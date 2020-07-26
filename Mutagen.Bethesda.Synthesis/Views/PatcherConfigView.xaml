@@ -12,9 +12,10 @@
     mc:Ignorable="d">
     <Grid
         x:Name="TopGrid"
-        MinHeight="34"
-        Margin="0,4"
-        Background="Transparent">
+        MinHeight="24"
+        Margin="0,2"
+        Background="Transparent"
+        Focusable="False">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="40" />
             <ColumnDefinition Width="Auto" />
@@ -32,6 +33,7 @@
             </Border.Effect>
         </Border>
         <Border Grid.Column="1" Grid.ColumnSpan="2"
+            Margin="0,0,-1,0"
             BorderThickness="1">
             <Border.Style>
                 <Style TargetType="Border">
@@ -92,21 +94,30 @@
             Content="{Binding}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type vm:CodeSnippetPatcherVM}">
-                    <icon:PackIconMaterial Foreground="{StaticResource PaleYellowBrush}" Kind="CodeBraces" />
+                    <icon:PackIconMaterial
+                        Height="13"
+                        Foreground="{StaticResource PaleYellowBrush}"
+                        Kind="CodeBraces" />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:GithubPatcherVM}">
-                    <icon:PackIconSimpleIcons Foreground="{StaticResource PaleYellowBrush}" Kind="Github" />
+                    <icon:PackIconSimpleIcons
+                        Height="13"
+                        Foreground="{StaticResource PaleYellowBrush}"
+                        Kind="Github" />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:SolutionPatcherVM}">
-                    <icon:PackIconModern Foreground="{StaticResource PaleYellowBrush}" Kind="Visualstudio" />
+                    <icon:PackIconModern
+                        Height="13"
+                        Foreground="{StaticResource PaleYellowBrush}"
+                        Kind="Visualstudio" />
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
         <TextBlock Grid.Column="2"
-            Margin="9,0,0,3"
+            Margin="9,0,0,1"
             VerticalAlignment="Center"
-            FontSize="16"
-            FontWeight="Bold"
+            FontSize="12"
+            FontWeight="SemiBold"
             Text="Dynamic Variance" />
     </Grid>
 </local:PatcherConfigViewBase>
