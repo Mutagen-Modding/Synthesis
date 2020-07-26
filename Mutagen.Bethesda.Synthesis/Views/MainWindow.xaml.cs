@@ -1,20 +1,10 @@
 ﻿using MahApps.Metro.Controls;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Mutagen.Bethesda.Synthesis.Settings;
+using Newtonsoft.Json;
+using Noggog.WPF;
+using System.IO;
 
-namespace Mutagen.Bethesda.Synthesis
+namespace Mutagen.Bethesda.Synthesis.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -24,6 +14,14 @@ namespace Mutagen.Bethesda.Synthesis
         public MainWindow()
         {
             InitializeComponent();
+            JsonSerializerSettings settings = new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            };
+            this.WireMainVM<MainVM>(
+                $"Settings.json",
+                load: (s, vm) => vm.Load(JsonConvert.DeserializeObject<SynthesisSettings>(File.ReadAllText(s), settings)!),
+                save: (s, vm) => File.WriteAllText(s, JsonConvert.SerializeObject(vm.Save(), Formatting.Indented, settings)));
         }
     }
 }

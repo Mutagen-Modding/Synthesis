@@ -1,0 +1,16 @@
+[*.cs]
+
+# CS4014: Task not awaited
+dotnet_diagnostic.CS4014.severity = error
+
+# CS1998: Async function does not contain await
+dotnet_diagnostic.CS1998.severity = silent
+
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.CS1591.severity = silent
+ 
+# IDE0060: // Remove unused parameter 
+dotnet_diagnostic.IDE0060.severity = silent 
+ 
+# CS1066: // Optional parameter has no effect 
+dotnet_diagnostic.CS1066.severity = silent 
