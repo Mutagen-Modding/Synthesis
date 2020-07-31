@@ -1,5 +1,5 @@
 ﻿using MahApps.Metro.Controls;
-using Mutagen.Bethesda.Synthesis.Settings;
+using Mutagen.Bethesda.Synthesis.Core.Settings;
 using Newtonsoft.Json;
 using Noggog.WPF;
 using System.IO;

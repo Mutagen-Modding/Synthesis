@@ -1,5 +1,5 @@
 ﻿using DynamicData;
-using Mutagen.Bethesda.Synthesis.Settings;
+using Mutagen.Bethesda.Synthesis.Core.Settings;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Noggog;
@@ -67,6 +67,7 @@ namespace Mutagen.Bethesda.Synthesis
 
             // Set to settings
             IsOn = settings?.On ?? false;
+            Nickname = settings?.Nickname ?? string.Empty;
         }
 
         public abstract PatcherSettings Save();
@@ -74,6 +75,7 @@ namespace Mutagen.Bethesda.Synthesis
         protected void CopyOverSave(PatcherSettings settings)
         {
             settings.On = IsOn;
+            settings.Nickname = Nickname;
         }
     }
 }

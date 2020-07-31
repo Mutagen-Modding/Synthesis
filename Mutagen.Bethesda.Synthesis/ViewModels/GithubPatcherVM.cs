@@ -1,6 +1,6 @@
 ﻿using DynamicData.Kernel;
 using LibGit2Sharp;
-using Mutagen.Bethesda.Synthesis.Settings;
+using Mutagen.Bethesda.Synthesis.Core.Settings;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -48,6 +48,8 @@ namespace Mutagen.Bethesda.Synthesis
         public GithubPatcherVM(MainVM mvm, GithubPatcherSettings? settings = null)
             : base(mvm, settings)
         {
+            CopyInSettings(settings);
+
             _DisplayName = this.WhenAnyValue(
                 x => x.Nickname,
                 x => x.RepoPath,
@@ -77,7 +79,14 @@ namespace Mutagen.Bethesda.Synthesis
         {
             var ret = new GithubPatcherSettings();
             CopyOverSave(ret);
+            ret.RepoPath = this.RepoPath;
             return ret;
+        }
+
+        private void CopyInSettings(GithubPatcherSettings? settings)
+        {
+            if (settings == null) return;
+            this.RepoPath = settings.RepoPath;
         }
     }
 }

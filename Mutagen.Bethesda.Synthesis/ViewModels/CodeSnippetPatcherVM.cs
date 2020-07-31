@@ -1,7 +1,8 @@
-﻿using Mutagen.Bethesda.Synthesis.Settings;
+﻿using Mutagen.Bethesda.Synthesis.Core.Settings;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
@@ -16,9 +17,13 @@ namespace Mutagen.Bethesda.Synthesis
 
         public override bool NeedsConfiguration => false;
 
-        public CodeSnippetPatcherVM(MainVM mvm, SnippetPatcherSettings? settings = null)
+        [Reactive]
+        public string Code { get; set; } = string.Empty;
+
+        public CodeSnippetPatcherVM(MainVM mvm, CodeSnippetPatcherSettings? settings = null)
             : base(mvm, settings)
         {
+            CopyInSettings(settings);
             _DisplayName = this.WhenAnyValue(x => x.Nickname)
                 .Select(x =>
                 {
@@ -36,9 +41,16 @@ namespace Mutagen.Bethesda.Synthesis
 
         public override PatcherSettings Save()
         {
-            var ret = new SnippetPatcherSettings();
+            var ret = new CodeSnippetPatcherSettings();
             CopyOverSave(ret);
+            ret.Code = this.Code;
             return ret;
+        }
+
+        private void CopyInSettings(CodeSnippetPatcherSettings? settings)
+        {
+            if (settings == null) return;
+            this.Code = settings.Code;
         }
     }
 }

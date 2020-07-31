@@ -1,6 +1,8 @@
 ﻿using Noggog.WPF;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Reactive.Disposables;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,6 +26,11 @@ namespace Mutagen.Bethesda.Synthesis.Views
         public CodeSnippetConfigView()
         {
             InitializeComponent();
+            this.WhenActivated(disposable =>
+            {
+                this.Bind(this.ViewModel, vm => vm.Code, v => v.CodeBox.Text)
+                    .DisposeWith(disposable);
+            });
         }
     }
 }

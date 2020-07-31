@@ -1,6 +1,6 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
-using Mutagen.Bethesda.Synthesis.Settings;
+using Mutagen.Bethesda.Synthesis.Core.Settings;
 using Newtonsoft.Json;
 using Noggog.WPF;
 using ReactiveUI;
@@ -46,7 +46,7 @@ namespace Mutagen.Bethesda.Synthesis
                 return p switch
                 {
                     GithubPatcherSettings gitHub => new GithubPatcherVM(this, gitHub),
-                    SnippetPatcherSettings snippet => new CodeSnippetPatcherVM(this, snippet),
+                    CodeSnippetPatcherSettings snippet => new CodeSnippetPatcherVM(this, snippet),
                     SolutionPatcherSettings soln => new SolutionPatcherVM(this, soln),
                     _ => throw new NotImplementedException(),
                 };

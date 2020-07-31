@@ -1,6 +1,6 @@
 ﻿using DynamicData;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Mutagen.Bethesda.Synthesis.Settings;
+using Mutagen.Bethesda.Synthesis.Core.Settings;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -31,6 +31,7 @@ namespace Mutagen.Bethesda.Synthesis
         public SolutionPatcherVM(MainVM mvm, SolutionPatcherSettings? settings = null)
             : base(mvm, settings)
         {
+            CopyInSettings(settings);
             SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
             _DisplayName = this.WhenAnyValue(
                 x => x.Nickname,
@@ -56,7 +57,14 @@ namespace Mutagen.Bethesda.Synthesis
         {
             var ret = new SolutionPatcherSettings();
             CopyOverSave(ret);
+            ret.SolutionPath = this.SolutionPath.TargetPath;
             return ret;
+        }
+
+        private void CopyInSettings(SolutionPatcherSettings? settings)
+        {
+            if (settings == null) return;
+            this.SolutionPath.TargetPath = settings.SolutionPath;
         }
     }
 }
