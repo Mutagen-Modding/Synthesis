@@ -3,23 +3,36 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Mutagen.Bethesda.Synthesis">
     <Color x:Key="Salmon">#e16063</Color>
+    <Color x:Key="LightSalmon">#fa7376</Color>
+    <Color x:Key="SalmonTransparent">#00e16063</Color>
+    <Color x:Key="DarkSalmon">#8e4d4f</Color>
+    <Color x:Key="DarkSalmonTransparent">#008e4d4f</Color>
     <Color x:Key="PaleYellow">#f7b992</Color>
     <Color x:Key="LightBlue">#51bcfa</Color>
     <Color x:Key="PaleBlue">#91d7ff</Color>
-    <Color x:Key="DarkSalmon">#8e4d4f</Color>
+    <Color x:Key="Blue">#2f5eb5</Color>
+    <Color x:Key="Purple">#281d52</Color>
     <Color x:Key="DarkPurple">#211c4a</Color>
     <Color x:Key="PaleDarkPurple">#201f24</Color>
+    <Color x:Key="AbyssPurple">#15131c</Color>
 
     <SolidColorBrush x:Key="SalmonBrush" Color="{StaticResource Salmon}" />
+    <SolidColorBrush x:Key="LightSalmonBrush" Color="{StaticResource LightSalmon}" />
+    <SolidColorBrush x:Key="SalmonTransparentBrush" Color="{StaticResource SalmonTransparent}" />
     <SolidColorBrush x:Key="DarkSalmonBrush" Color="{StaticResource DarkSalmon}" />
+    <SolidColorBrush x:Key="DarkSalmonTransparentBrush" Color="{StaticResource DarkSalmonTransparent}" />
     <SolidColorBrush x:Key="PaleYellowBrush" Color="{StaticResource PaleYellow}" />
     <SolidColorBrush x:Key="LightBlueBrush" Color="{StaticResource LightBlue}" />
     <SolidColorBrush x:Key="PaleBlueBrush" Color="{StaticResource PaleBlue}" />
+    <SolidColorBrush x:Key="BlueBrush" Color="{StaticResource Blue}" />
+    <SolidColorBrush x:Key="PurpleBrush" Color="{StaticResource Purple}" />
     <SolidColorBrush x:Key="DarkPurpleBrush" Color="{StaticResource DarkPurple}" />
     <SolidColorBrush x:Key="PaleDarkPurpleBrush" Color="{StaticResource PaleDarkPurple}" />
+    <SolidColorBrush x:Key="AbyssPurpleBrush" Color="{StaticResource AbyssPurple}" />
 
     <!--  Overrides  -->
     <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource LightBlue}" />
     <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="{StaticResource MahApps.Colors.ThemeForeground}" />
     <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource PaleBlue}" />
+    <SolidColorBrush x:Key="MahApps.Brushes.TextBox.Border.Focus" Color="{StaticResource MahApps.Colors.Gray4}" />
 </ResourceDictionary>

@@ -6,5 +6,6 @@ namespace Mutagen.Bethesda.Synthesis.Settings
 {
     public abstract class PatcherSettings
     {
+        public bool On;
     }
 }

@@ -9,6 +9,8 @@
     Title="Synthesis"
     Width="800"
     Height="450"
+    MinWidth="495"
+    MinHeight="375"
     BorderBrush="{StaticResource MahApps.Brushes.Accent2}"
     NonActiveBorderBrush="#444444"
     NonActiveWindowTitleBrush="#35000000"
