@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Authors>Noggog</Authors>
+    <Company>Mutagen</Company>
+    <Product>Synthesis</Product>
+    <Description>A lightweight wrapper CLI to run Synthesis pipelines without a GUI</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Synthesis.Bethesda.Execution\Synthesis.Bethesda.Execution.csproj" />
+  </ItemGroup>
+
+</Project>

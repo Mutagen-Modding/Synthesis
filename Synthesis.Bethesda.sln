@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30320.27
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Synthesis.Bethesda.Execution", "Synthesis.Bethesda.Execution\Synthesis.Bethesda.Execution.csproj", "{C914D28A-3D7D-40D4-8D77-B0FA0F3D95FD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Synthesis.Bethesda.GUI", "Synthesis.Bethesda.GUI\Synthesis.Bethesda.GUI.csproj", "{E874B0E8-1FB6-44A9-8544-253AB18DAA92}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Synthesis.Bethesda.CLI", "Synthesis.Bethesda.CLI\Synthesis.Bethesda.CLI.csproj", "{4C12BCB9-C5C4-4CE2-AD73-BD92DD5F5908}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Synthesis.Bethesda.UnitTests", "Synthesis.Bethesda.UnitTests\Synthesis.Bethesda.UnitTests.csproj", "{2AA63A56-A418-4B0C-AECC-170BF0CB0256}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Synthesis.Bethesda", "Synthesis.Bethesda\Synthesis.Bethesda.csproj", "{0549DAD2-D147-4BF6-82DD-A7B366E2324D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutagen.Bethesda.Synthesis", "Mutagen.Bethesda.Synthesis\Mutagen.Bethesda.Synthesis.csproj", "{B2C800E7-CE97-4EE5-A7F4-2807994C73FB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C914D28A-3D7D-40D4-8D77-B0FA0F3D95FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C914D28A-3D7D-40D4-8D77-B0FA0F3D95FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C914D28A-3D7D-40D4-8D77-B0FA0F3D95FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C914D28A-3D7D-40D4-8D77-B0FA0F3D95FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E874B0E8-1FB6-44A9-8544-253AB18DAA92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E874B0E8-1FB6-44A9-8544-253AB18DAA92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E874B0E8-1FB6-44A9-8544-253AB18DAA92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E874B0E8-1FB6-44A9-8544-253AB18DAA92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C12BCB9-C5C4-4CE2-AD73-BD92DD5F5908}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C12BCB9-C5C4-4CE2-AD73-BD92DD5F5908}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C12BCB9-C5C4-4CE2-AD73-BD92DD5F5908}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C12BCB9-C5C4-4CE2-AD73-BD92DD5F5908}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AA63A56-A418-4B0C-AECC-170BF0CB0256}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AA63A56-A418-4B0C-AECC-170BF0CB0256}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AA63A56-A418-4B0C-AECC-170BF0CB0256}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AA63A56-A418-4B0C-AECC-170BF0CB0256}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0549DAD2-D147-4BF6-82DD-A7B366E2324D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0549DAD2-D147-4BF6-82DD-A7B366E2324D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0549DAD2-D147-4BF6-82DD-A7B366E2324D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0549DAD2-D147-4BF6-82DD-A7B366E2324D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2C800E7-CE97-4EE5-A7F4-2807994C73FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2C800E7-CE97-4EE5-A7F4-2807994C73FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2C800E7-CE97-4EE5-A7F4-2807994C73FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2C800E7-CE97-4EE5-A7F4-2807994C73FB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {07FB5280-9F93-4B40-AE0B-B75310ED6A78}
+	EndGlobalSection
+EndGlobal

@@ -1,21 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Authors>Noggog</Authors>
     <Company>Mutagen</Company>
     <Product>Synthesis</Product>
-    <Description>Library for helping bootstrap programs utilizing Mutagen to be compatible with Synthesis</Description>
-    <PackageId>Mutagen.Bethesda.Synthesis</PackageId>
+    <Description>Library for helping bootstrap programs to be compatible with Synthesis</Description>
+    <PackageId>Synthesis.Bethesda</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/Noggog/Synthesis</RepositoryUrl>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
-    <AssemblyName>Mutagen.Bethesda.Synthesis</AssemblyName>
+    <AssemblyName>Synthesis.Bethesda</AssemblyName>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Synthesis.Bethesda\Synthesis.Bethesda.csproj" />
-  </ItemGroup>
 
 </Project>
