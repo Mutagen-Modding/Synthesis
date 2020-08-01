@@ -73,7 +73,7 @@ namespace Mutagen.Bethesda.Synthesis.UnitTests
                     wer++;",
                 Nickname = "UnitTests",
             };
-            using var file = new TempFile(extraDirectoryPaths: Utility.TempFolderPath);
+            using var file = new TempFile(extraDirectoryPaths: Utility.OverallTempFolderPath);
             var snippet = new CodeSnippetPatcher(settings);
             await snippet.Prep();
             await snippet.Run(null, new ModPath(Utility.ModKey, file.File.Path));
@@ -88,7 +88,7 @@ namespace Mutagen.Bethesda.Synthesis.UnitTests
                 Code = "File.WriteAllText(outputPath, \"Hello\");",
                 Nickname = "UnitTests",
             };
-            using var file = new TempFile(extraDirectoryPaths: Utility.TempFolderPath);
+            using var file = new TempFile(extraDirectoryPaths: Utility.OverallTempFolderPath);
             Assert.False(file.File.Exists);
             var snippet = new CodeSnippetPatcher(settings);
             await snippet.Prep();
@@ -107,7 +107,7 @@ namespace Mutagen.Bethesda.Synthesis.UnitTests
             };
             for (int i = 0; i < 2; i++)
             {
-                using var file = new TempFile(extraDirectoryPaths: Utility.TempFolderPath);
+                using var file = new TempFile(extraDirectoryPaths: Utility.OverallTempFolderPath);
                 Assert.False(file.File.Exists);
                 var snippet = new CodeSnippetPatcher(settings);
                 await snippet.Prep();

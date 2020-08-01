@@ -12,6 +12,5 @@ namespace Mutagen.Bethesda.Synthesis.Core.Patchers
         string Name { get; }
         Task Prep(CancellationToken? cancel = null);
         Task Run(ModPath? sourcePath, ModPath outputPath);
-        Task Complete { get; }
     }
 }
