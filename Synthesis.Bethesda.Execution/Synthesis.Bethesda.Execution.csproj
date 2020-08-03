@@ -12,6 +12,7 @@
     <Company>Mutagen</Company>
     <Product>Synthesis</Product>
     <PackageId>Synthesis.Bethesda.Execution</PackageId>
+    <Version>0.0.1</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -20,9 +21,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.6.0" />
-    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.12.0" />
+    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="1.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Mutagen.Bethesda" Version="0.12.0" />
+    <PackageReference Include="Noggog.CSharpExt" Version="1.0.36" />
   </ItemGroup>
 
 </Project>

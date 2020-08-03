@@ -1,8 +1,6 @@
-﻿using Loqui;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using Mutagen.Bethesda.Oblivion;
 using Synthesis.Bethesda.Execution.Settings;
 using Noggog;
 using System;
@@ -78,31 +76,29 @@ namespace Synthesis.Bethesda.Execution.Patchers
 
         public EmitResult Compile(CancellationToken cancel, out Assembly? assembly)
         {
-            FileGeneration fg = new FileGeneration();
-            fg.AppendLine($"using System;");
-            fg.AppendLine($"using System.Threading;");
-            fg.AppendLine($"using System.Threading.Tasks;");
-            fg.AppendLine($"using System.Linq;");
-            fg.AppendLine($"using System.IO;");
-            fg.AppendLine($"using System.Collections;");
-            fg.AppendLine($"using System.Collections.Generic;");
-            fg.AppendLine($"using Mutagen.Bethesda;");
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"using System;");
+            sb.AppendLine($"using System.Threading;");
+            sb.AppendLine($"using System.Threading.Tasks;");
+            sb.AppendLine($"using System.Linq;");
+            sb.AppendLine($"using System.IO;");
+            sb.AppendLine($"using System.Collections;");
+            sb.AppendLine($"using System.Collections.Generic;");
+            sb.AppendLine($"using Mutagen.Bethesda;");
             foreach (var game in EnumExt.GetValues<GameCategory>())
             {
-                fg.AppendLine($"using Mutagen.Bethesda.{game};");
+                sb.AppendLine($"using Mutagen.Bethesda.{game};");
             }
 
-            fg.AppendLine($"public class {ClassName}");
-            using (new BraceWrapper(fg))
-            {
-                fg.AppendLine($"public async Task Run({nameof(ModPath)}? sourcePath, {nameof(ModPath)} outputPath)");
-                using (new BraceWrapper(fg))
-                {
-                    fg.AppendLine(this.Code);
-                }
-            }
+            sb.AppendLine($"public class {ClassName}");
+            sb.AppendLine("{");
+            sb.AppendLine($"public async Task Run({nameof(ModPath)}? sourcePath, {nameof(ModPath)} outputPath)");
+            sb.AppendLine("{");
+            sb.AppendLine(this.Code);
+            sb.AppendLine("}");
+            sb.AppendLine("}");
 
-            var code = fg.ToString();
+            var code = sb.ToString();
 
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code);
 
@@ -120,6 +116,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                   MetadataReference.CreateFromFile(typeof(File).Assembly.Location),
                   MetadataReference.CreateFromFile(Assembly.Load("netstandard").Location),
                   MetadataReference.CreateFromFile(Assembly.Load("System.Runtime").Location),
+                  MetadataReference.CreateFromFile(Assembly.Load("Mutagen.Bethesda.Kernel").Location),
                   MetadataReference.CreateFromFile(Assembly.Load("Mutagen.Bethesda.Core").Location),
               });
             foreach (var game in EnumExt.GetValues<GameCategory>())

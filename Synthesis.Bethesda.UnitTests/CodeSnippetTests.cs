@@ -1,5 +1,4 @@
-﻿using Mutagen.Bethesda.Oblivion;
-using Synthesis.Bethesda.Execution.Patchers;
+﻿using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Settings;
 using Noggog;
 using Noggog.Utility;
@@ -54,7 +53,7 @@ namespace Synthesis.Bethesda.UnitTests
                 var settings = new CodeSnippetPatcherSettings()
                 {
                     On = true,
-                    Code = $"var id = {game}Mod.{nameof(OblivionMod.DefaultInitialNextFormID)}; id++;",
+                    Code = $"var id = {game}Mod.DefaultInitialNextFormID; id++;",
                     Nickname = "UnitTests",
                 };
                 var snippet = new CodeSnippetPatcher(settings);
