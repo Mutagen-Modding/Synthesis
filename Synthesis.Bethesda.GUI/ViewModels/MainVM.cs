@@ -20,9 +20,13 @@ namespace Synthesis.Bethesda.GUI
     {
         public ConfigurationVM Configuration { get; }
 
+        [Reactive]
+        public ViewModel ActivePanel { get; set; }
+
         public MainVM()
         {
             Configuration = new ConfigurationVM(this);
+            ActivePanel = Configuration;
         }
 
         public void Load(SynthesisSettings? settings)
@@ -32,5 +36,13 @@ namespace Synthesis.Bethesda.GUI
         }
 
         public SynthesisSettings Save() => Configuration.Save();
+
+        public void Init()
+        {
+            if (Configuration.Profiles.Count == 0)
+            {
+                ActivePanel = new NoProfileVM(this.Configuration);
+            }
+        }
     }
 }

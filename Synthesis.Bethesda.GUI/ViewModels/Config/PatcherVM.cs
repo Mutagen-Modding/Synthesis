@@ -16,13 +16,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public abstract class PatcherVM : ViewModel
     {
-        public ConfigurationVM Config { get; }
+        public ProfileVM Profile { get; }
 
         private readonly ObservableAsPropertyHelper<bool> _IsSelected;
         public bool IsSelected => _IsSelected.Value;
 
         [Reactive]
-        public bool IsOn { get; set; }
+        public bool IsOn { get; set; } = true;
 
         [Reactive]
         public string Nickname { get; set; } = string.Empty;
@@ -36,14 +36,14 @@ namespace Synthesis.Bethesda.GUI
 
         public abstract bool NeedsConfiguration { get; }
 
-        public PatcherVM(ConfigurationVM parent, PatcherSettings? settings)
+        public PatcherVM(ProfileVM parent, PatcherSettings? settings)
         {
-            Config = parent;
-            _IsSelected = this.WhenAnyValue(x => x.Config.SelectedPatcher)
+            Profile = parent;
+            _IsSelected = this.WhenAnyValue(x => x.Profile.Config.SelectedPatcher)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsSelected));
 
-            _InInitialConfiguration = this.WhenAnyValue(x => x.Config.NewPatcher)
+            _InInitialConfiguration = this.WhenAnyValue(x => x.Profile.Config.NewPatcher)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(InInitialConfiguration));
 

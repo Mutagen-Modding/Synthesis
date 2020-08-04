@@ -15,14 +15,18 @@ namespace Synthesis.Bethesda.GUI
 {
     public class ConfigurationVM : ViewModel
     {
-        public SourceList<PatcherVM> Patchers { get; } = new SourceList<PatcherVM>();
+        public MainVM MainVM { get; }
+
+        public SourceCache<ProfileVM, string> Profiles { get; } = new SourceCache<ProfileVM, string>(p => p.ID);
+
+        public IObservableCollection<ProfileVM> ProfilesDisplay { get; }
         public IObservableCollection<PatcherVM> PatchersDisplay { get; }
 
-        public ICommand AddGithubPatcherCommand { get; }
-        public ICommand AddSolutionPatcherCommand { get; }
-        public ICommand AddSnippetPatcherCommand { get; }
         public ICommand CompleteConfiguration { get; }
         public ICommand CancelConfiguration { get; }
+
+        [Reactive]
+        public ProfileVM? SelectedProfile { get; set; }
 
         [Reactive]
         public PatcherVM? SelectedPatcher { get; set; }
@@ -33,19 +37,21 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<PatcherVM?> _DisplayedPatcher;
         public PatcherVM? DisplayedPatcher => _DisplayedPatcher.Value;
 
-        public ConfigurationVM(MainVM parent)
+        public ConfigurationVM(MainVM mvm)
         {
-            PatchersDisplay = Patchers.Connect().ToObservableCollection(this);
-            AddGithubPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new GithubPatcherVM(this)));
-            AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new SolutionPatcherVM(this)));
-            AddSnippetPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new CodeSnippetPatcherVM(this)));
+            MainVM = mvm;
+            ProfilesDisplay = Profiles.Connect().ToObservableCollection(this);
+            PatchersDisplay = this.WhenAnyValue(x => x.SelectedProfile)
+                .Select(p => p?.Patchers.Connect() ?? Observable.Empty<IChangeSet<PatcherVM>>())
+                .Switch()
+                .ToObservableCollection(this);
 
             CompleteConfiguration = ReactiveCommand.Create(
                 () =>
                 {
                     var patcher = this.NewPatcher;
                     if (patcher == null) return;
-                    Patchers.Add(patcher);
+                    SelectedProfile?.Patchers.Add(patcher);
                     NewPatcher = null;
                     SelectedPatcher = patcher;
                     patcher.IsOn = true;
@@ -73,40 +79,26 @@ namespace Synthesis.Bethesda.GUI
                 .ToGuiProperty(this, nameof(DisplayedPatcher));
         }
 
-        public void Load(SynthesisSettings? settings)
+        public void Load(SynthesisSettings settings)
         {
-            if (settings == null) return;
-            Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
+            Profiles.Clear();
+            Profiles.AddOrUpdate(settings.Profiles.Select(p =>
             {
-                return p switch
-                {
-                    GithubPatcherSettings gitHub => new GithubPatcherVM(this, gitHub),
-                    CodeSnippetPatcherSettings snippet => new CodeSnippetPatcherVM(this, snippet),
-                    SolutionPatcherSettings soln => new SolutionPatcherVM(this, soln),
-                    _ => throw new NotImplementedException(),
-                };
+                return new ProfileVM(this, p);
             }));
+            if (Profiles.TryGetValue(settings.SelectedProfile, out var profile))
+            {
+                SelectedProfile = profile;
+            }
         }
 
         public SynthesisSettings Save()
         {
             return new SynthesisSettings()
             {
-                Patchers = Patchers.Items.Select(p => p.Save()).ToList()
+                Profiles = Profiles.Items.Select(p => p.Save()).ToList(),
+                SelectedProfile = SelectedProfile?.ID ?? string.Empty
             };
-        }
-
-        private void SetPatcherForInitialConfiguration(PatcherVM patcher)
-        {
-            if (patcher.NeedsConfiguration)
-            {
-                NewPatcher = patcher;
-            }
-            else
-            {
-                Patchers.Add(patcher);
-                SelectedPatcher = patcher;
-            }
         }
     }
 }

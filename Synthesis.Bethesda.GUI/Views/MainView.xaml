@@ -5,8 +5,18 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <local:PatchersConfigView x:Name="ConfigView" />
+    <ContentPresenter x:Name="ContentPane">
+        <ContentPresenter.Resources>
+            <DataTemplate DataType="{x:Type vm:ConfigurationVM}">
+                <local:PatchersConfigView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:NoProfileVM}">
+                <local:NoProfileView />
+            </DataTemplate>
+        </ContentPresenter.Resources>
+    </ContentPresenter>
 </local:MainViewBase>

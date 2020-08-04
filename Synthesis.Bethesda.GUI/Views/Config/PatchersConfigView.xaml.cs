@@ -22,13 +22,16 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated((disposable) =>
             {
-                this.WhenAnyValue(x => x.ViewModel.AddGithubPatcherCommand)
+                this.WhenAnyValue(x => x.ViewModel.SelectedProfile, x => x.ViewModel.SelectedProfile!.AddGithubPatcherCommand,
+                        (p, _) => p?.AddGithubPatcherCommand ?? null)
                     .BindToStrict(this, x => x.AddGithubButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.AddSolutionPatcherCommand)
+                this.WhenAnyValue(x => x.ViewModel.SelectedProfile, x => x.ViewModel.SelectedProfile!.AddSolutionPatcherCommand,
+                        (p, _) => p?.AddSolutionPatcherCommand ?? null)
                     .BindToStrict(this, x => x.AddSolutionButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.AddSnippetPatcherCommand)
+                this.WhenAnyValue(x => x.ViewModel.SelectedProfile, x => x.ViewModel.SelectedProfile!.AddSnippetPatcherCommand,
+                        (p, _) => p?.AddSnippetPatcherCommand ?? null)
                     .BindToStrict(this, x => x.AddSnippetButton.Command)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel.PatchersDisplay)

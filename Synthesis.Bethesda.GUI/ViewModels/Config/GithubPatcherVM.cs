@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
         public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
 
-        public GithubPatcherVM(ConfigurationVM parent, GithubPatcherSettings? settings = null)
+        public GithubPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
         {
             CopyInSettings(settings);

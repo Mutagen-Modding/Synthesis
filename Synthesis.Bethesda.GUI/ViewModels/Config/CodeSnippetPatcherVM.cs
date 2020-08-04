@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override ErrorResponse CanCompleteConfiguration => ErrorResponse.Success;
 
-        public CodeSnippetPatcherVM(ConfigurationVM parent, CodeSnippetPatcherSettings? settings = null)
+        public CodeSnippetPatcherVM(ProfileVM parent, CodeSnippetPatcherSettings? settings = null)
             : base(parent, settings)
         {
             CopyInSettings(settings);

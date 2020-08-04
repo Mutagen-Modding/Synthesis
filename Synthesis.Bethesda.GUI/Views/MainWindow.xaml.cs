@@ -18,10 +18,11 @@ namespace Synthesis.Bethesda.GUI.Views
             {
                 TypeNameHandling = TypeNameHandling.Auto
             };
-            this.WireMainVM<MainVM>(
+            var mvm = this.WireMainVM<MainVM>(
                 $"Settings.json",
                 load: (s, vm) => vm.Load(JsonConvert.DeserializeObject<SynthesisSettings>(File.ReadAllText(s), settings)!),
                 save: (s, vm) => File.WriteAllText(s, JsonConvert.SerializeObject(vm.Save(), Formatting.Indented, settings)));
+            mvm.Init();
         }
     }
 }

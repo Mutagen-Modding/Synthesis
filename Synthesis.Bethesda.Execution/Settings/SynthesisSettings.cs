@@ -7,6 +7,7 @@ namespace Synthesis.Bethesda.Execution.Settings
 {
     public class SynthesisSettings
     {
-        public List<PatcherSettings> Patchers = new List<PatcherSettings>();
+        public string SelectedProfile = string.Empty;
+        public List<SynthesisProfile> Profiles = new List<SynthesisProfile>();
     }
 }

@@ -12,6 +12,7 @@
     <Color x:Key="PaleBlue">#91d7ff</Color>
     <Color x:Key="Blue">#2f5eb5</Color>
     <Color x:Key="Purple">#281d52</Color>
+    <Color x:Key="NeonPurple">#4817ff</Color>
     <Color x:Key="DarkPurple">#211c4a</Color>
     <Color x:Key="PaleDarkPurple">#201f24</Color>
     <Color x:Key="AbyssPurple">#15131c</Color>
@@ -26,6 +27,7 @@
     <SolidColorBrush x:Key="PaleBlueBrush" Color="{StaticResource PaleBlue}" />
     <SolidColorBrush x:Key="BlueBrush" Color="{StaticResource Blue}" />
     <SolidColorBrush x:Key="PurpleBrush" Color="{StaticResource Purple}" />
+    <SolidColorBrush x:Key="NeonPurpleBrush" Color="{StaticResource NeonPurple}" />
     <SolidColorBrush x:Key="DarkPurpleBrush" Color="{StaticResource DarkPurple}" />
     <SolidColorBrush x:Key="PaleDarkPurpleBrush" Color="{StaticResource PaleDarkPurple}" />
     <SolidColorBrush x:Key="AbyssPurpleBrush" Color="{StaticResource AbyssPurple}" />
