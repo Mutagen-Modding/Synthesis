@@ -28,8 +28,8 @@ namespace Synthesis.Bethesda.GUI
 
         protected override IObservable<ErrorResponse> CanCompleteConfiguration => this.WhenAnyValue(x => x.SolutionPath.ErrorState);
 
-        public SolutionPatcherVM(MainVM mvm, SolutionPatcherSettings? settings = null)
-            : base(mvm, settings)
+        public SolutionPatcherVM(ConfigurationVM parent, SolutionPatcherSettings? settings = null)
+            : base(parent, settings)
         {
             CopyInSettings(settings);
             SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));

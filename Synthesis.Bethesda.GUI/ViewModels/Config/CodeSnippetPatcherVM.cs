@@ -20,8 +20,8 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string Code { get; set; } = string.Empty;
 
-        public CodeSnippetPatcherVM(MainVM mvm, CodeSnippetPatcherSettings? settings = null)
-            : base(mvm, settings)
+        public CodeSnippetPatcherVM(ConfigurationVM parent, CodeSnippetPatcherSettings? settings = null)
+            : base(parent, settings)
         {
             CopyInSettings(settings);
             _DisplayName = this.WhenAnyValue(x => x.Nickname)

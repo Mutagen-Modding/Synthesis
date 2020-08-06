@@ -1,5 +1,6 @@
 ﻿using Noggog.WPF;
 using ReactiveUI;
+using System.Reactive.Disposables;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,6 +17,12 @@ namespace Synthesis.Bethesda.GUI.Views
         public MainView()
         {
             InitializeComponent();
+            this.WhenActivated(disposable =>
+            {
+                this.WhenAnyValue(x => x.ViewModel.Configuration)
+                    .BindToStrict(this, x => x.ConfigView.DataContext)
+                    .DisposeWith(disposable);
+            });
         }
     }
 }

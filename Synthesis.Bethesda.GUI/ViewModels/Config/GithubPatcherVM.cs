@@ -44,8 +44,8 @@ namespace Synthesis.Bethesda.GUI
                     })
                     .ObserveOnGui());
 
-        public GithubPatcherVM(MainVM mvm, GithubPatcherSettings? settings = null)
-            : base(mvm, settings)
+        public GithubPatcherVM(ConfigurationVM parent, GithubPatcherSettings? settings = null)
+            : base(parent, settings)
         {
             CopyInSettings(settings);
 

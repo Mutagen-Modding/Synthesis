@@ -10,7 +10,7 @@ using System.Reactive.Linq;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class PatchersConfigViewBase : NoggogUserControl<MainVM> { }
+    public class PatchersConfigViewBase : NoggogUserControl<ConfigurationVM> { }
 
     /// <summary>
     /// Interaction logic for PatchersConfigurationView.xaml

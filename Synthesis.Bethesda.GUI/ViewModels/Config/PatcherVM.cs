@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public abstract class PatcherVM : ViewModel
     {
-        public MainVM MVM { get; }
+        public ConfigurationVM Config { get; }
 
         private readonly ObservableAsPropertyHelper<bool> _IsSelected;
         public bool IsSelected => _IsSelected.Value;
@@ -39,10 +39,10 @@ namespace Synthesis.Bethesda.GUI
 
         public abstract bool NeedsConfiguration { get; }
 
-        public PatcherVM(MainVM mvm, PatcherSettings? settings)
+        public PatcherVM(ConfigurationVM parent, PatcherSettings? settings)
         {
-            MVM = mvm;
-            _IsSelected = this.WhenAnyValue(x => x.MVM.SelectedPatcher)
+            Config = parent;
+            _IsSelected = this.WhenAnyValue(x => x.Config.SelectedPatcher)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsSelected));
 
@@ -50,7 +50,7 @@ namespace Synthesis.Bethesda.GUI
                 () =>
                 {
                     InInitialConfiguration = false;
-                    mvm.Patchers.Add(this);
+                    Config.Patchers.Add(this);
                 },
                 canExecute: Observable.CombineLatest(
                     this.WhenAnyValue(x => x.InInitialConfiguration),
@@ -61,7 +61,7 @@ namespace Synthesis.Bethesda.GUI
                 () =>
                 {
                     // Just forget about us and let us GC
-                    mvm.SelectedPatcher = null;
+                    Config.SelectedPatcher = null;
                 },
                 canExecute: this.WhenAnyValue(x => x.InInitialConfiguration));
 
