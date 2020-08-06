@@ -21,28 +21,8 @@ namespace Synthesis.Bethesda.GUI
 
         public override bool NeedsConfiguration => true;
 
-        protected override IObservable<ErrorResponse> CanCompleteConfiguration =>
-            // Whenever we change, mark that we cannot
-            this.WhenAnyValue(x => x.RepoPath)
-                .DistinctUntilChanged()
-                .Select(x => ErrorResponse.Fail("Checking remote repository correctness."))
-                // But merge in the work of checking the repo on that same path to get the eventual result
-                .Merge(this.WhenAnyValue(x => x.RepoPath)
-                    .DistinctUntilChanged()
-                    .Debounce(TimeSpan.FromMilliseconds(300), RxApp.MainThreadScheduler)
-                    .ObserveOn(RxApp.TaskpoolScheduler)
-                    .Select(p =>
-                    {
-                        try
-                        {
-                            if (Repository.ListRemoteReferences(p).Any()) return ErrorResponse.Success;
-                        }
-                        catch (Exception)
-                        {
-                        }
-                        return ErrorResponse.Fail("Path does not point to a valid repository.");
-                    })
-                    .ObserveOnGui());
+        private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
+        public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
 
         public GithubPatcherVM(ConfigurationVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
@@ -72,6 +52,28 @@ namespace Synthesis.Bethesda.GUI
                     }
                 })
                 .ToGuiProperty<string>(this, nameof(DisplayName));
+
+            // Whenever we change, mark that we cannot
+            _CanCompleteConfiguration = this.WhenAnyValue(x => x.RepoPath)
+                .DistinctUntilChanged()
+                .Select(x => ErrorResponse.Fail("Checking remote repository correctness."))
+                // But merge in the work of checking the repo on that same path to get the eventual result
+                .Merge(this.WhenAnyValue(x => x.RepoPath)
+                    .DistinctUntilChanged()
+                    .Debounce(TimeSpan.FromMilliseconds(300), RxApp.MainThreadScheduler)
+                    .ObserveOn(RxApp.TaskpoolScheduler)
+                    .Select(p =>
+                    {
+                        try
+                        {
+                            if (Repository.ListRemoteReferences(p).Any()) return ErrorResponse.Success;
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        return ErrorResponse.Fail("Path does not point to a valid repository.");
+                    }))
+                .ToGuiProperty(this, nameof(CanCompleteConfiguration));
         }
 
         public override PatcherSettings Save()

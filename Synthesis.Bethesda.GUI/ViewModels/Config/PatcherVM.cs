@@ -29,13 +29,10 @@ namespace Synthesis.Bethesda.GUI
 
         public abstract string DisplayName { get; }
 
-        [Reactive]
-        public bool InInitialConfiguration { get; set; }
+        private readonly ObservableAsPropertyHelper<bool> _InInitialConfiguration;
+        public bool InInitialConfiguration => _InInitialConfiguration.Value;
 
-        protected virtual IObservable<ErrorResponse> CanCompleteConfiguration => Observable.Return(ErrorResponse.Success);
-
-        public ICommand CompleteConfiguration { get; }
-        public ICommand CancelConfiguration { get; }
+        public abstract ErrorResponse CanCompleteConfiguration { get; }
 
         public abstract bool NeedsConfiguration { get; }
 
@@ -46,24 +43,9 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsSelected));
 
-            CompleteConfiguration = ReactiveCommand.Create(
-                () =>
-                {
-                    InInitialConfiguration = false;
-                    Config.Patchers.Add(this);
-                },
-                canExecute: Observable.CombineLatest(
-                    this.WhenAnyValue(x => x.InInitialConfiguration),
-                    CanCompleteConfiguration.Select(e => e.Succeeded),
-                    (inConfig, success) => inConfig && success));
-
-            CancelConfiguration = ReactiveCommand.Create(
-                () =>
-                {
-                    // Just forget about us and let us GC
-                    Config.SelectedPatcher = null;
-                },
-                canExecute: this.WhenAnyValue(x => x.InInitialConfiguration));
+            _InInitialConfiguration = this.WhenAnyValue(x => x.Config.NewPatcher)
+                .Select(x => x == this)
+                .ToGuiProperty(this, nameof(InInitialConfiguration));
 
             // Set to settings
             IsOn = settings?.On ?? false;

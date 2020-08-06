@@ -20,6 +20,8 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string Code { get; set; } = string.Empty;
 
+        public override ErrorResponse CanCompleteConfiguration => ErrorResponse.Success;
+
         public CodeSnippetPatcherVM(ConfigurationVM parent, CodeSnippetPatcherSettings? settings = null)
             : base(parent, settings)
         {

@@ -26,7 +26,8 @@ namespace Synthesis.Bethesda.GUI
 
         public override bool NeedsConfiguration => true;
 
-        protected override IObservable<ErrorResponse> CanCompleteConfiguration => this.WhenAnyValue(x => x.SolutionPath.ErrorState);
+        private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
+        public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
 
         public SolutionPatcherVM(ConfigurationVM parent, SolutionPatcherSettings? settings = null)
             : base(parent, settings)
@@ -51,6 +52,9 @@ namespace Synthesis.Bethesda.GUI
                     }
                 })
                 .ToGuiProperty<string>(this, nameof(DisplayName));
+
+            _CanCompleteConfiguration = this.WhenAnyValue(x => x.SolutionPath.ErrorState)
+                .ToGuiProperty(this, nameof(CanCompleteConfiguration));
         }
 
         public override PatcherSettings Save()

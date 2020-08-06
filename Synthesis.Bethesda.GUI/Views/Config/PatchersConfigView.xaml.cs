@@ -39,10 +39,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Wire up patcher config data context and visibility
-                this.WhenAnyValue(x => x.ViewModel.SelectedPatcher)
+                this.WhenAnyValue(x => x.ViewModel.DisplayedPatcher)
                     .BindToStrict(this, x => x.PatcherConfigView.DataContext)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.SelectedPatcher)
+                this.WhenAnyValue(x => x.ViewModel.DisplayedPatcher)
                     .Select(x => x == null ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.PatcherConfigView.Visibility)
                     .DisposeWith(disposable);
@@ -53,8 +53,8 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.AddSomePatchersHelpGrid.Visibility)
                     .DisposeWith(disposable);
 
-                var inInitialConfig = this.WhenAnyValue(x => x.ViewModel.SelectedPatcher, x => x.ViewModel.SelectedPatcher!.InInitialConfiguration,
-                        (p, _) => p?.InInitialConfiguration ?? false)
+                var inInitialConfig = this.WhenAnyValue(x => x.ViewModel.NewPatcher)
+                    .Select(x => x != null)
                     .Replay(1)
                     .RefCount();
 
@@ -82,12 +82,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Set up discard/confirm clicks
-                this.WhenAnyValue(x => x.ViewModel.SelectedPatcher, x => x.ViewModel.SelectedPatcher!.CancelConfiguration,
-                        (p, _) => p?.CancelConfiguration)
+                this.WhenAnyValue(x => x.ViewModel.CancelConfiguration)
                     .BindToStrict(this, x => x.CancelAdditionButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.SelectedPatcher, x => x.ViewModel.SelectedPatcher!.CompleteConfiguration,
-                        (p, _) => p?.CompleteConfiguration)
+                this.WhenAnyValue(x => x.ViewModel.CompleteConfiguration)
                     .BindToStrict(this, x => x.ConfirmAdditionButton.Command)
                     .DisposeWith(disposable);
             });
