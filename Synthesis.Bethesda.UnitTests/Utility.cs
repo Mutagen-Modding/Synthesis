@@ -19,5 +19,16 @@ namespace Synthesis.Bethesda.UnitTests
         public static readonly string PathToOverrideFile = "../../../override.esp";
         public static readonly ModKey OverrideModKey = new ModKey("override", ModType.Plugin);
         public static readonly string PathToLoadOrderFile = "../../../Plugins.txt";
+
+        public static TempFolder SetupDataFolder(string? loadOrderPath = null)
+        {
+            var dataFolder = new TempFolder();
+            loadOrderPath ??= PathToLoadOrderFile;
+            File.Copy(Utility.PathToTestFile, Path.Combine(dataFolder.Dir.Path, Path.GetFileName(Utility.PathToTestFile)));
+            File.Copy(Utility.PathToOverrideFile, Path.Combine(dataFolder.Dir.Path, Path.GetFileName(Utility.PathToOverrideFile)));
+            var loadOrderListing = LoadOrder.FromPath(loadOrderPath);
+            LoadOrder.AlignTimestamps(loadOrderListing, dataFolder.Dir.Path);
+            return dataFolder;
+        }
     }
 }

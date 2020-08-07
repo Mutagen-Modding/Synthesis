@@ -13,13 +13,13 @@ namespace Synthesis.Bethesda.Execution.Runner
 
         public Exception? Overall { get; private set; }
 
-        private readonly List<(IPatcher Patcher, Exception Exception)> _prepProblems = new List<(IPatcher Patcher, Exception Exception)>();
-        public IReadOnlyList<(IPatcher Patcher, Exception Exception)> PrepProblems => _prepProblems;
+        private readonly List<(IPatcherRun Patcher, Exception Exception)> _prepProblems = new List<(IPatcherRun Patcher, Exception Exception)>();
+        public IReadOnlyList<(IPatcherRun Patcher, Exception Exception)> PrepProblems => _prepProblems;
 
-        public (IPatcher Patcher, Exception Exception)? RunProblem { get; private set; }
+        public (IPatcherRun Patcher, Exception Exception)? RunProblem { get; private set; }
 
-        private readonly List<(IPatcher Patcher, string Output)> _outputMap = new List<(IPatcher Patcher, string Output)>();
-        public IReadOnlyList<(IPatcher Patcher, string Output)> Output => _outputMap;
+        private readonly List<(IPatcherRun Patcher, string Output)> _outputMap = new List<(IPatcherRun Patcher, string Output)>();
+        public IReadOnlyList<(IPatcherRun Patcher, string Output)> Output => _outputMap;
 
         public void ReportOverallProblem(Exception ex)
         {
@@ -30,12 +30,12 @@ namespace Synthesis.Bethesda.Execution.Runner
             Overall = ex;
         }
 
-        public void ReportPrepProblem(IPatcher patcher, Exception ex)
+        public void ReportPrepProblem(IPatcherRun patcher, Exception ex)
         {
             _prepProblems.Add((patcher, ex));
         }
 
-        public void ReportRunProblem(IPatcher patcher, Exception ex)
+        public void ReportRunProblem(IPatcherRun patcher, Exception ex)
         {
             if (RunProblem != null)
             {
@@ -44,7 +44,7 @@ namespace Synthesis.Bethesda.Execution.Runner
             RunProblem = (patcher, ex);
         }
 
-        public void ReportOutputMapping(IPatcher patcher, string str)
+        public void ReportOutputMapping(IPatcherRun patcher, string str)
         {
             _outputMap.Add((patcher, str));
         }

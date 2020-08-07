@@ -13,7 +13,7 @@ namespace Synthesis.Bethesda.Execution.Runner
         {
         }
 
-        public void ReportOutputMapping(IPatcher patcher, string str)
+        public void ReportOutputMapping(IPatcherRun patcher, string str)
         {
         }
 
@@ -22,12 +22,12 @@ namespace Synthesis.Bethesda.Execution.Runner
             throw ex;
         }
 
-        public void ReportPrepProblem(IPatcher patcher, Exception ex)
+        public void ReportPrepProblem(IPatcherRun patcher, Exception ex)
         {
             throw ex;
         }
 
-        public void ReportRunProblem(IPatcher patcher, Exception ex)
+        public void ReportRunProblem(IPatcherRun patcher, Exception ex)
         {
             throw ex;
         }

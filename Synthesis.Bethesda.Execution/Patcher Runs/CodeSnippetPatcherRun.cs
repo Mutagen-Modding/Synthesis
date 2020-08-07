@@ -13,10 +13,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Synthesis;
+using System.Linq.Expressions;
 
 namespace Synthesis.Bethesda.Execution.Patchers
 {
-    public class CodeSnippetPatcher : IPatcher
+    public class CodeSnippetPatcherRun : IPatcherRun
     {
         private static int UniquenessNumber;
         public const string ClassName = "PatcherClass";
@@ -31,14 +33,14 @@ namespace Synthesis.Bethesda.Execution.Patchers
 
         private Assembly? _assembly;
 
-        public CodeSnippetPatcher(CodeSnippetPatcherSettings settings)
+        public CodeSnippetPatcherRun(CodeSnippetPatcherSettings settings)
         {
             Name = settings.Nickname;
             Code = settings.Code;
             AssemblyName = $"{Name} - {System.Threading.Interlocked.Increment(ref UniquenessNumber)}";
         }
 
-        public async Task Run(ModPath? sourcePath, ModPath outputPath)
+        public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
         {
             if (_assembly == null)
             {
@@ -50,23 +52,24 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 throw new ArgumentException("Could not find compiled class within assembly.");
             }
             var patcherCodeClass = System.Activator.CreateInstance(type);
+            var synthesisState = ConstructStateFactory(settings.GameRelease)(settings);
             Task t = (Task)type.InvokeMember("Run",
                 BindingFlags.Default | BindingFlags.InvokeMethod,
                 null,
                 patcherCodeClass,
                 new[]
                 {
-                    sourcePath,
-                    outputPath,
+                    synthesisState,
                 });
             await t;
+            synthesisState.PatchMod.WriteToBinaryParallel(settings.OutputPath);
         }
 
-        public async Task Prep(CancellationToken? cancel = null)
+        public async Task Prep(GameRelease release, CancellationToken? cancel = null)
         {
             cancel ??= CancellationToken.None;
 
-            var emitResult = Compile(cancel.Value, out _assembly);
+            var emitResult = Compile(release, cancel.Value, out _assembly);
             if (!emitResult.Success)
             {
                 var err = emitResult.Diagnostics.First(d => d.Severity == DiagnosticSeverity.Error);
@@ -74,8 +77,31 @@ namespace Synthesis.Bethesda.Execution.Patchers
             }
         }
 
-        public EmitResult Compile(CancellationToken cancel, out Assembly? assembly)
+        internal static Func<RunSynthesisPatcher, ISynthesisState> ConstructStateFactory(GameRelease release)
         {
+            var regis = release.ToCategory().ToModRegistration();
+            var cliSettingsParam = Expression.Parameter(typeof(RunSynthesisPatcher), "settings");
+            MethodCallExpression callExp = Expression.Call(
+                typeof(Mutagen.Bethesda.Synthesis.Synthesis),
+                "ToState",
+                new Type[]
+                {
+                    regis.SetterType,
+                    regis.GetterType,
+                },
+                cliSettingsParam);
+            LambdaExpression lambda = Expression.Lambda(callExp, cliSettingsParam);
+            var deleg = lambda.Compile();
+            return (RunSynthesisPatcher settings) =>
+            {
+                return (ISynthesisState)deleg.DynamicInvoke(settings);
+            };
+        }
+
+        public EmitResult Compile(GameRelease release, CancellationToken cancel, out Assembly? assembly)
+        {
+            var gameCategory = release.ToCategory();
+
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"using System;");
             sb.AppendLine($"using System.Threading;");
@@ -84,6 +110,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             sb.AppendLine($"using System.IO;");
             sb.AppendLine($"using System.Collections;");
             sb.AppendLine($"using System.Collections.Generic;");
+            sb.AppendLine($"using Mutagen.Bethesda.Synthesis;");
             sb.AppendLine($"using Mutagen.Bethesda;");
             foreach (var game in EnumExt.GetValues<GameCategory>())
             {
@@ -92,7 +119,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
 
             sb.AppendLine($"public class {ClassName}");
             sb.AppendLine("{");
-            sb.AppendLine($"public async Task Run({nameof(ModPath)}? sourcePath, {nameof(ModPath)} outputPath)");
+            sb.AppendLine($"public async Task Run(Mutagen.Bethesda.Synthesis.SynthesisState<Mutagen.Bethesda.{gameCategory}.I{gameCategory}Mod, Mutagen.Bethesda.{gameCategory}.I{gameCategory}ModGetter> state)");
             sb.AppendLine("{");
             sb.AppendLine(this.Code);
             sb.AppendLine("}");
@@ -116,8 +143,10 @@ namespace Synthesis.Bethesda.Execution.Patchers
                   MetadataReference.CreateFromFile(typeof(File).Assembly.Location),
                   MetadataReference.CreateFromFile(Assembly.Load("netstandard").Location),
                   MetadataReference.CreateFromFile(Assembly.Load("System.Runtime").Location),
+                  MetadataReference.CreateFromFile(Assembly.Load("Loqui").Location),
                   MetadataReference.CreateFromFile(Assembly.Load("Mutagen.Bethesda.Kernel").Location),
                   MetadataReference.CreateFromFile(Assembly.Load("Mutagen.Bethesda.Core").Location),
+                  MetadataReference.CreateFromFile(Assembly.Load("Mutagen.Bethesda.Synthesis").Location),
               });
             foreach (var game in EnumExt.GetValues<GameCategory>())
             {
@@ -139,6 +168,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
 
         public void Dispose()
         {
+            // ToDo
             // Will eventually want to unload the assembly
         }
     }

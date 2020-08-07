@@ -8,7 +8,7 @@ using System.Text;
 namespace Synthesis.Bethesda
 {
     [Verb("run-patcher", HelpText = "Run the patcher")]
-    public class CliArgRunSettings : ICliArgRunSettings
+    public class RunSynthesisPatcher : IRunPipelineSettings
     {
         [Option('s', "SourcePath", Required = false, HelpText = "Optional path pointing to the previous patcher result to build onto.")]
         public string? SourcePath { get; set; }
@@ -26,7 +26,7 @@ namespace Synthesis.Bethesda
         public string LoadOrderFilePath { get; set; } = string.Empty;
     }
 
-    public interface ICliArgRunSettings
+    public interface IRunPipelineSettings
     {
         string? SourcePath { get; }
         string OutputPath { get; }

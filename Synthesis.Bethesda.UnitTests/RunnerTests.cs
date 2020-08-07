@@ -19,18 +19,22 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task EmptyRun()
         {
+            using var dataFolder = Utility.SetupDataFolder();
             using var tmpFolder = Utility.GetTempFolder();
             var output = Utility.TypicalOutputFile(tmpFolder);
             await Runner.Run(
                 workingDirectory: tmpFolder.Dir.Path,
-                outputPath: output, 
-                patchers: ListExt.Empty<IPatcher>());
+                outputPath: output,
+                dataFolder: dataFolder.Dir.Path,
+                release: GameRelease.Oblivion,
+                patchers: ListExt.Empty<IPatcherRun>());
             Assert.False(File.Exists(output));
         }
 
         [Fact]
         public async Task ListedNonExistantSourcePath()
         {
+            using var dataFolder = Utility.SetupDataFolder();
             using var tmpFolder = Utility.GetTempFolder();
             var patcher = new DummyPatcher();
             var output = Utility.TypicalOutputFile(tmpFolder);
@@ -38,6 +42,8 @@ namespace Synthesis.Bethesda.UnitTests
             await Runner.Run(
                 workingDirectory: tmpFolder.Dir.Path,
                 outputPath: output,
+                dataFolder: dataFolder.Dir.Path,
+                release: GameRelease.Oblivion,
                 sourcePath: output,
                 reporter: reporter,
                 patchers: patcher.AsEnumerable().ToList());
@@ -49,12 +55,15 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task BasicPatcherFunctionsCalled()
         {
+            using var dataFolder = Utility.SetupDataFolder();
             using var tmpFolder = Utility.GetTempFolder();
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher();
             await Runner.Run(
                 workingDirectory: tmpFolder.Dir.Path,
                 outputPath: output,
+                dataFolder: dataFolder.Dir.Path,
+                release: GameRelease.Oblivion,
                 patchers: patcher.AsEnumerable().ToList());
             Assert.True(patcher.WasRun);
             Assert.True(patcher.WasPrepped);
@@ -63,6 +72,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task ChecksIfPatchersOutput()
         {
+            using var dataFolder = Utility.SetupDataFolder();
             using var tmpFolder = Utility.GetTempFolder();
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher()
@@ -73,6 +83,8 @@ namespace Synthesis.Bethesda.UnitTests
             await Runner.Run(
                 workingDirectory: tmpFolder.Dir.Path,
                 outputPath: output,
+                dataFolder: dataFolder.Dir.Path,
+                release: GameRelease.Oblivion,
                 reporter: reporter,
                 patchers: patcher.AsEnumerable().ToList());
             Assert.IsType<ArgumentException>(reporter.RunProblem?.Exception);
@@ -82,12 +94,15 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task FinalOutputFileCreated()
         {
+            using var dataFolder = Utility.SetupDataFolder();
             using var tmpFolder = Utility.GetTempFolder();
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher();
             await Runner.Run(
                 workingDirectory: tmpFolder.Dir.Path,
                 outputPath: output,
+                dataFolder: dataFolder.Dir.Path,
+                release: GameRelease.Oblivion,
                 patchers: patcher.AsEnumerable().ToList());
             Assert.True(File.Exists(output));
         }
@@ -95,6 +110,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task PatcherThrowInPrep()
         {
+            using var dataFolder = Utility.SetupDataFolder();
             using var tmpFolder = Utility.GetTempFolder();
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher()
@@ -105,6 +121,8 @@ namespace Synthesis.Bethesda.UnitTests
             await Runner.Run(
                 workingDirectory: tmpFolder.Dir.Path,
                 outputPath: output,
+                dataFolder: dataFolder.Dir.Path,
+                release: GameRelease.Oblivion,
                 patchers: patcher.AsEnumerable().ToList(),
                 reporter: reporter);
             Assert.False(File.Exists(output));
@@ -118,6 +136,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task PatcherThrowInRun()
         {
+            using var dataFolder = Utility.SetupDataFolder();
             using var tmpFolder = Utility.GetTempFolder();
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher()
@@ -128,6 +147,8 @@ namespace Synthesis.Bethesda.UnitTests
             await Runner.Run(
                 workingDirectory: tmpFolder.Dir.Path,
                 outputPath: output,
+                dataFolder: dataFolder.Dir.Path,
+                release: GameRelease.Oblivion,
                 patchers: patcher.AsEnumerable().ToList(),
                 reporter: reporter);
             Assert.False(File.Exists(output));
@@ -141,6 +162,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task PatcherOutputReported()
         {
+            using var dataFolder = Utility.SetupDataFolder();
             using var tmpFolder = Utility.GetTempFolder();
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher();
@@ -148,6 +170,8 @@ namespace Synthesis.Bethesda.UnitTests
             await Runner.Run(
                 workingDirectory: tmpFolder.Dir.Path,
                 outputPath: output,
+                dataFolder: dataFolder.Dir.Path,
+                release: GameRelease.Oblivion,
                 patchers: patcher.AsEnumerable().ToList(),
                 reporter: reporter);
             Assert.True(File.Exists(output));
@@ -159,7 +183,7 @@ namespace Synthesis.Bethesda.UnitTests
             Assert.True(File.Exists(reporter.Output[0].Output));
         }
 
-        public class DummyPatcher : IPatcher
+        public class DummyPatcher : IPatcherRun
         {
             public string Name => "Dummy";
 
@@ -175,7 +199,7 @@ namespace Synthesis.Bethesda.UnitTests
                 WasDisposed = true;
             }
 
-            public async Task Prep(CancellationToken? cancel = null)
+            public async Task Prep(GameRelease release, CancellationToken? cancel = null)
             {
                 WasPrepped = true;
                 if (ThrowInPrep)
@@ -184,11 +208,11 @@ namespace Synthesis.Bethesda.UnitTests
                 }
             }
 
-            public async Task Run(ModPath? sourcePath, ModPath outputPath)
+            public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
             {
                 if (DoWork)
                 {
-                    File.WriteAllText(outputPath.Path, "Hello");
+                    File.WriteAllText(settings.OutputPath, "Hello");
                 }
                 WasRun = true;
                 if (ThrowInRun)

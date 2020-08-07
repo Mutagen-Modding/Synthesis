@@ -47,9 +47,9 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
-            return await Parser.Default.ParseArguments(args, typeof(CliArgRunSettings))
+            return await Parser.Default.ParseArguments(args, typeof(RunSynthesisPatcher))
                 .MapResult(
-                    async (CliArgRunSettings settings) =>
+                    async (RunSynthesisPatcher settings) =>
                     {
                         await Patch(
                             settings,
@@ -74,9 +74,9 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
-            return Parser.Default.ParseArguments(args, typeof(CliArgRunSettings))
+            return Parser.Default.ParseArguments(args, typeof(RunSynthesisPatcher))
                 .MapResult(
-                    (CliArgRunSettings settings) =>
+                    (RunSynthesisPatcher settings) =>
                     {
                         Patch(
                             settings,
@@ -86,7 +86,7 @@ namespace Mutagen.Bethesda.Synthesis
                     _ => false);
         }
 
-        internal static SynthesisState<TMod, TModGetter> ToState<TMod, TModGetter>(CliArgRunSettings settings)
+        public static SynthesisState<TMod, TModGetter> ToState<TMod, TModGetter>(RunSynthesisPatcher settings)
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
@@ -94,17 +94,18 @@ namespace Mutagen.Bethesda.Synthesis
             loadOrderListing = LoadOrder.AlignToTimestamps(loadOrderListing, settings.DataFolderPath, throwOnMissingMods: true);
             var loadOrder = LoadOrder.Import<TModGetter>(
                 settings.DataFolderPath,
-                loadOrderListing);
+                loadOrderListing,
+                settings.GameRelease);
             var modKey = ModKey.Factory(Path.GetFileName(settings.OutputPath));
             TMod patchMod;
             ILinkCache cache;
             if (settings.SourcePath == null)
             {
-                patchMod = ModInstantiator<TMod>.Activator(modKey);
+                patchMod = ModInstantiator<TMod>.Activator(modKey, settings.GameRelease);
             }
             else
             {
-                patchMod = ModInstantiator<TMod>.Importer(new ModPath(modKey, settings.SourcePath));
+                patchMod = ModInstantiator<TMod>.Importer(new ModPath(modKey, settings.SourcePath), settings.GameRelease);
             }
             cache = loadOrder.ToMutableLinkCache(patchMod);
             loadOrder.Add(new ModListing<TModGetter>(patchMod));
@@ -121,7 +122,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// <param name="patcher">Patcher func that processes a load order, and returns a mod object to export.</param>
         /// <returns>Mod object to export as the result of this patch</returns>
         public async Task Patch<TMod, TModGetter>(
-            CliArgRunSettings settings,
+            RunSynthesisPatcher settings,
             AsyncPatcherFunction<TMod, TModGetter> patcher)
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
@@ -141,7 +142,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// <param name="patcher">Patcher func that processes a load order, and returns a mod object to export.</param>
         /// <returns>Mod object to export as the result of this patch</returns>
         public void Patch<TMod, TModGetter>(
-            CliArgRunSettings settings,
+            RunSynthesisPatcher settings,
             PatcherFunction<TMod, TModGetter> patcher)
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter

@@ -2,20 +2,21 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace Mutagen.Bethesda.Synthesis
 {
     /// <summary>
     /// A class housing all the tools, parameters, and entry points for a typical Synthesis patcher
     /// </summary>
-    public class SynthesisState<TMod, TModGetter>
+    public class SynthesisState<TMod, TModGetter> : ISynthesisState
         where TMod : class, IMod, TModGetter
         where TModGetter : class, IModGetter
     {
         /// <summary>
         /// Instructions given to the patcher from the Synthesis pipeline
         /// </summary>
-        public ICliArgRunSettings Settings { get; }
+        public IRunPipelineSettings Settings { get; }
 
         /// <summary>
         /// Load Order object containing all the mods to be used for the patch.<br />
@@ -39,9 +40,15 @@ namespace Mutagen.Bethesda.Synthesis
         /// upon that content as appropriate, and mesh any changes to produce the final patch file.
         /// </summary>
         public TMod PatchMod { get; }
+        IModGetter ISynthesisState.PatchMod => PatchMod;
+
+        /// <summary>
+        /// Cancellation token that signals whether to stop patching and exit early
+        /// </summary>
+        public CancellationToken CancelToken { get; } = CancellationToken.None;
 
         public SynthesisState(
-            ICliArgRunSettings settings,
+            IRunPipelineSettings settings,
             LoadOrder<IModListing<TModGetter>> loadOrder,
             ILinkCache linkCache,
             TMod patchMod)

@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.Execution.Patchers
 {
-    public interface IPatcher : IDisposable
+    public interface IPatcherRun : IDisposable
     {
         string Name { get; }
-        Task Prep(CancellationToken? cancel = null);
-        Task Run(ModPath? sourcePath, ModPath outputPath);
+        Task Prep(GameRelease release, CancellationToken? cancel = null);
+        Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null);
     }
 }

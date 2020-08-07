@@ -18,7 +18,9 @@ namespace Synthesis.Bethesda.Execution.Runner
         public static async Task Run(
             string workingDirectory,
             ModPath outputPath,
-            IReadOnlyList<IPatcher> patchers,
+            string dataFolder,
+            GameRelease release,
+            IReadOnlyList<IPatcherRun> patchers,
             ModKey? modKeyOverride = null,
             ModPath? sourcePath = null,
             CancellationToken? cancellation = null,
@@ -42,13 +44,23 @@ namespace Synthesis.Bethesda.Execution.Runner
 
                 if (patchers.Count == 0) return;
 
+                if (!LoadOrder.TryGetPluginsFile(release, out var path)
+                    || !File.Exists(path.Path))
+                {
+                    reporter.ReportOverallProblem(new FileNotFoundException($"Could not locate load order file for: {release}"));
+                    return;
+                }
+                // Copy plugins text to working directory
+                string loadOrderPath = Path.Combine(workingDirectory, "Plugins.txt");
+                File.Copy(path.Path, loadOrderPath);
+
                 // Prep all patchers in parallel
                 bool problem = false;
                 await Task.WhenAll(patchers.Select(patcher => Task.Run(async () =>
                 {
                     try
                     {
-                        await patcher.Prep(cancellation);
+                        await patcher.Prep(release, cancellation);
                     }
                     catch (Exception ex)
                     {
@@ -65,7 +77,14 @@ namespace Synthesis.Bethesda.Execution.Runner
                     var nextPath = new ModPath(modKeyOverride.Value, Path.Combine(workingDirectory, $"{i} - {patcher.Name}"));
                     try
                     {
-                        await patcher.Run(prevPath, nextPath);
+                        await patcher.Run(new RunSynthesisPatcher()
+                        {
+                            SourcePath = prevPath?.Path,
+                            OutputPath = nextPath,
+                            DataFolderPath = dataFolder,
+                            GameRelease = release,
+                            LoadOrderFilePath = loadOrderPath,
+                        });
                     }
                     catch (Exception ex)
                     {
