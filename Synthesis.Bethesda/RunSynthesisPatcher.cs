@@ -25,13 +25,4 @@ namespace Synthesis.Bethesda
         [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
         public string LoadOrderFilePath { get; set; } = string.Empty;
     }
-
-    public interface IRunPipelineSettings
-    {
-        string? SourcePath { get; }
-        string OutputPath { get; }
-        GameRelease GameRelease { get; }
-        string DataFolderPath { get; }
-        string LoadOrderFilePath { get; }
-    }
 }

@@ -16,13 +16,13 @@ namespace Mutagen.Bethesda.Synthesis
     /// Note that you do not have to use these systems to be Synthesis compliant.  This system serves
     /// as a quick bootstrapper for some of the typical setup tasks and informational queries.
     /// </summary>
-    public class Synthesis
+    public class SynthesisPipeline
     {
         // We want to have this be a static singleton instance, as this allows us to 
         // eventually move the convenience functions out of this library, but still
         // latch on with the same API via extension functions.
 
-        public static readonly Synthesis Instance = new Synthesis();
+        public static readonly SynthesisPipeline Instance = new SynthesisPipeline();
 
         public delegate void PatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
             where TMod : class, IMod, TModGetter

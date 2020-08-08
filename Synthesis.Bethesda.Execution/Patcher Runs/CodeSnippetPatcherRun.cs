@@ -82,7 +82,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             var regis = release.ToCategory().ToModRegistration();
             var cliSettingsParam = Expression.Parameter(typeof(RunSynthesisPatcher), "settings");
             MethodCallExpression callExp = Expression.Call(
-                typeof(Mutagen.Bethesda.Synthesis.Synthesis),
+                typeof(SynthesisPipeline),
                 "ToState",
                 new Type[]
                 {
