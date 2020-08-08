@@ -17,8 +17,9 @@
         Background="Transparent"
         Focusable="False">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="40" />
+            <ColumnDefinition Width="30" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <ToggleButton Grid.Column="0"
@@ -96,7 +97,7 @@
                 </Style>
             </ToggleButton.Style>
         </ToggleButton>
-        <Border Grid.Column="1" Grid.ColumnSpan="2"
+        <Border Grid.Column="1" Grid.ColumnSpan="3"
             x:Name="SelectedGlow"
             Background="{StaticResource SalmonBrush}"
             Visibility="Hidden">
@@ -104,7 +105,7 @@
                 <BlurEffect Radius="8" />
             </Border.Effect>
         </Border>
-        <Border Grid.Column="1" Grid.ColumnSpan="2"
+        <Border Grid.Column="1" Grid.ColumnSpan="3"
             BorderThickness="1">
             <Border.Style>
                 <Style TargetType="Border">
@@ -180,41 +181,58 @@
                                 </Setter>
                             </MultiDataTrigger.Setters>
                         </MultiDataTrigger>
-                        <!--<MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding IsMouseOver, ElementName=TopGrid}" Value="False" />
-                                <Condition Binding="{Binding IsSelected}" Value="False" />
-                                <Condition Binding="{Binding IsOn}" Value="True" />
-                            </MultiDataTrigger.Conditions>
-                            <MultiDataTrigger.Setters>
-                                <Setter Property="BorderBrush" Value="{StaticResource MahApps.Brushes.Accent}" />
-                                <Setter Property="Background" Value="{StaticResource DarkPurpleBrush}" />
-                            </MultiDataTrigger.Setters>
-                        </MultiDataTrigger>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding IsMouseOver, ElementName=TopGrid}" Value="True" />
-                                <Condition Binding="{Binding IsSelected}" Value="False" />
-                                <Condition Binding="{Binding IsOn}" Value="False" />
-                            </MultiDataTrigger.Conditions>
-                            <MultiDataTrigger.Setters>
-                                <Setter Property="BorderBrush" Value="{StaticResource MahApps.Brushes.Gray3}" />
-                                <Setter Property="Background" Value="#22000000" />
-                            </MultiDataTrigger.Setters>
-                        </MultiDataTrigger>-->
                     </Style.Triggers>
                 </Style>
             </Border.Style>
         </Border>
         <TextBlock Grid.Column="1"
             x:Name="NameBlock"
-            Margin="9,0,0,1"
+            Margin="9,0,6,1"
             VerticalAlignment="Center"
             FontSize="12"
             FontWeight="SemiBold"
             TextTrimming="CharacterEllipsis" />
-        <ContentControl Grid.Column="2"
-            Margin="6,0,6,0"
+        <icon:PackIconMaterial Grid.Column="2"
+            x:Name="BlockingIssueDisplayCircle"
+            Width="7"
+            Height="7"
+            Margin="0,0,4,0"
+            VerticalAlignment="Center"
+            Kind="Circle">
+            <icon:PackIconMaterial.Style>
+                <Style TargetType="icon:PackIconMaterial">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Setter Property="Foreground" Value="Red" />
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding State.RunnableState.Succeeded}" Value="False" />
+                                <Condition Binding="{Binding State.IsHaltingError}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Foreground" Value="{StaticResource LightPurpleBrush}" />
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding State.RunnableState.Succeeded}" Value="False" />
+                                <Condition Binding="{Binding State.IsHaltingError}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect ShadowDepth="0" Color="Salmon" BlurRadius="15" />
+                                    </Setter.Value>
+                                </Setter>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </icon:PackIconMaterial.Style>
+        </icon:PackIconMaterial>
+        <ContentControl Grid.Column="3"
+            Margin="0,0,6,0"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
             Content="{Binding}">

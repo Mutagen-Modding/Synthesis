@@ -31,6 +31,12 @@ namespace Synthesis.Bethesda.GUI.Views
                 vm.WhenAnyValue(x => x.DisplayName)
                     .BindToStrict(this, x => x.NameBlock.Text)
                     .DisposeWith(disposable);
+
+                // Set up blocking issue display
+                this.WhenAnyValue(x => x.ViewModel.State.RunnableState.Succeeded)
+                    .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
+                    .BindToStrict(this, x => x.BlockingIssueDisplayCircle.Visibility)
+                    .DisposeWith(disposable);
             });
         }
     }

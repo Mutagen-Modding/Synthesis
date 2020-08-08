@@ -37,7 +37,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand DeleteCommand { get; }
 
-        public abstract ErrorResponse BlockingError { get; }
+        public abstract ConfigurationStateVM State { get; }
 
         public PatcherVM(ProfileVM parent, PatcherSettings? settings)
         {

@@ -33,8 +33,8 @@ namespace Synthesis.Bethesda.GUI
 
         public override ErrorResponse CanCompleteConfiguration => ErrorResponse.Success;
 
-        private readonly ObservableAsPropertyHelper<ErrorResponse> _BlockingError;
-        public override ErrorResponse BlockingError => _BlockingError.Value;
+        private readonly ObservableAsPropertyHelper<ConfigurationStateVM> _State;
+        public override ConfigurationStateVM State => _State.Value;
 
         private readonly ObservableAsPropertyHelper<string> _CompilationText;
         public string CompilationText => _CompilationText.Value;
@@ -100,29 +100,13 @@ namespace Synthesis.Bethesda.GUI
                 .Replay(1)
                 .RefCount();
 
-            IObservable<ErrorResponse> compileError = compileResults
-                .Select(results =>
-                {
-                    if (results.CompileResults == null)
-                    {
-                        return ErrorResponse.Fail("Compiling");
-                    }
-                    if (results.Exception != null) return ErrorResponse.Fail(results.Exception);
-                    if (results.CompileResults.Success) return ErrorResponse.Succeed("Compilation successful");
-                    var errDiag = results.CompileResults.Diagnostics
-                        .Where(e => e.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Error)
-                        .FirstOrDefault();
-                    if (errDiag == null)
-                    {
-                        return ErrorResponse.Fail("Unknown error");
-                    }
-                    return ErrorResponse.Fail(errDiag.ToString());
-                })
+            IObservable<ConfigurationStateVM> compileState = compileResults
+                .Select(results => ToState(results))
                 .Replay(1)
                 .RefCount();
 
-            _CompilationText = compileError
-                .Select(err => err.Reason)
+            _CompilationText = compileState
+                .Select(err => err.RunnableState.Reason)
                 .ToGuiProperty<string>(this, nameof(CompilationText));
 
             _CompilationStatus = compileResults
@@ -140,34 +124,41 @@ namespace Synthesis.Bethesda.GUI
                 })
                 .ToGuiProperty(this, nameof(CompilationStatus));
 
-            _ActiveAssembly = compileResults
+            var stateAndAssembly = compileResults
                 .Select(results =>
                 {
-                    if (results.AssemblyStream == null) return Observable.Return(default(Assembly?));
+                    var state = ToState(results);
+                    if (results.AssemblyStream == null) return Observable.Return((state, default(Assembly?)));
                     return Observable.Return(results.AssemblyStream)
                         .ObserveOn(RxApp.TaskpoolScheduler)
                         .Select(x =>
                         {
-                            return Assembly.Load(x.ToArray());
+                            return (state, (Assembly?)Assembly.Load(x.ToArray()));
                         });
                 })
                 .Switch()
+                .Replay(1)
+                .RefCount();
+
+            _ActiveAssembly = stateAndAssembly
+                .Select(results => results.Item2)
                 .ToGuiProperty(this, nameof(ActiveAssembly));
 
-            _BlockingError = Observable.CombineLatest(
-                    compileError,
-                    this.WhenAnyValue(x => x.ActiveAssembly),
-                    (err, assem) => (err, assem))
+            _State = stateAndAssembly
                 .Select(results =>
                 {
-                    if (results.err.Failed) return results.err;
-                    if (results.assem == null)
+                    if (!results.state.RunnableState.Succeeded) return results.state;
+                    if (results.Item2 == null)
                     {
-                        return ErrorResponse.Fail("Assembly was unexpectedly null");
+                        return new ConfigurationStateVM()
+                        {
+                            RunnableState = ErrorResponse.Fail("Assembly was unexpectedly null"),
+                            IsHaltingError = true,
+                        };
                     }
-                    return ErrorResponse.Success;
+                    return new ConfigurationStateVM();
                 })
-                .ToGuiProperty(this, nameof(BlockingError));
+                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), new ConfigurationStateVM());
         }
 
         public override PatcherSettings Save()
@@ -198,6 +189,42 @@ namespace Synthesis.Bethesda.GUI
             return new CodeSnippetPatcherRun(
                 Nickname,
                 ActiveAssembly);
+        }
+
+        private ConfigurationStateVM ToState((MemoryStream? AssemblyStream, EmitResult? CompileResults, Exception? Exception) results)
+        {
+            if (results.CompileResults == null)
+            {
+                return new ConfigurationStateVM()
+                {
+                    RunnableState = ErrorResponse.Fail("Compiling")
+                };
+            }
+            if (results.Exception != null)
+            {
+                return new ConfigurationStateVM()
+                {
+                    RunnableState = ErrorResponse.Fail(results.Exception),
+                    IsHaltingError = true
+                };
+            }
+            if (results.CompileResults.Success) return new ConfigurationStateVM();
+            var errDiag = results.CompileResults.Diagnostics
+                .Where(e => e.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Error)
+                .FirstOrDefault();
+            if (errDiag == null)
+            {
+                return new ConfigurationStateVM()
+                {
+                    RunnableState = ErrorResponse.Fail("Unknown error"),
+                    IsHaltingError = true,
+                };
+            }
+            return new ConfigurationStateVM()
+            {
+                RunnableState = ErrorResponse.Fail(errDiag.ToString()),
+                IsHaltingError = true,
+            };
         }
     }
 

@@ -126,12 +126,17 @@ namespace Synthesis.Bethesda.GUI
                     Patchers.Connect()
                         .AutoRefresh(x => x.IsOn)
                         .Filter(p => p.IsOn)
-                        .QueryWhenChanged(q => q.Count > 0),
-                    (dataFolder, loadOrder, hasAny) =>
+                        .QueryWhenChanged(q => q),
+                    (dataFolder, loadOrder, coll) =>
                     {
-                        if (!hasAny) return (IErrorResponse)ErrorResponse.Fail("There are no enabled patchers to run.");
+                        if (coll.Count == 0) return (IErrorResponse)ErrorResponse.Fail("There are no enabled patchers to run.");
                         if (!dataFolder.Succeeded) return dataFolder;
                         if (!loadOrder.Succeeded) return loadOrder;
+                        var blockingError = coll.FirstOrDefault(p => p.State.IsHaltingError);
+                        if (blockingError != null)
+                        {
+                            return ErrorResponse.Fail($"\"{blockingError.Nickname}\" has a blocking error");
+                        }
                         return ErrorResponse.Success;
                     })
                 .ToGuiProperty<IErrorResponse>(this, nameof(LargeOverallError), ErrorResponse.Fail("Uninitialized"));
@@ -141,9 +146,14 @@ namespace Synthesis.Bethesda.GUI
                     Patchers.Connect()
                         .AutoRefresh(x => x.IsOn)
                         .Filter(p => p.IsOn)
-                        .AutoRefresh(x => x.BlockingError)
-                        .Transform(p => p.BlockingError, transformOnRefresh: true)
-                        .QueryWhenChanged(errs => errs.Cast<ErrorResponse?>().FirstOrDefault<ErrorResponse?>(e => e?.Failed ?? false) ?? ErrorResponse.Success),
+                        .AutoRefresh(x => x.State)
+                        .Transform(p => p.State, transformOnRefresh: true)
+                        .QueryWhenChanged(errs =>
+                        {
+                            var halting = errs.Cast<ConfigurationStateVM?>().FirstOrDefault<ConfigurationStateVM?>(e => e?.IsHaltingError ?? false);
+                            if (halting == null) return ErrorResponse.Success;
+                            return halting.RunnableState;
+                        }),
                 (overall, patchers) =>
                 {
                     if (!overall.Succeeded) return overall;
