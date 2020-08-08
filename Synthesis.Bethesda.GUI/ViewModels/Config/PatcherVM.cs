@@ -36,6 +36,8 @@ namespace Synthesis.Bethesda.GUI
 
         public abstract bool NeedsConfiguration { get; }
 
+        public ICommand DeleteCommand { get; }
+
         public PatcherVM(ProfileVM parent, PatcherSettings? settings)
         {
             Profile = parent;
@@ -50,6 +52,14 @@ namespace Synthesis.Bethesda.GUI
             // Set to settings
             IsOn = settings?.On ?? false;
             Nickname = settings?.Nickname ?? string.Empty;
+
+            DeleteCommand = ReactiveCommand.Create(() =>
+            {
+                parent.Config.MainVM.ActiveConfirmation = new ConfirmationActionVM(
+                    "Confirm",
+                    $"Are you sure you want to delete {DisplayName}?",
+                    () => parent.Patchers.Remove(this));
+            });
         }
 
         public abstract PatcherSettings Save();

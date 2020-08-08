@@ -6,7 +6,6 @@
     xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:noggog="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -18,9 +17,12 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid Name="TopBarGrid" Grid.Row="0">
+        <Grid Grid.Row="0"
+            Name="TopBarGrid"
+            Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="0"
@@ -42,9 +44,32 @@
                     </Style>
                 </TextBox.Style>
             </TextBox>
-            <ContentControl Grid.Column="1"
+            <Button Grid.Column="1"
+                x:Name="DeleteButton"
+                VerticalAlignment="Center"
+                Style="{StaticResource NakedIconButtonStyle}"
+                ToolTip="Delete Patcher">
+                <Button.Resources>
+                    <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#44FFFFFF" />
+                    <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource Red}" />
+                    <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource RedBackground}" />
+                </Button.Resources>
+                <icon:PackIconFontAwesome Kind="TrashSolid">
+                    <icon:PackIconFontAwesome.Style>
+                        <Style TargetType="icon:PackIconFontAwesome">
+                            <Setter Property="Visibility" Value="Hidden" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsMouseOver, ElementName=TopBarGrid}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </icon:PackIconFontAwesome.Style>
+                </icon:PackIconFontAwesome>
+            </Button>
+            <ContentControl Grid.Column="2"
                 Name="PatcherIconDisplay"
-                Margin="15,5,10,0"
+                Margin="15,0,10,0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center">
                 <ContentControl.Resources>

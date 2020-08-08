@@ -4,6 +4,8 @@ using System.Reactive.Disposables;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Reactive.Linq;
+using System.Windows;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -21,6 +23,10 @@ namespace Synthesis.Bethesda.GUI.Views
             {
                 this.WhenAnyValue(x => x.ViewModel.ActivePanel)
                     .BindToStrict(this, x => x.ContentPane.Content)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel.ActiveConfirmation)
+                    .Select(x => x == null ? Visibility.Collapsed : Visibility.Visible)
+                    .BindToStrict(this, x => x.ConfirmationOverlay.Visibility)
                     .DisposeWith(disposable);
             });
         }

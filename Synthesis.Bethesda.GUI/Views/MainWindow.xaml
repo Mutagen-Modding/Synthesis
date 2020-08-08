@@ -16,6 +16,7 @@
     NonActiveWindowTitleBrush="#35000000"
     RenderOptions.BitmapScalingMode="HighQuality"
     SaveWindowPosition="True"
+    UseLayoutRounding="True"
     WindowTitleBrush="#35000000"
     mc:Ignorable="d">
     <mahapps:MetroWindow.Background>

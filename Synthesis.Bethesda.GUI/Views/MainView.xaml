@@ -9,14 +9,17 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <ContentPresenter x:Name="ContentPane">
-        <ContentPresenter.Resources>
-            <DataTemplate DataType="{x:Type vm:ConfigurationVM}">
-                <local:PatchersConfigView />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:NoProfileVM}">
-                <local:NoProfileView />
-            </DataTemplate>
-        </ContentPresenter.Resources>
-    </ContentPresenter>
+    <Grid>
+        <ContentPresenter x:Name="ContentPane">
+            <ContentPresenter.Resources>
+                <DataTemplate DataType="{x:Type vm:ConfigurationVM}">
+                    <local:PatchersConfigView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:NoProfileVM}">
+                    <local:NoProfileView />
+                </DataTemplate>
+            </ContentPresenter.Resources>
+        </ContentPresenter>
+        <local:ConfirmationOverlayView x:Name="ConfirmationOverlay" Visibility="Collapsed" />
+    </Grid>
 </local:MainViewBase>

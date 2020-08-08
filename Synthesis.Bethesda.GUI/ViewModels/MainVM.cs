@@ -23,10 +23,24 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public ViewModel ActivePanel { get; set; }
 
+        public ICommand ConfirmActionCommand { get; }
+        public ICommand DiscardActionCommand { get; }
+
+        [Reactive]
+        public ConfirmationActionVM? ActiveConfirmation { get; set; }
+
         public MainVM()
         {
             Configuration = new ConfigurationVM(this);
             ActivePanel = Configuration;
+            DiscardActionCommand = ReactiveCommand.Create(() => ActiveConfirmation = null);
+            ConfirmActionCommand = ReactiveCommand.Create(
+                () =>
+                {
+                    if (ActiveConfirmation == null) return;
+                    ActiveConfirmation.ToDo();
+                    ActiveConfirmation = null;
+                });
         }
 
         public void Load(SynthesisSettings? settings)

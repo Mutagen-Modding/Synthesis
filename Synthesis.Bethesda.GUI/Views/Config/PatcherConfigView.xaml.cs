@@ -41,6 +41,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.ConfigDetailPane.Content)
                     .DisposeWith(disposable);
 
+                this.WhenAnyValue(x => x.ViewModel.DeleteCommand)
+                    .BindToStrict(this, x => x.DeleteButton.Command)
+                    .DisposeWith(disposable);
+
                 // Hacky setup to edit nickname when focused, but display display name when not
                 // Need to polish and redeploy EditableTextBox instead sometime
                 this.WhenAnyValue(x => x.PatcherDetailName.Text)
