@@ -115,6 +115,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
 
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"using System;");
+            sb.AppendLine($"using Noggog;");
             sb.AppendLine($"using System.Threading;");
             sb.AppendLine($"using System.Threading.Tasks;");
             sb.AppendLine($"using System.Linq;");
@@ -123,10 +124,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             sb.AppendLine($"using System.Collections.Generic;");
             sb.AppendLine($"using Mutagen.Bethesda.Synthesis;");
             sb.AppendLine($"using Mutagen.Bethesda;");
-            foreach (var game in EnumExt.GetValues<GameCategory>())
-            {
-                sb.AppendLine($"using Mutagen.Bethesda.{game};");
-            }
+            sb.AppendLine($"using Mutagen.Bethesda.{release.ToCategory()};");
 
             sb.AppendLine($"public class {ClassName}");
             sb.AppendLine("{");
@@ -155,6 +153,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                   MetadataReference.CreateFromFile(Assembly.Load("netstandard").Location),
                   MetadataReference.CreateFromFile(Assembly.Load("System.Runtime").Location),
                   MetadataReference.CreateFromFile(Assembly.Load("Loqui").Location),
+                  MetadataReference.CreateFromFile(Assembly.Load("Noggog.CSharpExt").Location),
                   MetadataReference.CreateFromFile(Assembly.Load("Mutagen.Bethesda.Kernel").Location),
                   MetadataReference.CreateFromFile(Assembly.Load("Mutagen.Bethesda.Core").Location),
                   MetadataReference.CreateFromFile(Assembly.Load("Mutagen.Bethesda.Synthesis").Location),
