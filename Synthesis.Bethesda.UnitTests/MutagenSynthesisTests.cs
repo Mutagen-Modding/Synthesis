@@ -96,6 +96,26 @@ namespace Synthesis.Bethesda.UnitTests
         }
 
         [Fact]
+        public void MisalignedGameTypes()
+        {
+            using var dataFolder = Utility.SetupDataFolder();
+            var modPath = PatchModPath(dataFolder);
+            Assert.Throws<ArgumentException>(() =>
+            {
+                SynthesisPipeline.Instance.Patch<IOblivionMod, IOblivionModGetter>(
+                   new RunSynthesisPatcher()
+                   {
+                       DataFolderPath = dataFolder.Dir.Path,
+                       GameRelease = Mutagen.Bethesda.GameRelease.SkyrimLE,
+                       OutputPath = modPath,
+                       SourcePath = null,
+                       LoadOrderFilePath = Utility.PathToLoadOrderFile
+                   },
+                   PatchFunction);
+            });
+        }
+
+        [Fact]
         public void HasSourceModOnLoadOrder()
         {
             using var dataFolder = Utility.SetupDataFolder();

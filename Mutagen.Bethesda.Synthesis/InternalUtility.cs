@@ -14,13 +14,29 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
+            // Confirm target game release matches
+            var regis = settings.GameRelease.ToCategory().ToModRegistration();
+            if (!typeof(TMod).IsAssignableFrom(regis.SetterType))
+            {
+                throw new ArgumentException($"Target mod type {typeof(TMod)} was not of the expected type {regis.SetterType}");
+            }
+            if (!typeof(TModGetter).IsAssignableFrom(regis.GetterType))
+            {
+                throw new ArgumentException($"Target mod type {typeof(TModGetter)} was not of the expected type {regis.GetterType}");
+            }
+
+            // Get load order
             var loadOrderListing = SynthesisPipeline.Instance.GetLoadOrder(settings, userPrefs)
                 .ToExtendedList();
             var loadOrder = LoadOrder.Import<TModGetter>(
                 settings.DataFolderPath,
                 loadOrderListing,
                 settings.GameRelease);
+
+            // Get Modkey from output path
             var modKey = ModKey.FromNameAndExtension(Path.GetFileName(settings.OutputPath));
+
+            // Create or import patch mod
             TMod patchMod;
             ILinkCache cache;
             if (settings.SourcePath == null)
@@ -31,8 +47,11 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             {
                 patchMod = ModInstantiator<TMod>.Importer(new ModPath(modKey, settings.SourcePath), settings.GameRelease);
             }
+
+            // Create cache and loadorder for end use
             cache = loadOrder.ToMutableLinkCache(patchMod);
             loadOrder.Add(new ModListing<TModGetter>(patchMod));
+            
             return new SynthesisState<TMod, TModGetter>(settings, loadOrder, cache, patchMod);
         }
     }
