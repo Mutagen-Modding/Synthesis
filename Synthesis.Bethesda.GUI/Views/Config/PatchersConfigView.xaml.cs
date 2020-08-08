@@ -91,6 +91,11 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel.CompleteConfiguration)
                     .BindToStrict(this, x => x.ConfirmAdditionButton.Command)
                     .DisposeWith(disposable);
+
+                // Set up go button
+                this.WhenAnyValue(x => x.ViewModel.RunPatchers)
+                    .BindToStrict(this, x => x.GoButton.Command)
+                    .DisposeWith(disposable);
             });
         }
     }

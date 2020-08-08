@@ -1,5 +1,6 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
+using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -24,6 +25,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand CompleteConfiguration { get; }
         public ICommand CancelConfiguration { get; }
+        public ICommand RunPatchers { get; }
 
         [Reactive]
         public ProfileVM? SelectedProfile { get; set; }
@@ -77,6 +79,15 @@ namespace Synthesis.Bethesda.GUI
                     x => x.NewPatcher,
                     (selected, newConfig) => newConfig ?? selected)
                 .ToGuiProperty(this, nameof(DisplayedPatcher));
+
+            RunPatchers = ReactiveCommand.Create(
+                () => { },
+                canExecute: this.WhenAnyValue(x => x.SelectedProfile)
+                    .Select(prof => prof?.Patchers.Connect() ?? Observable.Empty<IChangeSet<PatcherVM>>())
+                    .Switch()
+                    .AutoRefresh(x => x.BlockingError)
+                    .Transform(p => p.BlockingError, transformOnRefresh: true)
+                    .QueryWhenChanged(errs => errs.Any() && errs.All(e => e.Succeeded)));
         }
 
         public void Load(SynthesisSettings settings)

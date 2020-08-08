@@ -3,8 +3,10 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -21,15 +23,56 @@
             Text="Code" />
         <TextBox Grid.Row="1"
             Name="CodeBox"
-            Margin="-8,0,0,10"
+            Margin="-8,0,0,0"
+            AcceptsReturn="True"
+            AcceptsTab="True"
             Background="{StaticResource AbyssPurpleBrush}">
             <TextBox.Resources>
                 <SolidColorBrush x:Key="TextBoxFocusBackgroundBrush" Color="{StaticResource AbyssPurple}" />
             </TextBox.Resources>
         </TextBox>
-        <Grid Grid.Row="2"
-            Name="BottomCompileBar"
-            Height="25"
-            Margin="-8,0,0,0" />
+        <Border Grid.Row="2" Margin="-8,0,0,8">
+            <Grid Name="BottomCompileBar" MinHeight="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <icon:PackIconFontAwesome Grid.Column="0"
+                    x:Name="CompileCircle"
+                    Width="12"
+                    Height="12"
+                    Margin="4,0,6,4"
+                    VerticalAlignment="Bottom"
+                    Kind="DotCircleSolid">
+                    <icon:PackIconFontAwesome.Style>
+                        <Style TargetType="icon:PackIconFontAwesome">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CompilationStatus}" Value="{x:Static vm:CodeCompilationStatus.Error}">
+                                    <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CompilationStatus}" Value="{x:Static vm:CodeCompilationStatus.Successful}">
+                                    <Setter Property="Foreground" Value="{StaticResource GreenBrush}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CompilationStatus}" Value="{x:Static vm:CodeCompilationStatus.Compiling}">
+                                    <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray7}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </icon:PackIconFontAwesome.Style>
+                </icon:PackIconFontAwesome>
+                <TextBox Grid.Column="1"
+                    x:Name="CompileResultsBlock"
+                    Margin="-6,0,0,-4"
+                    VerticalAlignment="Center"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    IsReadOnly="True"
+                    TextWrapping="Wrap">
+                    <TextBox.Resources>
+                        <SolidColorBrush x:Key="TextBoxFocusBackgroundBrush" Color="Transparent" />
+                    </TextBox.Resources>
+                </TextBox>
+            </Grid>
+        </Border>
     </Grid>
 </local:CodeSnippetConfigViewBase>

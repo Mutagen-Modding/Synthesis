@@ -18,8 +18,8 @@
         Focusable="False">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="40" />
-            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <ToggleButton Grid.Column="0"
             Name="OnToggle"
@@ -164,7 +164,8 @@
             Margin="9,0,0,1"
             VerticalAlignment="Center"
             FontSize="12"
-            FontWeight="SemiBold" />
+            FontWeight="SemiBold"
+            TextTrimming="CharacterEllipsis" />
         <ContentControl Grid.Column="2"
             Margin="6,0,6,0"
             HorizontalAlignment="Right"

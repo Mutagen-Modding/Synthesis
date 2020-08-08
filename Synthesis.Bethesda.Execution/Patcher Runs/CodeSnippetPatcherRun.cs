@@ -40,6 +40,14 @@ namespace Synthesis.Bethesda.Execution.Patchers
             AssemblyName = $"{Name} - {System.Threading.Interlocked.Increment(ref UniquenessNumber)}";
         }
 
+        public CodeSnippetPatcherRun(string name, Assembly assembly)
+        {
+            Name = name;
+            Code = string.Empty;
+            AssemblyName = assembly.FullName;
+            _assembly = assembly;
+        }
+
         public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
         {
             if (_assembly == null)
@@ -67,6 +75,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
 
         public async Task Prep(GameRelease release, CancellationToken? cancel = null)
         {
+            if (_assembly != null) return;
             cancel ??= CancellationToken.None;
 
             var emitResult = Compile(release, cancel.Value, out _assembly);
@@ -100,7 +109,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             };
         }
 
-        public EmitResult Compile(GameRelease release, CancellationToken cancel, out Assembly? assembly)
+        public static EmitResult Compile(GameRelease release, string assemblyName, string code, CancellationToken cancel, out MemoryStream assemblyStream)
         {
             var gameCategory = release.ToCategory();
 
@@ -123,11 +132,11 @@ namespace Synthesis.Bethesda.Execution.Patchers
             sb.AppendLine("{");
             sb.AppendLine($"public async Task Run(Mutagen.Bethesda.Synthesis.SynthesisState<Mutagen.Bethesda.{gameCategory}.I{gameCategory}Mod, Mutagen.Bethesda.{gameCategory}.I{gameCategory}ModGetter> state)");
             sb.AppendLine("{");
-            sb.AppendLine(this.Code);
+            sb.AppendLine(code);
             sb.AppendLine("}");
             sb.AppendLine("}");
 
-            var code = sb.ToString();
+            code = sb.ToString();
 
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code);
 
@@ -135,7 +144,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 OutputKind.DynamicallyLinkedLibrary,
                 optimizationLevel: OptimizationLevel.Release);
 
-            Compilation compilation = CSharpCompilation.Create(assemblyName: AssemblyName, options: options)
+            Compilation compilation = CSharpCompilation.Create(assemblyName: assemblyName, options: options)
               .AddSyntaxTrees(syntaxTree)
               .AddReferences(new[]
               {
@@ -155,8 +164,13 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 compilation = compilation.AddReferences(MetadataReference.CreateFromFile(Assembly.Load($"Mutagen.Bethesda.{game}").Location));
             }
 
-            var stream = new MemoryStream();
-            var emit = compilation.Emit(stream, cancellationToken: cancel);
+            assemblyStream = new MemoryStream();
+            return compilation.Emit(assemblyStream, cancellationToken: cancel);
+        }
+
+        public EmitResult Compile(GameRelease release, CancellationToken cancel, out Assembly? assembly)
+        {
+            var emit = Compile(release, assemblyName: AssemblyName, code: Code, cancel, out var stream);
             if (emit.Success)
             {
                 assembly = Assembly.Load(stream.ToArray());

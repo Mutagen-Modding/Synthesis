@@ -23,17 +23,57 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="3*" />
         </Grid.ColumnDefinitions>
-        <ListBox Grid.Row="2" Grid.Column="0"
-            Name="PatchersList"
-            Background="Transparent"
-            ClipToBounds="False"
-            ItemContainerStyle="{StaticResource PlainListBoxItemStyle}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <local:PatcherConfigListingView />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <Grid Grid.Row="2" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ListBox Grid.Row="0"
+                Name="PatchersList"
+                Background="Transparent"
+                ClipToBounds="False"
+                ItemContainerStyle="{StaticResource PlainListBoxItemStyle}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <local:PatcherConfigListingView />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Button Grid.Row="1"
+                x:Name="GoButton"
+                HorizontalContentAlignment="Stretch"
+                Style="{StaticResource NakedIconButtonStyle}">
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                        Margin="0,-2,10,0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        FontSize="15"
+                        Text="Run">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Hidden" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMouseOver, ElementName=GoButton}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <icon:PackIconMaterial Grid.Column="1"
+                        Width="25"
+                        Height="25"
+                        Kind="Send" />
+                </Grid>
+            </Button>
+        </Grid>
         <StackPanel Grid.Row="2" Grid.Column="0"
             x:Name="AddSomePatchersHelpGrid"
             Margin="15,4,0,0"

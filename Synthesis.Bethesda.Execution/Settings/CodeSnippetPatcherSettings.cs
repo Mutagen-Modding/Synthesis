@@ -7,5 +7,6 @@ namespace Synthesis.Bethesda.Execution.Settings
     public class CodeSnippetPatcherSettings : PatcherSettings
     {
         public string Code = string.Empty;
+        public string ID = string.Empty;
     }
 }

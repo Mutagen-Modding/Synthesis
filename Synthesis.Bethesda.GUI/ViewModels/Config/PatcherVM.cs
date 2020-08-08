@@ -38,6 +38,8 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand DeleteCommand { get; }
 
+        public abstract ErrorResponse BlockingError { get; }
+
         public PatcherVM(ProfileVM parent, PatcherSettings? settings)
         {
             Profile = parent;
