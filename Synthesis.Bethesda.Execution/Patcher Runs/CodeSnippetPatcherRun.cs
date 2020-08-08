@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 throw new ArgumentException("Could not find compiled class within assembly.");
             }
             var patcherCodeClass = System.Activator.CreateInstance(type);
-            var synthesisState = ConstructStateFactory(settings.GameRelease)(settings);
+            var synthesisState = ConstructStateFactory(settings.GameRelease)(settings, default(UserPreferences?));
             Task t = (Task)type.InvokeMember("Run",
                 BindingFlags.Default | BindingFlags.InvokeMethod,
                 null,
@@ -77,24 +77,26 @@ namespace Synthesis.Bethesda.Execution.Patchers
             }
         }
 
-        internal static Func<RunSynthesisPatcher, ISynthesisState> ConstructStateFactory(GameRelease release)
+        internal static Func<RunSynthesisPatcher, UserPreferences?, ISynthesisState> ConstructStateFactory(GameRelease release)
         {
             var regis = release.ToCategory().ToModRegistration();
-            var cliSettingsParam = Expression.Parameter(typeof(RunSynthesisPatcher), "settings");
+            var cliSettingsParam = Expression.Parameter(typeof(RunSynthesisPatcher));
+            var userPrefs = Expression.Parameter(typeof(UserPreferences));
             MethodCallExpression callExp = Expression.Call(
-                typeof(SynthesisPipeline),
-                "ToState",
+                typeof(Mutagen.Bethesda.Synthesis.Internal.Utility),
+                nameof(Mutagen.Bethesda.Synthesis.Internal.Utility.ToState),
                 new Type[]
                 {
                     regis.SetterType,
                     regis.GetterType,
                 },
-                cliSettingsParam);
-            LambdaExpression lambda = Expression.Lambda(callExp, cliSettingsParam);
+                cliSettingsParam,
+                userPrefs);
+            LambdaExpression lambda = Expression.Lambda(callExp, cliSettingsParam, userPrefs);
             var deleg = lambda.Compile();
-            return (RunSynthesisPatcher settings) =>
+            return (RunSynthesisPatcher settings, UserPreferences? prefs) =>
             {
-                return (ISynthesisState)deleg.DynamicInvoke(settings);
+                return (ISynthesisState)deleg.DynamicInvoke(settings, prefs);
             };
         }
 

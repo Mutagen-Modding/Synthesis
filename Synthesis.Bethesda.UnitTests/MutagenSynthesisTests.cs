@@ -100,14 +100,16 @@ namespace Synthesis.Bethesda.UnitTests
         {
             using var dataFolder = Utility.SetupDataFolder();
             var modPath = PatchModPath(dataFolder);
-            var state = SynthesisPipeline.ToState<IOblivionMod, IOblivionModGetter>(new RunSynthesisPatcher()
-            {
-                DataFolderPath = dataFolder.Dir.Path,
-                GameRelease = Mutagen.Bethesda.GameRelease.Oblivion,
-                OutputPath = modPath,
-                SourcePath = null,
-                LoadOrderFilePath = Utility.PathToLoadOrderFile
-            });
+            var state = Mutagen.Bethesda.Synthesis.Internal.Utility.ToState<IOblivionMod, IOblivionModGetter>(
+                new RunSynthesisPatcher()
+                {
+                    DataFolderPath = dataFolder.Dir.Path,
+                    GameRelease = Mutagen.Bethesda.GameRelease.Oblivion,
+                    OutputPath = modPath,
+                    SourcePath = null,
+                    LoadOrderFilePath = Utility.PathToLoadOrderFile
+                },
+                new UserPreferences());
             Assert.Equal(state.PatchMod.ModKey, state.LoadOrder.Last().Key);
         }
 
@@ -117,14 +119,16 @@ namespace Synthesis.Bethesda.UnitTests
             using var dataFolder = Utility.SetupDataFolder();
             var prevPath = new ModPath(Utility.OverrideModKey, Path.Combine(dataFolder.Dir.Path, Utility.OverrideModKey.FileName));
             var modPath = PatchModPath(dataFolder);
-            var state = SynthesisPipeline.ToState<IOblivionMod, IOblivionModGetter>(new RunSynthesisPatcher()
-            {
-                DataFolderPath = dataFolder.Dir.Path,
-                GameRelease = Mutagen.Bethesda.GameRelease.Oblivion,
-                OutputPath = modPath,
-                SourcePath = prevPath,
-                LoadOrderFilePath = Utility.PathToLoadOrderFile
-            });
+            var state = Mutagen.Bethesda.Synthesis.Internal.Utility.ToState<IOblivionMod, IOblivionModGetter>(
+                new RunSynthesisPatcher()
+                {
+                    DataFolderPath = dataFolder.Dir.Path,
+                    GameRelease = Mutagen.Bethesda.GameRelease.Oblivion,
+                    OutputPath = modPath,
+                    SourcePath = prevPath,
+                    LoadOrderFilePath = Utility.PathToLoadOrderFile
+                },
+                new UserPreferences());
             Assert.Equal(state.PatchMod.ModKey, state.LoadOrder.Last().Key);
         }
     }

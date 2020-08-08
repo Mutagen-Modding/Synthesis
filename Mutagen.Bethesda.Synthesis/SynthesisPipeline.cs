@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using Mutagen.Bethesda.Internals;
+using Mutagen.Bethesda.Synthesis.Internal;
 using Noggog;
 using Synthesis.Bethesda;
 using System;
@@ -32,18 +33,20 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter;
 
+        #region Patch
         /// <summary>
         /// Takes in the main line command arguments, and handles PatcherRunSettings CLI inputs.
         /// </summary>
         /// <typeparam name="TMod">Setter mod interface</typeparam>
         /// <typeparam name="TModGetter">Getter only mod interface</typeparam>
         /// <param name="args">Main command line args</param>
-        /// <param name="importer">Func to create a TModGetter</param>
         /// <param name="patcher">Patcher func that processes a load order, and returns a mod object to export.</param>
-        /// <returns>Mod object to export as the result of this patch</returns>
-        public async Task<bool> Patch<TMod, TModGetter>(
+        /// <param name="userPreferences">Any custom user preferences</param>
+        /// <returns>Null if args resulted in no actions being taken.  Otherwise int error code of the operation</returns>
+        public async Task<int?> Patch<TMod, TModGetter>(
             string[] args,
-            AsyncPatcherFunction<TMod, TModGetter> patcher)
+            AsyncPatcherFunction<TMod, TModGetter> patcher,
+            UserPreferences? userPreferences = null)
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
@@ -51,12 +54,20 @@ namespace Mutagen.Bethesda.Synthesis
                 .MapResult(
                     async (RunSynthesisPatcher settings) =>
                     {
-                        await Patch(
-                            settings,
-                            patcher);
-                        return true;
+                        try
+                        {
+                            await Patch(
+                                settings,
+                                patcher,
+                                userPreferences);
+                        }
+                        catch (Exception)
+                        {
+                            return (int?)-1;
+                        }
+                        return (int?)0;
                     },
-                    async _ => false);
+                    async _ => default(int?));
         }
 
         /// <summary>
@@ -65,12 +76,13 @@ namespace Mutagen.Bethesda.Synthesis
         /// <typeparam name="TMod">Setter mod interface</typeparam>
         /// <typeparam name="TModGetter">Getter only mod interface</typeparam>
         /// <param name="args">Main command line args</param>
-        /// <param name="importer">Func to create a TModGetter</param>
         /// <param name="patcher">Patcher func that processes a load order, and returns a mod object to export.</param>
-        /// <returns>Mod object to export as the result of this patch</returns>
-        public bool Patch<TMod, TModGetter>(
+        /// <param name="userPreferences">Any custom user preferences</param>
+        /// <returns>Null if args resulted in no actions being taken.  Otherwise int error code of the operation</returns>
+        public int? Patch<TMod, TModGetter>(
             string[] args,
-            PatcherFunction<TMod, TModGetter> patcher)
+            PatcherFunction<TMod, TModGetter> patcher,
+            UserPreferences? userPreferences = null)
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
@@ -78,38 +90,20 @@ namespace Mutagen.Bethesda.Synthesis
                 .MapResult(
                     (RunSynthesisPatcher settings) =>
                     {
-                        Patch(
-                            settings,
-                            patcher);
-                        return true;
+                        try
+                        {
+                            Patch(
+                                settings,
+                                patcher,
+                                userPreferences);
+                        }
+                        catch (Exception)
+                        {
+                            return -1;
+                        }
+                        return 0;
                     },
-                    _ => false);
-        }
-
-        public static SynthesisState<TMod, TModGetter> ToState<TMod, TModGetter>(RunSynthesisPatcher settings)
-            where TMod : class, IMod, TModGetter
-            where TModGetter : class, IModGetter
-        {
-            var loadOrderListing = LoadOrder.FromPath(settings.LoadOrderFilePath);
-            loadOrderListing = LoadOrder.AlignToTimestamps(loadOrderListing, settings.DataFolderPath, throwOnMissingMods: true);
-            var loadOrder = LoadOrder.Import<TModGetter>(
-                settings.DataFolderPath,
-                loadOrderListing,
-                settings.GameRelease);
-            var modKey = ModKey.FromNameAndExtension(Path.GetFileName(settings.OutputPath));
-            TMod patchMod;
-            ILinkCache cache;
-            if (settings.SourcePath == null)
-            {
-                patchMod = ModInstantiator<TMod>.Activator(modKey, settings.GameRelease);
-            }
-            else
-            {
-                patchMod = ModInstantiator<TMod>.Importer(new ModPath(modKey, settings.SourcePath), settings.GameRelease);
-            }
-            cache = loadOrder.ToMutableLinkCache(patchMod);
-            loadOrder.Add(new ModListing<TModGetter>(patchMod));
-            return new SynthesisState<TMod, TModGetter>(settings, loadOrder, cache, patchMod);
+                    _ => default(int?));
         }
 
         /// <summary>
@@ -118,16 +112,16 @@ namespace Mutagen.Bethesda.Synthesis
         /// <typeparam name="TMod">Setter mod interface</typeparam>
         /// <typeparam name="TModGetter">Getter only mod interface</typeparam>
         /// <param name="settings">Patcher run settings</param>
-        /// <param name="importer">Func to create a TModGetter</param>
         /// <param name="patcher">Patcher func that processes a load order, and returns a mod object to export.</param>
-        /// <returns>Mod object to export as the result of this patch</returns>
+        /// <param name="userPreferences">Any custom user preferences</param>
         public async Task Patch<TMod, TModGetter>(
             RunSynthesisPatcher settings,
-            AsyncPatcherFunction<TMod, TModGetter> patcher)
+            AsyncPatcherFunction<TMod, TModGetter> patcher,
+            UserPreferences? userPreferences = null)
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
-            var state = ToState<TMod, TModGetter>(settings);
+            var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
             await patcher(state).ConfigureAwait(false);
             state.PatchMod.WriteToBinary(path: settings.OutputPath);
         }
@@ -138,18 +132,59 @@ namespace Mutagen.Bethesda.Synthesis
         /// <typeparam name="TMod">Setter mod interface</typeparam>
         /// <typeparam name="TModGetter">Getter only mod interface</typeparam>
         /// <param name="settings">Patcher run settings</param>
-        /// <param name="importer">Func to create a TModGetter</param>
         /// <param name="patcher">Patcher func that processes a load order, and returns a mod object to export.</param>
-        /// <returns>Mod object to export as the result of this patch</returns>
+        /// <param name="userPreferences">Any custom user preferences</param>
         public void Patch<TMod, TModGetter>(
             RunSynthesisPatcher settings,
-            PatcherFunction<TMod, TModGetter> patcher)
+            PatcherFunction<TMod, TModGetter> patcher,
+            UserPreferences? userPreferences = null)
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
-            var state = ToState<TMod, TModGetter>(settings);
+            var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
             patcher(state);
             state.PatchMod.WriteToBinary(path: settings.OutputPath);
+        }
+        #endregion
+
+        public IEnumerable<ModKey> GetLoadOrder(
+            RunSynthesisPatcher settings,
+            UserPreferences? userPrefs = null,
+            bool throwOnMissingMods = true)
+        {
+            return GetLoadOrder(
+                loadOrderFilePath: settings.LoadOrderFilePath,
+                dataFolderPath: settings.DataFolderPath,
+                userPrefs: userPrefs,
+                throwOnMissingMods: throwOnMissingMods);
+        }
+
+        public IEnumerable<ModKey> GetLoadOrder(
+            string loadOrderFilePath,
+            string dataFolderPath,
+            UserPreferences? userPrefs = null,
+            bool throwOnMissingMods = true)
+        {
+            var loadOrderListing = LoadOrder.FromPath(loadOrderFilePath);
+            loadOrderListing = LoadOrder.AlignToTimestamps(
+                loadOrderListing,
+                dataFolderPath,
+                throwOnMissingMods: throwOnMissingMods);
+            if (userPrefs?.InclusionMods != null)
+            {
+                var inclusions = userPrefs.InclusionMods.ToHashSet();
+                loadOrderListing = loadOrderListing
+                    .Where(m => inclusions.Contains(m))
+                    .ToExtendedList();
+            }
+            if (userPrefs?.ExclusionMods != null)
+            {
+                var exclusions = userPrefs.ExclusionMods.ToHashSet();
+                loadOrderListing = loadOrderListing
+                    .Where(m => !exclusions.Contains(m))
+                    .ToExtendedList();
+            }
+            return loadOrderListing;
         }
     }
 }
