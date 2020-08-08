@@ -77,19 +77,22 @@
                         <icon:PackIconMaterial
                             Width="35"
                             Height="35"
-                            Kind="CodeBraces" />
+                            Kind="CodeBraces"
+                            ToolTip="Mutagen Code Snippet Patcher" />
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:GithubPatcherVM}">
                         <icon:PackIconSimpleIcons
                             Width="35"
                             Height="35"
-                            Kind="Github" />
+                            Kind="Github"
+                            ToolTip="Mutagen Github Link Patcher" />
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:SolutionPatcherVM}">
                         <icon:PackIconModern
                             Width="35"
                             Height="35"
-                            Kind="Visualstudio" />
+                            Kind="Visualstudio"
+                            ToolTip="Mutagen Solution Patcher" />
                     </DataTemplate>
                 </ContentControl.Resources>
             </ContentControl>

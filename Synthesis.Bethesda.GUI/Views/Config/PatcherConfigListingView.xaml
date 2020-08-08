@@ -24,29 +24,82 @@
         <ToggleButton Grid.Column="0"
             Name="OnToggle"
             Background="Transparent">
-            <icon:PackIconMaterial Kind="CheckboxMarkedCircle">
-                <icon:PackIconMaterial.Style>
-                    <Style TargetType="icon:PackIconMaterial">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsOn}" Value="True">
-                                <Setter Property="Foreground" Value="{StaticResource PaleYellowBrush}" />
-                                <Setter Property="Effect">
+            <ToggleButton.Style>
+                <Style BasedOn="{StaticResource MainToggleButtonStyle}" TargetType="ToggleButton">
+                    <Setter Property="Content">
+                        <Setter.Value>
+                            <icon:PackIconMaterial Kind="CheckboxBlankCircleOutline" />
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsChecked, ElementName=OnToggle}" Value="True" />
+                                <Condition Binding="{Binding IsMouseOver, ElementName=OnToggle}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Content">
                                     <Setter.Value>
-                                        <DropShadowEffect
-                                            BlurRadius="15"
-                                            ShadowDepth="0"
-                                            Color="{StaticResource Salmon}" />
+                                        <icon:PackIconMaterial Foreground="{StaticResource PaleYellowBrush}" Kind="CheckboxMarkedCircle">
+                                            <icon:PackIconMaterial.Effect>
+                                                <DropShadowEffect
+                                                    BlurRadius="15"
+                                                    ShadowDepth="0"
+                                                    Color="{StaticResource Salmon}" />
+                                            </icon:PackIconMaterial.Effect>
+                                        </icon:PackIconMaterial>
                                     </Setter.Value>
                                 </Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </icon:PackIconMaterial.Style>
-            </icon:PackIconMaterial>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsChecked, ElementName=OnToggle}" Value="True" />
+                                <Condition Binding="{Binding IsMouseOver, ElementName=OnToggle}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <icon:PackIconMaterial Foreground="{StaticResource YellowBrush}" Kind="CheckboxMarkedCircle">
+                                            <icon:PackIconMaterial.Effect>
+                                                <DropShadowEffect
+                                                    BlurRadius="15"
+                                                    ShadowDepth="0"
+                                                    Color="{StaticResource Salmon}" />
+                                            </icon:PackIconMaterial.Effect>
+                                        </icon:PackIconMaterial>
+                                    </Setter.Value>
+                                </Setter>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsChecked, ElementName=OnToggle}" Value="False" />
+                                <Condition Binding="{Binding IsMouseOver, ElementName=OnToggle}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <icon:PackIconMaterial Foreground="{StaticResource YellowBrush}" Kind="CheckboxBlankCircleOutline">
+                                            <icon:PackIconMaterial.Effect>
+                                                <DropShadowEffect
+                                                    BlurRadius="15"
+                                                    ShadowDepth="0"
+                                                    Color="{StaticResource Salmon}" />
+                                            </icon:PackIconMaterial.Effect>
+                                        </icon:PackIconMaterial>
+                                    </Setter.Value>
+                                </Setter>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ToggleButton.Style>
         </ToggleButton>
         <Border Grid.Column="1" Grid.ColumnSpan="2"
             x:Name="SelectedGlow"
-            Background="{StaticResource SalmonBrush}">
+            Background="{StaticResource SalmonBrush}"
+            Visibility="Hidden">
             <Border.Effect>
                 <BlurEffect Radius="8" />
             </Border.Effect>
