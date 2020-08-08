@@ -26,6 +26,7 @@ namespace Synthesis.Bethesda.UnitTests
                 workingDirectory: tmpFolder.Dir.Path,
                 outputPath: output,
                 dataFolder: dataFolder.Dir.Path,
+                loadOrder: Utility.TypicalLoadOrder(),
                 release: GameRelease.Oblivion,
                 patchers: ListExt.Empty<IPatcherRun>());
             Assert.False(File.Exists(output));
@@ -44,6 +45,7 @@ namespace Synthesis.Bethesda.UnitTests
                 outputPath: output,
                 dataFolder: dataFolder.Dir.Path,
                 release: GameRelease.Oblivion,
+                loadOrder: Utility.TypicalLoadOrder(),
                 sourcePath: output,
                 reporter: reporter,
                 patchers: patcher.AsEnumerable().ToList());
@@ -63,6 +65,7 @@ namespace Synthesis.Bethesda.UnitTests
                 workingDirectory: tmpFolder.Dir.Path,
                 outputPath: output,
                 dataFolder: dataFolder.Dir.Path,
+                loadOrder: Utility.TypicalLoadOrder(),
                 release: GameRelease.Oblivion,
                 patchers: patcher.AsEnumerable().ToList());
             Assert.True(patcher.WasRun);
@@ -85,6 +88,7 @@ namespace Synthesis.Bethesda.UnitTests
                 outputPath: output,
                 dataFolder: dataFolder.Dir.Path,
                 release: GameRelease.Oblivion,
+                loadOrder: Utility.TypicalLoadOrder(),
                 reporter: reporter,
                 patchers: patcher.AsEnumerable().ToList());
             Assert.IsType<ArgumentException>(reporter.RunProblem?.Exception);
@@ -103,6 +107,7 @@ namespace Synthesis.Bethesda.UnitTests
                 outputPath: output,
                 dataFolder: dataFolder.Dir.Path,
                 release: GameRelease.Oblivion,
+                loadOrder: Utility.TypicalLoadOrder(),
                 patchers: patcher.AsEnumerable().ToList());
             Assert.True(File.Exists(output));
         }
@@ -123,6 +128,7 @@ namespace Synthesis.Bethesda.UnitTests
                 outputPath: output,
                 dataFolder: dataFolder.Dir.Path,
                 release: GameRelease.Oblivion,
+                loadOrder: Utility.TypicalLoadOrder(),
                 patchers: patcher.AsEnumerable().ToList(),
                 reporter: reporter);
             Assert.False(File.Exists(output));
@@ -149,6 +155,7 @@ namespace Synthesis.Bethesda.UnitTests
                 outputPath: output,
                 dataFolder: dataFolder.Dir.Path,
                 release: GameRelease.Oblivion,
+                loadOrder: Utility.TypicalLoadOrder(),
                 patchers: patcher.AsEnumerable().ToList(),
                 reporter: reporter);
             Assert.False(File.Exists(output));
@@ -172,6 +179,7 @@ namespace Synthesis.Bethesda.UnitTests
                 outputPath: output,
                 dataFolder: dataFolder.Dir.Path,
                 release: GameRelease.Oblivion,
+                loadOrder: Utility.TypicalLoadOrder(),
                 patchers: patcher.AsEnumerable().ToList(),
                 reporter: reporter);
             Assert.True(File.Exists(output));

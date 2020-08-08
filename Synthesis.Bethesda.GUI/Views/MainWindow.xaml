@@ -40,8 +40,8 @@
             <Rectangle.Style>
                 <Style TargetType="Rectangle">
                     <Style.Triggers>
-                        <Trigger Property="Visibility" Value="Visible">
-                            <Trigger.EnterActions>
+                        <DataTrigger Binding="{Binding Hot}" Value="False">
+                            <DataTrigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimation
@@ -51,8 +51,18 @@
                                             Duration="0:0:25" />
                                     </Storyboard>
                                 </BeginStoryboard>
-                            </Trigger.EnterActions>
-                        </Trigger>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="0:0:1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </Rectangle.Style>
@@ -65,7 +75,7 @@
                 </LinearGradientBrush>
             </Border.BorderBrush>
         </Border>
-        <local:MainView />
+        <local:WindowView />
     </Grid>
     <mahapps:MetroWindow.RightWindowCommands>
         <mahapps:WindowCommands>

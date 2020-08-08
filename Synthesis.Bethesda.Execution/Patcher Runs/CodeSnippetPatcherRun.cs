@@ -70,7 +70,12 @@ namespace Synthesis.Bethesda.Execution.Patchers
                     synthesisState,
                 });
             await t;
-            synthesisState.PatchMod.WriteToBinaryParallel(settings.OutputPath);
+            synthesisState.PatchMod.WriteToBinaryParallel(
+                settings.OutputPath,
+                new BinaryWriteParameters()
+                {
+                    ModKey = BinaryWriteParameters.ModKeyOption.NoCheck
+                });
         }
 
         public async Task Prep(GameRelease release, CancellationToken? cancel = null)

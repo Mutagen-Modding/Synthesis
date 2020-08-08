@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Text;
+using Synthesis.Bethesda.Execution.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -90,6 +91,11 @@ namespace Synthesis.Bethesda.GUI
         {
             if (settings == null) return;
             this.RepoPath = settings.RepoPath;
+        }
+
+        public override IPatcherRun ToRunner()
+        {
+            throw new NotImplementedException();
         }
     }
 }

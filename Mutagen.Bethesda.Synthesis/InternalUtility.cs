@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Constants = Synthesis.Bethesda.Constants;
 
 namespace Mutagen.Bethesda.Synthesis.Internal
 {
@@ -34,7 +35,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 settings.GameRelease);
 
             // Get Modkey from output path
-            var modKey = ModKey.FromNameAndExtension(Path.GetFileName(settings.OutputPath));
+            var modKey = Constants.SynthesisModKey;
 
             // Create or import patch mod
             TMod patchMod;

@@ -1,7 +1,5 @@
 ﻿using DynamicData;
 using Synthesis.Bethesda.Execution.Settings;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -11,6 +9,7 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Text;
 using System.Windows.Input;
+using Synthesis.Bethesda.Execution.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -71,5 +70,7 @@ namespace Synthesis.Bethesda.GUI
             settings.On = IsOn;
             settings.Nickname = Nickname;
         }
+
+        public abstract IPatcherRun ToRunner();
     }
 }

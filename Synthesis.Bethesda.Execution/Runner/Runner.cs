@@ -13,15 +13,13 @@ namespace Synthesis.Bethesda.Execution.Runner
 {
     public class Runner
     {
-        public readonly static ModKey TypicalModKey = new ModKey("Synthesis", ModType.Plugin);
-
         public static async Task Run(
             string workingDirectory,
             ModPath outputPath,
             string dataFolder,
+            IEnumerable<ModKey> loadOrder,
             GameRelease release,
-            IReadOnlyList<IPatcherRun> patchers,
-            ModKey? modKeyOverride = null,
+            IEnumerable<IPatcherRun> patchers,
             ModPath? sourcePath = null,
             CancellationToken? cancellation = null,
             IRunReporter? reporter = null)
@@ -29,7 +27,6 @@ namespace Synthesis.Bethesda.Execution.Runner
             reporter ??= ThrowReporter.Instance;
             try
             {
-                modKeyOverride ??= TypicalModKey;
                 if (sourcePath != null)
                 {
                     if (!File.Exists(sourcePath))
@@ -42,21 +39,30 @@ namespace Synthesis.Bethesda.Execution.Runner
                 dirInfo.DeleteEntireFolder();
                 dirInfo.Create();
 
-                if (patchers.Count == 0) return;
+                var patchersList = patchers.ToList();
+                if (patchersList.Count == 0) return;
 
-                if (!LoadOrder.TryGetPluginsFile(release, out var path)
-                    || !File.Exists(path.Path))
-                {
-                    reporter.ReportOverallProblem(new FileNotFoundException($"Could not locate load order file for: {release}"));
-                    return;
-                }
+                bool problem = false;
+
                 // Copy plugins text to working directory
                 string loadOrderPath = Path.Combine(workingDirectory, "Plugins.txt");
-                File.Copy(path.Path, loadOrderPath);
+                var writeLoadOrder = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await File.WriteAllLinesAsync(
+                            loadOrderPath,
+                            loadOrder.Select(modKey => modKey.FileName));
+                    }
+                    catch (Exception ex)
+                    {
+                        reporter.ReportOverallProblem(ex);
+                        problem = true;
+                    }
+                });
 
                 // Prep all patchers in parallel
-                bool problem = false;
-                await Task.WhenAll(patchers.Select(patcher => Task.Run(async () =>
+                var patcherPreps = patchersList.Select(patcher => Task.Run(async () =>
                 {
                     try
                     {
@@ -67,14 +73,16 @@ namespace Synthesis.Bethesda.Execution.Runner
                         reporter.ReportPrepProblem(patcher, ex);
                         problem = true;
                     }
-                })));
+                }));
+
+                await Task.WhenAll(patcherPreps.And(writeLoadOrder));
                 if (problem) return;
 
                 var prevPath = sourcePath;
-                for (int i = 0; i < patchers.Count; i++)
+                for (int i = 0; i < patchersList.Count; i++)
                 {
-                    var patcher = patchers[i];
-                    var nextPath = new ModPath(modKeyOverride.Value, Path.Combine(workingDirectory, $"{i} - {patcher.Name}"));
+                    var patcher = patchersList[i];
+                    var nextPath = new ModPath(outputPath.ModKey, Path.Combine(workingDirectory, $"{i} - {patcher.Name}"));
                     try
                     {
                         await patcher.Run(new RunSynthesisPatcher()

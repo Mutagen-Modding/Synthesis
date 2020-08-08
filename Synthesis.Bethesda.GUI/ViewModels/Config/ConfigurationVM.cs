@@ -7,9 +7,11 @@ using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Synthesis.Bethesda.GUI
@@ -38,6 +40,12 @@ namespace Synthesis.Bethesda.GUI
 
         private readonly ObservableAsPropertyHelper<PatcherVM?> _DisplayedPatcher;
         public PatcherVM? DisplayedPatcher => _DisplayedPatcher.Value;
+
+        [Reactive]
+        public RunningPatchersVM? CurrentRun { get; private set; }
+
+        [Reactive]
+        public string WorkingDirectory { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Synthesis");
 
         public ConfigurationVM(MainVM mvm)
         {
@@ -80,14 +88,17 @@ namespace Synthesis.Bethesda.GUI
                     (selected, newConfig) => newConfig ?? selected)
                 .ToGuiProperty(this, nameof(DisplayedPatcher));
 
-            RunPatchers = ReactiveCommand.Create(
-                () => { },
-                canExecute: this.WhenAnyValue(x => x.SelectedProfile)
-                    .Select(prof => prof?.Patchers.Connect() ?? Observable.Empty<IChangeSet<PatcherVM>>())
-                    .Switch()
-                    .AutoRefresh(x => x.BlockingError)
-                    .Transform(p => p.BlockingError, transformOnRefresh: true)
-                    .QueryWhenChanged(errs => errs.Any() && errs.All(e => e.Succeeded)));
+            RunPatchers = ReactiveCommand.CreateFromTask(
+                async () =>
+                {
+                    if (SelectedProfile == null) return;
+                    CurrentRun = new RunningPatchersVM(SelectedProfile);
+                    await Task.Run(CurrentRun.Run);
+                },
+                canExecute: this.WhenAnyFallback(x => x.SelectedProfile!.BlockingError, fallback: ErrorResponse.Success)
+                    .CombineLatest(
+                        this.WhenAnyFallback(x => x.CurrentRun!.Running, fallback: false),
+                        (err, run) => err.Succeeded && !run));
         }
 
         public void Load(SynthesisSettings settings)

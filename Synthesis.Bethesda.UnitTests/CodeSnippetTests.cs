@@ -50,16 +50,16 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task CompileWithSpecificGames()
         {
-            foreach (var game in EnumExt.GetValues<GameCategory>())
+            foreach (var game in EnumExt.GetValues<GameRelease>())
             {
                 var settings = new CodeSnippetPatcherSettings()
                 {
                     On = true,
-                    Code = $"var id = {game}Mod.DefaultInitialNextFormID; id++;",
+                    Code = $"var id = {game.ToCategory()}Mod.DefaultInitialNextFormID; id++;",
                     Nickname = "UnitTests",
                 };
                 var snippet = new CodeSnippetPatcherRun(settings);
-                var result = snippet.Compile(GameRelease.SkyrimSE, CancellationToken.None, out var _);
+                var result = snippet.Compile(game, CancellationToken.None, out var _);
                 Assert.True(result.Success);
             }
         }

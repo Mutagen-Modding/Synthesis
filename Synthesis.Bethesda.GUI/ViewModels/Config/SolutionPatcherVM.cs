@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Linq;
 using System.Text;
+using Synthesis.Bethesda.Execution.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -71,6 +72,11 @@ namespace Synthesis.Bethesda.GUI
         {
             if (settings == null) return;
             this.SolutionPath.TargetPath = settings.SolutionPath;
+        }
+
+        public override IPatcherRun ToRunner()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,15 +1,19 @@
 ﻿using DynamicData;
 using Mutagen.Bethesda;
 using Newtonsoft.Json;
+using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Windows.Input;
+using Wabbajack.Common;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -24,27 +28,134 @@ namespace Synthesis.Bethesda.GUI
         public ICommand AddSolutionPatcherCommand { get; }
         public ICommand AddSnippetPatcherCommand { get; }
 
-        public string ID { get; }
+        public string ID { get; private set; }
 
         [Reactive]
         public string Nickname { get; set; } = string.Empty;
 
-        public ProfileVM(ConfigurationVM parent, GameRelease? release = null)
+        private readonly ObservableAsPropertyHelper<string> _WorkingDirectory;
+        public string WorkingDirectory => _WorkingDirectory.Value;
+
+        private readonly ObservableAsPropertyHelper<string> _DataFolder;
+        public string DataFolder => _DataFolder.Value;
+
+        private readonly ObservableAsPropertyHelper<IErrorResponse> _BlockingError;
+        public IErrorResponse BlockingError => _BlockingError.Value;
+
+        private readonly ObservableAsPropertyHelper<IErrorResponse> _LargeOverallError;
+        public IErrorResponse LargeOverallError => _LargeOverallError.Value;
+
+        public IObservableList<ModKey> LoadOrder { get; }
+
+        public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
-            ID = Guid.NewGuid().ToString();
+            ID = id ?? Guid.NewGuid().ToString();
             Config = parent;
             Release = release ?? GameRelease.Oblivion;
             AddGithubPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new GithubPatcherVM(this)));
             AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new SolutionPatcherVM(this)));
             AddSnippetPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new CodeSnippetPatcherVM(this)));
+            _WorkingDirectory = this.WhenAnyValue(x => x.Config.WorkingDirectory)
+                .Select(dir => Path.Combine(dir, ID))
+                .ToGuiProperty<string>(this, nameof(WorkingDirectory));
+
+            var dataFolderResult = this.WhenAnyValue(x => x.Release)
+                .ObserveOn(RxApp.TaskpoolScheduler)
+                .Select(x =>
+                {
+                    try
+                    {
+                        return GetResponse<string>.Succeed(
+                            Path.Combine(x.ToWjGame().MetaData().GameLocation().ToString(), "Data"));
+                    }
+                    catch (Exception ex)
+                    {
+                        return GetResponse<string>.Fail(string.Empty, ex);
+                    }
+                })
+                .Replay(1)
+                .RefCount();
+
+            _DataFolder = dataFolderResult
+                .Select(x => x.Value)
+                .ToGuiProperty<string>(this, nameof(DataFolder));
+
+            var loadOrderResult = Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.Release),
+                    dataFolderResult,
+                    (Release, DataFolder) => (Release, DataFolder))
+                .ObserveOn(RxApp.TaskpoolScheduler)
+                .Select(x =>
+                {
+                    try
+                    {
+                        if (x.DataFolder.Failed) return x.DataFolder.Bubble<IEnumerable<ModKey>>(_ => Enumerable.Empty<ModKey>());
+                        var lo = Mutagen.Bethesda.LoadOrder.GetUsualLoadOrder(x.Release, x.DataFolder.Value, throwOnMissingMods: true);
+                        return GetResponse<IEnumerable<ModKey>>.Succeed(lo);
+                    }
+                    catch (MissingModException ex)
+                    {
+                        return GetResponse<IEnumerable<ModKey>>.Fail(
+                            Enumerable.Empty<ModKey>(),
+                            $"Mod on the load order was missing from the data folder: {ex.ModPath}");
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        return GetResponse<IEnumerable<ModKey>>.Fail(
+                            Enumerable.Empty<ModKey>(),
+                            $"Could not locate load order for target game.");
+                    }
+                    catch (Exception ex)
+                    {
+                        return GetResponse<IEnumerable<ModKey>>.Fail(
+                            Enumerable.Empty<ModKey>(),
+                            ex);
+                    }
+                })
+                .Replay(1)
+                .RefCount();
+
+            LoadOrder = loadOrderResult
+                .Select(x => x.Value.AsObservableChangeSet())
+                .Switch()
+                .AsObservableList();
+
+            _LargeOverallError = Observable.CombineLatest(
+                    dataFolderResult,
+                    loadOrderResult,
+                    Patchers.Connect()
+                        .AutoRefresh(x => x.IsOn)
+                        .Filter(p => p.IsOn)
+                        .QueryWhenChanged(q => q.Count > 0),
+                    (dataFolder, loadOrder, hasAny) =>
+                    {
+                        if (!hasAny) return (IErrorResponse)ErrorResponse.Fail("There are no enabled patchers to run.");
+                        if (!dataFolder.Succeeded) return dataFolder;
+                        if (!loadOrder.Succeeded) return loadOrder;
+                        return ErrorResponse.Success;
+                    })
+                .ToGuiProperty<IErrorResponse>(this, nameof(LargeOverallError), ErrorResponse.Fail("Uninitialized"));
+
+            _BlockingError = Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.LargeOverallError),
+                    Patchers.Connect()
+                        .AutoRefresh(x => x.IsOn)
+                        .Filter(p => p.IsOn)
+                        .AutoRefresh(x => x.BlockingError)
+                        .Transform(p => p.BlockingError, transformOnRefresh: true)
+                        .QueryWhenChanged(errs => errs.Cast<ErrorResponse?>().FirstOrDefault<ErrorResponse?>(e => e?.Failed ?? false) ?? ErrorResponse.Success),
+                (overall, patchers) =>
+                {
+                    if (!overall.Succeeded) return overall;
+                    return patchers;
+                })
+                .ToGuiProperty<IErrorResponse>(this, nameof(BlockingError), ErrorResponse.Fail("Uninitialized"));
         }
 
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)
-            : this(parent)
+            : this(parent, settings.TargetRelease, id: settings.ID)
         {
-            ID = settings.ID;
             Nickname = settings.Nickname;
-            Release = settings.TargetRelease;
             Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
             {
                 return p switch

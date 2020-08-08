@@ -92,9 +92,32 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.ConfirmAdditionButton.Command)
                     .DisposeWith(disposable);
 
+                var running = this.WhenAnyValue(x => x.ViewModel.CurrentRun, x => x.ViewModel.CurrentRun!.Running,
+                        (r, _) => r?.Running ?? false)
+                    .Replay(1)
+                    .RefCount();
+
                 // Set up go button
                 this.WhenAnyValue(x => x.ViewModel.RunPatchers)
                     .BindToStrict(this, x => x.GoButton.Command)
+                    .DisposeWith(disposable);
+                running
+                    .Select(r => r ? Visibility.Collapsed : Visibility.Visible)
+                    .BindToStrict(this, x => x.GoButton.Visibility);
+                running
+                    .Select(r => r ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.RunningRingAnimation.Visibility);
+
+                // Set up large overall error icon display
+                var overallErr = this.WhenAnyValue(x => x.ViewModel.SelectedProfile, x => x.ViewModel.SelectedProfile!.LargeOverallError,
+                        (p, _) => p?.LargeOverallError ?? ErrorResponse.Success)
+                    .Replay(1)
+                    .RefCount();
+                overallErr.Select(x => x.Succeeded ? Visibility.Collapsed : Visibility.Visible)
+                    .BindToStrict(this, x => x.OverallErrorIcon.Visibility)
+                    .DisposeWith(disposable);
+                overallErr.Select(x => x.Reason)
+                    .BindToStrict(this, x => x.OverallErrorIcon.ToolTip)
                     .DisposeWith(disposable);
             });
         }

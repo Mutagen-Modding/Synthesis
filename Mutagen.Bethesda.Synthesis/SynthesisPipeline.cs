@@ -33,6 +33,11 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter;
 
+        private static readonly BinaryWriteParameters _writeParams = new BinaryWriteParameters()
+        {
+            ModKey = BinaryWriteParameters.ModKeyOption.NoCheck,
+        };
+
         #region Patch
         /// <summary>
         /// Takes in the main line command arguments, and handles PatcherRunSettings CLI inputs.
@@ -123,7 +128,7 @@ namespace Mutagen.Bethesda.Synthesis
         {
             var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
             await patcher(state).ConfigureAwait(false);
-            state.PatchMod.WriteToBinary(path: settings.OutputPath);
+            state.PatchMod.WriteToBinary(path: settings.OutputPath, param: _writeParams);
         }
 
         /// <summary>
@@ -143,7 +148,7 @@ namespace Mutagen.Bethesda.Synthesis
         {
             var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
             patcher(state);
-            state.PatchMod.WriteToBinary(path: settings.OutputPath);
+            state.PatchMod.WriteToBinary(path: settings.OutputPath, param: _writeParams);
         }
         #endregion
 

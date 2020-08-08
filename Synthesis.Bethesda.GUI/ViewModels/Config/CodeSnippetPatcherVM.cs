@@ -42,6 +42,9 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<CodeCompilationStatus> _CompilationStatus;
         public CodeCompilationStatus CompilationStatus => _CompilationStatus.Value;
 
+        private readonly ObservableAsPropertyHelper<Assembly?> _ActiveAssembly;
+        public Assembly? ActiveAssembly => _ActiveAssembly.Value;
+
         public CodeSnippetPatcherVM(ProfileVM parent, CodeSnippetPatcherSettings? settings = null)
             : base(parent, settings)
         {
@@ -68,7 +71,7 @@ namespace Synthesis.Bethesda.GUI
                     // Start actual compiling task,
                     this.WhenAnyValue(x => x.Code)
                         // Throttle input
-                        .Debounce(TimeSpan.FromMilliseconds(500), RxApp.MainThreadScheduler)
+                        .Throttle(TimeSpan.FromMilliseconds(350), RxApp.MainThreadScheduler)
                         // Stick on background thread
                         .ObserveOn(RxApp.TaskpoolScheduler)
                         .Select(code =>
@@ -82,7 +85,7 @@ namespace Synthesis.Bethesda.GUI
                                     code,
                                     cancel.Token,
                                     out var assembly);
-                                return (assembly, emit, default(Exception?));
+                                return (emit.Success ? assembly : default, emit, default(Exception?));
                             }
                             catch (TaskCanceledException)
                             {
@@ -93,12 +96,14 @@ namespace Synthesis.Bethesda.GUI
                                 return (default(MemoryStream?), default(EmitResult?), ex);
                             }
                         }))
-                    .ObserveOnGui();
+                    .ObserveOnGui()
+                .Replay(1)
+                .RefCount();
 
-            _BlockingError = compileResults
+            IObservable<ErrorResponse> compileError = compileResults
                 .Select(results =>
                 {
-                    if (results.AssemblyStream == null || results.CompileResults == null)
+                    if (results.CompileResults == null)
                     {
                         return ErrorResponse.Fail("Compiling");
                     }
@@ -113,9 +118,10 @@ namespace Synthesis.Bethesda.GUI
                     }
                     return ErrorResponse.Fail(errDiag.ToString());
                 })
-                .ToGuiProperty(this, nameof(BlockingError));
+                .Replay(1)
+                .RefCount();
 
-            _CompilationText = this.WhenAnyValue(x => x.BlockingError)
+            _CompilationText = compileError
                 .Select(err => err.Reason)
                 .ToGuiProperty<string>(this, nameof(CompilationText));
 
@@ -133,6 +139,35 @@ namespace Synthesis.Bethesda.GUI
                     return CodeCompilationStatus.Successful;
                 })
                 .ToGuiProperty(this, nameof(CompilationStatus));
+
+            _ActiveAssembly = compileResults
+                .Select(results =>
+                {
+                    if (results.AssemblyStream == null) return Observable.Return(default(Assembly?));
+                    return Observable.Return(results.AssemblyStream)
+                        .ObserveOn(RxApp.TaskpoolScheduler)
+                        .Select(x =>
+                        {
+                            return Assembly.Load(x.ToArray());
+                        });
+                })
+                .Switch()
+                .ToGuiProperty(this, nameof(ActiveAssembly));
+
+            _BlockingError = Observable.CombineLatest(
+                    compileError,
+                    this.WhenAnyValue(x => x.ActiveAssembly),
+                    (err, assem) => (err, assem))
+                .Select(results =>
+                {
+                    if (results.err.Failed) return results.err;
+                    if (results.assem == null)
+                    {
+                        return ErrorResponse.Fail("Assembly was unexpectedly null");
+                    }
+                    return ErrorResponse.Success;
+                })
+                .ToGuiProperty(this, nameof(BlockingError));
         }
 
         public override PatcherSettings Save()
@@ -152,6 +187,17 @@ namespace Synthesis.Bethesda.GUI
             }
             this.Code = settings.Code;
             this.ID = string.IsNullOrWhiteSpace(settings.ID) ? Guid.NewGuid().ToString() : settings.ID;
+        }
+
+        public override IPatcherRun ToRunner()
+        {
+            if (ActiveAssembly == null)
+            {
+                throw new ArgumentNullException("Assembly was null when trying to run");
+            }
+            return new CodeSnippetPatcherRun(
+                Nickname,
+                ActiveAssembly);
         }
     }
 

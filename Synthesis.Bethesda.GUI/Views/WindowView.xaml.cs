@@ -9,14 +9,14 @@ using System.Windows;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class MainViewBase : NoggogUserControl<MainVM> { }
+    public class WindowViewBase : NoggogUserControl<MainVM> { }
 
     /// <summary>
     /// Interaction logic for MainView.xaml
     /// </summary>
-    public partial class MainView : MainViewBase
+    public partial class WindowView : WindowViewBase
     {
-        public MainView()
+        public WindowView()
         {
             InitializeComponent();
             this.WhenActivated(disposable =>
