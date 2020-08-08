@@ -96,7 +96,7 @@ namespace Mutagen.Bethesda.Synthesis
                 settings.DataFolderPath,
                 loadOrderListing,
                 settings.GameRelease);
-            var modKey = ModKey.Factory(Path.GetFileName(settings.OutputPath));
+            var modKey = ModKey.FromNameAndExtension(Path.GetFileName(settings.OutputPath));
             TMod patchMod;
             ILinkCache cache;
             if (settings.SourcePath == null)
