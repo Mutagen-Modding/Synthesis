@@ -57,7 +57,7 @@ namespace Synthesis.Bethesda.GUI
             AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new SolutionPatcherVM(this)));
             AddSnippetPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new CodeSnippetPatcherVM(this)));
             _WorkingDirectory = this.WhenAnyValue(x => x.Config.WorkingDirectory)
-                .Select(dir => Path.Combine(dir, ID))
+                .Select(dir => Path.Combine(dir, ID, "Workspace"))
                 .ToGuiProperty<string>(this, nameof(WorkingDirectory));
 
             var dataFolderResult = this.WhenAnyValue(x => x.Release)
