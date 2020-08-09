@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wabbajack.Common;
 
 namespace Mutagen.Bethesda.Synthesis
 {
@@ -32,11 +33,6 @@ namespace Mutagen.Bethesda.Synthesis
         public delegate Task AsyncPatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter;
-
-        private static readonly BinaryWriteParameters _writeParams = new BinaryWriteParameters()
-        {
-            ModKey = BinaryWriteParameters.ModKeyOption.NoCheck,
-        };
 
         #region Patch
         /// <summary>
@@ -72,7 +68,23 @@ namespace Mutagen.Bethesda.Synthesis
                         }
                         return (int?)0;
                     },
-                    async _ => default(int?));
+                    async _ =>
+                    {
+                        var prefs = userPreferences ?? new UserPreferences();
+                        if (prefs.ActionsForEmptyArgs == null) return (int?)-1;
+                        try
+                        {
+                            await Patch(
+                                GetDefaultRun(prefs.ActionsForEmptyArgs.IdentifyingModKey, prefs.ActionsForEmptyArgs.TargetRelease),
+                                patcher,
+                                prefs);
+                        }
+                        catch (Exception)
+                        {
+                            return (int?)-1;
+                        }
+                        return (int?)0;
+                    });
         }
 
         /// <summary>
@@ -108,7 +120,23 @@ namespace Mutagen.Bethesda.Synthesis
                         }
                         return 0;
                     },
-                    _ => default(int?));
+                    _ =>
+                    {
+                        var prefs = userPreferences ?? new UserPreferences();
+                        if (prefs.ActionsForEmptyArgs == null) return (int?)-1;
+                        try
+                        {
+                            Patch(
+                                GetDefaultRun(prefs.ActionsForEmptyArgs.IdentifyingModKey, prefs.ActionsForEmptyArgs.TargetRelease),
+                                patcher,
+                                prefs);
+                        }
+                        catch (Exception)
+                        {
+                            return (int?)-1;
+                        }
+                        return (int?)0;
+                    });
         }
 
         /// <summary>
@@ -126,9 +154,10 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
+            WarmupAll.Init();
             var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
             await patcher(state).ConfigureAwait(false);
-            state.PatchMod.WriteToBinary(path: settings.OutputPath, param: _writeParams);
+            state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.LoadOrder.Select(i => i.Key)));
         }
 
         /// <summary>
@@ -146,11 +175,21 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
+            WarmupAll.Init();
             var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
             patcher(state);
-            state.PatchMod.WriteToBinary(path: settings.OutputPath, param: _writeParams);
+            state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.LoadOrder.Select(i => i.Key)));
         }
         #endregion
+
+        private BinaryWriteParameters GetWriteParams(IEnumerable<ModKey> loadOrder)
+        {
+            return new BinaryWriteParameters()
+            {
+                ModKey = BinaryWriteParameters.ModKeyOption.NoCheck,
+                MastersListOrdering = new BinaryWriteParameters.MastersListOrderingByLoadOrder(loadOrder),
+            };
+        }
 
         public IEnumerable<ModKey> GetLoadOrder(
             RunSynthesisPatcher settings,
@@ -158,6 +197,7 @@ namespace Mutagen.Bethesda.Synthesis
             bool throwOnMissingMods = true)
         {
             return GetLoadOrder(
+                category: settings.GameRelease.ToCategory(),
                 loadOrderFilePath: settings.LoadOrderFilePath,
                 dataFolderPath: settings.DataFolderPath,
                 userPrefs: userPrefs,
@@ -165,31 +205,50 @@ namespace Mutagen.Bethesda.Synthesis
         }
 
         public IEnumerable<ModKey> GetLoadOrder(
+            GameCategory category,
             string loadOrderFilePath,
             string dataFolderPath,
             UserPreferences? userPrefs = null,
             bool throwOnMissingMods = true)
         {
-            var loadOrderListing = LoadOrder.FromPath(loadOrderFilePath);
-            loadOrderListing = LoadOrder.AlignToTimestamps(
-                loadOrderListing,
-                dataFolderPath,
-                throwOnMissingMods: throwOnMissingMods);
+            var loadOrderListing = (IEnumerable<ModKey>)LoadOrder.FromPath(loadOrderFilePath);
+            if (LoadOrder.NeedsTimestampAlignment(category))
+            {
+                loadOrderListing = LoadOrder.AlignToTimestamps(
+                    loadOrderListing,
+                    dataFolderPath,
+                    throwOnMissingMods: throwOnMissingMods);
+            }
             if (userPrefs?.InclusionMods != null)
             {
                 var inclusions = userPrefs.InclusionMods.ToHashSet();
                 loadOrderListing = loadOrderListing
-                    .Where(m => inclusions.Contains(m))
-                    .ToExtendedList();
+                    .Where(m => inclusions.Contains(m));
             }
             if (userPrefs?.ExclusionMods != null)
             {
                 var exclusions = userPrefs.ExclusionMods.ToHashSet();
                 loadOrderListing = loadOrderListing
-                    .Where(m => !exclusions.Contains(m))
-                    .ToExtendedList();
+                    .Where(m => !exclusions.Contains(m));
             }
             return loadOrderListing;
+        }
+
+        public static RunSynthesisPatcher GetDefaultRun(ModKey modKey, GameRelease release)
+        {
+            var dataPath = Path.Combine(release.ToWjGame().MetaData().GameLocation().ToString(), "Data");
+            if (!LoadOrder.TryGetPluginsFile(release, out var path))
+            {
+                throw new FileNotFoundException("Could not locate load order automatically.");
+            }
+            return new RunSynthesisPatcher()
+            {
+                DataFolderPath = dataPath,
+                SourcePath = null,
+                OutputPath = Path.Combine(dataPath, modKey.FileName),
+                GameRelease = release,
+                LoadOrderFilePath = path.Path
+            };
         }
     }
 }

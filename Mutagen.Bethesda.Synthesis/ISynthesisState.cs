@@ -9,5 +9,6 @@ namespace Mutagen.Bethesda.Synthesis
     {
         IRunPipelineSettings Settings { get; }
         IModGetter PatchMod { get; }
+        IEnumerable<ModKey> LoadOrder { get; }
     }
 }

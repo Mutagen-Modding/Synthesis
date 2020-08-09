@@ -151,5 +151,13 @@ namespace Synthesis.Bethesda.UnitTests
                 new UserPreferences());
             Assert.Equal(state.PatchMod.ModKey, state.LoadOrder.Last().Key);
         }
+
+        [Fact]
+        public void EmptyArgs_NoRun()
+        {
+            SynthesisPipeline.Instance.Patch<IOblivionMod, IOblivionModGetter>(
+                new string[0],
+                PatchFunction);
+        }
     }
 }

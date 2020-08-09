@@ -1,6 +1,7 @@
 ﻿using Synthesis.Bethesda;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -46,6 +47,8 @@ namespace Mutagen.Bethesda.Synthesis
         /// Cancellation token that signals whether to stop patching and exit early
         /// </summary>
         public CancellationToken CancelToken { get; } = CancellationToken.None;
+
+        IEnumerable<ModKey> ISynthesisState.LoadOrder => LoadOrder.Select(i => i.Key);
 
         public SynthesisState(
             IRunPipelineSettings settings,

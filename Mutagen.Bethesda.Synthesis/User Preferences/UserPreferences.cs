@@ -19,5 +19,10 @@ namespace Mutagen.Bethesda.Synthesis
         /// Null means to include all mods
         /// </summary>
         public IEnumerable<ModKey>? ExclusionMods;
+
+        /// <summary>
+        /// If program args are empty, what actions should be taken
+        /// </summary>
+        public RunDefaultPatcher? ActionsForEmptyArgs = null;
     }
 }

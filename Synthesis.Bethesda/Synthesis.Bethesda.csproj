@@ -24,4 +24,8 @@
     <PackageReference Include="Mutagen.Bethesda.Kernel" Version="1.0.0" />
   </ItemGroup>
 
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="RD /S /Q &quot;%25USERPROFILE%25\.nuget\packages\synthesis.bethesda&quot;" />
+  </Target>
+
 </Project>

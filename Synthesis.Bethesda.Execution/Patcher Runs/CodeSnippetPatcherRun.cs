@@ -74,7 +74,8 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 settings.OutputPath,
                 new BinaryWriteParameters()
                 {
-                    ModKey = BinaryWriteParameters.ModKeyOption.NoCheck
+                    ModKey = BinaryWriteParameters.ModKeyOption.NoCheck,
+                    MastersListOrdering = new BinaryWriteParameters.MastersListOrderingByLoadOrder(synthesisState.LoadOrder)
                 });
         }
 

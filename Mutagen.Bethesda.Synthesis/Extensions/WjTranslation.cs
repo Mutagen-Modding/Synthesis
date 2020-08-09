@@ -1,12 +1,11 @@
-﻿using Mutagen.Bethesda;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using Wabbajack.Common;
 
-namespace Synthesis.Bethesda.GUI
+namespace Mutagen.Bethesda.Synthesis
 {
-    public static class Utility
+    public static class WjTranslation
     {
         public static Game ToWjGame(this GameRelease release)
         {
