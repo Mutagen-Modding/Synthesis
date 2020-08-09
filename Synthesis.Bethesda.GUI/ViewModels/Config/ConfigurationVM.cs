@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.GUI
             MainVM = mvm;
             ProfilesDisplay = Profiles.Connect().ToObservableCollection(this);
             PatchersDisplay = this.WhenAnyValue(x => x.SelectedProfile)
-                .Select(p => p?.Patchers.Connect() ?? Observable.Empty<IChangeSet<PatcherVM>>())
+                .Select(p => p?.Patchers.Connect() ?? Observable.Empty<IChangeSet<PatcherVM, int>>())
                 .Switch()
                 .ToObservableCollection(this);
 
@@ -61,7 +61,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     var patcher = this.NewPatcher;
                     if (patcher == null) return;
-                    SelectedProfile?.Patchers.Add(patcher);
+                    SelectedProfile?.Patchers.AddOrUpdate(patcher);
                     NewPatcher = null;
                     SelectedPatcher = patcher;
                     patcher.IsOn = true;
@@ -92,8 +92,9 @@ namespace Synthesis.Bethesda.GUI
                 async () =>
                 {
                     if (SelectedProfile == null) return;
-                    CurrentRun = new RunningPatchersVM(SelectedProfile);
-                    await Task.Run(CurrentRun.Run);
+                    CurrentRun = new RunningPatchersVM(this, SelectedProfile);
+                    MainVM.ActivePanel = CurrentRun;
+                    await CurrentRun.Run();
                 },
                 canExecute: this.WhenAnyFallback(x => x.SelectedProfile!.BlockingError, fallback: ErrorResponse.Success)
                     .CombineLatest(

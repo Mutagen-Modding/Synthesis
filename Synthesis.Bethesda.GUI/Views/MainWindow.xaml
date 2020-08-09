@@ -58,7 +58,7 @@
                                         <DoubleAnimation
                                             Storyboard.TargetProperty="Opacity"
                                             To="1"
-                                            Duration="0:0:1" />
+                                            Duration="0:0:0.7" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </DataTrigger.ExitActions>

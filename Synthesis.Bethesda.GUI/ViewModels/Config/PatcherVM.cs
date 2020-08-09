@@ -10,6 +10,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Windows.Input;
 using Synthesis.Bethesda.Execution.Patchers;
+using System.Threading;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -19,6 +20,8 @@ namespace Synthesis.Bethesda.GUI
 
         private readonly ObservableAsPropertyHelper<bool> _IsSelected;
         public bool IsSelected => _IsSelected.Value;
+
+        public int ID { get; }
 
         [Reactive]
         public bool IsOn { get; set; } = true;
@@ -39,8 +42,12 @@ namespace Synthesis.Bethesda.GUI
 
         public abstract ConfigurationStateVM State { get; }
 
+        private static int NextID;
+
         public PatcherVM(ProfileVM parent, PatcherSettings? settings)
         {
+            ID = Interlocked.Increment(ref NextID);
+
             Profile = parent;
             _IsSelected = this.WhenAnyValue(x => x.Profile.Config.SelectedPatcher)
                 .Select(x => x == this)
@@ -71,6 +78,6 @@ namespace Synthesis.Bethesda.GUI
             settings.Nickname = Nickname;
         }
 
-        public abstract IPatcherRun ToRunner();
+        public abstract RunningPatcherVM ToRunner(RunningPatchersVM parent);
     }
 }

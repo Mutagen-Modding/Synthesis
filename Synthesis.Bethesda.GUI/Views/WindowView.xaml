@@ -18,6 +18,9 @@
                 <DataTemplate DataType="{x:Type vm:NoProfileVM}">
                     <local:NoProfileView />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:RunningPatchersVM}">
+                    <local:MainRunView />
+                </DataTemplate>
             </ContentPresenter.Resources>
         </ContentPresenter>
         <local:ConfirmationOverlayView x:Name="ConfirmationOverlay" Visibility="Collapsed" />

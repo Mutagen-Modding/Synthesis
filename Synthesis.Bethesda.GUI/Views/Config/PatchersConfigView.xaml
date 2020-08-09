@@ -5,14 +5,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
-    xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="40" />
             <RowDefinition Height="20" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -55,7 +54,7 @@
                         Margin="0,-2,10,0"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
-                        FontSize="15"
+                        FontSize="13"
                         Text="Run">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
@@ -83,19 +82,6 @@
                     <ColumnDefinition Width="35" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <mahapps:ProgressRing Grid.Column="1"
-                    x:Name="RunningRingAnimation"
-                    Width="35"
-                    Height="35"
-                    Foreground="{StaticResource PaleYellowBrush}"
-                    Visibility="Collapsed">
-                    <mahapps:ProgressRing.Effect>
-                        <DropShadowEffect
-                            BlurRadius="10"
-                            ShadowDepth="0"
-                            Color="Red" />
-                    </mahapps:ProgressRing.Effect>
-                </mahapps:ProgressRing>
                 <icon:PackIconMaterial Grid.Column="2"
                     x:Name="OverallErrorIcon"
                     Width="19"
@@ -228,25 +214,8 @@
                 </Button>
             </Grid>
         </Border>
-        <Rectangle Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
-            Width="1"
-            Margin="5,0"
-            HorizontalAlignment="Left">
-            <Rectangle.Fill>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Offset="0.05" Color="{StaticResource DarkSalmonTransparent}" />
-                    <GradientStop Offset="0.4" Color="{StaticResource DarkSalmon}" />
-                    <GradientStop Offset="0.6" Color="{StaticResource DarkSalmon}" />
-                    <GradientStop Offset="0.95" Color="{StaticResource DarkSalmonTransparent}" />
-                </LinearGradientBrush>
-            </Rectangle.Fill>
-            <Rectangle.Effect>
-                <DropShadowEffect
-                    BlurRadius="12"
-                    ShadowDepth="0"
-                    Color="Red" />
-            </Rectangle.Effect>
-        </Rectangle>
+        <local:VerticalSlicer Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
+            Margin="5,0" />
         <Rectangle Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
             Name="InitialConfigurationDimmer"
             Margin="0,0,-4,0"

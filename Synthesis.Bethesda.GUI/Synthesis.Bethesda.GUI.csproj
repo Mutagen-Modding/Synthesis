@@ -15,9 +15,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Run\**" />
+    <EmbeddedResource Remove="Views\Run\**" />
+    <None Remove="Views\Run\**" />
+    <Page Remove="Views\Run\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\Oblivion.png" />
     <None Remove="Resources\SkyrimLE.png" />
     <None Remove="Resources\SkyrimSSE.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Views\Run\MainRunView.xaml.cs" />
+    <Compile Include="Views\Run\PatcherRunListingView.xaml.cs" />
+    <Compile Include="Views\Run\PatcherRunView.xaml.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +40,12 @@
     <PackageReference Include="reactiveui" Version="11.4.17" />
     <PackageReference Include="ReactiveUI.Fody" Version="11.4.17" />
     <PackageReference Include="Wabbajack.Common" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="Views\Run\MainRunView.xaml" />
+    <Page Include="Views\Run\PatcherRunListingView.xaml" />
+    <Page Include="Views\Run\PatcherRunView.xaml" />
   </ItemGroup>
 
   <ItemGroup>

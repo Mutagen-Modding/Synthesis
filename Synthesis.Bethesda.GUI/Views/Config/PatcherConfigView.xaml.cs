@@ -35,7 +35,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.PatcherDetailName.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel)
-                    .BindToStrict(this, x => x.PatcherIconDisplay.Content)
+                    .BindToStrict(this, x => x.PatcherIconDisplay.DataContext)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel)
                     .BindToStrict(this, x => x.ConfigDetailPane.Content)

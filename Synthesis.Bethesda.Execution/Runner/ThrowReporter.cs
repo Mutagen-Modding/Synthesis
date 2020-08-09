@@ -31,5 +31,13 @@ namespace Synthesis.Bethesda.Execution.Runner
         {
             throw ex;
         }
+
+        public void ReportRunSuccessful(IPatcherRun patcher, string outputPath)
+        {
+        }
+
+        public void ReportStartingRun(IPatcherRun patcher)
+        {
+        }
     }
 }

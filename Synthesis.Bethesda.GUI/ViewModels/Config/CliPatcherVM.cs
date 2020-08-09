@@ -88,9 +88,12 @@ namespace Synthesis.Bethesda.GUI
             return ret;
         }
 
-        public override IPatcherRun ToRunner()
+        public override RunningPatcherVM ToRunner(RunningPatchersVM parent)
         {
-            return new CliPatcherRun(PathToExecutable.TargetPath);
+            return new RunningPatcherVM(
+                parent, 
+                this, 
+                new CliPatcherRun(PathToExecutable.TargetPath));
         }
     }
 }

@@ -24,7 +24,29 @@ namespace Synthesis.Bethesda.Execution.Runner
             CancellationToken? cancellation = null,
             IRunReporter? reporter = null)
         {
-            reporter ??= ThrowReporter.Instance;
+            await Run(
+                workingDirectory: workingDirectory,
+                outputPath: outputPath,
+                dataFolder: dataFolder,
+                loadOrder: loadOrder,
+                release: release,
+                patchers: patchers,
+                reporter: new WrapReporter(reporter ?? ThrowReporter.Instance),
+                sourcePath: sourcePath,
+                cancellation: cancellation);
+        }
+
+        public static async Task Run<TKey>(
+            string workingDirectory,
+            ModPath outputPath,
+            string dataFolder,
+            IEnumerable<ModKey> loadOrder,
+            GameRelease release,
+            IEnumerable<(TKey Key, IPatcherRun Run)> patchers,
+            IRunReporter<TKey> reporter,
+            ModPath? sourcePath = null,
+            CancellationToken? cancellation = null)
+        {
             try
             {
                 if (sourcePath != null)
@@ -66,11 +88,11 @@ namespace Synthesis.Bethesda.Execution.Runner
                 {
                     try
                     {
-                        await patcher.Prep(release, cancellation);
+                        await patcher.Run.Prep(release, cancellation);
                     }
                     catch (Exception ex)
                     {
-                        reporter.ReportPrepProblem(patcher, ex);
+                        reporter.ReportPrepProblem(patcher.Key, patcher.Run, ex);
                         problem = true;
                     }
                 }));
@@ -82,10 +104,11 @@ namespace Synthesis.Bethesda.Execution.Runner
                 for (int i = 0; i < patchersList.Count; i++)
                 {
                     var patcher = patchersList[i];
-                    var nextPath = new ModPath(outputPath.ModKey, Path.Combine(workingDirectory, $"{i} - {patcher.Name}"));
+                    var nextPath = new ModPath(outputPath.ModKey, Path.Combine(workingDirectory, $"{i} - {patcher.Run.Name}"));
                     try
                     {
-                        await patcher.Run(new RunSynthesisPatcher()
+                        reporter.ReportStartingRun(patcher.Key, patcher.Run);
+                        await patcher.Run.Run(new RunSynthesisPatcher()
                         {
                             SourcePath = prevPath?.Path,
                             OutputPath = nextPath,
@@ -96,15 +119,15 @@ namespace Synthesis.Bethesda.Execution.Runner
                     }
                     catch (Exception ex)
                     {
-                        reporter.ReportRunProblem(patcher, ex);
+                        reporter.ReportRunProblem(patcher.Key, patcher.Run, ex);
                         return;
                     }
                     if (!File.Exists(nextPath))
                     {
-                        reporter.ReportRunProblem(patcher, new ArgumentException($"Patcher {patcher.Name} did not produce output file."));
+                        reporter.ReportRunProblem(patcher.Key, patcher.Run, new ArgumentException($"Patcher {patcher.Run.Name} did not produce output file."));
                         return;
                     }
-                    reporter.ReportOutputMapping(patcher, nextPath);
+                    reporter.ReportRunSuccessful(patcher.Key, patcher.Run, nextPath);
                     prevPath = nextPath;
                 }
                 File.Copy(prevPath!.Path, outputPath);

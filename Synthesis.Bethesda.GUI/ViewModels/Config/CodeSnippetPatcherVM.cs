@@ -180,15 +180,18 @@ namespace Synthesis.Bethesda.GUI
             this.ID = string.IsNullOrWhiteSpace(settings.ID) ? Guid.NewGuid().ToString() : settings.ID;
         }
 
-        public override IPatcherRun ToRunner()
+        public override RunningPatcherVM ToRunner(RunningPatchersVM parent)
         {
             if (ActiveAssembly == null)
             {
                 throw new ArgumentNullException("Assembly was null when trying to run");
             }
-            return new CodeSnippetPatcherRun(
-                Nickname,
-                ActiveAssembly);
+            return new RunningPatcherVM(
+                parent,
+                this,
+                new CodeSnippetPatcherRun(
+                    Nickname,
+                    ActiveAssembly));
         }
 
         private ConfigurationStateVM ToState((MemoryStream? AssemblyStream, EmitResult? CompileResults, Exception? Exception) results)

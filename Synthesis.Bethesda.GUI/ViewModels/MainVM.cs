@@ -51,9 +51,14 @@ namespace Synthesis.Bethesda.GUI
             _Hot = this.WhenAnyValue(x => x.ActivePanel)
                 .Select(x =>
                 {
-                    if (x is ConfigurationVM config)
+                    switch (x)
                     {
-                        return config.WhenAnyFallback(x => x.CurrentRun!.Running, fallback: false);
+                        case ConfigurationVM config:
+                            return config.WhenAnyFallback(x => x.CurrentRun!.Running, fallback: false);
+                        case RunningPatchersVM running:
+                            return running.WhenAnyValue(x => x.Running);
+                        default:
+                            break;
                     }
                     return Observable.Return(false);
                 })

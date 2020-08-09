@@ -11,8 +11,7 @@
     d:DesignWidth="800"
     Focusable="False"
     mc:Ignorable="d">
-    <Grid Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
-        Margin="15,15,15,0">
+    <Grid Margin="15,15,15,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -67,42 +66,11 @@
                     </icon:PackIconFontAwesome.Style>
                 </icon:PackIconFontAwesome>
             </Button>
-            <ContentControl Grid.Column="2"
-                Name="PatcherIconDisplay"
+            <local:TypeIcon Grid.Column="2"
+                x:Name="PatcherIconDisplay"
                 Margin="15,0,10,0"
                 HorizontalAlignment="Right"
-                VerticalAlignment="Center">
-                <ContentControl.Resources>
-                    <DataTemplate DataType="{x:Type vm:CodeSnippetPatcherVM}">
-                        <icon:PackIconMaterial
-                            Width="35"
-                            Height="35"
-                            Kind="CodeBraces"
-                            ToolTip="Mutagen Code Snippet Patcher" />
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:GithubPatcherVM}">
-                        <icon:PackIconSimpleIcons
-                            Width="35"
-                            Height="35"
-                            Kind="Github"
-                            ToolTip="Mutagen Github Link Patcher" />
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:SolutionPatcherVM}">
-                        <icon:PackIconModern
-                            Width="35"
-                            Height="35"
-                            Kind="Visualstudio"
-                            ToolTip="Mutagen Solution Patcher" />
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type vm:CliPatcherVM}">
-                        <icon:PackIconMaterial
-                            Width="35"
-                            Height="35"
-                            Kind="ConsoleLine"
-                            ToolTip="External Patcher Program" />
-                    </DataTemplate>
-                </ContentControl.Resources>
-            </ContentControl>
+                VerticalAlignment="Center" />
         </Grid>
         <ContentControl Grid.Row="1"
             x:Name="ConfigDetailPane"

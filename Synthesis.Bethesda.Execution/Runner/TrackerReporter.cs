@@ -9,6 +9,7 @@ namespace Synthesis.Bethesda.Execution.Runner
     {
         public bool Success => Overall == null
             && _prepProblems.Count == 0
+            && StartingRun != null
             && RunProblem == null;
 
         public Exception? Overall { get; private set; }
@@ -16,10 +17,12 @@ namespace Synthesis.Bethesda.Execution.Runner
         private readonly List<(IPatcherRun Patcher, Exception Exception)> _prepProblems = new List<(IPatcherRun Patcher, Exception Exception)>();
         public IReadOnlyList<(IPatcherRun Patcher, Exception Exception)> PrepProblems => _prepProblems;
 
+        public IPatcherRun? StartingRun { get; private set; }
+
         public (IPatcherRun Patcher, Exception Exception)? RunProblem { get; private set; }
 
-        private readonly List<(IPatcherRun Patcher, string Output)> _outputMap = new List<(IPatcherRun Patcher, string Output)>();
-        public IReadOnlyList<(IPatcherRun Patcher, string Output)> Output => _outputMap;
+        private readonly List<(IPatcherRun Patcher, string OutputPath)> _patcherComplete = new List<(IPatcherRun Patcher, string OutputPath)>();
+        public IReadOnlyList<(IPatcherRun Patcher, string OutputPath)> PatcherComplete => _patcherComplete;
 
         public void ReportOverallProblem(Exception ex)
         {
@@ -44,9 +47,14 @@ namespace Synthesis.Bethesda.Execution.Runner
             RunProblem = (patcher, ex);
         }
 
-        public void ReportOutputMapping(IPatcherRun patcher, string str)
+        public void ReportStartingRun(IPatcherRun patcher)
         {
-            _outputMap.Add((patcher, str));
+            StartingRun = patcher;
+        }
+
+        public void ReportRunSuccessful(IPatcherRun patcher, string outputPath)
+        {
+            _patcherComplete.Add((patcher, outputPath));
         }
     }
 }
