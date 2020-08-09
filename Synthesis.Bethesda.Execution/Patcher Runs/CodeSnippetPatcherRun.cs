@@ -26,9 +26,6 @@ namespace Synthesis.Bethesda.Execution.Patchers
         public string Name { get; }
         public string Code { get; }
 
-        private readonly TaskCompletionSource _complete = new TaskCompletionSource();
-        public Task Complete => _complete.Task;
-
         public string AssemblyName { get; }
 
         private Assembly? _assembly;

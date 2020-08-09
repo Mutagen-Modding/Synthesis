@@ -26,9 +26,9 @@ namespace Synthesis.Bethesda.GUI.Views
                         (p, _) => p?.AddGithubPatcherCommand ?? null)
                     .BindToStrict(this, x => x.AddGithubButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.SelectedProfile, x => x.ViewModel.SelectedProfile!.AddSolutionPatcherCommand,
-                        (p, _) => p?.AddSolutionPatcherCommand ?? null)
-                    .BindToStrict(this, x => x.AddSolutionButton.Command)
+                this.WhenAnyValue(x => x.ViewModel.SelectedProfile, x => x.ViewModel.SelectedProfile!.AddCliPatcherCommand,
+                        (p, _) => p?.AddCliPatcherCommand ?? null)
+                    .BindToStrict(this, x => x.AddCliButton.Command)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel.SelectedProfile, x => x.ViewModel.SelectedProfile!.AddSnippetPatcherCommand,
                         (p, _) => p?.AddSnippetPatcherCommand ?? null)

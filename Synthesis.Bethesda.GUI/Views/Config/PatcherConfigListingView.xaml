@@ -9,6 +9,7 @@
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     d:DesignHeight="60"
     d:DesignWidth="800"
+    Focusable="False"
     mc:Ignorable="d">
     <Grid
         x:Name="TopGrid"
@@ -222,7 +223,10 @@
                                 <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
                                 <Setter Property="Effect">
                                     <Setter.Value>
-                                        <DropShadowEffect ShadowDepth="0" Color="Salmon" BlurRadius="15" />
+                                        <DropShadowEffect
+                                            BlurRadius="15"
+                                            ShadowDepth="0"
+                                            Color="Salmon" />
                                     </Setter.Value>
                                 </Setter>
                             </MultiDataTrigger.Setters>
@@ -243,8 +247,8 @@
                 <DataTemplate DataType="{x:Type vm:GithubPatcherVM}">
                     <icon:PackIconSimpleIcons Height="13" Kind="Github" />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:SolutionPatcherVM}">
-                    <icon:PackIconModern Height="13" Kind="Visualstudio" />
+                <DataTemplate DataType="{x:Type vm:CliPatcherVM}">
+                    <icon:PackIconMaterial Height="13" Kind="ConsoleLine" />
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>

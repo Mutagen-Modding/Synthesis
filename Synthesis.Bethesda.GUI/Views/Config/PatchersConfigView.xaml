@@ -139,13 +139,13 @@
                             </Setter>
                             <Setter Property="Text" Value="GitHub" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddSolutionButton}" Value="True">
+                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddCliButton}" Value="True">
                             <Setter Property="Margin">
                                 <Setter.Value>
-                                    <Thickness>30,0,0,0</Thickness>
+                                    <Thickness>15,0,0,0</Thickness>
                                 </Setter.Value>
                             </Setter>
-                            <Setter Property="Text" Value="Mutagen Solution" />
+                            <Setter Property="Text" Value="External Patcher Program" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddSnippetButton}" Value="True">
                             <Setter Property="Margin">
@@ -220,8 +220,8 @@
                 <Button Name="AddGithubButton" Grid.Column="3">
                     <icon:PackIconSimpleIcons Margin="0,-5" Kind="Github" />
                 </Button>
-                <Button Name="AddSolutionButton" Grid.Column="4">
-                    <icon:PackIconModern Margin="0,-3" Kind="Visualstudio" />
+                <Button Name="AddCliButton" Grid.Column="4">
+                    <icon:PackIconMaterial Margin="0,-5" Kind="ConsoleLine" />
                 </Button>
                 <Button Name="AddSnippetButton" Grid.Column="5">
                     <icon:PackIconMaterial Margin="0,-3" Kind="CodeBraces" />

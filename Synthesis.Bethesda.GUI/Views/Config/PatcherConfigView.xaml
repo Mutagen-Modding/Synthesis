@@ -94,6 +94,13 @@
                             Kind="Visualstudio"
                             ToolTip="Mutagen Solution Patcher" />
                     </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:CliPatcherVM}">
+                        <icon:PackIconMaterial
+                            Width="35"
+                            Height="35"
+                            Kind="ConsoleLine"
+                            ToolTip="External Patcher Program" />
+                    </DataTemplate>
                 </ContentControl.Resources>
             </ContentControl>
         </Grid>
@@ -109,6 +116,9 @@
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:SolutionPatcherVM}">
                     <local:SolutionConfigView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:CliPatcherVM}">
+                    <local:CliConfigView />
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
