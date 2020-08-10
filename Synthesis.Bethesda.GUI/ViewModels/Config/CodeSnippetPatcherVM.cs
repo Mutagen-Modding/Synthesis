@@ -211,7 +211,13 @@ namespace Synthesis.Bethesda.GUI
                     IsHaltingError = true
                 };
             }
-            if (results.CompileResults.Success) return new ConfigurationStateVM();
+            if (results.CompileResults.Success)
+            {
+                return new ConfigurationStateVM()
+                {
+                    RunnableState = ErrorResponse.Succeed("Compilation successful")
+                };
+            }
             var errDiag = results.CompileResults.Diagnostics
                 .Where(e => e.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Error)
                 .FirstOrDefault();
