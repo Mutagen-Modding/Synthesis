@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.GUI
             MainVM = mvm;
             ProfilesDisplay = Profiles.Connect().ToObservableCollection(this);
             PatchersDisplay = this.WhenAnyValue(x => x.SelectedProfile)
-                .Select(p => p?.Patchers.Connect() ?? Observable.Empty<IChangeSet<PatcherVM, int>>())
+                .Select(p => p?.Patchers.Connect() ?? Observable.Empty<IChangeSet<PatcherVM>>())
                 .Switch()
                 .ToObservableCollection(this);
 
@@ -61,7 +61,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     var patcher = this.NewPatcher;
                     if (patcher == null) return;
-                    SelectedProfile?.Patchers.AddOrUpdate(patcher);
+                    SelectedProfile?.Patchers.Add(patcher);
                     NewPatcher = null;
                     SelectedPatcher = patcher;
                     patcher.IsOn = true;

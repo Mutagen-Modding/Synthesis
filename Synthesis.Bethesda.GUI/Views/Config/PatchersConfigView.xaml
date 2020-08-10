@@ -30,6 +30,7 @@
             </Grid.RowDefinitions>
             <ListBox Grid.Row="0"
                 Name="PatchersList"
+                AllowDrop="True"
                 Background="Transparent"
                 ClipToBounds="False"
                 ItemContainerStyle="{StaticResource PlainListBoxItemStyle}"

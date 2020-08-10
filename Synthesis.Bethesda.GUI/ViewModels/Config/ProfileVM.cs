@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.GUI
         public ConfigurationVM Config { get; }
         public GameRelease Release { get; }
 
-        public SourceCache<PatcherVM, int> Patchers { get; } = new SourceCache<PatcherVM, int>(p => p.ID);
+        public SourceList<PatcherVM> Patchers { get; } = new SourceList<PatcherVM>();
 
         public ICommand AddGithubPatcherCommand { get; }
         public ICommand AddCliPatcherCommand { get; }
@@ -133,7 +133,7 @@ namespace Synthesis.Bethesda.GUI
                         if (coll.Count == 0) return (IErrorResponse)ErrorResponse.Fail("There are no enabled patchers to run.");
                         if (!dataFolder.Succeeded) return dataFolder;
                         if (!loadOrder.Succeeded) return loadOrder;
-                        var blockingError = coll.Items.FirstOrDefault(p => p.State.IsHaltingError);
+                        var blockingError = coll.FirstOrDefault(p => p.State.IsHaltingError);
                         if (blockingError != null)
                         {
                             return ErrorResponse.Fail($"\"{blockingError.Nickname}\" has a blocking error");
@@ -151,7 +151,7 @@ namespace Synthesis.Bethesda.GUI
                         .Transform(p => p.State, transformOnRefresh: true)
                         .QueryWhenChanged(errs =>
                         {
-                            var blocking = errs.Items.Cast<ConfigurationStateVM?>().FirstOrDefault<ConfigurationStateVM?>(e => (!e?.RunnableState.Succeeded) ?? false);
+                            var blocking = errs.Cast<ConfigurationStateVM?>().FirstOrDefault<ConfigurationStateVM?>(e => (!e?.RunnableState.Succeeded) ?? false);
                             if (blocking == null) return ErrorResponse.Success;
                             return blocking.RunnableState;
                         }),
@@ -167,7 +167,7 @@ namespace Synthesis.Bethesda.GUI
             : this(parent, settings.TargetRelease, id: settings.ID)
         {
             Nickname = settings.Nickname;
-            Patchers.AddOrUpdate(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
+            Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
             {
                 return p switch
                 {
@@ -199,7 +199,7 @@ namespace Synthesis.Bethesda.GUI
             }
             else
             {
-                patcher.Profile.Patchers.AddOrUpdate(patcher);
+                patcher.Profile.Patchers.Add(patcher);
                 Config.SelectedPatcher = patcher;
             }
         }
