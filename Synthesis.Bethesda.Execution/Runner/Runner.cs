@@ -24,13 +24,13 @@ namespace Synthesis.Bethesda.Execution.Runner
             CancellationToken? cancellation = null,
             IRunReporter? reporter = null)
         {
-            return await Run(
+            return await Run<object?>(
                 workingDirectory: workingDirectory,
                 outputPath: outputPath,
                 dataFolder: dataFolder,
                 loadOrder: loadOrder,
                 release: release,
-                patchers: patchers,
+                patchers: patchers.Select(p => (default(object?), p)),
                 reporter: new WrapReporter(reporter ?? ThrowReporter.Instance),
                 sourcePath: sourcePath,
                 cancellation: cancellation);
