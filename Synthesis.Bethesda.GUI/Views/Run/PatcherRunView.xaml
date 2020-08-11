@@ -22,25 +22,12 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBox Grid.Column="0"
+            <TextBlock Grid.Column="0"
                 Name="PatcherDetailName"
-                MinWidth="150"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Top"
-                BorderThickness="0"
                 FontSize="26"
-                FontWeight="Black">
-                <TextBox.Style>
-                    <Style BasedOn="{StaticResource MainTextBoxStyle}" TargetType="TextBox">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Style.Triggers>
-                            <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter Property="Background" Value="Red" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBox.Style>
-            </TextBox>
+                FontWeight="Black" />
             <TextBlock Grid.Column="0"
                 x:Name="StatusBlock"
                 Margin="6,34,0,0">

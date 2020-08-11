@@ -42,8 +42,12 @@ namespace Synthesis.Bethesda.GUI
         public RunningPatcherVM? SelectedPatcher { get; set; }
 
         public ICommand BackCommand { get; }
+        public ReactiveCommand<Unit, Unit> ShowOverallErrorCommand { get; } = ReactiveCommand.Create(ActionExt.Nothing);
 
         private readonly RxReporter<int> _reporter = new RxReporter<int>();
+
+        private readonly ObservableAsPropertyHelper<object?> _DetailDisplay;
+        public object? DetailDisplay => _DetailDisplay.Value;
 
         public RunningPatchersVM(ConfigurationVM parent, ProfileVM profile)
         {
@@ -72,7 +76,7 @@ namespace Synthesis.Bethesda.GUI
                 .ObserveOnGui()
                 .Subscribe(ex =>
                 {
-                    throw new NotImplementedException();
+                    ResultError = ex;
                 })
                 .DisposeWith(this);
             _reporter.PrepProblem
@@ -107,6 +111,18 @@ namespace Synthesis.Bethesda.GUI
                     }
                 })
                 .DisposeWith(this);
+
+            // Clear selected patcher on showing error
+            this.ShowOverallErrorCommand.StartingExecution()
+                .Subscribe(_ => this.SelectedPatcher = null)
+                .DisposeWith(this);
+
+            _DetailDisplay = Observable.Merge(
+                    this.WhenAnyValue(x => x.SelectedPatcher)
+                        .Select(i => i as object),
+                    this.ShowOverallErrorCommand.EndingExecution()
+                        .Select(_ => ResultError == null ? null : new OverallErrorVM(ResultError)))
+                .ToGuiProperty(this, nameof(DetailDisplay));
         }
 
         public async Task Run()
@@ -118,7 +134,7 @@ namespace Synthesis.Bethesda.GUI
                     try
                     {
                         var output = Path.Combine(RunningProfile.WorkingDirectory, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
-                        await Runner.Run<int>(
+                        var madePatch = await Runner.Run<int>(
                             workingDirectory: RunningProfile.WorkingDirectory,
                             outputPath: output,
                             dataFolder: RunningProfile.DataFolder,
@@ -127,12 +143,13 @@ namespace Synthesis.Bethesda.GUI
                             cancellation: _cancel.Token,
                             reporter: _reporter,
                             patchers: Patchers.Items.Select(vm => (vm.Config.ID, vm.Run)));
+                        if (!madePatch) return;
                         var dataFolderPath = Path.Combine(RunningProfile.DataFolder, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
                         File.Copy(output, dataFolderPath, overwrite: true);
                     }
                     catch (Exception ex)
                     {
-                        ResultError = ex;
+                        _reporter.ReportOverallProblem(ex);
                     }
                 })
                 .ObserveOnGui()

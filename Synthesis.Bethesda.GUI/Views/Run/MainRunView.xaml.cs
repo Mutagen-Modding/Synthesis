@@ -37,10 +37,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Wire up patcher config data context and visibility
-                this.WhenAnyValue(x => x.ViewModel.SelectedPatcher)
-                    .BindToStrict(this, x => x.PatcherDetail.DataContext)
+                this.WhenAnyValue(x => x.ViewModel.DetailDisplay)
+                    .BindToStrict(this, x => x.PatcherDetail.Content)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.SelectedPatcher)
+                this.WhenAnyValue(x => x.ViewModel.DetailDisplay)
                     .Select(x => x == null ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.PatcherDetail.Visibility)
                     .DisposeWith(disposable);
@@ -60,6 +60,23 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel.Running)
                     .Select(running => running ? "Patching" : "Patch Results")
                     .BindToStrict(this, x => x.TopTitleBlock.Text)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(
+                        x => x.ViewModel.Running,
+                        x => x.ViewModel.ResultError,
+                        (running, err) =>
+                        {
+                            if (running || err == null) return Visibility.Collapsed;
+                            return Visibility.Visible;
+                        })
+                    .BindToStrict(this, x => x.OverallErrorButton.Visibility)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel.ResultError)
+                    .Select(x => x?.ToString() ?? string.Empty)
+                    .BindToStrict(this, x => x.OverallErrorButton.ToolTip)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel.ShowOverallErrorCommand)
+                    .BindToStrict(this, x => x.OverallErrorButton.Command)
                     .DisposeWith(disposable);
             });
         }

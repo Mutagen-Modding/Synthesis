@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <Compile Include="Views\Run\MainRunView.xaml.cs" />
+    <Compile Include="Views\Run\OverallErrorView.xaml.cs" />
     <Compile Include="Views\Run\PatcherRunListingView.xaml.cs" />
     <Compile Include="Views\Run\PatcherRunView.xaml.cs" />
   </ItemGroup>
@@ -44,6 +45,7 @@
 
   <ItemGroup>
     <Page Include="Views\Run\MainRunView.xaml" />
+    <Page Include="Views\Run\OverallErrorView.xaml" />
     <Page Include="Views\Run\PatcherRunListingView.xaml" />
     <Page Include="Views\Run\PatcherRunView.xaml" />
   </ItemGroup>

@@ -7,6 +7,7 @@
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -73,7 +74,7 @@
                     Margin="8,0"
                     HorizontalAlignment="Left"
                     Foreground="{StaticResource PaleYellowBrush}"
-                    Visibility="Visible">
+                    Visibility="Collapsed">
                     <mahapps:ProgressRing.Effect>
                         <DropShadowEffect
                             BlurRadius="10"
@@ -81,6 +82,23 @@
                             Color="Red" />
                     </mahapps:ProgressRing.Effect>
                 </mahapps:ProgressRing>
+                <Button Grid.Column="2"
+                    x:Name="OverallErrorButton"
+                    Margin="8,2,8,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource NakedIconButtonStyle}"
+                    Visibility="Collapsed">
+                    <Button.Resources>
+                        <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="{StaticResource Error}" />
+                        <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource ErrorPressed}" />
+                        <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource ErrorHover}" />
+                    </Button.Resources>
+                    <icon:PackIconMaterial
+                        Width="19"
+                        Height="19"
+                        Kind="AlertCircle" />
+                </Button>
             </Grid>
             <ListBox Grid.Row="1"
                 Name="PatchersList"
@@ -97,6 +115,15 @@
             </ListBox>
         </Grid>
         <local:VerticalSlicer Grid.Column="1" Margin="5,0" />
-        <local:PatcherRunView x:Name="PatcherDetail" Grid.Column="2" />
+        <ContentControl x:Name="PatcherDetail" Grid.Column="2">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type vm:RunningPatcherVM}">
+                    <local:PatcherRunView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:OverallErrorVM}">
+                    <local:OverallErrorView />
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
     </Grid>
 </local:MainRunViewBase>

@@ -13,7 +13,7 @@ namespace Synthesis.Bethesda.Execution.Runner
 {
     public class Runner
     {
-        public static async Task Run(
+        public static async Task<bool> Run(
             string workingDirectory,
             ModPath outputPath,
             string dataFolder,
@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.Execution.Runner
             CancellationToken? cancellation = null,
             IRunReporter? reporter = null)
         {
-            await Run(
+            return await Run(
                 workingDirectory: workingDirectory,
                 outputPath: outputPath,
                 dataFolder: dataFolder,
@@ -36,7 +36,7 @@ namespace Synthesis.Bethesda.Execution.Runner
                 cancellation: cancellation);
         }
 
-        public static async Task Run<TKey>(
+        public static async Task<bool> Run<TKey>(
             string workingDirectory,
             ModPath outputPath,
             string dataFolder,
@@ -54,7 +54,7 @@ namespace Synthesis.Bethesda.Execution.Runner
                     if (!File.Exists(sourcePath))
                     {
                         reporter.ReportOverallProblem(new FileNotFoundException($"Source path did not exist: {sourcePath}"));
-                        return;
+                        return false;
                     }
                 }
                 var dirInfo = new DirectoryInfo(workingDirectory);
@@ -62,7 +62,7 @@ namespace Synthesis.Bethesda.Execution.Runner
                 dirInfo.Create();
 
                 var patchersList = patchers.ToList();
-                if (patchersList.Count == 0) return;
+                if (patchersList.Count == 0) return false;
 
                 bool problem = false;
 
@@ -98,7 +98,7 @@ namespace Synthesis.Bethesda.Execution.Runner
                 }));
 
                 await Task.WhenAll(patcherPreps.And(writeLoadOrder));
-                if (problem) return;
+                if (problem) return false;
 
                 var prevPath = sourcePath;
                 for (int i = 0; i < patchersList.Count; i++)
@@ -120,21 +120,23 @@ namespace Synthesis.Bethesda.Execution.Runner
                     catch (Exception ex)
                     {
                         reporter.ReportRunProblem(patcher.Key, patcher.Run, ex);
-                        return;
+                        return false;
                     }
                     if (!File.Exists(nextPath))
                     {
                         reporter.ReportRunProblem(patcher.Key, patcher.Run, new ArgumentException($"Patcher {patcher.Run.Name} did not produce output file."));
-                        return;
+                        return false;
                     }
                     reporter.ReportRunSuccessful(patcher.Key, patcher.Run, nextPath);
                     prevPath = nextPath;
                 }
                 File.Copy(prevPath!.Path, outputPath);
+                return true;
             }
             catch (Exception ex)
             {
                 reporter.ReportOverallProblem(ex);
+                return false;
             }
         }
     }
