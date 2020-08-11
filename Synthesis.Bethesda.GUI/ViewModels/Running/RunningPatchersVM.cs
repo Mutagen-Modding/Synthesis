@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
@@ -20,7 +21,7 @@ using System.Windows.Input;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class RunningPatchersVM : ViewModel, IRunReporter<int>
+    public class RunningPatchersVM : ViewModel
     {
         public ConfigurationVM Config { get; }
 
@@ -41,6 +42,8 @@ namespace Synthesis.Bethesda.GUI
         public RunningPatcherVM? SelectedPatcher { get; set; }
 
         public ICommand BackCommand { get; }
+
+        private readonly RxReporter<int> _reporter = new RxReporter<int>();
 
         public RunningPatchersVM(ConfigurationVM parent, ProfileVM profile)
         {
@@ -64,6 +67,46 @@ namespace Synthesis.Bethesda.GUI
             },
             canExecute: this.WhenAnyValue(x => x.Running)
                 .Select(running => !running));
+
+            _reporter.Overall
+                .ObserveOnGui()
+                .Subscribe(ex =>
+                {
+                    throw new NotImplementedException();
+                })
+                .DisposeWith(this);
+            _reporter.PrepProblem
+                .Merge(_reporter.RunProblem)
+                .ObserveOnGui()
+                .Subscribe(i =>
+                {
+                    if (Patchers.TryGetValue(i.Key, out var vm))
+                    {
+                        vm.State = GetResponse<RunState>.Fail(RunState.Error, i.Error);
+                        SelectedPatcher = vm;
+                    }
+                })
+                .DisposeWith(this);
+            _reporter.Starting
+                .ObserveOnGui()
+                .Subscribe(i =>
+                {
+                    if (Patchers.TryGetValue(i.Key, out var vm))
+                    {
+                        vm.State = GetResponse<RunState>.Succeed(RunState.Started);
+                    }
+                })
+                .DisposeWith(this);
+            _reporter.RunSuccessful
+                .ObserveOnGui()
+                .Subscribe(i =>
+                {
+                    if (Patchers.TryGetValue(i.Key, out var vm))
+                    {
+                        vm.State = GetResponse<RunState>.Succeed(RunState.Finished);
+                    }
+                })
+                .DisposeWith(this);
         }
 
         public async Task Run()
@@ -82,7 +125,7 @@ namespace Synthesis.Bethesda.GUI
                             release: RunningProfile.Release,
                             loadOrder: RunningProfile.LoadOrder.Items,
                             cancellation: _cancel.Token,
-                            reporter: this,
+                            reporter: _reporter,
                             patchers: Patchers.Items.Select(vm => (vm.Config.ID, vm.Run)));
                         var dataFolderPath = Path.Combine(RunningProfile.DataFolder, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
                         File.Copy(output, dataFolderPath, overwrite: true);
@@ -97,44 +140,6 @@ namespace Synthesis.Bethesda.GUI
                 {
                     Running = false;
                 });
-        }
-
-        public void ReportOverallProblem(Exception ex)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ReportPrepProblem(int id, IPatcherRun patcher, Exception ex)
-        {
-            if (Patchers.TryGetValue(id, out var vm))
-            {
-                vm.State = GetResponse<RunState>.Fail(RunState.Error, ex);
-            }
-        }
-
-        public void ReportRunProblem(int id, IPatcherRun patcher, Exception ex)
-        {
-            if (Patchers.TryGetValue(id, out var vm))
-            {
-                vm.State = GetResponse<RunState>.Fail(RunState.Error, ex);
-                SelectedPatcher = vm;
-            }
-        }
-
-        public void ReportStartingRun(int id, IPatcherRun patcher)
-        {
-            if (Patchers.TryGetValue(id, out var vm))
-            {
-                vm.State = GetResponse<RunState>.Succeed(RunState.Started);
-            }
-        }
-
-        public void ReportRunSuccessful(int id, IPatcherRun patcher, string outputPath)
-        {
-            if (Patchers.TryGetValue(id, out var vm))
-            {
-                vm.State = GetResponse<RunState>.Succeed(RunState.Finished);
-            }
         }
     }
 }
