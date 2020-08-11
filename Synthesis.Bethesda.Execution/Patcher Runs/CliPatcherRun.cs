@@ -18,6 +18,10 @@ namespace Synthesis.Bethesda.Execution
     {
         public string Name { get; }
 
+        public IObservable<string> Output => throw new NotImplementedException();
+
+        public IObservable<string> Error => throw new NotImplementedException();
+
         public string PathToExecutable;
 
         public CliPatcherRun(string pathToExecutable)
@@ -58,6 +62,10 @@ namespace Synthesis.Bethesda.Execution
                 {
                     WindowStyle = ProcessWindowStyle.Hidden,
                     CreateNoWindow = true,
+                    RedirectStandardError = true,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
                 };
                 process.Start();
                 // Register process kill in a paranoid way
