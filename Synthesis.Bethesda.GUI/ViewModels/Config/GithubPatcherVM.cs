@@ -93,7 +93,7 @@ namespace Synthesis.Bethesda.GUI
             this.RepoPath = settings.RepoPath;
         }
 
-        public override RunningPatcherVM ToRunner(RunningPatchersVM parent)
+        public override PatcherRunVM ToRunner(PatchersRunVM parent)
         {
             throw new NotImplementedException();
         }

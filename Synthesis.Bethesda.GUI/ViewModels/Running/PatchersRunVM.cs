@@ -21,7 +21,7 @@ using System.Windows.Input;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class RunningPatchersVM : ViewModel
+    public class PatchersRunVM : ViewModel
     {
         public ConfigurationVM Config { get; }
 
@@ -35,11 +35,11 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool Running { get; private set; } = true;
 
-        public SourceCache<RunningPatcherVM, int> Patchers { get; } = new SourceCache<RunningPatcherVM, int>(p => p.Config.ID);
-        public IObservableCollection<RunningPatcherVM> PatchersDisplay { get; }
+        public SourceCache<PatcherRunVM, int> Patchers { get; } = new SourceCache<PatcherRunVM, int>(p => p.Config.ID);
+        public IObservableCollection<PatcherRunVM> PatchersDisplay { get; }
 
         [Reactive]
-        public RunningPatcherVM? SelectedPatcher { get; set; }
+        public PatcherRunVM? SelectedPatcher { get; set; }
 
         public ICommand BackCommand { get; }
         public ReactiveCommand<Unit, Unit> ShowOverallErrorCommand { get; } = ReactiveCommand.Create(ActionExt.Nothing);
@@ -49,7 +49,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<object?> _DetailDisplay;
         public object? DetailDisplay => _DetailDisplay.Value;
 
-        public RunningPatchersVM(ConfigurationVM parent, ProfileVM profile)
+        public PatchersRunVM(ConfigurationVM parent, ProfileVM profile)
         {
             Config = parent;
             RunningProfile = profile;

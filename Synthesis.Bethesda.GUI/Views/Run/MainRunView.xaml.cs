@@ -17,7 +17,7 @@ using System.Reactive.Linq;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class MainRunViewBase : NoggogUserControl<RunningPatchersVM> { }
+    public class MainRunViewBase : NoggogUserControl<PatchersRunVM> { }
 
     /// <summary>
     /// Interaction logic for MainRunView.xaml

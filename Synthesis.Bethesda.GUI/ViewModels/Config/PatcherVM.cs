@@ -78,6 +78,6 @@ namespace Synthesis.Bethesda.GUI
             settings.Nickname = Nickname;
         }
 
-        public abstract RunningPatcherVM ToRunner(RunningPatchersVM parent);
+        public abstract PatcherRunVM ToRunner(PatchersRunVM parent);
     }
 }

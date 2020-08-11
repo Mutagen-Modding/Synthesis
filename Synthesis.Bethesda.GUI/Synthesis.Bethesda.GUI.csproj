@@ -60,4 +60,8 @@
     <Resource Include="Resources\SkyrimSSE.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Profiles\" />
+  </ItemGroup>
+
 </Project>

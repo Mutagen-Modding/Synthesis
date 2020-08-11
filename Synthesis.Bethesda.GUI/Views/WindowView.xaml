@@ -18,7 +18,7 @@
                 <DataTemplate DataType="{x:Type vm:NoProfileVM}">
                     <local:NoProfileView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:RunningPatchersVM}">
+                <DataTemplate DataType="{x:Type vm:PatchersRunVM}">
                     <local:MainRunView />
                 </DataTemplate>
             </ContentPresenter.Resources>

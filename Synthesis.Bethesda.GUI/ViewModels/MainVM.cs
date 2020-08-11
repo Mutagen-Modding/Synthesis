@@ -55,7 +55,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         case ConfigurationVM config:
                             return config.WhenAnyFallback(x => x.CurrentRun!.Running, fallback: false);
-                        case RunningPatchersVM running:
+                        case PatchersRunVM running:
                             return running.WhenAnyValue(x => x.Running);
                         default:
                             break;

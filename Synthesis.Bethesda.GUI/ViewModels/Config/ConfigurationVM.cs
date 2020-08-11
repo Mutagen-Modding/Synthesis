@@ -42,7 +42,7 @@ namespace Synthesis.Bethesda.GUI
         public PatcherVM? DisplayedPatcher => _DisplayedPatcher.Value;
 
         [Reactive]
-        public RunningPatchersVM? CurrentRun { get; private set; }
+        public PatchersRunVM? CurrentRun { get; private set; }
 
         [Reactive]
         public string WorkingDirectory { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Synthesis");
@@ -92,7 +92,7 @@ namespace Synthesis.Bethesda.GUI
                 async () =>
                 {
                     if (SelectedProfile == null) return;
-                    CurrentRun = new RunningPatchersVM(this, SelectedProfile);
+                    CurrentRun = new PatchersRunVM(this, SelectedProfile);
                     MainVM.ActivePanel = CurrentRun;
                     await CurrentRun.Run();
                 },

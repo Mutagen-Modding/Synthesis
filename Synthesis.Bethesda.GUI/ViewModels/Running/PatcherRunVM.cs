@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class RunningPatcherVM : ViewModel
+    public class PatcherRunVM : ViewModel
     {
         public IPatcherRun Run { get; }
         public PatcherVM Config { get; }
@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public GetResponse<RunState> State { get; set; } = GetResponse<RunState>.Succeed(RunState.NotStarted);
 
-        public RunningPatcherVM(RunningPatchersVM parent, PatcherVM config, IPatcherRun run)
+        public PatcherRunVM(PatchersRunVM parent, PatcherVM config, IPatcherRun run)
         {
             Run = run;
             Config = config;

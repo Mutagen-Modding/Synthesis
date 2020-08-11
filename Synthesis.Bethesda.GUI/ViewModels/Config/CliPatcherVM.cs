@@ -88,9 +88,9 @@ namespace Synthesis.Bethesda.GUI
             return ret;
         }
 
-        public override RunningPatcherVM ToRunner(RunningPatchersVM parent)
+        public override PatcherRunVM ToRunner(PatchersRunVM parent)
         {
-            return new RunningPatcherVM(
+            return new PatcherRunVM(
                 parent, 
                 this, 
                 new CliPatcherRun(PathToExecutable.TargetPath));

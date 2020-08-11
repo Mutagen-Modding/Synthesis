@@ -74,7 +74,7 @@ namespace Synthesis.Bethesda.GUI
             this.SolutionPath.TargetPath = settings.SolutionPath;
         }
 
-        public override RunningPatcherVM ToRunner(RunningPatchersVM parent)
+        public override PatcherRunVM ToRunner(PatchersRunVM parent)
         {
             throw new NotImplementedException();
         }
