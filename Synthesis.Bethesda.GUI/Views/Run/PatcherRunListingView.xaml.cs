@@ -36,9 +36,8 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.SelectedGlow.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.State)
-                    .Select(x => x.Value == RunState.Started ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.RunningRingAnimation.Visibility)
+                this.WhenAnyValue(x => x.ViewModel.RunTime)
+                    .BindToStrict(this, x => x.RunningTimeBlock.Text)
                     .DisposeWith(disposable);
             });
         }

@@ -168,20 +168,37 @@
                 </Style>
             </TextBlock.Style>
         </TextBlock>
-        <Viewbox Grid.Column="1"
-            x:Name="RunningRingAnimation"
-            Width="15"
-            Height="15"
-            Margin="5,0"
-            Visibility="Visible">
-            <mahapps:ProgressRing Foreground="{StaticResource PaleYellowBrush}">
-                <mahapps:ProgressRing.Effect>
-                    <DropShadowEffect
-                        BlurRadius="10"
-                        ShadowDepth="0"
-                        Color="Red" />
-                </mahapps:ProgressRing.Effect>
-            </mahapps:ProgressRing>
-        </Viewbox>
+        <TextBlock Grid.Column="1"
+            x:Name="RunningTimeBlock"
+            Margin="0,0,4,0"
+            VerticalAlignment="Center">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsMouseOver, ElementName=TopGrid}" Value="False" />
+                                <Condition Binding="{Binding IsRunning}" Value="False" />
+                                <Condition Binding="{Binding IsErrored}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Foreground" Value="#44FFFFFF" />
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource PaleYellowBrush}" />
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect
+                                        BlurRadius="10"
+                                        ShadowDepth="0"
+                                        Color="Red" />
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
     </Grid>
 </local:PatcherRunListingViewBase>
