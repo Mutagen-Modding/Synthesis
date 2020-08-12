@@ -40,6 +40,7 @@
     <PackageReference Include="Noggog.WPF" Version="1.0.15" />
     <PackageReference Include="reactiveui" Version="11.4.17" />
     <PackageReference Include="ReactiveUI.Fody" Version="11.4.17" />
+    <PackageReference Include="Simple.Wpf.Terminal" Version="2.3.15" />
     <PackageReference Include="Wabbajack.Common" Version="3.0.0" />
   </ItemGroup>
 

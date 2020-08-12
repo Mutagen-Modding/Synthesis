@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis;
 using System.Linq.Expressions;
+using System.Reactive.Linq;
 
 namespace Synthesis.Bethesda.Execution.Patchers
 {
@@ -27,6 +28,10 @@ namespace Synthesis.Bethesda.Execution.Patchers
         public string Code { get; }
 
         public string AssemblyName { get; }
+
+        public IObservable<string> Output => Observable.Empty<string>();
+
+        public IObservable<string> Error => Observable.Empty<string>();
 
         private Assembly? _assembly;
 

@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Mutagen.Bethesda;
+using System.Reactive.Linq;
 
 namespace Synthesis.Bethesda.UnitTests
 {
@@ -201,6 +202,10 @@ namespace Synthesis.Bethesda.UnitTests
             public bool ThrowInPrep;
             public bool ThrowInRun;
             public bool DoWork = true;
+
+            public IObservable<string> Output => Observable.Empty<string>();
+
+            public IObservable<string> Error => Observable.Empty<string>();
 
             public void Dispose()
             {

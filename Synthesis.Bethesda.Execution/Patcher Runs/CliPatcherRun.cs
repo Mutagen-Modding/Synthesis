@@ -11,6 +11,8 @@ using CommandLine;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reactive.Subjects;
+using System.Reactive.Linq;
 
 namespace Synthesis.Bethesda.Execution
 {
@@ -18,9 +20,11 @@ namespace Synthesis.Bethesda.Execution
     {
         public string Name { get; }
 
-        public IObservable<string> Output => throw new NotImplementedException();
+        private readonly Subject<string> _output = new Subject<string>();
+        public IObservable<string> Output => _output;
 
-        public IObservable<string> Error => throw new NotImplementedException();
+        private readonly Subject<string> _error = new Subject<string>();
+        public IObservable<string> Error => _error;
 
         public string PathToExecutable;
 
@@ -41,6 +45,7 @@ namespace Synthesis.Bethesda.Execution
         public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
         {
             if (cancel?.IsCancellationRequested ?? false) return;
+            cancel ??= CancellationToken.None;
             try
             {
                 TaskCompletionSource completeTask = new TaskCompletionSource();
@@ -67,7 +72,20 @@ namespace Synthesis.Bethesda.Execution
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                 };
+
+                // Latch on and read output
+                process.OutputDataReceived += (_, data) =>
+                {
+                    _output.OnNext(data.Data);
+                };
+                process.ErrorDataReceived += (_, data) =>
+                {
+                    _error.OnNext(data.Data);
+                };
+
                 process.Start();
+                process.BeginErrorReadLine();
+                process.BeginOutputReadLine();
                 // Register process kill in a paranoid way
                 try
                 {
@@ -92,6 +110,7 @@ namespace Synthesis.Bethesda.Execution
                     {
                     }
                 }
+
                 await completeTask.Task;
             }
             catch (Win32Exception ex)

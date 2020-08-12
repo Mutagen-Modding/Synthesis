@@ -52,17 +52,9 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.StatusBlock.Text)
                     .DisposeWith(disposable);
 
-                // Set up error output textblock
-                this.WhenAnyValue(x => x.ViewModel.State.Value)
-                    .Select(x => x == RunState.Error ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.ErrorOutputBox.Visibility)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.State)
-                    .Select(x =>
-                    {
-                        return $"{x.Reason}\n{x.Exception}";
-                    })
-                    .BindToStrict(this, x => x.ErrorOutputBox.Text)
+                // Set up text output
+                this.WhenAnyValue(x => x.ViewModel.OutputLineDisplay)
+                    .BindToStrict(this, x => x.OutputBox.ItemsSource)
                     .DisposeWith(disposable);
             });
         }

@@ -12,5 +12,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
         string Name { get; }
         Task Prep(GameRelease release, CancellationToken? cancel = null);
         Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null);
+        IObservable<string> Output { get; }
+        IObservable<string> Error { get; }
     }
 }
