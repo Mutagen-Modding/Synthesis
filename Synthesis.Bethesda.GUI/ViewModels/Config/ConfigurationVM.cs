@@ -45,7 +45,7 @@ namespace Synthesis.Bethesda.GUI
         public PatchersRunVM? CurrentRun { get; private set; }
 
         [Reactive]
-        public string WorkingDirectory { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Synthesis");
+        public string WorkingDirectory { get; set; } = Path.Combine(Path.GetTempPath(), "Synthesis");
 
         public ConfigurationVM(MainVM mvm)
         {
