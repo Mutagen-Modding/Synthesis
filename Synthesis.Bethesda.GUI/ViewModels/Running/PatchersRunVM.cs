@@ -133,6 +133,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     try
                     {
+                        Running = true;
                         var output = Path.Combine(RunningProfile.WorkingDirectory, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
                         var madePatch = await Runner.Run<int>(
                             workingDirectory: RunningProfile.WorkingDirectory,

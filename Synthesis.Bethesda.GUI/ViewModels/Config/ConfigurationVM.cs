@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand CompleteConfiguration { get; }
         public ICommand CancelConfiguration { get; }
-        public ICommand RunPatchers { get; }
+        public ReactiveCommandBase<Unit, Unit> RunPatchers { get; }
 
         [Reactive]
         public ProfileVM? SelectedProfile { get; set; }
@@ -41,8 +42,8 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<PatcherVM?> _DisplayedPatcher;
         public PatcherVM? DisplayedPatcher => _DisplayedPatcher.Value;
 
-        [Reactive]
-        public PatchersRunVM? CurrentRun { get; private set; }
+        private readonly ObservableAsPropertyHelper<PatchersRunVM?> _CurrentRun;
+        public PatchersRunVM? CurrentRun => _CurrentRun.Value;
 
         [Reactive]
         public string WorkingDirectory { get; set; } = Path.Combine(Path.GetTempPath(), "Synthesis");
@@ -88,18 +89,34 @@ namespace Synthesis.Bethesda.GUI
                     (selected, newConfig) => newConfig ?? selected)
                 .ToGuiProperty(this, nameof(DisplayedPatcher));
 
-            RunPatchers = ReactiveCommand.CreateFromTask(
-                async () =>
+            RunPatchers = NoggogCommand.CreateFromJob(
+                extraInput: this.WhenAnyValue(x => x.SelectedProfile),
+                jobCreator: (profile) =>
                 {
-                    if (SelectedProfile == null) return;
-                    CurrentRun = new PatchersRunVM(this, SelectedProfile);
-                    MainVM.ActivePanel = CurrentRun;
-                    await CurrentRun.Run();
+                    if (SelectedProfile == null)
+                    {
+                        return (default(PatchersRunVM?), Observable.Return(Unit.Default));
+                    }
+                    var ret = new PatchersRunVM(this, SelectedProfile);
+                    var completeSignal = ret.WhenAnyValue(x => x.Running)
+                        .TurnedOff()
+                        .FirstAsync();
+                    return (ret, completeSignal);
                 },
-                canExecute: this.WhenAnyFallback(x => x.SelectedProfile!.BlockingError, fallback: ErrorResponse.Success)
-                    .CombineLatest(
-                        this.WhenAnyFallback(x => x.CurrentRun!.Running, fallback: false),
-                        (err, run) => err.Succeeded && !run));
+                createdJobs: out var createdRuns,
+                canExecute: this.WhenAnyFallback(x => x.SelectedProfile!.BlockingError, fallback: ErrorResponse.Failure)
+                    .Select(err => err.Succeeded))
+                .DisposeWith(this);
+
+            _CurrentRun = createdRuns
+                .ToGuiProperty(this, nameof(CurrentRun));
+
+            this.WhenAnyValue(x => x.CurrentRun)
+                .NotNull()
+                .Do(run => MainVM.ActivePanel = run)
+                .ObserveOn(RxApp.TaskpoolScheduler)
+                .Subscribe(r => r.Run())
+                .DisposeWith(this);
         }
 
         public void Load(SynthesisSettings settings)
