@@ -35,7 +35,7 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool Running { get; private set; } = true;
 
-        public SourceCache<PatcherRunVM, int> Patchers { get; } = new SourceCache<PatcherRunVM, int>(p => p.Config.ID);
+        public SourceCache<PatcherRunVM, int> Patchers { get; } = new SourceCache<PatcherRunVM, int>(p => p.Config.InternalID);
         public IObservableCollection<PatcherRunVM> PatchersDisplay { get; }
 
         [Reactive]
@@ -61,7 +61,7 @@ namespace Synthesis.Bethesda.GUI
             PatchersDisplay = Patchers.Connect()
                 .ToObservableCollection(this);
             if (parent.SelectedPatcher != null
-                && Patchers.TryGetValue(parent.SelectedPatcher.ID, out var run))
+                && Patchers.TryGetValue(parent.SelectedPatcher.InternalID, out var run))
             {
                 SelectedPatcher = run;
             }
@@ -148,7 +148,7 @@ namespace Synthesis.Bethesda.GUI
                             loadOrder: RunningProfile.LoadOrder.Items,
                             cancellation: _cancel.Token,
                             reporter: _reporter,
-                            patchers: Patchers.Items.Select(vm => (vm.Config.ID, vm.Run)));
+                            patchers: Patchers.Items.Select(vm => (vm.Config.InternalID, vm.Run)));
                         if (!madePatch) return;
                         var dataFolderPath = Path.Combine(RunningProfile.DataFolder, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
                         File.Copy(output, dataFolderPath, overwrite: true);

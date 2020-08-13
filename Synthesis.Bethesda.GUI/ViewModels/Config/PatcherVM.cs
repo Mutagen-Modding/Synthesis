@@ -21,7 +21,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<bool> _IsSelected;
         public bool IsSelected => _IsSelected.Value;
 
-        public int ID { get; }
+        public int InternalID { get; }
 
         [Reactive]
         public bool IsOn { get; set; } = true;
@@ -46,7 +46,7 @@ namespace Synthesis.Bethesda.GUI
 
         public PatcherVM(ProfileVM parent, PatcherSettings? settings)
         {
-            ID = Interlocked.Increment(ref NextID);
+            InternalID = Interlocked.Increment(ref NextID);
 
             Profile = parent;
             _IsSelected = this.WhenAnyValue(x => x.Profile.Config.SelectedPatcher)
