@@ -42,6 +42,8 @@ namespace Synthesis.Bethesda.GUI
         public PatcherRunVM? SelectedPatcher { get; set; }
 
         public ICommand BackCommand { get; }
+        public ICommand CancelCommand { get; }
+
         public ReactiveCommand<Unit, Unit> ShowOverallErrorCommand { get; } = ReactiveCommand.Create(ActionExt.Nothing);
 
         private readonly RxReporter<int> _reporter = new RxReporter<int>();
@@ -71,6 +73,9 @@ namespace Synthesis.Bethesda.GUI
             },
             canExecute: this.WhenAnyValue(x => x.Running)
                 .Select(running => !running));
+            CancelCommand = ReactiveCommand.CreateFromTask(
+                execute: Cancel,
+                canExecute: this.WhenAnyValue(x => x.Running));
 
             _reporter.Overall
                 .ObserveOnGui()
@@ -148,6 +153,9 @@ namespace Synthesis.Bethesda.GUI
                         var dataFolderPath = Path.Combine(RunningProfile.DataFolder, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
                         File.Copy(output, dataFolderPath, overwrite: true);
                     }
+                    catch (TaskCanceledException)
+                    {
+                    }
                     catch (Exception ex)
                     {
                         _reporter.ReportOverallProblem(ex);
@@ -158,6 +166,21 @@ namespace Synthesis.Bethesda.GUI
                 {
                     Running = false;
                 });
+        }
+
+        private async Task Cancel()
+        {
+            _cancel.Cancel();
+            await this.WhenAnyValue(x => x.Running)
+                .Where(x => !x)
+                .FirstAsync();
+            foreach (var p in Patchers.Items)
+            {
+                if (p.State.Value == RunState.Started)
+                {
+                    p.State = GetResponse<RunState>.Succeed(RunState.NotStarted);
+                }
+            }
         }
     }
 }

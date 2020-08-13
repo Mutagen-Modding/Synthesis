@@ -49,6 +49,7 @@ namespace Synthesis.Bethesda.Execution.Runner
         {
             try
             {
+                cancellation ??= CancellationToken.None;
                 if (sourcePath != null)
                 {
                     if (!File.Exists(sourcePath))
@@ -62,7 +63,7 @@ namespace Synthesis.Bethesda.Execution.Runner
                 dirInfo.Create();
 
                 var patchersList = patchers.ToList();
-                if (patchersList.Count == 0) return false;
+                if (patchersList.Count == 0 || cancellation.Value.IsCancellationRequested) return false;
 
                 bool problem = false;
 
@@ -90,6 +91,9 @@ namespace Synthesis.Bethesda.Execution.Runner
                     {
                         await patcher.Run.Prep(release, cancellation);
                     }
+                    catch (TaskCanceledException)
+                    {
+                    }
                     catch (Exception ex)
                     {
                         reporter.ReportPrepProblem(patcher.Key, patcher.Run, ex);
@@ -98,7 +102,7 @@ namespace Synthesis.Bethesda.Execution.Runner
                 }));
 
                 await Task.WhenAll(patcherPreps.And(writeLoadOrder));
-                if (problem) return false;
+                if (problem || cancellation.Value.IsCancellationRequested) return false;
 
                 var prevPath = sourcePath;
                 for (int i = 0; i < patchersList.Count; i++)
@@ -115,13 +119,19 @@ namespace Synthesis.Bethesda.Execution.Runner
                             DataFolderPath = dataFolder,
                             GameRelease = release,
                             LoadOrderFilePath = loadOrderPath,
-                        });
+                        },
+                        cancel: cancellation);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        return false;
                     }
                     catch (Exception ex)
                     {
                         reporter.ReportRunProblem(patcher.Key, patcher.Run, ex);
                         return false;
                     }
+                    if (cancellation.Value.IsCancellationRequested) return false;
                     if (!File.Exists(nextPath))
                     {
                         reporter.ReportRunProblem(patcher.Key, patcher.Run, new ArgumentException($"Patcher {patcher.Run.Name} did not produce output file."));

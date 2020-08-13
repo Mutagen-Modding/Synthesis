@@ -46,7 +46,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// <summary>
         /// Cancellation token that signals whether to stop patching and exit early
         /// </summary>
-        public CancellationToken CancelToken { get; } = CancellationToken.None;
+        public CancellationToken Cancel { get; } = CancellationToken.None;
 
         IEnumerable<ModKey> ISynthesisState.LoadOrder => LoadOrder.Select(i => i.Key);
 
@@ -54,12 +54,14 @@ namespace Mutagen.Bethesda.Synthesis
             IRunPipelineSettings settings,
             LoadOrder<IModListing<TModGetter>> loadOrder,
             ILinkCache linkCache,
-            TMod patchMod)
+            TMod patchMod,
+            CancellationToken cancellation)
         {
             Settings = settings;
             LinkCache = linkCache;
             LoadOrder = loadOrder;
             PatchMod = patchMod;
+            Cancel = cancellation;
         }
     }
 }

@@ -52,16 +52,38 @@ namespace Synthesis.Bethesda.Execution
                 var args = Parser.Default.FormatCommandLine(settings);
                 var process = new Process();
                 process.EnableRaisingEvents = true;
+                CancellationTokenRegistration? cancelSub;
+                // Register process kill in a paranoid way
+                try
+                {
+                    cancelSub = cancel.Value.Register(() =>
+                    {
+                        try
+                        {
+                            process.Kill();
+                        }
+                        catch (InvalidOperationException)
+                        {
+                        }
+                    });
+                }
+                catch (ObjectDisposedException)
+                { // Cancellation happened in between our checks?
+                    return;
+                }
                 process.Exited += (s, e) =>
                 {
-                    if (process.ExitCode != 0)
+                    if (process.ExitCode != 0 && !cancel.Value.IsCancellationRequested)
                     {
                         completeTask.SetException(
                             new CliUnsuccessfulRunException(
                                 process.ExitCode,
                                 $"Process exited in failure: {process.StartInfo.FileName} {process.StartInfo.Arguments}"));
                     }
-                    completeTask.Complete();
+                    else
+                    {
+                        completeTask.Complete();
+                    }
                 };
                 process.StartInfo = new ProcessStartInfo(PathToExecutable, args)
                 {
@@ -86,32 +108,9 @@ namespace Synthesis.Bethesda.Execution
                 process.Start();
                 process.BeginErrorReadLine();
                 process.BeginOutputReadLine();
-                // Register process kill in a paranoid way
-                try
-                {
-                    using var disp = cancel?.Register(() =>
-                    {
-                        try
-                        {
-                            process.Kill();
-                        }
-                        catch (InvalidOperationException)
-                        {
-                        }
-                    });
-                }
-                catch (ObjectDisposedException)
-                { // Cancellation happened in between our checks?
-                    try
-                    {
-                        process.Kill();
-                    }
-                    catch (InvalidOperationException)
-                    {
-                    }
-                }
 
                 await completeTask.Task;
+                cancelSub?.Dispose();
             }
             catch (Win32Exception ex)
             {

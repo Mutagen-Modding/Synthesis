@@ -2,9 +2,6 @@
 using Noggog;
 using Synthesis.Bethesda;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Constants = Synthesis.Bethesda.Constants;
 
 namespace Mutagen.Bethesda.Synthesis.Internal
@@ -53,7 +50,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             cache = loadOrder.ToMutableLinkCache(patchMod);
             loadOrder.Add(new ModListing<TModGetter>(patchMod));
             
-            return new SynthesisState<TMod, TModGetter>(settings, loadOrder, cache, patchMod);
+            return new SynthesisState<TMod, TModGetter>(settings, loadOrder, cache, patchMod, userPrefs.Cancel);
         }
     }
 }

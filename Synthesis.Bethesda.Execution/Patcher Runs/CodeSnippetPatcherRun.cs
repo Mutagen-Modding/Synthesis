@@ -62,7 +62,11 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 throw new ArgumentException("Could not find compiled class within assembly.");
             }
             var patcherCodeClass = System.Activator.CreateInstance(type);
-            var synthesisState = ConstructStateFactory(settings.GameRelease)(settings, default(UserPreferences?));
+            var userPrefs = new UserPreferences()
+            {
+                Cancel = cancel ?? CancellationToken.None
+            };
+            var synthesisState = ConstructStateFactory(settings.GameRelease)(settings, userPrefs);
             Task t = (Task)type.InvokeMember("Run",
                 BindingFlags.Default | BindingFlags.InvokeMethod,
                 null,

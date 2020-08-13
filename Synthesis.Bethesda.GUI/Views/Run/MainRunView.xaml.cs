@@ -54,8 +54,15 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(r => r ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.BackButton.Visibility)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel.Running)
+                    .Select(r => r ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.CancelButton.Visibility)
+                    .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel.BackCommand)
                     .BindToStrict(this, x => x.BackButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel.CancelCommand)
+                    .BindToStrict(this, x => x.CancelButton.Command)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel.Running)
                     .Select(running => running ? "Patching" : "Patch Results")

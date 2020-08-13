@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace Mutagen.Bethesda.Synthesis
 {
@@ -24,5 +25,10 @@ namespace Mutagen.Bethesda.Synthesis
         /// If program args are empty, what actions should be taken
         /// </summary>
         public RunDefaultPatcher? ActionsForEmptyArgs = null;
+
+        /// <summary>
+        /// Optional cancellation token that will signal to the patcher to stop early
+        /// </summary>
+        public CancellationToken Cancel = CancellationToken.None;
     }
 }

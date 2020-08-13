@@ -31,10 +31,9 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Button
+                <Button Grid.Column="0"
                     x:Name="BackButton"
                     HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Stretch"
                     Style="{StaticResource NakedIconButtonStyle}">
                     <icon:PackIconFontAwesome
                         Width="15"
@@ -42,6 +41,20 @@
                         Margin="7,0,0,0"
                         Kind="ArrowLeftSolid" />
                 </Button>
+                <mahapps:ProgressRing Grid.Column="0"
+                    x:Name="RunningRingAnimation"
+                    Width="25"
+                    Height="25"
+                    Margin="8,0"
+                    Foreground="{StaticResource PaleYellowBrush}"
+                    Visibility="Collapsed">
+                    <mahapps:ProgressRing.Effect>
+                        <DropShadowEffect
+                            BlurRadius="10"
+                            ShadowDepth="0"
+                            Color="Red" />
+                    </mahapps:ProgressRing.Effect>
+                </mahapps:ProgressRing>
                 <TextBlock Grid.Column="1"
                     x:Name="TopTitleBlock"
                     HorizontalAlignment="Center"
@@ -67,21 +80,19 @@
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
-                <mahapps:ProgressRing Grid.Column="2"
-                    x:Name="RunningRingAnimation"
-                    Width="25"
-                    Height="25"
-                    Margin="8,0"
-                    HorizontalAlignment="Left"
-                    Foreground="{StaticResource PaleYellowBrush}"
-                    Visibility="Collapsed">
-                    <mahapps:ProgressRing.Effect>
-                        <DropShadowEffect
-                            BlurRadius="10"
-                            ShadowDepth="0"
-                            Color="Red" />
-                    </mahapps:ProgressRing.Effect>
-                </mahapps:ProgressRing>
+                <Button Grid.Column="2"
+                    x:Name="CancelButton"
+                    Margin="0,2,0,0"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource NakedIconButtonStyle}"
+                    ToolTip="Cancel patching">
+                    <Button.Resources>
+                        <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#22FFFFFF" />
+                        <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource Red}" />
+                        <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource RedBackground}" />
+                    </Button.Resources>
+                    <icon:PackIconMaterial Kind="CloseCircle" />
+                </Button>
                 <Button Grid.Column="2"
                     x:Name="OverallErrorButton"
                     Margin="8,2,8,0"
