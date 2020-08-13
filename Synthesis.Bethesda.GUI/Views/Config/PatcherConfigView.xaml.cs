@@ -68,16 +68,6 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DistinctUntilChanged()
                     .Subscribe(x => this.PatcherDetailName.Text = x)
                     .DisposeWith(disposable);
-
-                // Clear textbox keyboard focus on keybinds
-                this.Events().KeyUp
-                    .Where(k => k.Key == Key.Escape || k.Key == Key.Return)
-                    .Unit()
-                    .Subscribe(_ =>
-                    {
-                        Keyboard.ClearFocus();
-                    })
-                    .DisposeWith(disposable);
             });
         }
     }

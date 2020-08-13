@@ -61,11 +61,10 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x.Value == RunState.Error)
                 .ToGuiProperty(this, nameof(IsErrored));
 
-            _RunTime = Observable.Interval(TimeSpan.FromMilliseconds(100), RxApp.MainThreadScheduler)
+            _RunTime = Noggog.ObservableExt.TimePassed(TimeSpan.FromMilliseconds(100), RxApp.MainThreadScheduler)
                 .FilterSwitch(this.WhenAnyValue(x => x.IsRunning))
-                .Select(count =>
+                .Select(time =>
                 {
-                    var time = TimeSpan.FromMilliseconds(100 * count);
                     if (time.TotalDays > 1)
                     {
                         return $"{time.TotalDays:n1}d";
