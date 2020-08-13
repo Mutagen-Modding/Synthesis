@@ -31,7 +31,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-                this.BindStrict(this.ViewModel, vm => vm.Profile!.Nickname, view => view.PatcherDetailName.Text)
+                this.BindStrict(this.ViewModel, vm => vm.Profile!.Nickname, view => view.ProfileDetailName.Text)
                     .DisposeWith(dispose);
 
                 this.WhenAnyValue(x => x.ViewModel.DeleteCommand)
