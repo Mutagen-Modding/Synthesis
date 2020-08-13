@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
+    xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -83,9 +84,26 @@
                     <ColumnDefinition Width="35" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <icon:PackIconMaterial Grid.Column="2"
+                <mahapps:ProgressRing Grid.Column="0" Grid.ColumnSpan="3"
+                    x:Name="ProcessingRingAnimation"
+                    Width="25"
+                    Height="25"
+                    Margin="8,0"
+                    HorizontalAlignment="Center"
+                    Foreground="{StaticResource LightPurpleBrush}"
+                    Visibility="Collapsed">
+                    <mahapps:ProgressRing.Effect>
+                        <DropShadowEffect
+                            BlurRadius="5"
+                            Opacity="0.3"
+                            ShadowDepth="0"
+                            Color="{StaticResource PaleBlue}" />
+                    </mahapps:ProgressRing.Effect>
+                </mahapps:ProgressRing>
+                <icon:PackIconMaterial Grid.Column="1"
                     x:Name="OverallErrorIcon"
                     Width="19"
+                    Margin="8,0"
                     Height="19"
                     VerticalAlignment="Center"
                     Foreground="{StaticResource RedBrush}"

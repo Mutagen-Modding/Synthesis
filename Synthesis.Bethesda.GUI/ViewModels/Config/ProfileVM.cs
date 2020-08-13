@@ -130,6 +130,7 @@ namespace Synthesis.Bethesda.GUI
                     Patchers.Connect()
                         .AutoRefresh(x => x.IsOn)
                         .Filter(p => p.IsOn)
+                        .AutoRefresh(x => x.State)
                         .QueryWhenChanged(q => q),
                     (dataFolder, loadOrder, coll) =>
                     {

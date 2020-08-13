@@ -93,6 +93,18 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel.RunPatchers)
                     .BindToStrict(this, x => x.GoButton.Command)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel.RunPatchers.CanExecute)
+                    .Switch()
+                    .Select(can => can ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.GoButton.Visibility)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel.RunPatchers.CanExecute)
+                    .Switch()
+                    .CombineLatest(this.WhenAnyFallback(x => x.ViewModel.SelectedProfile!.LargeOverallError, ErrorResponse.Success),
+                        (can, overall) => !can && overall.Succeeded)
+                    .Select(show => show ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.ProcessingRingAnimation.Visibility)
+                    .DisposeWith(disposable);
 
                 // Set up large overall error icon display
                 var overallErr = this.WhenAnyValue(x => x.ViewModel.SelectedProfile, x => x.ViewModel.SelectedProfile!.LargeOverallError,
