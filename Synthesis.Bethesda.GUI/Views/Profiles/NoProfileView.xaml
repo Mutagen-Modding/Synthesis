@@ -106,7 +106,7 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <local:GameTypeClickerView />
+                    <local:GameTypeClickerView Width="150" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

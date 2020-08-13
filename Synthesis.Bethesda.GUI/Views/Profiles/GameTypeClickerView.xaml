@@ -12,14 +12,13 @@
     mc:Ignorable="d">
     <Grid
         x:Name="MainGrid"
-        Width="150"
         Background="Transparent"
         ClipToBounds="False">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Image Grid.Row="0" Height="150">
+        <Image>
             <Image.Style>
                 <Style TargetType="Image">
                     <Setter Property="Effect">

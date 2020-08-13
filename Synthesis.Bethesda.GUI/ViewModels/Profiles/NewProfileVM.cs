@@ -11,14 +11,17 @@ using System.Text;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class NoProfileVM : ViewModel
+    public class NewProfileVM : ViewModel
     {
         public ObservableCollectionExtended<GameRelease> ReleaseOptions { get; } = new ObservableCollectionExtended<GameRelease>();
 
         [Reactive]
         public GameRelease? SelectedGame { get; set; }
 
-        public NoProfileVM(ConfigurationVM config)
+        [Reactive]
+        public string Nickname { get; set; } = string.Empty;
+
+        public NewProfileVM(ConfigurationVM config, Action<ProfileVM> postRun)
         {
             ReleaseOptions.AddRange(EnumExt.GetValues<GameRelease>());
 
@@ -28,11 +31,10 @@ namespace Synthesis.Bethesda.GUI
                     if (game == null) return;
                     var profile = new ProfileVM(config, game.Value)
                     {
-                        Nickname = "Initial Profile"
+                        Nickname = Nickname
                     };
                     config.Profiles.AddOrUpdate(profile);
-                    config.SelectedProfile = profile;
-                    config.MainVM.ActivePanel = config;
+                    postRun(profile);
                 })
                 .DisposeWith(this);
         }

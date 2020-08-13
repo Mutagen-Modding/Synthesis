@@ -15,11 +15,14 @@
                 <DataTemplate DataType="{x:Type vm:ConfigurationVM}">
                     <local:PatchersConfigView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:NoProfileVM}">
+                <DataTemplate DataType="{x:Type vm:NewProfileVM}">
                     <local:NoProfileView />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:PatchersRunVM}">
                     <local:MainRunView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:ProfilesDisplayVM}">
+                    <local:ProfilesView />
                 </DataTemplate>
             </ContentPresenter.Resources>
         </ContentPresenter>

@@ -48,6 +48,9 @@ namespace Synthesis.Bethesda.GUI
 
         public IObservableList<ModKey> LoadOrder { get; }
 
+        private readonly ObservableAsPropertyHelper<bool> _IsActive;
+        public bool IsActive => _IsActive.Value;
+
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
             ID = id ?? Guid.NewGuid().ToString();
@@ -161,6 +164,10 @@ namespace Synthesis.Bethesda.GUI
                     return patchers;
                 })
                 .ToGuiProperty<IErrorResponse>(this, nameof(BlockingError), ErrorResponse.Fail("Uninitialized"));
+
+            _IsActive = this.WhenAnyValue(x => x.Config.SelectedProfile)
+                .Select(x => x == this)
+                .ToGuiProperty(this, nameof(IsActive));
         }
 
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)

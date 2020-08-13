@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class NoProfileViewBase : NoggogUserControl<NoProfileVM> { }
+    public class NoProfileViewBase : NoggogUserControl<NewProfileVM> { }
 
     /// <summary>
     /// Interaction logic for NoProfileView.xaml

@@ -81,22 +81,12 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.InitialConfigurationDecisionGrid.Visibility)
                     .DisposeWith(disposable);
 
-                // Show configuration decision text on button hover
-                this.WhenAnyValue(x => x.CancelAdditionButton.IsMouseOver)
-                    .Select(over => over ? Visibility.Visible : Visibility.Hidden)
-                    .BindToStrict(this, x => x.CancelAdditionText.Visibility)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ConfirmAdditionButton.IsMouseOver)
-                    .Select(over => over ? Visibility.Visible : Visibility.Hidden)
-                    .BindToStrict(this, x => x.ConfirmAdditionText.Visibility)
-                    .DisposeWith(disposable);
-
                 // Set up discard/confirm clicks
                 this.WhenAnyValue(x => x.ViewModel.CancelConfiguration)
-                    .BindToStrict(this, x => x.CancelAdditionButton.Command)
+                    .BindToStrict(this, x => x.InitialConfigurationDecisionGrid.CancelAdditionButton.Command)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel.CompleteConfiguration)
-                    .BindToStrict(this, x => x.ConfirmAdditionButton.Command)
+                    .BindToStrict(this, x => x.InitialConfigurationDecisionGrid.ConfirmAdditionButton.Command)
                     .DisposeWith(disposable);
 
                 // Set up go button

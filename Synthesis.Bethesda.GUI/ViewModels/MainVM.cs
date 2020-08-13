@@ -27,6 +27,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand ConfirmActionCommand { get; }
         public ICommand DiscardActionCommand { get; }
+        public ICommand OpenProfilesPageCommand { get; }
 
         [Reactive]
         public ConfirmationActionVM? ActiveConfirmation { get; set; }
@@ -66,6 +67,16 @@ namespace Synthesis.Bethesda.GUI
                 .DistinctUntilChanged()
                 .ToGuiProperty(this, nameof(Hot));
 
+            OpenProfilesPageCommand = ReactiveCommand.Create(() =>
+            {
+                ActivePanel = new ProfilesDisplayVM(Configuration, ActivePanel);
+            },
+            canExecute: Observable.CombineLatest(
+                    this.WhenAnyFallback(x => x.Configuration.CurrentRun!.Running, fallback: false),
+                    this.WhenAnyValue(x => x.ActivePanel)
+                        .Select(x => x is ProfilesDisplayVM),
+                    (running, isProfile) => !running && !isProfile));
+
             Task.Run(() => Mutagen.Bethesda.WarmupAll.Init()).FireAndForget();
         }
 
@@ -81,7 +92,12 @@ namespace Synthesis.Bethesda.GUI
         {
             if (Configuration.Profiles.Count == 0)
             {
-                ActivePanel = new NoProfileVM(this.Configuration);
+                ActivePanel = new NewProfileVM(this.Configuration, (profile) =>
+                {
+                    profile.Nickname = profile.Release.ToDescriptionString();
+                    Configuration.SelectedProfile = profile;
+                    Configuration.MainVM.ActivePanel = Configuration;
+                });
             }
         }
     }

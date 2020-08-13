@@ -27,22 +27,13 @@
             <TextBox Grid.Column="0"
                 Name="PatcherDetailName"
                 MinWidth="150"
+                Margin="0,0,10,0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Top"
+                Background="Transparent"
                 BorderThickness="0"
                 FontSize="26"
-                FontWeight="Black">
-                <TextBox.Style>
-                    <Style BasedOn="{StaticResource MainTextBoxStyle}" TargetType="TextBox">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Style.Triggers>
-                            <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter Property="Background" Value="Red" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBox.Style>
-            </TextBox>
+                FontWeight="Black" />
             <Button Grid.Column="1"
                 x:Name="DeleteButton"
                 VerticalAlignment="Center"

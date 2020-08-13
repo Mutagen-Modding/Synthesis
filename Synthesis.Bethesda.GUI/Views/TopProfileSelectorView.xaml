@@ -9,38 +9,45 @@
     d:DesignHeight="25"
     d:DesignWidth="150"
     mc:Ignorable="d">
-    <Grid Margin="0,0,15,0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <Grid.Resources>
-            <DropShadowEffect
-                x:Key="GlowEffect"
-                BlurRadius="4"
-                Opacity="0.9"
-                ShadowDepth="0"
-                Color="{StaticResource LightBlue}" />
-        </Grid.Resources>
-        <TextBlock Grid.Column="0"
-            x:Name="ProfileNameBlock"
-            Margin="0,0,5,0"
-            VerticalAlignment="Center" />
-        <Image Grid.Column="1"
-            x:Name="GameIconImage"
-            Margin="3,5">
-            <Image.Style>
-                <Style TargetType="Image">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Configuration.SelectedProfile.Release}" Value="{x:Static muta:GameRelease.Oblivion}">
-                            <Setter Property="Effect" Value="{StaticResource GlowEffect}" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Configuration.SelectedProfile.Release}" Value="{x:Static muta:GameRelease.SkyrimLE}">
-                            <Setter Property="Effect" Value="{StaticResource GlowEffect}" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Image.Style>
-        </Image>
-    </Grid>
+    <Button x:Name="OpenProfilesPageButton" Style="{StaticResource NakedIconButtonStyle}">
+        <Grid
+            x:Name="TopGrid"
+            Margin="0,0,15,0"
+            Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.Resources>
+                <DropShadowEffect
+                    x:Key="GlowEffect"
+                    BlurRadius="4"
+                    Opacity="0.9"
+                    ShadowDepth="0"
+                    Color="{StaticResource LightBlue}" />
+            </Grid.Resources>
+            <TextBlock Grid.Column="0"
+                x:Name="ProfileNameBlock"
+                Margin="0,0,5,0"
+                VerticalAlignment="Center"
+                FontSize="11"
+                FontWeight="Medium" />
+            <Image Grid.Column="1"
+                x:Name="GameIconImage"
+                Margin="3,5">
+                <Image.Style>
+                    <Style TargetType="Image">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Configuration.SelectedProfile.Release}" Value="{x:Static muta:GameRelease.Oblivion}">
+                                <Setter Property="Effect" Value="{StaticResource GlowEffect}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Configuration.SelectedProfile.Release}" Value="{x:Static muta:GameRelease.SkyrimLE}">
+                                <Setter Property="Effect" Value="{StaticResource GlowEffect}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Image.Style>
+            </Image>
+        </Grid>
+    </Button>
 </local:TopProfileSelectorViewBase>

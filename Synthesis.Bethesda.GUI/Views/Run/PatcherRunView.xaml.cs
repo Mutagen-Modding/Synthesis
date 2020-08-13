@@ -56,6 +56,10 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel.OutputLineDisplay)
                     .BindToStrict(this, x => x.OutputBox.ItemsSource)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel.OutputLineDisplay.Count)
+                    .Select(count => count > 0 ? Visibility.Visible : Visibility.Hidden)
+                    .BindToStrict(this, x => x.OutputBox.Visibility)
+                    .DisposeWith(disposable);
             });
         }
     }

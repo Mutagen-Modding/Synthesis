@@ -1,8 +1,11 @@
-﻿using Noggog.WPF;
+﻿using Mutagen.Bethesda;
+using Noggog;
+using Noggog.WPF;
 using ReactiveUI;
-using System.Reactive.Disposables;
 using System;
 using System.Collections.Generic;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,28 +16,33 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Reactive.Linq;
-using Mutagen.Bethesda;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class TopProfileSelectorViewBase : NoggogUserControl<MainVM> { }
+    public class ProfileDetailViewBase : NoggogUserControl<ProfileDisplayVM> { }
 
     /// <summary>
-    /// Interaction logic for TopProfileSelectorView.xaml
+    /// Interaction logic for ProfileDetailView.xaml
     /// </summary>
-    public partial class TopProfileSelectorView : TopProfileSelectorViewBase
+    public partial class ProfileDetailView : ProfileDetailViewBase
     {
-        public TopProfileSelectorView()
+        public ProfileDetailView()
         {
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-                this.WhenAnyFallback(x => x.ViewModel.Configuration.SelectedProfile!.Nickname, string.Empty)
-                    .BindToStrict(this, x => x.ProfileNameBlock.Text)
+                this.BindStrict(this.ViewModel, vm => vm.Profile!.Nickname, view => view.PatcherDetailName.Text)
                     .DisposeWith(dispose);
 
-                this.WhenAnyFallback(x => x.ViewModel.Configuration.SelectedProfile!.Release, GameRelease.SkyrimSE)
+                this.WhenAnyValue(x => x.ViewModel.DeleteCommand)
+                    .BindToStrict(this, x => x.DeleteButton.Command)
+                    .DisposeWith(dispose);
+
+                this.WhenAnyValue(x => x.ViewModel.SwitchToCommand)
+                    .BindToStrict(this, x => x.SelectButton.Command)
+                    .DisposeWith(dispose);
+
+                this.WhenAnyFallback(x => x.ViewModel.Profile!.Release, GameRelease.SkyrimSE)
                     .ObserveOn(RxApp.TaskpoolScheduler)
                     .Select(gameRelease =>
                     {
@@ -42,10 +50,6 @@ namespace Synthesis.Bethesda.GUI.Views
                     })
                     .ObserveOnGui()
                     .BindToStrict(this, x => x.GameIconImage.Source)
-                    .DisposeWith(dispose);
-
-                this.WhenAnyValue(x => x.ViewModel.OpenProfilesPageCommand)
-                    .BindToStrict(this, x => x.OpenProfilesPageButton.Command)
                     .DisposeWith(dispose);
             });
         }
