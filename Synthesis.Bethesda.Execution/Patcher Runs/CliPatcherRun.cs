@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
+using Noggog.Utility;
 
 namespace Synthesis.Bethesda.Execution
 {
@@ -45,72 +46,21 @@ namespace Synthesis.Bethesda.Execution
         public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
         {
             if (cancel?.IsCancellationRequested ?? false) return;
-            cancel ??= CancellationToken.None;
+            var args = Parser.Default.FormatCommandLine(settings);
             try
             {
-                TaskCompletionSource completeTask = new TaskCompletionSource();
-                var args = Parser.Default.FormatCommandLine(settings);
-                var process = new Process();
-                process.EnableRaisingEvents = true;
-                CancellationTokenRegistration? cancelSub;
-                // Register process kill in a paranoid way
-                try
+                using ProcessWrapper process = ProcessWrapper.Start(
+                    new ProcessStartInfo(PathToExecutable, args),
+                    cancel);
+                using var outputSub = process.Output.Subscribe(_output);
+                using var errSub = process.Error.Subscribe(_error);
+                var result = await process.Start();
+                if (result != 0)
                 {
-                    cancelSub = cancel.Value.Register(() =>
-                    {
-                        try
-                        {
-                            process.Kill();
-                        }
-                        catch (InvalidOperationException)
-                        {
-                        }
-                    });
+                    throw new CliUnsuccessfulRunException(
+                        result,
+                        $"Process exited in failure: {process.StartInfo.FileName} {process.StartInfo.Arguments}");
                 }
-                catch (ObjectDisposedException)
-                { // Cancellation happened in between our checks?
-                    return;
-                }
-                process.Exited += (s, e) =>
-                {
-                    if (process.ExitCode != 0 && !cancel.Value.IsCancellationRequested)
-                    {
-                        completeTask.SetException(
-                            new CliUnsuccessfulRunException(
-                                process.ExitCode,
-                                $"Process exited in failure: {process.StartInfo.FileName} {process.StartInfo.Arguments}"));
-                    }
-                    else
-                    {
-                        completeTask.Complete();
-                    }
-                };
-                process.StartInfo = new ProcessStartInfo(PathToExecutable, args)
-                {
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    CreateNoWindow = true,
-                    RedirectStandardError = true,
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                };
-
-                // Latch on and read output
-                process.OutputDataReceived += (_, data) =>
-                {
-                    _output.OnNext(data.Data);
-                };
-                process.ErrorDataReceived += (_, data) =>
-                {
-                    _error.OnNext(data.Data);
-                };
-
-                process.Start();
-                process.BeginErrorReadLine();
-                process.BeginOutputReadLine();
-
-                await completeTask.Task;
-                cancelSub?.Dispose();
             }
             catch (Win32Exception ex)
             {
