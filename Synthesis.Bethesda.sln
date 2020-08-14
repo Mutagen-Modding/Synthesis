@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Synthesis.Bethesda.UnitTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Synthesis.Bethesda", "Synthesis.Bethesda\Synthesis.Bethesda.csproj", "{0549DAD2-D147-4BF6-82DD-A7B366E2324D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutagen.Bethesda.Synthesis", "Mutagen.Bethesda.Synthesis\Mutagen.Bethesda.Synthesis.csproj", "{B2C800E7-CE97-4EE5-A7F4-2807994C73FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mutagen.Bethesda.Synthesis", "Mutagen.Bethesda.Synthesis\Mutagen.Bethesda.Synthesis.csproj", "{B2C800E7-CE97-4EE5-A7F4-2807994C73FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

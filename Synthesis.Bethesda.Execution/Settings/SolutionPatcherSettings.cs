@@ -7,5 +7,6 @@ namespace Synthesis.Bethesda.Execution.Settings
     public class SolutionPatcherSettings : PatcherSettings
     {
         public string SolutionPath = string.Empty;
+        public string ProjectSubpath = string.Empty;
     }
 }

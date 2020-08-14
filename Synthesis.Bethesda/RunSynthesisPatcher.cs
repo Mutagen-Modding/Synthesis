@@ -24,5 +24,15 @@ namespace Synthesis.Bethesda
 
         [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
         public string LoadOrderFilePath { get; set; } = string.Empty;
+
+        public override string ToString()
+        {
+            return $"{nameof(RunSynthesisPatcher)} => \n"
+                + $"  {nameof(SourcePath)} => {this.SourcePath} \n"
+                + $"  {nameof(OutputPath)} => {this.OutputPath} \n"
+                + $"  {nameof(GameRelease)} => {this.GameRelease} \n"
+                + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
+                + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}";
+        }
     }
 }

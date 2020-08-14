@@ -31,7 +31,7 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string Code { get; set; } = string.Empty;
 
-        public override ErrorResponse CanCompleteConfiguration => ErrorResponse.Success;
+        public override IErrorResponse CanCompleteConfiguration => ErrorResponse.Success;
 
         private readonly ObservableAsPropertyHelper<ConfigurationStateVM> _State;
         public override ConfigurationStateVM State => _State.Value;
@@ -156,9 +156,9 @@ namespace Synthesis.Bethesda.GUI
                             IsHaltingError = true,
                         };
                     }
-                    return new ConfigurationStateVM();
+                    return ConfigurationStateVM.Success;
                 })
-                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), new ConfigurationStateVM());
+                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), ConfigurationStateVM.Success);
         }
 
         public override PatcherSettings Save()

@@ -26,6 +26,7 @@ namespace Synthesis.Bethesda.GUI
         public SourceList<PatcherVM> Patchers { get; } = new SourceList<PatcherVM>();
 
         public ICommand AddGithubPatcherCommand { get; }
+        public ICommand AddSolutionPatcherCommand { get; }
         public ICommand AddCliPatcherCommand { get; }
         public ICommand AddSnippetPatcherCommand { get; }
 
@@ -57,6 +58,7 @@ namespace Synthesis.Bethesda.GUI
             Config = parent;
             Release = release ?? GameRelease.Oblivion;
             AddGithubPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new GithubPatcherVM(this)));
+            AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new SolutionPatcherVM(this)));
             AddCliPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new CliPatcherVM(this)));
             AddSnippetPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new CodeSnippetPatcherVM(this)));
             _WorkingDirectory = this.WhenAnyValue(x => x.Config.WorkingDirectory)

@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<bool> _InInitialConfiguration;
         public bool InInitialConfiguration => _InInitialConfiguration.Value;
 
-        public abstract ErrorResponse CanCompleteConfiguration { get; }
+        public abstract IErrorResponse CanCompleteConfiguration { get; }
 
         public abstract bool NeedsConfiguration { get; }
 

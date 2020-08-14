@@ -144,10 +144,18 @@
                             </Setter>
                             <Setter Property="Text" Value="GitHub" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddSolutionButton}" Value="True">
+                            <Setter Property="Margin">
+                                <Setter.Value>
+                                    <Thickness>25,0,0,0</Thickness>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Text" Value="Mutagen Solution" />
+                        </DataTrigger>
                         <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddCliButton}" Value="True">
                             <Setter Property="Margin">
                                 <Setter.Value>
-                                    <Thickness>15,0,0,0</Thickness>
+                                    <Thickness>35,0,0,0</Thickness>
                                 </Setter.Value>
                             </Setter>
                             <Setter Property="Text" Value="External Patcher Program" />
@@ -155,7 +163,7 @@
                         <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddSnippetButton}" Value="True">
                             <Setter Property="Margin">
                                 <Setter.Value>
-                                    <Thickness>45,0,0,0</Thickness>
+                                    <Thickness>65,0,0,0</Thickness>
                                 </Setter.Value>
                             </Setter>
                             <Setter Property="Text" Value="Mutagen Code Snippet" />
@@ -209,6 +217,7 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="8" />
                 </Grid.ColumnDefinitions>
                 <icon:PackIconMaterial Grid.Column="1"
@@ -224,15 +233,21 @@
                     Fill="{StaticResource MahApps.Brushes.Gray8}" />
                 <Button Grid.Column="3"
                     Name="AddGithubButton"
-                    Padding="4">
+                    Padding="4"
+                    IsEnabled="False">
                     <icon:PackIconSimpleIcons Margin="0,-5" Kind="Github" />
                 </Button>
                 <Button Grid.Column="4"
+                    Name="AddSolutionButton"
+                    Padding="4">
+                    <icon:PackIconModern Margin="0,-5" Kind="Visualstudio" />
+                </Button>
+                <Button Grid.Column="5"
                     Name="AddCliButton"
                     Padding="4">
                     <icon:PackIconMaterial Margin="0,-5" Kind="ConsoleLine" />
                 </Button>
-                <Button Grid.Column="5"
+                <Button Grid.Column="6"
                     Name="AddSnippetButton"
                     Padding="4">
                     <icon:PackIconMaterial Margin="0,-3" Kind="CodeBraces" />

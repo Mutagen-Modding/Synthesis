@@ -29,16 +29,16 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated((disposable) =>
             {
-                this.WhenAnyValue(x => x.ViewModel.SelectedProfile, x => x.ViewModel.SelectedProfile!.AddGithubPatcherCommand,
-                        (p, _) => p?.AddGithubPatcherCommand ?? null)
+                this.WhenAnyFallback(x => x.ViewModel.SelectedProfile!.AddGithubPatcherCommand, fallback: default(ICommand))
                     .BindToStrict(this, x => x.AddGithubButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.SelectedProfile, x => x.ViewModel.SelectedProfile!.AddCliPatcherCommand,
-                        (p, _) => p?.AddCliPatcherCommand ?? null)
+                this.WhenAnyFallback(x => x.ViewModel.SelectedProfile!.AddSolutionPatcherCommand, fallback: default(ICommand))
+                    .BindToStrict(this, x => x.AddSolutionButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyFallback(x => x.ViewModel.SelectedProfile!.AddCliPatcherCommand, fallback: default(ICommand))
                     .BindToStrict(this, x => x.AddCliButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.SelectedProfile, x => x.ViewModel.SelectedProfile!.AddSnippetPatcherCommand,
-                        (p, _) => p?.AddSnippetPatcherCommand ?? null)
+                this.WhenAnyFallback(x => x.ViewModel.SelectedProfile!.AddSnippetPatcherCommand, fallback: default(ICommand))
                     .BindToStrict(this, x => x.AddSnippetButton.Command)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel.PatchersDisplay)
@@ -107,8 +107,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Set up large overall error icon display
-                var overallErr = this.WhenAnyValue(x => x.ViewModel.SelectedProfile, x => x.ViewModel.SelectedProfile!.LargeOverallError,
-                        (p, _) => p?.LargeOverallError ?? ErrorResponse.Success)
+                var overallErr = this.WhenAnyFallback( x => x.ViewModel.SelectedProfile!.LargeOverallError, fallback: ErrorResponse.Success)
                     .Replay(1)
                     .RefCount();
                 overallErr.Select(x => x.Succeeded ? Visibility.Collapsed : Visibility.Visible)

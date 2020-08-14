@@ -13,6 +13,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0"
             Margin="0,4"
@@ -20,5 +22,28 @@
             FontWeight="Bold"
             Text="Solution Path" />
         <noggog:PathPicker Name="SolutionPathPicker" Grid.Row="1" />
+        <TextBlock Grid.Row="2"
+            x:Name="ProjectLabel"
+            Margin="0,4"
+            FontSize="14"
+            FontWeight="Bold"
+            Text="Project" />
+        <ComboBox Grid.Row="3"
+            x:Name="ProjectsPickerBox">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+            <ComboBox.Style>
+                <Style TargetType="ComboBox" BasedOn="{StaticResource MainComboboxStyle}" >
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedProjectPath.InError}" Value="True" >
+                            <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ComboBox.Style>
+        </ComboBox>
     </Grid>
 </local:SolutionConfigViewBase>

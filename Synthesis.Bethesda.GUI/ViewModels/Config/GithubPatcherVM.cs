@@ -22,8 +22,8 @@ namespace Synthesis.Bethesda.GUI
 
         public override bool NeedsConfiguration => true;
 
-        private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
-        public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
+        private readonly ObservableAsPropertyHelper<IErrorResponse> _CanCompleteConfiguration;
+        public override IErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
 
         public override ConfigurationStateVM State => new ConfigurationStateVM();
 
@@ -76,7 +76,8 @@ namespace Synthesis.Bethesda.GUI
                         }
                         return ErrorResponse.Fail("Path does not point to a valid repository.");
                     }))
-                .ToGuiProperty(this, nameof(CanCompleteConfiguration));
+                .Cast<ErrorResponse, IErrorResponse>()
+                .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
         }
 
         public override PatcherSettings Save()

@@ -8,6 +8,8 @@ namespace Synthesis.Bethesda.GUI
 {
     public class ConfigurationStateVM : ViewModel
     {
+        public static readonly ConfigurationStateVM Success = new ConfigurationStateVM();
+
         public bool IsHaltingError { get; set; }
         public IErrorResponse RunnableState { get; set; } = ErrorResponse.Success;
     }

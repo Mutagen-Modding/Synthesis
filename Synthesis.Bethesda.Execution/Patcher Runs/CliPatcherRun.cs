@@ -29,9 +29,9 @@ namespace Synthesis.Bethesda.Execution
 
         public string PathToExecutable;
 
-        public CliPatcherRun(string pathToExecutable)
+        public CliPatcherRun(string nickname, string pathToExecutable)
         {
-            Name = Path.GetFileName(pathToExecutable);
+            Name = nickname;
             PathToExecutable = pathToExecutable;
         }
 

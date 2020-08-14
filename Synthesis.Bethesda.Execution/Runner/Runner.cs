@@ -84,7 +84,7 @@ namespace Synthesis.Bethesda.Execution.Runner
                     }
                 });
 
-                // Prep all patchers in parallel
+                // Start up prep for all patchers in background
                 var patcherPreps = patchersList.Select(patcher => Task.Run(async () =>
                 {
                     try
@@ -97,20 +97,28 @@ namespace Synthesis.Bethesda.Execution.Runner
                     catch (Exception ex)
                     {
                         reporter.ReportPrepProblem(patcher.Key, patcher.Run, ex);
-                        problem = true;
+                        return ex;
                     }
-                }));
+                    return default(Exception?);
+                })).ToList();
 
-                await Task.WhenAll(patcherPreps.And(writeLoadOrder));
+                // Wait for load order, at least
+                await writeLoadOrder;
                 if (problem || cancellation.Value.IsCancellationRequested) return false;
 
                 var prevPath = sourcePath;
                 for (int i = 0; i < patchersList.Count; i++)
                 {
+                    // Finish waiting for prep, if it didn't finish
+                    var prepException = await patcherPreps[i];
+                    if (prepException != null) return false;
+
                     var patcher = patchersList[i];
-                    var nextPath = new ModPath(outputPath.ModKey, Path.Combine(workingDirectory, $"{i} - {patcher.Run.Name}"));
+                    var fileName = StringExt.RemoveDisallowedFilepathChars(patcher.Run.Name);
+                    var nextPath = new ModPath(outputPath.ModKey, Path.Combine(workingDirectory, $"{i} - {fileName}"));
                     try
                     {
+                        // Start run
                         reporter.ReportStartingRun(patcher.Key, patcher.Run);
                         await patcher.Run.Run(new RunSynthesisPatcher()
                         {

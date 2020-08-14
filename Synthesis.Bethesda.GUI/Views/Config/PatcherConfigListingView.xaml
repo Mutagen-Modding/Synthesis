@@ -250,6 +250,9 @@
                 <DataTemplate DataType="{x:Type vm:CliPatcherVM}">
                     <icon:PackIconMaterial Height="13" Kind="ConsoleLine" />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:SolutionPatcherVM}">
+                    <icon:PackIconModern Height="13" Kind="Visualstudio" />
+                </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
     </Grid>

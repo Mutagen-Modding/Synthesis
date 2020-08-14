@@ -43,8 +43,8 @@ namespace Mutagen.Bethesda.Synthesis
         /// <param name="args">Main command line args</param>
         /// <param name="patcher">Patcher func that processes a load order, and returns a mod object to export.</param>
         /// <param name="userPreferences">Any custom user preferences</param>
-        /// <returns>Null if args resulted in no actions being taken.  Otherwise int error code of the operation</returns>
-        public async Task<int?> Patch<TMod, TModGetter>(
+        /// <returns>Int error code of the operation</returns>
+        public async Task<int> Patch<TMod, TModGetter>(
             string[] args,
             AsyncPatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
@@ -57,21 +57,23 @@ namespace Mutagen.Bethesda.Synthesis
                     {
                         try
                         {
+                            System.Console.WriteLine(settings.ToString());
                             await Patch(
                                 settings,
                                 patcher,
                                 userPreferences);
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
-                            return (int?)-1;
+                            System.Console.Error.WriteLine(ex);
+                            return -1;
                         }
-                        return (int?)0;
+                        return 0;
                     },
                     async _ =>
                     {
                         var prefs = userPreferences ?? new UserPreferences();
-                        if (prefs.ActionsForEmptyArgs == null) return (int?)-1;
+                        if (prefs.ActionsForEmptyArgs == null) return -1;
                         try
                         {
                             await Patch(
@@ -79,11 +81,12 @@ namespace Mutagen.Bethesda.Synthesis
                                 patcher,
                                 prefs);
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
-                            return (int?)-1;
+                            System.Console.Error.WriteLine(ex);
+                            return -1;
                         }
-                        return (int?)0;
+                        return 0;
                     });
         }
 
@@ -95,8 +98,8 @@ namespace Mutagen.Bethesda.Synthesis
         /// <param name="args">Main command line args</param>
         /// <param name="patcher">Patcher func that processes a load order, and returns a mod object to export.</param>
         /// <param name="userPreferences">Any custom user preferences</param>
-        /// <returns>Null if args resulted in no actions being taken.  Otherwise int error code of the operation</returns>
-        public int? Patch<TMod, TModGetter>(
+        /// <returns>Int error code of the operation</returns>
+        public int Patch<TMod, TModGetter>(
             string[] args,
             PatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
@@ -109,13 +112,15 @@ namespace Mutagen.Bethesda.Synthesis
                     {
                         try
                         {
+                            System.Console.WriteLine(settings.ToString());
                             Patch(
                                 settings,
                                 patcher,
                                 userPreferences);
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
+                            System.Console.Error.WriteLine(ex);
                             return -1;
                         }
                         return 0;
@@ -123,7 +128,7 @@ namespace Mutagen.Bethesda.Synthesis
                     _ =>
                     {
                         var prefs = userPreferences ?? new UserPreferences();
-                        if (prefs.ActionsForEmptyArgs == null) return (int?)-1;
+                        if (prefs.ActionsForEmptyArgs == null) return -1;
                         try
                         {
                             Patch(
@@ -131,11 +136,12 @@ namespace Mutagen.Bethesda.Synthesis
                                 patcher,
                                 prefs);
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
-                            return (int?)-1;
+                            System.Console.Error.WriteLine(ex);
+                            return -1;
                         }
-                        return (int?)0;
+                        return 0;
                     });
         }
 
@@ -156,7 +162,9 @@ namespace Mutagen.Bethesda.Synthesis
         {
             WarmupAll.Init();
             var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
+            System.Console.WriteLine("Running patch.");
             await patcher(state).ConfigureAwait(false);
+            System.Console.WriteLine($"Writing to output: {settings.OutputPath}");
             state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.LoadOrder.Select(i => i.Key)));
         }
 
@@ -177,7 +185,9 @@ namespace Mutagen.Bethesda.Synthesis
         {
             WarmupAll.Init();
             var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
+            System.Console.WriteLine("Running patch.");
             patcher(state);
+            System.Console.WriteLine($"Writing to output: {settings.OutputPath}");
             state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.LoadOrder.Select(i => i.Key)));
         }
         #endregion

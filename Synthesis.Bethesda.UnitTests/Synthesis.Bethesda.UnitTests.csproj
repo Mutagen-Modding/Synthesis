@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Test Solutions\**" />
+    <EmbeddedResource Remove="Test Solutions\**" />
+    <None Remove="Test Solutions\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Mutagen.Bethesda" Version="0.13.0-dev1" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">

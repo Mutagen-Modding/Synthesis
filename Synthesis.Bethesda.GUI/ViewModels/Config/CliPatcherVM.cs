@@ -24,8 +24,8 @@ namespace Synthesis.Bethesda.GUI
              ExistCheckOption = PathPickerVM.CheckOptions.On,
         };
 
-        private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
-        public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
+        private readonly ObservableAsPropertyHelper<IErrorResponse> _CanCompleteConfiguration;
+        public override IErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
 
         public override bool NeedsConfiguration => true;
 
@@ -61,7 +61,8 @@ namespace Synthesis.Bethesda.GUI
                 .ToGuiProperty<string>(this, nameof(DisplayName));
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.PathToExecutable.ErrorState)
-                .ToGuiProperty(this, nameof(CanCompleteConfiguration));
+                .Cast<ErrorResponse, IErrorResponse>()
+                .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
 
             _State = this.WhenAnyValue(x => x.PathToExecutable.ErrorState)
                 .Select(e =>
@@ -72,7 +73,7 @@ namespace Synthesis.Bethesda.GUI
                         RunnableState = e
                     };
                 })
-                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), new ConfigurationStateVM());
+                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), ConfigurationStateVM.Success);
         }
         private void CopyInSettings(CliPatcherSettings? settings)
         {
@@ -93,7 +94,7 @@ namespace Synthesis.Bethesda.GUI
             return new PatcherRunVM(
                 parent, 
                 this, 
-                new CliPatcherRun(PathToExecutable.TargetPath));
+                new CliPatcherRun(nickname: DisplayName, pathToExecutable: PathToExecutable.TargetPath));
         }
     }
 }

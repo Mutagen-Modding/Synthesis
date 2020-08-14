@@ -51,6 +51,9 @@ namespace Synthesis.Bethesda.GUI
                         .Where(x => x.Value == RunState.Error)
                         .Select(x => x.Reason))
                 .ToObservableChangeSet()
+                .Buffer(TimeSpan.FromMilliseconds(250), RxApp.TaskpoolScheduler)
+                .Where(l => l.Count > 0)
+                .FlattenBufferResult()
                 .ToObservableCollection(this);
 
             _IsRunning = this.WhenAnyValue(x => x.State)
