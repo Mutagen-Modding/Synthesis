@@ -80,13 +80,13 @@ namespace Synthesis.Bethesda.GUI
             Task.Run(() => Mutagen.Bethesda.WarmupAll.Init()).FireAndForget();
         }
 
-        public void Load(SynthesisSettings? settings)
+        public void Load(SynthesisGuiSettings? settings)
         {
             if (settings == null) return;
             Configuration.Load(settings);
         }
 
-        public SynthesisSettings Save() => Configuration.Save();
+        public SynthesisGuiSettings Save() => Configuration.Save();
 
         public void Init()
         {

@@ -1,4 +1,4 @@
-﻿using DynamicData;
+using DynamicData;
 using DynamicData.Binding;
 using Noggog;
 using Noggog.WPF;
@@ -28,6 +28,8 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand CompleteConfiguration { get; }
         public ICommand CancelConfiguration { get; }
+        public ICommand ShowHelpToggleCommand { get; }
+
         public ReactiveCommandBase<Unit, Unit> RunPatchers { get; }
 
         [Reactive]
@@ -47,6 +49,9 @@ namespace Synthesis.Bethesda.GUI
 
         [Reactive]
         public string WorkingDirectory { get; set; } = Path.Combine(Path.GetTempPath(), "Synthesis");
+
+        [Reactive]
+        public bool ShowHelp { get; set; }
 
         public ConfigurationVM(MainVM mvm)
         {
@@ -117,27 +122,34 @@ namespace Synthesis.Bethesda.GUI
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .Subscribe(r => r.Run())
                 .DisposeWith(this);
+
+            ShowHelpToggleCommand = ReactiveCommand.Create(() => ShowHelp = !ShowHelp);
         }
 
-        public void Load(SynthesisSettings settings)
+        public void Load(SynthesisGuiSettings settings)
         {
             Profiles.Clear();
-            Profiles.AddOrUpdate(settings.Profiles.Select(p =>
+            Profiles.AddOrUpdate(settings.ExecutableSettings.Profiles.Select(p =>
             {
                 return new ProfileVM(this, p);
             }));
-            if (Profiles.TryGetValue(settings.SelectedProfile, out var profile))
+            if (Profiles.TryGetValue(settings.ExecutableSettings.SelectedProfile, out var profile))
             {
                 SelectedProfile = profile;
             }
+            ShowHelp = settings.ShowHelp;
         }
 
-        public SynthesisSettings Save()
+        public SynthesisGuiSettings Save()
         {
-            return new SynthesisSettings()
+            return new SynthesisGuiSettings()
             {
-                Profiles = Profiles.Items.Select(p => p.Save()).ToList(),
-                SelectedProfile = SelectedProfile?.ID ?? string.Empty
+                ExecutableSettings = new SynthesisSettings()
+                {
+                    Profiles = Profiles.Items.Select(p => p.Save()).ToList(),
+                    SelectedProfile = SelectedProfile?.ID ?? string.Empty
+                },
+                ShowHelp = ShowHelp
             };
         }
     }

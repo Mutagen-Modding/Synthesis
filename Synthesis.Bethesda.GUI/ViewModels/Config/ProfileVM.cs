@@ -1,4 +1,4 @@
-﻿using DynamicData;
+using DynamicData;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis;
 using Newtonsoft.Json;
@@ -133,7 +133,8 @@ namespace Synthesis.Bethesda.GUI
                         .AutoRefresh(x => x.IsOn)
                         .Filter(p => p.IsOn)
                         .AutoRefresh(x => x.State)
-                        .QueryWhenChanged(q => q),
+                        .QueryWhenChanged(q => q)
+                        .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
                     (dataFolder, loadOrder, coll) =>
                     {
                         if (coll.Count == 0) return (IErrorResponse)ErrorResponse.Fail("There are no enabled patchers to run.");

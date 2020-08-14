@@ -20,7 +20,7 @@ namespace Synthesis.Bethesda.GUI.Views
             };
             var mvm = this.WireMainVM<MainVM>(
                 $"Settings.json",
-                load: (s, vm) => vm.Load(JsonConvert.DeserializeObject<SynthesisSettings>(File.ReadAllText(s), settings)!),
+                load: (s, vm) => vm.Load(JsonConvert.DeserializeObject<SynthesisGuiSettings>(File.ReadAllText(s), settings)!),
                 save: (s, vm) => File.WriteAllText(s, JsonConvert.SerializeObject(vm.Save(), Formatting.Indented, settings)));
             mvm.Init();
         }

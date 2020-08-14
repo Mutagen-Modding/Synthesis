@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Reactive.Linq;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -29,6 +30,10 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated(disposable =>
             {
                 this.BindStrict(this.ViewModel, vm => vm.PathToExecutable, view => view.ExecutablePathPicker.PickerVM)
+                    .DisposeWith(disposable);
+
+                // Hide help box if not in initialization
+                UtilityBindings.HelpWiring(this.ViewModel, this.HelpButton, this.HelpText)
                     .DisposeWith(disposable);
             });
         }

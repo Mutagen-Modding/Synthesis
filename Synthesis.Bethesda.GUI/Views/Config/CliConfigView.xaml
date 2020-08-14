@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:noggog="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
@@ -13,6 +14,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0"
             Margin="0,4"
@@ -20,5 +22,29 @@
             FontWeight="Bold"
             Text="Executable Path" />
         <noggog:PathPicker Name="ExecutablePathPicker" Grid.Row="1" />
+        <Grid Grid.Row="2"
+            x:Name="HelpBox"
+            Margin="0,25,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0"
+                x:Name="HelpButton"
+                Margin="0,8,0,0"
+                VerticalAlignment="Top"
+                Style="{StaticResource NakedIconButtonStyle}">
+                <icon:PackIconMaterial Kind="HelpCircle" />
+            </Button>
+            <TextBlock Grid.Column="1"
+                x:Name="HelpText"
+                Margin="15,0,0,0"
+                TextWrapping="Wrap"
+                Visibility="Collapsed">
+                Add an outside executable as a patcher.<LineBreak />
+                This can be any program that conforms to the Synthesis Command Line API.<LineBreak />
+                <LineBreak />
+                Make sure you trust the executables you choose to run.</TextBlock>
+        </Grid>
     </Grid>
 </local:CliConfigViewBase>

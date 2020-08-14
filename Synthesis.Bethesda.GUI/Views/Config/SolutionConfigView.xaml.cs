@@ -34,12 +34,18 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 // Hide project picker if sln invalid
                 var hasProjs = this.WhenAnyValue(x => x.ViewModel.ProjectsDisplay.Count)
-                    .Select(count => count > 0 ? Visibility.Visible : Visibility.Hidden)
+                    .Select(x => x > 0)
                     .Replay(1)
                     .RefCount();
-                hasProjs.BindToStrict(this, x => x.ProjectLabel.Visibility)
+                var projOpacity = hasProjs
+                    .Select(x => x ? 1.0d : 0.2d);
+                hasProjs.BindToStrict(this, x => x.ProjectLabel.IsEnabled)
                     .DisposeWith(disposable);
-                hasProjs.BindToStrict(this, x => x.ProjectsPickerBox.Visibility)
+                hasProjs.BindToStrict(this, x => x.ProjectsPickerBox.IsEnabled)
+                    .DisposeWith(disposable);
+                projOpacity.BindToStrict(this, x => x.ProjectLabel.Opacity)
+                    .DisposeWith(disposable);
+                projOpacity.BindToStrict(this, x => x.ProjectsPickerBox.Opacity)
                     .DisposeWith(disposable);
 
                 // Bind project picker
@@ -58,6 +64,10 @@ namespace Synthesis.Bethesda.GUI.Views
                         return $"Project in the solution to run was invalid: {e.Reason}";
                     })
                     .BindToStrict(this, x => x.ProjectsPickerBox.ToolTip)
+                    .DisposeWith(disposable);
+
+                // Hide help box if not in initialization
+                UtilityBindings.HelpWiring(this.ViewModel, this.HelpButton, this.HelpText)
                     .DisposeWith(disposable);
             });
         }
