@@ -49,12 +49,8 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Wire up patcher config data context and visibility
-                this.WhenAnyValue(x => x.ViewModel.DisplayedPatcher)
-                    .BindToStrict(this, x => x.PatcherConfigView.DataContext)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.DisplayedPatcher)
-                    .Select(x => x == null ? Visibility.Collapsed : Visibility.Visible)
-                    .BindToStrict(this, x => x.PatcherConfigView.Visibility)
+                this.WhenAnyValue(x => x.ViewModel.DisplayedObject)
+                    .BindToStrict(this, x => x.DetailControl.Content)
                     .DisposeWith(disposable);
 
                 // Only show help if zero patchers

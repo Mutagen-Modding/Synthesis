@@ -24,14 +24,10 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string> _DisplayName;
         public override string DisplayName => _DisplayName.Value;
 
-        public override bool NeedsConfiguration => false;
-
         public string ID { get; private set; } = string.Empty;
 
         [Reactive]
         public string Code { get; set; } = string.Empty;
-
-        public override IErrorResponse CanCompleteConfiguration => ErrorResponse.Success;
 
         private readonly ObservableAsPropertyHelper<ConfigurationStateVM> _State;
         public override ConfigurationStateVM State => _State.Value;
@@ -234,6 +230,11 @@ namespace Synthesis.Bethesda.GUI
                 RunnableState = ErrorResponse.Fail(errDiag.ToString()),
                 IsHaltingError = true,
             };
+        }
+
+        public override PatcherInitVM? CreateInitializer()
+        {
+            return null;
         }
     }
 

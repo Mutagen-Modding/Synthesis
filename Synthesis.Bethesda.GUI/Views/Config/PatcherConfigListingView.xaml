@@ -27,7 +27,7 @@
             Name="OnToggle"
             Background="Transparent">
             <ToggleButton.Style>
-                <Style BasedOn="{StaticResource MainToggleButtonStyle}" TargetType="ToggleButton">
+                <Style BasedOn="{StaticResource Noggog.Styles.ToggleButton}" TargetType="ToggleButton">
                     <Setter Property="Content">
                         <Setter.Value>
                             <icon:PackIconMaterial Kind="CheckboxBlankCircleOutline" />

@@ -20,11 +20,6 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string> _DisplayName;
         public override string DisplayName => _DisplayName.Value;
 
-        public override bool NeedsConfiguration => true;
-
-        private readonly ObservableAsPropertyHelper<IErrorResponse> _CanCompleteConfiguration;
-        public override IErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
-
         public override ConfigurationStateVM State => new ConfigurationStateVM();
 
         public GithubPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
@@ -55,29 +50,6 @@ namespace Synthesis.Bethesda.GUI
                     }
                 })
                 .ToGuiProperty<string>(this, nameof(DisplayName));
-
-            // Whenever we change, mark that we cannot
-            _CanCompleteConfiguration = this.WhenAnyValue(x => x.RepoPath)
-                .DistinctUntilChanged()
-                .Select(x => ErrorResponse.Fail("Checking remote repository correctness."))
-                // But merge in the work of checking the repo on that same path to get the eventual result
-                .Merge(this.WhenAnyValue(x => x.RepoPath)
-                    .DistinctUntilChanged()
-                    .Debounce(TimeSpan.FromMilliseconds(300), RxApp.MainThreadScheduler)
-                    .ObserveOn(RxApp.TaskpoolScheduler)
-                    .Select(p =>
-                    {
-                        try
-                        {
-                            if (Repository.ListRemoteReferences(p).Any()) return ErrorResponse.Success;
-                        }
-                        catch (Exception)
-                        {
-                        }
-                        return ErrorResponse.Fail("Path does not point to a valid repository.");
-                    }))
-                .Cast<ErrorResponse, IErrorResponse>()
-                .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
         }
 
         public override PatcherSettings Save()
@@ -97,6 +69,11 @@ namespace Synthesis.Bethesda.GUI
         public override PatcherRunVM ToRunner(PatchersRunVM parent)
         {
             throw new NotImplementedException();
+        }
+
+        public override PatcherInitVM? CreateInitializer()
+        {
+            return new GithubPatcherInitVM(this);
         }
     }
 }

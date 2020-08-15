@@ -15,6 +15,8 @@ using Buildalyzer;
 using System.Linq;
 using DynamicData.Binding;
 using Synthesis.Bethesda.Execution;
+using System.Windows.Input;
+using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -40,13 +42,11 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string> _DisplayName;
         public override string DisplayName => _DisplayName.Value;
 
-        public override bool NeedsConfiguration => true;
-
-        private readonly ObservableAsPropertyHelper<IErrorResponse> _CanCompleteConfiguration;
-        public override IErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
-
         private readonly ObservableAsPropertyHelper<ConfigurationStateVM> _State;
         public override ConfigurationStateVM State => _State.Value;
+
+        public ICommand NewSolutionCommand { get; }
+        public ICommand NewProjectCommand { get; }
 
         public SolutionPatcherVM(ProfileVM parent, SolutionPatcherSettings? settings = null)
             : base(parent, settings)
@@ -113,20 +113,6 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(p => SelectedProjectPath.TargetPath = p)
                 .DisposeWith(this);
 
-            //this.WhenAnyValue(x => x.SolutionPath.TargetPath)
-            //    .CombineLatest(this.WhenAnyValue(x => x.SolutionPath.InError),
-            //        (path, err) => (path, err))
-            //    .Subscribe(i =>
-            //    {
-            //        if (i.err || !File.Exists(i.path)) return;
-            //        var manager = new AnalyzerManager();
-            //        var proj = manager.GetProject(i.path);
-            //        var results = proj.Build();
-            //        int wer = 23;
-            //        wer++;
-            //    });
-
-
             _State = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.SolutionPath.ErrorState),
                     this.WhenAnyValue(x => x.SelectedProjectPath.ErrorState),
@@ -145,9 +131,11 @@ namespace Synthesis.Bethesda.GUI
                 })
                 .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), ConfigurationStateVM.Success);
 
-            _CanCompleteConfiguration = this.WhenAnyValue(x => x.State)
-                .Select(s => s.RunnableState)
-                .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
+            NewSolutionCommand = ReactiveCommand.CreateFromTask(CreateNewSolution);
+            NewProjectCommand = ReactiveCommand.CreateFromTask(
+                CreateNewProject,
+                canExecute: this.WhenAnyValue(x => x.SolutionPath.InError)
+                    .Select(x => !x));
         }
 
         public override PatcherSettings Save()
@@ -175,6 +163,21 @@ namespace Synthesis.Bethesda.GUI
                     nickname: DisplayName,
                     pathToSln: SolutionPath.TargetPath, 
                     pathToProj: SelectedProjectPath.TargetPath));
+        }
+
+        public override PatcherInitVM? CreateInitializer()
+        {
+            return new SolutionPatcherInitVM(this);
+        }
+
+        private async Task CreateNewSolution()
+        {
+
+        }
+
+        public async Task CreateNewProject()
+        {
+
         }
     }
 }

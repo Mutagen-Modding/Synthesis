@@ -31,13 +31,6 @@ namespace Synthesis.Bethesda.GUI
 
         public abstract string DisplayName { get; }
 
-        private readonly ObservableAsPropertyHelper<bool> _InInitialConfiguration;
-        public bool InInitialConfiguration => _InInitialConfiguration.Value;
-
-        public abstract IErrorResponse CanCompleteConfiguration { get; }
-
-        public abstract bool NeedsConfiguration { get; }
-
         public ICommand DeleteCommand { get; }
         public ICommand ShowHelpCommand { get; }
 
@@ -53,10 +46,6 @@ namespace Synthesis.Bethesda.GUI
             _IsSelected = this.WhenAnyValue(x => x.Profile.Config.SelectedPatcher)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsSelected));
-
-            _InInitialConfiguration = this.WhenAnyValue(x => x.Profile.Config.NewPatcher)
-                .Select(x => x == this)
-                .ToGuiProperty(this, nameof(InInitialConfiguration));
 
             // Set to settings
             IsOn = settings?.On ?? false;
@@ -81,5 +70,7 @@ namespace Synthesis.Bethesda.GUI
         }
 
         public abstract PatcherRunVM ToRunner(PatchersRunVM parent);
+
+        public abstract PatcherInitVM? CreateInitializer();
     }
 }

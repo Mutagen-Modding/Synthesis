@@ -20,7 +20,7 @@ namespace Synthesis.Bethesda.GUI
         {
             CompositeDisposable ret = new CompositeDisposable();
 
-            var isNewPatcher = vm.WhenAnyFallback(x => x.Profile.Config.NewPatcher, default)
+            var isNewPatcher = vm.WhenAnyFallback(x => x.Profile.Config.NewPatcher!.Patcher, default)
                 .Select(newPatcher => object.ReferenceEquals(newPatcher, vm))
                 .Replay(1)
                 .RefCount();

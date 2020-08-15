@@ -41,11 +41,11 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string> _DataFolder;
         public string DataFolder => _DataFolder.Value;
 
-        private readonly ObservableAsPropertyHelper<IErrorResponse> _BlockingError;
-        public IErrorResponse BlockingError => _BlockingError.Value;
+        private readonly ObservableAsPropertyHelper<ErrorResponse> _BlockingError;
+        public ErrorResponse BlockingError => _BlockingError.Value;
 
-        private readonly ObservableAsPropertyHelper<IErrorResponse> _LargeOverallError;
-        public IErrorResponse LargeOverallError => _LargeOverallError.Value;
+        private readonly ObservableAsPropertyHelper<ErrorResponse> _LargeOverallError;
+        public ErrorResponse LargeOverallError => _LargeOverallError.Value;
 
         public IObservableList<ModKey> LoadOrder { get; }
 
@@ -137,7 +137,7 @@ namespace Synthesis.Bethesda.GUI
                         .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
                     (dataFolder, loadOrder, coll) =>
                     {
-                        if (coll.Count == 0) return (IErrorResponse)ErrorResponse.Fail("There are no enabled patchers to run.");
+                        if (coll.Count == 0) return (ErrorResponse)ErrorResponse.Fail("There are no enabled patchers to run.");
                         if (!dataFolder.Succeeded) return dataFolder;
                         if (!loadOrder.Succeeded) return loadOrder;
                         var blockingError = coll.FirstOrDefault(p => p.State.IsHaltingError);
@@ -147,7 +147,7 @@ namespace Synthesis.Bethesda.GUI
                         }
                         return ErrorResponse.Success;
                     })
-                .ToGuiProperty<IErrorResponse>(this, nameof(LargeOverallError), ErrorResponse.Fail("Uninitialized"));
+                .ToGuiProperty<ErrorResponse>(this, nameof(LargeOverallError), ErrorResponse.Fail("Uninitialized"));
 
             _BlockingError = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.LargeOverallError),
@@ -167,7 +167,7 @@ namespace Synthesis.Bethesda.GUI
                     if (!overall.Succeeded) return overall;
                     return patchers;
                 })
-                .ToGuiProperty<IErrorResponse>(this, nameof(BlockingError), ErrorResponse.Fail("Uninitialized"));
+                .ToGuiProperty<ErrorResponse>(this, nameof(BlockingError), ErrorResponse.Fail("Uninitialized"));
 
             _IsActive = this.WhenAnyValue(x => x.Config.SelectedProfile)
                 .Select(x => x == this)
@@ -204,9 +204,10 @@ namespace Synthesis.Bethesda.GUI
 
         private void SetPatcherForInitialConfiguration(PatcherVM patcher)
         {
-            if (patcher.NeedsConfiguration)
+            var initializer = patcher.CreateInitializer();
+            if (initializer != null)
             {
-                Config.NewPatcher = patcher;
+                Config.NewPatcher = initializer;
             }
             else
             {

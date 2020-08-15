@@ -7,6 +7,7 @@
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -260,9 +261,17 @@
             Margin="0,0,-4,0"
             Fill="#AA000000"
             Visibility="Collapsed" />
-        <local:PatcherConfigView Grid.Row="0" Grid.RowSpan="3" Grid.Column="2"
-            x:Name="PatcherConfigView"
-            Visibility="Collapsed" />
+        <ContentControl Grid.Row="0" Grid.RowSpan="3" Grid.Column="2"
+            x:Name="DetailControl">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type vm:PatcherVM}">
+                    <local:PatcherConfigView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:PatcherInitVM}">
+                    <local:InitializationDetailView />
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
         <local:BottomDecisionButtonsView Grid.Row="0" Grid.RowSpan="3" Grid.Column="2"
             x:Name="InitialConfigurationDecisionGrid"
             Margin="0,0,0,10"

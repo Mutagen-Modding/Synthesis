@@ -121,7 +121,7 @@ namespace Synthesis.Bethesda.Execution
             return (true, default);
         }
 
-        public static async Task<IErrorResponse> CompileWithDotnet(string solutionUrl, CancellationToken cancel)
+        public static async Task<ErrorResponse> CompileWithDotnet(string solutionUrl, CancellationToken cancel)
         {
             using var process = ProcessWrapper.Start(
                 new ProcessStartInfo("dotnet", $"build \"{solutionUrl}\""),

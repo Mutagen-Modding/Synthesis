@@ -1,7 +1,10 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:Synthesis.Bethesda.GUI">
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:Converters="clr-namespace:MahApps.Metro.Converters;assembly=MahApps.Metro"
+    xmlns:local="clr-namespace:Synthesis.Bethesda.GUI"
+    xmlns:noggog="clr-namespace:Noggog.WPF;assembly=Noggog.WPF">
     <Color x:Key="Salmon">#e16063</Color>
     <Color x:Key="LightSalmon">#fa7376</Color>
     <Color x:Key="SalmonTransparent">#00e16063</Color>
@@ -42,4 +45,6 @@
     <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="{StaticResource MahApps.Colors.ThemeForeground}" />
     <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource PaleBlue}" />
     <SolidColorBrush x:Key="MahApps.Brushes.TextBox.Border.Focus" Color="{StaticResource MahApps.Colors.Gray4}" />
+    <Style BasedOn="{StaticResource MahApps.Styles.TabControl}" TargetType="TabControl" />
+    <Style BasedOn="{StaticResource MahApps.Styles.TabItem}" TargetType="{x:Type TabItem}" />
 </ResourceDictionary>

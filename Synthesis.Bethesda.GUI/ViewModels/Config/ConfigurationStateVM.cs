@@ -11,6 +11,6 @@ namespace Synthesis.Bethesda.GUI
         public static readonly ConfigurationStateVM Success = new ConfigurationStateVM();
 
         public bool IsHaltingError { get; set; }
-        public IErrorResponse RunnableState { get; set; } = ErrorResponse.Success;
+        public ErrorResponse RunnableState { get; set; } = ErrorResponse.Success;
     }
 }

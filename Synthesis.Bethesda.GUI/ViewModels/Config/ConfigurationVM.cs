@@ -39,10 +39,10 @@ namespace Synthesis.Bethesda.GUI
         public PatcherVM? SelectedPatcher { get; set; }
 
         [Reactive]
-        public PatcherVM? NewPatcher { get; set; }
+        public PatcherInitVM? NewPatcher { get; set; }
 
-        private readonly ObservableAsPropertyHelper<PatcherVM?> _DisplayedPatcher;
-        public PatcherVM? DisplayedPatcher => _DisplayedPatcher.Value;
+        private readonly ObservableAsPropertyHelper<object?> _DisplayedObject;
+        public object? DisplayedObject => _DisplayedObject.Value;
 
         private readonly ObservableAsPropertyHelper<PatchersRunVM?> _CurrentRun;
         public PatchersRunVM? CurrentRun => _CurrentRun.Value;
@@ -62,15 +62,16 @@ namespace Synthesis.Bethesda.GUI
                 .Switch()
                 .ToObservableCollection(this);
 
-            CompleteConfiguration = ReactiveCommand.Create(
-                () =>
+            CompleteConfiguration = ReactiveCommand.CreateFromTask(
+                async () =>
                 {
-                    var patcher = this.NewPatcher;
-                    if (patcher == null) return;
-                    SelectedProfile?.Patchers.Add(patcher);
+                    var initializer = this.NewPatcher;
+                    if (initializer == null) return;
+                    SelectedProfile?.Patchers.Add(initializer.Patcher);
                     NewPatcher = null;
-                    SelectedPatcher = patcher;
-                    patcher.IsOn = true;
+                    SelectedPatcher = initializer.Patcher;
+                    initializer.Patcher.IsOn = true;
+                    await initializer.ExecuteChanges();
                 },
                 canExecute: this.WhenAnyValue(x => x.NewPatcher)
                     .Select(patcher =>
@@ -88,11 +89,11 @@ namespace Synthesis.Bethesda.GUI
                     NewPatcher = null;
                 });
 
-            _DisplayedPatcher = this.WhenAnyValue(
+            _DisplayedObject = this.WhenAnyValue(
                     x => x.SelectedPatcher,
                     x => x.NewPatcher,
-                    (selected, newConfig) => newConfig ?? selected)
-                .ToGuiProperty(this, nameof(DisplayedPatcher));
+                    (selected, newConfig) => (newConfig as object) ?? selected)
+                .ToGuiProperty(this, nameof(DisplayedObject));
 
             RunPatchers = NoggogCommand.CreateFromJob(
                 extraInput: this.WhenAnyValue(x => x.SelectedProfile),

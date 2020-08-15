@@ -16,7 +16,6 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0"
             Margin="0,4"
@@ -26,7 +25,7 @@
         <noggog:PathPicker Name="SolutionPathPicker" Grid.Row="1" />
         <TextBlock Grid.Row="2"
             x:Name="ProjectLabel"
-            Margin="0,4"
+            Margin="0,8,0,4"
             FontSize="14"
             FontWeight="Bold"
             Text="Project" />
@@ -46,30 +45,5 @@
                 </Style>
             </ComboBox.Style>
         </ComboBox>
-        <Grid Grid.Row="4"
-            x:Name="HelpBox"
-            Margin="0,25,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0"
-                x:Name="HelpButton"
-                Margin="0,8,0,0"
-                VerticalAlignment="Top">
-                <icon:PackIconMaterial Kind="HelpCircle" />
-            </Button>
-            <TextBlock Grid.Column="1"
-                x:Name="HelpText"
-                Margin="15,0,0,0"
-                TextWrapping="Wrap"
-                Visibility="Collapsed">
-                Add a C# Mutagen Project as a patcher.<LineBreak />
-                Synthesis will build and use its results as a patch.<LineBreak />
-                <LineBreak />
-                The &quot;New&quot; button can create a new project for you to get you easily bootstrapped.<LineBreak />
-                <LineBreak />
-                Alternatively, you can set up a CLI patcher to the results of your build.</TextBlock>
-        </Grid>
     </Grid>
 </local:SolutionConfigViewBase>

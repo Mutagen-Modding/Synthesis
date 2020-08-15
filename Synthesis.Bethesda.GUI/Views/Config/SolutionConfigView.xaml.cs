@@ -65,10 +65,6 @@ namespace Synthesis.Bethesda.GUI.Views
                     })
                     .BindToStrict(this, x => x.ProjectsPickerBox.ToolTip)
                     .DisposeWith(disposable);
-
-                // Hide help box if not in initialization
-                UtilityBindings.HelpWiring(this.ViewModel, this.HelpButton, this.HelpText)
-                    .DisposeWith(disposable);
             });
         }
     }
