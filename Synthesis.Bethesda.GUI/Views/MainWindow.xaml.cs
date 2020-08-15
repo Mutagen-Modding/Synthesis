@@ -3,6 +3,7 @@ using Synthesis.Bethesda.Execution.Settings;
 using Newtonsoft.Json;
 using Noggog.WPF;
 using System.IO;
+using System;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -18,8 +19,9 @@ namespace Synthesis.Bethesda.GUI.Views
             {
                 TypeNameHandling = TypeNameHandling.Auto
             };
+            var settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Synthesis", "Settings.json");
             var mvm = this.WireMainVM<MainVM>(
-                $"Settings.json",
+                settingsPath,
                 load: (s, vm) => vm.Load(JsonConvert.DeserializeObject<SynthesisGuiSettings>(File.ReadAllText(s), settings)!),
                 save: (s, vm) => File.WriteAllText(s, JsonConvert.SerializeObject(vm.Save(), Formatting.Indented, settings)));
             mvm.Init();

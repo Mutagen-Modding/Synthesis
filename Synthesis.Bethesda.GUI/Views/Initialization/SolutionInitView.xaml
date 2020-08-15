@@ -20,7 +20,7 @@
             x:Name="TopTab"
             MinHeight="160"
             mahapps:HeaderedControlHelper.HeaderFontSize="16"
-            mahapps:HeaderedControlHelper.HeaderForeground="{StaticResource SalmonBrush}"
+            mahapps:HeaderedControlHelper.HeaderForeground="AliceBlue"
             Background="Transparent">
             <TabItem Background="Transparent" Header="New Solution">
                 <Grid>
