@@ -1,5 +1,6 @@
 ﻿using Loqui;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Synthesis;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -69,8 +71,8 @@ namespace Synthesis.Bethesda.GUI
                 fg.AppendLine($"<ItemGroup>");
                 using (new DepthWrapper(fg))
                 {
-                    fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda\" Version=\"0.13.0-dev1\" />");
-                    fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"0.0.1\" />");
+                    fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda\" Version=\"{typeof(IMod).Assembly.GetName().Version}\" />");
+                    fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{typeof(SynthesisPipeline).Assembly.GetName().Version}\" />");
                 }
                 fg.AppendLine($"</ItemGroup>");
                 fg.AppendLine();
