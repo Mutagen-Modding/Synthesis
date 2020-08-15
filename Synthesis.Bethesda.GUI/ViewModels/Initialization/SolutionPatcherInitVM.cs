@@ -4,7 +4,10 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing.Design;
 using System.IO;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +31,9 @@ namespace Synthesis.Bethesda.GUI
 
         private readonly ObservableAsPropertyHelper<Func<SolutionPatcherVM, Task>?> _TargetSolutionInitializer;
         public Func<SolutionPatcherVM, Task>? TargetSolutionInitializer => _TargetSolutionInitializer.Value;
+
+        [Reactive]
+        public bool OpenVsAfter { get; set; }
 
         public SolutionPatcherInitVM(SolutionPatcherVM patcher)
         {
@@ -60,6 +66,21 @@ namespace Synthesis.Bethesda.GUI
         {
             if (TargetSolutionInitializer == null) return;
             await TargetSolutionInitializer(_patcher);
+            if (OpenVsAfter)
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo(_patcher.SolutionPath.TargetPath)
+                    {
+                        UseShellExecute = true,
+                    });
+                }
+                catch (Exception)
+                {
+                    // ToDo
+                    // Log
+                }
+            }
         }
 
         public enum SolutionInitType

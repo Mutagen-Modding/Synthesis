@@ -59,6 +59,10 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel.ExistingProject.ProjectPath)
                     .BindToStrict(this, x => x.BothExistingProjectPathPicker.PickerVM)
                     .DisposeWith(dispose);
+
+                // Bind open after checkbox
+                this.BindStrict(this.ViewModel, vm => vm.OpenVsAfter, view => view.OpenVsAfter.IsChecked)
+                    .DisposeWith(dispose);
             });
         }
     }

@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.GUI
             ProjectPath.PathType = PathPickerVM.PathTypeOptions.File;
             ProjectPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
             ProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
-
+ 
             InitializationCall = Observable.CombineLatest(
                     SolutionPath.PathState(),
                     ProjectPath.PathState(),

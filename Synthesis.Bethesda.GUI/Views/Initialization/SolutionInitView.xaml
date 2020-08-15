@@ -15,6 +15,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TabControl Grid.Row="0"
             x:Name="TopTab"
@@ -109,7 +110,11 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Grid Grid.Row="1"
+        <CheckBox Grid.Row="1"
+            x:Name="OpenVsAfter"
+            Margin="10,15,0,6"
+            Content="Open Visual Studio After Creating" />
+        <Grid Grid.Row="2"
             x:Name="HelpBox"
             Margin="0,25,0,0">
             <Grid.ColumnDefinitions>

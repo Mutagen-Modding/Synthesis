@@ -17,6 +17,7 @@ using DynamicData.Binding;
 using Synthesis.Bethesda.Execution;
 using System.Windows.Input;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -45,8 +46,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<ConfigurationStateVM> _State;
         public override ConfigurationStateVM State => _State.Value;
 
-        public ICommand NewSolutionCommand { get; }
-        public ICommand NewProjectCommand { get; }
+        public ICommand OpenSolutionCommand { get; }
 
         public SolutionPatcherVM(ProfileVM parent, SolutionPatcherSettings? settings = null)
             : base(parent, settings)
@@ -131,11 +131,24 @@ namespace Synthesis.Bethesda.GUI
                 })
                 .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), ConfigurationStateVM.Success);
 
-            NewSolutionCommand = ReactiveCommand.CreateFromTask(CreateNewSolution);
-            NewProjectCommand = ReactiveCommand.CreateFromTask(
-                CreateNewProject,
-                canExecute: this.WhenAnyValue(x => x.SolutionPath.InError)
-                    .Select(x => !x));
+            OpenSolutionCommand = ReactiveCommand.Create(
+                canExecute: this.WhenAnyValue(x => x.State.IsHaltingError)
+                    .Select(x => !x),
+                execute: () =>
+                {
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo(SolutionPath.TargetPath)
+                        {
+                            UseShellExecute = true,
+                        });
+                    }
+                    catch (Exception)
+                    {
+                        // ToDo
+                        // Log
+                    }
+                });
         }
 
         public override PatcherSettings Save()
@@ -168,16 +181,6 @@ namespace Synthesis.Bethesda.GUI
         public override PatcherInitVM? CreateInitializer()
         {
             return new SolutionPatcherInitVM(this);
-        }
-
-        private async Task CreateNewSolution()
-        {
-
-        }
-
-        public async Task CreateNewProject()
-        {
-
         }
     }
 }
