@@ -125,7 +125,7 @@
             Width="30"
             Foreground="{StaticResource MahApps.Brushes.Gray4}">
             <Button.Style>
-                <Style BasedOn="{StaticResource NakedIconButtonStyle}" TargetType="Button">
+                <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
                     <Setter Property="Content">
                         <Setter.Value>
                             <icon:PackIconMaterial Kind="CircleOutline" />

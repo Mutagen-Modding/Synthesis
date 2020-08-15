@@ -33,8 +33,7 @@
                 <Button Grid.Column="0"
                     x:Name="BackButton"
                     HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Stretch"
-                    Style="{StaticResource NakedIconButtonStyle}">
+                    HorizontalContentAlignment="Stretch">
                     <icon:PackIconFontAwesome
                         Width="15"
                         Height="15"
@@ -51,8 +50,7 @@
                 <Button Grid.Column="2"
                     x:Name="AddButton"
                     HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Right"
-                    Style="{StaticResource NakedIconButtonStyle}">
+                    HorizontalContentAlignment="Right">
                     <icon:PackIconMaterial
                         Width="15"
                         Height="15"
@@ -64,7 +62,7 @@
                 Margin="8,15,0,0"
                 Background="Transparent"
                 ClipToBounds="False"
-                ItemContainerStyle="{StaticResource PlainListBoxItemStyle}"
+                ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemTemplate>
                     <DataTemplate>

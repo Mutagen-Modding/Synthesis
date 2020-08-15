@@ -34,7 +34,7 @@
                 AllowDrop="True"
                 Background="Transparent"
                 ClipToBounds="False"
-                ItemContainerStyle="{StaticResource PlainListBoxItemStyle}"
+                ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -44,8 +44,7 @@
             </ListBox>
             <Button Grid.Row="1"
                 x:Name="GoButton"
-                HorizontalContentAlignment="Stretch"
-                Style="{StaticResource NakedIconButtonStyle}">
+                HorizontalContentAlignment="Stretch">
                 <Grid Margin="0,0,0,10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -206,7 +205,7 @@
             </Border.Style>
             <Grid VerticalAlignment="Center">
                 <Grid.Resources>
-                    <Style BasedOn="{StaticResource NakedIconButtonStyle}" TargetType="Button">
+                    <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
                         <Setter Property="Margin" Value="1,0" />
                     </Style>
                 </Grid.Resources>

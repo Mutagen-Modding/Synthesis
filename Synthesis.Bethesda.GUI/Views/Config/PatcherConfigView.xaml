@@ -39,7 +39,6 @@
             <Button Grid.Column="1"
                 x:Name="DeleteButton"
                 VerticalAlignment="Center"
-                Style="{StaticResource NakedIconButtonStyle}"
                 ToolTip="Delete Patcher">
                 <Button.Resources>
                     <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#44FFFFFF" />

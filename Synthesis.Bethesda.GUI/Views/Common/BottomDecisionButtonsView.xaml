@@ -25,16 +25,12 @@
             x:Name="CancelAdditionButton"
             Width="110"
             Height="45"
-            Margin="0,0,0,7">
+            Margin="0,0,0,7"
+            Foreground="{StaticResource SalmonBrush}">
             <Button.Resources>
                 <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource LightSalmon}" />
                 <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource PaleYellow}" />
             </Button.Resources>
-            <Button.Style>
-                <Style BasedOn="{StaticResource NakedIconButtonStyle}" TargetType="Button">
-                    <Setter Property="Foreground" Value="{StaticResource SalmonBrush}" />
-                </Style>
-            </Button.Style>
             <icon:PackIconFontAwesome
                 Width="22"
                 Height="22"
@@ -78,12 +74,8 @@
             Width="110"
             Height="45"
             Margin="0,0,0,7"
-            HorizontalAlignment="Center">
-            <Button.Style>
-                <Style BasedOn="{StaticResource NakedIconButtonStyle}" TargetType="Button">
-                    <Setter Property="Foreground" Value="{StaticResource LightBlueBrush}" />
-                </Style>
-            </Button.Style>
+            HorizontalAlignment="Center"
+            Foreground="{StaticResource LightBlueBrush}">
             <icon:PackIconFontAwesome
                 Width="22"
                 Height="22"

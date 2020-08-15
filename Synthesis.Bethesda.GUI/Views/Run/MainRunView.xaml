@@ -33,8 +33,7 @@
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0"
                     x:Name="BackButton"
-                    HorizontalAlignment="Stretch"
-                    Style="{StaticResource NakedIconButtonStyle}">
+                    HorizontalAlignment="Stretch">
                     <icon:PackIconFontAwesome
                         Width="15"
                         Height="15"
@@ -84,7 +83,6 @@
                     x:Name="CancelButton"
                     Margin="0,2,0,0"
                     VerticalAlignment="Center"
-                    Style="{StaticResource NakedIconButtonStyle}"
                     ToolTip="Cancel patching">
                     <Button.Resources>
                         <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#22FFFFFF" />
@@ -98,7 +96,6 @@
                     Margin="8,2,8,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
-                    Style="{StaticResource NakedIconButtonStyle}"
                     Visibility="Collapsed">
                     <Button.Resources>
                         <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="{StaticResource Error}" />
@@ -116,7 +113,7 @@
                 Margin="8,15,0,0"
                 Background="Transparent"
                 ClipToBounds="False"
-                ItemContainerStyle="{StaticResource PlainListBoxItemStyle}"
+                ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemTemplate>
                     <DataTemplate>

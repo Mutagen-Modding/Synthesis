@@ -9,7 +9,7 @@
     d:DesignHeight="25"
     d:DesignWidth="150"
     mc:Ignorable="d">
-    <Button x:Name="OpenProfilesPageButton" Style="{StaticResource NakedIconButtonStyle}">
+    <Button x:Name="OpenProfilesPageButton" Style="{StaticResource Noggog.Styles.Button}">
         <Grid
             x:Name="TopGrid"
             Margin="0,0,15,0"

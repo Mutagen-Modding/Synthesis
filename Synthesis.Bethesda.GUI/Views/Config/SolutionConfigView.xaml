@@ -37,7 +37,7 @@
                 </DataTemplate>
             </ComboBox.ItemTemplate>
             <ComboBox.Style>
-                <Style BasedOn="{StaticResource MainComboboxStyle}" TargetType="ComboBox">
+                <Style BasedOn="{StaticResource Noggog.Styles.ComboBox}" TargetType="ComboBox">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding SelectedProjectPath.InError}" Value="True">
                             <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}" />
@@ -56,8 +56,7 @@
             <Button Grid.Column="0"
                 x:Name="HelpButton"
                 Margin="0,8,0,0"
-                VerticalAlignment="Top"
-                Style="{StaticResource NakedIconButtonStyle}">
+                VerticalAlignment="Top">
                 <icon:PackIconMaterial Kind="HelpCircle" />
             </Button>
             <TextBlock Grid.Column="1"
