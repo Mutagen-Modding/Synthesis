@@ -23,7 +23,10 @@
             mahapps:HeaderedControlHelper.HeaderFontSize="16"
             mahapps:HeaderedControlHelper.HeaderForeground="AliceBlue"
             Background="Transparent">
-            <TabItem Background="Transparent" Header="New Solution">
+            <TabItem
+                Background="Transparent"
+                Header="New Solution"
+                ToolTip="Create a whole new solution (collection of projects) as well as anew patcher project">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -61,7 +64,10 @@
                         Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
                 </Grid>
             </TabItem>
-            <TabItem Background="Transparent" Header="Existing Solution">
+            <TabItem
+                Background="Transparent"
+                Header="New Project"
+                ToolTip="Create a new patcher project and put it in an existing solution">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -87,7 +93,10 @@
                         Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
                 </Grid>
             </TabItem>
-            <TabItem Background="Transparent" Header="Existing Project">
+            <TabItem
+                Background="Transparent"
+                Header="Existing"
+                ToolTip="Add an existing patcher project">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
