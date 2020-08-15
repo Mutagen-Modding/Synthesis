@@ -1,5 +1,4 @@
-﻿using LibGit2Sharp;
-using Synthesis.Bethesda.Execution.Settings;
+﻿using Synthesis.Bethesda.Execution.Settings;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;

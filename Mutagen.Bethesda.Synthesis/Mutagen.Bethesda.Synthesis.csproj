@@ -20,8 +20,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Mutagen.Bethesda" Version="0.13.0-dev1" />
-    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="1.0.0" />
+    <PackageReference Include="Mutagen.Bethesda" Version="0.13.0" />
+    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.13.0" />
   </ItemGroup>
 
   <ItemGroup>

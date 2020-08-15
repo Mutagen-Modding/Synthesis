@@ -1,5 +1,4 @@
-﻿using LibGit2Sharp;
-using Noggog;
+﻿using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using System;
@@ -34,7 +33,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         try
                         {
-                            if (Repository.ListRemoteReferences(p).Any()) return ErrorResponse.Success;
+                            //if (Repository.ListRemoteReferences(p).Any()) return ErrorResponse.Success;
                         }
                         catch (Exception)
                         {
