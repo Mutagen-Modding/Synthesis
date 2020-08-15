@@ -21,6 +21,7 @@ namespace Synthesis.Bethesda.GUI
     public class MainVM : ViewModel
     {
         public ConfigurationVM Configuration { get; }
+        public SynthesisGuiSettings Settings { get; private set; } = new SynthesisGuiSettings();
 
         [Reactive]
         public ViewModel ActivePanel { get; set; }
@@ -83,6 +84,7 @@ namespace Synthesis.Bethesda.GUI
         public void Load(SynthesisGuiSettings? settings)
         {
             if (settings == null) return;
+            Settings = settings;
             Configuration.Load(settings);
         }
 

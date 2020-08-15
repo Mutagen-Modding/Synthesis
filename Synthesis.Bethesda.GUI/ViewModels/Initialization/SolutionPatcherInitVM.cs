@@ -38,6 +38,8 @@ namespace Synthesis.Bethesda.GUI
         public SolutionPatcherInitVM(SolutionPatcherVM patcher)
         {
             _patcher = patcher;
+            OpenVsAfter = _patcher.Profile.Config.MainVM.Settings.OpenVsAfterCreating;
+            New.ParentDirPath.TargetPath = _patcher.Profile.Config.MainVM.Settings.MainRepositoryFolder;
 
             var initializer = this.WhenAnyValue(x => x.SelectedIndex)
                 .Select<int, ASolutionInitializer>(x =>
@@ -81,6 +83,13 @@ namespace Synthesis.Bethesda.GUI
                     // Log
                 }
             }
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _patcher.Profile.Config.MainVM.Settings.OpenVsAfterCreating = OpenVsAfter;
+            _patcher.Profile.Config.MainVM.Settings.MainRepositoryFolder = New.ParentDirPath.TargetPath;
         }
 
         public enum SolutionInitType

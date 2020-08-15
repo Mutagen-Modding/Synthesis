@@ -86,6 +86,7 @@ namespace Synthesis.Bethesda.GUI
                 () =>
                 {
                     // Just forget about patcher and let it GC
+                    NewPatcher?.Dispose();
                     NewPatcher = null;
                 });
 
@@ -150,7 +151,9 @@ namespace Synthesis.Bethesda.GUI
                     Profiles = Profiles.Items.Select(p => p.Save()).ToList(),
                     SelectedProfile = SelectedProfile?.ID ?? string.Empty
                 },
-                ShowHelp = ShowHelp
+                ShowHelp = ShowHelp,
+                MainRepositoryFolder = MainVM.Settings.MainRepositoryFolder,
+                OpenVsAfterCreating = MainVM.Settings.OpenVsAfterCreating,
             };
         }
     }

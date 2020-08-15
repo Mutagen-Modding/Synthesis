@@ -15,15 +15,15 @@ namespace Synthesis.Bethesda.GUI.Views
         public MainWindow()
         {
             InitializeComponent();
-            JsonSerializerSettings settings = new JsonSerializerSettings()
+            JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Auto
             };
             var settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Synthesis", "Settings.json");
             var mvm = this.WireMainVM<MainVM>(
                 settingsPath,
-                load: (s, vm) => vm.Load(JsonConvert.DeserializeObject<SynthesisGuiSettings>(File.ReadAllText(s), settings)!),
-                save: (s, vm) => File.WriteAllText(s, JsonConvert.SerializeObject(vm.Save(), Formatting.Indented, settings)));
+                load: (s, vm) => vm.Load(JsonConvert.DeserializeObject<SynthesisGuiSettings>(File.ReadAllText(s), jsonSettings)!),
+                save: (s, vm) => File.WriteAllText(s, JsonConvert.SerializeObject(vm.Save(), Formatting.Indented, jsonSettings)));
             mvm.Init();
         }
     }
