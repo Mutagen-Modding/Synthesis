@@ -27,13 +27,13 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.BindStrict(this.ViewModel, vm => vm.SelectedIndex, view => view.TopTab.SelectedIndex)
                     .DisposeWith(dispose);
 
-                // Bind existing pane
-                this.WhenAnyValue(x => x.ViewModel.Existing.SolutionPath)
+                // Bind solution existing pane
+                this.WhenAnyValue(x => x.ViewModel.ExistingSolution.SolutionPath)
                     .BindToStrict(this, x => x.SolutionPathPicker.PickerVM)
                     .DisposeWith(dispose);
-                this.BindStrict(this.ViewModel, vm => vm.Existing.ProjectName, view => view.ExistingProjectNameBox.Text)
+                this.BindStrict(this.ViewModel, vm => vm.ExistingSolution.ProjectName, view => view.ExistingProjectNameBox.Text)
                     .DisposeWith(dispose);
-                this.WhenAnyValue(x => x.ViewModel.Existing.ProjectError)
+                this.WhenAnyValue(x => x.ViewModel.ExistingSolution.ProjectError)
                     .BindError(this.ExistingProjectNameBox)
                     .DisposeWith(dispose);
 
@@ -50,6 +50,14 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel.New.ProjectError)
                     .BindError(this.NewProjectNameBox)
+                    .DisposeWith(dispose);
+
+                // Bind both existing pane
+                this.WhenAnyValue(x => x.ViewModel.ExistingProject.SolutionPath)
+                    .BindToStrict(this, x => x.BothExistingSolutionPathPicker.PickerVM)
+                    .DisposeWith(dispose);
+                this.WhenAnyValue(x => x.ViewModel.ExistingProject.ProjectPath)
+                    .BindToStrict(this, x => x.BothExistingProjectPathPicker.PickerVM)
                     .DisposeWith(dispose);
             });
         }

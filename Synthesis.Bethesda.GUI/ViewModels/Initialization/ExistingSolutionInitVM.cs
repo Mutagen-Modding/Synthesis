@@ -1,4 +1,6 @@
-﻿using Mutagen.Bethesda;
+﻿using DynamicData;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Mutagen.Bethesda;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -28,6 +30,7 @@ namespace Synthesis.Bethesda.GUI
         {
             SolutionPath.PathType = PathPickerVM.PathTypeOptions.File;
             SolutionPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
+            SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
 
             var validation = Observable.CombineLatest(
                     SolutionPath.PathState(),

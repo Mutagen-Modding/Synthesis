@@ -73,8 +73,7 @@
                         FontSize="14"
                         FontWeight="Bold"
                         Text="Solution Path" />
-                    <noggog:PathPicker Grid.Row="1" Grid.Column="0"
-                        Name="SolutionPathPicker" />
+                    <noggog:PathPicker Name="SolutionPathPicker" Grid.Row="1" />
                     <TextBlock Grid.Row="2"
                         Margin="0,8,0,4"
                         FontSize="14"
@@ -85,6 +84,28 @@
                         noggog:ControlsHelper.ErrorTooltip="{Binding Existing.ProjectError.Reason}"
                         noggog:ControlsHelper.InError="{Binding Existing.ProjectError.Succeeded, Converter={StaticResource InverseBooleanConverter}}"
                         Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
+                </Grid>
+            </TabItem>
+            <TabItem Background="Transparent" Header="Existing Project">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0"
+                        Margin="0,4"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Text="Solution Path" />
+                    <noggog:PathPicker Name="BothExistingSolutionPathPicker" Grid.Row="1" />
+                    <TextBlock Grid.Row="2"
+                        Margin="0,8,0,4"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Text="Project Path" />
+                    <noggog:PathPicker Name="BothExistingProjectPathPicker" Grid.Row="3" />
                 </Grid>
             </TabItem>
         </TabControl>

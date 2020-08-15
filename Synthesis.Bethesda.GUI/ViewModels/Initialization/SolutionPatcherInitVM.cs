@@ -13,8 +13,9 @@ namespace Synthesis.Bethesda.GUI
 {
     public class SolutionPatcherInitVM : PatcherInitVM
     {
-        public ExistingSolutionInitVM Existing { get; } = new ExistingSolutionInitVM();
+        public ExistingSolutionInitVM ExistingSolution { get; } = new ExistingSolutionInitVM();
         public NewSolutionInitVM New { get; } = new NewSolutionInitVM();
+        public ExistingProjectInitVM ExistingProject { get; } = new ExistingProjectInitVM();
 
         private readonly SolutionPatcherVM _patcher;
         public override PatcherVM Patcher => _patcher;
@@ -37,8 +38,9 @@ namespace Synthesis.Bethesda.GUI
                 {
                     return ((SolutionInitType)x) switch
                     {
-                        SolutionInitType.Existing => Existing,
+                        SolutionInitType.ExistingSolution => ExistingSolution,
                         SolutionInitType.New => New,
+                        SolutionInitType.ExistingProject => ExistingProject,
                         _ => throw new NotImplementedException(),
                     };
                 })
@@ -63,7 +65,8 @@ namespace Synthesis.Bethesda.GUI
         public enum SolutionInitType
         {
             New,
-            Existing
+            ExistingSolution,
+            ExistingProject,
         }
     }
 }
