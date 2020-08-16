@@ -7,6 +7,7 @@
     <Company>Mutagen</Company>
     <Product>Synthesis</Product>
     <Description>A lightweight wrapper CLI to run Synthesis pipelines without a GUI</Description>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

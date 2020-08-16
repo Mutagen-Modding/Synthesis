@@ -13,6 +13,7 @@
     <RepositoryUrl>https://github.com/Noggog/Synthesis</RepositoryUrl>
     <Company>Mutagen</Company>
     <Version>0.0.3</Version>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

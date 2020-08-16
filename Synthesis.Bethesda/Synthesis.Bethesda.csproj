@@ -13,9 +13,10 @@
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <AssemblyName>Synthesis.Bethesda</AssemblyName>
     <Version>0.0.2</Version>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DocumentationFile>Synthesis.Bethesda.xml</DocumentationFile>
   </PropertyGroup>
 
