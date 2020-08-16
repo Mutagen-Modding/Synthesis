@@ -4,6 +4,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing.Design;
 using System.IO;
@@ -11,6 +12,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Win32;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -33,12 +35,12 @@ namespace Synthesis.Bethesda.GUI
         public Func<SolutionPatcherVM, Task>? TargetSolutionInitializer => _TargetSolutionInitializer.Value;
 
         [Reactive]
-        public bool OpenVsAfter { get; set; }
+        public OpenWithEnum OpenWith { get; set; }
 
         public SolutionPatcherInitVM(SolutionPatcherVM patcher)
         {
             _patcher = patcher;
-            OpenVsAfter = _patcher.Profile.Config.MainVM.Settings.OpenVsAfterCreating;
+            OpenWith = _patcher.Profile.Config.MainVM.Settings.OpenWithProgram;
             New.ParentDirPath.TargetPath = _patcher.Profile.Config.MainVM.Settings.MainRepositoryFolder;
 
             var initializer = this.WhenAnyValue(x => x.SelectedIndex)
@@ -68,27 +70,20 @@ namespace Synthesis.Bethesda.GUI
         {
             if (TargetSolutionInitializer == null) return;
             await TargetSolutionInitializer(_patcher);
-            if (OpenVsAfter)
+            try
             {
-                try
-                {
-                    Process.Start(new ProcessStartInfo(_patcher.SolutionPath.TargetPath)
-                    {
-                        UseShellExecute = true,
-                    });
-                }
-                catch (Exception)
-                {
-                    // ToDo
-                    // Log
-                }
+                OpenWithProgram.OpenSolution(_patcher.SolutionPath.TargetPath, OpenWith);
+            } catch (Exception)
+            {
+                // ToDo
+                // Log
             }
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            _patcher.Profile.Config.MainVM.Settings.OpenVsAfterCreating = OpenVsAfter;
+            _patcher.Profile.Config.MainVM.Settings.OpenWithProgram = OpenWith;
             _patcher.Profile.Config.MainVM.Settings.MainRepositoryFolder = New.ParentDirPath.TargetPath;
         }
 
