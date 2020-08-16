@@ -24,6 +24,7 @@ steps:
     vstsFeed: '3b91d9cc-9c4f-4129-88d6-e77bb8a0cb62/6309bacb-dd0d-47a7-ac81-f23a748d0aec'
 
 - task: DotNetCoreCLI@2
+  displayName: "Build"
   inputs:
     command: build
     arguments: --configuration Release
@@ -36,6 +37,7 @@ steps:
     arguments: --configuration Release
 
 - task: DotNetCoreCLI@2
+  displayName: "Publish"
   inputs:
     command: publish 
     arguments: -r win-x64 -p:PublishSingleFile=True --self-contained false -o $(Build.ArtifactStagingDirectory) --configuration Release
