@@ -20,6 +20,7 @@ ProjectSection(SolutionItems) = preProject
 	.editorconfig = .editorconfig
 	LICENSE.md = LICENSE.md
 	README.md = README.md
+	.gitignore = .gitignore
 EndProjectSection
 EndProject
 Global

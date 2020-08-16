@@ -353,3 +353,6 @@ Synthesis.Bethesda/Synthesis.Bethesda.xml
 Mutagen.Bethesda.Synthesis/Mutagen.Bethesda.Synthesis.xml
 
 Synthesis.Bethesda.Execution/Synthesis.Execution.xml
+
+# Rider
+.idea
