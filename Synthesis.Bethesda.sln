@@ -15,6 +15,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Synthesis.Bethesda", "Synth
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mutagen.Bethesda.Synthesis", "Mutagen.Bethesda.Synthesis\Mutagen.Bethesda.Synthesis.csproj", "{B2C800E7-CE97-4EE5-A7F4-2807994C73FB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{487B63F9-C71B-4553-A5E9-101FAD9541A3}"
+ProjectSection(SolutionItems) = preProject
+	.editorconfig = .editorconfig
+	LICENSE.md = LICENSE.md
+	README.md = README.md
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
