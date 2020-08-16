@@ -11,7 +11,7 @@ pool:
 
 variables:
   solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
+  buildPlatform: 'x64'
   buildConfiguration: 'Release'
 
 steps:
@@ -23,22 +23,22 @@ steps:
     restoreSolution: '$(solution)'
     vstsFeed: '3b91d9cc-9c4f-4129-88d6-e77bb8a0cb62/6309bacb-dd0d-47a7-ac81-f23a748d0aec'
 
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
   inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: build
+    arguments: --configuration Release
 
 - task: DotNetCoreCLI@2
   displayName: "Test Release"
   inputs:
     command: 'test'
     projects: '**/*UnitTests.csproj'
+    arguments: --configuration Release
 
 - task: DotNetCoreCLI@2
   inputs:
     command: publish 
-    arguments: -r win-x64 -p:PublishSingleFile=True --self-contained false -o $(Build.ArtifactStagingDirectory)
+    arguments: -r win-x64 -p:PublishSingleFile=True --self-contained false -o $(Build.ArtifactStagingDirectory) --configuration Release
     projects: '**/Synthesis.Bethesda.GUI.csproj'
     publishWebProjects: false
   enabled: true
