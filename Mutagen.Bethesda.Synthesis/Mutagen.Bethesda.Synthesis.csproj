@@ -13,9 +13,10 @@
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <AssemblyName>Mutagen.Bethesda.Synthesis</AssemblyName>
     <Version>0.0.2</Version>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DocumentationFile>Mutagen.Bethesda.Synthesis.xml</DocumentationFile>
   </PropertyGroup>
 

@@ -13,9 +13,10 @@
     <Product>Synthesis</Product>
     <PackageId>Synthesis.Bethesda.Execution</PackageId>
     <Version>0.0.2</Version>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DocumentationFile>Synthesis.Bethesda.Execution.xml</DocumentationFile>
   </PropertyGroup>
 

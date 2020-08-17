@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
 trigger:
-- release
+- dev
 
 pool:
   vmImage: 'windows-latest'
@@ -35,23 +35,3 @@ steps:
     command: 'test'
     projects: '**/*UnitTests.csproj'
     arguments: --configuration Release
-
-- task: DotNetCoreCLI@2
-  displayName: "Publish"
-  inputs:
-    command: publish 
-    arguments: -r win-x64 -p:PublishSingleFile=True --self-contained false -o $(Build.ArtifactStagingDirectory) --configuration Release
-    projects: '**/Synthesis.Bethesda.GUI.csproj'
-    publishWebProjects: false
-  enabled: true
-
-- task: DotNetCoreCLI@2
-  displayName: "Pack"
-  inputs:
-      command: pack
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: Synthesis'
-  inputs:
-    PathtoPublish: '$(build.artifactstagingdirectory)'
-  condition: succeededOrFailed()
