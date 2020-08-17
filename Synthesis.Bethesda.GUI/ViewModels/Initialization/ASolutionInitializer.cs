@@ -1,4 +1,4 @@
-﻿using Loqui;
+using Loqui;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis;
 using Noggog;
@@ -119,13 +119,43 @@ namespace Synthesis.Bethesda.GUI
 
         public static void CreateSolutionFile(string solutionPath)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(solutionPath));
+            var slnDir = Path.GetDirectoryName(solutionPath)!;
+            Directory.CreateDirectory(slnDir);
+
+            // Create solution
             FileGeneration fg = new FileGeneration();
             fg.AppendLine($"Microsoft Visual Studio Solution File, Format Version 12.00");
             fg.AppendLine($"# Visual Studio Version 16");
             fg.AppendLine($"VisualStudioVersion = 16.0.30330.147");
             fg.AppendLine($"MinimumVisualStudioVersion = 10.0.40219.1");
             fg.Generate(solutionPath);
+
+            // Create editorconfig
+            fg = new FileGeneration();
+            fg.AppendLine("[*.cs]");
+            fg.AppendLine();
+            fg.AppendLine("# CS4014: Task not awaited");
+            fg.AppendLine("dotnet_diagnostic.CS4014.severity = error");
+            fg.AppendLine();
+            fg.AppendLine("# CS1998: Async function does not contain await");
+            fg.AppendLine("dotnet_diagnostic.CS1998.severity = silent");
+            fg.Generate(Path.Combine(slnDir, ".editorconfig"));
+
+            // Add nullability errors
+            fg = new FileGeneration();
+            fg.AppendLine("<Project>");
+            using (new DepthWrapper(fg))
+            {
+                fg.AppendLine("<PropertyGroup>");
+                using (new DepthWrapper(fg))
+                {
+                    fg.AppendLine("<Nullable>enable</Nullable>");
+                    fg.AppendLine("<WarningsAsErrors>nullable</WarningsAsErrors>");
+                }
+                fg.AppendLine("</PropertyGroup>");
+            }
+            fg.AppendLine("</Project>");
+            fg.Generate(Path.Combine(slnDir, "Directory.Build.props"));
         }
 
         public static void AddProjectToSolution(string solutionpath, string projPath)
