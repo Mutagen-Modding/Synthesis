@@ -33,12 +33,12 @@ namespace Synthesis.Bethesda.GUI
         public Func<SolutionPatcherVM, Task>? TargetSolutionInitializer => _TargetSolutionInitializer.Value;
 
         [Reactive]
-        public bool OpenVsAfter { get; set; }
+        public OpenWithEnum OpenWith { get; set; }
 
         public SolutionPatcherInitVM(SolutionPatcherVM patcher)
         {
             _patcher = patcher;
-            OpenVsAfter = _patcher.Profile.Config.MainVM.Settings.OpenVsAfterCreating;
+            OpenWith = _patcher.Profile.Config.MainVM.Settings.OpenWithProgram;
             New.ParentDirPath.TargetPath = _patcher.Profile.Config.MainVM.Settings.MainRepositoryFolder;
 
             var initializer = this.WhenAnyValue(x => x.SelectedIndex)
@@ -68,27 +68,21 @@ namespace Synthesis.Bethesda.GUI
         {
             if (TargetSolutionInitializer == null) return;
             await TargetSolutionInitializer(_patcher);
-            if (OpenVsAfter)
+            try
             {
-                try
-                {
-                    Process.Start(new ProcessStartInfo(_patcher.SolutionPath.TargetPath)
-                    {
-                        UseShellExecute = true,
-                    });
-                }
-                catch (Exception)
-                {
-                    // ToDo
-                    // Log
-                }
+                OpenWithProgram.OpenSolution(_patcher.SolutionPath.TargetPath, OpenWith);
+            }
+            catch (Exception)
+            {
+                //TODO
+                //log
             }
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            _patcher.Profile.Config.MainVM.Settings.OpenVsAfterCreating = OpenVsAfter;
+            _patcher.Profile.Config.MainVM.Settings.OpenWithProgram = OpenWith;
             _patcher.Profile.Config.MainVM.Settings.MainRepositoryFolder = New.ParentDirPath.TargetPath;
         }
 

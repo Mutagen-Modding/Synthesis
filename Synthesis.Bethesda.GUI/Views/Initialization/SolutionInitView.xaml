@@ -8,6 +8,8 @@
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:noggog="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
+    xmlns:gui="clr-namespace:Synthesis.Bethesda.GUI"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -119,10 +121,29 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <CheckBox Grid.Row="1"
-            x:Name="OpenVsAfter"
-            Margin="10,15,0,6"
-            Content="Open Visual Studio After Creating" />
+        <Grid Grid.Row="1" Margin="0,15,0,6">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Margin="0 4" Text="Open With"/>
+            <ComboBox x:Name="OpenWithComboBox" Grid.Row="1">
+                <ComboBox.ItemsSource>
+                    <x:Array Type="{x:Type sys:Enum}">
+                        <gui:OpenWithEnum>None</gui:OpenWithEnum>
+                        <gui:OpenWithEnum>SystemDefault</gui:OpenWithEnum>
+                        <gui:OpenWithEnum>VisualStudio</gui:OpenWithEnum>
+                        <gui:OpenWithEnum>Rider</gui:OpenWithEnum>
+                        <gui:OpenWithEnum>VisualCode</gui:OpenWithEnum>
+                    </x:Array>
+                </ComboBox.ItemsSource>
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </Grid>
         <Grid Grid.Row="2"
             x:Name="HelpBox"
             Margin="0,25,0,0">
