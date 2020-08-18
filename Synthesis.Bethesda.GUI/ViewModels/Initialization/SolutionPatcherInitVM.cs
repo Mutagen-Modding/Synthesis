@@ -11,6 +11,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DynamicData.Binding;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -32,6 +33,8 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<Func<SolutionPatcherVM, Task>?> _TargetSolutionInitializer;
         public Func<SolutionPatcherVM, Task>? TargetSolutionInitializer => _TargetSolutionInitializer.Value;
 
+        public ObservableCollectionExtended<OpenWithEnum> OpenWithOptions { get; } = new ObservableCollectionExtended<OpenWithEnum>(); 
+        
         [Reactive]
         public OpenWithEnum OpenWith { get; set; }
 
@@ -40,6 +43,8 @@ namespace Synthesis.Bethesda.GUI
             _patcher = patcher;
             OpenWith = _patcher.Profile.Config.MainVM.Settings.OpenWithProgram;
             New.ParentDirPath.TargetPath = _patcher.Profile.Config.MainVM.Settings.MainRepositoryFolder;
+            
+            OpenWithOptions.AddRange(EnumExt.GetValues<OpenWithEnum>());
 
             var initializer = this.WhenAnyValue(x => x.SelectedIndex)
                 .Select<int, ASolutionInitializer>(x =>

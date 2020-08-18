@@ -61,6 +61,8 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(dispose);
 
                 // Bind open after checkbox
+                this.BindStrict(ViewModel, vm => vm.OpenWithOptions, view => view.OpenWithComboBox.ItemsSource)
+                    .DisposeWith(dispose);
                 this.BindStrict(ViewModel, vm => vm.OpenWith, view => view.OpenWithComboBox.SelectedValue)
                     .DisposeWith(dispose);
             });

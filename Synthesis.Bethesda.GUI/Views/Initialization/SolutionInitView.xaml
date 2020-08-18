@@ -128,15 +128,6 @@
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Margin="0 4" Text="Open With"/>
             <ComboBox x:Name="OpenWithComboBox" Grid.Row="1">
-                <ComboBox.ItemsSource>
-                    <x:Array Type="{x:Type sys:Enum}">
-                        <gui:OpenWithEnum>None</gui:OpenWithEnum>
-                        <gui:OpenWithEnum>SystemDefault</gui:OpenWithEnum>
-                        <gui:OpenWithEnum>VisualStudio</gui:OpenWithEnum>
-                        <gui:OpenWithEnum>Rider</gui:OpenWithEnum>
-                        <gui:OpenWithEnum>VisualCode</gui:OpenWithEnum>
-                    </x:Array>
-                </ComboBox.ItemsSource>
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"/>
