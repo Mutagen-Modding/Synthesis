@@ -11,6 +11,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DynamicData.Binding;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -32,14 +33,18 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<Func<SolutionPatcherVM, Task>?> _TargetSolutionInitializer;
         public Func<SolutionPatcherVM, Task>? TargetSolutionInitializer => _TargetSolutionInitializer.Value;
 
+        public ObservableCollectionExtended<OpenWithEnum> OpenWithOptions { get; } = new ObservableCollectionExtended<OpenWithEnum>(); 
+        
         [Reactive]
-        public bool OpenVsAfter { get; set; }
+        public OpenWithEnum OpenWith { get; set; }
 
         public SolutionPatcherInitVM(SolutionPatcherVM patcher)
         {
             _patcher = patcher;
-            OpenVsAfter = _patcher.Profile.Config.MainVM.Settings.OpenVsAfterCreating;
+            OpenWith = _patcher.Profile.Config.MainVM.Settings.OpenWithProgram;
             New.ParentDirPath.TargetPath = _patcher.Profile.Config.MainVM.Settings.MainRepositoryFolder;
+            
+            OpenWithOptions.AddRange(EnumExt.GetValues<OpenWithEnum>());
 
             var initializer = this.WhenAnyValue(x => x.SelectedIndex)
                 .Select<int, ASolutionInitializer>(x =>
@@ -68,27 +73,21 @@ namespace Synthesis.Bethesda.GUI
         {
             if (TargetSolutionInitializer == null) return;
             await TargetSolutionInitializer(_patcher);
-            if (OpenVsAfter)
+            try
             {
-                try
-                {
-                    Process.Start(new ProcessStartInfo(_patcher.SolutionPath.TargetPath)
-                    {
-                        UseShellExecute = true,
-                    });
-                }
-                catch (Exception)
-                {
-                    // ToDo
-                    // Log
-                }
+                OpenWithProgram.OpenSolution(_patcher.SolutionPath.TargetPath, OpenWith);
+            }
+            catch (Exception)
+            {
+                //TODO
+                //log
             }
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            _patcher.Profile.Config.MainVM.Settings.OpenVsAfterCreating = OpenVsAfter;
+            _patcher.Profile.Config.MainVM.Settings.OpenWithProgram = OpenWith;
             _patcher.Profile.Config.MainVM.Settings.MainRepositoryFolder = New.ParentDirPath.TargetPath;
         }
 

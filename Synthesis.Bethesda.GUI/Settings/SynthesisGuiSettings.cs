@@ -9,7 +9,7 @@ namespace Synthesis.Bethesda.GUI
     {
         public SynthesisSettings ExecutableSettings = new SynthesisSettings();
         public bool ShowHelp = true;
-        public bool OpenVsAfterCreating = true;
+        public OpenWithEnum OpenWithProgram = OpenWithEnum.VisualStudio;
         public string MainRepositoryFolder = string.Empty;
     }
 }
