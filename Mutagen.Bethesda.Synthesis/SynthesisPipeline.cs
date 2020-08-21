@@ -201,45 +201,38 @@ namespace Mutagen.Bethesda.Synthesis
             };
         }
 
-        public IEnumerable<ModKey> GetLoadOrder(
+        public IEnumerable<LoadOrderListing> GetLoadOrder(
             RunSynthesisPatcher settings,
             UserPreferences? userPrefs = null,
             bool throwOnMissingMods = true)
         {
             return GetLoadOrder(
-                category: settings.GameRelease.ToCategory(),
+                release: settings.GameRelease,
                 loadOrderFilePath: settings.LoadOrderFilePath,
                 dataFolderPath: settings.DataFolderPath,
                 userPrefs: userPrefs,
                 throwOnMissingMods: throwOnMissingMods);
         }
 
-        public IEnumerable<ModKey> GetLoadOrder(
-            GameCategory category,
+        public IEnumerable<LoadOrderListing> GetLoadOrder(
+            GameRelease release,
             string loadOrderFilePath,
             string dataFolderPath,
             UserPreferences? userPrefs = null,
             bool throwOnMissingMods = true)
         {
-            var loadOrderListing = (IEnumerable<ModKey>)LoadOrder.FromPath(loadOrderFilePath);
-            if (LoadOrder.NeedsTimestampAlignment(category))
-            {
-                loadOrderListing = LoadOrder.AlignToTimestamps(
-                    loadOrderListing,
-                    dataFolderPath,
-                    throwOnMissingMods: throwOnMissingMods);
-            }
+            var loadOrderListing = LoadOrder.FromPath(loadOrderFilePath, release, dataFolderPath);
             if (userPrefs?.InclusionMods != null)
             {
                 var inclusions = userPrefs.InclusionMods.ToHashSet();
                 loadOrderListing = loadOrderListing
-                    .Where(m => inclusions.Contains(m));
+                    .Where(m => inclusions.Contains(m.ModKey));
             }
             if (userPrefs?.ExclusionMods != null)
             {
                 var exclusions = userPrefs.ExclusionMods.ToHashSet();
                 loadOrderListing = loadOrderListing
-                    .Where(m => !exclusions.Contains(m));
+                    .Where(m => !exclusions.Contains(m.ModKey));
             }
             return loadOrderListing;
         }

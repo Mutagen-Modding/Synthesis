@@ -47,7 +47,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<ErrorResponse> _LargeOverallError;
         public ErrorResponse LargeOverallError => _LargeOverallError.Value;
 
-        public IObservableList<ModKey> LoadOrder { get; }
+        public IObservableList<LoadOrderListing> LoadOrder { get; }
 
         private readonly ObservableAsPropertyHelper<bool> _IsActive;
         public bool IsActive => _IsActive.Value;
@@ -95,26 +95,26 @@ namespace Synthesis.Bethesda.GUI
                 {
                     try
                     {
-                        if (x.DataFolder.Failed) return x.DataFolder.Bubble<IEnumerable<ModKey>>(_ => Enumerable.Empty<ModKey>());
+                        if (x.DataFolder.Failed) return x.DataFolder.Bubble<IEnumerable<LoadOrderListing>>(_ => Enumerable.Empty<LoadOrderListing>());
                         var lo = Mutagen.Bethesda.LoadOrder.GetUsualLoadOrder(x.Release, x.DataFolder.Value, throwOnMissingMods: true);
-                        return GetResponse<IEnumerable<ModKey>>.Succeed(lo);
+                        return GetResponse<IEnumerable<LoadOrderListing>>.Succeed(lo);
                     }
                     catch (MissingModException ex)
                     {
-                        return GetResponse<IEnumerable<ModKey>>.Fail(
-                            Enumerable.Empty<ModKey>(),
+                        return GetResponse<IEnumerable<LoadOrderListing>>.Fail(
+                            Enumerable.Empty<LoadOrderListing>(),
                             $"Mod on the load order was missing from the data folder: {ex.ModPath}");
                     }
                     catch (FileNotFoundException)
                     {
-                        return GetResponse<IEnumerable<ModKey>>.Fail(
-                            Enumerable.Empty<ModKey>(),
+                        return GetResponse<IEnumerable<LoadOrderListing>>.Fail(
+                            Enumerable.Empty<LoadOrderListing>(),
                             $"Could not locate load order for target game.");
                     }
                     catch (Exception ex)
                     {
-                        return GetResponse<IEnumerable<ModKey>>.Fail(
-                            Enumerable.Empty<ModKey>(),
+                        return GetResponse<IEnumerable<LoadOrderListing>>.Fail(
+                            Enumerable.Empty<LoadOrderListing>(),
                             ex);
                     }
                 })
