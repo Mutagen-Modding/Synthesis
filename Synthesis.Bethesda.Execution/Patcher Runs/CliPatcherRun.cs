@@ -1,4 +1,4 @@
-﻿using Mutagen.Bethesda;
+using Mutagen.Bethesda;
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Settings;
@@ -50,7 +50,10 @@ namespace Synthesis.Bethesda.Execution
             try
             {
                 using ProcessWrapper process = ProcessWrapper.Start(
-                    new ProcessStartInfo(PathToExecutable, args),
+                    new ProcessStartInfo(PathToExecutable, args)
+                    {
+                        WorkingDirectory = Path.GetDirectoryName(PathToExecutable)
+                    },
                     cancel);
                 using var outputSub = process.Output.Subscribe(_output);
                 using var errSub = process.Error.Subscribe(_error);
