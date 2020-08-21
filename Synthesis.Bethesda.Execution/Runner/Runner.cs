@@ -1,4 +1,4 @@
-﻿using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers;
 using Noggog;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace Synthesis.Bethesda.Execution.Runner
             string workingDirectory,
             ModPath outputPath,
             string dataFolder,
-            IEnumerable<ModKey> loadOrder,
+            IEnumerable<LoadOrderListing> loadOrder,
             GameRelease release,
             IEnumerable<IPatcherRun> patchers,
             ModPath? sourcePath = null,
@@ -40,7 +40,7 @@ namespace Synthesis.Bethesda.Execution.Runner
             string workingDirectory,
             ModPath outputPath,
             string dataFolder,
-            IEnumerable<ModKey> loadOrder,
+            IEnumerable<LoadOrderListing> loadOrder,
             GameRelease release,
             IEnumerable<(TKey Key, IPatcherRun Run)> patchers,
             IRunReporter<TKey> reporter,
@@ -67,15 +67,22 @@ namespace Synthesis.Bethesda.Execution.Runner
 
                 bool problem = false;
 
-                // Copy plugins text to working directory
+                // Copy plugins text to working directory, trimming synthesis and anything after
+                var loadOrderList = loadOrder.ToList();
+                var synthIndex = loadOrderList.IndexOf(Constants.SynthesisModKey, (listing, key) => listing.ModKey == key);
+                if (synthIndex != -1)
+                {
+                    loadOrderList.RemoveToCount(synthIndex);
+                }
                 string loadOrderPath = Path.Combine(workingDirectory, "Plugins.txt");
-                var writeLoadOrder = Task.Run(async () =>
+                var writeLoadOrder = Task.Run(() =>
                 {
                     try
                     {
-                        await File.WriteAllLinesAsync(
+                        LoadOrder.Write(
                             loadOrderPath,
-                            loadOrder.Select(modKey => modKey.FileName));
+                            release,
+                            loadOrderList);
                     }
                     catch (Exception ex)
                     {

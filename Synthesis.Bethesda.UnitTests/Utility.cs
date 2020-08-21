@@ -1,4 +1,5 @@
-﻿using Mutagen.Bethesda;
+using Mutagen.Bethesda;
+using Noggog;
 using Noggog.Utility;
 using System;
 using System.Collections.Generic;
@@ -20,16 +21,16 @@ namespace Synthesis.Bethesda.UnitTests
         public static readonly string PathToLoadOrderFile = "../../../Plugins.txt";
 
         public static string TypicalOutputFile(TempFolder tempFolder) => Path.Combine(tempFolder.Dir.Path, TypicalOutputFilename);
-        public static IEnumerable<ModKey> TypicalLoadOrder() => LoadOrder.FromPath(PathToLoadOrderFile);
+        public static IEnumerable<LoadOrderListing> TypicalLoadOrder(GameRelease release, DirectoryPath dir) => LoadOrder.FromPath(PathToLoadOrderFile, release, dir);
 
-        public static TempFolder SetupDataFolder(string? loadOrderPath = null)
+        public static TempFolder SetupDataFolder(GameRelease release, string? loadOrderPath = null)
         {
             var dataFolder = new TempFolder();
             loadOrderPath ??= PathToLoadOrderFile;
             File.Copy(Utility.PathToTestFile, Path.Combine(dataFolder.Dir.Path, Path.GetFileName(Utility.PathToTestFile)));
             File.Copy(Utility.PathToOverrideFile, Path.Combine(dataFolder.Dir.Path, Path.GetFileName(Utility.PathToOverrideFile)));
-            var loadOrderListing = LoadOrder.FromPath(loadOrderPath);
-            LoadOrder.AlignTimestamps(loadOrderListing, dataFolder.Dir.Path);
+            var loadOrderListing = LoadOrder.FromPath(loadOrderPath, release, dataFolder.Dir);
+            LoadOrder.AlignTimestamps(loadOrderListing.OnlyEnabled(), dataFolder.Dir.Path);
             return dataFolder;
         }
     }

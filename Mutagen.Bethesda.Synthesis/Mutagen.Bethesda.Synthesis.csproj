@@ -12,7 +12,7 @@
     <RepositoryUrl>https://github.com/Noggog/Synthesis</RepositoryUrl>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <AssemblyName>Mutagen.Bethesda.Synthesis</AssemblyName>
-    <Version>0.0.2.1</Version>
+    <Version>0.0.3-dev</Version>
     <Platforms>x64</Platforms>
   </PropertyGroup>
 

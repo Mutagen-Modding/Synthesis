@@ -28,7 +28,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 .ToExtendedList();
             var loadOrder = LoadOrder.Import<TModGetter>(
                 settings.DataFolderPath,
-                loadOrderListing,
+                loadOrderListing.OnlyEnabled(),
                 settings.GameRelease);
 
             // Get Modkey from output path

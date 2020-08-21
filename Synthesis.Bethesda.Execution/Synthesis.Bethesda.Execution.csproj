@@ -12,7 +12,7 @@
     <Company>Mutagen</Company>
     <Product>Synthesis</Product>
     <PackageId>Synthesis.Bethesda.Execution</PackageId>
-    <Version>0.0.2.1</Version>
+    <Version>0.0.3-dev</Version>
     <Platforms>x64</Platforms>
   </PropertyGroup>
 
