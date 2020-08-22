@@ -192,6 +192,30 @@ namespace Synthesis.Bethesda.UnitTests
             Assert.True(File.Exists(reporter.PatcherComplete[0].OutputPath));
         }
 
+        [Fact]
+        public async Task TrimsPostSynthesisFromLoadOrder()
+        {
+            using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimLE);
+            var output = Utility.TypicalOutputFile(tmpFolder);
+            var patcher = new DummyPatcher();
+            await Runner.Run(
+                workingDirectory: tmpFolder.Dir.Path,
+                outputPath: output,
+                dataFolder: dataFolder.Dir.Path,
+                release: GameRelease.SkyrimLE,
+                loadOrder: Utility.TypicalLoadOrder(GameRelease.SkyrimLE, dataFolder.Dir)
+                    .And(new LoadOrderListing(Constants.SynthesisModKey, true))
+                    .And(new LoadOrderListing(Utility.RandomModKey, true)),
+                patchers: patcher.AsEnumerable().ToList());
+            Assert.Equal(
+                new string[]
+                {
+                    Utility.TestModKey.FileName,
+                    Utility.OverrideModKey.FileName,
+                }, File.ReadAllLines(Path.Combine(tmpFolder.Dir.Path, "Plugins.txt")));
+        }
+
         public class DummyPatcher : IPatcherRun
         {
             public string Name => "Dummy";

@@ -1,4 +1,4 @@
-﻿using Mutagen.Bethesda.Internals;
+using Mutagen.Bethesda.Internals;
 using Noggog;
 using Synthesis.Bethesda;
 using System;
@@ -26,6 +26,11 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             // Get load order
             var loadOrderListing = SynthesisPipeline.Instance.GetLoadOrder(settings, userPrefs)
                 .ToExtendedList();
+            var synthIndex = loadOrderListing.IndexOf(Constants.SynthesisModKey, (listing, key) => listing.ModKey == key);
+            if (synthIndex != -1)
+            {
+                loadOrderListing.RemoveToCount(synthIndex);
+            }
             var loadOrder = LoadOrder.Import<TModGetter>(
                 settings.DataFolderPath,
                 loadOrderListing.OnlyEnabled(),

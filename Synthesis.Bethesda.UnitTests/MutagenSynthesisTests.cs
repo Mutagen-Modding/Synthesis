@@ -158,6 +158,39 @@ namespace Synthesis.Bethesda.UnitTests
         }
 
         [Fact]
+        public void TrimsPostSynthesisFromLoadOrder()
+        {
+            using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimLE);
+            var pluginsPath = Path.Combine(dataFolder.Dir.Path, "Plugins.txt");
+            File.WriteAllLines(
+                pluginsPath,
+                new string[]
+                {
+                    Utility.TestModKey.FileName,
+                    Utility.OverrideModKey.FileName,
+                    Constants.SynthesisModKey.FileName,
+                    Utility.RandomModKey.FileName
+                });
+            var prevPath = new ModPath(Utility.OverrideModKey, Path.Combine(dataFolder.Dir.Path, Utility.OverrideModKey.FileName));
+            var modPath = PatchModPath(dataFolder);
+            using var state = Mutagen.Bethesda.Synthesis.Internal.Utility.ToState<Mutagen.Bethesda.Skyrim.ISkyrimMod, Mutagen.Bethesda.Skyrim.ISkyrimModGetter>(
+                new RunSynthesisPatcher()
+                {
+                    DataFolderPath = dataFolder.Dir.Path,
+                    GameRelease = Mutagen.Bethesda.GameRelease.SkyrimLE,
+                    OutputPath = modPath,
+                    SourcePath = prevPath,
+                    LoadOrderFilePath = pluginsPath
+                },
+                new UserPreferences());
+            Assert.Equal(3, state.LoadOrder.Count);
+            Assert.Equal(Utility.TestModKey, state.LoadOrder[0].ModKey);
+            Assert.Equal(Utility.OverrideModKey, state.LoadOrder[1].ModKey);
+            Assert.Equal(Constants.SynthesisModKey, state.LoadOrder[2].ModKey);
+        }
+
+        [Fact]
         public void EmptyArgs_NoRun()
         {
             SynthesisPipeline.Instance.Patch<IOblivionMod, IOblivionModGetter>(
