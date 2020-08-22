@@ -1,4 +1,4 @@
-﻿using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Runner;
 using Noggog;
 using Noggog.Utility;
@@ -20,8 +20,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task EmptyRun()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             await Runner.Run(
                 workingDirectory: tmpFolder.Dir.Path,
@@ -36,8 +36,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task ListedNonExistantSourcePath()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var patcher = new DummyPatcher();
             var output = Utility.TypicalOutputFile(tmpFolder);
             var reporter = new TrackerReporter();
@@ -58,8 +58,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task BasicPatcherFunctionsCalled()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher();
             await Runner.Run(
@@ -76,8 +76,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task ChecksIfPatchersOutput()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher()
             {
@@ -99,8 +99,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task FinalOutputFileCreated()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher();
             await Runner.Run(
@@ -116,8 +116,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task PatcherThrowInPrep()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher()
             {
@@ -143,8 +143,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task PatcherThrowInRun()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher()
             {
@@ -170,8 +170,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task PatcherOutputReported()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher();
             var reporter = new TrackerReporter();

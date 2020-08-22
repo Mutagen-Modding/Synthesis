@@ -23,9 +23,9 @@ namespace Synthesis.Bethesda.UnitTests
         public static string TypicalOutputFile(TempFolder tempFolder) => Path.Combine(tempFolder.Dir.Path, TypicalOutputFilename);
         public static IEnumerable<LoadOrderListing> TypicalLoadOrder(GameRelease release, DirectoryPath dir) => LoadOrder.FromPath(PathToLoadOrderFile, release, dir);
 
-        public static TempFolder SetupDataFolder(GameRelease release, string? loadOrderPath = null)
+        public static TempFolder SetupDataFolder(TempFolder tempFolder, GameRelease release, string? loadOrderPath = null)
         {
-            var dataFolder = new TempFolder();
+            var dataFolder = new TempFolder(Path.Combine(tempFolder.Dir.Path, "Data"));
             loadOrderPath ??= PathToLoadOrderFile;
             File.Copy(Utility.PathToTestFile, Path.Combine(dataFolder.Dir.Path, Path.GetFileName(Utility.PathToTestFile)));
             File.Copy(Utility.PathToOverrideFile, Path.Combine(dataFolder.Dir.Path, Path.GetFileName(Utility.PathToOverrideFile)));

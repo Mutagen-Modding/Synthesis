@@ -38,7 +38,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void TypicalPatcher_FreshStart()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
+            using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
             SynthesisPipeline.Instance.Patch<IOblivionMod, IOblivionModGetter>(
                 new RunSynthesisPatcher()
@@ -61,7 +62,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void TypicalPatcher_HasSource()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
+            using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
             var settings = new RunSynthesisPatcher()
             {
@@ -98,7 +100,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void MisalignedGameTypes()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
+            using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
             Assert.Throws<ArgumentException>(() =>
             {
@@ -118,7 +121,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void HasSourceModOnLoadOrder()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
+            using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
             var state = Mutagen.Bethesda.Synthesis.Internal.Utility.ToState<IOblivionMod, IOblivionModGetter>(
                 new RunSynthesisPatcher()
@@ -136,7 +140,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void HasSourceModOnLoadOrder_HasSource()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
+            using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var prevPath = new ModPath(Utility.OverrideModKey, Path.Combine(dataFolder.Dir.Path, Utility.OverrideModKey.FileName));
             var modPath = PatchModPath(dataFolder);
             var state = Mutagen.Bethesda.Synthesis.Internal.Utility.ToState<IOblivionMod, IOblivionModGetter>(

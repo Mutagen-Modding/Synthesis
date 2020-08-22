@@ -67,8 +67,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task BasicRun()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var settings = new CodeSnippetPatcherSettings()
             {
                 On = true,
@@ -93,8 +93,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task CreatesOutput()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var settings = new CodeSnippetPatcherSettings()
             {
                 On = true,
@@ -120,8 +120,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task RunTwice()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var outputFile = Utility.TypicalOutputFile(tmpFolder);
             var settings = new CodeSnippetPatcherSettings()
             {
@@ -149,8 +149,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void ConstructStateFactory()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var settings = new RunSynthesisPatcher()
             {
