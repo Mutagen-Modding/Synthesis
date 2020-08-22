@@ -142,7 +142,7 @@ namespace Synthesis.Bethesda.UnitTests
                     SourcePath = i == 1 ? outputFile : null
                 });
             }
-            var mod = OblivionMod.CreateFromBinaryOverlay(outputFile);
+            using var mod = OblivionMod.CreateFromBinaryOverlay(outputFile);
             Assert.Equal(2, mod.Npcs.Count);
         }
 
@@ -163,7 +163,7 @@ namespace Synthesis.Bethesda.UnitTests
             var factory = CodeSnippetPatcherRun.ConstructStateFactory(GameRelease.Oblivion);
             var stateObj = factory(settings, new UserPreferences());
             Assert.NotNull(stateObj);
-            SynthesisState<IOblivionMod, IOblivionModGetter>? state = stateObj as SynthesisState<IOblivionMod, IOblivionModGetter>;
+            using var state = stateObj as SynthesisState<IOblivionMod, IOblivionModGetter>;
             Assert.NotNull(state);
         }
     }

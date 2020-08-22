@@ -1,4 +1,4 @@
-﻿using Synthesis.Bethesda;
+using Synthesis.Bethesda;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,6 +62,11 @@ namespace Mutagen.Bethesda.Synthesis
             LoadOrder = loadOrder;
             PatchMod = patchMod;
             Cancel = cancellation;
+        }
+
+        public void Dispose()
+        {
+            LoadOrder.Dispose();
         }
     }
 }

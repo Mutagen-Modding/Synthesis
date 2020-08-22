@@ -193,7 +193,7 @@ namespace Mutagen.Bethesda.Synthesis
             where TModGetter : class, IModGetter
         {
             WarmupAll.Init();
-            var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
+            using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
             System.Console.WriteLine("Running patch.");
             await patcher(state).ConfigureAwait(false);
             System.Console.WriteLine($"Writing to output: {settings.OutputPath}");
@@ -216,7 +216,7 @@ namespace Mutagen.Bethesda.Synthesis
             where TModGetter : class, IModGetter
         {
             WarmupAll.Init();
-            var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
+            using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
             System.Console.WriteLine("Running patch.");
             patcher(state);
             System.Console.WriteLine($"Writing to output: {settings.OutputPath}");
