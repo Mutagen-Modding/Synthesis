@@ -51,6 +51,36 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
+            if (args.Length == 0)
+            {
+                var prefs = userPreferences ?? new UserPreferences();
+                if (prefs.ActionsForEmptyArgs != null)
+                {
+                    try
+                    {
+                        await Patch(
+                            GetDefaultRun(prefs.ActionsForEmptyArgs.IdentifyingModKey, prefs.ActionsForEmptyArgs.TargetRelease),
+                            patcher,
+                            prefs);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Console.Error.WriteLine(ex);
+                        if (prefs.ActionsForEmptyArgs.BlockAutomaticExit)
+                        {
+                            System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
+                            System.Console.ReadLine();
+                        }
+                        return -1;
+                    }
+                    if (prefs.ActionsForEmptyArgs.BlockAutomaticExit)
+                    {
+                        System.Console.Error.WriteLine("Press enter to exit");
+                        System.Console.ReadLine();
+                    }
+                    return 0;
+                }
+            }
             return await Parser.Default.ParseArguments(args, typeof(RunSynthesisPatcher))
                 .MapResult(
                     async (RunSynthesisPatcher settings) =>
@@ -72,21 +102,7 @@ namespace Mutagen.Bethesda.Synthesis
                     },
                     async _ =>
                     {
-                        var prefs = userPreferences ?? new UserPreferences();
-                        if (prefs.ActionsForEmptyArgs == null) return -1;
-                        try
-                        {
-                            await Patch(
-                                GetDefaultRun(prefs.ActionsForEmptyArgs.IdentifyingModKey, prefs.ActionsForEmptyArgs.TargetRelease),
-                                patcher,
-                                prefs);
-                        }
-                        catch (Exception ex)
-                        {
-                            System.Console.Error.WriteLine(ex);
-                            return -1;
-                        }
-                        return 0;
+                        return -1;
                     });
         }
 
@@ -106,6 +122,36 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
+            if (args.Length == 0)
+            {
+                var prefs = userPreferences ?? new UserPreferences();
+                if (prefs.ActionsForEmptyArgs != null)
+                {
+                    try
+                    {
+                        Patch(
+                            GetDefaultRun(prefs.ActionsForEmptyArgs.IdentifyingModKey, prefs.ActionsForEmptyArgs.TargetRelease),
+                            patcher,
+                            prefs);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Console.Error.WriteLine(ex);
+                        if (prefs.ActionsForEmptyArgs.BlockAutomaticExit)
+                        {
+                            System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
+                            System.Console.ReadLine();
+                        }
+                        return -1;
+                    }
+                    if (prefs.ActionsForEmptyArgs.BlockAutomaticExit)
+                    {
+                        System.Console.Error.WriteLine("Press enter to exit");
+                        System.Console.ReadLine();
+                    }
+                    return 0;
+                }
+            }
             return Parser.Default.ParseArguments(args, typeof(RunSynthesisPatcher))
                 .MapResult(
                     (RunSynthesisPatcher settings) =>
@@ -127,32 +173,7 @@ namespace Mutagen.Bethesda.Synthesis
                     },
                     _ =>
                     {
-                        var prefs = userPreferences ?? new UserPreferences();
-                        if (prefs.ActionsForEmptyArgs == null) return -1;
-                        try
-                        {
-                            System.Console.WriteLine("Running patch directly outside of Sythesis:");
-                            Patch(
-                                GetDefaultRun(prefs.ActionsForEmptyArgs.IdentifyingModKey, prefs.ActionsForEmptyArgs.TargetRelease),
-                                patcher,
-                                prefs);
-                        }
-                        catch (Exception ex)
-                        {
-                            System.Console.Error.WriteLine(ex);
-                            if (prefs.ActionsForEmptyArgs.BlockAutomaticExit)
-                            {
-                                System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
-                                System.Console.ReadLine();
-                            }
-                            return -1;
-                        }
-                        if (prefs.ActionsForEmptyArgs.BlockAutomaticExit)
-                        {
-                            System.Console.Error.WriteLine("Press enter to exit");
-                            System.Console.ReadLine();
-                        }
-                        return 0;
+                        return -1;
                     });
         }
 
