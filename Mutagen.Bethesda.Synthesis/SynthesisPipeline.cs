@@ -1,4 +1,4 @@
-﻿using CommandLine;
+using CommandLine;
 using Mutagen.Bethesda.Internals;
 using Mutagen.Bethesda.Synthesis.Internal;
 using Noggog;
@@ -131,6 +131,7 @@ namespace Mutagen.Bethesda.Synthesis
                         if (prefs.ActionsForEmptyArgs == null) return -1;
                         try
                         {
+                            System.Console.WriteLine("Running patch directly outside of Sythesis:");
                             Patch(
                                 GetDefaultRun(prefs.ActionsForEmptyArgs.IdentifyingModKey, prefs.ActionsForEmptyArgs.TargetRelease),
                                 patcher,
@@ -139,7 +140,17 @@ namespace Mutagen.Bethesda.Synthesis
                         catch (Exception ex)
                         {
                             System.Console.Error.WriteLine(ex);
+                            if (prefs.ActionsForEmptyArgs.BlockAutomaticExit)
+                            {
+                                System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
+                                System.Console.ReadLine();
+                            }
                             return -1;
+                        }
+                        if (prefs.ActionsForEmptyArgs.BlockAutomaticExit)
+                        {
+                            System.Console.Error.WriteLine("Press enter to exit");
+                            System.Console.ReadLine();
                         }
                         return 0;
                     });

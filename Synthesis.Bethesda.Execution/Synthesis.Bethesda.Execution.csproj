@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
@@ -12,7 +12,7 @@
     <Company>Mutagen</Company>
     <Product>Synthesis</Product>
     <PackageId>Synthesis.Bethesda.Execution</PackageId>
-    <Version>0.0.3-dev</Version>
+    <Version>0.0.4-dev</Version>
     <Platforms>x64</Platforms>
   </PropertyGroup>
 
