@@ -1,4 +1,4 @@
-﻿using DynamicData;
+using DynamicData;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Synthesis.Bethesda.Execution.Settings;
 using Noggog;
@@ -57,7 +57,7 @@ namespace Synthesis.Bethesda.GUI
 
             _DisplayName = this.WhenAnyValue(
                 x => x.Nickname,
-                x => x.SolutionPath.TargetPath,
+                x => x.SelectedProjectPath.TargetPath,
                 (nickname, path) =>
                 {
                     if (!string.IsNullOrWhiteSpace(nickname)) return nickname;
