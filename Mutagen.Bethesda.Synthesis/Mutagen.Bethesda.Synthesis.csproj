@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
@@ -23,8 +23,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Mutagen.Bethesda" Version="0.13.4-dev" />
-    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.13.4-devs" />
+    <PackageReference Include="Mutagen.Bethesda" Version="0.13.4" />
+    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.13.4" />
   </ItemGroup>
 
   <ItemGroup>
