@@ -1,4 +1,4 @@
-﻿using Noggog.WPF;
+using Noggog.WPF;
 using Noggog;
 using ReactiveUI;
 using System;
@@ -36,6 +36,11 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel.State.RunnableState.Succeeded)
                     .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.BlockingIssueDisplayCircle.Visibility)
+                    .DisposeWith(disposable);
+
+                // ContextMenu
+                this.WhenAnyValue(x => x.ViewModel.DeleteCommand)
+                    .BindToStrict(this, x => x.DeleteContextMenuButton.Command)
                     .DisposeWith(disposable);
             });
         }
