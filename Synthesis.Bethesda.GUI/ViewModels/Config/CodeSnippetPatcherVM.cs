@@ -1,4 +1,4 @@
-﻿using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Settings;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -162,6 +162,7 @@ namespace Synthesis.Bethesda.GUI
             var ret = new CodeSnippetPatcherSettings();
             CopyOverSave(ret);
             ret.Code = this.Code;
+            ret.ID = this.ID;
             return ret;
         }
 
