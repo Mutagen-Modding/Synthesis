@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Platforms>x64</Platforms>
+    <Version>0.0.6.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
