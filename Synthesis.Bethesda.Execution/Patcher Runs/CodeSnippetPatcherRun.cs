@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Synthesis.Bethesda.Execution.Settings;
@@ -66,7 +66,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             {
                 Cancel = cancel ?? CancellationToken.None
             };
-            var synthesisState = ConstructStateFactory(settings.GameRelease)(settings, userPrefs);
+            using var synthesisState = ConstructStateFactory(settings.GameRelease)(settings, userPrefs);
             Task t = (Task)type.InvokeMember("Run",
                 BindingFlags.Default | BindingFlags.InvokeMethod,
                 null,

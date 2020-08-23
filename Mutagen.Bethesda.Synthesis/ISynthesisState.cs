@@ -1,11 +1,11 @@
-﻿using Synthesis.Bethesda;
+using Synthesis.Bethesda;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Mutagen.Bethesda.Synthesis
 {
-    public interface ISynthesisState
+    public interface ISynthesisState : IDisposable
     {
         IRunPipelineSettings Settings { get; }
         IModGetter PatchMod { get; }

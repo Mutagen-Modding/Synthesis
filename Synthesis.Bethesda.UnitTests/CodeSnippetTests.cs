@@ -67,8 +67,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task BasicRun()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var settings = new CodeSnippetPatcherSettings()
             {
                 On = true,
@@ -93,8 +93,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task CreatesOutput()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var settings = new CodeSnippetPatcherSettings()
             {
                 On = true,
@@ -120,8 +120,8 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task RunTwice()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var outputFile = Utility.TypicalOutputFile(tmpFolder);
             var settings = new CodeSnippetPatcherSettings()
             {
@@ -142,15 +142,15 @@ namespace Synthesis.Bethesda.UnitTests
                     SourcePath = i == 1 ? outputFile : null
                 });
             }
-            var mod = OblivionMod.CreateFromBinaryOverlay(outputFile);
+            using var mod = OblivionMod.CreateFromBinaryOverlay(outputFile);
             Assert.Equal(2, mod.Npcs.Count);
         }
 
         [Fact]
         public void ConstructStateFactory()
         {
-            using var dataFolder = Utility.SetupDataFolder(GameRelease.Oblivion);
             using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var settings = new RunSynthesisPatcher()
             {
@@ -163,7 +163,7 @@ namespace Synthesis.Bethesda.UnitTests
             var factory = CodeSnippetPatcherRun.ConstructStateFactory(GameRelease.Oblivion);
             var stateObj = factory(settings, new UserPreferences());
             Assert.NotNull(stateObj);
-            SynthesisState<IOblivionMod, IOblivionModGetter>? state = stateObj as SynthesisState<IOblivionMod, IOblivionModGetter>;
+            using var state = stateObj as SynthesisState<IOblivionMod, IOblivionModGetter>;
             Assert.NotNull(state);
         }
     }

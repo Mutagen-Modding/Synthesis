@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,5 +15,10 @@ namespace Mutagen.Bethesda.Synthesis
         /// GameRelease to target
         /// </summary>
         public GameRelease TargetRelease { get; set; }
+
+        /// <summary>
+        /// Whether to block automatic exit and wait for user to press return before exiting
+        /// </summary>
+        public bool BlockAutomaticExit { get; set; } = true;
     }
 }

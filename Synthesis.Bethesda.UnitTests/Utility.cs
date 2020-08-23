@@ -4,6 +4,7 @@ using Noggog.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Synthesis.Bethesda.UnitTests
@@ -13,24 +14,43 @@ namespace Synthesis.Bethesda.UnitTests
         public static readonly string OverallTempFolderPath = "SynthesisUnitTests";
         public static TempFolder GetTempFolder() => new TempFolder(Path.Combine(OverallTempFolderPath, Path.GetRandomFileName()));
         public static readonly string TypicalOutputFilename = "Synthesis.esp";
-        public static readonly ModKey ModKey = new ModKey("Synthesis", ModType.Plugin);
-        public static readonly string PathToTestFile = "../../../../test.esp";
         public static readonly ModKey TestModKey = new ModKey("test", ModType.Plugin);
-        public static readonly string PathToOverrideFile = "../../../../override.esp";
         public static readonly ModKey OverrideModKey = new ModKey("override", ModType.Plugin);
+        public static readonly string TestFileName = "test.esp";
+        public static readonly string OverrideFileName = "override.esp";
+        public static readonly string OblivionPathToTestFile = "../../../../oblivion_test.esp";
+        public static readonly string OblivionPathToOverrideFile = "../../../../oblivion_override.esp";
+        public static readonly string LePathToTestFile = "../../../../le_test.esp";
+        public static readonly string LePathToOverrideFile = "../../../../le_override.esp";
         public static readonly string PathToLoadOrderFile = "../../../../Plugins.txt";
+        public static readonly ModKey RandomModKey = new ModKey("Random", ModType.Plugin);
 
         public static string TypicalOutputFile(TempFolder tempFolder) => Path.Combine(tempFolder.Dir.Path, TypicalOutputFilename);
         public static IEnumerable<LoadOrderListing> TypicalLoadOrder(GameRelease release, DirectoryPath dir) => LoadOrder.FromPath(PathToLoadOrderFile, release, dir);
 
-        public static TempFolder SetupDataFolder(GameRelease release, string? loadOrderPath = null)
+        public static TempFolder SetupDataFolder(TempFolder tempFolder, GameRelease release, string? loadOrderPath = null)
         {
-            var dataFolder = new TempFolder();
+            var dataFolder = new TempFolder(Path.Combine(tempFolder.Dir.Path, "Data"));
             loadOrderPath ??= PathToLoadOrderFile;
-            File.Copy(Utility.PathToTestFile, Path.Combine(dataFolder.Dir.Path, Path.GetFileName(Utility.PathToTestFile)));
-            File.Copy(Utility.PathToOverrideFile, Path.Combine(dataFolder.Dir.Path, Path.GetFileName(Utility.PathToOverrideFile)));
+            string testPath, overridePath;
+            switch (release)
+            {
+                case GameRelease.Oblivion:
+                    testPath = OblivionPathToTestFile;
+                    overridePath = OblivionPathToOverrideFile;
+                    break;
+                case GameRelease.SkyrimLE:
+                case GameRelease.SkyrimSE:
+                    testPath = LePathToTestFile;
+                    overridePath = LePathToOverrideFile;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+            File.Copy(testPath, Path.Combine(dataFolder.Dir.Path, TestFileName));
+            File.Copy(overridePath, Path.Combine(dataFolder.Dir.Path, OverrideFileName));
             var loadOrderListing = LoadOrder.FromPath(loadOrderPath, release, dataFolder.Dir);
-            LoadOrder.AlignTimestamps(loadOrderListing.OnlyEnabled(), dataFolder.Dir.Path);
+            LoadOrder.AlignTimestamps(loadOrderListing.OnlyEnabled().Select(m => m.ModKey), dataFolder.Dir.Path);
             return dataFolder;
         }
     }
