@@ -180,7 +180,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override PatcherInitVM? CreateInitializer()
         {
-            return new SolutionPatcherInitVM(this);
+            return new SolutionPatcherInitVM(Profile.Config.MainVM, this);
         }
     }
 }

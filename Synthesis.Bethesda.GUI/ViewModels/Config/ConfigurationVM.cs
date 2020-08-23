@@ -153,7 +153,6 @@ namespace Synthesis.Bethesda.GUI
                 },
                 ShowHelp = ShowHelp,
                 MainRepositoryFolder = MainVM.Settings.MainRepositoryFolder,
-                OpenWithProgram = MainVM.Settings.OpenWithProgram
             };
         }
     }

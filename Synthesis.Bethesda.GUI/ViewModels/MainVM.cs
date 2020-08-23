@@ -1,4 +1,4 @@
-﻿using DynamicData;
+using DynamicData;
 using DynamicData.Binding;
 using Synthesis.Bethesda.Execution.Settings;
 using Newtonsoft.Json;
@@ -32,6 +32,11 @@ namespace Synthesis.Bethesda.GUI
 
         [Reactive]
         public ConfirmationActionVM? ActiveConfirmation { get; set; }
+
+        public ObservableCollectionExtended<IDE> IdeOptions { get; } = new ObservableCollectionExtended<IDE>();
+
+        [Reactive]
+        public IDE Ide { get; set; }
 
         // Whether to show red glow in background
         private readonly ObservableAsPropertyHelper<bool> _Hot;
@@ -78,6 +83,8 @@ namespace Synthesis.Bethesda.GUI
                         .Select(x => x is ProfilesDisplayVM),
                     (running, isProfile) => !running && !isProfile));
 
+            IdeOptions.AddRange(EnumExt.GetValues<IDE>());
+
             Task.Run(() => Mutagen.Bethesda.WarmupAll.Init()).FireAndForget();
         }
 
@@ -85,10 +92,16 @@ namespace Synthesis.Bethesda.GUI
         {
             if (settings == null) return;
             Settings = settings;
+            Ide = settings.Ide;
             Configuration.Load(settings);
         }
 
-        public SynthesisGuiSettings Save() => Configuration.Save();
+        public SynthesisGuiSettings Save()
+        {
+            var ret = Configuration.Save();
+            ret.Ide = this.Ide;
+            return ret;
+        }
 
         public void Init()
         {

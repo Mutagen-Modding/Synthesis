@@ -137,14 +137,15 @@
             </TabItem>
         </TabControl>
         <Grid Grid.Row="1" Margin="0,15,0,6">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0"
-                Margin="0,4"
-                Text="Open With" />
-            <ComboBox x:Name="OpenWithComboBox" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <CheckBox Grid.Column="0"
+                x:Name="OpenCodeAfter"
+                Margin="0,0,5,0"
+                Content="Open IDE After Creating" />
+            <ComboBox x:Name="OpenWithComboBox" Grid.Column="1">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
