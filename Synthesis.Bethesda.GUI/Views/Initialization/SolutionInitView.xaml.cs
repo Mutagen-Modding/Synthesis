@@ -1,4 +1,4 @@
-﻿using Noggog.WPF;
+using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -56,8 +56,9 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel.ExistingProject.SolutionPath)
                     .BindToStrict(this, x => x.BothExistingSolutionPathPicker.PickerVM)
                     .DisposeWith(dispose);
-                this.WhenAnyValue(x => x.ViewModel.ExistingProject.ProjectPath)
-                    .BindToStrict(this, x => x.BothExistingProjectPathPicker.PickerVM)
+                this.ProjectsPickerBox.ItemsSource = this.ViewModel.ExistingProject.ProjectsDisplay;
+                this.ProjectsPickerBox.SelectedItem = this.ViewModel.ExistingProject.ProjectSubpath;
+                this.BindStrict(this.ViewModel, vm => vm.ExistingProject.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
                     .DisposeWith(dispose);
 
                 // Bind open after checkbox
