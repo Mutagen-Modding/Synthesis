@@ -2,6 +2,7 @@ using Mutagen.Bethesda.Internals;
 using Noggog;
 using Synthesis.Bethesda;
 using System;
+using System.Linq;
 using Constants = Synthesis.Bethesda.Constants;
 
 namespace Mutagen.Bethesda.Synthesis.Internal
@@ -31,9 +32,13 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             {
                 loadOrderListing.RemoveToCount(synthIndex);
             }
+            if (!userPrefs.IncludeDisabledMods)
+            {
+                loadOrderListing = loadOrderListing.OnlyEnabled().ToExtendedList();
+            }
             var loadOrder = LoadOrder.Import<TModGetter>(
                 settings.DataFolderPath,
-                loadOrderListing.OnlyEnabled(),
+                loadOrderListing,
                 settings.GameRelease);
 
             // Get Modkey from output path
@@ -53,7 +58,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
 
             // Create cache and loadorder for end use
             cache = loadOrder.ToMutableLinkCache(patchMod);
-            loadOrder.Add(new ModListing<TModGetter>(patchMod));
+            loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));
             
             return new SynthesisState<TMod, TModGetter>(settings, loadOrder, cache, patchMod, userPrefs.Cancel);
         }

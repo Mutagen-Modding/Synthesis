@@ -4,6 +4,7 @@ using Noggog.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Synthesis.Bethesda.UnitTests
@@ -49,7 +50,7 @@ namespace Synthesis.Bethesda.UnitTests
             File.Copy(testPath, Path.Combine(dataFolder.Dir.Path, TestFileName));
             File.Copy(overridePath, Path.Combine(dataFolder.Dir.Path, OverrideFileName));
             var loadOrderListing = LoadOrder.FromPath(loadOrderPath, release, dataFolder.Dir);
-            LoadOrder.AlignTimestamps(loadOrderListing.OnlyEnabled(), dataFolder.Dir.Path);
+            LoadOrder.AlignTimestamps(loadOrderListing.OnlyEnabled().Select(m => m.ModKey), dataFolder.Dir.Path);
             return dataFolder;
         }
     }
