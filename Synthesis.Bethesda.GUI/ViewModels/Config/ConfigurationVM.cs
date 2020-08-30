@@ -86,9 +86,14 @@ namespace Synthesis.Bethesda.GUI
                 () =>
                 {
                     // Just forget about patcher and let it GC
-                    NewPatcher?.Dispose();
                     NewPatcher = null;
                 });
+
+            // Dispose any old patcher initializations
+            this.WhenAnyValue(x => x.NewPatcher)
+                .DisposePrevious()
+                .Subscribe()
+                .DisposeWith(this);
 
             _DisplayedObject = this.WhenAnyValue(
                     x => x.SelectedPatcher,

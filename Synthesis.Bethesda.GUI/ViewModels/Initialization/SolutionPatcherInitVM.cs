@@ -72,14 +72,17 @@ namespace Synthesis.Bethesda.GUI
         {
             if (TargetSolutionInitializer == null) return;
             await TargetSolutionInitializer(_patcher);
-            try
+            if (OpenCodeAfter)
             {
-                IdeLocator.OpenSolution(_patcher.SolutionPath.TargetPath, MVM.Ide);
-            }
-            catch (Exception)
-            {
-                //TODO
-                //log
+                try
+                {
+                    IdeLocator.OpenSolution(_patcher.SolutionPath.TargetPath, MVM.Ide);
+                }
+                catch (Exception)
+                {
+                    //TODO
+                    //log
+                }
             }
         }
 
