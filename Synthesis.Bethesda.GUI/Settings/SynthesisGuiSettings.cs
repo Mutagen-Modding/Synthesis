@@ -1,4 +1,4 @@
-﻿using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,7 +9,8 @@ namespace Synthesis.Bethesda.GUI
     {
         public SynthesisSettings ExecutableSettings = new SynthesisSettings();
         public bool ShowHelp = true;
-        public OpenWithEnum OpenWithProgram = OpenWithEnum.VisualStudio;
+        public bool OpenIdeAfterCreating = true;
+        public IDE Ide = IDE.SystemDefault;
         public string MainRepositoryFolder = string.Empty;
     }
 }

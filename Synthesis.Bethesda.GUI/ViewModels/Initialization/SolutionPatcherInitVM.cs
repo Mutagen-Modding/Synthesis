@@ -1,4 +1,4 @@
-﻿using Noggog;
+using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -17,6 +17,8 @@ namespace Synthesis.Bethesda.GUI
 {
     public class SolutionPatcherInitVM : PatcherInitVM
     {
+        public MainVM MVM { get; }
+
         public ExistingSolutionInitVM ExistingSolution { get; } = new ExistingSolutionInitVM();
         public NewSolutionInitVM New { get; } = new NewSolutionInitVM();
         public ExistingProjectInitVM ExistingProject { get; } = new ExistingProjectInitVM();
@@ -33,18 +35,15 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<Func<SolutionPatcherVM, Task>?> _TargetSolutionInitializer;
         public Func<SolutionPatcherVM, Task>? TargetSolutionInitializer => _TargetSolutionInitializer.Value;
 
-        public ObservableCollectionExtended<OpenWithEnum> OpenWithOptions { get; } = new ObservableCollectionExtended<OpenWithEnum>(); 
-        
         [Reactive]
-        public OpenWithEnum OpenWith { get; set; }
+        public bool OpenCodeAfter { get; set; }
 
-        public SolutionPatcherInitVM(SolutionPatcherVM patcher)
+        public SolutionPatcherInitVM(MainVM mvm, SolutionPatcherVM patcher)
         {
+            MVM = mvm;
             _patcher = patcher;
-            OpenWith = _patcher.Profile.Config.MainVM.Settings.OpenWithProgram;
+            OpenCodeAfter = _patcher.Profile.Config.MainVM.Settings.OpenIdeAfterCreating;
             New.ParentDirPath.TargetPath = _patcher.Profile.Config.MainVM.Settings.MainRepositoryFolder;
-            
-            OpenWithOptions.AddRange(EnumExt.GetValues<OpenWithEnum>());
 
             var initializer = this.WhenAnyValue(x => x.SelectedIndex)
                 .Select<int, ASolutionInitializer>(x =>
@@ -73,21 +72,24 @@ namespace Synthesis.Bethesda.GUI
         {
             if (TargetSolutionInitializer == null) return;
             await TargetSolutionInitializer(_patcher);
-            try
+            if (OpenCodeAfter)
             {
-                OpenWithProgram.OpenSolution(_patcher.SolutionPath.TargetPath, OpenWith);
-            }
-            catch (Exception)
-            {
-                //TODO
-                //log
+                try
+                {
+                    IdeLocator.OpenSolution(_patcher.SolutionPath.TargetPath, MVM.Ide);
+                }
+                catch (Exception)
+                {
+                    //TODO
+                    //log
+                }
             }
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            _patcher.Profile.Config.MainVM.Settings.OpenWithProgram = OpenWith;
+            _patcher.Profile.Config.MainVM.Settings.OpenIdeAfterCreating = OpenCodeAfter;
             _patcher.Profile.Config.MainVM.Settings.MainRepositoryFolder = New.ParentDirPath.TargetPath;
         }
 

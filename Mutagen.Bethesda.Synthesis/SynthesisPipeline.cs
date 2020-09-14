@@ -192,12 +192,23 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
-            WarmupAll.Init();
-            using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
-            System.Console.WriteLine("Running patch.");
-            await patcher(state).ConfigureAwait(false);
-            System.Console.WriteLine($"Writing to output: {settings.OutputPath}");
-            state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.LoadOrder.Select(i => i.Key)));
+            try
+            {
+                System.Console.WriteLine("Prepping state.");
+                WarmupAll.Init();
+                using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
+                System.Console.WriteLine("Running patch.");
+                await patcher(state).ConfigureAwait(false);
+                System.Console.WriteLine($"Writing to output: {settings.OutputPath}");
+                state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.LoadOrder.Select(i => i.Key)));
+            }
+            catch (Exception ex)
+            when (userPreferences?.ActionsForEmptyArgs?.BlockAutomaticExit ?? false)
+            {
+                System.Console.Error.WriteLine(ex);
+                System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
+                System.Console.ReadLine();
+            }
         }
 
         /// <summary>
@@ -215,12 +226,23 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
-            WarmupAll.Init();
-            using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
-            System.Console.WriteLine("Running patch.");
-            patcher(state);
-            System.Console.WriteLine($"Writing to output: {settings.OutputPath}");
-            state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.LoadOrder.Select(i => i.Key)));
+            try
+            {
+                System.Console.WriteLine("Prepping state.");
+                WarmupAll.Init();
+                using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
+                System.Console.WriteLine("Running patch.");
+                patcher(state);
+                System.Console.WriteLine($"Writing to output: {settings.OutputPath}");
+                state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.LoadOrder.Select(i => i.Key)));
+            }
+            catch (Exception ex)
+            when (userPreferences?.ActionsForEmptyArgs?.BlockAutomaticExit ?? false)
+            {
+                System.Console.Error.WriteLine(ex);
+                System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
+                System.Console.ReadLine();
+            }
         }
         #endregion
 

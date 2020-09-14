@@ -18,11 +18,11 @@ namespace Synthesis.Bethesda.UnitTests
         public static readonly ModKey OverrideModKey = new ModKey("override", ModType.Plugin);
         public static readonly string TestFileName = "test.esp";
         public static readonly string OverrideFileName = "override.esp";
-        public static readonly string OblivionPathToTestFile = "../../../../oblivion_test.esp";
-        public static readonly string OblivionPathToOverrideFile = "../../../../oblivion_override.esp";
-        public static readonly string LePathToTestFile = "../../../../le_test.esp";
-        public static readonly string LePathToOverrideFile = "../../../../le_override.esp";
-        public static readonly string PathToLoadOrderFile = "../../../../Plugins.txt";
+        public static readonly string OblivionPathToTestFile = "oblivion_test.esp";
+        public static readonly string OblivionPathToOverrideFile = "oblivion_override.esp";
+        public static readonly string LePathToTestFile = "le_test.esp";
+        public static readonly string LePathToOverrideFile = "le_override.esp";
+        public static readonly string PathToLoadOrderFile = "Plugins.txt";
         public static readonly ModKey RandomModKey = new ModKey("Random", ModType.Plugin);
 
         public static string TypicalOutputFile(TempFolder tempFolder) => Path.Combine(tempFolder.Dir.Path, TypicalOutputFilename);

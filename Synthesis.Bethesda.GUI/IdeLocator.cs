@@ -25,7 +25,7 @@ using Microsoft.Win32;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public enum OpenWithEnum
+    public enum IDE
     {
         [Description("None")]
         None,
@@ -39,12 +39,12 @@ namespace Synthesis.Bethesda.GUI
         VisualCode
     }
 
-    public static class OpenWithProgram
+    public static class IdeLocator
     {
         private static readonly string? RiderPath;
         private static readonly string? VSPath;
 
-        static OpenWithProgram()
+        static IdeLocator()
         {
             #region Visual Studio
 
@@ -107,13 +107,13 @@ namespace Synthesis.Bethesda.GUI
             #endregion
         }
 
-        public static void OpenSolution(string path, OpenWithEnum option)
+        public static void OpenSolution(string path, IDE option)
         {
             switch (option)
             {
-                case OpenWithEnum.None:
+                case IDE.None:
                     break;
-                case OpenWithEnum.SystemDefault:
+                case IDE.SystemDefault:
                 {
                     Process.Start(new ProcessStartInfo(path)
                     {
@@ -121,7 +121,7 @@ namespace Synthesis.Bethesda.GUI
                     });
                     break;
                 }
-                case OpenWithEnum.VisualStudio:
+                case IDE.VisualStudio:
                 {
                     if (VSPath == null)
                         break;
@@ -136,7 +136,7 @@ namespace Synthesis.Bethesda.GUI
                     Process.Start(info);
                     break;
                 }
-                case OpenWithEnum.Rider:
+                case IDE.Rider:
                 {
                     if (RiderPath == null)
                         break;
@@ -152,7 +152,7 @@ namespace Synthesis.Bethesda.GUI
 
                     break;
                 }
-                case OpenWithEnum.VisualCode:
+                case IDE.VisualCode:
                 {
                     var info = new ProcessStartInfo
                     {

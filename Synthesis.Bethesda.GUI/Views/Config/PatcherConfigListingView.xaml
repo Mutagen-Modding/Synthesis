@@ -1,4 +1,4 @@
-﻿<local:PatcherConfigListingViewBase
+<local:PatcherConfigListingViewBase
     x:Class="Synthesis.Bethesda.GUI.Views.PatcherConfigListingView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -23,6 +23,11 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem x:Name="DeleteContextMenuButton" Header="Delete" />
+            </ContextMenu>
+        </Grid.ContextMenu>
         <ToggleButton Grid.Column="0"
             Name="OnToggle"
             Background="Transparent">
