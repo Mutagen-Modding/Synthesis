@@ -12,7 +12,6 @@
     <RepositoryUrl>https://github.com/Noggog/Synthesis</RepositoryUrl>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <AssemblyName>Mutagen.Bethesda.Synthesis</AssemblyName>
-    <Version>0.7.0.0</Version>
     <Platforms>x64</Platforms>
   </PropertyGroup>
 

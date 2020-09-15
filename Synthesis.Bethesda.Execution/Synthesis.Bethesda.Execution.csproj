@@ -12,7 +12,6 @@
     <Company>Mutagen</Company>
     <Product>Synthesis</Product>
     <PackageId>Synthesis.Bethesda.Execution</PackageId>
-    <Version>0.7.0.0</Version>
     <Platforms>x64</Platforms>
   </PropertyGroup>
 
