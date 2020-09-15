@@ -8,7 +8,7 @@
     <Product>Synthesis</Product>
     <Description>A lightweight wrapper CLI to run Synthesis pipelines without a GUI</Description>
     <Platforms>x64</Platforms>
-    <Version>0.0.6.0</Version>
+    <Version>0.7.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
