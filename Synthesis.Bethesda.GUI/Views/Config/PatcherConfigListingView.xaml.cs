@@ -37,6 +37,9 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.BlockingIssueDisplayCircle.Visibility)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel.State.RunnableState.Reason)
+                    .BindToStrict(this, x => x.BlockingIssueDisplayCircle.ToolTip)
+                    .DisposeWith(disposable);
 
                 // ContextMenu
                 this.WhenAnyValue(x => x.ViewModel.DeleteCommand)

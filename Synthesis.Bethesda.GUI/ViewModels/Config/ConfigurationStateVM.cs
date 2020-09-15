@@ -1,4 +1,4 @@
-﻿using Noggog;
+using Noggog;
 using Noggog.WPF;
 using System;
 using System.Collections.Generic;
@@ -12,5 +12,14 @@ namespace Synthesis.Bethesda.GUI
 
         public bool IsHaltingError { get; set; }
         public ErrorResponse RunnableState { get; set; } = ErrorResponse.Success;
+
+        public static implicit operator ConfigurationStateVM(ErrorResponse err)
+        {
+            return new ConfigurationStateVM()
+            {
+                IsHaltingError = err.Failed,
+                RunnableState = err,
+            };
+        }
     }
 }

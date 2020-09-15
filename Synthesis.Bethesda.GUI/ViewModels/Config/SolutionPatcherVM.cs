@@ -18,6 +18,9 @@ using Synthesis.Bethesda.Execution;
 using System.Windows.Input;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Buildalyzer.Environment;
+using System.Reactive;
+using Microsoft.Build.Evaluation;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -33,6 +36,9 @@ namespace Synthesis.Bethesda.GUI
 
         [Reactive]
         public string ProjectSubpath { get; set; } = string.Empty;
+
+        private readonly ObservableAsPropertyHelper<string> _PathToExe;
+        public string PathToExe => _PathToExe.Value;
 
         public PathPickerVM SelectedProjectPath { get; } = new PathPickerVM()
         {
@@ -94,7 +100,7 @@ namespace Synthesis.Bethesda.GUI
                 .ObserveOnGui()
                 .ToObservableCollection(this);
 
-            this.WhenAnyValue(x => x.ProjectSubpath)
+            var projPath = this.WhenAnyValue(x => x.ProjectSubpath)
                 .DistinctUntilChanged()
                 .CombineLatest(this.WhenAnyValue(x => x.SolutionPath.TargetPath)
                         .DistinctUntilChanged(),
@@ -110,25 +116,83 @@ namespace Synthesis.Bethesda.GUI
                             return string.Empty;
                         }
                     })
+                .Replay(1)
+                .RefCount();
+
+            projPath
                 .Subscribe(p => SelectedProjectPath.TargetPath = p)
                 .DisposeWith(this);
+
+            var pathToExe = projPath
+                .CombineLatest(
+                    this.WhenAnyValue(x => x.SolutionPath.TargetPath),
+                    (ProjectPath, SolutionPath) => (ProjectPath, SolutionPath))
+                .ObserveOn(RxApp.TaskpoolScheduler)
+                .SelectReplace(async (t, cancel) =>
+                {
+                    try
+                    {
+                        cancel.ThrowIfCancellationRequested();
+                        if (!File.Exists(t.ProjectPath))
+                        {
+                            return GetResponse<string>.Fail("Project path does not exist.");
+                        }
+                        // Right now this is slow as it cleans the build results unnecessarily.  Need to look into that
+                        var manager = new AnalyzerManager();
+                        cancel.ThrowIfCancellationRequested();
+                        var proj = manager.GetProject(t.ProjectPath);
+                        cancel.ThrowIfCancellationRequested();
+                        var opt = new EnvironmentOptions();
+                        opt.TargetsToBuild.SetTo("Build");
+                        var build = proj.Build();
+                        cancel.ThrowIfCancellationRequested();
+                        var results = build.Results.ToArray();
+                        if (results.Length != 1)
+                        {
+                            return GetResponse<string>.Fail("Unsupported number of build results.");
+                        }
+                        var result = results[0];
+                        if (!result.Properties.TryGetValue("RunCommand", out var cmd))
+                        {
+                            return GetResponse<string>.Fail("Could not find executable to be run");
+                        }
+
+                        // Now we want to build, just to prep for run
+                        var resp = await SolutionPatcherRun.CompileWithDotnet(t.SolutionPath, cancel).ConfigureAwait(false);
+                        if (resp.Failed) return resp.BubbleFailure<string>();
+
+                        return GetResponse<string>.Succeed(cmd);
+                    }
+                    catch (Exception ex)
+                    {
+                        return GetResponse<string>.Fail(ex);
+                    }
+                })
+                .Replay(1)
+                .RefCount();
+
+            _PathToExe = pathToExe
+                .Select(r => r.Value)
+                .ToGuiProperty<string>(this, nameof(PathToExe));
 
             _State = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.SolutionPath.ErrorState),
                     this.WhenAnyValue(x => x.SelectedProjectPath.ErrorState),
-                    (sln, proj) =>
+                    Observable.Merge(
+                        projPath
+                            .Select(_ => new ConfigurationStateVM()
+                            {
+                                IsHaltingError = false,
+                                RunnableState = ErrorResponse.Fail("Building")
+                            }),
+                        pathToExe
+                            .Select(p => (ConfigurationStateVM)(ErrorResponse)p)),
+                    (sln, proj, exe) =>
                     {
                         if (sln.Failed) return sln;
+                        if (exe.RunnableState.Failed) return exe;
                         return proj;
                     })
-                .Select(err =>
-                {
-                    return new ConfigurationStateVM()
-                    {
-                        IsHaltingError = err.Failed,
-                        RunnableState = err,
-                    };
-                })
                 .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), ConfigurationStateVM.Success);
 
             OpenSolutionCommand = ReactiveCommand.Create(
@@ -174,7 +238,8 @@ namespace Synthesis.Bethesda.GUI
                 this,
                 new SolutionPatcherRun(
                     nickname: DisplayName,
-                    pathToSln: SolutionPath.TargetPath, 
+                    pathToSln: SolutionPath.TargetPath,
+                    pathToExe: PathToExe,
                     pathToProj: SelectedProjectPath.TargetPath));
         }
 

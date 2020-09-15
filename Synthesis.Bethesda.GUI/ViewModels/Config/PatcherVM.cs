@@ -1,4 +1,4 @@
-﻿using DynamicData;
+using DynamicData;
 using Synthesis.Bethesda.Execution.Settings;
 using Noggog;
 using Noggog.WPF;

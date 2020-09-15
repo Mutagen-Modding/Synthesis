@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Buildalyzer" Version="2.5.1" />
+    <PackageReference Include="Buildalyzer" Version="3.0.1" />
     <PackageReference Include="Microsoft.Build" Version="16.6.0" />
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="16.6.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.7.0" />
@@ -30,7 +30,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="3.7.0" />
     <PackageReference Include="Mutagen.Bethesda.Core" Version="0.16.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Noggog.CSharpExt" Version="1.1.5" />
+    <PackageReference Include="Noggog.CSharpExt" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>

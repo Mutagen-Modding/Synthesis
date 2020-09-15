@@ -1,5 +1,3 @@
-﻿using Buildalyzer;
-using Buildalyzer.Environment;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
@@ -26,6 +24,7 @@ namespace Synthesis.Bethesda.Execution
         public string Name { get; }
         public string PathToSolution { get; }
         public string PathToProject { get; }
+        public string PathToExe { get; }
         public CliPatcherRun? CliRun { get; private set; }
 
         private Subject<string> _output = new Subject<string>();
@@ -34,32 +33,17 @@ namespace Synthesis.Bethesda.Execution
         private Subject<string> _error = new Subject<string>();
         public IObservable<string> Error => _error;
 
-        public SolutionPatcherRun(string nickname, string pathToSln, string pathToProj)
+        public SolutionPatcherRun(string nickname, string pathToSln, string pathToProj, string pathToExe)
         {
             PathToSolution = pathToSln;
             PathToProject = pathToProj;
+            PathToExe = pathToExe;
             Name = $"{Path.GetFileNameWithoutExtension(pathToSln)} => {Path.GetFileNameWithoutExtension(pathToProj)}";
         }
 
         public async Task Prep(GameRelease release, CancellationToken? cancel = null)
         {
-            // Right now this is slow as it cleans the build results unnecessarily.  Need to look into that
-            var manager = new AnalyzerManager();
-            var proj = manager.GetProject(PathToProject);
-            var opt = new EnvironmentOptions();
-            opt.TargetsToBuild.SetTo("Build");
-            var build = proj.Build();
-            var results = build.Results.ToArray();
-            if (results.Length != 1)
-            {
-                throw new SynthesisBuildFailure("Unsupported number of build results.");
-            }
-            var result = results[0];
-            if (!result.Properties.TryGetValue("RunCommand", out var cmd))
-            {
-                throw new SynthesisBuildFailure("Could not find executable to be run");
-            }
-            CliRun = new CliPatcherRun(nickname: Name, pathToExecutable: cmd);
+            CliRun = new CliPatcherRun(nickname: Name, pathToExecutable: PathToExe);
 
             var resp = await CompileWithDotnet(PathToSolution, cancel ?? CancellationToken.None).ConfigureAwait(false);
             if (!resp.Succeeded)
