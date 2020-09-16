@@ -157,7 +157,6 @@ namespace Synthesis.Bethesda.GUI
                     SelectedProfile = SelectedProfile?.ID ?? string.Empty
                 },
                 ShowHelp = ShowHelp,
-                MainRepositoryFolder = MainVM.Settings.MainRepositoryFolder,
             };
         }
     }
