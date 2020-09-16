@@ -1,4 +1,4 @@
-﻿using Noggog.WPF;
+using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System;
@@ -49,11 +49,9 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Bind project picker
-                // Setting initial values here keeps the VM's property from being bounced to null on
-                // initial binding
-                this.ProjectsPickerBox.ItemsSource = this.ViewModel.ProjectsDisplay;
-                this.ProjectsPickerBox.SelectedItem = this.ViewModel.ProjectSubpath;
                 this.BindStrict(this.ViewModel, vm => vm.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
+                    .DisposeWith(disposable);
+                this.OneWayBindStrict(this.ViewModel, vm => vm.ProjectsDisplay, view => view.ProjectsPickerBox.ItemsSource)
                     .DisposeWith(disposable);
 
                 // Set project picker tooltips

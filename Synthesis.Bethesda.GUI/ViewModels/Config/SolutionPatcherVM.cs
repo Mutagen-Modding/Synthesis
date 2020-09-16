@@ -101,6 +101,8 @@ namespace Synthesis.Bethesda.GUI
                 .ToObservableCollection(this);
 
             var projPath = this.WhenAnyValue(x => x.ProjectSubpath)
+                // Need to throttle, as bindings flip to null quickly, which we want to skip
+                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                 .DistinctUntilChanged()
                 .CombineLatest(this.WhenAnyValue(x => x.SolutionPath.TargetPath)
                         .DistinctUntilChanged(),
