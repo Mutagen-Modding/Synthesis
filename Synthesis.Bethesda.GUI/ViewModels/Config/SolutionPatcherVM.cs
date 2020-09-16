@@ -195,7 +195,7 @@ namespace Synthesis.Bethesda.GUI
                 .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), ConfigurationStateVM.Success);
 
             OpenSolutionCommand = ReactiveCommand.Create(
-                canExecute: this.WhenAnyValue(x => x.State.IsHaltingError)
+                canExecute: this.WhenAnyValue(x => x.SolutionPath.InError)
                     .Select(x => !x),
                 execute: () =>
                 {
