@@ -124,23 +124,20 @@ namespace Synthesis.Bethesda.GUI
                 .DisposeWith(this);
 
             var pathToExe = projPath
-                .CombineLatest(
-                    this.WhenAnyValue(x => x.SolutionPath.TargetPath),
-                    (ProjectPath, SolutionPath) => (ProjectPath, SolutionPath))
                 .ObserveOn(RxApp.TaskpoolScheduler)
-                .SelectReplace(async (t, cancel) =>
+                .SelectReplace(async (projectPath, cancel) =>
                 {
                     try
                     {
                         cancel.ThrowIfCancellationRequested();
-                        if (!File.Exists(t.ProjectPath))
+                        if (!File.Exists(projectPath))
                         {
                             return GetResponse<string>.Fail("Project path does not exist.");
                         }
                         // Right now this is slow as it cleans the build results unnecessarily.  Need to look into that
                         var manager = new AnalyzerManager();
                         cancel.ThrowIfCancellationRequested();
-                        var proj = manager.GetProject(t.ProjectPath);
+                        var proj = manager.GetProject(projectPath);
                         cancel.ThrowIfCancellationRequested();
                         var opt = new EnvironmentOptions();
                         opt.TargetsToBuild.SetTo("Build");
@@ -158,7 +155,7 @@ namespace Synthesis.Bethesda.GUI
                         }
 
                         // Now we want to build, just to prep for run
-                        var resp = await SolutionPatcherRun.CompileWithDotnet(t.SolutionPath, cancel).ConfigureAwait(false);
+                        var resp = await SolutionPatcherRun.CompileWithDotnet(projectPath, cancel).ConfigureAwait(false);
                         if (resp.Failed) return resp.BubbleFailure<string>();
 
                         return GetResponse<string>.Succeed(cmd);

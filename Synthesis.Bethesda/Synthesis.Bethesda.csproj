@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="[0.16,0.17)" />
+    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="[0.16.1-dev,0.17)" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
