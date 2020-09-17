@@ -21,7 +21,7 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated(dispose =>
             {
                 // Hide help box if not in initialization
-                UtilityBindings.HelpWiring(this.ViewModel.Patcher, this.HelpButton, this.HelpText)
+                UtilityBindings.HelpWiring(this.ViewModel.Patcher.Profile.Config, this.HelpButton, this.HelpText)
                     .DisposeWith(dispose);
 
                 this.BindStrict(this.ViewModel, vm => vm.SelectedIndex, view => view.TopTab.SelectedIndex)

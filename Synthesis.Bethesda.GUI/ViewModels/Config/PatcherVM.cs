@@ -32,7 +32,6 @@ namespace Synthesis.Bethesda.GUI
         public abstract string DisplayName { get; }
 
         public ICommand DeleteCommand { get; }
-        public ICommand ShowHelpCommand { get; }
 
         public abstract ConfigurationStateVM State { get; }
 
@@ -58,7 +57,6 @@ namespace Synthesis.Bethesda.GUI
                     $"Are you sure you want to delete {DisplayName}?",
                     () => parent.Patchers.Remove(this));
             });
-            ShowHelpCommand = parent.Config.ShowHelpToggleCommand;
         }
 
         public abstract PatcherSettings Save();
