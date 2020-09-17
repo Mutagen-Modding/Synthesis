@@ -4,6 +4,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
@@ -23,8 +24,8 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public int SelectedIndex { get; set; }
 
-        private readonly ObservableAsPropertyHelper<Func<SolutionPatcherVM, Task>?> _TargetSolutionInitializer;
-        public Func<SolutionPatcherVM, Task>? TargetSolutionInitializer => _TargetSolutionInitializer.Value;
+        private readonly ObservableAsPropertyHelper<ASolutionInitializer.InitializerCall?> _TargetSolutionInitializer;
+        public ASolutionInitializer.InitializerCall? TargetSolutionInitializer => _TargetSolutionInitializer.Value;
 
         [Reactive]
         public bool OpenCodeAfter { get; set; }
@@ -52,7 +53,7 @@ namespace Synthesis.Bethesda.GUI
                 .Replay(1)
                 .RefCount();
             _TargetSolutionInitializer = initializer
-                .Select(x => x.Succeeded ? x.Value : default(Func<SolutionPatcherVM, Task>?))
+                .Select(x => x.Succeeded ? x.Value : default(ASolutionInitializer.InitializerCall?))
                 .ToGuiProperty(this, nameof(TargetSolutionInitializer));
             _CanCompleteConfiguration = initializer
                 .Select(x => (ErrorResponse)x)
@@ -69,15 +70,17 @@ namespace Synthesis.Bethesda.GUI
         public override async IAsyncEnumerable<PatcherVM> Construct()
         {
             if (TargetSolutionInitializer == null) yield break;
-            var ret = new SolutionPatcherVM(Profile);
-            await TargetSolutionInitializer(ret);
-            yield return ret;
+            var ret = (await TargetSolutionInitializer(Profile)).ToList();
+            foreach (var item in ret)
+            {
+                yield return item;
+            }
 
-            if (OpenCodeAfter)
+            if (OpenCodeAfter && ret.Count > 0)
             {
                 try
                 {
-                    IdeLocator.OpenSolution(ret.SolutionPath.TargetPath, MVM.Ide);
+                    IdeLocator.OpenSolution(ret[0].SolutionPath.TargetPath, MVM.Ide);
                 }
                 catch (Exception)
                 {

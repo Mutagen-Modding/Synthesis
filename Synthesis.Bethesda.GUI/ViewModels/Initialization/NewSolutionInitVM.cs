@@ -1,4 +1,4 @@
-﻿using Mutagen.Bethesda;
+using Mutagen.Bethesda;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -26,7 +26,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<GetResponse<string>> _SolutionPath;
         public GetResponse<string> SolutionPath => _SolutionPath.Value;
 
-        public override IObservable<GetResponse<Func<SolutionPatcherVM, Task>>> InitializationCall { get; }
+        public override IObservable<GetResponse<InitializerCall>> InitializationCall { get; }
 
         private readonly ObservableAsPropertyHelper<ErrorResponse> _ProjectError;
         public ErrorResponse ProjectError => _ProjectError.Value;
@@ -94,19 +94,19 @@ namespace Synthesis.Bethesda.GUI
             InitializationCall = validation
                 .Select((i) =>
                 {
-                    if (i.parentDir.Failed) return i.parentDir.BubbleFailure<Func<SolutionPatcherVM, Task>>();
-                    if (i.sln.Failed) return i.sln.BubbleFailure<Func<SolutionPatcherVM, Task>>();
-                    if (i.validation.Failed) return i.validation.BubbleFailure<Func<SolutionPatcherVM, Task>>();
-                    return GetResponse<Func<SolutionPatcherVM, Task>>.Succeed(async (patcher) =>
+                    if (i.parentDir.Failed) return i.parentDir.BubbleFailure<InitializerCall>();
+                    if (i.sln.Failed) return i.sln.BubbleFailure<InitializerCall>();
+                    if (i.validation.Failed) return i.validation.BubbleFailure<InitializerCall>();
+                    return GetResponse<InitializerCall>.Succeed(async (profile) =>
                     {
+                        var patcher = new SolutionPatcherVM(profile);
                         CreateSolutionFile(i.sln.Value);
                         CreateProject(i.validation.Value, patcher.Profile.Release.ToCategory());
                         AddProjectToSolution(i.sln.Value, i.validation.Value);
                         patcher.SolutionPath.TargetPath = i.sln.Value;
                         var projName = Path.GetFileNameWithoutExtension(i.validation.Value);
-                        // Little delay, just to make sure things populated properly.  Might not be needed
-                        await Task.Delay(300);
                         patcher.ProjectSubpath = Path.Combine(projName, $"{projName}.csproj");
+                        return patcher.AsEnumerable();
                     });
                 });
 

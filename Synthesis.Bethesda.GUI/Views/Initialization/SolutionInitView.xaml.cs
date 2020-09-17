@@ -5,6 +5,10 @@ using System.Reactive.Linq;
 using System.Reactive;
 using System;
 using Noggog;
+using System.Windows.Controls.Primitives;
+using System.Linq;
+using DynamicData;
+using System.Windows;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -56,9 +60,25 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel.ExistingProject.SolutionPath)
                     .BindToStrict(this, x => x.BothExistingSolutionPathPicker.PickerVM)
                     .DisposeWith(dispose);
-                this.ProjectsPickerBox.ItemsSource = this.ViewModel.ExistingProject.ProjectsDisplay;
-                this.ProjectsPickerBox.SelectedItem = this.ViewModel.ExistingProject.ProjectSubpath;
-                this.BindStrict(this.ViewModel, vm => vm.ExistingProject.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
+                var vis = this.WhenAnyValue(x => x.ViewModel.ExistingProject.SolutionPath.ErrorState)
+                    .Select(x => x.Succeeded ? Visibility.Visible : Visibility.Collapsed);
+                vis.BindToStrict(this, x => x.AvailableProjects.Visibility)
+                    .DisposeWith(dispose);
+                vis.BindToStrict(this, x => x.AvailableProjectsText.Visibility)
+                    .DisposeWith(dispose);
+                this.WhenAnyValue(x => x.ViewModel.ExistingProject.AvailableProjects)
+                    .BindToStrict(this, x => x.AvailableProjects.ItemsSource)
+                    .DisposeWith(dispose);
+                this.AvailableProjects.Events().SelectionChanged
+                    .Throttle(TimeSpan.FromMilliseconds(300), RxApp.MainThreadScheduler)
+                    .WithLatestFrom(
+                        this.WhenAnyValue(x => x.ViewModel),
+                        (change, vm) => (change, vm))
+                    .Subscribe(u =>
+                    {
+                        u.vm.ExistingProject.SelectedProjects.Clear();
+                        u.vm.ExistingProject.SelectedProjects.AddRange(this.AvailableProjects.SelectedItems.Cast<string>());
+                    })
                     .DisposeWith(dispose);
 
                 // Bind open after checkbox
