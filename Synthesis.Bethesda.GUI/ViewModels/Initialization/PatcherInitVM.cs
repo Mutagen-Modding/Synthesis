@@ -1,18 +1,25 @@
-﻿using Noggog;
+using Noggog;
 using Noggog.WPF;
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.GUI
 {
     public abstract class PatcherInitVM : ViewModel
     {
+        [Reactive]
+        public string DisplayName { get; set; } = string.Empty;
+
+        public ProfileVM Profile { get; }
+
         public abstract ErrorResponse CanCompleteConfiguration { get; }
-        public abstract PatcherVM Patcher { get; }
-        public virtual async Task ExecuteChanges()
+
+        public abstract IAsyncEnumerable<PatcherVM> Construct();
+
+        public PatcherInitVM(ProfileVM profile)
         {
+            Profile = profile;
         }
     }
 }

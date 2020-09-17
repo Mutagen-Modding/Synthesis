@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -43,6 +43,7 @@
     <PackageReference Include="reactiveui" Version="11.4.17" />
     <PackageReference Include="ReactiveUI.Fody" Version="11.4.17" />
     <PackageReference Include="Simple.Wpf.Terminal" Version="2.3.15" />
+    <PackageReference Include="System.Linq.Async" Version="4.1.1" />
     <PackageReference Include="Wabbajack.Common" Version="2.2.1.1" />
   </ItemGroup>
 

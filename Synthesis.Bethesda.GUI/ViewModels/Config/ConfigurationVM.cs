@@ -67,11 +67,12 @@ namespace Synthesis.Bethesda.GUI
                 {
                     var initializer = this.NewPatcher;
                     if (initializer == null) return;
-                    SelectedProfile?.Patchers.Add(initializer.Patcher);
+                    var patchersToAdd = await initializer.Construct().ToListAsync();
                     NewPatcher = null;
-                    SelectedPatcher = initializer.Patcher;
-                    initializer.Patcher.IsOn = true;
-                    await initializer.ExecuteChanges();
+                    if (patchersToAdd.Count == 0) return;
+                    patchersToAdd.ForEach(p => p.IsOn = true);
+                    SelectedProfile?.Patchers.AddRange(patchersToAdd);
+                    SelectedPatcher = patchersToAdd.First();
                 },
                 canExecute: this.WhenAnyValue(x => x.NewPatcher)
                     .Select(patcher =>

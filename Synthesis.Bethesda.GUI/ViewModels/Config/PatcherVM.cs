@@ -68,7 +68,5 @@ namespace Synthesis.Bethesda.GUI
         }
 
         public abstract PatcherRunVM ToRunner(PatchersRunVM parent);
-
-        public abstract PatcherInitVM? CreateInitializer();
     }
 }

@@ -57,9 +57,9 @@ namespace Synthesis.Bethesda.GUI
             ID = id ?? Guid.NewGuid().ToString();
             Config = parent;
             Release = release ?? GameRelease.Oblivion;
-            AddGithubPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new GithubPatcherVM(this)));
-            AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new SolutionPatcherVM(this)));
-            AddCliPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new CliPatcherVM(this)));
+            AddGithubPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new GithubPatcherInitVM(this)));
+            AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(this)));
+            AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(this)));
             AddSnippetPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new CodeSnippetPatcherVM(this)));
             _WorkingDirectory = this.WhenAnyValue(x => x.Config.WorkingDirectory)
                 .Select(dir => Path.Combine(dir, ID, "Workspace"))
@@ -204,16 +204,13 @@ namespace Synthesis.Bethesda.GUI
 
         private void SetPatcherForInitialConfiguration(PatcherVM patcher)
         {
-            var initializer = patcher.CreateInitializer();
-            if (initializer != null)
-            {
-                Config.NewPatcher = initializer;
-            }
-            else
-            {
-                patcher.Profile.Patchers.Add(patcher);
-                Config.SelectedPatcher = patcher;
-            }
+            patcher.Profile.Patchers.Add(patcher);
+            Config.SelectedPatcher = patcher;
+        }
+
+        private void SetInitializer(PatcherInitVM initializer)
+        {
+            Config.NewPatcher = initializer;
         }
     }
 }

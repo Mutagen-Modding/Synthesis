@@ -1,15 +1,11 @@
-﻿using Noggog;
+using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution;
-using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Linq;
-using System.Text;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -86,11 +82,6 @@ namespace Synthesis.Bethesda.GUI
                 parent, 
                 this, 
                 new CliPatcherRun(nickname: DisplayName, pathToExecutable: PathToExecutable.TargetPath));
-        }
-
-        public override PatcherInitVM? CreateInitializer()
-        {
-            return new CliPatcherInitVM(this);
         }
     }
 }

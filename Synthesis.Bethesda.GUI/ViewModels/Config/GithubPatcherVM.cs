@@ -1,4 +1,4 @@
-﻿using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Settings;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -68,11 +68,6 @@ namespace Synthesis.Bethesda.GUI
         public override PatcherRunVM ToRunner(PatchersRunVM parent)
         {
             throw new NotImplementedException();
-        }
-
-        public override PatcherInitVM? CreateInitializer()
-        {
-            return new GithubPatcherInitVM(this);
         }
     }
 }

@@ -241,10 +241,5 @@ namespace Synthesis.Bethesda.GUI
                     pathToExe: PathToExe,
                     pathToProj: SelectedProjectPath.TargetPath));
         }
-
-        public override PatcherInitVM? CreateInitializer()
-        {
-            return new SolutionPatcherInitVM(Profile.Config.MainVM, this);
-        }
     }
 }

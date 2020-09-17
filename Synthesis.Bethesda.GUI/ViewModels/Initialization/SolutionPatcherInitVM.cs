@@ -4,14 +4,8 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing.Design;
-using System.IO;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using DynamicData.Binding;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -22,9 +16,6 @@ namespace Synthesis.Bethesda.GUI
         public ExistingSolutionInitVM ExistingSolution { get; } = new ExistingSolutionInitVM();
         public NewSolutionInitVM New { get; } = new NewSolutionInitVM();
         public ExistingProjectInitVM ExistingProject { get; } = new ExistingProjectInitVM();
-
-        private readonly SolutionPatcherVM _patcher;
-        public override PatcherVM Patcher => _patcher;
 
         private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
         public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
@@ -38,12 +29,12 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool OpenCodeAfter { get; set; }
 
-        public SolutionPatcherInitVM(MainVM mvm, SolutionPatcherVM patcher)
+        public SolutionPatcherInitVM(ProfileVM profile)
+            : base(profile)
         {
-            MVM = mvm;
-            _patcher = patcher;
-            OpenCodeAfter = _patcher.Profile.Config.MainVM.Settings.OpenIdeAfterCreating;
-            New.ParentDirPath.TargetPath = _patcher.Profile.Config.MainVM.Settings.MainRepositoryFolder;
+            MVM = profile.Config.MainVM;
+            OpenCodeAfter = profile.Config.MainVM.Settings.OpenIdeAfterCreating;
+            New.ParentDirPath.TargetPath = profile.Config.MainVM.Settings.MainRepositoryFolder;
 
             var initializer = this.WhenAnyValue(x => x.SelectedIndex)
                 .Select<int, ASolutionInitializer>(x =>
@@ -68,15 +59,25 @@ namespace Synthesis.Bethesda.GUI
                 .ToGuiProperty<ErrorResponse>(this, nameof(CanCompleteConfiguration), ErrorResponse.Failure);
         }
 
-        public override async Task ExecuteChanges()
+        public override void Dispose()
         {
-            if (TargetSolutionInitializer == null) return;
-            await TargetSolutionInitializer(_patcher);
+            base.Dispose();
+            MVM.Settings.OpenIdeAfterCreating = OpenCodeAfter;
+            MVM.Settings.MainRepositoryFolder = New.ParentDirPath.TargetPath;
+        }
+
+        public override async IAsyncEnumerable<PatcherVM> Construct()
+        {
+            if (TargetSolutionInitializer == null) yield break;
+            var ret = new SolutionPatcherVM(Profile);
+            await TargetSolutionInitializer(ret);
+            yield return ret;
+
             if (OpenCodeAfter)
             {
                 try
                 {
-                    IdeLocator.OpenSolution(_patcher.SolutionPath.TargetPath, MVM.Ide);
+                    IdeLocator.OpenSolution(ret.SolutionPath.TargetPath, MVM.Ide);
                 }
                 catch (Exception)
                 {
@@ -84,13 +85,6 @@ namespace Synthesis.Bethesda.GUI
                     //log
                 }
             }
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-            _patcher.Profile.Config.MainVM.Settings.OpenIdeAfterCreating = OpenCodeAfter;
-            _patcher.Profile.Config.MainVM.Settings.MainRepositoryFolder = New.ParentDirPath.TargetPath;
         }
 
         public enum SolutionInitType
