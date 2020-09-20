@@ -33,7 +33,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Hide project picker if sln invalid
-                var hasProjs = this.WhenAnyValue(x => x.ViewModel.ProjectsDisplay.Count)
+                var hasProjs = this.WhenAnyValue(x => x.ViewModel.AvailableProjects.Count)
                     .Select(x => x > 0)
                     .Replay(1)
                     .RefCount();
@@ -51,7 +51,7 @@ namespace Synthesis.Bethesda.GUI.Views
                 // Bind project picker
                 this.BindStrict(this.ViewModel, vm => vm.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
                     .DisposeWith(disposable);
-                this.OneWayBindStrict(this.ViewModel, vm => vm.ProjectsDisplay, view => view.ProjectsPickerBox.ItemsSource)
+                this.OneWayBindStrict(this.ViewModel, vm => vm.AvailableProjects, view => view.ProjectsPickerBox.ItemsSource)
                     .DisposeWith(disposable);
 
                 // Set project picker tooltips

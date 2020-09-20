@@ -38,8 +38,9 @@
 
   <ItemGroup>
     <PackageReference Include="Buildalyzer" Version="3.0.1" />
+    <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Noggog.WPF" Version="[1.2.1,1.3)" />
+    <PackageReference Include="Noggog.WPF" Version="1.2.3" />
     <PackageReference Include="reactiveui" Version="11.4.17" />
     <PackageReference Include="ReactiveUI.Fody" Version="11.4.17" />
     <PackageReference Include="Simple.Wpf.Terminal" Version="2.3.15" />
@@ -63,6 +64,10 @@
     <Resource Include="Resources\Oblivion.png" />
     <Resource Include="Resources\SkyrimLE.png" />
     <Resource Include="Resources\SkyrimSSE.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Converters\" />
   </ItemGroup>
 
 </Project>

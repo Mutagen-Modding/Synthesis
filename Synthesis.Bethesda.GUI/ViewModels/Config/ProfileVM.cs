@@ -35,8 +35,8 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string Nickname { get; set; } = string.Empty;
 
-        private readonly ObservableAsPropertyHelper<string> _WorkingDirectory;
-        public string WorkingDirectory => _WorkingDirectory.Value;
+        public string ProfileDirectory { get; }
+        public string WorkingDirectory { get; }
 
         private readonly ObservableAsPropertyHelper<string> _DataFolder;
         public string DataFolder => _DataFolder.Value;
@@ -61,9 +61,9 @@ namespace Synthesis.Bethesda.GUI
             AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(this)));
             AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(this)));
             AddSnippetPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new CodeSnippetPatcherVM(this)));
-            _WorkingDirectory = this.WhenAnyValue(x => x.Config.WorkingDirectory)
-                .Select(dir => Path.Combine(dir, ID, "Workspace"))
-                .ToGuiProperty<string>(this, nameof(WorkingDirectory));
+
+            ProfileDirectory = Path.Combine(Config.WorkingDirectory, ID);
+            WorkingDirectory = Path.Combine(Config.WorkingDirectory, ID, "Workspace");
 
             var dataFolderResult = this.WhenAnyValue(x => x.Release)
                 .ObserveOn(RxApp.TaskpoolScheduler)

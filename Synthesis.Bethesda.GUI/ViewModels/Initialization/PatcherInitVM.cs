@@ -21,5 +21,9 @@ namespace Synthesis.Bethesda.GUI
         {
             Profile = profile;
         }
+
+        public virtual void Cancel()
+        {
+        }
     }
 }

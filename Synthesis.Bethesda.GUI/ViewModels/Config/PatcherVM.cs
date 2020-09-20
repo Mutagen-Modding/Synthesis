@@ -55,7 +55,7 @@ namespace Synthesis.Bethesda.GUI
                 parent.Config.MainVM.ActiveConfirmation = new ConfirmationActionVM(
                     "Confirm",
                     $"Are you sure you want to delete {DisplayName}?",
-                    () => parent.Patchers.Remove(this));
+                    Delete);
             });
         }
 
@@ -68,5 +68,10 @@ namespace Synthesis.Bethesda.GUI
         }
 
         public abstract PatcherRunVM ToRunner(PatchersRunVM parent);
+
+        public virtual void Delete()
+        {
+            Profile.Patchers.Remove(this);
+        }
     }
 }

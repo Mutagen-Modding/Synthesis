@@ -40,19 +40,7 @@ namespace Synthesis.Bethesda.GUI
 
             AvailableProjects = this.WhenAnyValue(x => x.SolutionPath.TargetPath)
                 .ObserveOn(RxApp.TaskpoolScheduler)
-                .Select(x =>
-                {
-                    if (!File.Exists(x)) return Enumerable.Empty<string>();
-                    try
-                    {
-                        var manager = new AnalyzerManager(x);
-                        return manager.Projects.Keys.Select(projPath => projPath.TrimStart($"{Path.GetDirectoryName(x)}\\"!));
-                    }
-                    catch (Exception)
-                    {
-                        return Enumerable.Empty<string>();
-                    }
-                })
+                .Select(x => Utility.AvailableProjectSubpaths(x))
                 .Select(x => x.AsObservableChangeSet())
                 .Switch()
                 .ObserveOnGui()

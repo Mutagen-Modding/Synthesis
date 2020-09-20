@@ -38,7 +38,7 @@ namespace Synthesis.Bethesda.Execution
             PathToSolution = pathToSln;
             PathToProject = pathToProj;
             PathToExe = pathToExe;
-            Name = $"{Path.GetFileNameWithoutExtension(pathToSln)} => {Path.GetFileNameWithoutExtension(pathToProj)}";
+            Name = $"{nickname} => {Path.GetFileNameWithoutExtension(pathToSln)} => {Path.GetFileNameWithoutExtension(pathToProj)}";
         }
 
         public async Task Prep(GameRelease release, CancellationToken? cancel = null)

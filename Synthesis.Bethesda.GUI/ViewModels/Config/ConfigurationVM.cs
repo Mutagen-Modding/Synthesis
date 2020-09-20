@@ -47,8 +47,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<PatchersRunVM?> _CurrentRun;
         public PatchersRunVM? CurrentRun => _CurrentRun.Value;
 
-        [Reactive]
-        public string WorkingDirectory { get; set; } = Path.Combine(Path.GetTempPath(), "Synthesis");
+        public string WorkingDirectory { get; } = Path.Combine(Path.GetTempPath(), "Synthesis");
 
         [Reactive]
         public bool ShowHelp { get; set; }
@@ -86,7 +85,7 @@ namespace Synthesis.Bethesda.GUI
             CancelConfiguration = ReactiveCommand.Create(
                 () =>
                 {
-                    // Just forget about patcher and let it GC
+                    NewPatcher?.Cancel();
                     NewPatcher = null;
                 });
 
