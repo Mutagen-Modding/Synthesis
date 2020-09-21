@@ -1,4 +1,4 @@
-﻿using Mutagen.Bethesda;
+using Mutagen.Bethesda;
 using System;
 using System.Collections.Generic;
 using System.Text;

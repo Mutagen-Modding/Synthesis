@@ -22,6 +22,9 @@ using Buildalyzer.Environment;
 using System.Reactive;
 using Microsoft.Build.Evaluation;
 using System.Threading;
+using Serilog.Context;
+using Serilog;
+using Serilog.Events;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -62,9 +65,10 @@ namespace Synthesis.Bethesda.GUI
             SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
 
-            _DisplayName = this.WhenAnyValue(
-                x => x.Nickname,
-                x => x.SelectedProjectPath.TargetPath,
+            _DisplayName = Observable.CombineLatest(
+                this.WhenAnyValue(x => x.Nickname),
+                this.WhenAnyValue(x => x.SelectedProjectPath.TargetPath)
+                    .StartWith(settings?.ProjectSubpath ?? string.Empty),
                 (nickname, path) =>
                 {
                     if (!string.IsNullOrWhiteSpace(nickname)) return nickname;
@@ -79,7 +83,7 @@ namespace Synthesis.Bethesda.GUI
                         return string.Empty;
                     }
                 })
-                .ToGuiProperty<string>(this, nameof(DisplayName));
+                .ToProperty(this, nameof(DisplayName), Nickname);
 
             AvailableProjects = SolutionPatcherConfigLogic.AvailableProject(
                 this.WhenAnyValue(x => x.SolutionPath.TargetPath))
@@ -101,14 +105,21 @@ namespace Synthesis.Bethesda.GUI
                         IsHaltingError = false,
                         RunnableState = ErrorResponse.Fail("Locating exe to run.")
                     },
-                    async (i, cancel) =>
+                    async (projectPath, cancel) =>
                     {
-                        var exe = await SolutionPatcherConfigLogic.PathToExe(i, cancel);
-                        if (exe.Failed) return new ConfigurationStateVM<string>(exe.BubbleFailure<string>());
+                        GetResponse<string> exe;
+                        using (Log.Logger.Time($"locate path to exe from {projectPath}"))
+                        {
+                            exe = await SolutionPatcherConfigLogic.PathToExe(projectPath, cancel);
+                            if (exe.Failed) return new ConfigurationStateVM<string>(exe.BubbleFailure<string>());
+                        }
 
-                        // Now we want to build, just to prep for run
-                        var build = await SolutionPatcherRun.CompileWithDotnet(i, cancel).ConfigureAwait(false);
-                        if (build.Failed) return new ConfigurationStateVM<string>(build.BubbleFailure<string>());
+                        using (Logger.Time($"building {projectPath}"))
+                        {
+                            // Now we want to build, just to prep for run
+                            var build = await SolutionPatcherRun.CompileWithDotnet(projectPath, cancel).ConfigureAwait(false);
+                            if (build.Failed) return new ConfigurationStateVM<string>(build.BubbleFailure<string>());
+                        }
 
                         return new ConfigurationStateVM<string>(exe);
                     })

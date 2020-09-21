@@ -1,4 +1,4 @@
-﻿using DynamicData;
+using DynamicData;
 using DynamicData.Binding;
 using Noggog;
 using Noggog.WPF;
@@ -26,8 +26,11 @@ namespace Synthesis.Bethesda.GUI
 
         public IObservableCollection<string> OutputLineDisplay { get; }
 
-        private readonly ObservableAsPropertyHelper<string> _RunTime;
-        public string RunTime => _RunTime.Value;
+        private readonly ObservableAsPropertyHelper<TimeSpan> _RunTime;
+        public TimeSpan RunTime => _RunTime.Value;
+
+        private readonly ObservableAsPropertyHelper<string> _RunTimeString;
+        public string RunTimeString => _RunTimeString.Value;
 
         private readonly ObservableAsPropertyHelper<bool> _IsRunning;
         public bool IsRunning => _IsRunning.Value;
@@ -64,8 +67,15 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x.Value == RunState.Error)
                 .ToGuiProperty(this, nameof(IsErrored));
 
-            _RunTime = Noggog.ObservableExt.TimePassed(TimeSpan.FromMilliseconds(100), RxApp.MainThreadScheduler)
+            var runTime = Noggog.ObservableExt.TimePassed(TimeSpan.FromMilliseconds(100), RxApp.MainThreadScheduler)
                 .FilterSwitch(this.WhenAnyValue(x => x.IsRunning))
+                .Publish()
+                .RefCount();
+
+            _RunTime = runTime
+                .ToProperty(this, nameof(RunTime));
+
+            _RunTimeString = runTime
                 .Select(time =>
                 {
                     if (time.TotalDays > 1)
@@ -82,7 +92,7 @@ namespace Synthesis.Bethesda.GUI
                     }
                     return $"{time.TotalSeconds:n1}s";
                 })
-                .ToGuiProperty<string>(this, nameof(RunTime), string.Empty);
+                .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty);
         }
     }
 

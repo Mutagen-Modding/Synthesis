@@ -1,4 +1,4 @@
-﻿using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Subjects;
@@ -15,10 +15,10 @@ namespace Synthesis.Bethesda.Execution.Runner
         private readonly Subject<(TKey, IPatcherRun)> _starting = new Subject<(TKey, IPatcherRun)>();
 
         public IObservable<Exception> Overall => _overall;
-        public IObservable<(TKey Key, IPatcherRun Patcher, Exception Error)> PrepProblem => _prepProblem;
-        public IObservable<(TKey Key, IPatcherRun Patcher, Exception Error)> RunProblem => _runProblem;
-        public IObservable<(TKey Key, IPatcherRun Patcher, string OutputPath)> RunSuccessful => _runSuccessful;
-        public IObservable<(TKey Key, IPatcherRun Patcher)> Starting => _starting;
+        public IObservable<(TKey Key, IPatcherRun Run, Exception Error)> PrepProblem => _prepProblem;
+        public IObservable<(TKey Key, IPatcherRun Run, Exception Error)> RunProblem => _runProblem;
+        public IObservable<(TKey Key, IPatcherRun Run, string OutputPath)> RunSuccessful => _runSuccessful;
+        public IObservable<(TKey Key, IPatcherRun Run)> Starting => _starting;
 
         public void ReportOverallProblem(Exception ex)
         {

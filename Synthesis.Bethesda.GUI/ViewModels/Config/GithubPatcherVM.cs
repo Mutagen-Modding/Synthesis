@@ -16,6 +16,7 @@ using static Synthesis.Bethesda.GUI.SolutionPatcherVM;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Threading.Tasks;
 using System.Reactive;
+using Serilog;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -125,11 +126,12 @@ namespace Synthesis.Bethesda.GUI
                         IsHaltingError = false,
                         RunnableState = ErrorResponse.Fail("Cloning driver repository"),
                     },
-                    async (item, cancel) =>
+                    async (path, cancel) =>
                     {
-                        if (!item.IsHaltingError && item.RunnableState.Failed) return item.BubbleError<DriverRepoInfo>();
+                        if (!path.IsHaltingError && path.RunnableState.Failed) return path.BubbleError<DriverRepoInfo>();
+                        using var timing = Logger.Time("Cloning driver repository");
                         // Clone and/or double check the clone is correct
-                        var state = await GithubPatcherRun.PrepRepo(item.ToGetResponse(), LocalDriverRepoDirectory, cancel);
+                        var state = await GithubPatcherRun.PrepRepo(path.ToGetResponse(), LocalDriverRepoDirectory, cancel);
                         if (state.Failed) return new ConfigurationStateVM<DriverRepoInfo>(default!, (ErrorResponse)state);
                         cancel.ThrowIfCancellationRequested();
 
@@ -173,10 +175,11 @@ namespace Synthesis.Bethesda.GUI
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .SelectReplaceWithIntermediate(
                     ErrorResponse.Fail("Cloning runner repository"),
-                    async (item, cancel) =>
+                    async (path, cancel) =>
                     {
-                        if (item.RunnableState.Failed) return item.RunnableState;
-                        return await GithubPatcherRun.PrepRepo(item.ToGetResponse(), LocalRunnerRepoDirectory, cancel);
+                        if (path.RunnableState.Failed) return path.RunnableState;
+                        using var timing = Logger.ForContext("RemotePath", path.Item).Time("runner repo");
+                        return await GithubPatcherRun.PrepRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, cancel);
                     })
                 .Replay(1)
                 .RefCount();
@@ -253,6 +256,7 @@ namespace Synthesis.Bethesda.GUI
                             if (item.runnerState.Failed) return item.runnerState.BubbleFailure<RunnerRepoInfo>();
                             if (item.proj.Failed) return item.proj.BubbleFailure<RunnerRepoInfo>();
                             cancel.ThrowIfCancellationRequested();
+                            using var timing = Logger.Time("runner checkout");
                             try
                             {
                                 const string RunnerBranch = "SynthesisRunner";
@@ -326,6 +330,7 @@ namespace Synthesis.Bethesda.GUI
                 .SelectReplace(async (x, cancel) =>
                 {
                     if (x.RunnableState.Failed) return string.Empty;
+                    using var timing = Logger.Time($"locate path to exe from {x.Item.ProjPath}");
                     var exePath = await SolutionPatcherConfigLogic.PathToExe(x.Item.ProjPath, cancel);
                     if (exePath.Failed) return string.Empty;
                     return exePath.Value;

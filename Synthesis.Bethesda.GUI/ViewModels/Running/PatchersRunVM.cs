@@ -1,4 +1,4 @@
-﻿using DynamicData;
+using DynamicData;
 using DynamicData.Binding;
 using Mutagen.Bethesda;
 using Noggog;
@@ -81,39 +81,48 @@ namespace Synthesis.Bethesda.GUI
                 .ObserveOnGui()
                 .Subscribe(ex =>
                 {
+                    Log.Logger.Error(ex, "Error while running patcher pipeline");
                     ResultError = ex;
                 })
                 .DisposeWith(this);
             _reporter.PrepProblem
-                .Merge(_reporter.RunProblem)
+                .Select(data => (data, type: "prepping"))
+                .Merge(_reporter.RunProblem
+                    .Select(data => (data, type: "running")))
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
-                    if (Patchers.TryGetValue(i.Key, out var vm))
-                    {
-                        vm.State = GetResponse<RunState>.Fail(RunState.Error, i.Error);
-                        SelectedPatcher = vm;
-                    }
+                    var vm = Patchers.Get(i.data.Key);
+                    vm.State = GetResponse<RunState>.Fail(RunState.Error, i.data.Error);
+                    SelectedPatcher = vm;
+                    Log.Logger
+                        .ForContext("PatcherRunId", i.data.Key)
+                        .ForContext(nameof(PatcherVM.DisplayName), vm?.Config.DisplayName)
+                        .Error(i.data.Error, $"Error while {i.type}");
                 })
                 .DisposeWith(this);
             _reporter.Starting
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
-                    if (Patchers.TryGetValue(i.Key, out var vm))
-                    {
-                        vm.State = GetResponse<RunState>.Succeed(RunState.Started);
-                    }
+                    var vm = Patchers.Get(i.Key);
+                    vm.State = GetResponse<RunState>.Succeed(RunState.Started);
+                    Log.Logger
+                        .ForContext("PatcherRunId", i.Key)
+                        .ForContext(nameof(PatcherVM.DisplayName), vm?.Config.DisplayName)
+                        .Information($"Starting");
                 })
                 .DisposeWith(this);
             _reporter.RunSuccessful
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
-                    if (Patchers.TryGetValue(i.Key, out var vm))
-                    {
-                        vm.State = GetResponse<RunState>.Succeed(RunState.Finished);
-                    }
+                    var vm = Patchers.Get(i.Key);
+                    vm.State = GetResponse<RunState>.Succeed(RunState.Finished);
+                    Log.Logger
+                        .ForContext("PatcherRunId", i.Key)
+                        .ForContext(nameof(PatcherVM.DisplayName), vm.Config.DisplayName)
+                        .Information("Finished {RunTime}", vm.RunTime);
                 })
                 .DisposeWith(this);
 
@@ -132,6 +141,7 @@ namespace Synthesis.Bethesda.GUI
 
         public async Task Run()
         {
+            Log.Logger.Information("Starting patcher run.");
             await Observable.Return(Unit.Default)
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .DoTask(async (_) =>
@@ -166,6 +176,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     Running = false;
                 });
+            Log.Logger.Information("Finished patcher run.");
         }
 
         private async Task Cancel()

@@ -74,19 +74,9 @@ namespace Synthesis.Bethesda.Execution
                 dirInfo.DeleteEntireFolder();
                 return false;
             }
-            try
-            {
-                using var repo = new Repository(localDir);
-                // If it's the same remote repo, don't delete
-                if (repo.Network.Remotes.FirstOrDefault()?.Url.Equals(remoteUrl.Value) ?? false) return true;
-                int wer = 23;
-                wer++;
-            }
-            catch (Exception ex)
-            {
-                int wer = 23;
-                wer++;
-            }
+            using var repo = new Repository(localDir);
+            // If it's the same remote repo, don't delete
+            if (repo.Network.Remotes.FirstOrDefault()?.Url.Equals(remoteUrl.Value) ?? false) return true;
             dirInfo.DeleteEntireFolder();
             return false;
         }

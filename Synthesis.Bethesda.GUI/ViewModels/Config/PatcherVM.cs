@@ -11,6 +11,8 @@ using System.Text;
 using System.Windows.Input;
 using Synthesis.Bethesda.Execution.Patchers;
 using System.Threading;
+using Serilog.Core;
+using Serilog;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -73,5 +75,7 @@ namespace Synthesis.Bethesda.GUI
         {
             Profile.Patchers.Remove(this);
         }
+
+        protected ILogger Logger =>  Log.Logger.ForContext(nameof(DisplayName), DisplayName);
     }
 }

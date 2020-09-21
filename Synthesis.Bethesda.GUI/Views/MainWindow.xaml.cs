@@ -1,4 +1,4 @@
-﻿using MahApps.Metro.Controls;
+using MahApps.Metro.Controls;
 using Synthesis.Bethesda.Execution.Settings;
 using Newtonsoft.Json;
 using Noggog.WPF;
@@ -15,6 +15,7 @@ namespace Synthesis.Bethesda.GUI.Views
         public MainWindow()
         {
             InitializeComponent();
+            Log.Logger.Information("Starting");
             JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Auto
