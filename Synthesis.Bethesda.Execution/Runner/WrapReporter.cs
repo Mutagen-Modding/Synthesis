@@ -1,4 +1,4 @@
-﻿using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,6 +13,14 @@ namespace Synthesis.Bethesda.Execution.Runner
         public WrapReporter(IRunReporter wrapped)
         {
             _wrapped = wrapped;
+        }
+
+        public void ReportError(string str)
+        {
+        }
+
+        public void ReportOutput(string str)
+        {
         }
 
         public void ReportOverallProblem(Exception ex)

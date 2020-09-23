@@ -5,6 +5,7 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Serilog;
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Runner;
 using System;
@@ -77,11 +78,13 @@ namespace Synthesis.Bethesda.GUI
                 execute: Cancel,
                 canExecute: this.WhenAnyValue(x => x.Running));
 
+            ILogger log = Log.Logger;
+
             _reporter.Overall
                 .ObserveOnGui()
                 .Subscribe(ex =>
                 {
-                    Log.Logger.Error(ex, "Error while running patcher pipeline");
+                    log.Error(ex, "Error while running patcher pipeline");
                     ResultError = ex;
                 })
                 .DisposeWith(this);
@@ -96,9 +99,8 @@ namespace Synthesis.Bethesda.GUI
                     vm.State = GetResponse<RunState>.Fail(RunState.Error, i.data.Error);
                     SelectedPatcher = vm;
                     Log.Logger
-                        .ForContext("PatcherRunId", i.data.Key)
                         .ForContext(nameof(PatcherVM.DisplayName), vm?.Config.DisplayName)
-                        .Error(i.data.Error, $"Error while {i.type}");
+                        .Error(i.data.Error, $"Error while prepping {i.type}");
                 })
                 .DisposeWith(this);
             _reporter.Starting
@@ -107,10 +109,9 @@ namespace Synthesis.Bethesda.GUI
                 {
                     var vm = Patchers.Get(i.Key);
                     vm.State = GetResponse<RunState>.Succeed(RunState.Started);
-                    Log.Logger
-                        .ForContext("PatcherRunId", i.Key)
-                        .ForContext(nameof(PatcherVM.DisplayName), vm?.Config.DisplayName)
-                        .Information($"Starting");
+                    log = Log.Logger
+                        .ForContext(nameof(PatcherVM.DisplayName), vm?.Config.DisplayName);
+                    log.Information($"Starting");
                 })
                 .DisposeWith(this);
             _reporter.RunSuccessful
@@ -119,10 +120,19 @@ namespace Synthesis.Bethesda.GUI
                 {
                     var vm = Patchers.Get(i.Key);
                     vm.State = GetResponse<RunState>.Succeed(RunState.Finished);
-                    Log.Logger
-                        .ForContext("PatcherRunId", i.Key)
-                        .ForContext(nameof(PatcherVM.DisplayName), vm.Config.DisplayName)
-                        .Information("Finished {RunTime}", vm.RunTime);
+                    log.Information("Finished {RunTime}", vm.RunTime);
+                })
+                .DisposeWith(this);
+            _reporter.Output
+                .Subscribe(s =>
+                {
+                    log.Information(s);
+                })
+                .DisposeWith(this);
+            _reporter.Error
+                .Subscribe(s =>
+                {
+                    log.Error(s);
                 })
                 .DisposeWith(this);
 

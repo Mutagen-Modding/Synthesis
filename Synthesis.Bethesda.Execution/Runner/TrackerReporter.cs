@@ -1,4 +1,4 @@
-﻿using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -55,6 +55,14 @@ namespace Synthesis.Bethesda.Execution.Runner
         public void ReportRunSuccessful(IPatcherRun patcher, string outputPath)
         {
             _patcherComplete.Add((patcher, outputPath));
+        }
+
+        public void ReportOutput(string str)
+        {
+        }
+
+        public void ReportError(string str)
+        {
         }
     }
 }

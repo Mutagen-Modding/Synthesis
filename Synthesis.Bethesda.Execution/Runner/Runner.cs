@@ -96,7 +96,22 @@ namespace Synthesis.Bethesda.Execution.Runner
                 {
                     try
                     {
-                        await patcher.Run.Prep(release, cancellation);
+                        using var outputSub = patcher.Run.Output
+                            .Subscribe(reporter.ReportOutput);
+                        using var errorSub = patcher.Run.Error
+                            .Subscribe(reporter.ReportError);
+                        try
+                        {
+                            await patcher.Run.Prep(release, cancellation);
+                        }
+                        catch (TaskCanceledException)
+                        {
+                        }
+                        catch (Exception ex)
+                        {
+                            reporter.ReportPrepProblem(patcher.Key, patcher.Run, ex);
+                            return ex;
+                        }
                     }
                     catch (TaskCanceledException)
                     {
@@ -125,17 +140,33 @@ namespace Synthesis.Bethesda.Execution.Runner
                     var nextPath = new ModPath(outputPath.ModKey, Path.Combine(workingDirectory, $"{i} - {fileName}"));
                     try
                     {
-                        // Start run
-                        reporter.ReportStartingRun(patcher.Key, patcher.Run);
-                        await patcher.Run.Run(new RunSynthesisPatcher()
+                        using var outputSub = patcher.Run.Output
+                            .Subscribe(reporter.ReportOutput);
+                        using var errorSub = patcher.Run.Error
+                            .Subscribe(reporter.ReportError);
+
+                        try
                         {
-                            SourcePath = prevPath?.Path,
-                            OutputPath = nextPath,
-                            DataFolderPath = dataFolder,
-                            GameRelease = release,
-                            LoadOrderFilePath = loadOrderPath,
-                        },
-                        cancel: cancellation);
+                            // Start run
+                            reporter.ReportStartingRun(patcher.Key, patcher.Run);
+                            await patcher.Run.Run(new RunSynthesisPatcher()
+                            {
+                                SourcePath = prevPath?.Path,
+                                OutputPath = nextPath,
+                                DataFolderPath = dataFolder,
+                                GameRelease = release,
+                                LoadOrderFilePath = loadOrderPath,
+                            },
+                            cancel: cancellation);
+                        }
+                        catch (TaskCanceledException)
+                        {
+                        }
+                        catch (Exception ex)
+                        {
+                            reporter.ReportRunProblem(patcher.Key, patcher.Run, ex);
+                            return false;
+                        }
                     }
                     catch (TaskCanceledException)
                     {
