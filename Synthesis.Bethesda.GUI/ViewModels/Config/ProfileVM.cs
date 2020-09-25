@@ -1,7 +1,6 @@
 using DynamicData;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis;
-using Newtonsoft.Json;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -89,46 +88,33 @@ namespace Synthesis.Bethesda.GUI
             var loadOrderResult = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.Release),
                     dataFolderResult,
-                    (Release, DataFolder) => (Release, DataFolder))
+                    (release, dataFolder) => (release, dataFolder))
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .Select(x =>
                 {
-                    try
+                    if (x.dataFolder.Failed)
                     {
-                        if (x.DataFolder.Failed) return x.DataFolder.Bubble<IEnumerable<LoadOrderListing>>(_ => Enumerable.Empty<LoadOrderListing>());
-                        var lo = Mutagen.Bethesda.LoadOrder.GetUsualLoadOrder(x.Release, x.DataFolder.Value, throwOnMissingMods: true);
-                        return GetResponse<IEnumerable<LoadOrderListing>>.Succeed(lo);
+                        return (Results: Observable.Empty<IChangeSet<LoadOrderListing>>(), State: Observable.Return<ErrorResponse>(ErrorResponse.Fail("Data folder not set")));
                     }
-                    catch (MissingModException ex)
+                    if (!Mutagen.Bethesda.LoadOrder.TryGetPluginsFile(x.release, out var path))
                     {
-                        return GetResponse<IEnumerable<LoadOrderListing>>.Fail(
-                            Enumerable.Empty<LoadOrderListing>(),
-                            $"Mod on the load order was missing from the data folder: {ex.ModPath}");
+                        return (Results: Observable.Empty<IChangeSet<LoadOrderListing>>(), State: Observable.Return<ErrorResponse>(ErrorResponse.Fail("Could not locate plugins file")));
                     }
-                    catch (FileNotFoundException)
-                    {
-                        return GetResponse<IEnumerable<LoadOrderListing>>.Fail(
-                            Enumerable.Empty<LoadOrderListing>(),
-                            $"Could not locate load order for target game.");
-                    }
-                    catch (Exception ex)
-                    {
-                        return GetResponse<IEnumerable<LoadOrderListing>>.Fail(
-                            Enumerable.Empty<LoadOrderListing>(),
-                            ex);
-                    }
+                    return (Results: Mutagen.Bethesda.LoadOrder.GetLiveLoadOrder(x.release, path, x.dataFolder.Value, out var errors), State: errors);
                 })
                 .Replay(1)
                 .RefCount();
 
             LoadOrder = loadOrderResult
-                .Select(x => x.Value.AsObservableChangeSet())
+                .Select(x => x.Results)
                 .Switch()
                 .AsObservableList();
 
             _LargeOverallError = Observable.CombineLatest(
                     dataFolderResult,
-                    loadOrderResult,
+                    loadOrderResult
+                        .Select(x => x.State)
+                        .Switch(),
                     Patchers.Connect()
                         .AutoRefresh(x => x.IsOn)
                         .Filter(p => p.IsOn)

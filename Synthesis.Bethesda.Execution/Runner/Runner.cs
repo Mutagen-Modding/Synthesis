@@ -74,6 +74,8 @@ namespace Synthesis.Bethesda.Execution.Runner
                 {
                     loadOrderList.RemoveToCount(synthIndex);
                 }
+                reporter.ReportOutput("Load Order:");
+                loadOrderList.ForEach(i => reporter.ReportOutput($"   {i}"));
                 string loadOrderPath = Path.Combine(workingDirectory, "Plugins.txt");
                 var writeLoadOrder = Task.Run(() =>
                 {
