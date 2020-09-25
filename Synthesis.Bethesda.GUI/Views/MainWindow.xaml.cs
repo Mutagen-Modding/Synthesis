@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Noggog.WPF;
 using System.IO;
 using System;
+using Newtonsoft.Json.Converters;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -18,8 +19,9 @@ namespace Synthesis.Bethesda.GUI.Views
             Log.Logger.Information("Starting");
             JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
             {
-                TypeNameHandling = TypeNameHandling.Auto
+                TypeNameHandling = TypeNameHandling.Auto,
             };
+            jsonSettings.Converters.Add(new StringEnumConverter());
             var mvm = this.WireMainVM<MainVM>(
                 "Settings.json",
                 load: (s, vm) => vm.Load(JsonConvert.DeserializeObject<SynthesisGuiSettings>(File.ReadAllText(s), jsonSettings)!),
