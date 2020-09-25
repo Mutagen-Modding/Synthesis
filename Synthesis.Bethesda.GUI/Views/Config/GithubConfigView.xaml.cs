@@ -1,4 +1,5 @@
 using Noggog.WPF;
+using System;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Windows;
@@ -71,6 +72,20 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 this.BindStrict(this.ViewModel, vm => vm.TargetCommit, view => view.CommitShaBox.Text)
+                    .DisposeWith(disposable);
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel.RunnableData),
+                        this.WhenAnyValue(x => x.ViewModel.PatcherVersioning),
+                        (data, patcher) => data == null && patcher == PatcherVersioningEnum.Commit)
+                    .Subscribe(x => this.CommitShaBox.SetValue(ControlsHelper.InErrorProperty, x))
+                    .DisposeWith(disposable);
+                this.BindStrict(this.ViewModel, vm => vm.TargetBranchName, view => view.BranchNameBox.Text)
+                    .DisposeWith(disposable);
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel.RunnableData),
+                        this.WhenAnyValue(x => x.ViewModel.PatcherVersioning),
+                        (data, patcher) => data == null && patcher == PatcherVersioningEnum.Branch)
+                    .Subscribe(x => this.BranchNameBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel.RunnableData)
                     .Select(x => x == null ? string.Empty : x.CommitDate.ToString())

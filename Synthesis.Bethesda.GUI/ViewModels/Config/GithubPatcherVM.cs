@@ -67,6 +67,9 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string TargetCommit { get; set; } = string.Empty;
 
+        [Reactive]
+        public string TargetBranchName { get; set; } = string.Empty;
+
         private readonly ObservableAsPropertyHelper<RunnerRepoInfo?> _RunnableData;
         public RunnerRepoInfo? RunnableData => _RunnableData.Value;
 
@@ -236,7 +239,8 @@ namespace Synthesis.Bethesda.GUI
                         .Select(x => x.Succeeded ? x : GetResponse<string>.Fail("No patcher project selected.")),
                     this.WhenAnyValue(x => x.TargetTag),
                     this.WhenAnyValue(x => x.TargetCommit),
-                    (master, versioning, runnerState, proj, tag, commit) => (master, versioning, runnerState, proj, tag, commit))
+                    this.WhenAnyValue(x => x.TargetBranchName),
+                    (master, versioning, runnerState, proj, tag, commit, branch) => (master, versioning, runnerState, proj, tag, commit, branch))
                 .Replay(1)
                 .RefCount();
             var runnableState = checkoutInput
@@ -261,9 +265,9 @@ namespace Synthesis.Bethesda.GUI
                             {
                                 const string RunnerBranch = "SynthesisRunner";
                                 using var repo = new Repository(LocalRunnerRepoDirectory);
-                                var branch = repo.Branches[RunnerBranch] ?? repo.CreateBranch(RunnerBranch);
+                                var runnerBranch = repo.Branches[RunnerBranch] ?? repo.CreateBranch(RunnerBranch);
                                 repo.Reset(ResetMode.Hard);
-                                Commands.Checkout(repo, branch);
+                                Commands.Checkout(repo, runnerBranch);
                                 string? targetSha;
                                 switch (item.versioning)
                                 {
@@ -282,6 +286,12 @@ namespace Synthesis.Bethesda.GUI
                                     case PatcherVersioningEnum.Commit:
                                         targetSha = item.commit;
                                         if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit");
+                                        break;
+                                    case PatcherVersioningEnum.Branch:
+                                        if (string.IsNullOrWhiteSpace(item.branch)) return GetResponse<RunnerRepoInfo>.Fail($"Target branch had no name.");
+                                        var targetBranch = repo.Branches[item.branch];
+                                        if (targetBranch == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {item.branch}");
+                                        targetSha = targetBranch.Tip.Sha;
                                         break;
                                     default:
                                         throw new NotImplementedException();

@@ -68,8 +68,7 @@
             </ComboBox.Style>
         </ComboBox>
         <Grid Grid.Row="4"
-            x:Name="VersioningGrid"
-            Visibility="Collapsed">
+            x:Name="VersioningGrid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -113,11 +112,21 @@
                         </ComboBox.Style>
                     </ComboBox>
                 </TabItem>
+                <TabItem Header="Branch" ToolTip="Run the patcher from a specific Git branch">
+                    <TextBox
+                        x:Name="BranchNameBox"
+                        Width="300"
+                        Margin="0,3"
+                        mahapps:TextBoxHelper.Watermark="Remote branch name"
+                        HorizontalAlignment="Left"
+                        Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
+                </TabItem>
                 <TabItem Header="Commit" ToolTip="Run the patcher from a specific Git commit">
                     <TextBox
                         x:Name="CommitShaBox"
                         Width="300"
                         Margin="0,3"
+                        mahapps:TextBoxHelper.Watermark="Commit sha"
                         HorizontalAlignment="Left"
                         Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
                 </TabItem>

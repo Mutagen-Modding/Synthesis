@@ -8,6 +8,7 @@ namespace Synthesis.Bethesda.Execution.Settings
     {
         Master,
         Tag,
+        Branch,
         Commit,
     }
 
@@ -27,5 +28,6 @@ namespace Synthesis.Bethesda.Execution.Settings
         public MutagenVersioningEnum MutagenVersioning = MutagenVersioningEnum.Match;
         public string TargetTag = string.Empty;
         public string TargetCommit = string.Empty;
+        public string TargetBranch = string.Empty;
     }
 }
