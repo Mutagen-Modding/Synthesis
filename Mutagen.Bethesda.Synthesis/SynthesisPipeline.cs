@@ -203,7 +203,8 @@ namespace Mutagen.Bethesda.Synthesis
                 state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.LoadOrder.Select(i => i.Key)));
             }
             catch (Exception ex)
-            when (userPreferences?.ActionsForEmptyArgs?.BlockAutomaticExit ?? false)
+            when (Environment.GetCommandLineArgs().Length == 0
+                && (userPreferences?.ActionsForEmptyArgs?.BlockAutomaticExit ?? false))
             {
                 System.Console.Error.WriteLine(ex);
                 System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
@@ -237,7 +238,8 @@ namespace Mutagen.Bethesda.Synthesis
                 state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.LoadOrder.Select(i => i.Key)));
             }
             catch (Exception ex)
-            when (userPreferences?.ActionsForEmptyArgs?.BlockAutomaticExit ?? false)
+            when (Environment.GetCommandLineArgs().Length == 0
+                && (userPreferences?.ActionsForEmptyArgs?.BlockAutomaticExit ?? false))
             {
                 System.Console.Error.WriteLine(ex);
                 System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
