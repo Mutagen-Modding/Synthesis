@@ -13,6 +13,8 @@
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <AssemblyName>Mutagen.Bethesda.Synthesis</AssemblyName>
     <Platforms>x64</Platforms>
+    <PackageProjectUrl>https://github.com/Noggog/Synthesis</PackageProjectUrl>
+    <Copyright>2020</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
