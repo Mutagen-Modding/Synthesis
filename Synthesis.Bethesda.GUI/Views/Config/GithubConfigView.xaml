@@ -41,6 +41,12 @@
                         Color="Red" />
                 </mahapps:ProgressRing.Effect>
             </mahapps:ProgressRing>
+            <Button
+                x:Name="OpenGithubButton"
+                Margin="8,0"
+                HorizontalAlignment="Right">
+                <icon:PackIconMaterial Kind="OpenInApp" />
+            </Button>
         </Grid>
         <TextBlock Grid.Row="2"
             x:Name="ProjectTitle"
@@ -67,8 +73,7 @@
                 </Style>
             </ComboBox.Style>
         </ComboBox>
-        <Grid Grid.Row="4"
-            x:Name="VersioningGrid">
+        <Grid x:Name="VersioningGrid" Grid.Row="4">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -117,8 +122,8 @@
                         x:Name="BranchNameBox"
                         Width="300"
                         Margin="0,3"
-                        mahapps:TextBoxHelper.Watermark="Remote branch name"
                         HorizontalAlignment="Left"
+                        mahapps:TextBoxHelper.Watermark="Remote branch name"
                         Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
                 </TabItem>
                 <TabItem Header="Commit" ToolTip="Run the patcher from a specific Git commit">
@@ -126,14 +131,15 @@
                         x:Name="CommitShaBox"
                         Width="300"
                         Margin="0,3"
-                        mahapps:TextBoxHelper.Watermark="Commit sha"
                         HorizontalAlignment="Left"
+                        mahapps:TextBoxHelper.Watermark="Commit sha"
                         Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
                 </TabItem>
             </TabControl>
             <Grid Grid.Row="1" Grid.Column="1"
                 x:Name="PatcherVersionInfoGrid">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -146,6 +152,11 @@
                     x:Name="PatcherVersionDateText"
                     HorizontalAlignment="Right"
                     Text="Date" />
+                <Button Grid.Row="2"
+                    x:Name="OpenGithubToVersionButton"
+                    HorizontalAlignment="Right">
+                    <icon:PackIconMaterial Kind="OpenInApp" />
+                </Button>
             </Grid>
             <TextBlock Grid.Row="2"
                 Margin="0,4,0,0"

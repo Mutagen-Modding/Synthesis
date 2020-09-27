@@ -17,6 +17,8 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Threading.Tasks;
 using System.Reactive;
 using Serilog;
+using System.Windows.Input;
+using System.Diagnostics;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -75,6 +77,10 @@ namespace Synthesis.Bethesda.GUI
 
         private readonly ObservableAsPropertyHelper<string> _ExePath;
         public string ExePath => _ExePath.Value;
+
+        public ICommand OpenGithubPageCommand { get; }
+
+        public ICommand OpenGithubPageToVersionCommand { get; }
 
         public GithubPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
@@ -269,6 +275,7 @@ namespace Synthesis.Bethesda.GUI
                                 repo.Reset(ResetMode.Hard);
                                 Commands.Checkout(repo, runnerBranch);
                                 string? targetSha;
+                                string? target;
                                 switch (item.versioning)
                                 {
                                     case PatcherVersioningEnum.Master:
@@ -277,21 +284,25 @@ namespace Synthesis.Bethesda.GUI
                                             .FirstOrDefault()
                                             ?.Tip.Sha;
                                         if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate master commit");
+                                        target = null;
                                         break;
                                     case PatcherVersioningEnum.Tag:
                                         if (string.IsNullOrWhiteSpace(item.tag)) return GetResponse<RunnerRepoInfo>.Fail("No tag selected");
                                         targetSha = repo.Tags[item.tag]?.Target.Sha;
                                         if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate tag");
+                                        target = item.tag;
                                         break;
                                     case PatcherVersioningEnum.Commit:
                                         targetSha = item.commit;
                                         if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit");
+                                        target = item.commit;
                                         break;
                                     case PatcherVersioningEnum.Branch:
                                         if (string.IsNullOrWhiteSpace(item.branch)) return GetResponse<RunnerRepoInfo>.Fail($"Target branch had no name.");
                                         var targetBranch = repo.Branches[item.branch];
                                         if (targetBranch == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {item.branch}");
                                         targetSha = targetBranch.Tip.Sha;
+                                        target = item.branch;
                                         break;
                                     default:
                                         throw new NotImplementedException();
@@ -319,6 +330,7 @@ namespace Synthesis.Bethesda.GUI
                                     new RunnerRepoInfo(
                                         slnPath: slnPath,
                                         projPath: Path.Combine(LocalDriverRepoDirectory, foundProjSubPath),
+                                        target: target,
                                         commitMsg: commit.Message,
                                         commitDate: commit.Author.When.LocalDateTime));
                             }
@@ -361,6 +373,56 @@ namespace Synthesis.Bethesda.GUI
                         return checkout;
                     })
                 .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), ConfigurationStateVM.Success);
+
+            OpenGithubPageCommand = ReactiveCommand.Create(
+                canExecute: this.WhenAnyValue(x => x.RepoValidity)
+                    .Select(x => x.Succeeded),
+                execute: () =>
+                {
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = RemoteRepoPath,
+                            UseShellExecute = true
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error("Error opening Github webpage", ex);
+                    }
+                });
+
+            OpenGithubPageToVersionCommand = ReactiveCommand.Create(
+                canExecute: runnableState
+                    .Select(x => x.RunnableState.Succeeded),
+                execute: () =>
+                {
+                    try
+                    {
+                        if (!RunnableData.TryGet(out var runnable)) return;
+                        if (runnable.Target == null)
+                        {
+                            Process.Start(new ProcessStartInfo
+                            {
+                                FileName = RemoteRepoPath,
+                                UseShellExecute = true
+                            });
+                        }
+                        else
+                        {
+                            Process.Start(new ProcessStartInfo
+                            {
+                                FileName = Path.Combine(RemoteRepoPath, "tree", runnable.Target),
+                                UseShellExecute = true
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error("Error opening Github webpage", ex);
+                    }
+                });
         }
 
         public override PatcherSettings Save()
@@ -478,17 +540,20 @@ namespace Synthesis.Bethesda.GUI
         {
             public readonly string SolutionPath;
             public readonly string ProjPath;
+            public readonly string? Target;
             public readonly string CommitMessage;
             public readonly DateTime CommitDate;
 
             public RunnerRepoInfo(
                 string slnPath,
                 string projPath,
+                string? target,
                 string commitMsg,
                 DateTime commitDate)
             {
                 SolutionPath = slnPath;
                 ProjPath = projPath;
+                Target = target;
                 CommitMessage = commitMsg;
                 CommitDate = commitDate;
             }

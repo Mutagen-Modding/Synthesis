@@ -95,6 +95,14 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x != null ? Visibility.Visible : Visibility.Hidden)
                     .BindToStrict(this, view => view.CommitDateText.Visibility)
                     .DisposeWith(disposable);
+
+                // Bind github open commands
+                this.WhenAnyValue(x => x.ViewModel.OpenGithubPageCommand)
+                    .BindToStrict(this, x => x.OpenGithubButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel.OpenGithubPageToVersionCommand)
+                    .BindToStrict(this, x => x.OpenGithubToVersionButton.Command)
+                    .DisposeWith(disposable);
             });
         }
     }
