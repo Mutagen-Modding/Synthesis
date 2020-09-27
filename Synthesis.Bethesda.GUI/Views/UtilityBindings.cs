@@ -1,4 +1,4 @@
-﻿using Noggog.WPF;
+using Noggog.WPF;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -16,33 +16,29 @@ namespace Synthesis.Bethesda.GUI
     public static class UtilityBindings
     {
         #region Help Sections
-        public static IDisposable HelpWiring(PatcherVM vm, Button button, TextBlock helpBlock)
+        public static IDisposable HelpWiring(ConfigurationVM config, Button button, TextBlock helpBlock, IObservable<bool>? show = null)
         {
             CompositeDisposable ret = new CompositeDisposable();
 
-            var isNewPatcher = vm.WhenAnyFallback(x => x.Profile.Config.NewPatcher!.Patcher, default)
-                .Select(newPatcher => object.ReferenceEquals(newPatcher, vm))
-                .Replay(1)
-                .RefCount();
+            show ??= Observable.Return(true);
 
-            isNewPatcher
-                .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+            show.Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                 .Subscribe(x => button.Visibility = x)
                 .DisposeWith(ret);
 
             Observable.CombineLatest(
-                    isNewPatcher,
-                    vm.WhenAnyValue(x => x.Profile.Config.ShowHelp),
+                    show,
+                    config.WhenAnyValue(x => x.ShowHelp),
                     (newPatcher, on) => on && newPatcher)
                 .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                 .Subscribe(x => helpBlock.Visibility = x)
                 .DisposeWith(ret);
 
-            vm.WhenAnyValue(x => x.ShowHelpCommand)
+            config.WhenAnyValue(x => x.ShowHelpToggleCommand)
                 .Subscribe(x => button.Command = x)
                 .DisposeWith(ret);
 
-            vm.WhenAnyValue(x => x.Profile.Config.ShowHelp)
+            config.WhenAnyValue(x => x.ShowHelp)
                 .Select(x => x ? 1.0d : 0.4d)
                 .Subscribe(x => button.Opacity = x)
                 .DisposeWith(ret);

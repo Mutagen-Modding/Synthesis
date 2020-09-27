@@ -26,6 +26,13 @@
                     Kind="Github"
                     ToolTip="Mutagen Github Link Patcher" />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:GithubPatcherInitVM}">
+                <icon:PackIconSimpleIcons
+                    Width="35"
+                    Height="35"
+                    Kind="Github"
+                    ToolTip="Mutagen Github Link Patcher" />
+            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:SolutionPatcherVM}">
                 <icon:PackIconModern
                     Width="35"
@@ -33,7 +40,21 @@
                     Kind="Visualstudio"
                     ToolTip="Mutagen Solution Patcher" />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:SolutionPatcherInitVM}">
+                <icon:PackIconModern
+                    Width="35"
+                    Height="35"
+                    Kind="Visualstudio"
+                    ToolTip="Mutagen Solution Patcher" />
+            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:CliPatcherVM}">
+                <icon:PackIconMaterial
+                    Width="35"
+                    Height="35"
+                    Kind="ConsoleLine"
+                    ToolTip="External Patcher Program" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:CliPatcherInitVM}">
                 <icon:PackIconMaterial
                     Width="35"
                     Height="35"

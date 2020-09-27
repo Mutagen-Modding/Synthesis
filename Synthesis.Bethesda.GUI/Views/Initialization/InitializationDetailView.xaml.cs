@@ -1,4 +1,4 @@
-﻿using Noggog.WPF;
+using Noggog.WPF;
 using System.Windows.Controls;
 using ReactiveUI;
 using System.Reactive.Disposables;
@@ -17,10 +17,9 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel.Patcher.DisplayName)
-                    .BindToStrict(this, x => x.PatcherDetailName.Text)
+                this.BindStrict(this.ViewModel, vm => vm.DisplayName, view => view.PatcherDetailName.Text)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.Patcher)
+                this.WhenAnyValue(x => x.ViewModel)
                     .BindToStrict(this, x => x.PatcherIconDisplay.DataContext)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel)

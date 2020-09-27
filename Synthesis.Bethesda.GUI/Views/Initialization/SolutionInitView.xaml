@@ -113,26 +113,25 @@
                         Text="Solution Path" />
                     <noggog:PathPicker Name="BothExistingSolutionPathPicker" Grid.Row="1" />
                     <TextBlock Grid.Row="2"
+                        x:Name="AvailableProjectsText"
                         Margin="0,8,0,4"
                         FontSize="14"
                         FontWeight="Bold"
-                        Text="Project Path" />
-                    <ComboBox x:Name="ProjectsPickerBox" Grid.Row="3">
-                        <ComboBox.ItemTemplate>
+                        Text="Patcher Projects" />
+                    <ListBox Grid.Row="3"
+                        Name="AvailableProjects"
+                        Background="Transparent"
+                        BorderBrush="{StaticResource MahApps.Brushes.Gray8}"
+                        BorderThickness="1"
+                        ClipToBounds="False"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        SelectionMode="Extended">
+                        <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding}" />
+                                <TextBlock Margin="5,0" Text="{Binding}" />
                             </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                        <ComboBox.Style>
-                            <Style BasedOn="{StaticResource Noggog.Styles.ComboBox}" TargetType="ComboBox">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ExistingProject.SelectedProjectPath.InError}" Value="True">
-                                        <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ComboBox.Style>
-                    </ComboBox>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </Grid>
             </TabItem>
         </TabControl>

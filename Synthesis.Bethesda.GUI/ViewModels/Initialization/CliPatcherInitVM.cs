@@ -1,27 +1,30 @@
-﻿using Noggog;
+using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
-using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.GUI
 {
     public class CliPatcherInitVM : PatcherInitVM
     {
-        private readonly CliPatcherVM _patcher;
-        public override PatcherVM Patcher => _patcher;
-
         private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
         public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
 
-        public CliPatcherInitVM(CliPatcherVM patcher)
-        {
-            _patcher = patcher;
+        public CliPatcherVM Patcher { get; }
 
-            _CanCompleteConfiguration = _patcher.WhenAnyValue(x => x.PathToExecutable.ErrorState)
+        public CliPatcherInitVM(ProfileVM profile)
+            : base(profile)
+        {
+            Patcher = new CliPatcherVM(profile);
+            _CanCompleteConfiguration = Patcher.WhenAnyValue(x => x.PathToExecutable.ErrorState)
                 .Cast<ErrorResponse, ErrorResponse>()
                 .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
+        }
+
+        public override async IAsyncEnumerable<PatcherVM> Construct()
+        {
+            yield return Patcher;
         }
     }
 }

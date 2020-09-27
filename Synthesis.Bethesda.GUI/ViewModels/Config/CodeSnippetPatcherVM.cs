@@ -232,11 +232,6 @@ namespace Synthesis.Bethesda.GUI
                 IsHaltingError = true,
             };
         }
-
-        public override PatcherInitVM? CreateInitializer()
-        {
-            return null;
-        }
     }
 
     public enum CodeCompilationStatus

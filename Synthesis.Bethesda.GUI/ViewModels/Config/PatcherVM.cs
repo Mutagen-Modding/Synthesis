@@ -1,4 +1,4 @@
-﻿using DynamicData;
+using DynamicData;
 using Synthesis.Bethesda.Execution.Settings;
 using Noggog;
 using Noggog.WPF;
@@ -11,6 +11,8 @@ using System.Text;
 using System.Windows.Input;
 using Synthesis.Bethesda.Execution.Patchers;
 using System.Threading;
+using Serilog.Core;
+using Serilog;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -32,7 +34,6 @@ namespace Synthesis.Bethesda.GUI
         public abstract string DisplayName { get; }
 
         public ICommand DeleteCommand { get; }
-        public ICommand ShowHelpCommand { get; }
 
         public abstract ConfigurationStateVM State { get; }
 
@@ -56,9 +57,8 @@ namespace Synthesis.Bethesda.GUI
                 parent.Config.MainVM.ActiveConfirmation = new ConfirmationActionVM(
                     "Confirm",
                     $"Are you sure you want to delete {DisplayName}?",
-                    () => parent.Patchers.Remove(this));
+                    Delete);
             });
-            ShowHelpCommand = parent.Config.ShowHelpToggleCommand;
         }
 
         public abstract PatcherSettings Save();
@@ -71,6 +71,11 @@ namespace Synthesis.Bethesda.GUI
 
         public abstract PatcherRunVM ToRunner(PatchersRunVM parent);
 
-        public abstract PatcherInitVM? CreateInitializer();
+        public virtual void Delete()
+        {
+            Profile.Patchers.Remove(this);
+        }
+
+        protected ILogger Logger =>  Log.Logger.ForContext(nameof(DisplayName), DisplayName);
     }
 }

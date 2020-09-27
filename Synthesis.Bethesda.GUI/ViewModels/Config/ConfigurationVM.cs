@@ -47,8 +47,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<PatchersRunVM?> _CurrentRun;
         public PatchersRunVM? CurrentRun => _CurrentRun.Value;
 
-        [Reactive]
-        public string WorkingDirectory { get; set; } = Path.Combine(Path.GetTempPath(), "Synthesis");
+        public string WorkingDirectory { get; } = Path.Combine(Path.GetTempPath(), "Synthesis");
 
         [Reactive]
         public bool ShowHelp { get; set; }
@@ -67,11 +66,12 @@ namespace Synthesis.Bethesda.GUI
                 {
                     var initializer = this.NewPatcher;
                     if (initializer == null) return;
-                    SelectedProfile?.Patchers.Add(initializer.Patcher);
+                    var patchersToAdd = await initializer.Construct().ToListAsync();
                     NewPatcher = null;
-                    SelectedPatcher = initializer.Patcher;
-                    initializer.Patcher.IsOn = true;
-                    await initializer.ExecuteChanges();
+                    if (patchersToAdd.Count == 0) return;
+                    patchersToAdd.ForEach(p => p.IsOn = true);
+                    SelectedProfile?.Patchers.AddRange(patchersToAdd);
+                    SelectedPatcher = patchersToAdd.First();
                 },
                 canExecute: this.WhenAnyValue(x => x.NewPatcher)
                     .Select(patcher =>
@@ -85,7 +85,7 @@ namespace Synthesis.Bethesda.GUI
             CancelConfiguration = ReactiveCommand.Create(
                 () =>
                 {
-                    // Just forget about patcher and let it GC
+                    NewPatcher?.Cancel();
                     NewPatcher = null;
                 });
 
@@ -157,7 +157,6 @@ namespace Synthesis.Bethesda.GUI
                     SelectedProfile = SelectedProfile?.ID ?? string.Empty
                 },
                 ShowHelp = ShowHelp,
-                MainRepositoryFolder = MainVM.Settings.MainRepositoryFolder,
             };
         }
     }

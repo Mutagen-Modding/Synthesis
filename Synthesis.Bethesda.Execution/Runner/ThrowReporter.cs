@@ -1,4 +1,4 @@
-﻿using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,6 +10,14 @@ namespace Synthesis.Bethesda.Execution.Runner
         public static ThrowReporter Instance = new ThrowReporter();
 
         private ThrowReporter()
+        {
+        }
+
+        public void ReportError(string str)
+        {
+        }
+
+        public void ReportOutput(string str)
         {
         }
 

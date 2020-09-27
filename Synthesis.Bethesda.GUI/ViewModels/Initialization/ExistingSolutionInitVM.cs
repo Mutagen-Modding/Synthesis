@@ -1,4 +1,4 @@
-﻿using DynamicData;
+using DynamicData;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Mutagen.Bethesda;
 using Noggog;
@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public class ExistingSolutionInitVM : ASolutionInitializer
     {
-        public override IObservable<GetResponse<Func<SolutionPatcherVM, Task>>> InitializationCall { get; }
+        public override IObservable<GetResponse<InitializerCall>> InitializationCall { get; }
 
         public PathPickerVM SolutionPath { get; } = new PathPickerVM();
 
@@ -46,16 +46,16 @@ namespace Synthesis.Bethesda.GUI
             InitializationCall = validation
                 .Select((i) =>
                 {
-                    if (!i.sln.Succeeded) return i.sln.BubbleFailure<Func<SolutionPatcherVM, Task>>();
-                    if (!i.validation.Succeeded) return i.validation.BubbleFailure<Func<SolutionPatcherVM, Task>>();
-                    return GetResponse<Func<SolutionPatcherVM, Task>>.Succeed(async (patcher) =>
+                    if (!i.sln.Succeeded) return i.sln.BubbleFailure<InitializerCall>();
+                    if (!i.validation.Succeeded) return i.validation.BubbleFailure<InitializerCall>();
+                    return GetResponse<InitializerCall>.Succeed(async (profile) =>
                     {
+                        var patcher = new SolutionPatcherVM(profile);
                         CreateProject(i.validation.Value, patcher.Profile.Release.ToCategory());
                         AddProjectToSolution(i.sln.Value, i.validation.Value);
                         patcher.SolutionPath.TargetPath = i.sln.Value;
-                        // Little delay, just to make sure things populated properly.  Might not be needed
-                        await Task.Delay(300);
                         patcher.ProjectSubpath = Path.Combine(i.proj, $"{i.proj}.csproj");
+                        return patcher.AsEnumerable();
                     });
                 });
         }

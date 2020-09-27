@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+    
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build -c Release --no-restore /p:Version=${{ github.event.release.tag_name }} -p:PackageReleaseNotes="See https://github.com/Noggog/Synthesis/releases/tag/${{ github.event.release.tag_name }}"
+    - name: Test
+      run: dotnet test --no-build -c Release
+    - name: Publish Synthesis GUI to Github
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: Synthesis.Bethesda.GUI/bin/Release/Synthesis.exe
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event.release.tag_name }}
+    - name: Publish Mutagen Synthesis to Github
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: Mutagen.Bethesda.Synthesis/bin/Release/Mutagen.Bethesda.Synthesis.${{ github.event.release.tag_name }}.nupkg
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event.release.tag_name }}
+    - name: Publish Synthesis Bethesda to Github
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: Synthesis.Bethesda/bin/Release/Synthesis.Bethesda.${{ github.event.release.tag_name }}.nupkg
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event.release.tag_name }}
+    - name: Publish Synthesis Execution to Github
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: Synthesis.Bethesda.Execution/bin/Release/Synthesis.Bethesda.Execution.${{ github.event.release.tag_name }}.nupkg
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event.release.tag_name }}
+    - name: Publish to Nuget.org
+      run: dotnet nuget push **/*${{ github.event.release.tag_name }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --no-symbols true

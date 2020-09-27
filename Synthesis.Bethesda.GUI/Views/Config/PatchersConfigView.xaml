@@ -1,4 +1,4 @@
-﻿<local:PatchersConfigViewBase
+<local:PatchersConfigViewBase
     x:Class="Synthesis.Bethesda.GUI.Views.PatchersConfigView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -233,8 +233,7 @@
                     Fill="{StaticResource MahApps.Brushes.Gray8}" />
                 <Button Grid.Column="3"
                     Name="AddGithubButton"
-                    Padding="4"
-                    IsEnabled="False">
+                    Padding="4">
                     <icon:PackIconSimpleIcons Margin="0,-5" Kind="Github" />
                 </Button>
                 <Button Grid.Column="4"

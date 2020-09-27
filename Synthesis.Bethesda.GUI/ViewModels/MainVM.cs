@@ -100,6 +100,8 @@ namespace Synthesis.Bethesda.GUI
         {
             var ret = Configuration.Save();
             ret.Ide = this.Ide;
+            ret.MainRepositoryFolder = Settings.MainRepositoryFolder;
+            ret.OpenIdeAfterCreating = Settings.OpenIdeAfterCreating;
             return ret;
         }
 

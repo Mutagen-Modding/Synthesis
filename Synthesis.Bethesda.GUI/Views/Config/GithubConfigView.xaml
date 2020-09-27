@@ -1,9 +1,11 @@
-﻿<local:GithubConfigViewBase
+<local:GithubConfigViewBase
     x:Class="Synthesis.Bethesda.GUI.Views.GithubConfigView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
+    xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -12,12 +14,191 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0"
             Margin="0,4"
             FontSize="14"
             FontWeight="Bold"
             Text="Repository Path" />
-        <TextBox Name="RepositoryPath" Grid.Row="1" />
+        <Grid Grid.Row="1">
+            <TextBox Name="RepositoryPath" Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
+            <mahapps:ProgressRing
+                x:Name="CloningRing"
+                Width="14"
+                Height="14"
+                Margin="8,0"
+                HorizontalAlignment="Right"
+                Foreground="{StaticResource PaleYellowBrush}"
+                ToolTip="Cloning repository"
+                Visibility="Collapsed">
+                <mahapps:ProgressRing.Effect>
+                    <DropShadowEffect
+                        BlurRadius="10"
+                        ShadowDepth="0"
+                        Color="Red" />
+                </mahapps:ProgressRing.Effect>
+            </mahapps:ProgressRing>
+            <Button
+                x:Name="OpenGithubButton"
+                Margin="8,0"
+                HorizontalAlignment="Right">
+                <icon:PackIconMaterial Kind="OpenInApp" />
+            </Button>
+        </Grid>
+        <TextBlock Grid.Row="2"
+            x:Name="ProjectTitle"
+            Margin="0,8,0,4"
+            FontSize="14"
+            FontWeight="Bold"
+            Text="Project"
+            Visibility="Collapsed" />
+        <ComboBox Grid.Row="3"
+            x:Name="ProjectsPickerBox"
+            Visibility="Collapsed">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+            <ComboBox.Style>
+                <Style BasedOn="{StaticResource Noggog.Styles.ComboBox}" TargetType="ComboBox">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedProjectPath.InError}" Value="True">
+                            <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ComboBox.Style>
+        </ComboBox>
+        <Grid x:Name="VersioningGrid" Grid.Row="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0"
+                Margin="0,8,0,0"
+                FontSize="14"
+                FontWeight="Bold"
+                Text="Patcher Versioning" />
+            <TabControl Grid.Row="1"
+                x:Name="PatcherVersioningTab"
+                Margin="0,2,0,0"
+                mahapps:HeaderedControlHelper.HeaderFontSize="16"
+                mahapps:HeaderedControlHelper.HeaderForeground="AliceBlue"
+                Background="Transparent">
+                <TabItem Header="Latest Master" ToolTip="Run the patcher with the latest code" />
+                <TabItem Header="Tag" ToolTip="Run the patcher from a specific marked version">
+                    <ComboBox
+                        x:Name="TagPickerBox"
+                        Margin="0,3"
+                        HorizontalAlignment="Left">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        <ComboBox.Style>
+                            <Style BasedOn="{StaticResource Noggog.Styles.ComboBox}" TargetType="ComboBox">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding TargetTag, Converter={StaticResource StringIsWhitespaceBooleanConverter}}" Value="True">
+                                        <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+                </TabItem>
+                <TabItem Header="Branch" ToolTip="Run the patcher from a specific Git branch">
+                    <TextBox
+                        x:Name="BranchNameBox"
+                        Width="300"
+                        Margin="0,3"
+                        HorizontalAlignment="Left"
+                        mahapps:TextBoxHelper.Watermark="Remote branch name"
+                        Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
+                </TabItem>
+                <TabItem Header="Commit" ToolTip="Run the patcher from a specific Git commit">
+                    <TextBox
+                        x:Name="CommitShaBox"
+                        Width="300"
+                        Margin="0,3"
+                        HorizontalAlignment="Left"
+                        mahapps:TextBoxHelper.Watermark="Commit sha"
+                        Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
+                </TabItem>
+            </TabControl>
+            <Grid Grid.Row="1" Grid.Column="1"
+                x:Name="PatcherVersionInfoGrid">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0"
+                    x:Name="CommitDateText"
+                    HorizontalAlignment="Right"
+                    Foreground="{StaticResource MahApps.Brushes.Gray3}"
+                    Text="Commit Date" />
+                <TextBlock Grid.Row="1"
+                    x:Name="PatcherVersionDateText"
+                    HorizontalAlignment="Right"
+                    Text="Date" />
+                <Button Grid.Row="2"
+                    x:Name="OpenGithubToVersionButton"
+                    HorizontalAlignment="Right">
+                    <icon:PackIconMaterial Kind="OpenInApp" />
+                </Button>
+            </Grid>
+            <TextBlock Grid.Row="2"
+                Margin="0,4,0,0"
+                FontSize="14"
+                FontWeight="Bold"
+                Text="Mutagen Versioning"
+                Visibility="Collapsed" />
+            <TabControl Grid.Row="3"
+                x:Name="MutagenVersioningTab"
+                Margin="0,2,0,0"
+                mahapps:HeaderedControlHelper.HeaderFontSize="16"
+                mahapps:HeaderedControlHelper.HeaderForeground="AliceBlue"
+                Background="Transparent"
+                Visibility="Collapsed">
+                <TabItem Header="Match" ToolTip="Run with the version of Mutagen explicitly listed in the patcher">
+                    <TextBlock x:Name="MutagenVersionMarkedDisplay" />
+                </TabItem>
+                <TabItem Header="Latest" ToolTip="Run with the latest stable version of Mutagen">
+                    <TextBlock x:Name="MutagenVersionLatestDisplay" />
+                </TabItem>
+                <TabItem Header="Manual" ToolTip="Run with a manually specified version of Mutagen">
+                    <ComboBox
+                        x:Name="MutagenVersionPickerBox"
+                        Margin="0,3"
+                        HorizontalAlignment="Left">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        <ComboBox.Style>
+                            <Style BasedOn="{StaticResource Noggog.Styles.ComboBox}" TargetType="ComboBox">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedProjectPath.InError}" Value="True">
+                                        <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+                </TabItem>
+            </TabControl>
+        </Grid>
     </Grid>
 </local:GithubConfigViewBase>

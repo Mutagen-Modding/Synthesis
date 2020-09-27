@@ -18,6 +18,13 @@ using Synthesis.Bethesda.Execution;
 using System.Windows.Input;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Buildalyzer.Environment;
+using System.Reactive;
+using Microsoft.Build.Evaluation;
+using System.Threading;
+using Serilog.Context;
+using Serilog;
+using Serilog.Events;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -29,10 +36,13 @@ namespace Synthesis.Bethesda.GUI
             PathType = PathPickerVM.PathTypeOptions.File,
         };
 
-        public IObservableCollection<string> ProjectsDisplay { get; }
+        public IObservableCollection<string> AvailableProjects { get; }
 
         [Reactive]
         public string ProjectSubpath { get; set; } = string.Empty;
+
+        private readonly ObservableAsPropertyHelper<string> _PathToExe;
+        public string PathToExe => _PathToExe.Value;
 
         public PathPickerVM SelectedProjectPath { get; } = new PathPickerVM()
         {
@@ -55,9 +65,10 @@ namespace Synthesis.Bethesda.GUI
             SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
 
-            _DisplayName = this.WhenAnyValue(
-                x => x.Nickname,
-                x => x.SelectedProjectPath.TargetPath,
+            _DisplayName = Observable.CombineLatest(
+                this.WhenAnyValue(x => x.Nickname),
+                this.WhenAnyValue(x => x.SelectedProjectPath.TargetPath)
+                    .StartWith(settings?.ProjectSubpath ?? string.Empty),
                 (nickname, path) =>
                 {
                     if (!string.IsNullOrWhiteSpace(nickname)) return nickname;
@@ -72,67 +83,75 @@ namespace Synthesis.Bethesda.GUI
                         return string.Empty;
                     }
                 })
-                .ToGuiProperty<string>(this, nameof(DisplayName));
+                .ToProperty(this, nameof(DisplayName), Nickname);
 
-            ProjectsDisplay = this.WhenAnyValue(x => x.SolutionPath.TargetPath)
-                .ObserveOn(RxApp.TaskpoolScheduler)
-                .Select(x =>
-                {
-                    if (!File.Exists(x)) return Enumerable.Empty<string>();
-                    try
-                    {
-                        var manager = new AnalyzerManager(x);
-                        return manager.Projects.Keys.Select(projPath => projPath.TrimStart($"{Path.GetDirectoryName(x)}\\"!));
-                    }
-                    catch (Exception)
-                    {
-                        return Enumerable.Empty<string>();
-                    }
-                })
-                .Select(x => x.AsObservableChangeSet())
-                .Switch()
+            AvailableProjects = SolutionPatcherConfigLogic.AvailableProject(
+                this.WhenAnyValue(x => x.SolutionPath.TargetPath))
                 .ObserveOnGui()
                 .ToObservableCollection(this);
 
-            this.WhenAnyValue(x => x.ProjectSubpath)
-                .DistinctUntilChanged()
-                .CombineLatest(this.WhenAnyValue(x => x.SolutionPath.TargetPath)
-                        .DistinctUntilChanged(),
-                    (subPath, slnPath) =>
-                    {
-                        if (subPath == null || slnPath == null) return string.Empty;
-                        try
-                        {
-                            return Path.Combine(Path.GetDirectoryName(slnPath)!, subPath);
-                        }
-                        catch (Exception)
-                        {
-                            return string.Empty;
-                        }
-                    })
+            var projPath = SolutionPatcherConfigLogic.ProjectPath(
+                solutionPath: this.WhenAnyValue(x => x.SolutionPath.TargetPath),
+                projectSubpath: this.WhenAnyValue(x => x.ProjectSubpath));
+            projPath
                 .Subscribe(p => SelectedProjectPath.TargetPath = p)
                 .DisposeWith(this);
+
+            var pathToExe = projPath
+                .ObserveOn(RxApp.TaskpoolScheduler)
+                .SelectReplaceWithIntermediate(
+                    new ConfigurationStateVM<string>(default!)
+                    {
+                        IsHaltingError = false,
+                        RunnableState = ErrorResponse.Fail("Locating exe to run.")
+                    },
+                    async (projectPath, cancel) =>
+                    {
+                        GetResponse<string> exe;
+                        using (Log.Logger.Time($"locate path to exe from {projectPath}"))
+                        {
+                            exe = await SolutionPatcherConfigLogic.PathToExe(projectPath, cancel);
+                            if (exe.Failed) return new ConfigurationStateVM<string>(exe.BubbleFailure<string>());
+                        }
+
+                        using (Logger.Time($"building {projectPath}"))
+                        {
+                            // Now we want to build, just to prep for run
+                            var build = await SolutionPatcherRun.CompileWithDotnet(projectPath, cancel).ConfigureAwait(false);
+                            if (build.Failed) return new ConfigurationStateVM<string>(build.BubbleFailure<string>());
+                        }
+
+                        return new ConfigurationStateVM<string>(exe);
+                    })
+                .Replay(1)
+                .RefCount();
+
+            _PathToExe = pathToExe
+                .Select(r => r.Item ?? string.Empty)
+                .ToGuiProperty<string>(this, nameof(PathToExe));
 
             _State = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.SolutionPath.ErrorState),
                     this.WhenAnyValue(x => x.SelectedProjectPath.ErrorState),
-                    (sln, proj) =>
+                    Observable.Merge(
+                        projPath
+                            .Select(_ => new ConfigurationStateVM()
+                            {
+                                IsHaltingError = false,
+                                RunnableState = ErrorResponse.Fail("Building")
+                            }),
+                        pathToExe
+                            .Select(i => i.ToUnit())),
+                    (sln, proj, exe) =>
                     {
-                        if (sln.Failed) return sln;
-                        return proj;
+                        if (sln.Failed) return new ConfigurationStateVM(sln);
+                        if (exe.RunnableState.Failed) return exe;
+                        return new ConfigurationStateVM(proj);
                     })
-                .Select(err =>
-                {
-                    return new ConfigurationStateVM()
-                    {
-                        IsHaltingError = err.Failed,
-                        RunnableState = err,
-                    };
-                })
                 .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), ConfigurationStateVM.Success);
 
             OpenSolutionCommand = ReactiveCommand.Create(
-                canExecute: this.WhenAnyValue(x => x.State.IsHaltingError)
+                canExecute: this.WhenAnyValue(x => x.SolutionPath.InError)
                     .Select(x => !x),
                 execute: () =>
                 {
@@ -174,13 +193,97 @@ namespace Synthesis.Bethesda.GUI
                 this,
                 new SolutionPatcherRun(
                     nickname: DisplayName,
-                    pathToSln: SolutionPath.TargetPath, 
+                    pathToSln: SolutionPath.TargetPath,
+                    pathToExe: PathToExe,
                     pathToProj: SelectedProjectPath.TargetPath));
         }
 
-        public override PatcherInitVM? CreateInitializer()
+        public class SolutionPatcherConfigLogic
         {
-            return new SolutionPatcherInitVM(Profile.Config.MainVM, this);
+            public static IObservable<IChangeSet<string>> AvailableProject(IObservable<string> solutionPath)
+            {
+                return solutionPath
+                    .ObserveOn(RxApp.TaskpoolScheduler)
+                    .Select(AvailableProject)
+                    .Select(x => x.AsObservableChangeSet())
+                    .Switch()
+                    .RefCount();
+            }
+
+            public static IEnumerable<string> AvailableProject(string solutionPath)
+            {
+                if (!File.Exists(solutionPath)) return Enumerable.Empty<string>();
+                try
+                {
+                    var manager = new AnalyzerManager(solutionPath);
+                    return manager.Projects.Keys.Select(projPath => projPath.TrimStart($"{Path.GetDirectoryName(solutionPath)}\\"!));
+                }
+                catch (Exception)
+                {
+                    return Enumerable.Empty<string>();
+                }
+            }
+
+            public static IObservable<string> ProjectPath(IObservable<string> solutionPath, IObservable<string> projectSubpath)
+            {
+                return projectSubpath
+                    // Need to throttle, as bindings flip to null quickly, which we want to skip
+                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                    .DistinctUntilChanged()
+                    .CombineLatest(solutionPath.DistinctUntilChanged(),
+                        (subPath, slnPath) =>
+                        {
+                            if (subPath == null || slnPath == null) return string.Empty;
+                            try
+                            {
+                                return Path.Combine(Path.GetDirectoryName(slnPath)!, subPath);
+                            }
+                            catch (Exception)
+                            {
+                                return string.Empty;
+                            }
+                        })
+                    .Replay(1)
+                    .RefCount();
+            }
+
+            public static async Task<GetResponse<string>> PathToExe(string projectPath, CancellationToken cancel)
+            {
+                try
+                {
+                    cancel.ThrowIfCancellationRequested();
+                    if (!File.Exists(projectPath))
+                    {
+                        return GetResponse<string>.Fail("Project path does not exist.");
+                    }
+
+                    // Right now this is slow as it cleans the build results unnecessarily.  Need to look into that
+                    var manager = new AnalyzerManager();
+                    cancel.ThrowIfCancellationRequested();
+                    var proj = manager.GetProject(projectPath);
+                    cancel.ThrowIfCancellationRequested();
+                    var opt = new EnvironmentOptions();
+                    opt.TargetsToBuild.SetTo("Build");
+                    var build = proj.Build();
+                    cancel.ThrowIfCancellationRequested();
+                    var results = build.Results.ToArray();
+                    if (results.Length != 1)
+                    {
+                        return GetResponse<string>.Fail("Unsupported number of build results.");
+                    }
+                    var result = results[0];
+                    if (!result.Properties.TryGetValue("RunCommand", out var cmd))
+                    {
+                        return GetResponse<string>.Fail("Could not find executable to be run");
+                    }
+
+                    return GetResponse<string>.Succeed(cmd);
+                }
+                catch (Exception ex)
+                {
+                    return GetResponse<string>.Fail(ex);
+                }
+            }
         }
     }
 }

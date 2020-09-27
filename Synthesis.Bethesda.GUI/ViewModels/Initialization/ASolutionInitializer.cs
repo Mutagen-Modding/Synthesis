@@ -17,7 +17,8 @@ namespace Synthesis.Bethesda.GUI
 {
     public abstract class ASolutionInitializer : ViewModel
     {
-        public abstract IObservable<GetResponse<Func<SolutionPatcherVM, Task>>> InitializationCall { get; }
+        public delegate Task<IEnumerable<SolutionPatcherVM>> InitializerCall(ProfileVM profile);
+        public abstract IObservable<GetResponse<InitializerCall>> InitializationCall { get; }
 
         public static GetResponse<string> ValidateProjectPath(string projName, GetResponse<string> sln)
         {
