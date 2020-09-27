@@ -1,4 +1,4 @@
-name: Release
+name: Publish
 
 on:
   release:
@@ -20,25 +20,25 @@ jobs:
     - name: Publish Synthesis GUI to Github
       uses: svenstaro/upload-release-action@v2
       with:
-        file: Synthesis.Bethesda.GUI/bin/Release/Synthesis.exe
+        file: Synthesis.Bethesda.GUI/bin/x64/Release/netcoreapp3.1/Synthesis.exe
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.release.tag_name }}
     - name: Publish Mutagen Synthesis to Github
       uses: svenstaro/upload-release-action@v2
       with:
-        file: Mutagen.Bethesda.Synthesis/bin/Release/Mutagen.Bethesda.Synthesis.${{ github.event.release.tag_name }}.nupkg
+        file: Mutagen.Bethesda.Synthesis/bin/x64/Release/Mutagen.Bethesda.Synthesis.${{ github.event.release.tag_name }}.nupkg
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.release.tag_name }}
     - name: Publish Synthesis Bethesda to Github
       uses: svenstaro/upload-release-action@v2
       with:
-        file: Synthesis.Bethesda/bin/Release/Synthesis.Bethesda.${{ github.event.release.tag_name }}.nupkg
+        file: Synthesis.Bethesda/bin/x64/Release/Synthesis.Bethesda.${{ github.event.release.tag_name }}.nupkg
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.release.tag_name }}
     - name: Publish Synthesis Execution to Github
       uses: svenstaro/upload-release-action@v2
       with:
-        file: Synthesis.Bethesda.Execution/bin/Release/Synthesis.Bethesda.Execution.${{ github.event.release.tag_name }}.nupkg
+        file: Synthesis.Bethesda.Execution/bin/x64/Release/Synthesis.Bethesda.Execution.${{ github.event.release.tag_name }}.nupkg
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.release.tag_name }}
     - name: Publish to Nuget.org
