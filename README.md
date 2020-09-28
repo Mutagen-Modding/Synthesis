@@ -1,4 +1,4 @@
-![Release](https://github.com/Noggog/Synthesis/workflows/Release/badge.svg) ![Dev](https://github.com/Noggog/Synthesis/workflows/Dev/badge.svg) ![Scrape](https://github.com/Noggog/Synthesis.Registry/workflows/Scrape/badge.svg)
+![Release](https://github.com/Noggog/Synthesis/workflows/Release/badge.svg) ![Dev](https://github.com/Noggog/Synthesis/workflows/Dev/badge.svg) ![Scrape](https://github.com/Noggog/Synthesis.Registry/workflows/Scrape/badge.svg) [![NuGet Stats](https://img.shields.io/nuget/v/Synthesis.Bethesda.svg)](https://www.nuget.org/packages/Synthesis.Bethesda)
 
 [![Discord](https://discordapp.com/api/guilds/759302581448474626/widget.png)](https://discord.gg/53KMEsW)
 
