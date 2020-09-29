@@ -6,6 +6,6 @@ namespace Mutagen.Bethesda.Synthesis.DTO
 {
     public class PatchersListing
     {
-        public PatcherInfo[] Patchers { get; set; } = Array.Empty<PatcherInfo>();
+        public PatcherMeta[] Patchers { get; set; } = Array.Empty<PatcherMeta>();
     }
 }
