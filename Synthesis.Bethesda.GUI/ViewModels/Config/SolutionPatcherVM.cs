@@ -27,6 +27,7 @@ using Serilog;
 using Serilog.Events;
 using Newtonsoft.Json;
 using Mutagen.Bethesda.Synthesis;
+using Mutagen.Bethesda.Synthesis.DTO;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -177,12 +178,12 @@ namespace Synthesis.Bethesda.GUI
                     }
                 });
 
-            var metaPath = this.WhenAnyValue(x => x.SolutionPath.TargetPath)
-                .Select(slnPath =>
+            var metaPath = this.WhenAnyValue(x => x.SelectedProjectPath.TargetPath)
+                .Select(projPath =>
                 {
                     try
                     {
-                        return Path.Combine(Path.GetDirectoryName(slnPath)!, "SynthesisMeta.json");
+                        return Path.Combine(Path.GetDirectoryName(projPath)!, "SynthesisMeta.json");
                     }
                     catch (Exception)
                     {
@@ -202,13 +203,13 @@ namespace Synthesis.Bethesda.GUI
                         {
                             try
                             {
-                                return JsonConvert.DeserializeObject<SynthesisPatcherInfo>(File.ReadAllText(path));
+                                return JsonConvert.DeserializeObject<PatcherInfo>(File.ReadAllText(path));
                             }
                             catch (Exception ex)
                             {
                                 Logger.Error(ex, "Error reading in meta");
                             }
-                            return default(SynthesisPatcherInfo?);
+                            return default(PatcherInfo?);
                         });
                 })
                 .Switch()
@@ -241,7 +242,7 @@ namespace Synthesis.Bethesda.GUI
                         if (string.IsNullOrWhiteSpace(x.meta)) return;
                         File.WriteAllText(x.meta,
                             JsonConvert.SerializeObject(
-                                new SynthesisPatcherInfo()
+                                new PatcherInfo()
                                 {
                                     Description = x.desc,
                                     HideByDefault = x.hidden,

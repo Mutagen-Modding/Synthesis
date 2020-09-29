@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Mutagen.Bethesda.Synthesis
+namespace Mutagen.Bethesda.Synthesis.DTO
 {
-    public class SynthesisPatcherInfo : IEquatable<SynthesisPatcherInfo>
+    public class PatcherInfo : IEquatable<PatcherInfo>
     {
         public string? Nickname { get; set; }
         public bool HideByDefault { get; set; } = false;
@@ -12,10 +12,10 @@ namespace Mutagen.Bethesda.Synthesis
 
         public override bool Equals(object obj)
         {
-            return obj is SynthesisPatcherInfo info && this.Equals(info);
+            return obj is PatcherInfo info && this.Equals(info);
         }
 
-        public bool Equals(SynthesisPatcherInfo other)
+        public bool Equals(PatcherInfo other)
         {
             if (HideByDefault != other.HideByDefault) return false;
             if (!string.Equals(this.Description, other.Description)) return false;
