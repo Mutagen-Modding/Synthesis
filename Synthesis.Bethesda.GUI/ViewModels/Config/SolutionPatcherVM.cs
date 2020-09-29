@@ -25,6 +25,8 @@ using System.Threading;
 using Serilog.Context;
 using Serilog;
 using Serilog.Events;
+using Newtonsoft.Json;
+using Mutagen.Bethesda.Synthesis;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -57,6 +59,12 @@ namespace Synthesis.Bethesda.GUI
         public override ConfigurationStateVM State => _State.Value;
 
         public ICommand OpenSolutionCommand { get; }
+
+        [Reactive]
+        public string Description { get; set; } = string.Empty;
+
+        [Reactive]
+        public bool HiddenByDefault { get; set; }
 
         public SolutionPatcherVM(ProfileVM parent, SolutionPatcherSettings? settings = null)
             : base(parent, settings)
@@ -168,6 +176,85 @@ namespace Synthesis.Bethesda.GUI
                         // Log
                     }
                 });
+
+            var metaPath = this.WhenAnyValue(x => x.SolutionPath.TargetPath)
+                .Select(slnPath =>
+                {
+                    try
+                    {
+                        return Path.Combine(Path.GetDirectoryName(slnPath)!, "SynthesisMeta.json");
+                    }
+                    catch (Exception)
+                    {
+                        return string.Empty;
+                    }
+                })
+                .Replay(1)
+                .RefCount();
+
+            // Set up meta file sync
+            metaPath
+                .Select(path =>
+                {
+                    return Noggog.ObservableExt.WatchFile(path)
+                        .StartWith(Unit.Default)
+                        .Select(_ =>
+                        {
+                            try
+                            {
+                                return JsonConvert.DeserializeObject<SynthesisPatcherInfo>(File.ReadAllText(path));
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Error(ex, "Error reading in meta");
+                            }
+                            return default(SynthesisPatcherInfo?);
+                        });
+                })
+                .Switch()
+                .DistinctUntilChanged()
+                .ObserveOnGui()
+                .Subscribe(info =>
+                {
+                    if (info == null) return;
+                    if (info.Nickname != null)
+                    {
+                        this.Nickname = info.Nickname;
+                    }
+                    this.Description = info.Description ?? string.Empty;
+                    this.HiddenByDefault = info.HideByDefault;
+                })
+                .DisposeWith(this);
+
+            Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.DisplayName),
+                    this.WhenAnyValue(x => x.Description),
+                    this.WhenAnyValue(x => x.HiddenByDefault),
+                    metaPath,
+                    (nickname, desc, hidden, meta) => (nickname, desc, hidden, meta))
+                .DistinctUntilChanged()
+                .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+                .Subscribe(x =>
+                {
+                    try
+                    {
+                        if (string.IsNullOrWhiteSpace(x.meta)) return;
+                        File.WriteAllText(x.meta,
+                            JsonConvert.SerializeObject(
+                                new SynthesisPatcherInfo()
+                                {
+                                    Description = x.desc,
+                                    HideByDefault = x.hidden,
+                                    Nickname = x.nickname
+                                },
+                                Formatting.Indented));
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex, "Error writing out meta");
+                    }
+                })
+                .DisposeWith(this);
         }
 
         public override PatcherSettings Save()
