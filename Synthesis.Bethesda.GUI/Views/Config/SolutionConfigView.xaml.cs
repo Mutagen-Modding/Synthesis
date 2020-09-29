@@ -65,16 +65,14 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Set up open solution button
-                this.WhenAnyValue(x => x.OpenSolutionButton.IsMouseOver)
-                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.OpenSolutionText.Visibility)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.OpenSolutionButton.IsMouseOver)
-                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.OpenSolutionVSIcon.Visibility)
-                    .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel.OpenSolutionCommand)
                     .BindToStrict(this, x => x.OpenSolutionButton.Command)
+                    .DisposeWith(disposable);
+
+                // Bind settings
+                this.BindStrict(this.ViewModel, vm => vm.Description, view => view.DescriptionBox.Text)
+                    .DisposeWith(disposable);
+                this.BindStrict(this.ViewModel, vm => vm.HiddenByDefault, view => view.HideCheckbox.IsChecked)
                     .DisposeWith(disposable);
             });
         }
