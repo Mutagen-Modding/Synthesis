@@ -52,4 +52,4 @@ jobs:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@0.3.0
       with:
-        args: '**Synthesis v{{ EVENT_PAYLOAD.github.event.release.tag_name }}**\n{{ EVENT_PAYLOAD.github.event.release.body }}'
+        args: '**Synthesis v{{ EVENT_PAYLOAD.release.tag_name }}**\n{{ EVENT_PAYLOAD.release.body }}'
