@@ -1,7 +1,8 @@
 using Noggog.WPF;
-using System.Windows.Controls;
+using System.Windows;
 using ReactiveUI;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -24,6 +25,21 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel)
                     .BindToStrict(this, x => x.ConfigDetailPane.Content)
+                    .DisposeWith(disposable);
+
+                /// Bottom decision button setup
+                // Show bottom decision buttons when in configuration
+                this.WhenAnyValue(x => x.ViewModel.OnCompletionPage)
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.InitialConfigurationDecisionGrid.Visibility)
+                    .DisposeWith(disposable);
+
+                // Set up discard/confirm clicks
+                this.WhenAnyValue(x => x.ViewModel.Profile.Config.CancelConfiguration)
+                    .BindToStrict(this, x => x.InitialConfigurationDecisionGrid.CancelAdditionButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel.Profile.Config.CompleteConfiguration)
+                    .BindToStrict(this, x => x.InitialConfigurationDecisionGrid.ConfirmAdditionButton.Command)
                     .DisposeWith(disposable);
             });
         }

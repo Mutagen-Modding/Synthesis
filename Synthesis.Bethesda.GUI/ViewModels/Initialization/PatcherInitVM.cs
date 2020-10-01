@@ -17,6 +17,8 @@ namespace Synthesis.Bethesda.GUI
 
         public abstract IAsyncEnumerable<PatcherVM> Construct();
 
+        public virtual bool OnCompletionPage { get; protected set; } = true;
+
         public PatcherInitVM(ProfileVM profile)
         {
             Profile = profile;

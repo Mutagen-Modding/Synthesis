@@ -1,4 +1,4 @@
-﻿using Noggog.WPF;
+using Noggog.WPF;
 using Noggog;
 using ReactiveUI;
 using System.Reactive.Disposables;
@@ -59,30 +59,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.AddSomePatchersHelpGrid.Visibility)
                     .DisposeWith(disposable);
 
-                var inInitialConfig = this.WhenAnyValue(x => x.ViewModel.NewPatcher)
-                    .Select(x => x != null)
-                    .Replay(1)
-                    .RefCount();
-
                 // Show dimmer if in initial configuration
-                inInitialConfig
-                    .Select(initialConfig => initialConfig ? Visibility.Visible : Visibility.Collapsed)
+                this.WhenAnyValue(x => x.ViewModel.NewPatcher)
+                    .Select(newPatcher => newPatcher != null? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.InitialConfigurationDimmer.Visibility)
-                    .DisposeWith(disposable);
-
-                /// Bottom decision button setup
-                // Show bottom decision buttons when in configuration
-                inInitialConfig
-                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.InitialConfigurationDecisionGrid.Visibility)
-                    .DisposeWith(disposable);
-
-                // Set up discard/confirm clicks
-                this.WhenAnyValue(x => x.ViewModel.CancelConfiguration)
-                    .BindToStrict(this, x => x.InitialConfigurationDecisionGrid.CancelAdditionButton.Command)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.CompleteConfiguration)
-                    .BindToStrict(this, x => x.InitialConfigurationDecisionGrid.ConfirmAdditionButton.Command)
                     .DisposeWith(disposable);
 
                 // Set up go button
