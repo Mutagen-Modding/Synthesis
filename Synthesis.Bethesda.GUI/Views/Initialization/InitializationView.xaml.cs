@@ -6,14 +6,14 @@ using System.Reactive.Linq;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class InitializationDetailViewBase : NoggogUserControl<PatcherInitVM> { }
+    public class InitializationViewBase : NoggogUserControl<PatcherInitVM> { }
 
     /// <summary>
-    /// Interaction logic for InitializationDetailView.xaml
+    /// Interaction logic for InitializationView.xaml
     /// </summary>
-    public partial class InitializationDetailView : InitializationDetailViewBase
+    public partial class InitializationView : InitializationViewBase
     {
-        public InitializationDetailView()
+        public InitializationView()
         {
             InitializeComponent();
             this.WhenActivated(disposable =>
