@@ -50,7 +50,7 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 // Wire up patcher config data context and visibility
                 this.WhenAnyValue(x => x.ViewModel.DisplayedObject)
-                    .BindToStrict(this, x => x.DetailControl.Content)
+                    .BindToStrict(this, x => x.DetailControl.DataContext)
                     .DisposeWith(disposable);
 
                 // Only show help if zero patchers

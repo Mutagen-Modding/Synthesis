@@ -10,6 +10,6 @@
     mc:Ignorable="d">
     <Grid>
         <local:PatchersConfigView x:Name="Patchers" />
-        <local:InitializationView x:Name="Initialization" />
+        <local:InitializationView x:Name="Initialization" Visibility="Collapsed" />
     </Grid>
 </local:ConfigurationViewBase>
