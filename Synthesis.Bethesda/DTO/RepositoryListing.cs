@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Mutagen.Bethesda.Synthesis.DTO
+namespace Synthesis.Bethesda.DTO
 {
-    public class PatcherRepoInfo
+    public class RepositoryListing
     {
+        public PatcherListing[] Patchers { get; set; } = Array.Empty<PatcherListing>();
         public string? AvatarURL { get; set; }
         public string? User { get; set; }
         public string? Repository { get; set; }

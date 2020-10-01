@@ -1,8 +1,7 @@
-﻿using CommandLine;
+using CommandLine;
 using Mutagen.Bethesda;
 using System;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
 using System.Text;
 
 namespace Synthesis.Bethesda

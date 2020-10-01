@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Linq;
 using System.Text;
-using Synthesis.Bethesda.Execution.Patchers;
 using Buildalyzer;
 using System.Linq;
 using DynamicData.Binding;
@@ -20,14 +19,9 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Buildalyzer.Environment;
 using System.Reactive;
-using Microsoft.Build.Evaluation;
 using System.Threading;
-using Serilog.Context;
-using Serilog;
-using Serilog.Events;
 using Newtonsoft.Json;
-using Mutagen.Bethesda.Synthesis;
-using Mutagen.Bethesda.Synthesis.DTO;
+using Synthesis.Bethesda.DTO;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -183,7 +177,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     try
                     {
-                        return Path.Combine(Path.GetDirectoryName(projPath)!, "SynthesisMeta.json");
+                        return Path.Combine(Path.GetDirectoryName(projPath)!, Constants.MetaFileName);
                     }
                     catch (Exception)
                     {
@@ -203,13 +197,13 @@ namespace Synthesis.Bethesda.GUI
                         {
                             try
                             {
-                                return JsonConvert.DeserializeObject<PatcherInfo>(File.ReadAllText(path));
+                                return JsonConvert.DeserializeObject<PatcherCustomization>(File.ReadAllText(path));
                             }
                             catch (Exception ex)
                             {
                                 Logger.Error(ex, "Error reading in meta");
                             }
-                            return default(PatcherInfo?);
+                            return default(PatcherCustomization?);
                         });
                 })
                 .Switch()
@@ -242,7 +236,7 @@ namespace Synthesis.Bethesda.GUI
                         if (string.IsNullOrWhiteSpace(x.meta)) return;
                         File.WriteAllText(x.meta,
                             JsonConvert.SerializeObject(
-                                new PatcherInfo()
+                                new PatcherCustomization()
                                 {
                                     Description = x.desc,
                                     HideByDefault = x.hidden,
