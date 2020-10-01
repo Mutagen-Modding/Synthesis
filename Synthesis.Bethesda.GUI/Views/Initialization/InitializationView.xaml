@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -19,10 +20,31 @@
             Name="TopBarGrid"
             Background="Transparent">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBox Grid.Column="0"
+            <Button Grid.Column="0"
+                x:Name="CancelAdditionButton"
+                Margin="0,3,5,0"
+                VerticalAlignment="Center"
+                ToolTip="Cancel and Discard">
+                <icon:PackIconFontAwesome
+                    Width="25"
+                    Height="25"
+                    Kind="BackspaceSolid">
+                    <icon:PackIconFontAwesome.Style>
+                        <Style TargetType="icon:PackIconFontAwesome">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsMouseOver, ElementName=CancelAdditionButton}" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </icon:PackIconFontAwesome.Style>
+                </icon:PackIconFontAwesome>
+            </Button>
+            <TextBox Grid.Column="1"
                 Name="PatcherDetailName"
                 MinWidth="150"
                 Margin="0,0,10,0"
@@ -54,11 +76,57 @@
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
-        <local:BottomDecisionButtonsView Grid.Row="1"
-            x:Name="InitialConfigurationDecisionGrid"
+        <Grid Grid.Row="1"
+            x:Name="ConfirmButtonGrid"
             Margin="0,0,0,10"
             HorizontalAlignment="Right"
             VerticalAlignment="Bottom"
-            Visibility="Collapsed" />
+            Visibility="Collapsed">
+            <TextBlock
+                x:Name="ConfirmAdditionText"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Foreground="{StaticResource PaleBlueBrush}"
+                Text="Confirm" />
+            <Button
+                x:Name="ConfirmAdditionButton"
+                Width="110"
+                Height="45"
+                Margin="0,0,0,7"
+                HorizontalAlignment="Center"
+                Foreground="{StaticResource LightBlueBrush}">
+                <icon:PackIconFontAwesome
+                    Width="22"
+                    Height="22"
+                    Kind="CheckCircleSolid">
+                    <icon:PackIconFontAwesome.Style>
+                        <Style TargetType="icon:PackIconFontAwesome">
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect
+                                        BlurRadius="20"
+                                        Opacity="0.6"
+                                        ShadowDepth="0"
+                                        Color="{StaticResource LightBlue}" />
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsMouseOver, ElementName=ConfirmAdditionButton}" Value="True">
+                                    <Setter Property="Effect">
+                                        <Setter.Value>
+                                            <DropShadowEffect
+                                                BlurRadius="35"
+                                                Opacity="1"
+                                                ShadowDepth="0"
+                                                Color="{StaticResource LightBlue}" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </icon:PackIconFontAwesome.Style>
+                </icon:PackIconFontAwesome>
+            </Button>
+        </Grid>
     </Grid>
 </local:InitializationViewBase>
