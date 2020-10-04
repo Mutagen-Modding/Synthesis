@@ -136,37 +136,37 @@
             <TextBlock.Style>
                 <Style TargetType="TextBlock">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddGithubButton}" Value="True">
+                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddGitButton}" Value="True">
                             <Setter Property="Margin">
                                 <Setter.Value>
-                                    <Thickness>28,0,0,0</Thickness>
+                                    <Thickness>9,0,0,0</Thickness>
                                 </Setter.Value>
                             </Setter>
-                            <Setter Property="Text" Value="GitHub" />
+                            <Setter Property="Text" Value="Git Repository" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddSolutionButton}" Value="True">
                             <Setter Property="Margin">
                                 <Setter.Value>
-                                    <Thickness>25,0,0,0</Thickness>
+                                    <Thickness>36,0,0,0</Thickness>
                                 </Setter.Value>
                             </Setter>
-                            <Setter Property="Text" Value="Mutagen Solution" />
+                            <Setter Property="Text" Value="Local Solution" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddCliButton}" Value="True">
                             <Setter Property="Margin">
                                 <Setter.Value>
-                                    <Thickness>35,0,0,0</Thickness>
+                                    <Thickness>56,0,0,0</Thickness>
                                 </Setter.Value>
                             </Setter>
-                            <Setter Property="Text" Value="External Patcher Program" />
+                            <Setter Property="Text" Value="External Program" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddSnippetButton}" Value="True">
                             <Setter Property="Margin">
                                 <Setter.Value>
-                                    <Thickness>65,0,0,0</Thickness>
+                                    <Thickness>90,0,0,0</Thickness>
                                 </Setter.Value>
                             </Setter>
-                            <Setter Property="Text" Value="Mutagen Code Snippet" />
+                            <Setter Property="Text" Value="Code Snippet" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -232,9 +232,9 @@
                     HorizontalAlignment="Center"
                     Fill="{StaticResource MahApps.Brushes.Gray8}" />
                 <Button Grid.Column="3"
-                    Name="AddGithubButton"
+                    Name="AddGitButton"
                     Padding="4">
-                    <icon:PackIconSimpleIcons Margin="0,-5" Kind="Github" />
+                    <icon:PackIconMaterial Margin="0,-5" Kind="Git" />
                 </Button>
                 <Button Grid.Column="4"
                     Name="AddSolutionButton"
@@ -260,22 +260,7 @@
             Margin="0,0,-4,0"
             Fill="#AA000000"
             Visibility="Collapsed" />
-        <ContentControl Grid.Row="0" Grid.RowSpan="3" Grid.Column="2"
-            x:Name="DetailControl">
-            <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type vm:PatcherVM}">
-                    <local:PatcherConfigView />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:PatcherInitVM}">
-                    <local:InitializationDetailView />
-                </DataTemplate>
-            </ContentControl.Resources>
-        </ContentControl>
-        <local:BottomDecisionButtonsView Grid.Row="0" Grid.RowSpan="3" Grid.Column="2"
-            x:Name="InitialConfigurationDecisionGrid"
-            Margin="0,0,0,10"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Bottom"
-            Visibility="Collapsed" />
+        <local:PatcherConfigView Grid.Row="0" Grid.RowSpan="3" Grid.Column="2"
+            x:Name="DetailControl" />
     </Grid>
 </local:PatchersConfigViewBase>

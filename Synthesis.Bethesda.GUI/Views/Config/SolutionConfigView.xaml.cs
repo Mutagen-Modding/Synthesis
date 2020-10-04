@@ -70,7 +70,9 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Bind settings
-                this.BindStrict(this.ViewModel, vm => vm.Description, view => view.DescriptionBox.Text)
+                this.BindStrict(this.ViewModel, vm => vm.LongDescription, view => view.DescriptionBox.Text)
+                    .DisposeWith(disposable);
+                this.BindStrict(this.ViewModel, vm => vm.ShortDescription, view => view.OneLineDescriptionBox.Text)
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.HiddenByDefault, view => view.HideCheckbox.IsChecked)
                     .DisposeWith(disposable);

@@ -1,9 +1,9 @@
-﻿using Noggog.WPF;
+using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
-using System.Windows.Input;
+using System.Windows.Controls;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -19,11 +19,6 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-                // Show configuration decision text on button hover
-                this.WhenAnyValue(x => x.CancelAdditionButton.IsMouseOver)
-                    .Select(over => over ? Visibility.Visible : Visibility.Hidden)
-                    .BindToStrict(this, x => x.CancelAdditionText.Visibility)
-                    .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ConfirmAdditionButton.IsMouseOver)
                     .Select(over => over ? Visibility.Visible : Visibility.Hidden)
                     .BindToStrict(this, x => x.ConfirmAdditionText.Visibility)

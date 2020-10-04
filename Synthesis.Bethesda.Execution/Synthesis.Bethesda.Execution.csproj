@@ -26,14 +26,13 @@
   <ItemGroup>
     <PackageReference Include="Buildalyzer" Version="3.0.1" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
-    <PackageReference Include="Microsoft.Build" Version="16.6.0" />
-    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="16.6.0" />
+    <PackageReference Include="Microsoft.Build" Version="16.7.0" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="16.7.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.7.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.7.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="3.7.0" />
     <PackageReference Include="Mutagen.Bethesda.Core" Version="[0.18,0.19)" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Noggog.CSharpExt" Version="1.3.0" />
+    <PackageReference Include="Noggog.CSharpExt" Version="1.4.0" />
   </ItemGroup>
 
   <ItemGroup>

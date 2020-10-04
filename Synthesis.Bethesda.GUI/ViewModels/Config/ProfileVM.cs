@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.GUI
 
         public SourceList<PatcherVM> Patchers { get; } = new SourceList<PatcherVM>();
 
-        public ICommand AddGithubPatcherCommand { get; }
+        public ICommand AddGitPatcherCommand { get; }
         public ICommand AddSolutionPatcherCommand { get; }
         public ICommand AddCliPatcherCommand { get; }
         public ICommand AddSnippetPatcherCommand { get; }
@@ -56,7 +56,7 @@ namespace Synthesis.Bethesda.GUI
             ID = id ?? Guid.NewGuid().ToString();
             Config = parent;
             Release = release ?? GameRelease.Oblivion;
-            AddGithubPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new GithubPatcherInitVM(this)));
+            AddGitPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new GitPatcherInitVM(this)));
             AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(this)));
             AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(this)));
             AddSnippetPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new CodeSnippetPatcherVM(this)));
@@ -168,7 +168,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 return p switch
                 {
-                    GithubPatcherSettings gitHub => new GithubPatcherVM(this, gitHub),
+                    GithubPatcherSettings git => new GitPatcherVM(this, git),
                     CodeSnippetPatcherSettings snippet => new CodeSnippetPatcherVM(this, snippet),
                     SolutionPatcherSettings soln => new SolutionPatcherVM(this, soln),
                     CliPatcherSettings cli => new CliPatcherVM(this, cli),

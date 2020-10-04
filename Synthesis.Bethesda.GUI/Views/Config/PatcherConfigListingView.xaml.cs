@@ -20,15 +20,15 @@ namespace Synthesis.Bethesda.GUI.Views
         public PatcherConfigListingView()
         {
             InitializeComponent();
-            this.WhenActivated((vm, disposable) =>
+            this.WhenActivated((disposable) =>
             {
-                vm.WhenAnyValue(x => x.IsSelected)
+                this.WhenAnyValue(x => x.ViewModel.IsSelected)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.SelectedGlow.Visibility)
                     .DisposeWith(disposable);
-                this.BindStrict(vm, vm => vm.IsOn, view => view.OnToggle.IsChecked)
+                this.BindStrict(this.ViewModel, vm => vm.IsOn, view => view.OnToggle.IsChecked)
                     .DisposeWith(disposable);
-                vm.WhenAnyValue(x => x.DisplayName)
+                this.WhenAnyValue(x => x.ViewModel.DisplayName)
                     .BindToStrict(this, x => x.NameBlock.Text)
                     .DisposeWith(disposable);
 

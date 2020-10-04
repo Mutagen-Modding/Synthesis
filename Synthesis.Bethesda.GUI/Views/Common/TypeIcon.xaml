@@ -1,4 +1,4 @@
-﻿<local:TypeIconBase
+<local:TypeIconBase
     x:Class="Synthesis.Bethesda.GUI.Views.TypeIcon"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -19,19 +19,19 @@
                     Kind="CodeBraces"
                     ToolTip="Mutagen Code Snippet Patcher" />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:GithubPatcherVM}">
-                <icon:PackIconSimpleIcons
+            <DataTemplate DataType="{x:Type vm:GitPatcherVM}">
+                <icon:PackIconMaterial
                     Width="35"
                     Height="35"
-                    Kind="Github"
-                    ToolTip="Mutagen Github Link Patcher" />
+                    Kind="Git"
+                    ToolTip="Mutagen Git Repo Patcher" />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:GithubPatcherInitVM}">
-                <icon:PackIconSimpleIcons
+            <DataTemplate DataType="{x:Type vm:GitPatcherInitVM}">
+                <icon:PackIconMaterial
                     Width="35"
                     Height="35"
-                    Kind="Github"
-                    ToolTip="Mutagen Github Link Patcher" />
+                    Kind="Git"
+                    ToolTip="Mutagen Git repo Patcher" />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:SolutionPatcherVM}">
                 <icon:PackIconModern

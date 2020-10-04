@@ -15,14 +15,12 @@ using DynamicData;
 using static Synthesis.Bethesda.GUI.SolutionPatcherVM;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Threading.Tasks;
-using System.Reactive;
-using Serilog;
 using System.Windows.Input;
 using System.Diagnostics;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class GithubPatcherVM : PatcherVM
+    public class GitPatcherVM : PatcherVM
     {
         [Reactive]
         public string RemoteRepoPath { get; set; } = string.Empty;
@@ -78,11 +76,11 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string> _ExePath;
         public string ExePath => _ExePath.Value;
 
-        public ICommand OpenGithubPageCommand { get; }
+        public ICommand OpenGitPageCommand { get; }
 
-        public ICommand OpenGithubPageToVersionCommand { get; }
+        public ICommand OpenGitPageToVersionCommand { get; }
 
-        public GithubPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
+        public GitPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
         {
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
@@ -100,7 +98,7 @@ namespace Synthesis.Bethesda.GUI
                     if (!string.IsNullOrWhiteSpace(nickname)) return nickname;
                     try
                     {
-                        if (string.IsNullOrWhiteSpace(path)) return "Mutagen Github Link";
+                        if (string.IsNullOrWhiteSpace(path)) return "Mutagen Git Patcher";
                         var span = path.AsSpan();
                         var slashIndex = span.LastIndexOf('/');
                         if (slashIndex != -1)
@@ -111,7 +109,7 @@ namespace Synthesis.Bethesda.GUI
                     }
                     catch (Exception)
                     {
-                        return "Mutagen Github Link";
+                        return "Mutagen Git Patcher";
                     }
                 })
                 .ToGuiProperty<string>(this, nameof(DisplayName));
@@ -140,7 +138,7 @@ namespace Synthesis.Bethesda.GUI
                         if (!path.IsHaltingError && path.RunnableState.Failed) return path.BubbleError<DriverRepoInfo>();
                         using var timing = Logger.Time("Cloning driver repository");
                         // Clone and/or double check the clone is correct
-                        var state = await GithubPatcherRun.PrepRepo(path.ToGetResponse(), LocalDriverRepoDirectory, cancel);
+                        var state = await GitPatcherRun.PrepRepo(path.ToGetResponse(), LocalDriverRepoDirectory, cancel);
                         if (state.Failed) return new ConfigurationStateVM<DriverRepoInfo>(default!, (ErrorResponse)state);
                         cancel.ThrowIfCancellationRequested();
 
@@ -188,7 +186,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         if (path.RunnableState.Failed) return path.RunnableState;
                         using var timing = Logger.ForContext("RemotePath", path.Item).Time("runner repo");
-                        return await GithubPatcherRun.PrepRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, cancel);
+                        return await GitPatcherRun.PrepRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, cancel);
                     })
                 .Replay(1)
                 .RefCount();
@@ -374,26 +372,12 @@ namespace Synthesis.Bethesda.GUI
                     })
                 .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), ConfigurationStateVM.Success);
 
-            OpenGithubPageCommand = ReactiveCommand.Create(
+            OpenGitPageCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.RepoValidity)
                     .Select(x => x.Succeeded),
-                execute: () =>
-                {
-                    try
-                    {
-                        Process.Start(new ProcessStartInfo
-                        {
-                            FileName = RemoteRepoPath,
-                            UseShellExecute = true
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error("Error opening Github webpage", ex);
-                    }
-                });
+                execute: () => Utility.OpenWebsite(RemoteRepoPath));
 
-            OpenGithubPageToVersionCommand = ReactiveCommand.Create(
+            OpenGitPageToVersionCommand = ReactiveCommand.Create(
                 canExecute: runnableState
                     .Select(x => x.RunnableState.Succeeded),
                 execute: () =>
@@ -403,24 +387,16 @@ namespace Synthesis.Bethesda.GUI
                         if (!RunnableData.TryGet(out var runnable)) return;
                         if (runnable.Target == null)
                         {
-                            Process.Start(new ProcessStartInfo
-                            {
-                                FileName = RemoteRepoPath,
-                                UseShellExecute = true
-                            });
+                            Utility.OpenWebsite(RemoteRepoPath);
                         }
                         else
                         {
-                            Process.Start(new ProcessStartInfo
-                            {
-                                FileName = Path.Combine(RemoteRepoPath, "tree", runnable.Target),
-                                UseShellExecute = true
-                            });
+                            Utility.OpenWebsite(Path.Combine(RemoteRepoPath, "tree", runnable.Target));
                         }
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error("Error opening Github webpage", ex);
+                        Logger.Error("Error opening Git webpage", ex);
                     }
                 });
         }
