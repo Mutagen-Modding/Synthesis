@@ -54,7 +54,10 @@
                 <local:StoreView />
             </TabItem>
             <TabItem Header="Input">
-                <local:GitConfigView Grid.Row="1" DataContext="{Binding Patcher}" />
+                <Grid>
+                    <local:GitConfigView DataContext="{Binding Patcher}" />
+                    <local:BottomDecisionButtonsView x:Name="ConfirmButton" />
+                </Grid>
             </TabItem>
         </TabControl>
         <TextBlock Grid.Row="0" Grid.Column="0"

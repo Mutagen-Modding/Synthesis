@@ -25,6 +25,9 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel.Profile.Config.CancelConfiguration)
                     .BindToStrict(this, x => x.CancelAdditionButton.Command)
                     .DisposeWith(dispose);
+                this.WhenAnyValue(x => x.ViewModel.Profile.Config.CompleteConfiguration)
+                    .BindToStrict(this, x => x.ConfirmButton.ConfirmAdditionButton.Command)
+                    .DisposeWith(dispose);
             });
         }
     }
