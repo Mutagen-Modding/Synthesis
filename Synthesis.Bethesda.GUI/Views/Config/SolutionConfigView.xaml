@@ -19,6 +19,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -65,10 +66,14 @@
             FontWeight="Bold"
             Text="Settings" />
         <TextBox Grid.Row="6"
+            x:Name="OneLineDescriptionBox"
+            mahapps:TextBoxHelper.Watermark="One line description"
+            Background="{StaticResource AbyssPurpleBrush}" />
+        <TextBox Grid.Row="7"
             x:Name="DescriptionBox"
             mahapps:TextBoxHelper.Watermark="Description"
             Background="{StaticResource AbyssPurpleBrush}" />
-        <CheckBox Grid.Row="7"
+        <CheckBox Grid.Row="8"
             x:Name="HideCheckbox"
             Margin="0,10"
             Content="Hide in searches" />

@@ -1,0 +1,77 @@
+<local:StoreViewBase
+    x:Class="Synthesis.Bethesda.GUI.Views.StoreView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
+    xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <Grid Margin="-10,0,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0"
+            Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0"
+                x:Name="SearchBox"
+                mahapps:TextBoxHelper.Watermark="Search" />
+            <Button Grid.Column="0"
+                x:Name="ClearSearchButton"
+                Margin="0,0,5,0"
+                HorizontalAlignment="Right"
+                ToolTip="Clear search text">
+                <Button.Resources>
+                    <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="{StaticResource MahApps.Colors.Gray7}" />
+                </Button.Resources>
+                <icon:PackIconMaterial Height="14" Kind="CloseCircle" />
+            </Button>
+            <Button Grid.Column="1"
+                x:Name="SearchHelp"
+                Margin="5,0,0,0"
+                ToolTip="Info about how this list is populated">
+                <Button.Resources>
+                    <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="{StaticResource MahApps.Colors.Gray7}" />
+                </Button.Resources>
+                <icon:PackIconFontAwesome Kind="InfoCircleSolid" />
+            </Button>
+        </Grid>
+        <ListBox Grid.Row="1" Grid.Column="0"
+            x:Name="PatcherReposListBox"
+            Margin="0,5,0,0"
+            Background="Transparent"
+            Focusable="False"
+            ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
+            ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <ListBox.GroupStyle>
+                <GroupStyle />
+            </ListBox.GroupStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <local:PatcherStoreListingView DataContext="{Binding}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <CheckBox Grid.Row="2"
+            x:Name="ShowAllCheckbox"
+            Margin="0,5"
+            Content="Show All"
+            ToolTip="Some patchers opt to not show regularly" />
+        <local:PatcherStoreDetailView Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
+            x:Name="DetailView"
+            Margin="15,0,15,0" />
+    </Grid>
+</local:StoreViewBase>

@@ -249,8 +249,8 @@
                 <DataTemplate DataType="{x:Type vm:CodeSnippetPatcherVM}">
                     <icon:PackIconMaterial Height="13" Kind="CodeBraces" />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:GithubPatcherVM}">
-                    <icon:PackIconSimpleIcons Height="13" Kind="Github" />
+                <DataTemplate DataType="{x:Type vm:GitPatcherVM}">
+                    <icon:PackIconMaterial Height="13" Kind="Git" />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:CliPatcherVM}">
                     <icon:PackIconMaterial Height="13" Kind="ConsoleLine" />

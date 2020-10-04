@@ -42,21 +42,10 @@
                 ToolTip="Delete Patcher">
                 <Button.Resources>
                     <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#44FFFFFF" />
-                    <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource Red}" />
-                    <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource RedBackground}" />
+                    <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource Salmon}" />
+                    <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource Red}" />
                 </Button.Resources>
-                <icon:PackIconFontAwesome Kind="TrashSolid">
-                    <icon:PackIconFontAwesome.Style>
-                        <Style TargetType="icon:PackIconFontAwesome">
-                            <Setter Property="Opacity" Value="0.35" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsMouseOver, ElementName=TopBarGrid}" Value="True">
-                                    <Setter Property="Opacity" Value="1" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </icon:PackIconFontAwesome.Style>
-                </icon:PackIconFontAwesome>
+                <icon:PackIconFontAwesome Kind="TrashSolid" />
             </Button>
             <local:TypeIcon Grid.Column="2"
                 x:Name="PatcherIconDisplay"
@@ -71,8 +60,8 @@
                 <DataTemplate DataType="{x:Type vm:CodeSnippetPatcherVM}">
                     <local:CodeSnippetConfigView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:GithubPatcherVM}">
-                    <local:GithubConfigView />
+                <DataTemplate DataType="{x:Type vm:GitPatcherVM}">
+                    <local:GitConfigView />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:SolutionPatcherVM}">
                     <local:SolutionConfigView />

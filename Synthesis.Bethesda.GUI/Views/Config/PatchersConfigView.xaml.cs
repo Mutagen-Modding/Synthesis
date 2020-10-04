@@ -29,8 +29,8 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated((disposable) =>
             {
-                this.WhenAnyFallback(x => x.ViewModel.SelectedProfile!.AddGithubPatcherCommand, fallback: default(ICommand))
-                    .BindToStrict(this, x => x.AddGithubButton.Command)
+                this.WhenAnyFallback(x => x.ViewModel.SelectedProfile!.AddGitPatcherCommand, fallback: default(ICommand))
+                    .BindToStrict(this, x => x.AddGitButton.Command)
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel.SelectedProfile!.AddSolutionPatcherCommand, fallback: default(ICommand))
                     .BindToStrict(this, x => x.AddSolutionButton.Command)

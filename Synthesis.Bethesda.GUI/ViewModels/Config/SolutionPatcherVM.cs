@@ -56,7 +56,10 @@ namespace Synthesis.Bethesda.GUI
         public ICommand OpenSolutionCommand { get; }
 
         [Reactive]
-        public string Description { get; set; } = string.Empty;
+        public string ShortDescription { get; set; } = string.Empty;
+
+        [Reactive]
+        public string LongDescription { get; set; } = string.Empty;
 
         [Reactive]
         public bool HiddenByDefault { get; set; }
@@ -165,10 +168,9 @@ namespace Synthesis.Bethesda.GUI
                             UseShellExecute = true,
                         });
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        // ToDo
-                        // Log
+                        Log.Logger.Error(ex, $"Error opening solution: {SolutionPath.TargetPath}");
                     }
                 });
 
@@ -216,19 +218,22 @@ namespace Synthesis.Bethesda.GUI
                     {
                         this.Nickname = info.Nickname;
                     }
-                    this.Description = info.Description ?? string.Empty;
+                    this.LongDescription = info.LongDescription ?? string.Empty;
+                    this.ShortDescription = info.OneLineDescription ?? string.Empty;
                     this.HiddenByDefault = info.HideByDefault;
                 })
                 .DisposeWith(this);
 
             Observable.CombineLatest(
                     this.WhenAnyValue(x => x.DisplayName),
-                    this.WhenAnyValue(x => x.Description),
+                    this.WhenAnyValue(x => x.ShortDescription),
+                    this.WhenAnyValue(x => x.LongDescription),
                     this.WhenAnyValue(x => x.HiddenByDefault),
                     metaPath,
-                    (nickname, desc, hidden, meta) => (nickname, desc, hidden, meta))
+                    (nickname, shortDesc, desc, hidden, meta) => (nickname, shortDesc, desc, hidden, meta))
                 .DistinctUntilChanged()
                 .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+                .Skip(1)
                 .Subscribe(x =>
                 {
                     try
@@ -238,7 +243,8 @@ namespace Synthesis.Bethesda.GUI
                             JsonConvert.SerializeObject(
                                 new PatcherCustomization()
                                 {
-                                    Description = x.desc,
+                                    OneLineDescription = x.shortDesc,
+                                    LongDescription = x.desc,
                                     HideByDefault = x.hidden,
                                     Nickname = x.nickname
                                 },

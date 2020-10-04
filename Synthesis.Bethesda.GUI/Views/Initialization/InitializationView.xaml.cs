@@ -18,32 +18,8 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.BindStrict(this.ViewModel, vm => vm.DisplayName, view => view.PatcherDetailName.Text)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel)
-                    .BindToStrict(this, x => x.PatcherIconDisplay.DataContext)
-                    .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel)
                     .BindToStrict(this, x => x.ConfigDetailPane.Content)
-                    .DisposeWith(disposable);
-
-                /// Bottom decision button setup
-                // Show bottom decision buttons when in configuration
-                this.WhenAnyValue(x => x.ViewModel.OnCompletionPage)
-                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.ConfirmButtonGrid.Visibility)
-                    .DisposeWith(disposable);
-
-                // Set up discard/confirm clicks
-                this.WhenAnyValue(x => x.ViewModel.Profile.Config.CancelConfiguration)
-                    .BindToStrict(this, x => x.CancelAdditionButton.Command)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.Profile.Config.CompleteConfiguration)
-                    .BindToStrict(this, x => x.ConfirmAdditionButton.Command)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ConfirmAdditionButton.IsMouseOver)
-                    .Select(over => over ? Visibility.Visible : Visibility.Hidden)
-                    .BindToStrict(this, x => x.ConfirmAdditionText.Visibility)
                     .DisposeWith(disposable);
             });
         }

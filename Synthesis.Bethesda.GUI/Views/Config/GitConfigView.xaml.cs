@@ -9,14 +9,14 @@ using Noggog;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class GithubConfigViewBase : NoggogUserControl<GithubPatcherVM> { }
+    public class GitConfigViewBase : NoggogUserControl<GitPatcherVM> { }
 
     /// <summary>
-    /// Interaction logic for GithubConfigView.xaml
+    /// Interaction logic for GitConfigView.xaml
     /// </summary>
-    public partial class GithubConfigView : GithubConfigViewBase
+    public partial class GitConfigView : GitConfigViewBase
     {
-        public GithubConfigView()
+        public GitConfigView()
         {
             InitializeComponent();
             this.WhenActivated(disposable =>
@@ -36,6 +36,10 @@ namespace Synthesis.Bethesda.GUI.Views
                 processing
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.CloningRing.Visibility)
+                    .DisposeWith(disposable);
+                processing
+                    .Select(x => x ?  Visibility.Collapsed : Visibility.Visible)
+                    .BindToStrict(this, x => x.OpenGitButton.Visibility)
                     .DisposeWith(disposable);
 
                 // Bind project picker
@@ -96,12 +100,12 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, view => view.CommitDateText.Visibility)
                     .DisposeWith(disposable);
 
-                // Bind github open commands
-                this.WhenAnyValue(x => x.ViewModel.OpenGithubPageCommand)
-                    .BindToStrict(this, x => x.OpenGithubButton.Command)
+                // Bind git open commands
+                this.WhenAnyValue(x => x.ViewModel.OpenGitPageCommand)
+                    .BindToStrict(this, x => x.OpenGitButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.OpenGithubPageToVersionCommand)
-                    .BindToStrict(this, x => x.OpenGithubToVersionButton.Command)
+                this.WhenAnyValue(x => x.ViewModel.OpenGitPageToVersionCommand)
+                    .BindToStrict(this, x => x.OpenGitToVersionButton.Command)
                     .DisposeWith(disposable);
             });
         }

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.Execution
 {
-    public class GithubPatcherRun : IPatcherRun
+    public class GitPatcherRun : IPatcherRun
     {
         public string Name { get; }
         private readonly string _nickname;
@@ -30,7 +30,7 @@ namespace Synthesis.Bethesda.Execution
         private Subject<string> _error = new Subject<string>();
         public IObservable<string> Error => _error;
 
-        public GithubPatcherRun(string nickname, string remote, string localDir, string pathToSln, string pathToProj, string pathToExe)
+        public GitPatcherRun(string nickname, string remote, string localDir, string pathToSln, string pathToProj, string pathToExe)
         {
             _nickname = nickname;
             _remote = remote;

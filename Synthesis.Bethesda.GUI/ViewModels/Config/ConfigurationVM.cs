@@ -66,12 +66,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     var initializer = this.NewPatcher;
                     if (initializer == null) return;
-                    var patchersToAdd = await initializer.Construct().ToListAsync();
-                    NewPatcher = null;
-                    if (patchersToAdd.Count == 0) return;
-                    patchersToAdd.ForEach(p => p.IsOn = true);
-                    SelectedProfile?.Patchers.AddRange(patchersToAdd);
-                    SelectedPatcher = patchersToAdd.First();
+                    AddNewPatchers(await initializer.Construct().ToListAsync());
                 },
                 canExecute: this.WhenAnyValue(x => x.NewPatcher)
                     .Select(patcher =>
@@ -158,6 +153,15 @@ namespace Synthesis.Bethesda.GUI
                 },
                 ShowHelp = ShowHelp,
             };
+        }
+
+        public void AddNewPatchers(List<PatcherVM> patchersToAdd)
+        {
+            NewPatcher = null;
+            if (patchersToAdd.Count == 0) return;
+            patchersToAdd.ForEach(p => p.IsOn = true);
+            SelectedProfile?.Patchers.AddRange(patchersToAdd);
+            SelectedPatcher = patchersToAdd.First();
         }
     }
 }

@@ -1,7 +1,9 @@
 using Buildalyzer;
 using Noggog;
+using Noggog.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -20,6 +22,21 @@ namespace Synthesis.Bethesda.GUI
             catch (Exception)
             {
                 return Enumerable.Empty<string>();
+            }
+        }
+
+        public static async void OpenWebsite(string path)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo(path)
+                {
+                    UseShellExecute = true,
+                });
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(ex, $"Error opening website: {path}");
             }
         }
     }
