@@ -36,27 +36,27 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.DescriptionBox.Text)
                     .DisposeWith(dispose);
 
-                this.WhenAnyValue(x => x.ViewModel.Repository.Raw.Stars)
+                this.WhenAnyValue(x => x.ViewModel.Repository.Stars)
                     .Select(x => x.ToString())
                     .BindToStrict(this, v => v.StarNumberBlock.Text)
                     .DisposeWith(dispose);
-                this.WhenAnyValue(x => x.ViewModel.Repository.Raw.Forks)
+                this.WhenAnyValue(x => x.ViewModel.Repository.Forks)
                     .Select(x => x.ToString())
                     .BindToStrict(this, v => v.ForkNumberBlock.Text)
                     .DisposeWith(dispose);
-                this.WhenAnyValue(x => x.ViewModel.Repository.Raw.Forks)
+                this.WhenAnyValue(x => x.ViewModel.Repository.Forks)
                     .Select(f => f == 0 ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, v => v.ForkIcon.Visibility)
                     .DisposeWith(dispose);
-                this.WhenAnyValue(x => x.ViewModel.Repository.Raw.Forks)
+                this.WhenAnyValue(x => x.ViewModel.Repository.Forks)
                     .Select(f => f == 0 ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, v => v.ForkNumberBlock.Visibility)
                     .DisposeWith(dispose);
-                this.WhenAnyValue(x => x.ViewModel.Repository.Raw.Stars)
+                this.WhenAnyValue(x => x.ViewModel.Repository.Stars)
                     .Select(f => f == 0 ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, v => v.StarIcon.Visibility)
                     .DisposeWith(dispose);
-                this.WhenAnyValue(x => x.ViewModel.Repository.Raw.Stars)
+                this.WhenAnyValue(x => x.ViewModel.Repository.Stars)
                     .Select(f => f == 0 ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, v => v.StarNumberBlock.Visibility)
                     .DisposeWith(dispose);
