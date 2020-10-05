@@ -61,7 +61,7 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.WhenAnyValue(x => x.ViewModel!.SelectedProjectPath.ErrorState),
                         (driver, proj) => driver && proj.Succeeded)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, view => view.VersioningGrid.Visibility)
+                    .BindToStrict(this, view => view.AdvancedSettingsArea.Visibility)
                     .DisposeWith(disposable);
 
                 this.BindStrict(this.ViewModel, vm => vm.PatcherVersioning, view => view.PatcherVersioningTab.SelectedIndex, (e) => (int)e, i => (PatcherVersioningEnum)i)
@@ -106,6 +106,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.OpenGitPageToVersionCommand)
                     .BindToStrict(this, x => x.OpenGitToVersionButton.Command)
+                    .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.ExtraDataPath)
+                    .BindToStrict(this, x => x.ExtraFolderPicker.PickerVM)
                     .DisposeWith(disposable);
             });
         }

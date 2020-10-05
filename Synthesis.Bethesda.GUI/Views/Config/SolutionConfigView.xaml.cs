@@ -29,7 +29,8 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.BindStrict(this.ViewModel, vm => vm.SolutionPath, view => view.SolutionPathPicker.PickerVM)
+                this.WhenAnyValue(x => x.ViewModel!.SolutionPath)
+                    .BindToStrict(this, view => view.SolutionPathPicker.PickerVM)
                     .DisposeWith(disposable);
 
                 // Hide project picker if sln invalid

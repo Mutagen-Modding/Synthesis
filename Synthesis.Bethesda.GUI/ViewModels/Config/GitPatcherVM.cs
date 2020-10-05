@@ -80,6 +80,12 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand OpenGitPageToVersionCommand { get; }
 
+        public PathPickerVM ExtraDataPath { get; } = new PathPickerVM()
+        {
+            ExistCheckOption = PathPickerVM.CheckOptions.IfPathNotEmpty,
+            PathType = PathPickerVM.PathTypeOptions.Either,
+        };
+
         public GitPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
         {
@@ -168,9 +174,9 @@ namespace Synthesis.Bethesda.GUI
                         var availableProjs = Utility.AvailableProjectSubpaths(slnPath).ToList();
                         return new ConfigurationStateVM<DriverRepoInfo>(
                             new DriverRepoInfo(
-                                slnPath: slnPath, 
+                                slnPath: slnPath,
                                 masterBranchName: masterBranch,
-                                tags: tags, 
+                                tags: tags,
                                 availableProjects: availableProjs));
                     })
                 .Replay(1)
@@ -412,6 +418,7 @@ namespace Synthesis.Bethesda.GUI
                 MutagenVersioning = this.MutagenVersioning,
                 TargetTag = this.TargetTag,
                 TargetCommit = this.TargetCommit,
+                ExtraDataPath = this.ExtraDataPath.TargetPath,
             };
             CopyOverSave(ret);
             return ret;
@@ -431,6 +438,7 @@ namespace Synthesis.Bethesda.GUI
             this.MutagenVersioning = settings.MutagenVersioning;
             this.TargetTag = settings.TargetTag;
             this.TargetCommit = settings.TargetCommit;
+            this.ExtraDataPath.TargetPath = settings.ExtraDataPath;
         }
 
         public override PatcherRunVM ToRunner(PatchersRunVM parent)
@@ -446,7 +454,8 @@ namespace Synthesis.Bethesda.GUI
                     nickname: DisplayName,
                     pathToExe: ExePath,
                     pathToSln: RunnableData.SolutionPath,
-                    pathToProj: SelectedProjectPath.TargetPath));
+                    pathToProj: SelectedProjectPath.TargetPath,
+                    extraData: ExtraDataPath.TargetPath));
         }
 
         public static IObservable<ConfigurationStateVM<string>> GetRepoPathValidity(IObservable<string> repoPath)
@@ -479,12 +488,24 @@ namespace Synthesis.Bethesda.GUI
         public override void Delete()
         {
             base.Delete();
-            var dir = new DirectoryInfo(this.LocalDriverRepoDirectory);
-            dir.DeleteEntireFolder();
-            dir = new DirectoryInfo(this.LocalRunnerRepoDirectory);
-            dir.DeleteEntireFolder();
-            // ToDo
-            // Handle failure reporting
+            try
+            {
+                var dir = new DirectoryInfo(this.LocalDriverRepoDirectory);
+                dir.DeleteEntireFolder();
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(ex, $"Failure deleting git repo: {this.LocalDriverRepoDirectory}");
+            }
+            try
+            {
+                var dir = new DirectoryInfo(this.LocalRunnerRepoDirectory);
+                dir.DeleteEntireFolder();
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(ex, $"Failure deleting git repo: {this.LocalRunnerRepoDirectory}");
+            }
         }
 
         private static string GetPathToSolution(string pathToRepo)
