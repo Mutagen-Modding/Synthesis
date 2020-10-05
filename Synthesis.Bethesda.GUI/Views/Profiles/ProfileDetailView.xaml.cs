@@ -34,15 +34,15 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.BindStrict(this.ViewModel, vm => vm.Profile!.Nickname, view => view.ProfileDetailName.Text)
                     .DisposeWith(dispose);
 
-                this.WhenAnyValue(x => x.ViewModel.DeleteCommand)
+                this.WhenAnyValue(x => x.ViewModel!.DeleteCommand)
                     .BindToStrict(this, x => x.DeleteButton.Command)
                     .DisposeWith(dispose);
 
-                this.WhenAnyValue(x => x.ViewModel.SwitchToCommand)
+                this.WhenAnyValue(x => x.ViewModel!.SwitchToCommand)
                     .BindToStrict(this, x => x.SelectButton.Command)
                     .DisposeWith(dispose);
 
-                this.WhenAnyFallback(x => x.ViewModel.Profile!.Release, GameRelease.SkyrimSE)
+                this.WhenAnyFallback(x => x.ViewModel!.Profile!.Release, GameRelease.SkyrimSE)
                     .ObserveOn(RxApp.TaskpoolScheduler)
                     .Select(gameRelease =>
                     {

@@ -25,11 +25,11 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 var processing = Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel.RepoValidity),
-                        this.WhenAnyValue(x => x.ViewModel.State),
+                        this.WhenAnyValue(x => x.ViewModel!.RepoValidity),
+                        this.WhenAnyValue(x => x.ViewModel!.State),
                         (repo, state) => repo.Succeeded && !state.IsHaltingError && state.RunnableState.Failed);
 
-                this.WhenAnyValue(x => x.ViewModel.RepoValidity)
+                this.WhenAnyValue(x => x.ViewModel!.RepoValidity)
                     .BindError(this.RepositoryPath)
                     .DisposeWith(disposable);
 
@@ -47,18 +47,18 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.OneWayBindStrict(this.ViewModel, vm => vm.AvailableProjects, view => view.ProjectsPickerBox.ItemsSource)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.RepoClonesValid)
+                this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, view => view.ProjectsPickerBox.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.RepoClonesValid)
+                this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, view => view.ProjectTitle.Visibility)
                     .DisposeWith(disposable);
 
                 Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel.RepoClonesValid),
-                        this.WhenAnyValue(x => x.ViewModel.SelectedProjectPath.ErrorState),
+                        this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid),
+                        this.WhenAnyValue(x => x.ViewModel!.SelectedProjectPath.ErrorState),
                         (driver, proj) => driver && proj.Succeeded)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, view => view.VersioningGrid.Visibility)
@@ -78,33 +78,33 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.BindStrict(this.ViewModel, vm => vm.TargetCommit, view => view.CommitShaBox.Text)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel.RunnableData),
-                        this.WhenAnyValue(x => x.ViewModel.PatcherVersioning),
+                        this.WhenAnyValue(x => x.ViewModel!.RunnableData),
+                        this.WhenAnyValue(x => x.ViewModel!.PatcherVersioning),
                         (data, patcher) => data == null && patcher == PatcherVersioningEnum.Commit)
                     .Subscribe(x => this.CommitShaBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.TargetBranchName, view => view.BranchNameBox.Text)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel.RunnableData),
-                        this.WhenAnyValue(x => x.ViewModel.PatcherVersioning),
+                        this.WhenAnyValue(x => x.ViewModel!.RunnableData),
+                        this.WhenAnyValue(x => x.ViewModel!.PatcherVersioning),
                         (data, patcher) => data == null && patcher == PatcherVersioningEnum.Branch)
                     .Subscribe(x => this.BranchNameBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.RunnableData)
+                this.WhenAnyValue(x => x.ViewModel!.RunnableData)
                     .Select(x => x == null ? string.Empty : x.CommitDate.ToString())
                     .BindToStrict(this, view => view.PatcherVersionDateText.Text)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.RunnableData)
+                this.WhenAnyValue(x => x.ViewModel!.RunnableData)
                     .Select(x => x != null ? Visibility.Visible : Visibility.Hidden)
                     .BindToStrict(this, view => view.CommitDateText.Visibility)
                     .DisposeWith(disposable);
 
                 // Bind git open commands
-                this.WhenAnyValue(x => x.ViewModel.OpenGitPageCommand)
+                this.WhenAnyValue(x => x.ViewModel!.OpenGitPageCommand)
                     .BindToStrict(this, x => x.OpenGitButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.OpenGitPageToVersionCommand)
+                this.WhenAnyValue(x => x.ViewModel!.OpenGitPageToVersionCommand)
                     .BindToStrict(this, x => x.OpenGitToVersionButton.Command)
                     .DisposeWith(disposable);
             });

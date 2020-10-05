@@ -29,27 +29,27 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-                this.WhenAnyValue(x => x.ViewModel.ProfilesDisplay)
+                this.WhenAnyValue(x => x.ViewModel!.ProfilesDisplay)
                     .BindToStrict(this, x => x.ProfilesList.ItemsSource)
                     .DisposeWith(dispose);
-                this.WhenAnyValue(x => x.ViewModel.GoBackCommand)
+                this.WhenAnyValue(x => x.ViewModel!.GoBackCommand)
                     .BindToStrict(this, x => x.BackButton.Command)
                     .DisposeWith(dispose);
-                this.WhenAnyValue(x => x.ViewModel.AddCommand)
+                this.WhenAnyValue(x => x.ViewModel!.AddCommand)
                     .BindToStrict(this, x => x.AddButton.Command)
                     .DisposeWith(dispose);
 
                 this.BindStrict(this.ViewModel, vm => vm.DisplayedProfile, view => view.ProfilesList.SelectedItem)
                     .DisposeWith(dispose);
 
-                this.WhenAnyValue(x => x.ViewModel.DisplayObject)
+                this.WhenAnyValue(x => x.ViewModel!.DisplayObject)
                     .BindToStrict(this, x => x.ProfileDetail.Content)
                     .DisposeWith(dispose);
 
                 // Set up dimmer
                 Observable.CombineLatest(
-                        this.WhenAnyFallback(x => x.ViewModel.DisplayedProfile!.Profile, fallback: null),
-                        this.WhenAnyValue(x => x.ViewModel.ProfilesDisplay.Count),
+                        this.WhenAnyFallback(x => x.ViewModel!.DisplayedProfile!.Profile, fallback: null),
+                        this.WhenAnyValue(x => x.ViewModel!.ProfilesDisplay.Count),
                         (profile, count) => count > 0 && profile == null)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.InitialConfigurationDimmer.Visibility)

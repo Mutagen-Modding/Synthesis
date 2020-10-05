@@ -22,27 +22,27 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated((disposable) =>
             {
-                this.WhenAnyValue(x => x.ViewModel.IsSelected)
+                this.WhenAnyFallback(x => x.ViewModel!.IsSelected)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.SelectedGlow.Visibility)
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.IsOn, view => view.OnToggle.IsChecked)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.DisplayName)
+                this.WhenAnyFallback(x => x.ViewModel!.DisplayName)
                     .BindToStrict(this, x => x.NameBlock.Text)
                     .DisposeWith(disposable);
 
                 // Set up blocking issue display
-                this.WhenAnyValue(x => x.ViewModel.State.RunnableState.Succeeded)
+                this.WhenAnyFallback(x => x.ViewModel!.State.RunnableState.Succeeded)
                     .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.BlockingIssueDisplayCircle.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.State.RunnableState.Reason)
+                this.WhenAnyFallback(x => x.ViewModel!.State.RunnableState.Reason)
                     .BindToStrict(this, x => x.BlockingIssueDisplayCircle.ToolTip)
                     .DisposeWith(disposable);
 
                 // ContextMenu
-                this.WhenAnyValue(x => x.ViewModel.DeleteCommand)
+                this.WhenAnyFallback(x => x.ViewModel!.DeleteCommand)
                     .BindToStrict(this, x => x.DeleteContextMenuButton.Command)
                     .DisposeWith(disposable);
             });

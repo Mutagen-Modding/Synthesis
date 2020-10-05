@@ -28,7 +28,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel.ReleaseOptions)
+                this.WhenAnyValue(x => x.ViewModel!.ReleaseOptions)
                     .BindToStrict(this, x => x.GameReleaseOptionsControl.ItemsSource)
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.SelectedGame, view => view.GameReleaseOptionsControl.SelectedItem)

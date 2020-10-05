@@ -18,13 +18,13 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-                this.WhenAnyValue(x => x.ViewModel.Name)
+                this.WhenAnyValue(x => x.ViewModel!.Name)
                     .BindToStrict(this, x => x.Name.Text)
                     .DisposeWith(dispose);
-                this.WhenAnyFallback(x => x.ViewModel.Raw.Customization!.OneLineDescription, string.Empty)
+                this.WhenAnyFallback(x => x.ViewModel!.Raw.Customization!.OneLineDescription, string.Empty)
                     .BindToStrict(this, x => x.OneLine.Text)
                     .DisposeWith(dispose);
-                this.WhenAnyFallback(x => x.ViewModel.Raw.Customization!.OneLineDescription, string.Empty)
+                this.WhenAnyFallback(x => x.ViewModel!.Raw.Customization!.OneLineDescription, string.Empty)
                     .Select(s => string.IsNullOrWhiteSpace(s) ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.OneLine.Visibility)
                     .DisposeWith(dispose);
@@ -37,10 +37,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(dispose);
                 hoverVis.BindToStrict(this, v => v.AddButton.Visibility)
                     .DisposeWith(dispose);
-                this.WhenAnyValue(x => x.ViewModel.AddCommand)
+                this.WhenAnyValue(x => x.ViewModel!.AddCommand)
                     .BindToStrict(this, v => v.AddButton.Command)
                     .DisposeWith(dispose);
-                this.WhenAnyValue(x => x.ViewModel.OpenWebsite)
+                this.WhenAnyValue(x => x.ViewModel!.OpenWebsite)
                     .BindToStrict(this, v => v.OpenWebsiteButton.Command)
                     .DisposeWith(dispose);
             });

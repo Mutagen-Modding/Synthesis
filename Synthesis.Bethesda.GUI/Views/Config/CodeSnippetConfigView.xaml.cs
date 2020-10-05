@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.Bind(this.ViewModel, vm => vm.Code, v => v.CodeBox.Text)
                     .DisposeWith(disposable);
 
-                this.WhenAnyValue(x => x.ViewModel.CompilationText)
+                this.WhenAnyValue(x => x.ViewModel!.CompilationText)
                     .BindToStrict(this, x => x.CompileResultsBlock.Text)
                     .DisposeWith(disposable);
 

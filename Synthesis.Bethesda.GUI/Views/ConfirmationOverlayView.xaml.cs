@@ -1,4 +1,4 @@
-﻿using Noggog.WPF;
+using Noggog.WPF;
 using ReactiveUI;
 using System;
 using System.Reactive.Disposables;
@@ -29,18 +29,18 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel.ActiveConfirmation, x => x.ViewModel.ActiveConfirmation!.Title,
+                this.WhenAnyValue(x => x.ViewModel!.ActiveConfirmation, x => x.ViewModel!.ActiveConfirmation!.Title,
                         (c, _) => c?.Title)
                     .BindToStrict(this, x => x.TitleBlock.Text)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.ActiveConfirmation, x => x.ViewModel.ActiveConfirmation!.Description,
+                this.WhenAnyValue(x => x.ViewModel!.ActiveConfirmation, x => x.ViewModel!.ActiveConfirmation!.Description,
                         (c, _) => c?.Description)
                     .BindToStrict(this, x => x.DescriptionBlock.Text)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.ConfirmActionCommand)
+                this.WhenAnyValue(x => x.ViewModel!.ConfirmActionCommand)
                     .BindToStrict(this, x => x.AcceptButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.DiscardActionCommand)
+                this.WhenAnyValue(x => x.ViewModel!.DiscardActionCommand)
                     .BindToStrict(this, x => x.CancelButton.Command)
                     .DisposeWith(disposable);
             });

@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel.Exception)
+                this.WhenAnyValue(x => x.ViewModel!.Exception)
                     .Select(x => x.ToString())
                     .BindToStrict(this, x => x.ErrorOutputBox.Text)
                     .DisposeWith(disposable);

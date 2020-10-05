@@ -1,4 +1,4 @@
-﻿using Noggog.WPF;
+using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System;
@@ -30,11 +30,11 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-                this.WhenAnyFallback(x => x.ViewModel.Configuration.SelectedProfile!.Nickname, string.Empty)
+                this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.Nickname, string.Empty)
                     .BindToStrict(this, x => x.ProfileNameBlock.Text)
                     .DisposeWith(dispose);
 
-                this.WhenAnyFallback(x => x.ViewModel.Configuration.SelectedProfile!.Release, GameRelease.SkyrimSE)
+                this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.Release, GameRelease.SkyrimSE)
                     .ObserveOn(RxApp.TaskpoolScheduler)
                     .Select(gameRelease =>
                     {
@@ -44,7 +44,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.GameIconImage.Source)
                     .DisposeWith(dispose);
 
-                this.WhenAnyValue(x => x.ViewModel.OpenProfilesPageCommand)
+                this.WhenAnyValue(x => x.ViewModel!.OpenProfilesPageCommand)
                     .BindToStrict(this, x => x.OpenProfilesPageButton.Command)
                     .DisposeWith(dispose);
             });
