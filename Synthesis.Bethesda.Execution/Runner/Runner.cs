@@ -104,7 +104,7 @@ namespace Synthesis.Bethesda.Execution.Runner
                             .Subscribe(reporter.ReportError);
                         try
                         {
-                            await patcher.Run.Prep(release, cancellation);
+                            await patcher.Run.Prep(release, reporter, cancellation);
                         }
                         catch (TaskCanceledException)
                         {
@@ -159,6 +159,7 @@ namespace Synthesis.Bethesda.Execution.Runner
                                 GameRelease = release,
                                 LoadOrderFilePath = loadOrderPath,
                             },
+                            reporter,
                             cancel: cancellation);
                         }
                         catch (TaskCanceledException)

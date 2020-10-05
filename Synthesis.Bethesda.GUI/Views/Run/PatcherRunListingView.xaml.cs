@@ -29,14 +29,14 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel.Config.DisplayName)
+                this.WhenAnyValue(x => x.ViewModel!.Config.DisplayName)
                     .BindToStrict(this, x => x.NameBlock.Text)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.IsSelected)
+                this.WhenAnyValue(x => x.ViewModel!.IsSelected)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.SelectedGlow.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.RunTimeString)
+                this.WhenAnyValue(x => x.ViewModel!.RunTimeString)
                     .BindToStrict(this, x => x.RunningTimeBlock.Text)
                     .DisposeWith(disposable);
             });

@@ -29,11 +29,12 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.BindStrict(this.ViewModel, vm => vm.SolutionPath, view => view.SolutionPathPicker.PickerVM)
+                this.WhenAnyValue(x => x.ViewModel!.SolutionPath)
+                    .BindToStrict(this, view => view.SolutionPathPicker.PickerVM)
                     .DisposeWith(disposable);
 
                 // Hide project picker if sln invalid
-                var hasProjs = this.WhenAnyValue(x => x.ViewModel.AvailableProjects.Count)
+                var hasProjs = this.WhenAnyValue(x => x.ViewModel!.AvailableProjects.Count)
                     .Select(x => x > 0)
                     .Replay(1)
                     .RefCount();
@@ -55,7 +56,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Set project picker tooltips
-                this.WhenAnyValue(x => x.ViewModel.SelectedProjectPath.ErrorState)
+                this.WhenAnyValue(x => x.ViewModel!.SelectedProjectPath.ErrorState)
                     .Select(e =>
                     {
                         if (e.Succeeded) return "Project in the solution to run";
@@ -65,7 +66,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Set up open solution button
-                this.WhenAnyValue(x => x.ViewModel.OpenSolutionCommand)
+                this.WhenAnyValue(x => x.ViewModel!.OpenSolutionCommand)
                     .BindToStrict(this, x => x.OpenSolutionButton.Command)
                     .DisposeWith(disposable);
 

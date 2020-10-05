@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Mutagen.Bethesda;
 using System.Reactive.Linq;
+using Synthesis.Bethesda.Execution;
 
 namespace Synthesis.Bethesda.UnitTests
 {
@@ -235,7 +236,7 @@ namespace Synthesis.Bethesda.UnitTests
                 WasDisposed = true;
             }
 
-            public async Task Prep(GameRelease release, CancellationToken? cancel = null)
+            public async Task Prep(GameRelease release, ILogger? log, CancellationToken? cancel = null)
             {
                 WasPrepped = true;
                 if (ThrowInPrep)
@@ -244,7 +245,7 @@ namespace Synthesis.Bethesda.UnitTests
                 }
             }
 
-            public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
+            public async Task Run(RunSynthesisPatcher settings, ILogger? log, CancellationToken? cancel = null)
             {
                 if (DoWork)
                 {

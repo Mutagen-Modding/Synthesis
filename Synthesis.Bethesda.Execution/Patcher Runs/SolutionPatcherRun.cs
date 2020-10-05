@@ -7,15 +7,13 @@ using Noggog;
 using Noggog.Utility;
 using Synthesis.Bethesda.Execution.Patchers;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Wabbajack.Common;
 
 namespace Synthesis.Bethesda.Execution
 {
@@ -33,15 +31,23 @@ namespace Synthesis.Bethesda.Execution
         private Subject<string> _error = new Subject<string>();
         public IObservable<string> Error => _error;
 
-        public SolutionPatcherRun(string nickname, string pathToSln, string pathToProj, string pathToExe)
+        private string? _extraData;
+
+        public SolutionPatcherRun(
+            string nickname,
+            string pathToSln, 
+            string pathToProj,
+            string pathToExe, 
+            string? extraData)
         {
+            _extraData = extraData;
             PathToSolution = pathToSln;
             PathToProject = pathToProj;
             PathToExe = pathToExe;
             Name = $"{nickname} => {Path.GetFileNameWithoutExtension(pathToSln)} => {Path.GetFileNameWithoutExtension(pathToProj)}";
         }
 
-        public async Task Prep(GameRelease release, CancellationToken? cancel = null)
+        public async Task Prep(GameRelease release, ILogger? log, CancellationToken? cancel = null)
         {
             CliRun = new CliPatcherRun(nickname: Name, pathToExecutable: PathToExe);
 
@@ -52,15 +58,28 @@ namespace Synthesis.Bethesda.Execution
             }
         }
 
-        public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
+        public async Task Run(RunSynthesisPatcher settings, ILogger? log, CancellationToken? cancel = null)
         {
             if (CliRun == null)
             {
                 throw new SynthesisBuildFailure("Expected CLI Run object did not exist.");
             }
+            if (_extraData != null && Directory.Exists(_extraData))
+            {
+                var target = new AbsolutePath(Path.Combine(Path.GetDirectoryName(PathToExe), Path.GetFileName(_extraData)));
+                log?.ReportOutput($"Copying extra data folder {_extraData} to {target}");
+                var p = new AbsolutePath(_extraData);
+                await p.CopyDirectoryToAsync(target);
+            }
+            else if (_extraData != null && File.Exists(_extraData))
+            {
+                var targetPath = Path.Combine(Path.GetDirectoryName(PathToExe), Path.GetFileName(_extraData));
+                log?.ReportOutput($"Copying extra data file {_extraData} to {targetPath}");
+                File.Copy(_extraData, targetPath);
+            }
             using var outputSub = CliRun.Output.Subscribe(_output);
             using var errSub = CliRun.Error.Subscribe(_error);
-            await CliRun.Run(settings, cancel).ConfigureAwait(false);
+            await CliRun.Run(settings, log, cancel).ConfigureAwait(false);
         }
 
         public void Dispose()

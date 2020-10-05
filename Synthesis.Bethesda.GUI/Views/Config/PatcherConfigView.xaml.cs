@@ -1,4 +1,4 @@
-﻿using Noggog;
+using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using System;
@@ -31,7 +31,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel.DisplayName)
+                this.WhenAnyValue(x => x.ViewModel!.DisplayName)
                     .BindToStrict(this, x => x.PatcherDetailName.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel)
@@ -41,7 +41,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.ConfigDetailPane.Content)
                     .DisposeWith(disposable);
 
-                this.WhenAnyValue(x => x.ViewModel.DeleteCommand)
+                this.WhenAnyValue(x => x.ViewModel!.DeleteCommand)
                     .BindToStrict(this, x => x.DeleteButton.Command)
                     .DisposeWith(disposable);
 
@@ -50,18 +50,24 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.PatcherDetailName.Text)
                     .Skip(1)
                     .FilterSwitch(this.WhenAnyValue(x => x.PatcherDetailName.IsFocused))
-                    .Subscribe(x => this.ViewModel.Nickname = x)
+                    .Subscribe(x =>
+                    {
+                        if (this.ViewModel.TryGet(out var vm))
+                        {
+                            vm.Nickname = x;
+                        }
+                    })
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.PatcherDetailName.IsKeyboardFocused)
                     .Select(focused =>
                     {
                         if (focused)
                         {
-                            return this.WhenAnyValue(x => x.ViewModel.Nickname);
+                            return this.WhenAnyValue(x => x.ViewModel!.Nickname);
                         }
                         else
                         {
-                            return this.WhenAnyValue(x => x.ViewModel.DisplayName);
+                            return this.WhenAnyValue(x => x.ViewModel!.DisplayName);
                         }
                     })
                     .Switch()

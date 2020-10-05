@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel.PatchersDisplay)
+                this.WhenAnyValue(x => x.ViewModel!.PatchersDisplay)
                     .BindToStrict(this, x => x.PatchersList.ItemsSource)
                     .DisposeWith(disposable);
 
@@ -37,40 +37,40 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Wire up patcher config data context and visibility
-                this.WhenAnyValue(x => x.ViewModel.DetailDisplay)
+                this.WhenAnyValue(x => x.ViewModel!.DetailDisplay)
                     .BindToStrict(this, x => x.PatcherDetail.Content)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.DetailDisplay)
+                this.WhenAnyValue(x => x.ViewModel!.DetailDisplay)
                     .Select(x => x == null ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.PatcherDetail.Visibility)
                     .DisposeWith(disposable);
 
                 // Set up top bar
-                this.WhenAnyValue(x => x.ViewModel.Running)
+                this.WhenAnyValue(x => x.ViewModel!.Running)
                     .Select(r => r ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.RunningRingAnimation.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.Running)
+                this.WhenAnyValue(x => x.ViewModel!.Running)
                     .Select(r => r ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.BackButton.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.Running)
+                this.WhenAnyValue(x => x.ViewModel!.Running)
                     .Select(r => r ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.CancelButton.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.BackCommand)
+                this.WhenAnyValue(x => x.ViewModel!.BackCommand)
                     .BindToStrict(this, x => x.BackButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.CancelCommand)
+                this.WhenAnyValue(x => x.ViewModel!.CancelCommand)
                     .BindToStrict(this, x => x.CancelButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.Running)
+                this.WhenAnyValue(x => x.ViewModel!.Running)
                     .Select(running => running ? "Patching" : "Patch Results")
                     .BindToStrict(this, x => x.TopTitleBlock.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(
-                        x => x.ViewModel.Running,
-                        x => x.ViewModel.ResultError,
+                        x => x.ViewModel!.Running,
+                        x => x.ViewModel!.ResultError,
                         (running, err) =>
                         {
                             if (running || err == null) return Visibility.Collapsed;
@@ -78,11 +78,11 @@ namespace Synthesis.Bethesda.GUI.Views
                         })
                     .BindToStrict(this, x => x.OverallErrorButton.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.ResultError)
+                this.WhenAnyValue(x => x.ViewModel!.ResultError)
                     .Select(x => x?.ToString() ?? string.Empty)
                     .BindToStrict(this, x => x.OverallErrorButton.ToolTip)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.ShowOverallErrorCommand)
+                this.WhenAnyValue(x => x.ViewModel!.ShowOverallErrorCommand)
                     .BindToStrict(this, x => x.OverallErrorButton.Command)
                     .DisposeWith(disposable);
             });

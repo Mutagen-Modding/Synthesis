@@ -1,4 +1,4 @@
-﻿using Noggog.WPF;
+using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System;
@@ -29,15 +29,15 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel.Config.DisplayName)
+                this.WhenAnyValue(x => x.ViewModel!.Config.DisplayName)
                     .BindToStrict(this, x => x.PatcherDetailName.Text)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.Config)
+                this.WhenAnyValue(x => x.ViewModel!.Config)
                     .BindToStrict(this, x => x.PatcherIconDisplay.DataContext)
                     .DisposeWith(disposable);
 
                 // Set state subheader
-                this.WhenAnyValue(x => x.ViewModel.State.Value)
+                this.WhenAnyValue(x => x.ViewModel!.State.Value)
                     .Select(state =>
                     {
                         return state switch
@@ -53,10 +53,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Set up text output
-                this.WhenAnyValue(x => x.ViewModel.OutputLineDisplay)
+                this.WhenAnyValue(x => x.ViewModel!.OutputLineDisplay)
                     .BindToStrict(this, x => x.OutputBox.ItemsSource)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.OutputLineDisplay.Count)
+                this.WhenAnyValue(x => x.ViewModel!.OutputLineDisplay.Count)
                     .Select(count => count > 0 ? Visibility.Visible : Visibility.Hidden)
                     .BindToStrict(this, x => x.OutputBox.Visibility)
                     .DisposeWith(disposable);

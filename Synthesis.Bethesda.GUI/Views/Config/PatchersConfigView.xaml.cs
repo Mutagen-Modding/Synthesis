@@ -29,19 +29,19 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated((disposable) =>
             {
-                this.WhenAnyFallback(x => x.ViewModel.SelectedProfile!.AddGitPatcherCommand, fallback: default(ICommand))
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.AddGitPatcherCommand, fallback: default(ICommand))
                     .BindToStrict(this, x => x.AddGitButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyFallback(x => x.ViewModel.SelectedProfile!.AddSolutionPatcherCommand, fallback: default(ICommand))
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.AddSolutionPatcherCommand, fallback: default(ICommand))
                     .BindToStrict(this, x => x.AddSolutionButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyFallback(x => x.ViewModel.SelectedProfile!.AddCliPatcherCommand, fallback: default(ICommand))
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.AddCliPatcherCommand, fallback: default(ICommand))
                     .BindToStrict(this, x => x.AddCliButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyFallback(x => x.ViewModel.SelectedProfile!.AddSnippetPatcherCommand, fallback: default(ICommand))
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.AddSnippetPatcherCommand, fallback: default(ICommand))
                     .BindToStrict(this, x => x.AddSnippetButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.PatchersDisplay)
+                this.WhenAnyValue(x => x.ViewModel!.PatchersDisplay)
                     .BindToStrict(this, x => x.PatchersList.ItemsSource)
                     .DisposeWith(disposable);
 
@@ -49,41 +49,41 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Wire up patcher config data context and visibility
-                this.WhenAnyValue(x => x.ViewModel.DisplayedObject)
+                this.WhenAnyValue(x => x.ViewModel!.DisplayedObject)
                     .BindToStrict(this, x => x.DetailControl.DataContext)
                     .DisposeWith(disposable);
 
                 // Only show help if zero patchers
-                this.WhenAnyValue(x => x.ViewModel.PatchersDisplay.Count)
+                this.WhenAnyValue(x => x.ViewModel!.PatchersDisplay.Count)
                     .Select(c => c == 0 ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.AddSomePatchersHelpGrid.Visibility)
                     .DisposeWith(disposable);
 
                 // Show dimmer if in initial configuration
-                this.WhenAnyValue(x => x.ViewModel.NewPatcher)
+                this.WhenAnyValue(x => x.ViewModel!.NewPatcher)
                     .Select(newPatcher => newPatcher != null? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.InitialConfigurationDimmer.Visibility)
                     .DisposeWith(disposable);
 
                 // Set up go button
-                this.WhenAnyValue(x => x.ViewModel.RunPatchers)
+                this.WhenAnyValue(x => x.ViewModel!.RunPatchers)
                     .BindToStrict(this, x => x.GoButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.RunPatchers.CanExecute)
+                this.WhenAnyValue(x => x.ViewModel!.RunPatchers.CanExecute)
                     .Switch()
                     .Select(can => can ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.GoButton.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel.RunPatchers.CanExecute)
+                this.WhenAnyValue(x => x.ViewModel!.RunPatchers.CanExecute)
                     .Switch()
-                    .CombineLatest(this.WhenAnyFallback(x => x.ViewModel.SelectedProfile!.LargeOverallError, ErrorResponse.Success),
+                    .CombineLatest(this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LargeOverallError, ErrorResponse.Success),
                         (can, overall) => !can && overall.Succeeded)
                     .Select(show => show ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.ProcessingRingAnimation.Visibility)
                     .DisposeWith(disposable);
 
                 // Set up large overall error icon display
-                var overallErr = this.WhenAnyFallback( x => x.ViewModel.SelectedProfile!.LargeOverallError, fallback: ErrorResponse.Success)
+                var overallErr = this.WhenAnyFallback( x => x.ViewModel!.SelectedProfile!.LargeOverallError, fallback: ErrorResponse.Success)
                     .Replay(1)
                     .RefCount();
                 overallErr.Select(x => x.Succeeded ? Visibility.Collapsed : Visibility.Visible)
@@ -136,7 +136,7 @@ namespace Synthesis.Bethesda.GUI.Views
                         if (!e.Data.GetDataPresent(DragParamName)) return;
                         var vm = e.Data.GetData(DragParamName) as PatcherVM;
                         if (vm == null) return;
-                        var profile = ViewModel.SelectedProfile;
+                        var profile = ViewModel?.SelectedProfile;
                         if (!object.ReferenceEquals(profile, vm.Profile)) return;
 
                         if (!(e.OriginalSource is DependencyObject dep)) return;

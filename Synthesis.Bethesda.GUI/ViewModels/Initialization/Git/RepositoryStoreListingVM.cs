@@ -10,6 +10,10 @@ namespace Synthesis.Bethesda.GUI
     {
         public RepositoryListing Raw { get; }
 
+        public int Stars { get; }
+
+        public int Forks { get; }
+
         public RepositoryStoreListingVM(RepositoryListing listing)
         {
             Raw = listing;

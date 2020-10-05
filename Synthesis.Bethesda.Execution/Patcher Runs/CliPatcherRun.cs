@@ -39,11 +39,11 @@ namespace Synthesis.Bethesda.Execution
         {
         }
 
-        public async Task Prep(GameRelease release, CancellationToken? cancel = null)
+        public async Task Prep(GameRelease release, ILogger? log = null, CancellationToken? cancel = null)
         {
         }
 
-        public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
+        public async Task Run(RunSynthesisPatcher settings, ILogger? log = null, CancellationToken? cancel = null)
         {
             if (cancel?.IsCancellationRequested ?? false) return;
             var args = Parser.Default.FormatCommandLine(settings);

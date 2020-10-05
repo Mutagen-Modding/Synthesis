@@ -3,7 +3,6 @@ using Mutagen.Bethesda;
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Subjects;
@@ -22,6 +21,7 @@ namespace Synthesis.Bethesda.Execution
         private readonly string _pathToSln;
         private readonly string _pathToProj;
         private readonly string _pathToExe;
+        private readonly string? _extraData;
         public SolutionPatcherRun? SolutionRun { get; private set; }
 
         private Subject<string> _output = new Subject<string>();
@@ -30,7 +30,14 @@ namespace Synthesis.Bethesda.Execution
         private Subject<string> _error = new Subject<string>();
         public IObservable<string> Error => _error;
 
-        public GitPatcherRun(string nickname, string remote, string localDir, string pathToSln, string pathToProj, string pathToExe)
+        public GitPatcherRun(
+            string nickname, 
+            string remote, 
+            string localDir, 
+            string pathToSln, 
+            string pathToProj, 
+            string pathToExe, 
+            string? extraData)
         {
             _nickname = nickname;
             _remote = remote;
@@ -38,6 +45,7 @@ namespace Synthesis.Bethesda.Execution
             _pathToProj = pathToProj;
             _pathToSln = pathToSln;
             _pathToExe = pathToExe;
+            _extraData = extraData;
             Name = $"{nickname} => {remote} => {Path.GetFileNameWithoutExtension(pathToProj)}";
         }
 
@@ -45,24 +53,29 @@ namespace Synthesis.Bethesda.Execution
         {
         }
 
-        public async Task Prep(GameRelease release, CancellationToken? cancel = null)
+        public async Task Prep(GameRelease release, ILogger? log, CancellationToken? cancel = null)
         {
             var prepResult = await PrepRepo(GetResponse<string>.Succeed(_remote), _localDir, cancel ?? CancellationToken.None);
             if (prepResult.Failed)
             {
                 throw new SynthesisBuildFailure(prepResult.Reason);
             }
-            SolutionRun = new SolutionPatcherRun(_nickname, Path.Combine(_localDir, _pathToSln), Path.Combine(_localDir, _pathToProj), Path.Combine(_localDir, _pathToExe));
-            await SolutionRun.Prep(release, cancel).ConfigureAwait(false);
+            SolutionRun = new SolutionPatcherRun(
+                _nickname,
+                pathToSln: Path.Combine(_localDir, _pathToSln), 
+                pathToProj: Path.Combine(_localDir, _pathToProj), 
+                pathToExe: Path.Combine(_localDir, _pathToExe),
+                extraData: _extraData);
+            await SolutionRun.Prep(release, log, cancel).ConfigureAwait(false);
         }
 
-        public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
+        public async Task Run(RunSynthesisPatcher settings, ILogger? log, CancellationToken? cancel = null)
         {
             if (SolutionRun == null)
             {
                 throw new SynthesisBuildFailure("Expected Solution Run object did not exist.");
             }
-            await SolutionRun.Run(settings, cancel).ConfigureAwait(false);
+            await SolutionRun.Run(settings, log, cancel).ConfigureAwait(false);
         }
 
         private static bool DeleteOldRepo(string localDir, GetResponse<string> remoteUrl)

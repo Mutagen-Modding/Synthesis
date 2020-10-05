@@ -19,7 +19,7 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.BindStrict(this.ViewModel, vm => vm.Nickname, view => view.PatcherDetailName.Text)
                     .DisposeWith(dispose);
 
-                this.WhenAnyFallback(x => x.ViewModel.ReleaseOptions, fallback: default)
+                this.WhenAnyFallback(x => x.ViewModel!.ReleaseOptions, fallback: default)
                     .BindToStrict(this, x => x.GameReleaseOptionsControl.ItemsSource)
                     .DisposeWith(dispose);
                 this.BindStrict(this.ViewModel, vm => vm.SelectedGame, view => view.GameReleaseOptionsControl.SelectedItem)
