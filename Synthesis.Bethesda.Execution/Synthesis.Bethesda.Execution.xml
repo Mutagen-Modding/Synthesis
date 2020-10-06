@@ -4,5 +4,74 @@
         <name>Synthesis.Bethesda.Execution</name>
     </assembly>
     <members>
+        <member name="T:ThisAssembly">
+            <summary>Provides access to the current assembly information.</summary>
+        </member>
+        <member name="T:ThisAssembly.Git">
+            <summary>Provides access to the git information for the current assembly.</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.IsDirty">
+            <summary>IsDirty: true</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.IsDirtyString">
+            <summary>IsDirtyString: true</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.RepositoryUrl">
+            <summary>Repository URL: https://github.com/Noggog/Synthesis.git</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.Branch">
+            <summary>Branch: dev</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.Commit">
+            <summary>Commit: db17d17</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.Sha">
+            <summary>Sha: db17d1717b25dab113c2cb81336a388b30a0ae85</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.CommitDate">
+            <summary>Commit date: 2020-10-05T09:42:58-05:00</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.Commits">
+            <summary>Commits on top of base version: 1</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.Tag">
+            <summary>Tag: 0.9.1-1-gdb17d17</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.BaseTag">
+            <summary>Base tag: 0.9.1</summary>
+        </member>
+        <member name="T:ThisAssembly.Git.BaseVersion">
+            <summary>Provides access to the base version information used to determine the <see cref="T:ThisAssembly.Git.SemVer" />.</summary>      
+        </member>
+        <member name="F:ThisAssembly.Git.BaseVersion.Major">
+            <summary>Major: 0</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.BaseVersion.Minor">
+            <summary>Minor: 9</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.BaseVersion.Patch">
+            <summary>Patch: 1</summary>
+        </member>
+        <member name="T:ThisAssembly.Git.SemVer">
+            <summary>Provides access to SemVer information for the current assembly.</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.SemVer.Major">
+            <summary>Major: 0</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.SemVer.Minor">
+            <summary>Minor: 9</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.SemVer.Patch">
+            <summary>Patch: 2</summary>
+        </member>
+        <member name="F:ThisAssembly.Git.SemVer.Label">
+            <summary>Label: </summary>
+        </member>
+        <member name="F:ThisAssembly.Git.SemVer.DashLabel">
+            <summary>Label with dash prefix: </summary>
+        </member>
+        <member name="F:ThisAssembly.Git.SemVer.Source">
+            <summary>Source: Tag</summary>
+        </member>
     </members>
 </doc>

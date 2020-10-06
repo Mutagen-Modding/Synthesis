@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
@@ -15,6 +15,10 @@
     <Platforms>x64</Platforms>
     <PackageProjectUrl>https://github.com/Noggog/Synthesis</PackageProjectUrl>
     <Copyright>2020</Copyright>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+    <FileVersion>0.0.1.0</FileVersion>
+    <PackageVersion>0.0.1.0</PackageVersion>
+    <InformationalVersion>0.0.1.0</InformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -25,6 +29,10 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
+    <PackageReference Include="GitInfo" Version="2.1.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Mutagen.Bethesda.Kernel" Version="[0.18,0.19)" />
   </ItemGroup>
 
