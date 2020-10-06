@@ -2,20 +2,6 @@
   <PropertyGroup>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable</WarningsAsErrors>
+    <Version>0.9.1.1-dev</Version>
   </PropertyGroup>
-  
-  <PropertyGroup>
-    <GitInfoReportImportance Condition="$(Configuration) == 'Release'">high</GitInfoReportImportance>
-  </PropertyGroup>
-	
-  <Target Name="SetVersion" BeforeTargets="GetAssemblyVersion;GetPackageVersion" Condition="'$(ExcludeRestorePackageImports)' != 'true'">
-    <PropertyGroup>
-      <DevLabel Condition="'$(GitCommits)' != '0' or $(GitIsDirty) == 'true'">.1-dev</DevLabel>
-      <AssemblyDevLabel Condition="'$(GitCommits)' != '0' or $(GitIsDirty) == 'true'">.1</AssemblyDevLabel>
-      <AssemblyVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(AssemblyDevLabel)</AssemblyVersion>
-      <FileVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(AssemblyDevLabel)</FileVersion>
-      <PackageVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(DevLabel)</PackageVersion>
-      <InformationalVersion>$(PackageVersion)</InformationalVersion>
-    </PropertyGroup>
-  </Target>
 </Project>
