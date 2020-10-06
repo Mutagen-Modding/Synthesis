@@ -12,7 +12,6 @@
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Noggog/Synthesis</RepositoryUrl>
     <Company>Mutagen</Company>
-    <Version>0.0.5</Version>
     <Platforms>x64</Platforms>
     <ApplicationIcon>mushroom.ico</ApplicationIcon>
   </PropertyGroup>
