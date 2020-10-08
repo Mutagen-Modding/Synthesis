@@ -1,3 +1,4 @@
+using Mutagen.Bethesda.Synthesis.CLI;
 using Synthesis.Bethesda;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// <summary>
         /// Instructions given to the patcher from the Synthesis pipeline
         /// </summary>
-        public IRunPipelineSettings Settings { get; }
+        public RunSynthesisMutagenPatcher Settings { get; }
 
         /// <summary>
         /// Load Order object containing all the mods to be used for the patch.<br />
@@ -50,17 +51,24 @@ namespace Mutagen.Bethesda.Synthesis
 
         IEnumerable<ModKey> ISynthesisState.LoadOrder => LoadOrder.Select(i => i.Key);
 
+        /// <summary>
+        /// Path to the supplimental data folder dedicated to storing patcher specific settings/files
+        /// </summary>
+        public string ExtraSettingsDataPath { get; } = string.Empty;
+
         public SynthesisState(
-            IRunPipelineSettings settings,
+            RunSynthesisMutagenPatcher settings,
             LoadOrder<IModListing<TModGetter>> loadOrder,
             ILinkCache linkCache,
             TMod patchMod,
+            string extraDataPath,
             CancellationToken cancellation)
         {
             Settings = settings;
             LinkCache = linkCache;
             LoadOrder = loadOrder;
             PatchMod = patchMod;
+            ExtraSettingsDataPath = extraDataPath;
             Cancel = cancellation;
         }
 

@@ -84,8 +84,6 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -206,14 +204,6 @@
                         </ComboBox>
                     </TabItem>
                 </TabControl>
-                <TextBlock Grid.Row="4"
-                    Margin="0,4,0,0"
-                    FontSize="14"
-                    FontWeight="Bold"
-                    Text="Extra Input" />
-                <noggog:PathPicker Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
-                    Name="ExtraFolderPicker"
-                    Margin="0,2,0,0" />
             </Grid>
         </ScrollViewer>
     </Grid>

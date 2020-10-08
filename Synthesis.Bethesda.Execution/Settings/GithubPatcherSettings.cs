@@ -29,6 +29,5 @@ namespace Synthesis.Bethesda.Execution.Settings
         public string TargetTag = string.Empty;
         public string TargetCommit = string.Empty;
         public string TargetBranch = string.Empty;
-        public string ExtraDataPath = string.Empty;
     }
 }

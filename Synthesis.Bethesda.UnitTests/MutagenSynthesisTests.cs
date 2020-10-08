@@ -2,6 +2,7 @@ using Alphaleonis.Win32.Filesystem;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Oblivion;
 using Mutagen.Bethesda.Synthesis;
+using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using Noggog.Utility;
 using System;
@@ -42,7 +43,7 @@ namespace Synthesis.Bethesda.UnitTests
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
             SynthesisPipeline.Instance.Patch<IOblivionMod, IOblivionModGetter>(
-                new RunSynthesisPatcher()
+                new RunSynthesisMutagenPatcher()
                 {
                     DataFolderPath = dataFolder.Dir.Path,
                     GameRelease = Mutagen.Bethesda.GameRelease.Oblivion,
@@ -65,7 +66,7 @@ namespace Synthesis.Bethesda.UnitTests
             using var tmpFolder = Utility.GetTempFolder();
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
-            var settings = new RunSynthesisPatcher()
+            var settings = new RunSynthesisMutagenPatcher()
             {
                 DataFolderPath = dataFolder.Dir.Path,
                 GameRelease = Mutagen.Bethesda.GameRelease.Oblivion,
@@ -106,7 +107,7 @@ namespace Synthesis.Bethesda.UnitTests
             Assert.Throws<ArgumentException>(() =>
             {
                 SynthesisPipeline.Instance.Patch<IOblivionMod, IOblivionModGetter>(
-                   new RunSynthesisPatcher()
+                   new RunSynthesisMutagenPatcher()
                    {
                        DataFolderPath = dataFolder.Dir.Path,
                        GameRelease = Mutagen.Bethesda.GameRelease.SkyrimLE,
@@ -125,7 +126,7 @@ namespace Synthesis.Bethesda.UnitTests
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
             using var state = Mutagen.Bethesda.Synthesis.Internal.Utility.ToState<IOblivionMod, IOblivionModGetter>(
-                new RunSynthesisPatcher()
+                new RunSynthesisMutagenPatcher()
                 {
                     DataFolderPath = dataFolder.Dir.Path,
                     GameRelease = Mutagen.Bethesda.GameRelease.Oblivion,
@@ -145,7 +146,7 @@ namespace Synthesis.Bethesda.UnitTests
             var prevPath = new ModPath(Utility.OverrideModKey, Path.Combine(dataFolder.Dir.Path, Utility.OverrideModKey.FileName));
             var modPath = PatchModPath(dataFolder);
             using var state = Mutagen.Bethesda.Synthesis.Internal.Utility.ToState<IOblivionMod, IOblivionModGetter>(
-                new RunSynthesisPatcher()
+                new RunSynthesisMutagenPatcher()
                 {
                     DataFolderPath = dataFolder.Dir.Path,
                     GameRelease = Mutagen.Bethesda.GameRelease.Oblivion,
@@ -175,7 +176,7 @@ namespace Synthesis.Bethesda.UnitTests
             var prevPath = new ModPath(Utility.OverrideModKey, Path.Combine(dataFolder.Dir.Path, Utility.OverrideModKey.FileName));
             var modPath = PatchModPath(dataFolder);
             using var state = Mutagen.Bethesda.Synthesis.Internal.Utility.ToState<Mutagen.Bethesda.Skyrim.ISkyrimMod, Mutagen.Bethesda.Skyrim.ISkyrimModGetter>(
-                new RunSynthesisPatcher()
+                new RunSynthesisMutagenPatcher()
                 {
                     DataFolderPath = dataFolder.Dir.Path,
                     GameRelease = Mutagen.Bethesda.GameRelease.SkyrimLE,

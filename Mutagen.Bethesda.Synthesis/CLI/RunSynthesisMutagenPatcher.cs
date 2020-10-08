@@ -1,13 +1,12 @@
 using CommandLine;
-using Mutagen.Bethesda;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Synthesis.Bethesda
+namespace Mutagen.Bethesda.Synthesis.CLI
 {
     [Verb("run-patcher", HelpText = "Run the patcher")]
-    public class RunSynthesisPatcher : IRunPipelineSettings
+    public class RunSynthesisMutagenPatcher
     {
         [Option('s', "SourcePath", Required = false, HelpText = "Optional path pointing to the previous patcher result to build onto.")]
         public string? SourcePath { get; set; }
@@ -24,14 +23,18 @@ namespace Synthesis.Bethesda
         [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
         public string LoadOrderFilePath { get; set; } = string.Empty;
 
+        [Option('e', "ExtraSettingsPath", Required = true, HelpText = "Path to the extra settings folder dedicated for a patcher")]
+        public string? ExtraSettingsPath { get; set; }
+
         public override string ToString()
         {
-            return $"{nameof(RunSynthesisPatcher)} => \n"
+            return $"{nameof(RunSynthesisMutagenPatcher)} => \n"
                 + $"  {nameof(SourcePath)} => {this.SourcePath} \n"
                 + $"  {nameof(OutputPath)} => {this.OutputPath} \n"
                 + $"  {nameof(GameRelease)} => {this.GameRelease} \n"
                 + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
-                + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}";
+                + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
+                + $"  {nameof(ExtraSettingsPath)} => {this.ExtraSettingsPath}";
         }
     }
 }

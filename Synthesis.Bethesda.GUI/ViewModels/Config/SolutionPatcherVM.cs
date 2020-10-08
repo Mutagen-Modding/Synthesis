@@ -283,8 +283,7 @@ namespace Synthesis.Bethesda.GUI
                     nickname: DisplayName,
                     pathToSln: SolutionPath.TargetPath,
                     pathToExe: PathToExe,
-                    pathToProj: SelectedProjectPath.TargetPath,
-                    extraData: null));
+                    pathToProj: SelectedProjectPath.TargetPath));
         }
 
         public class SolutionPatcherConfigLogic

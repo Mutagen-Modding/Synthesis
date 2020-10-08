@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
 using Noggog.Utility;
+using Mutagen.Bethesda.Synthesis.CLI;
 
 namespace Synthesis.Bethesda.Execution
 {
@@ -29,10 +30,16 @@ namespace Synthesis.Bethesda.Execution
 
         public string PathToExecutable;
 
-        public CliPatcherRun(string nickname, string pathToExecutable)
+        public string? PathToExtraData;
+
+        public CliPatcherRun(
+            string nickname,
+            string pathToExecutable, 
+            string? pathToExtra)
         {
             Name = nickname;
             PathToExecutable = pathToExecutable;
+            PathToExtraData = pathToExtra;
         }
 
         public void Dispose()
@@ -46,7 +53,18 @@ namespace Synthesis.Bethesda.Execution
         public async Task Run(RunSynthesisPatcher settings, ILogger? log = null, CancellationToken? cancel = null)
         {
             if (cancel?.IsCancellationRequested ?? false) return;
-            var args = Parser.Default.FormatCommandLine(settings);
+
+            var internalSettings = new RunSynthesisMutagenPatcher()
+            {
+                DataFolderPath = settings.DataFolderPath,
+                ExtraSettingsPath = PathToExtraData,
+                GameRelease = settings.GameRelease,
+                LoadOrderFilePath = settings.LoadOrderFilePath,
+                OutputPath = settings.OutputPath,
+                SourcePath = settings.SourcePath
+            };
+
+            var args = Parser.Default.FormatCommandLine(internalSettings);
             try
             {
                 using ProcessWrapper process = ProcessWrapper.Start(

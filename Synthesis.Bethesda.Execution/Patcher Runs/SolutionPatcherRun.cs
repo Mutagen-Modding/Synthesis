@@ -31,16 +31,12 @@ namespace Synthesis.Bethesda.Execution
         private Subject<string> _error = new Subject<string>();
         public IObservable<string> Error => _error;
 
-        private string? _extraData;
-
         public SolutionPatcherRun(
             string nickname,
             string pathToSln, 
             string pathToProj,
-            string pathToExe, 
-            string? extraData)
+            string pathToExe)
         {
-            _extraData = extraData;
             PathToSolution = pathToSln;
             PathToProject = pathToProj;
             PathToExe = pathToExe;
@@ -49,7 +45,10 @@ namespace Synthesis.Bethesda.Execution
 
         public async Task Prep(GameRelease release, ILogger? log, CancellationToken? cancel = null)
         {
-            CliRun = new CliPatcherRun(nickname: Name, pathToExecutable: PathToExe);
+            CliRun = new CliPatcherRun(
+                nickname: Name,
+                pathToExecutable: PathToExe,
+                pathToExtra: Path.Combine(Path.GetDirectoryName(PathToProject), "Data"));
 
             var resp = await CompileWithDotnet(PathToProject, cancel ?? CancellationToken.None).ConfigureAwait(false);
             if (!resp.Succeeded)
@@ -63,19 +62,6 @@ namespace Synthesis.Bethesda.Execution
             if (CliRun == null)
             {
                 throw new SynthesisBuildFailure("Expected CLI Run object did not exist.");
-            }
-            if (_extraData != null && Directory.Exists(_extraData))
-            {
-                var target = new AbsolutePath(Path.Combine(Path.GetDirectoryName(PathToExe), Path.GetFileName(_extraData)));
-                log?.ReportOutput($"Copying extra data folder {_extraData} to {target}");
-                var p = new AbsolutePath(_extraData);
-                await p.CopyDirectoryToAsync(target);
-            }
-            else if (_extraData != null && File.Exists(_extraData))
-            {
-                var targetPath = Path.Combine(Path.GetDirectoryName(PathToExe), Path.GetFileName(_extraData));
-                log?.ReportOutput($"Copying extra data file {_extraData} to {targetPath}");
-                File.Copy(_extraData, targetPath);
             }
             using var outputSub = CliRun.Output.Subscribe(_output);
             using var errSub = CliRun.Error.Subscribe(_error);

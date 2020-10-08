@@ -31,8 +31,8 @@
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.7.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.7.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="3.7.0" />
-    <PackageReference Include="Mutagen.Bethesda.Core" Version="[0.18,0.19)" />
-    <PackageReference Include="Noggog.CSharpExt" Version="1.5.0" />
+    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.18.1.1-dev" />
+    <PackageReference Include="Noggog.CSharpExt" Version="1.5.3" />
   </ItemGroup>
 
   <ItemGroup>

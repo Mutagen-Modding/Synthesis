@@ -80,12 +80,6 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand OpenGitPageToVersionCommand { get; }
 
-        public PathPickerVM ExtraDataPath { get; } = new PathPickerVM()
-        {
-            ExistCheckOption = PathPickerVM.CheckOptions.IfPathNotEmpty,
-            PathType = PathPickerVM.PathTypeOptions.Either,
-        };
-
         public GitPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
         {
@@ -418,7 +412,6 @@ namespace Synthesis.Bethesda.GUI
                 MutagenVersioning = this.MutagenVersioning,
                 TargetTag = this.TargetTag,
                 TargetCommit = this.TargetCommit,
-                ExtraDataPath = this.ExtraDataPath.TargetPath,
             };
             CopyOverSave(ret);
             return ret;
@@ -438,7 +431,6 @@ namespace Synthesis.Bethesda.GUI
             this.MutagenVersioning = settings.MutagenVersioning;
             this.TargetTag = settings.TargetTag;
             this.TargetCommit = settings.TargetCommit;
-            this.ExtraDataPath.TargetPath = settings.ExtraDataPath;
         }
 
         public override PatcherRunVM ToRunner(PatchersRunVM parent)
@@ -454,8 +446,7 @@ namespace Synthesis.Bethesda.GUI
                     nickname: DisplayName,
                     pathToExe: ExePath,
                     pathToSln: RunnableData.SolutionPath,
-                    pathToProj: SelectedProjectPath.TargetPath,
-                    extraData: ExtraDataPath.TargetPath));
+                    pathToProj: SelectedProjectPath.TargetPath));
         }
 
         public static IObservable<ConfigurationStateVM<string>> GetRepoPathValidity(IObservable<string> repoPath)

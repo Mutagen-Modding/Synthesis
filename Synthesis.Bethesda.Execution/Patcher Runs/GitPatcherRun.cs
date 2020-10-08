@@ -21,7 +21,6 @@ namespace Synthesis.Bethesda.Execution
         private readonly string _pathToSln;
         private readonly string _pathToProj;
         private readonly string _pathToExe;
-        private readonly string? _extraData;
         public SolutionPatcherRun? SolutionRun { get; private set; }
 
         private Subject<string> _output = new Subject<string>();
@@ -36,8 +35,7 @@ namespace Synthesis.Bethesda.Execution
             string localDir, 
             string pathToSln, 
             string pathToProj, 
-            string pathToExe, 
-            string? extraData)
+            string pathToExe)
         {
             _nickname = nickname;
             _remote = remote;
@@ -45,7 +43,6 @@ namespace Synthesis.Bethesda.Execution
             _pathToProj = pathToProj;
             _pathToSln = pathToSln;
             _pathToExe = pathToExe;
-            _extraData = extraData;
             Name = $"{nickname} => {remote} => {Path.GetFileNameWithoutExtension(pathToProj)}";
         }
 
@@ -64,8 +61,7 @@ namespace Synthesis.Bethesda.Execution
                 _nickname,
                 pathToSln: Path.Combine(_localDir, _pathToSln), 
                 pathToProj: Path.Combine(_localDir, _pathToProj), 
-                pathToExe: Path.Combine(_localDir, _pathToExe),
-                extraData: _extraData);
+                pathToExe: Path.Combine(_localDir, _pathToExe));
             await SolutionRun.Prep(release, log, cancel).ConfigureAwait(false);
         }
 

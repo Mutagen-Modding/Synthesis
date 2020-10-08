@@ -107,10 +107,6 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.OpenGitPageToVersionCommand)
                     .BindToStrict(this, x => x.OpenGitToVersionButton.Command)
                     .DisposeWith(disposable);
-
-                this.WhenAnyValue(x => x.ViewModel!.ExtraDataPath)
-                    .BindToStrict(this, x => x.ExtraFolderPicker.PickerVM)
-                    .DisposeWith(disposable);
             });
         }
     }
