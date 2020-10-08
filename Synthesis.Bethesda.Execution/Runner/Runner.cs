@@ -69,7 +69,7 @@ namespace Synthesis.Bethesda.Execution.Runner
 
                 // Copy plugins text to working directory, trimming synthesis and anything after
                 var loadOrderList = loadOrder.ToList();
-                var synthIndex = loadOrderList.IndexOf(Constants.SynthesisModKey, (listing, key) => listing.ModKey == key);
+                var synthIndex = loadOrderList.IndexOf(Synthesis.Bethesda.Constants.SynthesisModKey, (listing, key) => listing.ModKey == key);
                 if (synthIndex != -1)
                 {
                     loadOrderList.RemoveToCount(synthIndex);

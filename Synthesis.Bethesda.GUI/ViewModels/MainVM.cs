@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Threading.Tasks;
 using Noggog;
 using Mutagen.Bethesda;
+using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -90,21 +91,22 @@ namespace Synthesis.Bethesda.GUI
             MutagenVersion = typeof(FormKey).Assembly.GetName().Version!.ToString().TrimEnd(".0").TrimEnd(".0");
         }
 
-        public void Load(SynthesisGuiSettings? settings)
+        public void Load(SynthesisGuiSettings? guiSettings, PipelineSettings? pipeSettings)
         {
-            if (settings == null) return;
-            Settings = settings;
-            Ide = settings.Ide;
-            Configuration.Load(settings);
+            if (guiSettings != null)
+            {
+                Settings = guiSettings;
+                Ide = guiSettings.Ide;
+            }
+            Configuration.Load(Settings, pipeSettings ?? new PipelineSettings());
         }
 
-        public SynthesisGuiSettings Save()
+        public void Save(out SynthesisGuiSettings guiSettings, out PipelineSettings pipeSettings)
         {
-            var ret = Configuration.Save();
-            ret.Ide = this.Ide;
-            ret.MainRepositoryFolder = Settings.MainRepositoryFolder;
-            ret.OpenIdeAfterCreating = Settings.OpenIdeAfterCreating;
-            return ret;
+            Configuration.Save(out guiSettings, out pipeSettings);
+            guiSettings.Ide = this.Ide;
+            guiSettings.MainRepositoryFolder = Settings.MainRepositoryFolder;
+            guiSettings.OpenIdeAfterCreating = Settings.OpenIdeAfterCreating;
         }
 
         public void Init()
