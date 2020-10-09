@@ -82,7 +82,11 @@ namespace Mutagen.Bethesda.Synthesis
                     return 0;
                 }
             }
-            return await Parser.Default.ParseArguments(args, typeof(RunSynthesisMutagenPatcher))
+            var parser = new Parser((s) =>
+            {
+                s.IgnoreUnknownArguments = true;
+            });
+            return await parser.ParseArguments(args, typeof(RunSynthesisMutagenPatcher))
                 .MapResult(
                     async (RunSynthesisMutagenPatcher settings) =>
                     {
@@ -153,7 +157,11 @@ namespace Mutagen.Bethesda.Synthesis
                     return 0;
                 }
             }
-            return Parser.Default.ParseArguments(args, typeof(RunSynthesisMutagenPatcher))
+            var parser = new Parser((s) =>
+            {
+                s.IgnoreUnknownArguments = true;
+            });
+            return parser.ParseArguments(args, typeof(RunSynthesisMutagenPatcher))
                 .MapResult(
                     (RunSynthesisMutagenPatcher settings) =>
                     {
