@@ -388,8 +388,8 @@ namespace Synthesis.Bethesda.GUI
                 execute: () => Utility.OpenWebsite(RemoteRepoPath));
 
             OpenGitPageToVersionCommand = ReactiveCommand.Create(
-                canExecute: runnableState
-                    .Select(x => x.RunnableState.Succeeded),
+                canExecute: this.WhenAnyValue(x => x.RunnableData)
+                    .Select(x => x != null),
                 execute: () =>
                 {
                     try
