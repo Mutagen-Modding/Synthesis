@@ -138,7 +138,7 @@ namespace Synthesis.Bethesda.GUI
                         if (!path.IsHaltingError && path.RunnableState.Failed) return path.BubbleError<DriverRepoInfo>();
                         using var timing = Logger.Time("Cloning driver repository");
                         // Clone and/or double check the clone is correct
-                        var state = await GitPatcherRun.PrepRepo(path.ToGetResponse(), LocalDriverRepoDirectory, cancel);
+                        var state = await GitPatcherRun.CheckOrCloneRepo(path.ToGetResponse(), LocalDriverRepoDirectory, cancel);
                         if (state.Failed) return new ConfigurationStateVM<DriverRepoInfo>(default!, (ErrorResponse)state);
                         cancel.ThrowIfCancellationRequested();
 
@@ -186,7 +186,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         if (path.RunnableState.Failed) return path.RunnableState;
                         using var timing = Logger.ForContext("RemotePath", path.Item).Time("runner repo");
-                        return await GitPatcherRun.PrepRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, cancel);
+                        return await GitPatcherRun.CheckOrCloneRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, cancel);
                     })
                 .Replay(1)
                 .RefCount();

@@ -47,7 +47,7 @@ namespace Synthesis.Bethesda.Execution
         public async Task Prep(GameRelease release, CancellationToken? cancel = null)
         {
             _output.OnNext("Preparing repository");
-            var prepResult = await PrepRepo(GetResponse<string>.Succeed(_remote), _localDir, cancel ?? CancellationToken.None);
+            var prepResult = await CheckOrCloneRepo(GetResponse<string>.Succeed(_remote), _localDir, cancel ?? CancellationToken.None);
             if (prepResult.Failed)
             {
                 throw new SynthesisBuildFailure(prepResult.Reason);
@@ -101,7 +101,7 @@ namespace Synthesis.Bethesda.Execution
             return false;
         }
 
-        public static async Task<GetResponse<(string Remote, string Local)>> PrepRepo(GetResponse<string> remote, string localDir, CancellationToken cancel)
+        public static async Task<GetResponse<(string Remote, string Local)>> CheckOrCloneRepo(GetResponse<string> remote, string localDir, CancellationToken cancel)
         {
             try
             {
