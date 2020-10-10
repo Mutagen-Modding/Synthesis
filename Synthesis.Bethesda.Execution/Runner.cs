@@ -189,6 +189,10 @@ namespace Synthesis.Bethesda.Execution
                     reporter.ReportRunSuccessful(patcher.Key, patcher.Run, nextPath);
                     prevPath = nextPath;
                 }
+                if (File.Exists(outputPath))
+                {
+                    File.Delete(outputPath);
+                }
                 File.Copy(prevPath!.Path, outputPath);
                 return true;
             }
