@@ -2,6 +2,8 @@ using LibGit2Sharp;
 using Mutagen.Bethesda;
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Reporters;
+using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.IO;
 using System.Linq;
@@ -15,10 +17,8 @@ namespace Synthesis.Bethesda.Execution
     public class GitPatcherRun : IPatcherRun
     {
         public string Name { get; }
-        private readonly string _nickname;
-        private readonly string _remote;
         private readonly string _localDir;
-        private readonly string _projSubpath;
+        private GithubPatcherSettings _settings;
         public SolutionPatcherRun? SolutionRun { get; private set; }
 
         private Subject<string> _output = new Subject<string>();
@@ -28,16 +28,12 @@ namespace Synthesis.Bethesda.Execution
         public IObservable<string> Error => _error;
 
         public GitPatcherRun(
-            string nickname, 
-            string remote, 
-            string localDir,
-            string projSubpath)
+            GithubPatcherSettings settings,
+            string localDir)
         {
-            _nickname = nickname;
-            _remote = remote;
             _localDir = localDir;
-            _projSubpath = projSubpath;
-            Name = $"{nickname.Decorate(x => $"{x} => ")}{remote} => {Path.GetFileNameWithoutExtension(projSubpath)}";
+            _settings = settings;
+            Name = $"{settings.Nickname.Decorate(x => $"{x} => ")}{settings.RemoteRepoPath} => {Path.GetFileNameWithoutExtension(settings.SelectedProjectSubpath)}";
         }
 
         public void Dispose()
@@ -46,26 +42,26 @@ namespace Synthesis.Bethesda.Execution
 
         public async Task Prep(GameRelease release, CancellationToken? cancel = null)
         {
-            _output.OnNext("Preparing repository");
-            var prepResult = await CheckOrCloneRepo(GetResponse<string>.Succeed(_remote), _localDir, (x) => _output.OnNext(x), cancel ?? CancellationToken.None);
-            if (prepResult.Failed)
+            _output.OnNext("Cloning repository");
+            var cloneResult = await CheckOrCloneRepo(GetResponse<string>.Succeed(_settings.RemoteRepoPath), _localDir, (x) => _output.OnNext(x), cancel ?? CancellationToken.None);
+            if (cloneResult.Failed)
             {
-                throw new SynthesisBuildFailure(prepResult.Reason);
+                throw new SynthesisBuildFailure(cloneResult.Reason);
             }
 
             throw new NotImplementedException("Need to migrate in proper git checkouts");
 
             _output.OnNext($"Locating path to solution based on local dir {_localDir}");
             var pathToSln = GetPathToSolution(_localDir);
-            _output.OnNext($"Locating path to project based on {pathToSln} AND {_projSubpath}");
-            var foundProjSubPath = SolutionPatcherRun.AvailableProject(pathToSln, _projSubpath);
+            _output.OnNext($"Locating path to project based on {pathToSln} AND {_settings.SelectedProjectSubpath}");
+            var foundProjSubPath = SolutionPatcherRun.AvailableProject(pathToSln, _settings.SelectedProjectSubpath);
             if (foundProjSubPath == null)
             {
                 throw new SynthesisBuildFailure("Could not locate project sub path");
             }
             var pathToProj = Path.Combine(_localDir, foundProjSubPath);
             SolutionRun = new SolutionPatcherRun(
-                _nickname,
+                _settings.Nickname,
                 pathToSln: Path.Combine(_localDir, pathToSln), 
                 pathToProj: pathToProj,
                 pathToExe: null);

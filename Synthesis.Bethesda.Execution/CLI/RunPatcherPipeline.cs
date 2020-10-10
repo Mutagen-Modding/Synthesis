@@ -86,10 +86,8 @@ namespace Synthesis.Bethesda.Execution.CLI
                                 pathToProj: Path.Combine(Path.GetDirectoryName(sln.SolutionPath)!, sln.ProjectSubpath),
                                 pathToExe: null),
                             GithubPatcherSettings git => new GitPatcherRun(
-                                nickname: git.Nickname,
-                                remote: git.RemoteRepoPath,
-                                localDir: GitPatcherRun.RunnerRepoDirectory(profile.ID, git.ID),
-                                projSubpath: git.SelectedProjectSubpath),
+                                settings: git,
+                                localDir: GitPatcherRun.RunnerRepoDirectory(profile.ID, git.ID)),
                             _ => throw new NotImplementedException(),
                         };
                     })
