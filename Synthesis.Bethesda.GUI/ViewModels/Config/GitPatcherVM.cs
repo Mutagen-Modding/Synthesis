@@ -250,6 +250,7 @@ namespace Synthesis.Bethesda.GUI
             var runnableState = checkoutInput
                 .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                 .DistinctUntilChanged()
+                .Do(item => Logger.Information($"Checking out {CheckoutStateToString(item)}"))
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .SelectReplaceWithIntermediate(
                     new ConfigurationStateVM<RunnerRepoInfo>(default!)
@@ -337,7 +338,16 @@ namespace Synthesis.Bethesda.GUI
                                 return GetResponse<RunnerRepoInfo>.Fail(ex);
                             }
                         }
-                        return new ConfigurationStateVM<RunnerRepoInfo>(await Execute());
+                        var ret = new ConfigurationStateVM<RunnerRepoInfo>(await Execute());
+                        if (ret.RunnableState.Succeeded)
+                        {
+                            Logger.Information($"Finished checking out {CheckoutStateToString(item)}");
+                        }
+                        else
+                        {
+                            Logger.Information($"Failed checking out {CheckoutStateToString(item)}");
+                        }
+                        return ret;
                     })
                 .Replay(1)
                 .RefCount();
@@ -544,6 +554,36 @@ namespace Synthesis.Bethesda.GUI
                 Target = target;
                 CommitMessage = commitMsg;
                 CommitDate = commitDate;
+            }
+        }
+
+        private static string CheckoutStateToString((
+            string MasterBranchName,
+            PatcherVersioningEnum Versioning,
+            ErrorResponse RunnerState,
+            GetResponse<string> Project,
+            string Tag,
+            string Commit,
+            string Branch) item)
+        {
+            if (item.RunnerState.Failed
+                || item.Project.Failed)
+            {
+                return "Failed checkout state";
+            }
+
+            switch (item.Versioning)
+            {
+                case PatcherVersioningEnum.Master:
+                    return $"main branch {item.MasterBranchName}";
+                case PatcherVersioningEnum.Tag:
+                    return $"tag {item.Tag}";
+                case PatcherVersioningEnum.Branch:
+                    return $"branch {item.Branch}";
+                case PatcherVersioningEnum.Commit:
+                    return $"master {item.Commit}";
+                default:
+                    throw new NotImplementedException();
             }
         }
     }
