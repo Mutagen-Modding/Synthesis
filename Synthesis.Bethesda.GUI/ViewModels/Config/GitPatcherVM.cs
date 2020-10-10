@@ -88,7 +88,7 @@ namespace Synthesis.Bethesda.GUI
             CopyInSettings(settings);
 
             LocalDriverRepoDirectory = Path.Combine(Profile.ProfileDirectory, "Git", ID, "Driver");
-            LocalRunnerRepoDirectory = Path.Combine(Profile.ProfileDirectory, "Git", ID, "Runner");
+            LocalRunnerRepoDirectory = GitPatcherRun.RunnerRepoDirectory(Profile.ID, ID);
 
             _DisplayName = this.WhenAnyValue(
                 x => x.Nickname,
@@ -163,7 +163,7 @@ namespace Synthesis.Bethesda.GUI
                         }
 
                         // Try to locate a solution to drive from
-                        var slnPath = GetPathToSolution(LocalDriverRepoDirectory);
+                        var slnPath = GitPatcherRun.GetPathToSolution(LocalDriverRepoDirectory);
                         if (slnPath == null) return new ConfigurationStateVM<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate solution to run."));
                         var availableProjs = Utility.AvailableProjectSubpaths(slnPath).ToList();
                         return new ConfigurationStateVM<DriverRepoInfo>(
@@ -311,18 +311,12 @@ namespace Synthesis.Bethesda.GUI
                                 var commit = repo.Lookup(objId, ObjectType.Commit) as Commit;
                                 if (commit == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit with given sha");
 
-                                var slnPath = GetPathToSolution(LocalRunnerRepoDirectory);
+                                var slnPath = GitPatcherRun.GetPathToSolution(LocalRunnerRepoDirectory);
                                 if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
 
-                                var projName = Path.GetFileName(item.proj.Value);
+                                var foundProjSubPath = SolutionPatcherRun.AvailableProject(slnPath, item.proj.Value);
 
-                                var availableProjs = SolutionPatcherConfigLogic.AvailableProject(slnPath).ToList();
-
-                                var foundProjSubPath = availableProjs
-                                    .Where(av => Path.GetFileName(av).Equals(projName))
-                                    .FirstOrDefault();
-
-                                if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {projName}.");
+                                if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {item.proj.Value}.");
 
                                 repo.Reset(ResetMode.Hard, commit, new CheckoutOptions());
                                 return GetResponse<RunnerRepoInfo>.Succeed(
@@ -361,7 +355,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (x.RunnableState.Failed) return string.Empty;
                     using var timing = Logger.Time($"locate path to exe from {x.Item.ProjPath}");
-                    var exePath = await SolutionPatcherConfigLogic.PathToExe(x.Item.ProjPath, cancel);
+                    var exePath = await SolutionPatcherRun.GetPathToExe(x.Item.ProjPath, cancel);
                     if (exePath.Failed) return string.Empty;
                     return exePath.Value;
                 })
@@ -507,11 +501,6 @@ namespace Synthesis.Bethesda.GUI
             {
                 Log.Logger.Error(ex, $"Failure deleting git repo: {this.LocalRunnerRepoDirectory}");
             }
-        }
-
-        private static string GetPathToSolution(string pathToRepo)
-        {
-            return Directory.EnumerateFiles(pathToRepo, "*.sln").FirstOrDefault();
         }
 
         private class DriverRepoInfo

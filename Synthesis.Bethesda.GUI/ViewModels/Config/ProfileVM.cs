@@ -61,8 +61,8 @@ namespace Synthesis.Bethesda.GUI
             AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(this)));
             AddSnippetPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new CodeSnippetPatcherVM(this)));
 
-            ProfileDirectory = Path.Combine(Config.WorkingDirectory, ID);
-            WorkingDirectory = Path.Combine(Config.WorkingDirectory, ID, "Workspace");
+            ProfileDirectory = Path.Combine(Execution.Constants.WorkingDirectory, ID);
+            WorkingDirectory = Path.Combine(Execution.Constants.WorkingDirectory, ID, "Workspace");
 
             var dataFolderResult = this.WhenAnyValue(x => x.Release)
                 .ObserveOn(RxApp.TaskpoolScheduler)

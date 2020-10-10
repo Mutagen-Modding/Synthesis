@@ -6,7 +6,7 @@ namespace Synthesis.Bethesda.Execution
 {
     public interface ILogger
     {
-        void ReportOutput(string str);
-        void ReportError(string str);
+        void Write(string str);
+        void WriteError(string str);
     }
 }

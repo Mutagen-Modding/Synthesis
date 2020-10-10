@@ -57,11 +57,11 @@ namespace Synthesis.Bethesda.Execution.Runner
             _patcherComplete.Add((patcher, outputPath));
         }
 
-        public void ReportOutput(string str)
+        public void Write(string str)
         {
         }
 
-        public void ReportError(string str)
+        public void WriteError(string str)
         {
         }
     }

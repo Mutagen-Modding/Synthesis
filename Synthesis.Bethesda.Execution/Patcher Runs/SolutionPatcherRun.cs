@@ -1,3 +1,5 @@
+using Buildalyzer;
+using Buildalyzer.Environment;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
@@ -7,8 +9,10 @@ using Noggog;
 using Noggog.Utility;
 using Synthesis.Bethesda.Execution.Patchers;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -22,7 +26,7 @@ namespace Synthesis.Bethesda.Execution
         public string Name { get; }
         public string PathToSolution { get; }
         public string PathToProject { get; }
-        public string PathToExe { get; }
+        public string? PathToExe { get; }
         public CliPatcherRun? CliRun { get; private set; }
 
         private Subject<string> _output = new Subject<string>();
@@ -35,26 +39,41 @@ namespace Synthesis.Bethesda.Execution
             string nickname,
             string pathToSln, 
             string pathToProj,
-            string pathToExe)
+            string? pathToExe)
         {
             PathToSolution = pathToSln;
             PathToProject = pathToProj;
             PathToExe = pathToExe;
-            Name = $"{nickname} => {Path.GetFileNameWithoutExtension(pathToSln)} => {Path.GetFileNameWithoutExtension(pathToProj)}";
+            Name = $"{nickname} => {Path.GetFileNameWithoutExtension(pathToSln)}/{Path.GetFileNameWithoutExtension(pathToProj)}";
         }
 
         public async Task Prep(GameRelease release, ILogger? log, CancellationToken? cancel = null)
         {
+            var pathToExe = PathToExe;
+            if (pathToExe == null)
+            {
+                log?.Write($"Locating path to exe based on proj path {PathToProject}");
+                var pathToExeGet = await GetPathToExe(PathToProject, cancel ?? CancellationToken.None);
+                if (pathToExeGet.Failed)
+                {
+                    throw pathToExeGet.Exception ?? throw new ArgumentException("Could not find path to exe");
+                }
+                pathToExe = pathToExeGet.Value;
+                log?.Write($"Located path to exe: {pathToExe}");
+            }
+
             CliRun = new CliPatcherRun(
                 nickname: Name,
-                pathToExecutable: PathToExe,
+                pathToExecutable: pathToExe,
                 pathToExtra: Path.Combine(Path.GetDirectoryName(PathToProject), "Data"));
 
+            log?.Write($"Compiling");
             var resp = await CompileWithDotnet(PathToProject, cancel ?? CancellationToken.None).ConfigureAwait(false);
             if (!resp.Succeeded)
             {
                 throw new SynthesisBuildFailure(resp.Reason);
             }
+            log?.Write($"Compiled");
         }
 
         public async Task Run(RunSynthesisPatcher settings, ILogger? log, CancellationToken? cancel = null)
@@ -133,6 +152,66 @@ namespace Synthesis.Bethesda.Execution
             var result = await process.Start().ConfigureAwait(false);
             if (result == 0) return ErrorResponse.Success;
             return ErrorResponse.Fail(reason: firstError ?? "Unknown Error");
+        }
+
+        public static async Task<GetResponse<string>> GetPathToExe(string projectPath, CancellationToken cancel)
+        {
+            try
+            {
+                cancel.ThrowIfCancellationRequested();
+                if (!File.Exists(projectPath))
+                {
+                    return GetResponse<string>.Fail("Project path does not exist.");
+                }
+
+                // Right now this is slow as it cleans the build results unnecessarily.  Need to look into that
+                var manager = new AnalyzerManager();
+                cancel.ThrowIfCancellationRequested();
+                var proj = manager.GetProject(projectPath);
+                cancel.ThrowIfCancellationRequested();
+                var opt = new EnvironmentOptions();
+                opt.TargetsToBuild.SetTo("Build");
+                var build = proj.Build();
+                cancel.ThrowIfCancellationRequested();
+                var results = build.Results.ToArray();
+                if (results.Length != 1)
+                {
+                    return GetResponse<string>.Fail("Unsupported number of build results.");
+                }
+                var result = results[0];
+                if (!result.Properties.TryGetValue("RunCommand", out var cmd))
+                {
+                    return GetResponse<string>.Fail("Could not find executable to be run");
+                }
+
+                return GetResponse<string>.Succeed(cmd);
+            }
+            catch (Exception ex)
+            {
+                return GetResponse<string>.Fail(ex);
+            }
+        }
+
+        public static IEnumerable<string> AvailableProjects(string solutionPath)
+        {
+            if (!File.Exists(solutionPath)) return Enumerable.Empty<string>();
+            try
+            {
+                var manager = new AnalyzerManager(solutionPath);
+                return manager.Projects.Keys.Select(projPath => projPath.TrimStart($"{Path.GetDirectoryName(solutionPath)}\\"!));
+            }
+            catch (Exception)
+            {
+                return Enumerable.Empty<string>();
+            }
+        }
+
+        public static string? AvailableProject(string solutionPath, string projSubpath)
+        {
+            var projName = Path.GetFileName(projSubpath);
+            return AvailableProjects(solutionPath)
+                .Where(av => Path.GetFileName(av).Equals(projName))
+                .FirstOrDefault();
         }
     }
 }

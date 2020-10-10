@@ -80,7 +80,7 @@ namespace Synthesis.Bethesda.Execution
                 {
                     throw new CliUnsuccessfulRunException(
                         result,
-                        $"Process exited in failure: {process.StartInfo.FileName} {process.StartInfo.Arguments}");
+                        $"Process exited in failure: {process.StartInfo.FileName} {internalSettings}");
                 }
             }
             catch (Win32Exception ex)

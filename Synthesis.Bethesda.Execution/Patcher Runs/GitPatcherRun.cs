@@ -18,9 +18,7 @@ namespace Synthesis.Bethesda.Execution
         private readonly string _nickname;
         private readonly string _remote;
         private readonly string _localDir;
-        private readonly string _pathToSln;
-        private readonly string _pathToProj;
-        private readonly string _pathToExe;
+        private readonly string _projSubpath;
         public SolutionPatcherRun? SolutionRun { get; private set; }
 
         private Subject<string> _output = new Subject<string>();
@@ -32,18 +30,14 @@ namespace Synthesis.Bethesda.Execution
         public GitPatcherRun(
             string nickname, 
             string remote, 
-            string localDir, 
-            string pathToSln, 
-            string pathToProj, 
-            string pathToExe)
+            string localDir,
+            string projSubpath)
         {
             _nickname = nickname;
             _remote = remote;
             _localDir = localDir;
-            _pathToProj = pathToProj;
-            _pathToSln = pathToSln;
-            _pathToExe = pathToExe;
-            Name = $"{nickname} => {remote} => {Path.GetFileNameWithoutExtension(pathToProj)}";
+            _projSubpath = projSubpath;
+            Name = $"{nickname} => {remote} => {Path.GetFileNameWithoutExtension(projSubpath)}";
         }
 
         public void Dispose()
@@ -52,16 +46,26 @@ namespace Synthesis.Bethesda.Execution
 
         public async Task Prep(GameRelease release, ILogger? log, CancellationToken? cancel = null)
         {
+            log?.Write("Preparing repository");
             var prepResult = await PrepRepo(GetResponse<string>.Succeed(_remote), _localDir, cancel ?? CancellationToken.None);
             if (prepResult.Failed)
             {
                 throw new SynthesisBuildFailure(prepResult.Reason);
             }
+            log?.Write($"Locating path to solution based on local dir {_localDir}");
+            var pathToSln = GetPathToSolution(_localDir);
+            log?.Write($"Locating path to project based on {pathToSln} AND {_projSubpath}");
+            var foundProjSubPath = SolutionPatcherRun.AvailableProject(pathToSln, _projSubpath);
+            if (foundProjSubPath == null)
+            {
+                throw new SynthesisBuildFailure("Could not locate project sub path");
+            }
+            var pathToProj = Path.Combine(_localDir, foundProjSubPath);
             SolutionRun = new SolutionPatcherRun(
                 _nickname,
-                pathToSln: Path.Combine(_localDir, _pathToSln), 
-                pathToProj: Path.Combine(_localDir, _pathToProj), 
-                pathToExe: Path.Combine(_localDir, _pathToExe));
+                pathToSln: Path.Combine(_localDir, pathToSln), 
+                pathToProj: pathToProj,
+                pathToExe: null);
             await SolutionRun.Prep(release, log, cancel).ConfigureAwait(false);
         }
 
@@ -109,6 +113,16 @@ namespace Synthesis.Bethesda.Execution
             {
                 return GetResponse<(string Remote, string Local)>.Fail((remote.Value, string.Empty), ex);
             }
+        }
+
+        public static string GetPathToSolution(string pathToRepo)
+        {
+            return Directory.EnumerateFiles(pathToRepo, "*.sln").FirstOrDefault();
+        }
+
+        public static string RunnerRepoDirectory(string profileID, string githubID)
+        {
+            return Path.Combine(Execution.Constants.WorkingDirectory, profileID, "Git", githubID, "Runner");
         }
     }
 }

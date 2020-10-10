@@ -74,8 +74,8 @@ namespace Synthesis.Bethesda.Execution.Runner
                 {
                     loadOrderList.RemoveToCount(synthIndex);
                 }
-                reporter.ReportOutput("Load Order:");
-                loadOrderList.ForEach(i => reporter.ReportOutput($"   {i}"));
+                reporter.Write("Load Order:");
+                loadOrderList.ForEach(i => reporter.Write($"   {i}"));
                 string loadOrderPath = Path.Combine(workingDirectory, "Plugins.txt");
                 var writeLoadOrder = Task.Run(() =>
                 {
@@ -99,9 +99,9 @@ namespace Synthesis.Bethesda.Execution.Runner
                     try
                     {
                         using var outputSub = patcher.Run.Output
-                            .Subscribe(reporter.ReportOutput);
+                            .Subscribe(reporter.Write);
                         using var errorSub = patcher.Run.Error
-                            .Subscribe(reporter.ReportError);
+                            .Subscribe(reporter.WriteError);
                         try
                         {
                             await patcher.Run.Prep(release, reporter, cancellation);
@@ -143,9 +143,9 @@ namespace Synthesis.Bethesda.Execution.Runner
                     try
                     {
                         using var outputSub = patcher.Run.Output
-                            .Subscribe(reporter.ReportOutput);
+                            .Subscribe(reporter.Write);
                         using var errorSub = patcher.Run.Error
-                            .Subscribe(reporter.ReportError);
+                            .Subscribe(reporter.WriteError);
 
                         try
                         {

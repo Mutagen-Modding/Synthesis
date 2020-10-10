@@ -24,12 +24,12 @@ namespace Synthesis.Bethesda.Execution.Runner
         public IObservable<string> Output => _output;
         public IObservable<string> Error => _error;
 
-        public void ReportError(string str)
+        public void WriteError(string str)
         {
             _error.OnNext(str);
         }
 
-        public void ReportOutput(string str)
+        public void Write(string str)
         {
             _output.OnNext(str);
         }

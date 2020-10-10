@@ -47,8 +47,6 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<PatchersRunVM?> _CurrentRun;
         public PatchersRunVM? CurrentRun => _CurrentRun.Value;
 
-        public string WorkingDirectory { get; } = Path.Combine(Path.GetTempPath(), "Synthesis");
-
         [Reactive]
         public bool ShowHelp { get; set; }
 

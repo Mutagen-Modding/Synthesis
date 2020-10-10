@@ -13,11 +13,11 @@ namespace Synthesis.Bethesda.Execution.Runner
         {
         }
 
-        public void ReportError(string str)
+        public void WriteError(string str)
         {
         }
 
-        public void ReportOutput(string str)
+        public void Write(string str)
         {
         }
 

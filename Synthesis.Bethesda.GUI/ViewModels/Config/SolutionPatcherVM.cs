@@ -15,11 +15,8 @@ using System.Linq;
 using DynamicData.Binding;
 using Synthesis.Bethesda.Execution;
 using System.Windows.Input;
-using System.Threading.Tasks;
 using System.Diagnostics;
-using Buildalyzer.Environment;
 using System.Reactive;
-using System.Threading;
 using Newtonsoft.Json;
 using Synthesis.Bethesda.DTO;
 
@@ -116,7 +113,7 @@ namespace Synthesis.Bethesda.GUI
                         GetResponse<string> exe;
                         using (Log.Logger.Time($"locate path to exe from {projectPath}"))
                         {
-                            exe = await SolutionPatcherConfigLogic.PathToExe(projectPath, cancel);
+                            exe = await SolutionPatcherRun.GetPathToExe(projectPath, cancel);
                             if (exe.Failed) return new ConfigurationStateVM<string>(exe.BubbleFailure<string>());
                         }
 
@@ -292,24 +289,10 @@ namespace Synthesis.Bethesda.GUI
             {
                 return solutionPath
                     .ObserveOn(RxApp.TaskpoolScheduler)
-                    .Select(AvailableProject)
+                    .Select(SolutionPatcherRun.AvailableProjects)
                     .Select(x => x.AsObservableChangeSet())
                     .Switch()
                     .RefCount();
-            }
-
-            public static IEnumerable<string> AvailableProject(string solutionPath)
-            {
-                if (!File.Exists(solutionPath)) return Enumerable.Empty<string>();
-                try
-                {
-                    var manager = new AnalyzerManager(solutionPath);
-                    return manager.Projects.Keys.Select(projPath => projPath.TrimStart($"{Path.GetDirectoryName(solutionPath)}\\"!));
-                }
-                catch (Exception)
-                {
-                    return Enumerable.Empty<string>();
-                }
             }
 
             public static IObservable<string> ProjectPath(IObservable<string> solutionPath, IObservable<string> projectSubpath)
@@ -333,44 +316,6 @@ namespace Synthesis.Bethesda.GUI
                         })
                     .Replay(1)
                     .RefCount();
-            }
-
-            public static async Task<GetResponse<string>> PathToExe(string projectPath, CancellationToken cancel)
-            {
-                try
-                {
-                    cancel.ThrowIfCancellationRequested();
-                    if (!File.Exists(projectPath))
-                    {
-                        return GetResponse<string>.Fail("Project path does not exist.");
-                    }
-
-                    // Right now this is slow as it cleans the build results unnecessarily.  Need to look into that
-                    var manager = new AnalyzerManager();
-                    cancel.ThrowIfCancellationRequested();
-                    var proj = manager.GetProject(projectPath);
-                    cancel.ThrowIfCancellationRequested();
-                    var opt = new EnvironmentOptions();
-                    opt.TargetsToBuild.SetTo("Build");
-                    var build = proj.Build();
-                    cancel.ThrowIfCancellationRequested();
-                    var results = build.Results.ToArray();
-                    if (results.Length != 1)
-                    {
-                        return GetResponse<string>.Fail("Unsupported number of build results.");
-                    }
-                    var result = results[0];
-                    if (!result.Properties.TryGetValue("RunCommand", out var cmd))
-                    {
-                        return GetResponse<string>.Fail("Could not find executable to be run");
-                    }
-
-                    return GetResponse<string>.Succeed(cmd);
-                }
-                catch (Exception ex)
-                {
-                    return GetResponse<string>.Fail(ex);
-                }
             }
         }
     }
