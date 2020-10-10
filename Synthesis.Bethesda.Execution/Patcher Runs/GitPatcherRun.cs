@@ -52,6 +52,9 @@ namespace Synthesis.Bethesda.Execution
             {
                 throw new SynthesisBuildFailure(prepResult.Reason);
             }
+
+            throw new NotImplementedException("Need to migrate in proper git checkouts");
+
             _output.OnNext($"Locating path to solution based on local dir {_localDir}");
             var pathToSln = GetPathToSolution(_localDir);
             _output.OnNext($"Locating path to project based on {pathToSln} AND {_projSubpath}");
