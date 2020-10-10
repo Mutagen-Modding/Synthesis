@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Synthesis.Bethesda.Execution.Runner
+namespace Synthesis.Bethesda.Execution.Reporters
 {
     public class ThrowReporter : IRunReporter
     {
@@ -13,11 +13,11 @@ namespace Synthesis.Bethesda.Execution.Runner
         {
         }
 
-        public void WriteError(string str)
+        public void WriteError(IPatcherRun? patcher, string str)
         {
         }
 
-        public void Write(string str)
+        public void Write(IPatcherRun? patcher, string str)
         {
         }
 

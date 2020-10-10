@@ -2,6 +2,7 @@ using CommandLine;
 using Mutagen.Bethesda.Synthesis;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.CLI;
+using Synthesis.Bethesda.Execution.Reporters;
 using System;
 using System.Threading.Tasks;
 using Wabbajack.Common;
@@ -23,7 +24,7 @@ namespace Synthesis.Bethesda.CLI
                             {
                                 settings.DataFolderPath = settings.GameRelease.ToWjGame().MetaData().GameLocation().ToString();
                             }
-                            await RunPatcherPipeline.Run(settings, new Logger());
+                            await RunPatcherPipeline.Run(settings, new ConsoleReporter());
                         }
                         catch (Exception ex)
                         {

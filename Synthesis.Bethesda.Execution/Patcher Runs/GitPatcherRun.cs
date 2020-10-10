@@ -37,24 +37,24 @@ namespace Synthesis.Bethesda.Execution
             _remote = remote;
             _localDir = localDir;
             _projSubpath = projSubpath;
-            Name = $"{nickname} => {remote} => {Path.GetFileNameWithoutExtension(projSubpath)}";
+            Name = $"{nickname.Decorate(x => $"{x} => ")}{remote} => {Path.GetFileNameWithoutExtension(projSubpath)}";
         }
 
         public void Dispose()
         {
         }
 
-        public async Task Prep(GameRelease release, ILogger? log, CancellationToken? cancel = null)
+        public async Task Prep(GameRelease release, CancellationToken? cancel = null)
         {
-            log?.Write("Preparing repository");
+            _output.OnNext("Preparing repository");
             var prepResult = await PrepRepo(GetResponse<string>.Succeed(_remote), _localDir, cancel ?? CancellationToken.None);
             if (prepResult.Failed)
             {
                 throw new SynthesisBuildFailure(prepResult.Reason);
             }
-            log?.Write($"Locating path to solution based on local dir {_localDir}");
+            _output.OnNext($"Locating path to solution based on local dir {_localDir}");
             var pathToSln = GetPathToSolution(_localDir);
-            log?.Write($"Locating path to project based on {pathToSln} AND {_projSubpath}");
+            _output.OnNext($"Locating path to project based on {pathToSln} AND {_projSubpath}");
             var foundProjSubPath = SolutionPatcherRun.AvailableProject(pathToSln, _projSubpath);
             if (foundProjSubPath == null)
             {
@@ -66,16 +66,20 @@ namespace Synthesis.Bethesda.Execution
                 pathToSln: Path.Combine(_localDir, pathToSln), 
                 pathToProj: pathToProj,
                 pathToExe: null);
-            await SolutionRun.Prep(release, log, cancel).ConfigureAwait(false);
+            using var outputSub = SolutionRun.Output.Subscribe(this._output);
+            using var errSub = SolutionRun.Error.Subscribe(this._error);
+            await SolutionRun.Prep(release, cancel).ConfigureAwait(false);
         }
 
-        public async Task Run(RunSynthesisPatcher settings, ILogger? log, CancellationToken? cancel = null)
+        public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
         {
             if (SolutionRun == null)
             {
                 throw new SynthesisBuildFailure("Expected Solution Run object did not exist.");
             }
-            await SolutionRun.Run(settings, log, cancel).ConfigureAwait(false);
+            using var outputSub = SolutionRun.Output.Subscribe(this._output);
+            using var errSub = SolutionRun.Error.Subscribe(this._error);
+            await SolutionRun.Run(settings, cancel).ConfigureAwait(false);
         }
 
         private static bool DeleteOldRepo(string localDir, GetResponse<string> remoteUrl)

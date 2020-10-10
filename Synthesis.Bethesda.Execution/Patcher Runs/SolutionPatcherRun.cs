@@ -44,22 +44,22 @@ namespace Synthesis.Bethesda.Execution
             PathToSolution = pathToSln;
             PathToProject = pathToProj;
             PathToExe = pathToExe;
-            Name = $"{nickname} => {Path.GetFileNameWithoutExtension(pathToSln)}/{Path.GetFileNameWithoutExtension(pathToProj)}";
+            Name = nickname ?? $"{Path.GetFileNameWithoutExtension(pathToSln)}/{Path.GetFileNameWithoutExtension(pathToProj)}";
         }
 
-        public async Task Prep(GameRelease release, ILogger? log, CancellationToken? cancel = null)
+        public async Task Prep(GameRelease release, CancellationToken? cancel = null)
         {
             var pathToExe = PathToExe;
             if (pathToExe == null)
             {
-                log?.Write($"Locating path to exe based on proj path {PathToProject}");
+                _output.OnNext($"Locating path to exe based on proj path {PathToProject}");
                 var pathToExeGet = await GetPathToExe(PathToProject, cancel ?? CancellationToken.None);
                 if (pathToExeGet.Failed)
                 {
                     throw pathToExeGet.Exception ?? throw new ArgumentException("Could not find path to exe");
                 }
                 pathToExe = pathToExeGet.Value;
-                log?.Write($"Located path to exe: {pathToExe}");
+                _output.OnNext($"Located path to exe: {pathToExe}");
             }
 
             CliRun = new CliPatcherRun(
@@ -67,16 +67,16 @@ namespace Synthesis.Bethesda.Execution
                 pathToExecutable: pathToExe,
                 pathToExtra: Path.Combine(Path.GetDirectoryName(PathToProject), "Data"));
 
-            log?.Write($"Compiling");
+            _output.OnNext($"Compiling");
             var resp = await CompileWithDotnet(PathToProject, cancel ?? CancellationToken.None).ConfigureAwait(false);
             if (!resp.Succeeded)
             {
                 throw new SynthesisBuildFailure(resp.Reason);
             }
-            log?.Write($"Compiled");
+            _output.OnNext($"Compiled");
         }
 
-        public async Task Run(RunSynthesisPatcher settings, ILogger? log, CancellationToken? cancel = null)
+        public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
         {
             if (CliRun == null)
             {
@@ -84,7 +84,7 @@ namespace Synthesis.Bethesda.Execution
             }
             using var outputSub = CliRun.Output.Subscribe(_output);
             using var errSub = CliRun.Error.Subscribe(_error);
-            await CliRun.Run(settings, log, cancel).ConfigureAwait(false);
+            await CliRun.Run(settings, cancel).ConfigureAwait(false);
         }
 
         public void Dispose()

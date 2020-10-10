@@ -1,4 +1,5 @@
 using Noggog;
+using Synthesis.Bethesda.Execution.Reporters;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,9 +33,9 @@ namespace Synthesis.Bethesda.Execution.Settings
         public string TargetCommit = string.Empty;
         public string TargetBranch = string.Empty;
 
-        public override void Print(ILogger logger)
+        public override void Print(IRunReporter logger)
         {
-            logger.Write($"[Git] {Nickname.Decorate(x => $"{x} => ")}{RemoteRepoPath}/{SelectedProjectSubpath} {PatcherVersioningString()}");
+            logger.Write(default, $"[Git] {Nickname.Decorate(x => $"{x} => ")}{RemoteRepoPath}/{SelectedProjectSubpath} {PatcherVersioningString()}");
         }
 
         public string PatcherVersioningString()
