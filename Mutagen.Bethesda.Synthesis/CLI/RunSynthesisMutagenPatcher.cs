@@ -1,4 +1,5 @@
 using CommandLine;
+using Synthesis.Bethesda;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -35,6 +36,18 @@ namespace Mutagen.Bethesda.Synthesis.CLI
                 + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
                 + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
                 + $"  {nameof(ExtraSettingsPath)} => {this.ExtraSettingsPath}";
+        }
+
+        public static RunSynthesisMutagenPatcher Factory(RunSynthesisPatcher settings)
+        {
+            return new RunSynthesisMutagenPatcher()
+            {
+                DataFolderPath = settings.DataFolderPath,
+                GameRelease = settings.GameRelease,
+                LoadOrderFilePath = settings.LoadOrderFilePath,
+                OutputPath = settings.OutputPath,
+                SourcePath = settings.SourcePath
+            };
         }
     }
 }

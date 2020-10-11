@@ -11,6 +11,7 @@ using Xunit;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Oblivion;
+using Mutagen.Bethesda.Synthesis.CLI;
 
 namespace Synthesis.Bethesda.UnitTests
 {
@@ -151,7 +152,7 @@ namespace Synthesis.Bethesda.UnitTests
             using var tmpFolder = Utility.GetTempFolder();
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
-            var settings = new RunSynthesisPatcher()
+            var settings = new RunSynthesisMutagenPatcher()
             {
                 DataFolderPath = dataFolder.Dir.Path,
                 GameRelease = GameRelease.Oblivion,

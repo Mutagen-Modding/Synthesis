@@ -54,15 +54,8 @@ namespace Synthesis.Bethesda.Execution
         {
             if (cancel?.IsCancellationRequested ?? false) return;
 
-            var internalSettings = new RunSynthesisMutagenPatcher()
-            {
-                DataFolderPath = settings.DataFolderPath,
-                ExtraSettingsPath = PathToExtraData,
-                GameRelease = settings.GameRelease,
-                LoadOrderFilePath = settings.LoadOrderFilePath,
-                OutputPath = settings.OutputPath,
-                SourcePath = settings.SourcePath
-            };
+            var internalSettings = RunSynthesisMutagenPatcher.Factory(settings);
+            internalSettings.ExtraSettingsPath = PathToExtraData;
 
             var args = Parser.Default.FormatCommandLine(internalSettings);
             try
