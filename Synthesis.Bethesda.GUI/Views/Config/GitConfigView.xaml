@@ -105,7 +105,8 @@
                         <ComboBox
                             x:Name="TagPickerBox"
                             Margin="0,3"
-                            HorizontalAlignment="Left">
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding}" />
@@ -128,6 +129,7 @@
                             Width="300"
                             Margin="0,3"
                             HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
                             mahapps:TextBoxHelper.Watermark="Remote branch name"
                             Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
                     </TabItem>
@@ -137,12 +139,14 @@
                             Width="300"
                             Margin="0,3"
                             HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
                             mahapps:TextBoxHelper.Watermark="Commit sha"
                             Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
                     </TabItem>
                 </TabControl>
                 <Grid Grid.Row="1" Grid.Column="1"
-                    x:Name="PatcherVersionInfoGrid">
+                    x:Name="PatcherVersionInfoGrid"
+                    MinHeight="70">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
