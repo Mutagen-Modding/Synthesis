@@ -35,9 +35,6 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string ProjectSubpath { get; set; } = string.Empty;
 
-        private readonly ObservableAsPropertyHelper<string> _PathToExe;
-        public string PathToExe => _PathToExe.Value;
-
         public PathPickerVM SelectedProjectPath { get; } = new PathPickerVM()
         {
             ExistCheckOption = PathPickerVM.CheckOptions.On,
@@ -100,55 +97,12 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(p => SelectedProjectPath.TargetPath = p)
                 .DisposeWith(this);
 
-            var pathToExe = projPath
-                .ObserveOn(RxApp.TaskpoolScheduler)
-                .SelectReplaceWithIntermediate(
-                    new ConfigurationStateVM<string>(default!)
-                    {
-                        IsHaltingError = false,
-                        RunnableState = ErrorResponse.Fail("Locating exe to run.")
-                    },
-                    async (projectPath, cancel) =>
-                    {
-                        GetResponse<string> exe;
-                        using (Log.Logger.Time($"locate path to exe from {projectPath}"))
-                        {
-                            exe = await SolutionPatcherRun.GetPathToExe(projectPath, cancel);
-                            if (exe.Failed) return new ConfigurationStateVM<string>(exe.BubbleFailure<string>());
-                        }
-
-                        using (Logger.Time($"building {projectPath}"))
-                        {
-                            // Now we want to build, just to prep for run
-                            var build = await SolutionPatcherRun.CompileWithDotnet(projectPath, cancel).ConfigureAwait(false);
-                            if (build.Failed) return new ConfigurationStateVM<string>(build.BubbleFailure<string>());
-                        }
-
-                        return new ConfigurationStateVM<string>(exe);
-                    })
-                .Replay(1)
-                .RefCount();
-
-            _PathToExe = pathToExe
-                .Select(r => r.Item ?? string.Empty)
-                .ToGuiProperty<string>(this, nameof(PathToExe));
-
             _State = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.SolutionPath.ErrorState),
                     this.WhenAnyValue(x => x.SelectedProjectPath.ErrorState),
-                    Observable.Merge(
-                        projPath
-                            .Select(_ => new ConfigurationStateVM()
-                            {
-                                IsHaltingError = false,
-                                RunnableState = ErrorResponse.Fail("Building")
-                            }),
-                        pathToExe
-                            .Select(i => i.ToUnit())),
-                    (sln, proj, exe) =>
+                    (sln, proj) =>
                     {
                         if (sln.Failed) return new ConfigurationStateVM(sln);
-                        if (exe.RunnableState.Failed) return exe;
                         return new ConfigurationStateVM(proj);
                     })
                 .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), ConfigurationStateVM.Success);
@@ -279,7 +233,6 @@ namespace Synthesis.Bethesda.GUI
                 new SolutionPatcherRun(
                     nickname: DisplayName,
                     pathToSln: SolutionPath.TargetPath,
-                    pathToExe: PathToExe,
                     pathToProj: SelectedProjectPath.TargetPath));
         }
 

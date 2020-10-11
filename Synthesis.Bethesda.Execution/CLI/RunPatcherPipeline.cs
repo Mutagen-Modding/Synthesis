@@ -83,8 +83,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                             SolutionPatcherSettings sln => new SolutionPatcherRun(
                                 nickname: sln.Nickname,
                                 pathToSln: sln.SolutionPath,
-                                pathToProj: Path.Combine(Path.GetDirectoryName(sln.SolutionPath)!, sln.ProjectSubpath),
-                                pathToExe: null),
+                                pathToProj: Path.Combine(Path.GetDirectoryName(sln.SolutionPath)!, sln.ProjectSubpath)),
                             GithubPatcherSettings git => new GitPatcherRun(
                                 settings: git,
                                 localDir: GitPatcherRun.RunnerRepoDirectory(profile.ID, git.ID)),

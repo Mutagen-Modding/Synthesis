@@ -73,9 +73,6 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<RunnerRepoInfo?> _RunnableData;
         public RunnerRepoInfo? RunnableData => _RunnableData.Value;
 
-        private readonly ObservableAsPropertyHelper<string> _ExePath;
-        public string ExePath => _ExePath.Value;
-
         public ICommand OpenGitPageCommand { get; }
 
         public ICommand OpenGitPageToVersionCommand { get; }
@@ -351,17 +348,6 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x.RunnableState.Succeeded ? x.Item : default(RunnerRepoInfo?))
                 .ToGuiProperty(this, nameof(RunnableData));
 
-            _ExePath = runnableState
-                .SelectReplace(async (x, cancel) =>
-                {
-                    if (x.RunnableState.Failed) return string.Empty;
-                    using var timing = Logger.Time($"locate path to exe from {x.Item.ProjPath}");
-                    var exePath = await SolutionPatcherRun.GetPathToExe(x.Item.ProjPath, cancel);
-                    if (exePath.Failed) return string.Empty;
-                    return exePath.Value;
-                })
-                .ToGuiProperty<string>(this, nameof(ExePath));
-
             _State = Observable.CombineLatest(
                     driverRepoInfo
                         .Select(x => x.ToUnit()),
@@ -449,7 +435,6 @@ namespace Synthesis.Bethesda.GUI
                 this,
                 new SolutionPatcherRun(
                     nickname: DisplayName,
-                    pathToExe: ExePath,
                     pathToSln: RunnableData.SolutionPath,
                     pathToProj: SelectedProjectPath.TargetPath));
         }

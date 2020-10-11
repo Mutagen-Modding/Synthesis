@@ -63,8 +63,7 @@ namespace Synthesis.Bethesda.Execution
             SolutionRun = new SolutionPatcherRun(
                 _settings.Nickname,
                 pathToSln: Path.Combine(_localDir, pathToSln), 
-                pathToProj: pathToProj,
-                pathToExe: null);
+                pathToProj: pathToProj);
             using var outputSub = SolutionRun.Output.Subscribe(this._output);
             using var errSub = SolutionRun.Error.Subscribe(this._error);
             await SolutionRun.Prep(release, cancel).ConfigureAwait(false);

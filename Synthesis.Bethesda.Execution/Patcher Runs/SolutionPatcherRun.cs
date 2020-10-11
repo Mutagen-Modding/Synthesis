@@ -1,10 +1,12 @@
 using Buildalyzer;
 using Buildalyzer.Environment;
+using CommandLine;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.MSBuild;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using Noggog.Utility;
 using Synthesis.Bethesda.Execution.Patchers;
@@ -26,8 +28,6 @@ namespace Synthesis.Bethesda.Execution
         public string Name { get; }
         public string PathToSolution { get; }
         public string PathToProject { get; }
-        public string? PathToExe { get; }
-        public CliPatcherRun? CliRun { get; private set; }
 
         private Subject<string> _output = new Subject<string>();
         public IObservable<string> Output => _output;
@@ -38,35 +38,15 @@ namespace Synthesis.Bethesda.Execution
         public SolutionPatcherRun(
             string nickname,
             string pathToSln, 
-            string pathToProj,
-            string? pathToExe)
+            string pathToProj)
         {
             PathToSolution = pathToSln;
             PathToProject = pathToProj;
-            PathToExe = pathToExe;
             Name = nickname ?? $"{Path.GetFileNameWithoutExtension(pathToSln)}/{Path.GetFileNameWithoutExtension(pathToProj)}";
         }
 
         public async Task Prep(GameRelease release, CancellationToken? cancel = null)
         {
-            var pathToExe = PathToExe;
-            if (pathToExe == null)
-            {
-                _output.OnNext($"Locating path to exe based on proj path {PathToProject}");
-                var pathToExeGet = await GetPathToExe(PathToProject, cancel ?? CancellationToken.None);
-                if (pathToExeGet.Failed)
-                {
-                    throw pathToExeGet.Exception ?? throw new ArgumentException("Could not find path to exe");
-                }
-                pathToExe = pathToExeGet.Value;
-                _output.OnNext($"Located path to exe: {pathToExe}");
-            }
-
-            CliRun = new CliPatcherRun(
-                nickname: Name,
-                pathToExecutable: pathToExe,
-                pathToExtra: Path.Combine(Path.GetDirectoryName(PathToProject), "Data"));
-
             _output.OnNext($"Compiling");
             var resp = await CompileWithDotnet(PathToProject, cancel ?? CancellationToken.None).ConfigureAwait(false);
             if (!resp.Succeeded)
@@ -78,13 +58,26 @@ namespace Synthesis.Bethesda.Execution
 
         public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
         {
-            if (CliRun == null)
+            var internalSettings = new RunSynthesisMutagenPatcher()
             {
-                throw new SynthesisBuildFailure("Expected CLI Run object did not exist.");
+                DataFolderPath = settings.DataFolderPath,
+                ExtraSettingsPath = Path.Combine(Path.GetDirectoryName(PathToProject), "Data"),
+                GameRelease = settings.GameRelease,
+                LoadOrderFilePath = settings.LoadOrderFilePath,
+                OutputPath = settings.OutputPath,
+                SourcePath = settings.SourcePath
+            };
+            var args = Parser.Default.FormatCommandLine(internalSettings);
+            using var process = ProcessWrapper.Start(
+                new ProcessStartInfo("dotnet", $"run --project \"{PathToProject}\" --no-build {args}"),
+                cancel: cancel);
+            using var outputSub = process.Output.Subscribe(_output);
+            using var errSub = process.Error.Subscribe(_error);
+            var result = await process.Start().ConfigureAwait(false);
+            if (result != 0)
+            {
+                throw new CliUnsuccessfulRunException(result, "Error running solution patcher");
             }
-            using var outputSub = CliRun.Output.Subscribe(_output);
-            using var errSub = CliRun.Error.Subscribe(_error);
-            await CliRun.Run(settings, cancel).ConfigureAwait(false);
         }
 
         public void Dispose()
@@ -152,44 +145,6 @@ namespace Synthesis.Bethesda.Execution
             var result = await process.Start().ConfigureAwait(false);
             if (result == 0) return ErrorResponse.Success;
             return ErrorResponse.Fail(reason: firstError ?? "Unknown Error");
-        }
-
-        public static async Task<GetResponse<string>> GetPathToExe(string projectPath, CancellationToken cancel)
-        {
-            try
-            {
-                cancel.ThrowIfCancellationRequested();
-                if (!File.Exists(projectPath))
-                {
-                    return GetResponse<string>.Fail("Project path does not exist.");
-                }
-
-                // Right now this is slow as it cleans the build results unnecessarily.  Need to look into that
-                var manager = new AnalyzerManager();
-                cancel.ThrowIfCancellationRequested();
-                var proj = manager.GetProject(projectPath);
-                cancel.ThrowIfCancellationRequested();
-                var opt = new EnvironmentOptions();
-                opt.TargetsToBuild.SetTo("Build");
-                var build = proj.Build();
-                cancel.ThrowIfCancellationRequested();
-                var results = build.Results.ToArray();
-                if (results.Length != 1)
-                {
-                    return GetResponse<string>.Fail("Unsupported number of build results.");
-                }
-                var result = results[0];
-                if (!result.Properties.TryGetValue("RunCommand", out var cmd))
-                {
-                    return GetResponse<string>.Fail("Could not find executable to be run");
-                }
-
-                return GetResponse<string>.Succeed(cmd);
-            }
-            catch (Exception ex)
-            {
-                return GetResponse<string>.Fail(ex);
-            }
         }
 
         public static IEnumerable<string> AvailableProjects(string solutionPath)
