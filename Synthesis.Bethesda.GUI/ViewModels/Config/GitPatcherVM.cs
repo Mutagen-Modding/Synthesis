@@ -317,6 +317,7 @@ namespace Synthesis.Bethesda.GUI
 
                                 if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {item.proj.Value}.");
 
+                                Logger.Information($"Checking out {targetSha}");
                                 repo.Reset(ResetMode.Hard, commit, new CheckoutOptions());
 
                                 var projPath = Path.Combine(LocalDriverRepoDirectory, foundProjSubPath);

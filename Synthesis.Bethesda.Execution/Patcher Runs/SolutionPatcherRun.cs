@@ -1,6 +1,7 @@
 using Buildalyzer;
 using Buildalyzer.Environment;
 using CommandLine;
+using LibGit2Sharp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
@@ -53,11 +54,16 @@ namespace Synthesis.Bethesda.Execution
             {
                 throw new SynthesisBuildFailure(resp.Reason);
             }
-            _output.OnNext($"Compiled");
         }
 
         public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
         {
+            var repoPath = Path.GetDirectoryName(PathToSolution);
+            if (Repository.IsValid(repoPath))
+            {
+                using var repo = new Repository(repoPath);
+                _output.OnNext($"Sha {repo.Head.Tip.Sha}");
+            }
             var internalSettings = new RunSynthesisMutagenPatcher()
             {
                 DataFolderPath = settings.DataFolderPath,
