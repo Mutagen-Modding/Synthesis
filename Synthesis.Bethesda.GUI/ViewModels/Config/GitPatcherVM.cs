@@ -17,6 +17,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Diagnostics;
+using System.Reactive;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -317,10 +318,16 @@ namespace Synthesis.Bethesda.GUI
                                 if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {item.proj.Value}.");
 
                                 repo.Reset(ResetMode.Hard, commit, new CheckoutOptions());
+
+                                var projPath = Path.Combine(LocalDriverRepoDirectory, foundProjSubPath);
+
+                                // Compile to help prep
+                                await SolutionPatcherRun.CompileWithDotnet(projPath, cancel);
+
                                 return GetResponse<RunnerRepoInfo>.Succeed(
                                     new RunnerRepoInfo(
                                         slnPath: slnPath,
-                                        projPath: Path.Combine(LocalDriverRepoDirectory, foundProjSubPath),
+                                        projPath: projPath,
                                         target: target,
                                         commitMsg: commit.Message,
                                         commitDate: commit.Author.When.LocalDateTime));
