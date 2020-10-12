@@ -33,7 +33,7 @@ jobs:
         tag: ${{ github.event.release.tag_name }}
         file_glob: "true"
     - name: Publish to Nuget.org
-      run: dotnet nuget push **/*${{ github.event.release.tag_name }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --no-symbols true
+      run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --no-symbols true
   notification:
     runs-on: ubuntu-latest
     needs: release
