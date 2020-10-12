@@ -46,7 +46,7 @@
             <Button Grid.Row="1"
                 x:Name="GoButton"
                 HorizontalContentAlignment="Stretch">
-                <Grid Margin="0,0,0,10">
+                <Grid Margin="0,6,0,6">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
@@ -78,7 +78,7 @@
             </Button>
             <Grid Grid.Row="1"
                 x:Name="GoAreaOverlay"
-                Margin="4,0,0,10">
+                Margin="4,6,0,6">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="35" />
