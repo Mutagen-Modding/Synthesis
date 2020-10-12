@@ -1,4 +1,5 @@
 using Mutagen.Bethesda.Internals;
+using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using Synthesis.Bethesda;
 using System;
@@ -9,7 +10,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
 {
     public class Utility
     {
-        public static SynthesisState<TMod, TModGetter> ToState<TMod, TModGetter>(RunSynthesisPatcher settings, UserPreferences userPrefs)
+        public static SynthesisState<TMod, TModGetter> ToState<TMod, TModGetter>(RunSynthesisMutagenPatcher settings, UserPreferences userPrefs)
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
@@ -59,8 +60,14 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             // Create cache and loadorder for end use
             cache = loadOrder.ToMutableLinkCache(patchMod);
             loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));
-            
-            return new SynthesisState<TMod, TModGetter>(settings, loadOrder, cache, patchMod, userPrefs.Cancel);
+
+            return new SynthesisState<TMod, TModGetter>(
+                settings: settings,
+                loadOrder: loadOrder,
+                linkCache: cache,
+                patchMod: patchMod,
+                extraDataPath: settings.ExtraDataFolder ?? string.Empty,
+                cancellation: userPrefs.Cancel);
         }
     }
 }

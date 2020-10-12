@@ -17,6 +17,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Diagnostics;
+using System.Reactive;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -73,18 +74,9 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<RunnerRepoInfo?> _RunnableData;
         public RunnerRepoInfo? RunnableData => _RunnableData.Value;
 
-        private readonly ObservableAsPropertyHelper<string> _ExePath;
-        public string ExePath => _ExePath.Value;
-
         public ICommand OpenGitPageCommand { get; }
 
         public ICommand OpenGitPageToVersionCommand { get; }
-
-        public PathPickerVM ExtraDataPath { get; } = new PathPickerVM()
-        {
-            ExistCheckOption = PathPickerVM.CheckOptions.IfPathNotEmpty,
-            PathType = PathPickerVM.PathTypeOptions.Either,
-        };
 
         public GitPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
@@ -94,7 +86,7 @@ namespace Synthesis.Bethesda.GUI
             CopyInSettings(settings);
 
             LocalDriverRepoDirectory = Path.Combine(Profile.ProfileDirectory, "Git", ID, "Driver");
-            LocalRunnerRepoDirectory = Path.Combine(Profile.ProfileDirectory, "Git", ID, "Runner");
+            LocalRunnerRepoDirectory = GitPatcherRun.RunnerRepoDirectory(Profile.ID, ID);
 
             _DisplayName = this.WhenAnyValue(
                 x => x.Nickname,
@@ -144,7 +136,7 @@ namespace Synthesis.Bethesda.GUI
                         if (!path.IsHaltingError && path.RunnableState.Failed) return path.BubbleError<DriverRepoInfo>();
                         using var timing = Logger.Time("Cloning driver repository");
                         // Clone and/or double check the clone is correct
-                        var state = await GitPatcherRun.PrepRepo(path.ToGetResponse(), LocalDriverRepoDirectory, cancel);
+                        var state = await GitPatcherRun.CheckOrCloneRepo(path.ToGetResponse(), LocalDriverRepoDirectory, (x) => Logger.Information(x), cancel);
                         if (state.Failed) return new ConfigurationStateVM<DriverRepoInfo>(default!, (ErrorResponse)state);
                         cancel.ThrowIfCancellationRequested();
 
@@ -169,7 +161,7 @@ namespace Synthesis.Bethesda.GUI
                         }
 
                         // Try to locate a solution to drive from
-                        var slnPath = GetPathToSolution(LocalDriverRepoDirectory);
+                        var slnPath = GitPatcherRun.GetPathToSolution(LocalDriverRepoDirectory);
                         if (slnPath == null) return new ConfigurationStateVM<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate solution to run."));
                         var availableProjs = Utility.AvailableProjectSubpaths(slnPath).ToList();
                         return new ConfigurationStateVM<DriverRepoInfo>(
@@ -191,8 +183,9 @@ namespace Synthesis.Bethesda.GUI
                     async (path, cancel) =>
                     {
                         if (path.RunnableState.Failed) return path.RunnableState;
-                        using var timing = Logger.ForContext("RemotePath", path.Item).Time("runner repo");
-                        return await GitPatcherRun.PrepRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, cancel);
+                        var log = Logger.ForContext("RemotePath", path.Item);
+                        using var timing = log.Time("runner repo");
+                        return await GitPatcherRun.CheckOrCloneRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, x => log.Information(x), cancel);
                     })
                 .Replay(1)
                 .RefCount();
@@ -256,6 +249,7 @@ namespace Synthesis.Bethesda.GUI
             var runnableState = checkoutInput
                 .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                 .DistinctUntilChanged()
+                .Do(item => Logger.Information($"Checking out {CheckoutStateToString(item)}"))
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .SelectReplaceWithIntermediate(
                     new ConfigurationStateVM<RunnerRepoInfo>(default!)
@@ -316,24 +310,25 @@ namespace Synthesis.Bethesda.GUI
                                 var commit = repo.Lookup(objId, ObjectType.Commit) as Commit;
                                 if (commit == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit with given sha");
 
-                                var slnPath = GetPathToSolution(LocalRunnerRepoDirectory);
+                                var slnPath = GitPatcherRun.GetPathToSolution(LocalRunnerRepoDirectory);
                                 if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
 
-                                var projName = Path.GetFileName(item.proj.Value);
+                                var foundProjSubPath = SolutionPatcherRun.AvailableProject(slnPath, item.proj.Value);
 
-                                var availableProjs = SolutionPatcherConfigLogic.AvailableProject(slnPath).ToList();
+                                if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {item.proj.Value}.");
 
-                                var foundProjSubPath = availableProjs
-                                    .Where(av => Path.GetFileName(av).Equals(projName))
-                                    .FirstOrDefault();
-
-                                if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {projName}.");
-
+                                Logger.Information($"Checking out {targetSha}");
                                 repo.Reset(ResetMode.Hard, commit, new CheckoutOptions());
+
+                                var projPath = Path.Combine(LocalDriverRepoDirectory, foundProjSubPath);
+
+                                // Compile to help prep
+                                await SolutionPatcherRun.CompileWithDotnet(projPath, cancel);
+
                                 return GetResponse<RunnerRepoInfo>.Succeed(
                                     new RunnerRepoInfo(
                                         slnPath: slnPath,
-                                        projPath: Path.Combine(LocalDriverRepoDirectory, foundProjSubPath),
+                                        projPath: projPath,
                                         target: target,
                                         commitMsg: commit.Message,
                                         commitDate: commit.Author.When.LocalDateTime));
@@ -343,7 +338,16 @@ namespace Synthesis.Bethesda.GUI
                                 return GetResponse<RunnerRepoInfo>.Fail(ex);
                             }
                         }
-                        return new ConfigurationStateVM<RunnerRepoInfo>(await Execute());
+                        var ret = new ConfigurationStateVM<RunnerRepoInfo>(await Execute());
+                        if (ret.RunnableState.Succeeded)
+                        {
+                            Logger.Information($"Finished checking out {CheckoutStateToString(item)}");
+                        }
+                        else
+                        {
+                            Logger.Information($"Failed checking out {CheckoutStateToString(item)}");
+                        }
+                        return ret;
                     })
                 .Replay(1)
                 .RefCount();
@@ -351,17 +355,6 @@ namespace Synthesis.Bethesda.GUI
             _RunnableData = runnableState
                 .Select(x => x.RunnableState.Succeeded ? x.Item : default(RunnerRepoInfo?))
                 .ToGuiProperty(this, nameof(RunnableData));
-
-            _ExePath = runnableState
-                .SelectReplace(async (x, cancel) =>
-                {
-                    if (x.RunnableState.Failed) return string.Empty;
-                    using var timing = Logger.Time($"locate path to exe from {x.Item.ProjPath}");
-                    var exePath = await SolutionPatcherConfigLogic.PathToExe(x.Item.ProjPath, cancel);
-                    if (exePath.Failed) return string.Empty;
-                    return exePath.Value;
-                })
-                .ToGuiProperty<string>(this, nameof(ExePath));
 
             _State = Observable.CombineLatest(
                     driverRepoInfo
@@ -384,8 +377,8 @@ namespace Synthesis.Bethesda.GUI
                 execute: () => Utility.OpenWebsite(RemoteRepoPath));
 
             OpenGitPageToVersionCommand = ReactiveCommand.Create(
-                canExecute: runnableState
-                    .Select(x => x.RunnableState.Succeeded),
+                canExecute: this.WhenAnyValue(x => x.RunnableData)
+                    .Select(x => x != null),
                 execute: () =>
                 {
                     try
@@ -418,7 +411,6 @@ namespace Synthesis.Bethesda.GUI
                 MutagenVersioning = this.MutagenVersioning,
                 TargetTag = this.TargetTag,
                 TargetCommit = this.TargetCommit,
-                ExtraDataPath = this.ExtraDataPath.TargetPath,
             };
             CopyOverSave(ret);
             return ret;
@@ -438,7 +430,6 @@ namespace Synthesis.Bethesda.GUI
             this.MutagenVersioning = settings.MutagenVersioning;
             this.TargetTag = settings.TargetTag;
             this.TargetCommit = settings.TargetCommit;
-            this.ExtraDataPath.TargetPath = settings.ExtraDataPath;
         }
 
         public override PatcherRunVM ToRunner(PatchersRunVM parent)
@@ -451,11 +442,10 @@ namespace Synthesis.Bethesda.GUI
                 parent,
                 this,
                 new SolutionPatcherRun(
-                    nickname: DisplayName,
-                    pathToExe: ExePath,
+                    name: DisplayName,
                     pathToSln: RunnableData.SolutionPath,
-                    pathToProj: SelectedProjectPath.TargetPath,
-                    extraData: ExtraDataPath.TargetPath));
+                    pathToExtraDataBaseFolder: Execution.Constants.TypicalExtraData,
+                    pathToProj: SelectedProjectPath.TargetPath));
         }
 
         public static IObservable<ConfigurationStateVM<string>> GetRepoPathValidity(IObservable<string> repoPath)
@@ -508,11 +498,6 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        private static string GetPathToSolution(string pathToRepo)
-        {
-            return Directory.EnumerateFiles(pathToRepo, "*.sln").FirstOrDefault();
-        }
-
         private class DriverRepoInfo
         {
             public readonly string SolutionPath;
@@ -553,6 +538,36 @@ namespace Synthesis.Bethesda.GUI
                 Target = target;
                 CommitMessage = commitMsg;
                 CommitDate = commitDate;
+            }
+        }
+
+        private static string CheckoutStateToString((
+            string MasterBranchName,
+            PatcherVersioningEnum Versioning,
+            ErrorResponse RunnerState,
+            GetResponse<string> Project,
+            string Tag,
+            string Commit,
+            string Branch) item)
+        {
+            if (item.RunnerState.Failed
+                || item.Project.Failed)
+            {
+                return "Failed checkout state";
+            }
+
+            switch (item.Versioning)
+            {
+                case PatcherVersioningEnum.Master:
+                    return $"main branch {item.MasterBranchName}";
+                case PatcherVersioningEnum.Tag:
+                    return $"tag {item.Tag}";
+                case PatcherVersioningEnum.Branch:
+                    return $"branch {item.Branch}";
+                case PatcherVersioningEnum.Commit:
+                    return $"master {item.Commit}";
+                default:
+                    throw new NotImplementedException();
             }
         }
     }

@@ -21,10 +21,6 @@ namespace Synthesis.Bethesda.GUI
                 output.Write(timeSpan.Milliseconds / 100);
                 output.Write("]");
 
-                output.Write("[");
-                output.Write(logEvent.Properties["ThreadId"]);
-                output.Write("]");
-
                 foreach (var prop in logEvent.Properties)
                 {
                     if (EventUsingProperty(logEvent, prop.Key)) continue;

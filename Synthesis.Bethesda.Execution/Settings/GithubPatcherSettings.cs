@@ -1,5 +1,8 @@
+using Noggog;
+using Synthesis.Bethesda.Execution.Reporters;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Synthesis.Bethesda.Execution.Settings
@@ -29,6 +32,22 @@ namespace Synthesis.Bethesda.Execution.Settings
         public string TargetTag = string.Empty;
         public string TargetCommit = string.Empty;
         public string TargetBranch = string.Empty;
-        public string ExtraDataPath = string.Empty;
+
+        public override void Print(IRunReporter logger)
+        {
+            logger.Write(default, $"[Git] {Nickname.Decorate(x => $"{x} => ")}{RemoteRepoPath}/{SelectedProjectSubpath} {PatcherVersioningString()}");
+        }
+
+        public string PatcherVersioningString()
+        {
+            return PatcherVersioning switch
+            {
+                PatcherVersioningEnum.Master => $"Master Track",
+                PatcherVersioningEnum.Tag => $"Tag: {TargetTag}",
+                PatcherVersioningEnum.Branch => $"Branch: {TargetBranch}",
+                PatcherVersioningEnum.Commit => $"Commit: {TargetCommit}",
+                _ => throw new NotImplementedException(),
+            };
+        }
     }
 }

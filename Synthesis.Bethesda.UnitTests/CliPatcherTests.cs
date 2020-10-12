@@ -1,4 +1,4 @@
-﻿using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace Synthesis.Bethesda.UnitTests
         public async Task MissingTarget()
         {
             var runSettings = new RunSynthesisPatcher();
-            var run = new CliPatcherRun("Missing", "Missing.exe");
+            var run = new CliPatcherRun("Missing", "Missing.exe", pathToExtra: null);
             await run.Prep(Mutagen.Bethesda.GameRelease.Oblivion);
             await Assert.ThrowsAsync<FileNotFoundException>(async () =>
             {

@@ -2,9 +2,8 @@ using Synthesis.Bethesda.Execution.Patchers;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using YamlDotNet.Serialization;
 
-namespace Synthesis.Bethesda.Execution.Runner
+namespace Synthesis.Bethesda.Execution.Reporters
 {
     public class WrapReporter : IRunReporter, IRunReporter<object?>
     {
@@ -15,12 +14,24 @@ namespace Synthesis.Bethesda.Execution.Runner
             _wrapped = wrapped;
         }
 
-        public void ReportError(string str)
+        public void WriteError(object? key, IPatcherRun? patcher, string str)
         {
+            _wrapped.WriteError(patcher, str);
         }
 
-        public void ReportOutput(string str)
+        public void Write(object? key, IPatcherRun? patcher, string str)
         {
+            _wrapped.Write(patcher, str);
+        }
+
+        public void WriteError(IPatcherRun? patcher, string str)
+        {
+            _wrapped.WriteError(patcher, str);
+        }
+
+        public void Write(IPatcherRun? patcher, string str)
+        {
+            _wrapped.Write(patcher, str);
         }
 
         public void ReportOverallProblem(Exception ex)

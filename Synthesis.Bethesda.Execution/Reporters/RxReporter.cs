@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reactive.Subjects;
 using System.Text;
 
-namespace Synthesis.Bethesda.Execution.Runner
+namespace Synthesis.Bethesda.Execution.Reporters
 {
     public class RxReporter<TKey> : IRunReporter<TKey>
     {
@@ -13,25 +13,25 @@ namespace Synthesis.Bethesda.Execution.Runner
         private readonly Subject<(TKey, IPatcherRun, Exception)> _runProblem = new Subject<(TKey, IPatcherRun, Exception)>();
         private readonly Subject<(TKey, IPatcherRun, string)> _runSuccessful = new Subject<(TKey, IPatcherRun, string)>();
         private readonly Subject<(TKey, IPatcherRun)> _starting = new Subject<(TKey, IPatcherRun)>();
-        private readonly Subject<string> _output = new Subject<string>();
-        private readonly Subject<string> _error = new Subject<string>();
+        private readonly Subject<(TKey Key, IPatcherRun? Run, string String)> _output = new Subject<(TKey Key, IPatcherRun? Run, string String)>();
+        private readonly Subject<(TKey Key, IPatcherRun? Run, string String)> _error = new Subject<(TKey Key, IPatcherRun? Run, string String)>();
 
         public IObservable<Exception> Overall => _overall;
         public IObservable<(TKey Key, IPatcherRun Run, Exception Error)> PrepProblem => _prepProblem;
         public IObservable<(TKey Key, IPatcherRun Run, Exception Error)> RunProblem => _runProblem;
         public IObservable<(TKey Key, IPatcherRun Run, string OutputPath)> RunSuccessful => _runSuccessful;
         public IObservable<(TKey Key, IPatcherRun Run)> Starting => _starting;
-        public IObservable<string> Output => _output;
-        public IObservable<string> Error => _error;
+        public IObservable<(TKey Key, IPatcherRun? Run, string String)> Output => _output;
+        public IObservable<(TKey Key, IPatcherRun? Run, string String)> Error => _error;
 
-        public void ReportError(string str)
+        public void WriteError(TKey key, IPatcherRun? patcher, string str)
         {
-            _error.OnNext(str);
+            _error.OnNext((key, patcher, str));
         }
 
-        public void ReportOutput(string str)
+        public void Write(TKey key, IPatcherRun? patcher, string str)
         {
-            _output.OnNext(str);
+            _output.OnNext((key, patcher, str));
         }
 
         public void ReportOverallProblem(Exception ex)

@@ -1,19 +1,24 @@
+using Buildalyzer;
+using CommandLine;
+using LibGit2Sharp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.MSBuild;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using Noggog.Utility;
 using Synthesis.Bethesda.Execution.Patchers;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using Wabbajack.Common;
 
 namespace Synthesis.Bethesda.Execution
 {
@@ -22,8 +27,7 @@ namespace Synthesis.Bethesda.Execution
         public string Name { get; }
         public string PathToSolution { get; }
         public string PathToProject { get; }
-        public string PathToExe { get; }
-        public CliPatcherRun? CliRun { get; private set; }
+        public string PathToExtraDataBaseFolder { get; }
 
         private Subject<string> _output = new Subject<string>();
         public IObservable<string> Output => _output;
@@ -31,55 +35,64 @@ namespace Synthesis.Bethesda.Execution
         private Subject<string> _error = new Subject<string>();
         public IObservable<string> Error => _error;
 
-        private string? _extraData;
-
         public SolutionPatcherRun(
-            string nickname,
+            string name,
             string pathToSln, 
             string pathToProj,
-            string pathToExe, 
-            string? extraData)
+            string pathToExtraDataBaseFolder)
         {
-            _extraData = extraData;
             PathToSolution = pathToSln;
             PathToProject = pathToProj;
-            PathToExe = pathToExe;
-            Name = $"{nickname} => {Path.GetFileNameWithoutExtension(pathToSln)} => {Path.GetFileNameWithoutExtension(pathToProj)}";
+            PathToExtraDataBaseFolder = pathToExtraDataBaseFolder;
+            Name = name;
         }
 
-        public async Task Prep(GameRelease release, ILogger? log, CancellationToken? cancel = null)
+        public async Task Prep(GameRelease release, CancellationToken? cancel = null)
         {
-            CliRun = new CliPatcherRun(nickname: Name, pathToExecutable: PathToExe);
-
-            var resp = await CompileWithDotnet(PathToProject, cancel ?? CancellationToken.None).ConfigureAwait(false);
-            if (!resp.Succeeded)
-            {
-                throw new SynthesisBuildFailure(resp.Reason);
-            }
+            await Task.WhenAll(
+                Task.Run(async () =>
+                {
+                    _output.OnNext($"Compiling");
+                    var resp = await CompileWithDotnet(PathToProject, cancel ?? CancellationToken.None).ConfigureAwait(false);
+                    if (!resp.Succeeded)
+                    {
+                        throw new SynthesisBuildFailure(resp.Reason);
+                    }
+                }),
+                Task.Run(async () =>
+                {
+                    await CopyOverExtraData().ConfigureAwait(false);
+                })).ConfigureAwait(false); ;
         }
 
-        public async Task Run(RunSynthesisPatcher settings, ILogger? log, CancellationToken? cancel = null)
+        public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
         {
-            if (CliRun == null)
+            var repoPath = Path.GetDirectoryName(PathToSolution);
+            if (Repository.IsValid(repoPath))
             {
-                throw new SynthesisBuildFailure("Expected CLI Run object did not exist.");
+                using var repo = new Repository(repoPath);
+                _output.OnNext($"Sha {repo.Head.Tip.Sha}");
             }
-            if (_extraData != null && Directory.Exists(_extraData))
+            var internalSettings = new RunSynthesisMutagenPatcher()
             {
-                var target = new AbsolutePath(Path.Combine(Path.GetDirectoryName(PathToExe), Path.GetFileName(_extraData)));
-                log?.ReportOutput($"Copying extra data folder {_extraData} to {target}");
-                var p = new AbsolutePath(_extraData);
-                await p.CopyDirectoryToAsync(target);
-            }
-            else if (_extraData != null && File.Exists(_extraData))
+                DataFolderPath = settings.DataFolderPath,
+                ExtraDataFolder = Path.Combine(PathToExtraDataBaseFolder, Name),
+                GameRelease = settings.GameRelease,
+                LoadOrderFilePath = settings.LoadOrderFilePath,
+                OutputPath = settings.OutputPath,
+                SourcePath = settings.SourcePath
+            };
+            var args = Parser.Default.FormatCommandLine(internalSettings);
+            using var process = ProcessWrapper.Start(
+                new ProcessStartInfo("dotnet", $"run --project \"{PathToProject}\" --no-build {args}"),
+                cancel: cancel);
+            using var outputSub = process.Output.Subscribe(_output);
+            using var errSub = process.Error.Subscribe(_error);
+            var result = await process.Start().ConfigureAwait(false);
+            if (result != 0)
             {
-                var targetPath = Path.Combine(Path.GetDirectoryName(PathToExe), Path.GetFileName(_extraData));
-                log?.ReportOutput($"Copying extra data file {_extraData} to {targetPath}");
-                File.Copy(_extraData, targetPath);
+                throw new CliUnsuccessfulRunException(result, "Error running solution patcher");
             }
-            using var outputSub = CliRun.Output.Subscribe(_output);
-            using var errSub = CliRun.Error.Subscribe(_error);
-            await CliRun.Run(settings, log, cancel).ConfigureAwait(false);
         }
 
         public void Dispose()
@@ -147,6 +160,50 @@ namespace Synthesis.Bethesda.Execution
             var result = await process.Start().ConfigureAwait(false);
             if (result == 0) return ErrorResponse.Success;
             return ErrorResponse.Fail(reason: firstError ?? "Unknown Error");
+        }
+
+        public static IEnumerable<string> AvailableProjects(string solutionPath)
+        {
+            if (!File.Exists(solutionPath)) return Enumerable.Empty<string>();
+            try
+            {
+                var manager = new AnalyzerManager(solutionPath);
+                return manager.Projects.Keys.Select(projPath => projPath.TrimStart($"{Path.GetDirectoryName(solutionPath)}\\"!));
+            }
+            catch (Exception)
+            {
+                return Enumerable.Empty<string>();
+            }
+        }
+
+        public static string? AvailableProject(string solutionPath, string projSubpath)
+        {
+            var projName = Path.GetFileName(projSubpath);
+            return AvailableProjects(solutionPath)
+                .Where(av => Path.GetFileName(av).Equals(projName))
+                .FirstOrDefault();
+        }
+
+        private async Task CopyOverExtraData()
+        {
+            var inputExtraData = new DirectoryInfo(Path.Combine(Path.GetDirectoryName(PathToProject), "Data"));
+            if (!inputExtraData.Exists)
+            {
+                _output.OnNext("No extra data to consider.");
+                return;
+            }
+
+            var outputExtraData = new DirectoryInfo(Path.Combine(PathToExtraDataBaseFolder, Name));
+            if (outputExtraData.Exists)
+            {
+                _output.OnNext($"Extra data folder already exists. Leaving as is: {outputExtraData}");
+                return;
+            }
+
+            _output.OnNext("Copying extra data folder");
+            _output.OnNext($"  From: {inputExtraData}");
+            _output.OnNext($"  To: {outputExtraData}");
+            inputExtraData.DeepCopy(outputExtraData);
         }
     }
 }

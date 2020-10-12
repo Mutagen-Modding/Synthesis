@@ -1,20 +1,16 @@
 using DynamicData;
 using DynamicData.Binding;
-using Synthesis.Bethesda.Execution.Settings;
-using Newtonsoft.Json;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text;
 using System.Windows.Input;
 using System.Threading.Tasks;
 using Noggog;
+using Mutagen.Bethesda;
+using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -41,6 +37,10 @@ namespace Synthesis.Bethesda.GUI
         // Whether to show red glow in background
         private readonly ObservableAsPropertyHelper<bool> _Hot;
         public bool Hot => _Hot.Value;
+
+        public string SynthesisVersion { get; }
+
+        public string MutagenVersion { get; }
 
         public MainVM()
         {
@@ -86,23 +86,27 @@ namespace Synthesis.Bethesda.GUI
             IdeOptions.AddRange(EnumExt.GetValues<IDE>());
 
             Task.Run(() => Mutagen.Bethesda.WarmupAll.Init()).FireAndForget();
+
+            SynthesisVersion = typeof(Synthesis.Bethesda.Constants).Assembly.GetName().Version!.ToString().TrimEnd(".0").TrimEnd(".0");
+            MutagenVersion = typeof(FormKey).Assembly.GetName().Version!.ToString().TrimEnd(".0").TrimEnd(".0");
         }
 
-        public void Load(SynthesisGuiSettings? settings)
+        public void Load(SynthesisGuiSettings? guiSettings, PipelineSettings? pipeSettings)
         {
-            if (settings == null) return;
-            Settings = settings;
-            Ide = settings.Ide;
-            Configuration.Load(settings);
+            if (guiSettings != null)
+            {
+                Settings = guiSettings;
+                Ide = guiSettings.Ide;
+            }
+            Configuration.Load(Settings, pipeSettings ?? new PipelineSettings());
         }
 
-        public SynthesisGuiSettings Save()
+        public void Save(out SynthesisGuiSettings guiSettings, out PipelineSettings pipeSettings)
         {
-            var ret = Configuration.Save();
-            ret.Ide = this.Ide;
-            ret.MainRepositoryFolder = Settings.MainRepositoryFolder;
-            ret.OpenIdeAfterCreating = Settings.OpenIdeAfterCreating;
-            return ret;
+            Configuration.Save(out guiSettings, out pipeSettings);
+            guiSettings.Ide = this.Ide;
+            guiSettings.MainRepositoryFolder = Settings.MainRepositoryFolder;
+            guiSettings.OpenIdeAfterCreating = Settings.OpenIdeAfterCreating;
         }
 
         public void Init()

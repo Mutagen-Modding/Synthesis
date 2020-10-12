@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
 using Noggog.Utility;
+using Mutagen.Bethesda.Synthesis.CLI;
 
 namespace Synthesis.Bethesda.Execution
 {
@@ -29,24 +30,34 @@ namespace Synthesis.Bethesda.Execution
 
         public string PathToExecutable;
 
-        public CliPatcherRun(string nickname, string pathToExecutable)
+        public string? PathToExtraData;
+
+        public CliPatcherRun(
+            string nickname,
+            string pathToExecutable, 
+            string? pathToExtra)
         {
             Name = nickname;
             PathToExecutable = pathToExecutable;
+            PathToExtraData = pathToExtra;
         }
 
         public void Dispose()
         {
         }
 
-        public async Task Prep(GameRelease release, ILogger? log = null, CancellationToken? cancel = null)
+        public async Task Prep(GameRelease release, CancellationToken? cancel = null)
         {
         }
 
-        public async Task Run(RunSynthesisPatcher settings, ILogger? log = null, CancellationToken? cancel = null)
+        public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
         {
             if (cancel?.IsCancellationRequested ?? false) return;
-            var args = Parser.Default.FormatCommandLine(settings);
+
+            var internalSettings = RunSynthesisMutagenPatcher.Factory(settings);
+            internalSettings.ExtraDataFolder = PathToExtraData;
+
+            var args = Parser.Default.FormatCommandLine(internalSettings);
             try
             {
                 using ProcessWrapper process = ProcessWrapper.Start(
@@ -62,7 +73,7 @@ namespace Synthesis.Bethesda.Execution
                 {
                     throw new CliUnsuccessfulRunException(
                         result,
-                        $"Process exited in failure: {process.StartInfo.FileName} {process.StartInfo.Arguments}");
+                        $"Process exited in failure: {process.StartInfo.FileName} {internalSettings}");
                 }
             }
             catch (Win32Exception ex)

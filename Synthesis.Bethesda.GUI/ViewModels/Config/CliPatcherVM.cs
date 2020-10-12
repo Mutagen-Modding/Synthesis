@@ -81,7 +81,10 @@ namespace Synthesis.Bethesda.GUI
             return new PatcherRunVM(
                 parent, 
                 this, 
-                new CliPatcherRun(nickname: DisplayName, pathToExecutable: PathToExecutable.TargetPath));
+                new CliPatcherRun(
+                    nickname: DisplayName, 
+                    pathToExecutable: PathToExecutable.TargetPath, 
+                    pathToExtra: null));
         }
     }
 }

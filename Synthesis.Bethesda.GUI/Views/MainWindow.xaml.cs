@@ -5,6 +5,8 @@ using Noggog.WPF;
 using System.IO;
 using System;
 using Newtonsoft.Json.Converters;
+using Noggog;
+using Newtonsoft.Json.Linq;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -17,16 +19,45 @@ namespace Synthesis.Bethesda.GUI.Views
         {
             InitializeComponent();
             Log.Logger.Information("Starting");
-            JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
+            const string GuiSettingsPath = "GuiSettings.json";
+            var mainVM = new MainVM();
+            SynthesisGuiSettings? guiSettings = null;
+            if (File.Exists(GuiSettingsPath))
             {
-                TypeNameHandling = TypeNameHandling.Auto,
+                guiSettings = JsonConvert.DeserializeObject<SynthesisGuiSettings>(File.ReadAllText(GuiSettingsPath), Execution.Constants.JsonSettings)!;
+            }
+            PipelineSettings? pipeSettings = null;
+            if (File.Exists(Execution.Constants.SettingsFileName))
+            {
+                pipeSettings = JsonConvert.DeserializeObject<PipelineSettings>(File.ReadAllText(Execution.Constants.SettingsFileName), Execution.Constants.JsonSettings)!;
+            }
+
+            // Backwards compatibility
+            const string OldGuiSettingsPath = "Settings.json";
+            if (guiSettings == null && pipeSettings == null
+                && File.Exists(OldGuiSettingsPath))
+            {
+                var rawText = File.ReadAllText(OldGuiSettingsPath);
+                guiSettings = JsonConvert.DeserializeObject<SynthesisGuiSettings>(rawText, Execution.Constants.JsonSettings)!;
+                JObject rawObj = JObject.Parse(rawText);
+                var execSettings = rawObj["ExecutableSettings"];
+                if (execSettings != null)
+                {
+                    guiSettings.SelectedProfile = execSettings["SelectedProfile"]?.ToString() ?? string.Empty;
+                    pipeSettings = JsonConvert.DeserializeObject<PipelineSettings>(execSettings.ToString(), Execution.Constants.JsonSettings)!;
+                }
+            }
+            mainVM.Load(guiSettings, pipeSettings);
+            Closed += (a, b) =>
+            {
+                mainVM.Save(out var gui, out var pipe);
+                File.WriteAllText(Execution.Constants.SettingsFileName, JsonConvert.SerializeObject(pipe, Formatting.Indented, Execution.Constants.JsonSettings));
+                File.WriteAllText(GuiSettingsPath, JsonConvert.SerializeObject(gui, Formatting.Indented, Execution.Constants.JsonSettings));
+                mainVM.Dispose();
             };
-            jsonSettings.Converters.Add(new StringEnumConverter());
-            var mvm = this.WireMainVM<MainVM>(
-                "Settings.json",
-                load: (s, vm) => vm.Load(JsonConvert.DeserializeObject<SynthesisGuiSettings>(File.ReadAllText(s), jsonSettings)!),
-                save: (s, vm) => File.WriteAllText(s, JsonConvert.SerializeObject(vm.Save(), Formatting.Indented, jsonSettings)));
-            mvm.Init();
+
+            DataContext = mainVM;
+            mainVM.Init();
         }
     }
 }

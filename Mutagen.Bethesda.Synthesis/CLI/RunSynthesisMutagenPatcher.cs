@@ -1,13 +1,13 @@
 using CommandLine;
-using Mutagen.Bethesda;
+using Synthesis.Bethesda;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Synthesis.Bethesda
+namespace Mutagen.Bethesda.Synthesis.CLI
 {
     [Verb("run-patcher", HelpText = "Run the patcher")]
-    public class RunSynthesisPatcher : IRunPipelineSettings
+    public class RunSynthesisMutagenPatcher
     {
         [Option('s', "SourcePath", Required = false, HelpText = "Optional path pointing to the previous patcher result to build onto.")]
         public string? SourcePath { get; set; }
@@ -24,14 +24,30 @@ namespace Synthesis.Bethesda
         [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
         public string LoadOrderFilePath { get; set; } = string.Empty;
 
+        [Option('e', "ExtraDataFolder", Required = true, HelpText = "Path to the extra data folder dedicated for a patcher")]
+        public string? ExtraDataFolder { get; set; }
+
         public override string ToString()
         {
-            return $"{nameof(RunSynthesisPatcher)} => \n"
+            return $"{nameof(RunSynthesisMutagenPatcher)} => \n"
                 + $"  {nameof(SourcePath)} => {this.SourcePath} \n"
                 + $"  {nameof(OutputPath)} => {this.OutputPath} \n"
                 + $"  {nameof(GameRelease)} => {this.GameRelease} \n"
                 + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
-                + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}";
+                + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
+                + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}";
+        }
+
+        public static RunSynthesisMutagenPatcher Factory(RunSynthesisPatcher settings)
+        {
+            return new RunSynthesisMutagenPatcher()
+            {
+                DataFolderPath = settings.DataFolderPath,
+                GameRelease = settings.GameRelease,
+                LoadOrderFilePath = settings.LoadOrderFilePath,
+                OutputPath = settings.OutputPath,
+                SourcePath = settings.SourcePath
+            };
         }
     }
 }

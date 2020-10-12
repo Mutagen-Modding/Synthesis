@@ -16,6 +16,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
+using Mutagen.Bethesda.Synthesis.CLI;
 
 namespace Synthesis.Bethesda.Execution.Patchers
 {
@@ -50,7 +51,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             _assembly = assembly;
         }
 
-        public async Task Run(RunSynthesisPatcher settings, ILogger? log = null, CancellationToken? cancel = null)
+        public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
         {
             if (_assembly == null)
             {
@@ -66,7 +67,8 @@ namespace Synthesis.Bethesda.Execution.Patchers
             {
                 Cancel = cancel ?? CancellationToken.None
             };
-            using var synthesisState = ConstructStateFactory(settings.GameRelease)(settings, userPrefs);
+            var internalSettings = RunSynthesisMutagenPatcher.Factory(settings);
+            using var synthesisState = ConstructStateFactory(settings.GameRelease)(internalSettings, userPrefs);
             Task t = (Task)type.InvokeMember("Run",
                 BindingFlags.Default | BindingFlags.InvokeMethod,
                 null,
@@ -85,7 +87,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 });
         }
 
-        public async Task Prep(GameRelease release, ILogger? log = null, CancellationToken? cancel = null)
+        public async Task Prep(GameRelease release, CancellationToken? cancel = null)
         {
             if (_assembly != null) return;
             cancel ??= CancellationToken.None;
@@ -98,10 +100,10 @@ namespace Synthesis.Bethesda.Execution.Patchers
             }
         }
 
-        internal static Func<RunSynthesisPatcher, UserPreferences?, ISynthesisState> ConstructStateFactory(GameRelease release)
+        internal static Func<RunSynthesisMutagenPatcher, UserPreferences?, ISynthesisState> ConstructStateFactory(GameRelease release)
         {
             var regis = release.ToCategory().ToModRegistration();
-            var cliSettingsParam = Expression.Parameter(typeof(RunSynthesisPatcher));
+            var cliSettingsParam = Expression.Parameter(typeof(RunSynthesisMutagenPatcher));
             var userPrefs = Expression.Parameter(typeof(UserPreferences));
             MethodCallExpression callExp = Expression.Call(
                 typeof(Mutagen.Bethesda.Synthesis.Internal.Utility),
@@ -115,7 +117,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 userPrefs);
             LambdaExpression lambda = Expression.Lambda(callExp, cliSettingsParam, userPrefs);
             var deleg = lambda.Compile();
-            return (RunSynthesisPatcher settings, UserPreferences? prefs) =>
+            return (RunSynthesisMutagenPatcher settings, UserPreferences? prefs) =>
             {
                 return (ISynthesisState)deleg.DynamicInvoke(settings, prefs);
             };

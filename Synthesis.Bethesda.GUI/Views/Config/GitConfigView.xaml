@@ -84,8 +84,6 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -107,7 +105,8 @@
                         <ComboBox
                             x:Name="TagPickerBox"
                             Margin="0,3"
-                            HorizontalAlignment="Left">
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding}" />
@@ -130,6 +129,7 @@
                             Width="300"
                             Margin="0,3"
                             HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
                             mahapps:TextBoxHelper.Watermark="Remote branch name"
                             Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
                     </TabItem>
@@ -139,12 +139,14 @@
                             Width="300"
                             Margin="0,3"
                             HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
                             mahapps:TextBoxHelper.Watermark="Commit sha"
                             Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
                     </TabItem>
                 </TabControl>
                 <Grid Grid.Row="1" Grid.Column="1"
-                    x:Name="PatcherVersionInfoGrid">
+                    x:Name="PatcherVersionInfoGrid"
+                    MinHeight="70">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -206,14 +208,6 @@
                         </ComboBox>
                     </TabItem>
                 </TabControl>
-                <TextBlock Grid.Row="4"
-                    Margin="0,4,0,0"
-                    FontSize="14"
-                    FontWeight="Bold"
-                    Text="Extra Input" />
-                <noggog:PathPicker Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
-                    Name="ExtraFolderPicker"
-                    Margin="0,2,0,0" />
             </Grid>
         </ScrollViewer>
     </Grid>

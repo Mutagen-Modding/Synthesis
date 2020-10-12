@@ -47,8 +47,6 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<PatchersRunVM?> _CurrentRun;
         public PatchersRunVM? CurrentRun => _CurrentRun.Value;
 
-        public string WorkingDirectory { get; } = Path.Combine(Path.GetTempPath(), "Synthesis");
-
         [Reactive]
         public bool ShowHelp { get; set; }
 
@@ -128,30 +126,30 @@ namespace Synthesis.Bethesda.GUI
             ShowHelpToggleCommand = ReactiveCommand.Create(() => ShowHelp = !ShowHelp);
         }
 
-        public void Load(SynthesisGuiSettings settings)
+        public void Load(SynthesisGuiSettings settings, PipelineSettings pipeSettings)
         {
             Profiles.Clear();
-            Profiles.AddOrUpdate(settings.ExecutableSettings.Profiles.Select(p =>
+            Profiles.AddOrUpdate(pipeSettings.Profiles.Select(p =>
             {
                 return new ProfileVM(this, p);
             }));
-            if (Profiles.TryGetValue(settings.ExecutableSettings.SelectedProfile, out var profile))
+            if (Profiles.TryGetValue(settings.SelectedProfile, out var profile))
             {
                 SelectedProfile = profile;
             }
             ShowHelp = settings.ShowHelp;
         }
 
-        public SynthesisGuiSettings Save()
+        public void Save(out SynthesisGuiSettings guiSettings, out PipelineSettings pipeSettings)
         {
-            return new SynthesisGuiSettings()
+            pipeSettings = new PipelineSettings()
             {
-                ExecutableSettings = new SynthesisSettings()
-                {
-                    Profiles = Profiles.Items.Select(p => p.Save()).ToList(),
-                    SelectedProfile = SelectedProfile?.ID ?? string.Empty
-                },
+                Profiles = Profiles.Items.Select(p => p.Save()).ToList(),
+            };
+            guiSettings = new SynthesisGuiSettings()
+            {
                 ShowHelp = ShowHelp,
+                SelectedProfile = SelectedProfile?.ID ?? string.Empty
             };
         }
 

@@ -8,8 +8,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda;
+using Synthesis.Bethesda.Execution.Reporters;
 
-namespace Synthesis.Bethesda.Execution.Runner
+namespace Synthesis.Bethesda.Execution
 {
     public class Runner
     {
@@ -69,13 +70,13 @@ namespace Synthesis.Bethesda.Execution.Runner
 
                 // Copy plugins text to working directory, trimming synthesis and anything after
                 var loadOrderList = loadOrder.ToList();
-                var synthIndex = loadOrderList.IndexOf(Constants.SynthesisModKey, (listing, key) => listing.ModKey == key);
+                var synthIndex = loadOrderList.IndexOf(Synthesis.Bethesda.Constants.SynthesisModKey, (listing, key) => listing.ModKey == key);
                 if (synthIndex != -1)
                 {
                     loadOrderList.RemoveToCount(synthIndex);
                 }
-                reporter.ReportOutput("Load Order:");
-                loadOrderList.ForEach(i => reporter.ReportOutput($"   {i}"));
+                reporter.Write(default(TKey)!, default, "Load Order:");
+                loadOrderList.ForEach(i => reporter.Write(default(TKey)!, default, $"   {i}"));
                 string loadOrderPath = Path.Combine(workingDirectory, "Plugins.txt");
                 var writeLoadOrder = Task.Run(() =>
                 {
@@ -99,12 +100,12 @@ namespace Synthesis.Bethesda.Execution.Runner
                     try
                     {
                         using var outputSub = patcher.Run.Output
-                            .Subscribe(reporter.ReportOutput);
+                            .Subscribe(i => reporter.Write(patcher.Key, patcher.Run, i));
                         using var errorSub = patcher.Run.Error
-                            .Subscribe(reporter.ReportError);
+                            .Subscribe(i => reporter.WriteError(patcher.Key, patcher.Run, i));
                         try
                         {
-                            await patcher.Run.Prep(release, reporter, cancellation);
+                            await patcher.Run.Prep(release, cancellation);
                         }
                         catch (TaskCanceledException)
                         {
@@ -143,9 +144,9 @@ namespace Synthesis.Bethesda.Execution.Runner
                     try
                     {
                         using var outputSub = patcher.Run.Output
-                            .Subscribe(reporter.ReportOutput);
+                            .Subscribe(i => reporter.Write(patcher.Key, patcher.Run, i));
                         using var errorSub = patcher.Run.Error
-                            .Subscribe(reporter.ReportError);
+                            .Subscribe(i => reporter.WriteError(patcher.Key, patcher.Run, i));
 
                         try
                         {
@@ -159,7 +160,6 @@ namespace Synthesis.Bethesda.Execution.Runner
                                 GameRelease = release,
                                 LoadOrderFilePath = loadOrderPath,
                             },
-                            reporter,
                             cancel: cancellation);
                         }
                         catch (TaskCanceledException)
@@ -188,6 +188,10 @@ namespace Synthesis.Bethesda.Execution.Runner
                     }
                     reporter.ReportRunSuccessful(patcher.Key, patcher.Run, nextPath);
                     prevPath = nextPath;
+                }
+                if (File.Exists(outputPath))
+                {
+                    File.Delete(outputPath);
                 }
                 File.Copy(prevPath!.Path, outputPath);
                 return true;

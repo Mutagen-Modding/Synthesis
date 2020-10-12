@@ -12,7 +12,6 @@
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Noggog/Synthesis</RepositoryUrl>
     <Company>Mutagen</Company>
-    <Version>0.0.5</Version>
     <Platforms>x64</Platforms>
     <ApplicationIcon>mushroom.ico</ApplicationIcon>
   </PropertyGroup>
@@ -40,7 +39,7 @@
   <ItemGroup>
     <PackageReference Include="Buildalyzer" Version="3.0.1" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
-    <PackageReference Include="Noggog.WPF" Version="1.5.0" />
+    <PackageReference Include="Noggog.WPF" Version="1.6.0" />
     <PackageReference Include="Octokit" Version="0.48.0" />
     <PackageReference Include="reactiveui" Version="11.5.35" />
     <PackageReference Include="ReactiveUI.Fody" Version="11.5.35" />

@@ -24,8 +24,7 @@ namespace Synthesis.Bethesda.GUI
         public static LoggerConfiguration GetLoggerConfig()
         {
             return new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .Enrich.WithThreadId();
+                .MinimumLevel.Debug();
         }
 
         public static LoggerConfiguration WriteToFile(this LoggerConfiguration conf, params string[] extraIdentifiers)

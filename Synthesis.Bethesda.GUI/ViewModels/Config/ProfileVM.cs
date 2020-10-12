@@ -61,8 +61,8 @@ namespace Synthesis.Bethesda.GUI
             AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(this)));
             AddSnippetPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new CodeSnippetPatcherVM(this)));
 
-            ProfileDirectory = Path.Combine(Config.WorkingDirectory, ID);
-            WorkingDirectory = Path.Combine(Config.WorkingDirectory, ID, "Workspace");
+            ProfileDirectory = Path.Combine(Execution.Constants.WorkingDirectory, ID);
+            WorkingDirectory = Execution.Constants.ProfileWorkingDirectory(ID);
 
             var dataFolderResult = this.WhenAnyValue(x => x.Release)
                 .ObserveOn(RxApp.TaskpoolScheduler)
@@ -96,10 +96,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         return (Results: Observable.Empty<IChangeSet<LoadOrderListing>>(), State: Observable.Return<ErrorResponse>(ErrorResponse.Fail("Data folder not set")));
                     }
-                    if (!Mutagen.Bethesda.LoadOrder.TryGetPluginsFile(x.release, out var path))
-                    {
-                        return (Results: Observable.Empty<IChangeSet<LoadOrderListing>>(), State: Observable.Return<ErrorResponse>(ErrorResponse.Fail("Could not locate plugins file")));
-                    }
+                    var path = Mutagen.Bethesda.LoadOrder.GetPluginsPath(x.release);
                     return (Results: Mutagen.Bethesda.LoadOrder.GetLiveLoadOrder(x.release, path, x.dataFolder.Value, out var errors), State: errors);
                 })
                 .Replay(1)

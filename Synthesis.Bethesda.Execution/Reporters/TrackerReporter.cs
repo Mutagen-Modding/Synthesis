@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Synthesis.Bethesda.Execution.Runner
+namespace Synthesis.Bethesda.Execution.Reporters
 {
     public class TrackerReporter : IRunReporter
     {
@@ -57,11 +57,11 @@ namespace Synthesis.Bethesda.Execution.Runner
             _patcherComplete.Add((patcher, outputPath));
         }
 
-        public void ReportOutput(string str)
+        public void Write(IPatcherRun? patcher, string str)
         {
         }
 
-        public void ReportError(string str)
+        public void WriteError(IPatcherRun? patcher, string str)
         {
         }
     }

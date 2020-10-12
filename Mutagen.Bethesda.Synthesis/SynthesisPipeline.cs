@@ -1,5 +1,6 @@
 using CommandLine;
 using Mutagen.Bethesda.Internals;
+using Mutagen.Bethesda.Synthesis.CLI;
 using Mutagen.Bethesda.Synthesis.Internal;
 using Noggog;
 using Synthesis.Bethesda;
@@ -81,9 +82,13 @@ namespace Mutagen.Bethesda.Synthesis
                     return 0;
                 }
             }
-            return await Parser.Default.ParseArguments(args, typeof(RunSynthesisPatcher))
+            var parser = new Parser((s) =>
+            {
+                s.IgnoreUnknownArguments = true;
+            });
+            return await parser.ParseArguments(args, typeof(RunSynthesisMutagenPatcher))
                 .MapResult(
-                    async (RunSynthesisPatcher settings) =>
+                    async (RunSynthesisMutagenPatcher settings) =>
                     {
                         try
                         {
@@ -152,9 +157,13 @@ namespace Mutagen.Bethesda.Synthesis
                     return 0;
                 }
             }
-            return Parser.Default.ParseArguments(args, typeof(RunSynthesisPatcher))
+            var parser = new Parser((s) =>
+            {
+                s.IgnoreUnknownArguments = true;
+            });
+            return parser.ParseArguments(args, typeof(RunSynthesisMutagenPatcher))
                 .MapResult(
-                    (RunSynthesisPatcher settings) =>
+                    (RunSynthesisMutagenPatcher settings) =>
                     {
                         try
                         {
@@ -186,7 +195,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// <param name="patcher">Patcher func that processes a load order, and returns a mod object to export.</param>
         /// <param name="userPreferences">Any custom user preferences</param>
         public async Task Patch<TMod, TModGetter>(
-            RunSynthesisPatcher settings,
+            RunSynthesisMutagenPatcher settings,
             AsyncPatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
             where TMod : class, IMod, TModGetter
@@ -221,7 +230,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// <param name="patcher">Patcher func that processes a load order, and returns a mod object to export.</param>
         /// <param name="userPreferences">Any custom user preferences</param>
         public void Patch<TMod, TModGetter>(
-            RunSynthesisPatcher settings,
+            RunSynthesisMutagenPatcher settings,
             PatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
             where TMod : class, IMod, TModGetter
@@ -258,7 +267,7 @@ namespace Mutagen.Bethesda.Synthesis
         }
 
         public IEnumerable<LoadOrderListing> GetLoadOrder(
-            RunSynthesisPatcher settings,
+            RunSynthesisMutagenPatcher settings,
             UserPreferences? userPrefs = null,
             bool throwOnMissingMods = true)
         {
@@ -293,20 +302,21 @@ namespace Mutagen.Bethesda.Synthesis
             return loadOrderListing;
         }
 
-        public static RunSynthesisPatcher GetDefaultRun(ModKey modKey, GameRelease release)
+        public static RunSynthesisMutagenPatcher GetDefaultRun(ModKey modKey, GameRelease release)
         {
             var dataPath = Path.Combine(release.ToWjGame().MetaData().GameLocation().ToString(), "Data");
             if (!LoadOrder.TryGetPluginsFile(release, out var path))
             {
                 throw new FileNotFoundException("Could not locate load order automatically.");
             }
-            return new RunSynthesisPatcher()
+            return new RunSynthesisMutagenPatcher()
             {
                 DataFolderPath = dataPath,
                 SourcePath = null,
                 OutputPath = Path.Combine(dataPath, modKey.FileName),
                 GameRelease = release,
-                LoadOrderFilePath = path.Path
+                LoadOrderFilePath = path.Path,
+                ExtraDataFolder = "./Data"
             };
         }
     }
