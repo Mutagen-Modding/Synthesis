@@ -30,6 +30,9 @@ namespace Synthesis.Bethesda.Execution.CLI
         [Option('n', "ProfileName", Required = false, HelpText = "Nickname/GUID of profile to run if path is to a settings file with multiple profiles")]
         public string ProfileName { get; set; } = string.Empty;
 
+        [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to where top level extra patcher data should be stored/read from.  Default is next to the exe")]
+        public string? ExtraDataFolder { get; set; }
+
         public override string ToString()
         {
             return $"\n{nameof(RunSynthesisPatcher)} => \n"
@@ -39,7 +42,8 @@ namespace Synthesis.Bethesda.Execution.CLI
                 + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
                 + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
                 + $"  {nameof(ProfileDefinitionPath)} => {this.ProfileDefinitionPath} \n"
-                + $"  {nameof(ProfileName)} => {this.ProfileName}";
+                + $"  {nameof(ProfileName)} => {this.ProfileName} \n"
+                + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}";
         }
     }
 }

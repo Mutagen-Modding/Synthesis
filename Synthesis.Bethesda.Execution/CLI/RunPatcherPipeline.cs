@@ -79,6 +79,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                             SolutionPatcherSettings sln => new SolutionPatcherRun(
                                 name: sln.Nickname,
                                 pathToSln: sln.SolutionPath,
+                                pathToExtraDataBaseFolder: run.ExtraDataFolder ?? Constants.TypicalExtraData,
                                 pathToProj: Path.Combine(Path.GetDirectoryName(sln.SolutionPath)!, sln.ProjectSubpath)),
                             GithubPatcherSettings git => new GitPatcherRun(
                                 settings: git,

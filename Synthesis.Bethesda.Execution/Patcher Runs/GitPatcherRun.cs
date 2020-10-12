@@ -51,22 +51,22 @@ namespace Synthesis.Bethesda.Execution
 
             throw new NotImplementedException("Need to migrate in proper git checkouts");
 
-            _output.OnNext($"Locating path to solution based on local dir {_localDir}");
-            var pathToSln = GetPathToSolution(_localDir);
-            _output.OnNext($"Locating path to project based on {pathToSln} AND {_settings.SelectedProjectSubpath}");
-            var foundProjSubPath = SolutionPatcherRun.AvailableProject(pathToSln, _settings.SelectedProjectSubpath);
-            if (foundProjSubPath == null)
-            {
-                throw new SynthesisBuildFailure("Could not locate project sub path");
-            }
-            var pathToProj = Path.Combine(_localDir, foundProjSubPath);
-            SolutionRun = new SolutionPatcherRun(
-                _settings.Nickname,
-                pathToSln: Path.Combine(_localDir, pathToSln), 
-                pathToProj: pathToProj);
-            using var outputSub = SolutionRun.Output.Subscribe(this._output);
-            using var errSub = SolutionRun.Error.Subscribe(this._error);
-            await SolutionRun.Prep(release, cancel).ConfigureAwait(false);
+            //_output.OnNext($"Locating path to solution based on local dir {_localDir}");
+            //var pathToSln = GetPathToSolution(_localDir);
+            //_output.OnNext($"Locating path to project based on {pathToSln} AND {_settings.SelectedProjectSubpath}");
+            //var foundProjSubPath = SolutionPatcherRun.AvailableProject(pathToSln, _settings.SelectedProjectSubpath);
+            //if (foundProjSubPath == null)
+            //{
+            //    throw new SynthesisBuildFailure("Could not locate project sub path");
+            //}
+            //var pathToProj = Path.Combine(_localDir, foundProjSubPath);
+            //SolutionRun = new SolutionPatcherRun(
+            //    _settings.Nickname,
+            //    pathToSln: Path.Combine(_localDir, pathToSln), 
+            //    pathToProj: pathToProj);
+            //using var outputSub = SolutionRun.Output.Subscribe(this._output);
+            //using var errSub = SolutionRun.Error.Subscribe(this._error);
+            //await SolutionRun.Prep(release, cancel).ConfigureAwait(false);
         }
 
         public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)

@@ -27,6 +27,7 @@ namespace Synthesis.Bethesda.Execution
         public string Name { get; }
         public string PathToSolution { get; }
         public string PathToProject { get; }
+        public string PathToExtraDataBaseFolder { get; }
 
         private Subject<string> _output = new Subject<string>();
         public IObservable<string> Output => _output;
@@ -37,21 +38,31 @@ namespace Synthesis.Bethesda.Execution
         public SolutionPatcherRun(
             string name,
             string pathToSln, 
-            string pathToProj)
+            string pathToProj,
+            string pathToExtraDataBaseFolder)
         {
             PathToSolution = pathToSln;
             PathToProject = pathToProj;
-            Name = name ?? $"{Path.GetFileNameWithoutExtension(pathToSln)}/{Path.GetFileNameWithoutExtension(pathToProj)}";
+            PathToExtraDataBaseFolder = pathToExtraDataBaseFolder;
+            Name = name;
         }
 
         public async Task Prep(GameRelease release, CancellationToken? cancel = null)
         {
-            _output.OnNext($"Compiling");
-            var resp = await CompileWithDotnet(PathToProject, cancel ?? CancellationToken.None).ConfigureAwait(false);
-            if (!resp.Succeeded)
-            {
-                throw new SynthesisBuildFailure(resp.Reason);
-            }
+            await Task.WhenAll(
+                Task.Run(async () =>
+                {
+                    _output.OnNext($"Compiling");
+                    var resp = await CompileWithDotnet(PathToProject, cancel ?? CancellationToken.None).ConfigureAwait(false);
+                    if (!resp.Succeeded)
+                    {
+                        throw new SynthesisBuildFailure(resp.Reason);
+                    }
+                }),
+                Task.Run(async () =>
+                {
+                    await CopyOverExtraData().ConfigureAwait(false);
+                })).ConfigureAwait(false); ;
         }
 
         public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
@@ -65,7 +76,7 @@ namespace Synthesis.Bethesda.Execution
             var internalSettings = new RunSynthesisMutagenPatcher()
             {
                 DataFolderPath = settings.DataFolderPath,
-                ExtraDataFolder = Path.Combine(Path.GetDirectoryName(PathToProject), "Data"),
+                ExtraDataFolder = Path.Combine(PathToExtraDataBaseFolder, Name),
                 GameRelease = settings.GameRelease,
                 LoadOrderFilePath = settings.LoadOrderFilePath,
                 OutputPath = settings.OutputPath,
@@ -171,6 +182,28 @@ namespace Synthesis.Bethesda.Execution
             return AvailableProjects(solutionPath)
                 .Where(av => Path.GetFileName(av).Equals(projName))
                 .FirstOrDefault();
+        }
+
+        private async Task CopyOverExtraData()
+        {
+            var inputExtraData = new DirectoryInfo(Path.Combine(Path.GetDirectoryName(PathToProject), "Data"));
+            if (!inputExtraData.Exists)
+            {
+                _output.OnNext("No extra data to consider.");
+                return;
+            }
+
+            var outputExtraData = new DirectoryInfo(Path.Combine(PathToExtraDataBaseFolder, Name));
+            if (outputExtraData.Exists)
+            {
+                _output.OnNext($"Extra data folder already exists. Leaving as is: {outputExtraData}");
+                return;
+            }
+
+            _output.OnNext("Copying extra data folder");
+            _output.OnNext($"  From: {inputExtraData}");
+            _output.OnNext($"  To: {outputExtraData}");
+            inputExtraData.DeepCopy(outputExtraData);
         }
     }
 }

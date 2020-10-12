@@ -444,6 +444,7 @@ namespace Synthesis.Bethesda.GUI
                 new SolutionPatcherRun(
                     name: DisplayName,
                     pathToSln: RunnableData.SolutionPath,
+                    pathToExtraDataBaseFolder: Execution.Constants.TypicalExtraData,
                     pathToProj: SelectedProjectPath.TargetPath));
         }
 

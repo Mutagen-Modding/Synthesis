@@ -16,6 +16,7 @@ namespace Synthesis.Bethesda.Execution
         {
             TypeNameHandling = TypeNameHandling.Auto,
         };
+        public static string TypicalExtraData => Path.Combine(Environment.CurrentDirectory, "Data");
 
         static Constants()
         {
