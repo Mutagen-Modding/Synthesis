@@ -25,26 +25,15 @@ jobs:
         file: Synthesis.Bethesda.GUI/bin/Release/netcoreapp3.1/win-x64/publish/Synthesis.exe
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.release.tag_name }}
-    - name: Publish Mutagen Synthesis to Github
+    - name: Publish Synthesis Nugets to Github
       uses: svenstaro/upload-release-action@v2
       with:
-        file: Mutagen.Bethesda.Synthesis/bin/x64/Release/Mutagen.Bethesda.Synthesis.${{ github.event.release.tag_name }}.nupkg
+        file: "**/*.nupkg"
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.release.tag_name }}
-    - name: Publish Synthesis Bethesda to Github
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: Synthesis.Bethesda/bin/x64/Release/Synthesis.Bethesda.${{ github.event.release.tag_name }}.nupkg
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ github.event.release.tag_name }}
-    - name: Publish Synthesis Execution to Github
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: Synthesis.Bethesda.Execution/bin/x64/Release/Synthesis.Bethesda.Execution.${{ github.event.release.tag_name }}.nupkg
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ github.event.release.tag_name }}
+        file_glob: "true"
     - name: Publish to Nuget.org
-      run: dotnet nuget push **/*${{ github.event.release.tag_name }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --no-symbols true
+      run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --no-symbols true
   notification:
     runs-on: ubuntu-latest
     needs: release
