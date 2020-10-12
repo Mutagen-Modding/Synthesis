@@ -231,7 +231,7 @@ namespace Synthesis.Bethesda.GUI
                 parent,
                 this,
                 new SolutionPatcherRun(
-                    nickname: DisplayName,
+                    name: DisplayName,
                     pathToSln: SolutionPath.TargetPath,
                     pathToProj: SelectedProjectPath.TargetPath));
         }

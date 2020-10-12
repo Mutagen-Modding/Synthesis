@@ -24,8 +24,8 @@ namespace Mutagen.Bethesda.Synthesis.CLI
         [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
         public string LoadOrderFilePath { get; set; } = string.Empty;
 
-        [Option('e', "ExtraSettingsPath", Required = true, HelpText = "Path to the extra settings folder dedicated for a patcher")]
-        public string? ExtraSettingsPath { get; set; }
+        [Option('e', "ExtraDataFolder", Required = true, HelpText = "Path to the extra data folder dedicated for a patcher")]
+        public string? ExtraDataFolder { get; set; }
 
         public override string ToString()
         {
@@ -35,7 +35,7 @@ namespace Mutagen.Bethesda.Synthesis.CLI
                 + $"  {nameof(GameRelease)} => {this.GameRelease} \n"
                 + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
                 + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
-                + $"  {nameof(ExtraSettingsPath)} => {this.ExtraSettingsPath}";
+                + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}";
         }
 
         public static RunSynthesisMutagenPatcher Factory(RunSynthesisPatcher settings)

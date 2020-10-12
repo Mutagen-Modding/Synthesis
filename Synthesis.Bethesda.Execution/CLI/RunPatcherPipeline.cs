@@ -77,7 +77,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                                 cli.PathToExecutable,
                                 pathToExtra: null),
                             SolutionPatcherSettings sln => new SolutionPatcherRun(
-                                nickname: sln.Nickname,
+                                name: sln.Nickname,
                                 pathToSln: sln.SolutionPath,
                                 pathToProj: Path.Combine(Path.GetDirectoryName(sln.SolutionPath)!, sln.ProjectSubpath)),
                             GithubPatcherSettings git => new GitPatcherRun(

@@ -55,7 +55,7 @@ namespace Synthesis.Bethesda.Execution
             if (cancel?.IsCancellationRequested ?? false) return;
 
             var internalSettings = RunSynthesisMutagenPatcher.Factory(settings);
-            internalSettings.ExtraSettingsPath = PathToExtraData;
+            internalSettings.ExtraDataFolder = PathToExtraData;
 
             var args = Parser.Default.FormatCommandLine(internalSettings);
             try

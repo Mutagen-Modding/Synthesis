@@ -1,5 +1,4 @@
 using Buildalyzer;
-using Buildalyzer.Environment;
 using CommandLine;
 using LibGit2Sharp;
 using Microsoft.CodeAnalysis;
@@ -20,7 +19,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using Wabbajack.Common;
 
 namespace Synthesis.Bethesda.Execution
 {
@@ -37,13 +35,13 @@ namespace Synthesis.Bethesda.Execution
         public IObservable<string> Error => _error;
 
         public SolutionPatcherRun(
-            string nickname,
+            string name,
             string pathToSln, 
             string pathToProj)
         {
             PathToSolution = pathToSln;
             PathToProject = pathToProj;
-            Name = nickname ?? $"{Path.GetFileNameWithoutExtension(pathToSln)}/{Path.GetFileNameWithoutExtension(pathToProj)}";
+            Name = name ?? $"{Path.GetFileNameWithoutExtension(pathToSln)}/{Path.GetFileNameWithoutExtension(pathToProj)}";
         }
 
         public async Task Prep(GameRelease release, CancellationToken? cancel = null)
@@ -67,7 +65,7 @@ namespace Synthesis.Bethesda.Execution
             var internalSettings = new RunSynthesisMutagenPatcher()
             {
                 DataFolderPath = settings.DataFolderPath,
-                ExtraSettingsPath = Path.Combine(Path.GetDirectoryName(PathToProject), "Data"),
+                ExtraDataFolder = Path.Combine(Path.GetDirectoryName(PathToProject), "Data"),
                 GameRelease = settings.GameRelease,
                 LoadOrderFilePath = settings.LoadOrderFilePath,
                 OutputPath = settings.OutputPath,
