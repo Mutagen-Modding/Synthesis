@@ -57,11 +57,7 @@ namespace Synthesis.Bethesda.Execution.CLI
 
                 if (run.LoadOrderFilePath.IsNullOrWhitespace())
                 {
-                    if (!LoadOrder.TryGetPluginsFile(run.GameRelease, out var pluginPath))
-                    {
-                        throw new ArgumentException("Could not locate plugins file");
-                    }
-                    run.LoadOrderFilePath = pluginPath.Path;
+                    run.LoadOrderFilePath = LoadOrder.GetPluginsPath(run.GameRelease);
                 }
 
                 reporter?.Write(default, "Patchers to run:");
