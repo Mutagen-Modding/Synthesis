@@ -150,8 +150,7 @@ namespace Synthesis.Bethesda.GUI
                             masterBranch = master.FriendlyName;
                             repo.Reset(ResetMode.Hard);
                             Commands.Checkout(repo, master);
-                            Configuration config = repo.Config;
-                            Signature author = config.BuildSignature(DateTimeOffset.Now);
+                            Signature author = new Signature("please", "whymustidothis@gmail.com", DateTimeOffset.Now);
                             Commands.Pull(repo, author, null);
                             tags = repo.Tags.Select(tag => tag.FriendlyName).WithIndex().ToList();
                         }
