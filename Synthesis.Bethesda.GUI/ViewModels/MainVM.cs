@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Noggog;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution.Settings;
+using System.Diagnostics;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -87,8 +88,8 @@ namespace Synthesis.Bethesda.GUI
 
             Task.Run(() => Mutagen.Bethesda.WarmupAll.Init()).FireAndForget();
 
-            SynthesisVersion = typeof(Synthesis.Bethesda.Constants).Assembly.GetName().Version!.ToString().TrimEnd(".0").TrimEnd(".0");
-            MutagenVersion = typeof(FormKey).Assembly.GetName().Version!.ToString().TrimEnd(".0").TrimEnd(".0");
+            SynthesisVersion = FileVersionInfo.GetVersionInfo(typeof(Synthesis.Bethesda.Constants).Assembly.Location)!.ProductVersion.TrimEnd(".0").TrimEnd(".0");
+            MutagenVersion = FileVersionInfo.GetVersionInfo(typeof(FormKey).Assembly.Location)!.ProductVersion.TrimEnd(".0").TrimEnd(".0");
         }
 
         public void Load(SynthesisGuiSettings? guiSettings, PipelineSettings? pipeSettings)
