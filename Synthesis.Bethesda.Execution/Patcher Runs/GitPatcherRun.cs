@@ -97,12 +97,21 @@ namespace Synthesis.Bethesda.Execution
                 dirInfo.DeleteEntireFolder();
                 return false;
             }
-            using var repo = new Repository(localDir);
-            // If it's the same remote repo, don't delete
-            if (repo.Network.Remotes.FirstOrDefault()?.Url.Equals(remoteUrl.Value) ?? false)
+            try
             {
-                logger("Remote repository target matched local folder's repo.  Keeping clone.");
-                return true;
+                using var repo = new Repository(localDir);
+                // If it's the same remote repo, don't delete
+                if (repo.Network.Remotes.FirstOrDefault()?.Url.Equals(remoteUrl.Value) ?? false)
+                {
+                    logger("Remote repository target matched local folder's repo.  Keeping clone.");
+                    return true;
+                }
+            }
+            catch (RepositoryNotFoundException)
+            {
+                logger("Repository corrupted.  Deleting local.");
+                dirInfo.DeleteEntireFolder();
+                return false;
             }
 
             logger("Remote address targeted a different repository.  Deleting local.");
