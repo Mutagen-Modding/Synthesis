@@ -319,7 +319,7 @@ namespace Synthesis.Bethesda.GUI
                                 Logger.Information($"Checking out {targetSha}");
                                 repo.Reset(ResetMode.Hard, commit, new CheckoutOptions());
 
-                                var projPath = Path.Combine(LocalDriverRepoDirectory, foundProjSubPath);
+                                var projPath = Path.Combine(LocalRunnerRepoDirectory, foundProjSubPath);
 
                                 // Compile to help prep
                                 await SolutionPatcherRun.CompileWithDotnet(projPath, cancel);
@@ -444,7 +444,7 @@ namespace Synthesis.Bethesda.GUI
                     name: DisplayName,
                     pathToSln: RunnableData.SolutionPath,
                     pathToExtraDataBaseFolder: Execution.Constants.TypicalExtraData,
-                    pathToProj: SelectedProjectPath.TargetPath));
+                    pathToProj: RunnableData.ProjPath));
         }
 
         public static IObservable<ConfigurationStateVM<string>> GetRepoPathValidity(IObservable<string> repoPath)
