@@ -26,10 +26,18 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, v => v.VersionButton.Content)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.SynthesisVersion)
-                    .BindToStrict(this, v => v.SynthesisVersionTooltip.Text)
+                    .BindToStrict(this, v => v.CurrentSynthesisVersionText.Text)
+                    .DisposeWith(dispose);
+                this.WhenAnyValue(x => x.ViewModel!.NewestSynthesisVersion)
+                    .Select(x => x ?? "[Unknown]")
+                    .BindToStrict(this, v => v.LatestSynthesisVersionText.Text)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.MutagenVersion)
-                    .BindToStrict(this, v => v.MutagenVersionTooltip.Text)
+                    .BindToStrict(this, v => v.CurrentMutagenVersionText.Text)
+                    .DisposeWith(dispose);
+                this.WhenAnyValue(x => x.ViewModel!.NewestMutagenVersion)
+                    .Select(x => x ?? "[Unknown]")
+                    .BindToStrict(this, v => v.LatestMutagenVersionText.Text)
                     .DisposeWith(dispose);
                 this.VersionButton.Events()
                     .PreviewMouseLeftButtonUp
