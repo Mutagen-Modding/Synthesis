@@ -18,9 +18,15 @@ namespace Synthesis.Bethesda.GUI.Views
         public MainWindow()
         {
             InitializeComponent();
-            Log.Logger.Information("==============================================");
-            Log.Logger.Information("================== Starting ==================");
-            Log.Logger.Information("==============================================");
+
+            AppDomain.CurrentDomain.UnhandledException += (o, e) =>
+            {
+                Log.Logger.Error(e.ExceptionObject as Exception, "Crashing");
+            };
+
+            Log.Logger.Information("===============================================");
+            Log.Logger.Information("============== Opening Synthesis ==============");
+            Log.Logger.Information("===============================================");
             const string GuiSettingsPath = "GuiSettings.json";
             var mainVM = new MainVM();
             SynthesisGuiSettings? guiSettings = null;

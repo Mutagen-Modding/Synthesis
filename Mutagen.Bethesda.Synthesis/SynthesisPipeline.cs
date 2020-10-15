@@ -314,7 +314,7 @@ namespace Mutagen.Bethesda.Synthesis
                 OutputPath = Path.Combine(dataPath, modKey.FileName),
                 GameRelease = release,
                 LoadOrderFilePath = path.Path,
-                ExtraDataFolder = "./Data"
+                ExtraDataFolder = Path.GetFullPath("./Data")
             };
         }
     }
