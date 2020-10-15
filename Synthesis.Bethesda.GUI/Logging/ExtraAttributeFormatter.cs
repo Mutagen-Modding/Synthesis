@@ -45,6 +45,11 @@ namespace Synthesis.Bethesda.GUI
                     }
                 }
                 output.Write(Environment.NewLine);
+                if (logEvent.Exception != null)
+                {
+                    output.Write(logEvent.Exception);
+                    output.Write(Environment.NewLine);
+                }
             }
             catch (Exception)
             {
