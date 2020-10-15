@@ -1,14 +1,10 @@
 using CommandLine;
-using Mutagen.Bethesda.Internals;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Mutagen.Bethesda.Synthesis.Internal;
-using Noggog;
-using Synthesis.Bethesda;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Wabbajack.Common;
 
@@ -127,6 +123,8 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
+            Console.WriteLine($"Mutagen version: {Constants.MutagenVersion}");
+            Console.WriteLine($"Synthesis version: {Constants.SynthesisVersion}");
             if (args.Length == 0)
             {
                 var prefs = userPreferences ?? new UserPreferences();

@@ -1,10 +1,7 @@
-using Mutagen.Bethesda.Internals;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
-using Synthesis.Bethesda;
 using System;
-using System.Linq;
-using Constants = Synthesis.Bethesda.Constants;
+using BaseSynthesis = Synthesis.Bethesda;
 
 namespace Mutagen.Bethesda.Synthesis.Internal
 {
@@ -28,7 +25,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             // Get load order
             var loadOrderListing = SynthesisPipeline.Instance.GetLoadOrder(settings, userPrefs)
                 .ToExtendedList();
-            var synthIndex = loadOrderListing.IndexOf(Constants.SynthesisModKey, (listing, key) => listing.ModKey == key);
+            var synthIndex = loadOrderListing.IndexOf(BaseSynthesis.Constants.SynthesisModKey, (listing, key) => listing.ModKey == key);
             if (synthIndex != -1)
             {
                 loadOrderListing.RemoveToCount(synthIndex);
@@ -43,7 +40,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 settings.GameRelease);
 
             // Get Modkey from output path
-            var modKey = Constants.SynthesisModKey;
+            var modKey = BaseSynthesis.Constants.SynthesisModKey;
 
             // Create or import patch mod
             TMod patchMod;

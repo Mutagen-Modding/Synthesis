@@ -17,7 +17,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0"
             Margin="0,4"
@@ -76,6 +76,7 @@
         </ComboBox>
         <ScrollViewer Grid.Row="4"
             x:Name="AdvancedSettingsArea"
+            Margin="0,4,0,0"
             ScrollViewer.HorizontalScrollBarVisibility="Auto"
             ScrollViewer.VerticalScrollBarVisibility="Auto">
             <Grid>
@@ -84,17 +85,87 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="65" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Row="0"
+                    Margin="0,4,0,0"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    Text="Mutagen Version" />
+                <Grid x:Name="MutagenVersioningGrid" Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TabControl Grid.Column="0"
+                        x:Name="MutagenVersioningTab"
+                        Margin="0,2,0,0"
+                        mahapps:HeaderedControlHelper.HeaderFontSize="16"
+                        mahapps:HeaderedControlHelper.HeaderForeground="AliceBlue"
+                        Background="Transparent">
+                        <TabItem Header="Latest" ToolTip="Run with the latest stable version of Mutagen" />
+                        <TabItem Header="Match" ToolTip="Run with the version of Mutagen explicitly listed in the patcher" />
+                        <TabItem Header="Manual" ToolTip="Run with a manually specified version of Mutagen" />
+                    </TabControl>
+                    <TextBox Grid.Column="1"
+                        x:Name="MutagenManualVersionBox"
+                        MinWidth="65"
+                        Margin="0,3"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        mahapps:TextBoxHelper.Watermark="0.0.0.0"
+                        Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
+                </Grid>
+                <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                    x:Name="MutagenVersionText"
+                    Margin="0,10,0,0"
+                    HorizontalAlignment="Right" />
+                <TextBlock Grid.Row="2"
+                    Margin="0,4,0,0"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    Text="Synthesis Version" />
+                <Grid x:Name="SynthesisVersioningGrid" Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TabControl Grid.Row="5"
+                        x:Name="SynthesisVersioningTab"
+                        Margin="0,2,0,0"
+                        mahapps:HeaderedControlHelper.HeaderFontSize="16"
+                        mahapps:HeaderedControlHelper.HeaderForeground="AliceBlue"
+                        Background="Transparent">
+                        <TabItem Header="Latest" ToolTip="Run with the latest stable version of Mutagen" />
+                        <TabItem Header="Match" ToolTip="Run with the version of Mutagen explicitly listed in the patcher" />
+                        <TabItem Header="Manual" ToolTip="Run with a manually specified version of Mutagen" />
+                    </TabControl>
+                    <TextBox Grid.Column="1"
+                        x:Name="SynthesisManualVersionBox"
+                        MinWidth="65"
+                        Margin="0,3"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        mahapps:TextBoxHelper.Watermark="0.0.0.0"
+                        Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
+                </Grid>
+                <TextBlock Grid.Row="2" Grid.RowSpan="2" Grid.Column="1"
+                    x:Name="SynthesisVersionText"
+                    Margin="0,10,0,0"
+                    HorizontalAlignment="Right" />
+                <TextBlock Grid.Row="4"
                     Margin="0,8,0,0"
                     FontSize="14"
                     FontWeight="Bold"
-                    Text="Patcher Versioning" />
-                <TabControl Grid.Row="1"
+                    Text="Patcher Version" />
+                <TabControl Grid.Row="5"
                     x:Name="PatcherVersioningTab"
                     Margin="0,2,0,0"
                     mahapps:HeaderedControlHelper.HeaderFontSize="16"
@@ -144,70 +215,10 @@
                             Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
                     </TabItem>
                 </TabControl>
-                <Grid Grid.Row="1" Grid.Column="1"
-                    x:Name="PatcherVersionInfoGrid"
-                    MinHeight="70">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0"
-                        x:Name="CommitDateText"
-                        HorizontalAlignment="Right"
-                        Foreground="{StaticResource MahApps.Brushes.Gray3}"
-                        Text="Commit Date" />
-                    <TextBlock Grid.Row="1"
-                        x:Name="PatcherVersionDateText"
-                        HorizontalAlignment="Right"
-                        Text="Date" />
-                    <Button Grid.Row="2"
-                        x:Name="OpenGitToVersionButton"
-                        HorizontalAlignment="Right">
-                        <icon:PackIconMaterial Kind="OpenInApp" />
-                    </Button>
-                </Grid>
-                <TextBlock Grid.Row="2"
-                    Margin="0,4,0,0"
-                    FontSize="14"
-                    FontWeight="Bold"
-                    Text="Mutagen Versioning"
-                    Visibility="Collapsed" />
-                <TabControl Grid.Row="3"
-                    x:Name="MutagenVersioningTab"
-                    Margin="0,2,0,0"
-                    mahapps:HeaderedControlHelper.HeaderFontSize="16"
-                    mahapps:HeaderedControlHelper.HeaderForeground="AliceBlue"
-                    Background="Transparent"
-                    Visibility="Collapsed">
-                    <TabItem Header="Match" ToolTip="Run with the version of Mutagen explicitly listed in the patcher">
-                        <TextBlock x:Name="MutagenVersionMarkedDisplay" />
-                    </TabItem>
-                    <TabItem Header="Latest" ToolTip="Run with the latest stable version of Mutagen">
-                        <TextBlock x:Name="MutagenVersionLatestDisplay" />
-                    </TabItem>
-                    <TabItem Header="Manual" ToolTip="Run with a manually specified version of Mutagen">
-                        <ComboBox
-                            x:Name="MutagenVersionPickerBox"
-                            Margin="0,3"
-                            HorizontalAlignment="Left">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding}" />
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                            <ComboBox.Style>
-                                <Style BasedOn="{StaticResource Noggog.Styles.ComboBox}" TargetType="ComboBox">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedProjectPath.InError}" Value="True">
-                                            <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ComboBox.Style>
-                        </ComboBox>
-                    </TabItem>
-                </TabControl>
+                <TextBlock Grid.Row="4" Grid.RowSpan="2" Grid.Column="1"
+                    x:Name="PatcherVersionDateText"
+                    Margin="0,10,0,0"
+                    HorizontalAlignment="Right" />
             </Grid>
         </ScrollViewer>
     </Grid>

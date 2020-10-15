@@ -14,11 +14,15 @@
                 <StackPanel Orientation="Vertical">
                     <TextBlock>
                         <Run Text="Synthesis:" />
-                        <Run x:Name="SynthesisVersionTooltip" />
+                        <Run x:Name="CurrentSynthesisVersionText" />
+                        <Run Text=" - " />
+                        <Run x:Name="LatestSynthesisVersionText" />
                     </TextBlock>
                     <TextBlock>
                         <Run Text="Mutagen:" />
-                        <Run x:Name="MutagenVersionTooltip" />
+                        <Run x:Name="CurrentMutagenVersionText" />
+                        <Run Text=" - " />
+                        <Run x:Name="LatestMutagenVersionText" />
                     </TextBlock>
                 </StackPanel>
             </Button.ToolTip>

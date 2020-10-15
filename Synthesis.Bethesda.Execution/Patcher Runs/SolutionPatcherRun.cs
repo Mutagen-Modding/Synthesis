@@ -137,10 +137,13 @@ namespace Synthesis.Bethesda.Execution
             return (true, default);
         }
 
-        public static async Task<ErrorResponse> CompileWithDotnet(string url, CancellationToken cancel)
+        public static async Task<ErrorResponse> CompileWithDotnet(string targetPath, CancellationToken cancel)
         {
             using var process = ProcessWrapper.Start(
-                new ProcessStartInfo("dotnet", $"build \"{url}\""),
+                new ProcessStartInfo("dotnet", $"build \"{Path.GetFileName(targetPath)}\"")
+                {
+                    WorkingDirectory = Path.GetDirectoryName(targetPath)
+                },
                 cancel: cancel);
             string? firstError = null;
             bool buildFailed = false;

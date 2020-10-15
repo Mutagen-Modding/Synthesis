@@ -11,7 +11,9 @@ using System.Threading.Tasks;
 using Noggog;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution.Settings;
-using System.Diagnostics;
+using System.Reactive;
+using System.IO;
+using Synthesis.Bethesda.Execution;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -42,6 +44,9 @@ namespace Synthesis.Bethesda.GUI
         public string SynthesisVersion { get; }
 
         public string MutagenVersion { get; }
+
+        public IObservable<string?> NewestSynthesisVersion { get; }
+        public IObservable<string?> NewestMutagenVersion { get; }
 
         public MainVM()
         {
@@ -88,8 +93,18 @@ namespace Synthesis.Bethesda.GUI
 
             Task.Run(() => Mutagen.Bethesda.WarmupAll.Init()).FireAndForget();
 
-            SynthesisVersion = FileVersionInfo.GetVersionInfo(typeof(Synthesis.Bethesda.Constants).Assembly.Location)!.ProductVersion.TrimEnd(".0").TrimEnd(".0");
-            MutagenVersion = FileVersionInfo.GetVersionInfo(typeof(FormKey).Assembly.Location)!.ProductVersion.TrimEnd(".0").TrimEnd(".0");
+            SynthesisVersion = Mutagen.Bethesda.Synthesis.Constants.SynthesisVersion;
+            MutagenVersion = Mutagen.Bethesda.Synthesis.Constants.MutagenVersion;
+
+            var latestVersions = Observable.Return(Unit.Default)
+                .ObserveOn(RxApp.TaskpoolScheduler)
+                .SelectTask(_ => GetLatestVersions())
+                .Replay(1)
+                .RefCount();
+            NewestMutagenVersion = latestVersions
+                .Select(x => x.MutagenVersion);
+            NewestSynthesisVersion = latestVersions
+                .Select(x => x.SynthesisVersion);
         }
 
         public void Load(SynthesisGuiSettings? guiSettings, PipelineSettings? pipeSettings)
@@ -120,6 +135,32 @@ namespace Synthesis.Bethesda.GUI
                     Configuration.SelectedProfile = profile;
                     Configuration.MainVM.ActivePanel = Configuration;
                 });
+            }
+        }
+
+        public async Task<(string? MutagenVersion, string? SynthesisVersion)> GetLatestVersions()
+        {
+            try
+            {
+                Log.Logger.Information("Querying for latest published library versions");
+                var bootstrapProjectDir = new DirectoryPath(Path.Combine(Execution.Constants.WorkingDirectory, "VersionQuery"));
+                bootstrapProjectDir.DeleteEntireFolder();
+                bootstrapProjectDir.Create();
+                var slnPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.sln");
+                ASolutionInitializer.CreateSolutionFile(slnPath);
+                var projPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.csproj");
+                ASolutionInitializer.CreateProject(projPath, GameCategory.Skyrim);
+                ASolutionInitializer.AddProjectToSolution(slnPath, projPath);
+                var ret = await NugetQuery.QueryVersions(projPath, current: false);
+                Log.Logger.Information("Latest published library versions:");
+                Log.Logger.Information($"  Mutagen: {ret.MutagenVersion}");
+                Log.Logger.Information($"  Synthesis: {ret.SynthesisVersion}");
+                return (ret.MutagenVersion ?? this.MutagenVersion, ret.SynthesisVersion ?? this.SynthesisVersion);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(ex, "Error querying for latest nuget versions");
+                return (null, null);
             }
         }
     }

@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Diagnostics;
 using System.Reactive;
+using Microsoft.Build.Logging.StructuredLogger;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -57,9 +58,6 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public PatcherVersioningEnum PatcherVersioning { get; set; } = PatcherVersioningEnum.Master;
 
-        [Reactive]
-        public MutagenVersioningEnum MutagenVersioning { get; set; } = MutagenVersioningEnum.Match;
-
         public IObservableCollection<string> AvailableTags { get; }
 
         [Reactive]
@@ -77,6 +75,24 @@ namespace Synthesis.Bethesda.GUI
         public ICommand OpenGitPageCommand { get; }
 
         public ICommand OpenGitPageToVersionCommand { get; }
+
+        [Reactive]
+        public MutagenVersioningEnum MutagenVersioning { get; set; } = MutagenVersioningEnum.Latest;
+
+        [Reactive]
+        public string ManualMutagenVersion { get; set; } = string.Empty;
+
+        [Reactive]
+        public SynthesisVersioningEnum SynthesisVersioning { get; set; } = SynthesisVersioningEnum.Latest;
+
+        [Reactive]
+        public string ManualSynthesisVersion { get; set; } = string.Empty;
+
+        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _UsedMutagenVersion;
+        public (string? MatchVersion, string? SelectedVersion) UsedMutagenVersion => _UsedMutagenVersion.Value;
+
+        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _UsedSynthesisVersion;
+        public (string? MatchVersion, string? SelectedVersion) UsedSynthesisVersion => _UsedSynthesisVersion.Value;
 
         public GitPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
@@ -232,23 +248,70 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(p => SelectedProjectPath.TargetPath = p)
                 .DisposeWith(this);
 
+            // Get the selected versioning preferences
+            var patcherVersioning = Observable.CombineLatest(
+                this.WhenAnyValue(x => x.PatcherVersioning),
+                this.WhenAnyValue(x => x.TargetTag),
+                this.WhenAnyValue(x => x.TargetCommit),
+                this.WhenAnyValue(x => x.TargetBranchName),
+                (versioning, tag, commit, branch) => (versioning, tag, commit, branch));
+
+            var libraryNugets = Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.MutagenVersioning),
+                    this.WhenAnyValue(x => x.ManualMutagenVersion),
+                    this.WhenAnyValue(x => x.SynthesisVersioning),
+                    this.WhenAnyValue(x => x.ManualSynthesisVersion),
+                    parent.Config.MainVM.NewestMutagenVersion,
+                    parent.Config.MainVM.NewestSynthesisVersion,
+                    (mutaVersioning, mutaManual, synthVersioning, synthManual, newestMuta, newestSynth) => 
+                    (mutaVersioning, mutaManual, synthVersioning, synthManual, newestMuta, newestSynth))
+                .Select(nugets =>
+                {
+                    if (nugets.mutaVersioning == MutagenVersioningEnum.Latest && nugets.newestMuta == null)
+                    {
+                        return GetResponse<(MutagenVersioningEnum MutaVersioning, string MutaVersion, SynthesisVersioningEnum SynthVersioning, string SynthVersion)>
+                            .Fail("Latest Mutagen version is desired, but latest version is not known.");
+                    }
+                    if (nugets.synthVersioning == SynthesisVersioningEnum.Latest && nugets.newestSynth == null)
+                    {
+                        return GetResponse<(MutagenVersioningEnum MutaVersioning, string MutaVersion, SynthesisVersioningEnum SynthVersioning, string SynthVersion)>
+                            .Fail("Latest Synthesis version is desired, but latest version is not known.");
+                    }
+                    var muta = nugets.mutaVersioning switch
+                    {
+                        MutagenVersioningEnum.Latest => (nugets.newestMuta, nugets.mutaVersioning),
+                        MutagenVersioningEnum.Match => (null, nugets.mutaVersioning),
+                        MutagenVersioningEnum.Manual => (nugets.mutaManual, nugets.mutaVersioning),
+                        _ => throw new NotImplementedException(),
+                    };
+                    var synth = nugets.synthVersioning switch
+                    {
+                        SynthesisVersioningEnum.Latest => (nugets.newestSynth, nugets.synthVersioning),
+                        SynthesisVersioningEnum.Match => (null, nugets.synthVersioning),
+                        SynthesisVersioningEnum.Manual => (nugets.synthManual, nugets.synthVersioning),
+                        _ => throw new NotImplementedException(),
+                    };
+                    return GetResponse<(MutagenVersioningEnum MutaVersioning, string MutaVersion, SynthesisVersioningEnum SynthVersioning, string SynthVersion)>
+                        .Succeed((muta.mutaVersioning, muta.Item1!, synth.synthVersioning, synth.Item1!));
+                })
+                .Replay(1)
+                .RefCount();
+
             // Checkout desired patcher commit on the runner repository
             var checkoutInput = Observable.CombineLatest(
                     driverRepoInfo.Select(x => x.RunnableState.Failed ? string.Empty : x.Item.MasterBranchName),
-                    this.WhenAnyValue(x => x.PatcherVersioning),
                     runnerRepoState,
                     SelectedProjectPath.PathState()
                         .Select(x => x.Succeeded ? x : GetResponse<string>.Fail("No patcher project selected.")),
-                    this.WhenAnyValue(x => x.TargetTag),
-                    this.WhenAnyValue(x => x.TargetCommit),
-                    this.WhenAnyValue(x => x.TargetBranchName),
-                    (master, versioning, runnerState, proj, tag, commit, branch) => (master, versioning, runnerState, proj, tag, commit, branch))
+                    patcherVersioning,
+                    libraryNugets,
+                    (master, runnerState, proj, patcherVersioning, libraryNugets) => 
+                    (master, runnerState, proj, patcherVersioning, libraryNugets))
                 .Replay(1)
                 .RefCount();
             var runnableState = checkoutInput
                 .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                 .DistinctUntilChanged()
-                .Do(item => Logger.Information($"Checking out {CheckoutStateToString(item)}"))
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .SelectReplaceWithIntermediate(
                     new ConfigurationStateVM<RunnerRepoInfo>(default!)
@@ -262,7 +325,19 @@ namespace Synthesis.Bethesda.GUI
                         {
                             if (item.runnerState.Failed) return item.runnerState.BubbleFailure<RunnerRepoInfo>();
                             if (item.proj.Failed) return item.proj.BubbleFailure<RunnerRepoInfo>();
+                            if (item.libraryNugets.Failed) return item.libraryNugets.BubbleFailure<RunnerRepoInfo>();
                             cancel.ThrowIfCancellationRequested();
+
+                            var checkoutTargetStr = item.patcherVersioning.versioning switch
+                            {
+                                PatcherVersioningEnum.Master => $"main branch {item.master}",
+                                PatcherVersioningEnum.Tag => $"tag {item.patcherVersioning.tag}",
+                                PatcherVersioningEnum.Branch => $"branch {item.patcherVersioning.branch}",
+                                PatcherVersioningEnum.Commit => $"master {item.patcherVersioning.commit}",
+                                _ => throw new NotImplementedException(),
+                            };
+                            Logger.Information($"Targeting {checkoutTargetStr}");
+
                             using var timing = Logger.Time("runner checkout");
                             try
                             {
@@ -273,7 +348,7 @@ namespace Synthesis.Bethesda.GUI
                                 Commands.Checkout(repo, runnerBranch);
                                 string? targetSha;
                                 string? target;
-                                switch (item.versioning)
+                                switch (item.patcherVersioning.versioning)
                                 {
                                     case PatcherVersioningEnum.Master:
                                         targetSha = repo.Branches
@@ -284,31 +359,33 @@ namespace Synthesis.Bethesda.GUI
                                         target = null;
                                         break;
                                     case PatcherVersioningEnum.Tag:
-                                        if (string.IsNullOrWhiteSpace(item.tag)) return GetResponse<RunnerRepoInfo>.Fail("No tag selected");
-                                        targetSha = repo.Tags[item.tag]?.Target.Sha;
+                                        if (string.IsNullOrWhiteSpace(item.patcherVersioning.tag)) return GetResponse<RunnerRepoInfo>.Fail("No tag selected");
+                                        targetSha = repo.Tags[item.patcherVersioning.tag]?.Target.Sha;
                                         if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate tag");
-                                        target = item.tag;
+                                        target = item.patcherVersioning.tag;
                                         break;
                                     case PatcherVersioningEnum.Commit:
-                                        targetSha = item.commit;
+                                        targetSha = item.patcherVersioning.commit;
                                         if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit");
-                                        target = item.commit;
+                                        target = item.patcherVersioning.commit;
                                         break;
                                     case PatcherVersioningEnum.Branch:
-                                        if (string.IsNullOrWhiteSpace(item.branch)) return GetResponse<RunnerRepoInfo>.Fail($"Target branch had no name.");
-                                        var targetBranch = repo.Branches[item.branch];
-                                        if (targetBranch == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {item.branch}");
+                                        if (string.IsNullOrWhiteSpace(item.patcherVersioning.branch)) return GetResponse<RunnerRepoInfo>.Fail($"Target branch had no name.");
+                                        var targetBranch = repo.Branches[item.patcherVersioning.branch];
+                                        if (targetBranch == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {item.patcherVersioning.branch}");
                                         targetSha = targetBranch.Tip.Sha;
-                                        target = item.branch;
+                                        target = item.patcherVersioning.branch;
                                         break;
                                     default:
                                         throw new NotImplementedException();
                                 }
                                 if (!ObjectId.TryParse(targetSha, out var objId)) return GetResponse<RunnerRepoInfo>.Fail("Malformed sha string");
 
+                                cancel.ThrowIfCancellationRequested();
                                 var commit = repo.Lookup(objId, ObjectType.Commit) as Commit;
                                 if (commit == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit with given sha");
 
+                                cancel.ThrowIfCancellationRequested();
                                 var slnPath = GitPatcherRun.GetPathToSolution(LocalRunnerRepoDirectory);
                                 if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
 
@@ -316,13 +393,25 @@ namespace Synthesis.Bethesda.GUI
 
                                 if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {item.proj.Value}.");
 
+                                cancel.ThrowIfCancellationRequested();
                                 Logger.Information($"Checking out {targetSha}");
                                 repo.Reset(ResetMode.Hard, commit, new CheckoutOptions());
 
-                                var projPath = Path.Combine(LocalDriverRepoDirectory, foundProjSubPath);
+                                var projPath = Path.Combine(LocalRunnerRepoDirectory, foundProjSubPath);
 
                                 // Compile to help prep
-                                await SolutionPatcherRun.CompileWithDotnet(projPath, cancel);
+                                cancel.ThrowIfCancellationRequested();
+                                Logger.Information($"Mutagen Nuget: {item.libraryNugets.Value.MutaVersioning} {item.libraryNugets.Value.MutaVersion}");
+                                Logger.Information($"Synthesis Nuget: {item.libraryNugets.Value.SynthVersioning} {item.libraryNugets.Value.SynthVersion}");
+                                GitPatcherRun.SwapInDesiredVersionsForSolution(
+                                    slnPath,
+                                    drivingProjSubPath: foundProjSubPath,
+                                    mutagenVersion: item.libraryNugets.Value.MutaVersioning == MutagenVersioningEnum.Match ? null : item.libraryNugets.Value.MutaVersion,
+                                    listedMutagenVersion: out var listedMutagenVersion,
+                                    synthesisVersion: item.libraryNugets.Value.SynthVersioning == SynthesisVersioningEnum.Match ? null : item.libraryNugets.Value.SynthVersion,
+                                    listedSynthesisVersion: out var listedSynthesisVersion);
+                                var compileResp = await SolutionPatcherRun.CompileWithDotnet(projPath, cancel);
+                                if (compileResp.Failed) return compileResp.BubbleFailure<RunnerRepoInfo>();
 
                                 return GetResponse<RunnerRepoInfo>.Succeed(
                                     new RunnerRepoInfo(
@@ -330,7 +419,13 @@ namespace Synthesis.Bethesda.GUI
                                         projPath: projPath,
                                         target: target,
                                         commitMsg: commit.Message,
-                                        commitDate: commit.Author.When.LocalDateTime));
+                                        commitDate: commit.Author.When.LocalDateTime,
+                                        listedSynthesis: listedSynthesisVersion,
+                                        listedMutagen: listedMutagenVersion));
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                throw;
                             }
                             catch (Exception ex)
                             {
@@ -340,11 +435,11 @@ namespace Synthesis.Bethesda.GUI
                         var ret = new ConfigurationStateVM<RunnerRepoInfo>(await Execute());
                         if (ret.RunnableState.Succeeded)
                         {
-                            Logger.Information($"Finished checking out {CheckoutStateToString(item)}");
+                            Logger.Information($"Finished checking out");
                         }
                         else
                         {
-                            Logger.Information($"Failed checking out {CheckoutStateToString(item)}");
+                            Logger.Information($"Failed checking out");
                         }
                         return ret;
                     })
@@ -354,6 +449,20 @@ namespace Synthesis.Bethesda.GUI
             _RunnableData = runnableState
                 .Select(x => x.RunnableState.Succeeded ? x.Item : default(RunnerRepoInfo?))
                 .ToGuiProperty(this, nameof(RunnableData));
+
+            _UsedMutagenVersion = Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.RunnableData)
+                        .Select(x => x?.ListedMutagenVersion),
+                    libraryNugets.Select(x => x.Value.MutaVersion),
+                    (matchVersion, selVersion) => (matchVersion, selVersion))
+                .ToGuiProperty(this, nameof(UsedMutagenVersion));
+
+            _UsedSynthesisVersion = Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.RunnableData)
+                        .Select(x => x?.ListedSynthesisVersion),
+                    libraryNugets.Select(x => x.Value.MutaVersion),
+                    (matchVersion, selVersion) => (matchVersion, selVersion))
+                .ToGuiProperty(this, nameof(UsedSynthesisVersion));
 
             _State = Observable.CombineLatest(
                     driverRepoInfo
@@ -408,6 +517,9 @@ namespace Synthesis.Bethesda.GUI
                 SelectedProjectSubpath = this.ProjectSubpath,
                 PatcherVersioning = this.PatcherVersioning,
                 MutagenVersioning = this.MutagenVersioning,
+                ManualMutagenVersion = this.ManualMutagenVersion,
+                SynthesisVersioning = this.SynthesisVersioning,
+                ManualSynthesisVersion = this.ManualSynthesisVersion,
                 TargetTag = this.TargetTag,
                 TargetCommit = this.TargetCommit,
             };
@@ -427,6 +539,9 @@ namespace Synthesis.Bethesda.GUI
             this.ProjectSubpath = settings.SelectedProjectSubpath;
             this.PatcherVersioning = settings.PatcherVersioning;
             this.MutagenVersioning = settings.MutagenVersioning;
+            this.SynthesisVersioning = settings.SynthesisVersioning;
+            this.ManualMutagenVersion = settings.ManualMutagenVersion;
+            this.ManualSynthesisVersion = settings.ManualSynthesisVersion;
             this.TargetTag = settings.TargetTag;
             this.TargetCommit = settings.TargetCommit;
         }
@@ -444,7 +559,7 @@ namespace Synthesis.Bethesda.GUI
                     name: DisplayName,
                     pathToSln: RunnableData.SolutionPath,
                     pathToExtraDataBaseFolder: Execution.Constants.TypicalExtraData,
-                    pathToProj: SelectedProjectPath.TargetPath));
+                    pathToProj: RunnableData.ProjPath));
         }
 
         public static IObservable<ConfigurationStateVM<string>> GetRepoPathValidity(IObservable<string> repoPath)
@@ -524,49 +639,25 @@ namespace Synthesis.Bethesda.GUI
             public readonly string? Target;
             public readonly string CommitMessage;
             public readonly DateTime CommitDate;
+            public readonly string? ListedMutagenVersion;
+            public readonly string? ListedSynthesisVersion;
 
             public RunnerRepoInfo(
                 string slnPath,
                 string projPath,
                 string? target,
                 string commitMsg,
-                DateTime commitDate)
+                DateTime commitDate,
+                string? listedSynthesis,
+                string? listedMutagen)
             {
                 SolutionPath = slnPath;
                 ProjPath = projPath;
                 Target = target;
                 CommitMessage = commitMsg;
                 CommitDate = commitDate;
-            }
-        }
-
-        private static string CheckoutStateToString((
-            string MasterBranchName,
-            PatcherVersioningEnum Versioning,
-            ErrorResponse RunnerState,
-            GetResponse<string> Project,
-            string Tag,
-            string Commit,
-            string Branch) item)
-        {
-            if (item.RunnerState.Failed
-                || item.Project.Failed)
-            {
-                return "Failed checkout state";
-            }
-
-            switch (item.Versioning)
-            {
-                case PatcherVersioningEnum.Master:
-                    return $"main branch {item.MasterBranchName}";
-                case PatcherVersioningEnum.Tag:
-                    return $"tag {item.Tag}";
-                case PatcherVersioningEnum.Branch:
-                    return $"branch {item.Branch}";
-                case PatcherVersioningEnum.Commit:
-                    return $"master {item.Commit}";
-                default:
-                    throw new NotImplementedException();
+                ListedMutagenVersion = listedMutagen;
+                ListedSynthesisVersion = listedSynthesis;
             }
         }
     }
