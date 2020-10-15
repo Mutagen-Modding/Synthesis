@@ -17,6 +17,15 @@ jobs:
       run: dotnet build -c Release --no-restore /p:Version=${{ github.event.release.tag_name }} -p:PackageReleaseNotes="See https://github.com/Noggog/Synthesis/releases/tag/${{ github.event.release.tag_name }}"
     - name: Test
       run: dotnet test --no-build -c Release
+    - name: Publish Nugets to Github
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: "**/*.nupkg"
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event.release.tag_name }}
+        file_glob: "true"
+    - name: Publish Nugets to Nuget.org
+      run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --no-symbols true
     - name: Pack
       run: dotnet publish "Synthesis.Bethesda.GUI/Synthesis.Bethesda.GUI.csproj" -r win-x64 /p:PublishSingleFile=True --self-contained false --configuration Release /p:IncludeSymbolsInSingleFile=true
     - name: Publish Synthesis GUI to Github
@@ -25,15 +34,6 @@ jobs:
         file: Synthesis.Bethesda.GUI/bin/Release/netcoreapp3.1/win-x64/publish/Synthesis.exe
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.release.tag_name }}
-    - name: Publish Synthesis Nugets to Github
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: "**/*.nupkg"
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ github.event.release.tag_name }}
-        file_glob: "true"
-    - name: Publish to Nuget.org
-      run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --no-symbols true
   notification:
     runs-on: ubuntu-latest
     needs: release
