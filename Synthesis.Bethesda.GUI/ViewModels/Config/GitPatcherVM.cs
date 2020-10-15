@@ -352,7 +352,13 @@ namespace Synthesis.Bethesda.GUI
                                 {
                                     case PatcherVersioningEnum.Master:
                                         targetSha = repo.Branches
-                                            .Where(b => b.FriendlyName == item.master)
+                                            .Where(b =>
+                                            {
+                                                if (!b.IsRemote) return false;
+                                                var index = b.FriendlyName.LastIndexOf('/');
+                                                if (index == -1) return false;
+                                                return b.FriendlyName.Substring(index + 1).Equals(item.master);
+                                            })
                                             .FirstOrDefault()
                                             ?.Tip.Sha;
                                         if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate master commit");
@@ -371,7 +377,7 @@ namespace Synthesis.Bethesda.GUI
                                         break;
                                     case PatcherVersioningEnum.Branch:
                                         if (string.IsNullOrWhiteSpace(item.patcherVersioning.branch)) return GetResponse<RunnerRepoInfo>.Fail($"Target branch had no name.");
-                                        var targetBranch = repo.Branches[item.patcherVersioning.branch];
+                                        var targetBranch = repo.Branches[$"origin/{item.patcherVersioning.branch}"];
                                         if (targetBranch == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {item.patcherVersioning.branch}");
                                         targetSha = targetBranch.Tip.Sha;
                                         target = item.patcherVersioning.branch;
@@ -460,7 +466,7 @@ namespace Synthesis.Bethesda.GUI
             _UsedSynthesisVersion = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.RunnableData)
                         .Select(x => x?.ListedSynthesisVersion),
-                    libraryNugets.Select(x => x.Value.MutaVersion),
+                    libraryNugets.Select(x => x.Value.SynthVersion),
                     (matchVersion, selVersion) => (matchVersion, selVersion))
                 .ToGuiProperty(this, nameof(UsedSynthesisVersion));
 
