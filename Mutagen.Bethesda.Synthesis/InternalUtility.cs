@@ -1,6 +1,7 @@
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using System;
+using System.IO;
 using BaseSynthesis = Synthesis.Bethesda;
 
 namespace Mutagen.Bethesda.Synthesis.Internal
@@ -63,7 +64,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 loadOrder: loadOrder,
                 linkCache: cache,
                 patchMod: patchMod,
-                extraDataPath: settings.ExtraDataFolder ?? string.Empty,
+                extraDataPath: Path.GetFullPath(settings.ExtraDataFolder) ?? string.Empty,
                 cancellation: userPrefs.Cancel);
         }
     }
