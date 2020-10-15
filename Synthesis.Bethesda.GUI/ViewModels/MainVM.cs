@@ -93,8 +93,8 @@ namespace Synthesis.Bethesda.GUI
 
             Task.Run(() => Mutagen.Bethesda.WarmupAll.Init()).FireAndForget();
 
-            SynthesisVersion = Mutagen.Bethesda.Synthesis.Constants.SynthesisVersion;
-            MutagenVersion = Mutagen.Bethesda.Synthesis.Constants.MutagenVersion;
+            SynthesisVersion = Mutagen.Bethesda.Synthesis.Versions.SynthesisVersion;
+            MutagenVersion = Mutagen.Bethesda.Synthesis.Versions.MutagenVersion;
 
             var latestVersions = Observable.Return(Unit.Default)
                 .ObserveOn(RxApp.TaskpoolScheduler)

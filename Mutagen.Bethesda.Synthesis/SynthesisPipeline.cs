@@ -123,8 +123,8 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IMod, TModGetter
             where TModGetter : class, IModGetter
         {
-            Console.WriteLine($"Mutagen version: {Constants.MutagenVersion}");
-            Console.WriteLine($"Synthesis version: {Constants.SynthesisVersion}");
+            Console.WriteLine($"Mutagen version: {Versions.MutagenVersion}");
+            Console.WriteLine($"Synthesis version: {Versions.SynthesisVersion}");
             if (args.Length == 0)
             {
                 var prefs = userPreferences ?? new UserPreferences();
