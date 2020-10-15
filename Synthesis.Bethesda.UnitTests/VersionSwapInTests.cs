@@ -37,7 +37,12 @@ namespace Synthesis.Bethesda.UnitTests
         public void None()
         {
             var projStr = CreateProj();
-            GitPatcherRun.SwapInDesiredVersionsForProjectString(projStr, "0", "0")
+            GitPatcherRun.SwapInDesiredVersionsForProjectString(
+                    projStr, 
+                    mutagenVersion: "0",
+                    listedMutagenVersion: out var _,
+                    synthesisVersion: "0",
+                    listedSynthesisVersion: out var _)
                 .Should()
                 .BeEquivalentTo(projStr);
         }
@@ -48,7 +53,12 @@ namespace Synthesis.Bethesda.UnitTests
             var projStr = CreateProj(
                 ("Mutagen.Bethesda", "2.0"),
             ("Mutagen.Bethesda.Synthesis", "3.1"));
-            var swapString = GitPatcherRun.SwapInDesiredVersionsForProjectString(projStr, mutagenVersion: "2.0", synthesisVersion: "3.1");
+            var swapString = GitPatcherRun.SwapInDesiredVersionsForProjectString(
+                projStr, 
+                mutagenVersion: "2.0",
+                listedMutagenVersion: out var _,
+                synthesisVersion: "3.1",
+                listedSynthesisVersion: out var _);
             var expectedString = CreateProj(
                 ("Mutagen.Bethesda", "2.0"),
                 ("Mutagen.Bethesda.Synthesis", "3.1"));
@@ -63,7 +73,12 @@ namespace Synthesis.Bethesda.UnitTests
             var projStr = CreateProj(
                 ("Mutagen.Bethesda", "0.0.0"),
                 ("Mutagen.Bethesda.Synthesis", "0.1.0"));
-            var swapString = GitPatcherRun.SwapInDesiredVersionsForProjectString(projStr, mutagenVersion: "2.0", synthesisVersion: "3.1");
+            var swapString = GitPatcherRun.SwapInDesiredVersionsForProjectString(
+                projStr,
+                mutagenVersion: "2.0",
+                listedMutagenVersion: out var _,
+                synthesisVersion: "3.1",
+                listedSynthesisVersion: out var _);
             var expectedString = CreateProj(
                 ("Mutagen.Bethesda", "2.0"),
                 ("Mutagen.Bethesda.Synthesis", "3.1"));
@@ -79,7 +94,12 @@ namespace Synthesis.Bethesda.UnitTests
                 ("Mutagen.Bethesda", "0.0.0"),
                 ("Mutagen.Bethesda.Oblivion", "0.1.0"),
                 ("Mutagen.Bethesda.Synthesis", "0.1.0"));
-            var swapString = GitPatcherRun.SwapInDesiredVersionsForProjectString(projStr, mutagenVersion: "2.0", synthesisVersion: "3.1");
+            var swapString = GitPatcherRun.SwapInDesiredVersionsForProjectString(
+                projStr,
+                mutagenVersion: "2.0", 
+                listedMutagenVersion: out var _,
+                synthesisVersion: "3.1",
+                listedSynthesisVersion: out var _);
             var expectedString = CreateProj(
                 ("Mutagen.Bethesda", "2.0"),
                 ("Mutagen.Bethesda.Oblivion", "2.0"),
