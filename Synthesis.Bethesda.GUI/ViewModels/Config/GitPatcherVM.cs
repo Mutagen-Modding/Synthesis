@@ -16,9 +16,6 @@ using static Synthesis.Bethesda.GUI.SolutionPatcherVM;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Diagnostics;
-using System.Reactive;
-using Microsoft.Build.Logging.StructuredLogger;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -445,7 +442,7 @@ namespace Synthesis.Bethesda.GUI
                         }
                         else
                         {
-                            Logger.Information($"Failed checking out");
+                            Logger.Error(ret.RunnableState, $"Failed checking out");
                         }
                         return ret;
                     })
