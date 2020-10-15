@@ -126,7 +126,7 @@ namespace Synthesis.Bethesda.GUI
                         var blockingError = coll.FirstOrDefault(p => p.State.IsHaltingError);
                         if (blockingError != null)
                         {
-                            return ErrorResponse.Fail($"\"{blockingError.Nickname}\" has a blocking error");
+                            return ErrorResponse.Fail($"\"{blockingError.DisplayName}\" has a blocking error");
                         }
                         return ErrorResponse.Success;
                     })
