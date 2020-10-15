@@ -76,7 +76,7 @@ namespace Synthesis.Bethesda.Execution
                     loadOrderList.RemoveToCount(synthIndex);
                 }
                 reporter.Write(default(TKey)!, default, "Load Order:");
-                loadOrderList.ForEach(i => reporter.Write(default(TKey)!, default, $"   {i}"));
+                loadOrderList.WithIndex().ForEach(i => reporter.Write(default(TKey)!, default, $" [{i.Index,3}] {i.Item}"));
                 string loadOrderPath = Path.Combine(workingDirectory, "Plugins.txt");
                 var writeLoadOrder = Task.Run(() =>
                 {
