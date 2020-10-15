@@ -34,13 +34,14 @@ jobs:
         file: Synthesis.Bethesda.GUI/bin/Release/netcoreapp3.1/win-x64/publish/Synthesis.exe
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.release.tag_name }}
-  notification:
-    runs-on: ubuntu-latest
-    needs: release
-    steps:
-    - name: Discord notification
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      uses: Ilshidur/action-discord@0.3.0
-      with:
-        args: '**Synthesis v{{ EVENT_PAYLOAD.release.tag_name }}**\n{{ EVENT_PAYLOAD.release.body }}'
+  
+  #notification:
+  #  runs-on: ubuntu-latest
+  #  needs: release
+  #  steps:
+  #  - name: Discord notification
+  #    env:
+  #      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+  #    uses: Ilshidur/action-discord@0.3.0
+  #    with:
+  #      args: '**Synthesis v{{ EVENT_PAYLOAD.release.tag_name }}**\n{{ EVENT_PAYLOAD.release.body }}'
