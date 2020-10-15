@@ -460,7 +460,7 @@ namespace Synthesis.Bethesda.GUI
             _UsedSynthesisVersion = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.RunnableData)
                         .Select(x => x?.ListedSynthesisVersion),
-                    libraryNugets.Select(x => x.Value.MutaVersion),
+                    libraryNugets.Select(x => x.Value.SynthVersion),
                     (matchVersion, selVersion) => (matchVersion, selVersion))
                 .ToGuiProperty(this, nameof(UsedSynthesisVersion));
 
