@@ -2,15 +2,16 @@ using LibGit2Sharp;
 using Mutagen.Bethesda;
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers;
-using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Synthesis.Bethesda.Execution
 {
@@ -26,6 +27,18 @@ namespace Synthesis.Bethesda.Execution
 
         private Subject<string> _error = new Subject<string>();
         public IObservable<string> Error => _error;
+
+        private static readonly HashSet<string> MutagenLibraries;
+
+        static GitPatcherRun()
+        {
+            MutagenLibraries = EnumExt.GetValues<GameCategory>()
+                .Select(x => $"Mutagen.Bethesda.{x}")
+                .And("Mutagen.Bethesda")
+                .And("Mutagen.Bethesda.Core")
+                .And("Mutagen.Bethesda.Kernel")
+                .ToHashSet();
+        }
 
         public GitPatcherRun(
             GithubPatcherSettings settings,
@@ -154,6 +167,73 @@ namespace Synthesis.Bethesda.Execution
         public static string RunnerRepoDirectory(string profileID, string githubID)
         {
             return Path.Combine(Execution.Constants.WorkingDirectory, profileID, "Git", githubID, "Runner");
+        }
+
+        public static void SwapInDesiredVersionsForSolution(
+            string solutionPath,
+            string drivingProjSubPath,
+            string? mutagenVersion,
+            out string? listedMutagenVersion,
+            string? synthesisVersion,
+            out string? listedSynthesisVersion)
+        {
+            listedMutagenVersion = null;
+            listedSynthesisVersion = null;
+            foreach (var subProj in SolutionPatcherRun.AvailableProjects(solutionPath))
+            {
+                var proj = Path.Combine(Path.GetDirectoryName(solutionPath), subProj);
+                File.WriteAllText(proj,
+                    SwapInDesiredVersionsForProjectString(
+                        File.ReadAllText(proj),
+                        mutagenVersion: mutagenVersion,
+                        listedMutagenVersion: out var curListedMutagenVersion,
+                        synthesisVersion: synthesisVersion,
+                        listedSynthesisVersion: out var curListedSynthesisVersion));
+                if (drivingProjSubPath.Equals(subProj))
+                {
+                    listedMutagenVersion = curListedMutagenVersion;
+                    listedSynthesisVersion = curListedSynthesisVersion;
+                }
+            }
+        }
+
+        public static string SwapInDesiredVersionsForProjectString(
+            string projStr,
+            string? mutagenVersion,
+            out string? listedMutagenVersion,
+            string? synthesisVersion,
+            out string? listedSynthesisVersion)
+        {
+            var root = XElement.Parse(projStr);
+            listedMutagenVersion = null;
+            listedSynthesisVersion = null;
+            foreach (var group in root.Elements("ItemGroup"))
+            {
+                foreach (var elem in group.Elements())
+                {
+                    if (!elem.Name.LocalName.Equals("PackageReference")) continue;
+                    if (!elem.TryGetAttribute("Include", out var libAttr)) continue;
+                    string swapInStr;
+                    if (libAttr.Value.Equals("Mutagen.Bethesda.Synthesis"))
+                    {
+                        listedSynthesisVersion = elem.Attribute("Version")?.Value;
+                        if (synthesisVersion == null) continue;
+                        swapInStr = synthesisVersion;
+                    }
+                    else if (MutagenLibraries.Contains(libAttr.Value))
+                    {
+                        listedMutagenVersion = elem.Attribute("Version")?.Value;
+                        if (mutagenVersion == null) continue;
+                        swapInStr = mutagenVersion;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                    elem.SetAttributeValue("Version", swapInStr);
+                }
+            }
+            return root.ToString();
         }
     }
 }

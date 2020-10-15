@@ -29,6 +29,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, v => v.CurrentSynthesisVersionText.Text)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.NewestSynthesisVersion)
+                    .Switch()
                     .Select(x => x ?? "[Unknown]")
                     .BindToStrict(this, v => v.LatestSynthesisVersionText.Text)
                     .DisposeWith(dispose);
@@ -36,6 +37,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, v => v.CurrentMutagenVersionText.Text)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.NewestMutagenVersion)
+                    .Switch()
                     .Select(x => x ?? "[Unknown]")
                     .BindToStrict(this, v => v.LatestMutagenVersionText.Text)
                     .DisposeWith(dispose);

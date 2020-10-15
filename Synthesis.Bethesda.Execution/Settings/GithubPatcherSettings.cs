@@ -1,9 +1,6 @@
 using Noggog;
 using Synthesis.Bethesda.Execution.Reporters;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
@@ -17,8 +14,15 @@ namespace Synthesis.Bethesda.Execution.Settings
 
     public enum MutagenVersioningEnum
     {
-        Match,
         Latest,
+        Match,
+        Manual,
+    }
+
+    public enum SynthesisVersioningEnum
+    {
+        Latest,
+        Match,
         Manual,
     }
 
@@ -28,10 +32,13 @@ namespace Synthesis.Bethesda.Execution.Settings
         public string RemoteRepoPath = string.Empty;
         public string SelectedProjectSubpath = string.Empty;
         public PatcherVersioningEnum PatcherVersioning = PatcherVersioningEnum.Master;
-        public MutagenVersioningEnum MutagenVersioning = MutagenVersioningEnum.Match;
         public string TargetTag = string.Empty;
         public string TargetCommit = string.Empty;
         public string TargetBranch = string.Empty;
+        public MutagenVersioningEnum MutagenVersioning = MutagenVersioningEnum.Latest;
+        public string ManualMutagenVersion = string.Empty;
+        public SynthesisVersioningEnum SynthesisVersioning = SynthesisVersioningEnum.Latest;
+        public string ManualSynthesisVersion = string.Empty;
 
         public override void Print(IRunReporter logger)
         {
@@ -42,7 +49,7 @@ namespace Synthesis.Bethesda.Execution.Settings
         {
             return PatcherVersioning switch
             {
-                PatcherVersioningEnum.Master => $"Master Track",
+                PatcherVersioningEnum.Master => $"Master Tracking",
                 PatcherVersioningEnum.Tag => $"Tag: {TargetTag}",
                 PatcherVersioningEnum.Branch => $"Branch: {TargetBranch}",
                 PatcherVersioningEnum.Commit => $"Commit: {TargetCommit}",

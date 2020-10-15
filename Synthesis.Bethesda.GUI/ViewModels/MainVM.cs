@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Noggog;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution.Settings;
-using System.Diagnostics;
 using System.Reactive;
 using System.IO;
 using Synthesis.Bethesda.Execution;
@@ -46,11 +45,8 @@ namespace Synthesis.Bethesda.GUI
 
         public string MutagenVersion { get; }
 
-        private readonly ObservableAsPropertyHelper<string?> _NewestSynthesisVersion;
-        public string? NewestSynthesisVersion => _NewestSynthesisVersion.Value;
-
-        private readonly ObservableAsPropertyHelper<string?> _NewestMutagenVersion;
-        public string? NewestMutagenVersion => _NewestMutagenVersion.Value;
+        public IObservable<string?> NewestSynthesisVersion { get; }
+        public IObservable<string?> NewestMutagenVersion { get; }
 
         public MainVM()
         {
@@ -97,20 +93,18 @@ namespace Synthesis.Bethesda.GUI
 
             Task.Run(() => Mutagen.Bethesda.WarmupAll.Init()).FireAndForget();
 
-            SynthesisVersion = FileVersionInfo.GetVersionInfo(typeof(Synthesis.Bethesda.Constants).Assembly.Location)!.ProductVersion.TrimEnd(".0").TrimEnd(".0");
-            MutagenVersion = FileVersionInfo.GetVersionInfo(typeof(FormKey).Assembly.Location)!.ProductVersion.TrimEnd(".0").TrimEnd(".0");
+            SynthesisVersion = Mutagen.Bethesda.Synthesis.Constants.SynthesisVersion;
+            MutagenVersion = Mutagen.Bethesda.Synthesis.Constants.MutagenVersion;
 
             var latestVersions = Observable.Return(Unit.Default)
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .SelectTask(_ => GetLatestVersions())
                 .Replay(1)
                 .RefCount();
-            _NewestMutagenVersion = latestVersions
-                .Select(x => x.MutagenVersion)
-                .ToGuiProperty<string?>(this, nameof(NewestMutagenVersion));
-            _NewestSynthesisVersion = latestVersions
-                .Select(x => x.SynthesisVersion)
-                .ToGuiProperty<string?>(this, nameof(NewestSynthesisVersion));
+            NewestMutagenVersion = latestVersions
+                .Select(x => x.MutagenVersion);
+            NewestSynthesisVersion = latestVersions
+                .Select(x => x.SynthesisVersion);
         }
 
         public void Load(SynthesisGuiSettings? guiSettings, PipelineSettings? pipeSettings)
