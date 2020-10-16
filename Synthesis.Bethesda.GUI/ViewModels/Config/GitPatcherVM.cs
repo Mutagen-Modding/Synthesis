@@ -191,22 +191,24 @@ namespace Synthesis.Bethesda.GUI
                 .Throttle(TimeSpan.FromMilliseconds(100), RxApp.MainThreadScheduler)
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .SelectReplaceWithIntermediate(
-                    ErrorResponse.Fail("Cloning runner repository"),
+                    new ConfigurationStateVM(ErrorResponse.Fail("Cloning runner repository"))
+                    {
+                        IsHaltingError = false
+                    },
                     async (path, cancel) =>
                     {
-                        if (path.RunnableState.Failed) return path.RunnableState;
+                        if (path.RunnableState.Failed) return new ConfigurationStateVM(path.RunnableState);
                         var log = Logger.ForContext("RemotePath", path.Item);
                         using var timing = log.Time("runner repo");
-                        return await GitPatcherRun.CheckOrCloneRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, x => log.Information(x), cancel);
+                        return (ErrorResponse)await GitPatcherRun.CheckOrCloneRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, x => log.Information(x), cancel);
                     })
                 .Replay(1)
                 .RefCount();
 
-            // Expose a lot of the metadata
             _RepoClonesValid = Observable.CombineLatest(
                     driverRepoInfo,
                     runnerRepoState,
-                    (driver, runner) => driver.RunnableState.Succeeded && runner.Succeeded)
+                    (driver, runner) => driver.RunnableState.Succeeded && runner.RunnableState.Succeeded)
                 .ToGuiProperty(this, nameof(RepoClonesValid));
 
             AvailableProjects = driverRepoInfo
@@ -260,7 +262,7 @@ namespace Synthesis.Bethesda.GUI
                     this.WhenAnyValue(x => x.ManualSynthesisVersion),
                     parent.Config.MainVM.NewestMutagenVersion,
                     parent.Config.MainVM.NewestSynthesisVersion,
-                    (mutaVersioning, mutaManual, synthVersioning, synthManual, newestMuta, newestSynth) => 
+                    (mutaVersioning, mutaManual, synthVersioning, synthManual, newestMuta, newestSynth) =>
                     (mutaVersioning, mutaManual, synthVersioning, synthManual, newestMuta, newestSynth))
                 .Select(nugets =>
                 {
@@ -302,7 +304,7 @@ namespace Synthesis.Bethesda.GUI
                         .Select(x => x.Succeeded ? x : GetResponse<string>.Fail("No patcher project selected.")),
                     patcherVersioning,
                     libraryNugets,
-                    (master, runnerState, proj, patcherVersioning, libraryNugets) => 
+                    (master, runnerState, proj, patcherVersioning, libraryNugets) =>
                     (master, runnerState, proj, patcherVersioning, libraryNugets))
                 .Replay(1)
                 .RefCount();
@@ -318,9 +320,9 @@ namespace Synthesis.Bethesda.GUI
                     },
                     async (item, cancel) =>
                     {
-                        async Task<GetResponse<RunnerRepoInfo>> Execute()
+                        async Task<ConfigurationStateVM<RunnerRepoInfo>> Execute()
                         {
-                            if (item.runnerState.Failed) return item.runnerState.BubbleFailure<RunnerRepoInfo>();
+                            if (item.runnerState.RunnableState.Failed) return item.runnerState.BubbleError<RunnerRepoInfo>();
                             if (item.proj.Failed) return item.proj.BubbleFailure<RunnerRepoInfo>();
                             if (item.libraryNugets.Failed) return item.libraryNugets.BubbleFailure<RunnerRepoInfo>();
                             cancel.ThrowIfCancellationRequested();
@@ -435,7 +437,7 @@ namespace Synthesis.Bethesda.GUI
                                 return GetResponse<RunnerRepoInfo>.Fail(ex);
                             }
                         }
-                        var ret = new ConfigurationStateVM<RunnerRepoInfo>(await Execute());
+                        var ret = await Execute();
                         if (ret.RunnableState.Succeeded)
                         {
                             Logger.Information($"Finished checking out");
@@ -470,8 +472,7 @@ namespace Synthesis.Bethesda.GUI
             _State = Observable.CombineLatest(
                     driverRepoInfo
                         .Select(x => x.ToUnit()),
-                    runnerRepoState
-                        .Select(x => new ConfigurationStateVM(x)),
+                    runnerRepoState,
                     runnableState
                         .Select(x => x.ToUnit()),
                     (driver, runner, checkout) =>

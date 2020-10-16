@@ -20,6 +20,11 @@ namespace Synthesis.Bethesda.GUI
             : base(Unit.Default, err)
         {
         }
+
+        public static implicit operator ConfigurationStateVM(ErrorResponse err)
+        {
+            return new ConfigurationStateVM(err);
+        }
     }
 
     public class ConfigurationStateVM<T> : ViewModel
@@ -68,6 +73,11 @@ namespace Synthesis.Bethesda.GUI
         public GetResponse<T> ToGetResponse()
         {
             return GetResponse<T>.Create(RunnableState.Succeeded, Item, RunnableState.Reason);
+        }
+
+        public static implicit operator ConfigurationStateVM<T>(GetResponse<T> err)
+        {
+            return new ConfigurationStateVM<T>(err);
         }
     }
 }
