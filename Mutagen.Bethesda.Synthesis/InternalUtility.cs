@@ -64,7 +64,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 loadOrder: loadOrder,
                 linkCache: cache,
                 patchMod: patchMod,
-                extraDataPath: Path.GetFullPath(settings.ExtraDataFolder) ?? string.Empty,
+                extraDataPath: settings.ExtraDataFolder == null ? string.Empty : Path.GetFullPath(settings.ExtraDataFolder),
                 cancellation: userPrefs.Cancel);
         }
     }
