@@ -4,3 +4,10 @@
 
 # Synthesis
 A framework and GUI to construct a single Bethesda game patch from many patcher sources. Designed to allow any program to work as a patcher as long as it conforms to the CLI API. 
+
+![Typical Usage](https://i.imgur.com/Wj2fGaF.gif)
+
+## Installation
+If you're looking to install, we have a [wiki page](https://github.com/Noggog/Synthesis/wiki/Installation) with the details.
+
+Currently there is not much in the way of official documentation.  This will be filled out as the app begins to exit the alpha stage.  In the meantime, head over to [Discord](https://discord.gg/53KMEsW) and ask any and all questions you may have!
