@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.Execution
 {
-    public static class NugetQuery
+    public static class DotNetQueries
     {
-        public static async Task<IEnumerable<(string Package, string Requested, string Resolved, string Latest)>> Query(string projectPath, bool queryServer)
+        public static async Task<IEnumerable<(string Package, string Requested, string Resolved, string Latest)>> NugetListingQuery(string projectPath, bool queryServer)
         {
             // Run restore first
             {
@@ -52,10 +52,10 @@ namespace Synthesis.Bethesda.Execution
             return ret;
         }
 
-        public static async Task<(string? MutagenVersion, string? SynthesisVersion)> QueryVersions(string projectPath, bool current)
+        public static async Task<(string? MutagenVersion, string? SynthesisVersion)> QuerySynthesisVersions(string projectPath, bool current)
         {
             string? mutagenVersion = null, synthesisVersion = null;
-            var queries = await Query(projectPath, !current);
+            var queries = await NugetListingQuery(projectPath, !current);
             foreach (var item in queries)
             {
                 if (item.Package.StartsWith("Mutagen.Bethesda")
@@ -69,6 +69,30 @@ namespace Synthesis.Bethesda.Execution
                 }
             }
             return (mutagenVersion, synthesisVersion);
+        }
+
+        public static async Task<Version> DotNetSdkVersion()
+        {
+            using var proc = ProcessWrapper.Start(
+                new System.Diagnostics.ProcessStartInfo("dotnet", "--version"));
+            List<string> outs = new List<string>();
+            using var outp = proc.Output.Subscribe(o => outs.Add(o));
+            List<string> errs = new List<string>();
+            using var errp = proc.Error.Subscribe(o => errs.Add(o));
+            var result = await proc.Start();
+            if (errs.Count > 0)
+            {
+                throw new ArgumentException($"{string.Join("\n", errs)}");
+            }
+            if (outs.Count != 1)
+            {
+                throw new ArgumentException($"Unexpected messages:\n{string.Join("\n", outs)}");
+            }
+            if (!Version.TryParse(outs[0], out var v))
+            {
+                throw new ArgumentException($"Could not parse dotnet SDK version: {outs[0]}");
+            }
+            return v;
         }
     }
 }

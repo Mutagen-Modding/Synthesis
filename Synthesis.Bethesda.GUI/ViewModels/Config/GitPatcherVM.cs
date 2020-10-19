@@ -475,10 +475,14 @@ namespace Synthesis.Bethesda.GUI
                     runnerRepoState,
                     runnableState
                         .Select(x => x.ToUnit()),
-                    (driver, runner, checkout) =>
+                    this.WhenAnyValue(x => x.Profile.Config.MainVM)
+                        .Select(x => x.DotNetSdkInstalled)
+                        .Switch(),
+                    (driver, runner, checkout, dotnet) =>
                     {
                         if (driver.IsHaltingError) return driver;
                         if (runner.IsHaltingError) return runner;
+                        if (dotnet == null) return new ConfigurationStateVM(ErrorResponse.Fail("No dotnet SDK installed"));
                         return checkout;
                     })
                 .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), new ConfigurationStateVM(ErrorResponse.Fail("Evaluating"))

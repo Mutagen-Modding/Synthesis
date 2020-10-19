@@ -100,9 +100,13 @@ namespace Synthesis.Bethesda.GUI
             _State = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.SolutionPath.ErrorState),
                     this.WhenAnyValue(x => x.SelectedProjectPath.ErrorState),
-                    (sln, proj) =>
+                    this.WhenAnyValue(x => x.Profile.Config.MainVM)
+                        .Select(x => x.DotNetSdkInstalled)
+                        .Switch(),
+                    (sln, proj, dotnet) =>
                     {
                         if (sln.Failed) return new ConfigurationStateVM(sln);
+                        if (dotnet == null) return new ConfigurationStateVM(ErrorResponse.Fail("No dotnet SDK installed"));
                         return new ConfigurationStateVM(proj);
                     })
                 .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), new ConfigurationStateVM(ErrorResponse.Fail("Evaluating"))
