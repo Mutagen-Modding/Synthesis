@@ -1,4 +1,6 @@
 using Alphaleonis.Win32.Filesystem;
+using FluentAssertions;
+using FluentAssertions.Common;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Oblivion;
 using Mutagen.Bethesda.Synthesis;
@@ -189,6 +191,37 @@ namespace Synthesis.Bethesda.UnitTests
             Assert.Equal(Utility.TestModKey, state.LoadOrder[0].ModKey);
             Assert.Equal(Utility.OverrideModKey, state.LoadOrder[1].ModKey);
             Assert.Equal(Constants.SynthesisModKey, state.LoadOrder[2].ModKey);
+        }
+
+        [Fact]
+        public void DisabledModsInLoadOrder()
+        {
+            using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimLE);
+            var pluginsPath = Path.Combine(dataFolder.Dir.Path, "Plugins.txt");
+            File.WriteAllLines(
+                pluginsPath,
+                new string[]
+                {
+                    $"*{Utility.TestModKey.FileName}",
+                    Utility.OverrideModKey.FileName
+                });
+            var prevPath = new ModPath(Utility.OverrideModKey, Path.Combine(dataFolder.Dir.Path, Utility.OverrideModKey.FileName));
+            var modPath = PatchModPath(dataFolder);
+            using var state = Mutagen.Bethesda.Synthesis.Internal.Utility.ToState<Mutagen.Bethesda.Skyrim.ISkyrimMod, Mutagen.Bethesda.Skyrim.ISkyrimModGetter>(
+                new RunSynthesisMutagenPatcher()
+                {
+                    DataFolderPath = dataFolder.Dir.Path,
+                    GameRelease = Mutagen.Bethesda.GameRelease.SkyrimSE,
+                    OutputPath = modPath,
+                    SourcePath = prevPath,
+                    LoadOrderFilePath = pluginsPath
+                },
+                new UserPreferences());
+            state.LoadOrder.PriorityOrder.Should().HaveCount(2);
+            state.RawLoadOrder.Should().HaveCount(2);
+            state.RawLoadOrder[0].Should().Be(new ModKeyListing(Utility.TestModKey, true));
+            state.RawLoadOrder[1].Should().Be(new ModKeyListing(Utility.OverrideModKey, false));
         }
 
         [Fact]

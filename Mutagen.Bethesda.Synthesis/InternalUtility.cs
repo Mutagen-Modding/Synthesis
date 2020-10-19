@@ -1,7 +1,9 @@
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using BaseSynthesis = Synthesis.Bethesda;
 
 namespace Mutagen.Bethesda.Synthesis.Internal
@@ -26,6 +28,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             // Get load order
             var loadOrderListing = SynthesisPipeline.Instance.GetLoadOrder(settings, userPrefs)
                 .ToExtendedList();
+            var rawLoadOrder = loadOrderListing.Select(x => new ModKeyListing(x.ModKey, x.Enabled)).ToExtendedList();
             var synthIndex = loadOrderListing.IndexOf(BaseSynthesis.Constants.SynthesisModKey, (listing, key) => listing.ModKey == key);
             if (synthIndex != -1)
             {
@@ -62,6 +65,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             return new SynthesisState<TMod, TModGetter>(
                 settings: settings,
                 loadOrder: loadOrder,
+                rawLoadOrder: rawLoadOrder,
                 linkCache: cache,
                 patchMod: patchMod,
                 extraDataPath: settings.ExtraDataFolder == null ? string.Empty : Path.GetFullPath(settings.ExtraDataFolder),

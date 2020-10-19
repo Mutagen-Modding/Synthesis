@@ -1,5 +1,4 @@
 using Mutagen.Bethesda.Synthesis.CLI;
-using Synthesis.Bethesda;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +27,11 @@ namespace Mutagen.Bethesda.Synthesis
         public LoadOrder<IModListing<TModGetter>> LoadOrder { get; }
 
         /// <summary>
+        /// A list of ModKeys as they appeared, and whether they were enabled
+        /// </summary>
+        public IReadOnlyList<ModKeyListing> RawLoadOrder { get; }
+
+        /// <summary>
         /// Convenience Link Cache to use created from the provided Load Order object.<br />
         /// The patch mod is marked as safe for mutation, and will not make the cache invalid.
         /// </summary>
@@ -49,7 +53,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// </summary>
         public CancellationToken Cancel { get; } = CancellationToken.None;
 
-        IEnumerable<ModKey> ISynthesisState.LoadOrder => LoadOrder.Select(i => i.Key);
+        IEnumerable<ModKeyListing> ISynthesisState.LoadOrder => LoadOrder.Select(i => new ModKeyListing(i.Key, i.Value.Enabled));
 
         /// <summary>
         /// Path to the supplimental data folder dedicated to storing patcher specific settings/files
@@ -58,7 +62,9 @@ namespace Mutagen.Bethesda.Synthesis
 
         public SynthesisState(
             RunSynthesisMutagenPatcher settings,
+            IReadOnlyList<ModKeyListing> rawLoadOrder,
             LoadOrder<IModListing<TModGetter>> loadOrder,
+
             ILinkCache linkCache,
             TMod patchMod,
             string extraDataPath,
@@ -66,6 +72,7 @@ namespace Mutagen.Bethesda.Synthesis
         {
             Settings = settings;
             LinkCache = linkCache;
+            RawLoadOrder = rawLoadOrder;
             LoadOrder = loadOrder;
             PatchMod = patchMod;
             ExtraSettingsDataPath = extraDataPath;

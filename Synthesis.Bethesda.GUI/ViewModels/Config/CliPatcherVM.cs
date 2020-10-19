@@ -60,7 +60,10 @@ namespace Synthesis.Bethesda.GUI
                         RunnableState = e
                     };
                 })
-                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), ConfigurationStateVM.Success);
+                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), new ConfigurationStateVM(ErrorResponse.Fail("Evaluating"))
+                {
+                    IsHaltingError = false
+                });
         }
         private void CopyInSettings(CliPatcherSettings? settings)
         {

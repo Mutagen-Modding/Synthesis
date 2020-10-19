@@ -1,5 +1,4 @@
 using Mutagen.Bethesda.Synthesis.CLI;
-using Synthesis.Bethesda;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,6 +9,6 @@ namespace Mutagen.Bethesda.Synthesis
     {
         RunSynthesisMutagenPatcher Settings { get; }
         IModGetter PatchMod { get; }
-        IEnumerable<ModKey> LoadOrder { get; }
+        IEnumerable<ModKeyListing> LoadOrder { get; }
     }
 }

@@ -207,7 +207,7 @@ namespace Mutagen.Bethesda.Synthesis
                 System.Console.WriteLine("Running patch.");
                 await patcher(state).ConfigureAwait(false);
                 System.Console.WriteLine($"Writing to output: {settings.OutputPath}");
-                state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.LoadOrder.Select(i => i.Key)));
+                state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)));
             }
             catch (Exception ex)
             when (Environment.GetCommandLineArgs().Length == 0
@@ -242,7 +242,7 @@ namespace Mutagen.Bethesda.Synthesis
                 System.Console.WriteLine("Running patch.");
                 patcher(state);
                 System.Console.WriteLine($"Writing to output: {settings.OutputPath}");
-                state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.LoadOrder.Select(i => i.Key)));
+                state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)));
             }
             catch (Exception ex)
             when (Environment.GetCommandLineArgs().Length == 0

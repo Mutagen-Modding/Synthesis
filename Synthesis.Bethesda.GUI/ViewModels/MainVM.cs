@@ -14,6 +14,8 @@ using Synthesis.Bethesda.Execution.Settings;
 using System.Reactive;
 using System.IO;
 using Synthesis.Bethesda.Execution;
+using Noggog.Utility;
+using System.Collections.Generic;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -47,9 +49,29 @@ namespace Synthesis.Bethesda.GUI
 
         public IObservable<string?> NewestSynthesisVersion { get; }
         public IObservable<string?> NewestMutagenVersion { get; }
+        public IObservable<Version?> DotNetSdkInstalled { get; }
 
         public MainVM()
         {
+            DotNetSdkInstalled = Observable.Return(Unit.Default)
+                .ObserveOn(RxApp.TaskpoolScheduler)
+                .SelectTask(async _ =>
+                {
+                    try
+                    {
+                        var ret = await DotNetQueries.DotNetSdkVersion();
+                        Log.Logger.Information($"dotnet SDK: {ret}");
+                        return ret;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Logger.Error(ex, $"Error retrieving dotnet SDK version");
+                        return default(Version?);
+                    }
+                })
+                .Replay(1)
+                .RefCount();
+
             Configuration = new ConfigurationVM(this);
             ActivePanel = Configuration;
             DiscardActionCommand = ReactiveCommand.Create(() => ActiveConfirmation = null);
@@ -98,7 +120,10 @@ namespace Synthesis.Bethesda.GUI
 
             var latestVersions = Observable.Return(Unit.Default)
                 .ObserveOn(RxApp.TaskpoolScheduler)
-                .SelectTask(_ => GetLatestVersions())
+                .CombineLatest(
+                    DotNetSdkInstalled,
+                    (_, v) => v)
+                .SelectTask(GetLatestVersions)
                 .Replay(1)
                 .RefCount();
             NewestMutagenVersion = latestVersions
@@ -138,10 +163,15 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public async Task<(string? MutagenVersion, string? SynthesisVersion)> GetLatestVersions()
+        public async Task<(string? MutagenVersion, string? SynthesisVersion)> GetLatestVersions(Version? dotNetVersion)
         {
             try
             {
+                if (dotNetVersion == null)
+                {
+                    Log.Logger.Error("Can not query for latest nuget versions as there is not dotnet SDK installed.");
+                    return (null, null);
+                }
                 Log.Logger.Information("Querying for latest published library versions");
                 var bootstrapProjectDir = new DirectoryPath(Path.Combine(Execution.Constants.WorkingDirectory, "VersionQuery"));
                 bootstrapProjectDir.DeleteEntireFolder();
@@ -151,7 +181,7 @@ namespace Synthesis.Bethesda.GUI
                 var projPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.csproj");
                 ASolutionInitializer.CreateProject(projPath, GameCategory.Skyrim);
                 ASolutionInitializer.AddProjectToSolution(slnPath, projPath);
-                var ret = await NugetQuery.QueryVersions(projPath, current: false);
+                var ret = await DotNetQueries.QuerySynthesisVersions(projPath, current: false);
                 Log.Logger.Information("Latest published library versions:");
                 Log.Logger.Information($"  Mutagen: {ret.MutagenVersion}");
                 Log.Logger.Information($"  Synthesis: {ret.SynthesisVersion}");
