@@ -83,7 +83,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 new BinaryWriteParameters()
                 {
                     ModKey = BinaryWriteParameters.ModKeyOption.NoCheck,
-                    MastersListOrdering = new BinaryWriteParameters.MastersListOrderingByLoadOrder(synthesisState.LoadOrder)
+                    MastersListOrdering = new BinaryWriteParameters.MastersListOrderingByLoadOrder(synthesisState.LoadOrder.Where(i => i.Enabled).Select(i => i.ModKey))
                 });
         }
 
