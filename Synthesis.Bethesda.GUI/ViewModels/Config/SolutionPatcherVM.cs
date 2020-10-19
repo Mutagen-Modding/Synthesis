@@ -105,7 +105,10 @@ namespace Synthesis.Bethesda.GUI
                         if (sln.Failed) return new ConfigurationStateVM(sln);
                         return new ConfigurationStateVM(proj);
                     })
-                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), ConfigurationStateVM.Success);
+                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), new ConfigurationStateVM(ErrorResponse.Fail("Evaluating"))
+                {
+                    IsHaltingError = false
+                });
 
             OpenSolutionCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.SolutionPath.InError)

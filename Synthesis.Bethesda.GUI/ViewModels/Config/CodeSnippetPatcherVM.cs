@@ -154,7 +154,10 @@ namespace Synthesis.Bethesda.GUI
                     }
                     return ConfigurationStateVM.Success;
                 })
-                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), ConfigurationStateVM.Success);
+                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), new ConfigurationStateVM(ErrorResponse.Fail("Evaluating"))
+                {
+                    IsHaltingError = false
+                });
         }
 
         public override PatcherSettings Save()

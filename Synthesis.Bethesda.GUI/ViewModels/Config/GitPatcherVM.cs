@@ -481,7 +481,10 @@ namespace Synthesis.Bethesda.GUI
                         if (runner.IsHaltingError) return runner;
                         return checkout;
                     })
-                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), ConfigurationStateVM.Success);
+                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), new ConfigurationStateVM(ErrorResponse.Fail("Evaluating"))
+                {
+                    IsHaltingError = false
+                });
 
             OpenGitPageCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.RepoValidity)
