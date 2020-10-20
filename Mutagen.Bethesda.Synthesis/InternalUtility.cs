@@ -1,3 +1,4 @@
+using Mutagen.Bethesda.Internals;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using System;
@@ -28,16 +29,26 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             // Get load order
             var loadOrderListing = SynthesisPipeline.Instance.GetLoadOrder(settings, userPrefs)
                 .ToExtendedList();
-            var rawLoadOrder = loadOrderListing.Select(x => new ModKeyListing(x.ModKey, x.Enabled)).ToExtendedList();
+            var rawLoadOrder = loadOrderListing.Select(x => new LoadOrderListing(x.ModKey, x.Enabled)).ToExtendedList();
+
+            // Trim past Synthesis.esp
             var synthIndex = loadOrderListing.IndexOf(BaseSynthesis.Constants.SynthesisModKey, (listing, key) => listing.ModKey == key);
             if (synthIndex != -1)
             {
                 loadOrderListing.RemoveToCount(synthIndex);
             }
+
+            if (userPrefs.AddImplicitMasters)
+            {
+                AddImplicitMasters(settings, loadOrderListing);
+            }
+
+            // Remove disabled mods
             if (!userPrefs.IncludeDisabledMods)
             {
                 loadOrderListing = loadOrderListing.OnlyEnabled().ToExtendedList();
             }
+
             var loadOrder = LoadOrder.Import<TModGetter>(
                 settings.DataFolderPath,
                 loadOrderListing,
@@ -70,6 +81,24 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 patchMod: patchMod,
                 extraDataPath: settings.ExtraDataFolder == null ? string.Empty : Path.GetFullPath(settings.ExtraDataFolder),
                 cancellation: userPrefs.Cancel);
+        }
+
+        public static void AddImplicitMasters(RunSynthesisMutagenPatcher settings, ExtendedList<LoadOrderListing> loadOrderListing)
+        {
+            HashSet<ModKey> referencedMasters = new HashSet<ModKey>();
+            foreach (var item in loadOrderListing.OnlyEnabled())
+            {
+                MasterReferenceReader reader = MasterReferenceReader.FromPath(Path.Combine(settings.DataFolderPath, item.ModKey.FileName), settings.GameRelease);
+                referencedMasters.Add(reader.Masters.Select(m => m.Master));
+            }
+            for (int i = 0; i < loadOrderListing.Count; i++)
+            {
+                var listing = loadOrderListing[i];
+                if (!listing.Enabled && referencedMasters.Contains(listing.ModKey))
+                {
+                    loadOrderListing[i] = new LoadOrderListing(listing.ModKey, enabled: true);
+                }
+            }
         }
     }
 }

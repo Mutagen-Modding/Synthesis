@@ -29,7 +29,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// <summary>
         /// A list of ModKeys as they appeared, and whether they were enabled
         /// </summary>
-        public IReadOnlyList<ModKeyListing> RawLoadOrder { get; }
+        public IReadOnlyList<LoadOrderListing> RawLoadOrder { get; }
 
         /// <summary>
         /// Convenience Link Cache to use created from the provided Load Order object.<br />
@@ -53,7 +53,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// </summary>
         public CancellationToken Cancel { get; } = CancellationToken.None;
 
-        IEnumerable<ModKeyListing> ISynthesisState.LoadOrder => LoadOrder.Select(i => new ModKeyListing(i.Key, i.Value.Enabled));
+        IEnumerable<LoadOrderListing> ISynthesisState.LoadOrder => LoadOrder.Select(i => new LoadOrderListing(i.Key, i.Value.Enabled));
 
         /// <summary>
         /// Path to the supplimental data folder dedicated to storing patcher specific settings/files
@@ -62,7 +62,7 @@ namespace Mutagen.Bethesda.Synthesis
 
         public SynthesisState(
             RunSynthesisMutagenPatcher settings,
-            IReadOnlyList<ModKeyListing> rawLoadOrder,
+            IReadOnlyList<LoadOrderListing> rawLoadOrder,
             LoadOrder<IModListing<TModGetter>> loadOrder,
 
             ILinkCache linkCache,

@@ -1,6 +1,5 @@
 using Alphaleonis.Win32.Filesystem;
 using FluentAssertions;
-using FluentAssertions.Common;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Oblivion;
 using Mutagen.Bethesda.Synthesis;
@@ -197,7 +196,7 @@ namespace Synthesis.Bethesda.UnitTests
         public void DisabledModsInLoadOrder()
         {
             using var tmpFolder = Utility.GetTempFolder();
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimLE);
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimSE);
             var pluginsPath = Path.Combine(dataFolder.Dir.Path, "Plugins.txt");
             File.WriteAllLines(
                 pluginsPath,
@@ -220,8 +219,8 @@ namespace Synthesis.Bethesda.UnitTests
                 new UserPreferences());
             state.LoadOrder.PriorityOrder.Should().HaveCount(2);
             state.RawLoadOrder.Should().HaveCount(2);
-            state.RawLoadOrder[0].Should().Be(new ModKeyListing(Utility.TestModKey, true));
-            state.RawLoadOrder[1].Should().Be(new ModKeyListing(Utility.OverrideModKey, false));
+            state.RawLoadOrder[0].Should().Be(new LoadOrderListing(Utility.TestModKey, true));
+            state.RawLoadOrder[1].Should().Be(new LoadOrderListing(Utility.OverrideModKey, false));
         }
 
         [Fact]
@@ -230,6 +229,44 @@ namespace Synthesis.Bethesda.UnitTests
             SynthesisPipeline.Instance.Patch<IOblivionMod, IOblivionModGetter>(
                 new string[0],
                 PatchFunction);
+        }
+
+        [Fact]
+        public void AddImplicitMasters()
+        {
+            using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
+            var pluginsPath = Path.Combine(dataFolder.Dir.Path, "Plugins.txt");
+            File.WriteAllLines(
+                pluginsPath,
+                new string[]
+                {
+                    Utility.TestModKey.FileName,
+                    Utility.OverrideModKey.FileName
+                });
+
+            var mod = new OblivionMod(Utility.TestModKey);
+            mod.WriteToBinary(Path.Combine(dataFolder.Dir.Path, Utility.TestModKey.FileName));
+            var mod2 = new OblivionMod(Utility.OverrideModKey);
+            mod2.Npcs.Add(new Npc(mod.GetNextFormKey()));
+            mod2.WriteToBinary(Path.Combine(dataFolder.Dir.Path, Utility.OverrideModKey.FileName));
+
+            var list = new ExtendedList<LoadOrderListing>()
+            {
+                new LoadOrderListing(Utility.TestModKey, false),
+                new LoadOrderListing(Utility.OverrideModKey, true),
+            };
+            Mutagen.Bethesda.Synthesis.Internal.Utility.AddImplicitMasters(
+                new RunSynthesisMutagenPatcher()
+                {
+                    DataFolderPath = dataFolder.Dir.Path,
+                    GameRelease = GameRelease.Oblivion
+                },
+                list);
+
+            list.Should().HaveCount(2);
+            list[0].Should().Be(new LoadOrderListing(Utility.TestModKey, true));
+            list[1].Should().Be(new LoadOrderListing(Utility.OverrideModKey, true));
         }
     }
 }

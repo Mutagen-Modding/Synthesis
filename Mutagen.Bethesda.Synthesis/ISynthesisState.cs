@@ -9,6 +9,6 @@ namespace Mutagen.Bethesda.Synthesis
     {
         RunSynthesisMutagenPatcher Settings { get; }
         IModGetter PatchMod { get; }
-        IEnumerable<ModKeyListing> LoadOrder { get; }
+        IEnumerable<LoadOrderListing> LoadOrder { get; }
     }
 }
