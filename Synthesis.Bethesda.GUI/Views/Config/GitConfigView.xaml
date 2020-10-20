@@ -143,9 +143,9 @@
                         mahapps:HeaderedControlHelper.HeaderFontSize="16"
                         mahapps:HeaderedControlHelper.HeaderForeground="AliceBlue"
                         Background="Transparent">
-                        <TabItem Header="Latest" ToolTip="Run with the latest stable version of Mutagen" />
-                        <TabItem Header="Match" ToolTip="Run with the version of Mutagen explicitly listed in the patcher" />
-                        <TabItem Header="Manual" ToolTip="Run with a manually specified version of Mutagen" />
+                        <TabItem Header="Latest" ToolTip="Run with the latest stable version of Synthesis" />
+                        <TabItem Header="Match" ToolTip="Run with the version of Synthesis explicitly listed in the patcher" />
+                        <TabItem Header="Manual" ToolTip="Run with a manually specified version of Synthesis" />
                     </TabControl>
                     <TextBox Grid.Column="1"
                         x:Name="SynthesisManualVersionBox"
