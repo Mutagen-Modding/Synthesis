@@ -27,6 +27,11 @@ namespace Mutagen.Bethesda.Synthesis
         public bool IncludeDisabledMods { get; set; }
 
         /// <summary>
+        /// Should disabled mods that are referenced by active mods be marked active themselves?
+        /// </summary>
+        public bool AddImplicitMasters { get; set; } = true;
+
+        /// <summary>
         /// If program args are empty, what actions should be taken
         /// </summary>
         public RunDefaultPatcher? ActionsForEmptyArgs { get; set; } = null;
