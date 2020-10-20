@@ -3,6 +3,8 @@ using Noggog.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,12 +46,48 @@ namespace Synthesis.Bethesda.Execution
             var ret = new List<(string Package, string Requested, string Resolved, string Latest)>();
             foreach (var line in lines)
             {
-                var startIndex = line.IndexOf("> ");
-                if (startIndex == -1) continue;
-                var split = line.Substring(startIndex + 2).Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                ret.Add((split[0], split[1], split[2], split[3]));
+                if (!TryParseLibraryLine(
+                    line, 
+                    out var package,
+                    out var requested, 
+                    out var resolved, 
+                    out var latest))
+                {
+                    continue;
+                }
+                ret.Add((package, requested, resolved, latest));
             }
             return ret;
+        }
+
+        public static bool TryParseLibraryLine(
+            string line, 
+            [MaybeNullWhen(false)] out string package,
+            [MaybeNullWhen(false)] out string requested,
+            [MaybeNullWhen(false)] out string resolved,
+            [MaybeNullWhen(false)] out string latest)
+        {
+            var startIndex = line.IndexOf("> ");
+            if (startIndex == -1)
+            {
+                package = default;
+                requested = default;
+                resolved = default;
+                latest = default;
+                return false;
+            }
+            var split = line
+                .Substring(startIndex + 2)
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .WithIndex()
+                .Where(x => x.Index == 0 || Version.TryParse(x.Item, out _))
+                .Select(x => x.Item)
+                .ToArray();
+            package = split[0];
+            requested = split[1];
+            resolved = split[2];
+            latest = split[3];
+            return true;
         }
 
         public static async Task<(string? MutagenVersion, string? SynthesisVersion)> QuerySynthesisVersions(string projectPath, bool current)
