@@ -220,8 +220,8 @@ namespace Synthesis.Bethesda.UnitTests
                 new UserPreferences());
             state.LoadOrder.PriorityOrder.Should().HaveCount(2);
             state.RawLoadOrder.Should().HaveCount(2);
-            state.RawLoadOrder[0].Should().Be(new ModKeyListing(Utility.TestModKey, true));
-            state.RawLoadOrder[1].Should().Be(new ModKeyListing(Utility.OverrideModKey, false));
+            state.RawLoadOrder[0].Should().Be(new LoadOrderListing(Utility.TestModKey, true));
+            state.RawLoadOrder[1].Should().Be(new LoadOrderListing(Utility.OverrideModKey, false));
         }
 
         [Fact]
