@@ -24,7 +24,7 @@ namespace Mutagen.Bethesda.Synthesis.CLI
         [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
         public string LoadOrderFilePath { get; set; } = string.Empty;
 
-        [Option('e', "ExtraDataFolder", Required = true, HelpText = "Path to the extra data folder dedicated for a patcher")]
+        [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to the extra data folder dedicated for a patcher")]
         public string? ExtraDataFolder { get; set; }
 
         public override string ToString()
