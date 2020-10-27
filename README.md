@@ -14,4 +14,4 @@ Also be sure to head over to [Discord](https://discord.gg/53KMEsW) and ask any a
 
 ## Development
 While Synthesis supports any external program as a patcher, it heavily facilitates creating and running Mutagen-based patchers.
-Take a look at the [Development](https://github.com/Noggog/Synthesis/wiki/Create-a-Mutagen-Patcher) side of the wiki, the [Mutagen](https://github.com/Noggog/Mutagen/wiki) documentation, or some [example patchers](https://github.com/Noggog/Synthesis/network/dependents).
+Take a look at the [Development](https://github.com/Noggog/Synthesis/wiki/Create-a-Mutagen-Patcher) side of the wiki, the [Mutagen](https://github.com/Noggog/Mutagen/wiki) documentation, or some [example patchers](https://github.com/Noggog/Synthesis/network/dependents?package_id=UGFja2FnZS0xMzg1MjY1MjYz).
