@@ -36,7 +36,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     return GetResponse<string>.Fail($"Target project folder cannot already exist as a file: {projPath}");
                 }
-                if (Directory.Exists(projPath) 
+                if (Directory.Exists(projPath)
                     && (Directory.EnumerateFiles(projPath).Any()
                     || Directory.EnumerateDirectories(projPath).Any()))
                 {
@@ -103,7 +103,17 @@ namespace Synthesis.Bethesda.GUI
                         using (new DepthWrapper(fg))
                         {
                             fg.AppendLine("args: args,");
-                            fg.AppendLine("patcher: RunPatch);");
+                            fg.AppendLine("patcher: RunPatch");
+                            fg.AppendLine($"userPreferences: new {nameof(UserPreferences)}()");
+                            using (new BraceWrapper(fg) { AppendParenthesis = true, AppendSemicolon = true })
+                            {
+                                fg.AppendLine($"{nameof(UserPreferences.ActionsForEmptyArgs)} = new {nameof(RunDefaultPatcher)}()");
+                                using (new BraceWrapper(fg))
+                                {
+                                    fg.AppendLine($"{nameof(RunDefaultPatcher.IdentifyingModKey)} = \"YourPatcher.esp\",");
+                                    fg.AppendLine($"{nameof(RunDefaultPatcher.TargetRelease)} = {nameof(GameRelease)}.{category.DefaultRelease()};");
+                                }
+                            }
                         }
                     }
                     fg.AppendLine();

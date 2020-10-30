@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -38,8 +38,16 @@
 
   <ItemGroup>
     <PackageReference Include="Buildalyzer" Version="3.0.1" />
+    <PackageReference Include="GitInfo" Version="2.1.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
-    <PackageReference Include="Noggog.WPF" Version="1.6.0" />
+    <PackageReference Include="Noggog.WPF" Version="1.6.2" />
+    <PackageReference Include="NuGetizer" Version="0.4.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Octokit" Version="0.48.0" />
     <PackageReference Include="reactiveui" Version="11.5.35" />
     <PackageReference Include="ReactiveUI.Fody" Version="11.5.35" />
@@ -73,4 +81,14 @@
     <Folder Include="Converters\" />
   </ItemGroup>
 
+  <!-- Replace inherited target -->
+  <Target Name="SetVersion" BeforeTargets="GetAssemblyVersion;GetPackageVersion" DependsOnTargets="GitVersion" Returns="$(PackageVersion)">
+    <PropertyGroup>
+      <DevLabel Condition="'$(GitCommits)' != '0' or $(GitIsDirty) != ''">.1-dev</DevLabel>
+      <AssemblyDevLabel Condition="'$(GitCommits)' != '0' or $(GitIsDirty) != ''">.1</AssemblyDevLabel>
+      <FileVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(AssemblyDevLabel)</FileVersion>
+      <PackageVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(DevLabel)</PackageVersion>
+      <InformationalVersion>$(PackageVersion)</InformationalVersion>
+    </PropertyGroup>
+  </Target>
 </Project>
