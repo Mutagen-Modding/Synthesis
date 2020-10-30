@@ -28,7 +28,7 @@ namespace Synthesis.Bethesda.Execution
         private Subject<string> _error = new Subject<string>();
         public IObservable<string> Error => _error;
 
-        private static readonly HashSet<string> MutagenLibraries;
+        internal static readonly HashSet<string> MutagenLibraries;
 
         static GitPatcherRun()
         {
@@ -202,14 +202,17 @@ namespace Synthesis.Bethesda.Execution
             string? mutagenVersion,
             out string? listedMutagenVersion,
             string? synthesisVersion,
-            out string? listedSynthesisVersion)
+            out string? listedSynthesisVersion,
+            bool addMissing = true)
         {
             var root = XElement.Parse(projStr);
             listedMutagenVersion = null;
             listedSynthesisVersion = null;
+            var missingLibs = new HashSet<string>(MutagenLibraries);
+            XElement? itemGroup = null;
             foreach (var group in root.Elements("ItemGroup"))
             {
-                foreach (var elem in group.Elements())
+                foreach (var elem in group.Elements().ToArray())
                 {
                     if (!elem.Name.LocalName.Equals("PackageReference")) continue;
                     if (!elem.TryGetAttribute("Include", out var libAttr)) continue;
@@ -219,18 +222,34 @@ namespace Synthesis.Bethesda.Execution
                         listedSynthesisVersion = elem.Attribute("Version")?.Value;
                         if (synthesisVersion == null) continue;
                         swapInStr = synthesisVersion;
+                        missingLibs.Remove(libAttr.Value);
                     }
                     else if (MutagenLibraries.Contains(libAttr.Value))
                     {
                         listedMutagenVersion = elem.Attribute("Version")?.Value;
                         if (mutagenVersion == null) continue;
                         swapInStr = mutagenVersion;
+                        missingLibs.Remove(libAttr.Value);
                     }
                     else
                     {
                         continue;
                     }
                     elem.SetAttributeValue("Version", swapInStr);
+                }
+                itemGroup = group;
+            }
+            if (itemGroup == null)
+            {
+                throw new ArgumentException("No ItemGroup found in project to upgrade");
+            }
+            if (addMissing)
+            {
+                foreach (var missing in missingLibs)
+                {
+                    itemGroup.Add(new XElement("PackageReference",
+                        new XAttribute("Include", missing),
+                        new XAttribute("Version", mutagenVersion)));
                 }
             }
             return root.ToString();
