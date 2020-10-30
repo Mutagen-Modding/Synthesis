@@ -182,35 +182,42 @@ namespace Synthesis.Bethesda.Execution
             foreach (var subProj in SolutionPatcherRun.AvailableProjects(solutionPath))
             {
                 var proj = Path.Combine(Path.GetDirectoryName(solutionPath), subProj);
-                File.WriteAllText(proj,
-                    SwapInDesiredVersionsForProjectString(
-                        File.ReadAllText(proj),
-                        mutagenVersion: mutagenVersion,
-                        listedMutagenVersion: out var curListedMutagenVersion,
-                        synthesisVersion: synthesisVersion,
-                        listedSynthesisVersion: out var curListedSynthesisVersion));
+                var projXml = XElement.Parse(File.ReadAllText(proj));
+                SwapInDesiredVersionsForProjectString(
+                    projXml,
+                    mutagenVersion: mutagenVersion,
+                    listedMutagenVersion: out var curListedMutagenVersion,
+                    synthesisVersion: synthesisVersion,
+                    listedSynthesisVersion: out var curListedSynthesisVersion);
+                TurnOffNullability(projXml);
+                File.WriteAllText(proj, projXml.ToString());
                 if (drivingProjSubPath.Equals(subProj))
                 {
                     listedMutagenVersion = curListedMutagenVersion;
                     listedSynthesisVersion = curListedSynthesisVersion;
                 }
             }
+            foreach (var item in Directory.EnumerateFiles(Path.GetDirectoryName(solutionPath), "Directory.Build.props"))
+            {
+                var projXml = XElement.Parse(File.ReadAllText(item));
+                TurnOffNullability(projXml);
+                File.WriteAllText(item, projXml.ToString());
+            }
         }
 
-        public static string SwapInDesiredVersionsForProjectString(
-            string projStr,
+        public static void SwapInDesiredVersionsForProjectString(
+            XElement proj,
             string? mutagenVersion,
             out string? listedMutagenVersion,
             string? synthesisVersion,
             out string? listedSynthesisVersion,
             bool addMissing = true)
         {
-            var root = XElement.Parse(projStr);
             listedMutagenVersion = null;
             listedSynthesisVersion = null;
             var missingLibs = new HashSet<string>(MutagenLibraries);
             XElement? itemGroup = null;
-            foreach (var group in root.Elements("ItemGroup"))
+            foreach (var group in proj.Elements("ItemGroup"))
             {
                 foreach (var elem in group.Elements().ToArray())
                 {
@@ -241,7 +248,7 @@ namespace Synthesis.Bethesda.Execution
             }
             if (itemGroup == null)
             {
-                throw new ArgumentException("No ItemGroup found in project to upgrade");
+                throw new ArgumentException("No ItemGroup found in project");
             }
             if (addMissing)
             {
@@ -252,7 +259,23 @@ namespace Synthesis.Bethesda.Execution
                         new XAttribute("Version", mutagenVersion)));
                 }
             }
-            return root.ToString();
+        }
+
+        public static void TurnOffNullability(XElement proj)
+        {
+            XElement? propGroup = null;
+            foreach (var group in proj.Elements("PropertyGroup"))
+            {
+                foreach (var elem in group.Elements())
+                {
+                    if (elem.Name.LocalName.Equals("WarningsAsErrors"))
+                    {
+                        var warnings = elem.Value.Split(',');
+                        elem.Value = string.Join(',', warnings.Where(x => !x.Contains("nullable", StringComparison.OrdinalIgnoreCase)));
+                    }
+                }
+                propGroup = group;
+            }
         }
     }
 }
