@@ -41,7 +41,7 @@ namespace Synthesis.Bethesda.GUI
             _IsSelected = gitInit.WhenAnyValue(x => x.SelectedPatcher)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsSelected));
-            OpenWebsite = ReactiveCommand.Create(() => Utility.OpenWebsite(RepoPath));
+            OpenWebsite = ReactiveCommand.Create(() => Utility.NavigateToPath(RepoPath));
             AddCommand = ReactiveCommand.Create(() =>
             {
                 gitInit.AddStorePatcher(this);

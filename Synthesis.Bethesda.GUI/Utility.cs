@@ -25,7 +25,7 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public static async void OpenWebsite(string path)
+        public static async void NavigateToPath(string path)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace Synthesis.Bethesda.GUI
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(ex, $"Error opening website: {path}");
+                Log.Logger.Error(ex, $"Error navigating to path: {path}");
             }
         }
     }

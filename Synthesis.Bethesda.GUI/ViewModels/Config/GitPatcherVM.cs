@@ -79,6 +79,8 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand OpenGitPageToVersionCommand { get; }
 
+        public ICommand NavigateToInternalFilesCommand { get; }
+
         [Reactive]
         public MutagenVersioningEnum MutagenVersioning { get; set; } = MutagenVersioningEnum.Latest;
 
@@ -104,7 +106,8 @@ namespace Synthesis.Bethesda.GUI
 
             CopyInSettings(settings);
 
-            LocalDriverRepoDirectory = Path.Combine(Profile.ProfileDirectory, "Git", ID, "Driver");
+            var localRepoDir = Path.Combine(Profile.ProfileDirectory, "Git", ID);
+            LocalDriverRepoDirectory = Path.Combine(localRepoDir, "Driver");
             LocalRunnerRepoDirectory = GitPatcherRun.RunnerRepoDirectory(Profile.ID, ID);
 
             _DisplayName = this.WhenAnyValue(
@@ -495,7 +498,7 @@ namespace Synthesis.Bethesda.GUI
             OpenGitPageCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.RepoValidity)
                     .Select(x => x.Succeeded),
-                execute: () => Utility.OpenWebsite(RemoteRepoPath));
+                execute: () => Utility.NavigateToPath(RemoteRepoPath));
 
             OpenGitPageToVersionCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.RunnableData)
@@ -507,11 +510,11 @@ namespace Synthesis.Bethesda.GUI
                         if (!RunnableData.TryGet(out var runnable)) return;
                         if (runnable.Target == null)
                         {
-                            Utility.OpenWebsite(RemoteRepoPath);
+                            Utility.NavigateToPath(RemoteRepoPath);
                         }
                         else
                         {
-                            Utility.OpenWebsite(Path.Combine(RemoteRepoPath, "tree", runnable.Target));
+                            Utility.NavigateToPath(Path.Combine(RemoteRepoPath, "tree", runnable.Target));
                         }
                     }
                     catch (Exception ex)
@@ -519,6 +522,8 @@ namespace Synthesis.Bethesda.GUI
                         Logger.Error("Error opening Git webpage", ex);
                     }
                 });
+
+            NavigateToInternalFilesCommand = ReactiveCommand.Create(() => Utility.NavigateToPath(localRepoDir));
         }
 
         public override PatcherSettings Save()

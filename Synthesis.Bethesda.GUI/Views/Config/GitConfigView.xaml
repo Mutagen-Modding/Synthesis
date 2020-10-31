@@ -45,7 +45,8 @@
             <Button
                 x:Name="OpenGitButton"
                 Margin="8,0"
-                HorizontalAlignment="Right">
+                HorizontalAlignment="Right"
+                ToolTip="Go to repository website">
                 <icon:PackIconMaterial Kind="OpenInApp" />
             </Button>
         </Grid>
@@ -56,6 +57,16 @@
             FontWeight="Bold"
             Text="Project"
             Visibility="Collapsed" />
+        <Button Grid.Row="2"
+            x:Name="OpenPatcherInternalFilesButton"
+            Margin="8,0"
+            HorizontalAlignment="Right"
+            ToolTip="Go to patcher internal files location">
+            <Button.Resources>
+                <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#44FFFFFF" />
+            </Button.Resources>
+            <icon:PackIconModern Kind="FolderEllipsis" />
+        </Button>
         <ComboBox Grid.Row="3"
             x:Name="ProjectsPickerBox"
             Visibility="Collapsed">

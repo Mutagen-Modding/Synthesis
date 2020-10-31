@@ -1,4 +1,4 @@
-﻿<local:ProfileDetailViewBase
+<local:ProfileDetailViewBase
     x:Class="Synthesis.Bethesda.GUI.Views.ProfileDetailView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -13,6 +13,7 @@
     mc:Ignorable="d">
     <Grid Margin="15,15,15,0">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -70,7 +71,7 @@
                 <icon:PackIconFontAwesome Kind="TrashSolid" />
             </Button>
         </Grid>
-        <Image Grid.Row="0" Grid.RowSpan="2"
+        <Image Grid.Row="0" Grid.RowSpan="3"
             x:Name="GameIconImage"
             Width="60"
             Height="60"
@@ -98,22 +99,16 @@
                 </Style>
             </Image.Style>
         </Image>
-        <ListBox Grid.Row="1"
-            x:Name="GameReleaseOptionsControl"
-            Margin="20,25"
-            HorizontalAlignment="Center"
-            Background="Transparent"
-            ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}">
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel Margin="100,0" />
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <local:GameTypeClickerView Width="100" Height="120" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <Button Grid.Row="1"
+            x:Name="ProfileInternalFilesButton"
+            HorizontalAlignment="Left">
+            <StackPanel Orientation="Horizontal">
+                <icon:PackIconModern
+                    Margin="0,1,5,0"
+                    VerticalAlignment="Center"
+                    Kind="FolderEllipsis" />
+                <TextBlock VerticalAlignment="Center" Text="Profile Internal Files" />
+            </StackPanel>
+        </Button>
     </Grid>
 </local:ProfileDetailViewBase>

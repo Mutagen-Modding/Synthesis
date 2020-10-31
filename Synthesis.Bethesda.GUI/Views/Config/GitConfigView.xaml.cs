@@ -145,6 +145,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     })
                     .BindToStrict(this, x => x.SynthesisVersionText.Text)
                     .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.NavigateToInternalFilesCommand)
+                    .BindToStrict(this, x => x.OpenPatcherInternalFilesButton.Command)
+                    .DisposeWith(disposable);
             });
         }
     }
