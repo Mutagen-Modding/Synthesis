@@ -11,14 +11,7 @@ namespace Synthesis.Bethesda.Execution.Settings
         Commit,
     }
 
-    public enum MutagenVersioningEnum
-    {
-        Latest,
-        Match,
-        Manual,
-    }
-
-    public enum SynthesisVersioningEnum
+    public enum NugetVersioningEnum
     {
         Latest,
         Match,
@@ -36,9 +29,9 @@ namespace Synthesis.Bethesda.Execution.Settings
         public string TargetBranch = string.Empty;
         public bool LatestTag = true;
         public bool FollowDefaultBranch = true;
-        public MutagenVersioningEnum MutagenVersioning = MutagenVersioningEnum.Latest;
+        public NugetVersioningEnum MutagenVersioning = NugetVersioningEnum.Latest;
         public string ManualMutagenVersion = string.Empty;
-        public SynthesisVersioningEnum SynthesisVersioning = SynthesisVersioningEnum.Latest;
+        public NugetVersioningEnum SynthesisVersioning = NugetVersioningEnum.Latest;
         public string ManualSynthesisVersion = string.Empty;
 
         public override void Print(IRunReporter logger)

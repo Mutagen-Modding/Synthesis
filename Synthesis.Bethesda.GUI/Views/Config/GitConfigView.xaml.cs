@@ -111,20 +111,20 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.OpenGitButton.Command)
                     .DisposeWith(disposable);
 
-                this.BindStrict(this.ViewModel, vm => vm.MutagenVersioning, view => view.MutagenVersioningTab.SelectedIndex, (e) => (int)e, i => (MutagenVersioningEnum)i)
+                this.BindStrict(this.ViewModel, vm => vm.MutagenVersioning, view => view.MutagenVersioningTab.SelectedIndex, (e) => (int)e, i => (NugetVersioningEnum)i)
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.ManualMutagenVersion, view => view.MutagenManualVersionBox.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning)
-                    .Select(x => x == MutagenVersioningEnum.Manual ? Visibility.Visible : Visibility.Hidden)
+                    .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Hidden)
                     .BindToStrict(this, x => x.MutagenManualVersionBox.Visibility)
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.SynthesisVersioning, view => view.SynthesisVersioningTab.SelectedIndex, (e) => (int)e, i => (SynthesisVersioningEnum)i)
+                this.BindStrict(this.ViewModel, vm => vm.SynthesisVersioning, view => view.SynthesisVersioningTab.SelectedIndex, (e) => (int)e, i => (NugetVersioningEnum)i)
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.ManualSynthesisVersion, view => view.SynthesisManualVersionBox.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning)
-                    .Select(x => x == SynthesisVersioningEnum.Manual ? Visibility.Visible : Visibility.Hidden)
+                    .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Hidden)
                     .BindToStrict(this, x => x.SynthesisManualVersionBox.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.UsedMutagenVersion)

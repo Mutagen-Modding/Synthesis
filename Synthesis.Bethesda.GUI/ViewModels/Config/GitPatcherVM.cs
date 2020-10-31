@@ -83,13 +83,13 @@ namespace Synthesis.Bethesda.GUI
         public ICommand NavigateToInternalFilesCommand { get; }
 
         [Reactive]
-        public MutagenVersioningEnum MutagenVersioning { get; set; } = MutagenVersioningEnum.Latest;
+        public NugetVersioningEnum MutagenVersioning { get; set; } = NugetVersioningEnum.Latest;
 
         [Reactive]
         public string ManualMutagenVersion { get; set; } = string.Empty;
 
         [Reactive]
-        public SynthesisVersioningEnum SynthesisVersioning { get; set; } = SynthesisVersioningEnum.Latest;
+        public NugetVersioningEnum SynthesisVersioning { get; set; } = NugetVersioningEnum.Latest;
 
         [Reactive]
         public string ManualSynthesisVersion { get; set; } = string.Empty;
@@ -277,43 +277,49 @@ namespace Synthesis.Bethesda.GUI
                 this.WhenAnyValue(x => x.TargetBranchName),
                 (versioning, tag, commit, branch) => new GitPatcherVersioning(versioning, tag, commit, branch));
 
-            var libraryNugets = Observable.CombineLatest(
+            var nugetVersioning = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.MutagenVersioning),
                     this.WhenAnyValue(x => x.ManualMutagenVersion),
+                    parent.Config.MainVM.NewestMutagenVersion,
                     this.WhenAnyValue(x => x.SynthesisVersioning),
                     this.WhenAnyValue(x => x.ManualSynthesisVersion),
-                    parent.Config.MainVM.NewestMutagenVersion,
                     parent.Config.MainVM.NewestSynthesisVersion,
-                    (mutaVersioning, mutaManual, synthVersioning, synthManual, newestMuta, newestSynth) =>
-                    (mutaVersioning, mutaManual, synthVersioning, synthManual, newestMuta, newestSynth))
-                .Select(nugets =>
-                {
-                    if (nugets.mutaVersioning == MutagenVersioningEnum.Latest && nugets.newestMuta == null)
+                    (mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
                     {
-                        return GetResponse<(MutagenVersioningEnum MutaVersioning, string MutaVersion, SynthesisVersioningEnum SynthVersioning, string SynthVersion)>
+                        return new SynthesisNugetVersioning(
+                            new NugetVersioning(mutaVersioning, mutaManual, newestMuta),
+                            new NugetVersioning(synthVersioning, synthManual, newestSynth));
+                    });
+
+            var libraryNugets = nugetVersioning
+                .Select(nuget =>
+                {
+                    if (nuget.Mutagen.Versioning == NugetVersioningEnum.Latest && nuget.Mutagen.NewestVersion == null)
+                    {
+                        return GetResponse<(NugetVersioningEnum MutaVersioning, string MutaVersion, NugetVersioningEnum SynthVersioning, string SynthVersion)>
                             .Fail("Latest Mutagen version is desired, but latest version is not known.");
                     }
-                    if (nugets.synthVersioning == SynthesisVersioningEnum.Latest && nugets.newestSynth == null)
+                    if (nuget.Synthesis.Versioning == NugetVersioningEnum.Latest && nuget.Synthesis.NewestVersion == null)
                     {
-                        return GetResponse<(MutagenVersioningEnum MutaVersioning, string MutaVersion, SynthesisVersioningEnum SynthVersioning, string SynthVersion)>
+                        return GetResponse<(NugetVersioningEnum MutaVersioning, string MutaVersion, NugetVersioningEnum SynthVersioning, string SynthVersion)>
                             .Fail("Latest Synthesis version is desired, but latest version is not known.");
                     }
-                    var muta = nugets.mutaVersioning switch
+                    var muta = nuget.Mutagen.Versioning switch
                     {
-                        MutagenVersioningEnum.Latest => (nugets.newestMuta, nugets.mutaVersioning),
-                        MutagenVersioningEnum.Match => (null, nugets.mutaVersioning),
-                        MutagenVersioningEnum.Manual => (nugets.mutaManual, nugets.mutaVersioning),
+                        NugetVersioningEnum.Latest => (nuget.Mutagen.NewestVersion, nuget.Mutagen.Versioning),
+                        NugetVersioningEnum.Match => (null, nuget.Mutagen.Versioning),
+                        NugetVersioningEnum.Manual => (nuget.Mutagen.ManualVersion, nuget.Mutagen.Versioning),
                         _ => throw new NotImplementedException(),
                     };
-                    var synth = nugets.synthVersioning switch
+                    var synth = nuget.Synthesis.Versioning switch
                     {
-                        SynthesisVersioningEnum.Latest => (nugets.newestSynth, nugets.synthVersioning),
-                        SynthesisVersioningEnum.Match => (null, nugets.synthVersioning),
-                        SynthesisVersioningEnum.Manual => (nugets.synthManual, nugets.synthVersioning),
+                        NugetVersioningEnum.Latest => (nuget.Synthesis.NewestVersion, nuget.Synthesis.Versioning),
+                        NugetVersioningEnum.Match => (null, nuget.Synthesis.Versioning),
+                        NugetVersioningEnum.Manual => (nuget.Synthesis.ManualVersion, nuget.Synthesis.Versioning),
                         _ => throw new NotImplementedException(),
                     };
-                    return GetResponse<(MutagenVersioningEnum MutaVersioning, string MutaVersion, SynthesisVersioningEnum SynthVersioning, string SynthVersion)>
-                        .Succeed((muta.mutaVersioning, muta.Item1!, synth.synthVersioning, synth.Item1!));
+                    return GetResponse<(NugetVersioningEnum MutaVersioning, string MutaVersion, NugetVersioningEnum SynthVersioning, string SynthVersion)>
+                        .Succeed((muta.Versioning, muta.Item1!, synth.Versioning, synth.Item1!));
                 })
                 .Replay(1)
                 .RefCount();
@@ -417,9 +423,9 @@ namespace Synthesis.Bethesda.GUI
                                 GitPatcherRun.SwapInDesiredVersionsForSolution(
                                     slnPath,
                                     drivingProjSubPath: foundProjSubPath,
-                                    mutagenVersion: item.libraryNugets.Value.MutaVersioning == MutagenVersioningEnum.Match ? null : item.libraryNugets.Value.MutaVersion,
+                                    mutagenVersion: item.libraryNugets.Value.MutaVersioning == NugetVersioningEnum.Match ? null : item.libraryNugets.Value.MutaVersion,
                                     listedMutagenVersion: out var listedMutagenVersion,
-                                    synthesisVersion: item.libraryNugets.Value.SynthVersioning == SynthesisVersioningEnum.Match ? null : item.libraryNugets.Value.SynthVersion,
+                                    synthesisVersion: item.libraryNugets.Value.SynthVersioning == NugetVersioningEnum.Match ? null : item.libraryNugets.Value.SynthVersion,
                                     listedSynthesisVersion: out var listedSynthesisVersion);
                                 var compileResp = await SolutionPatcherRun.CompileWithDotnet(projPath, cancel);
                                 if (compileResp.Failed) return compileResp.BubbleFailure<RunnerRepoInfo>();
