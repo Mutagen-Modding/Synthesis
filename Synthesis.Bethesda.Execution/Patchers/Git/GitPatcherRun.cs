@@ -276,5 +276,110 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 propGroup = group;
             }
         }
+
+        public static async Task<ConfigurationState<RunnerRepoInfo>> CheckoutRunnerRepository(
+            string proj,
+            string localRepoDir,
+            GitPatcherVersioning patcherVersioning,
+            NugetVersioningTarget nugetVersioning,
+            Action<string>? logger,
+            CancellationToken cancel)
+        {
+            try
+            {
+                cancel.ThrowIfCancellationRequested();
+
+                var checkoutTargetStr = patcherVersioning.Versioning switch
+                {
+                    PatcherVersioningEnum.Tag => $"tag {patcherVersioning.TargetTag}",
+                    PatcherVersioningEnum.Branch => $"branch {patcherVersioning.TargetBranchName}",
+                    PatcherVersioningEnum.Commit => $"master {patcherVersioning.TargetCommit}",
+                    _ => throw new NotImplementedException(),
+                };
+                logger?.Invoke($"Targeting {checkoutTargetStr}");
+
+                const string RunnerBranch = "SynthesisRunner";
+                using var repo = new Repository(localRepoDir);
+                var runnerBranch = repo.Branches[RunnerBranch] ?? repo.CreateBranch(RunnerBranch);
+                repo.Reset(ResetMode.Hard);
+                Commands.Checkout(repo, runnerBranch);
+                string? targetSha;
+                string? target;
+                switch (patcherVersioning.Versioning)
+                {
+                    case PatcherVersioningEnum.Tag:
+                        if (string.IsNullOrWhiteSpace(patcherVersioning.TargetTag)) return GetResponse<RunnerRepoInfo>.Fail("No tag selected");
+                        targetSha = repo.Tags[patcherVersioning.TargetTag]?.Target.Sha;
+                        if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate tag");
+                        target = patcherVersioning.TargetTag;
+                        break;
+                    case PatcherVersioningEnum.Commit:
+                        targetSha = patcherVersioning.TargetCommit;
+                        if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit");
+                        target = patcherVersioning.TargetCommit;
+                        break;
+                    case PatcherVersioningEnum.Branch:
+                        if (string.IsNullOrWhiteSpace(patcherVersioning.TargetBranchName)) return GetResponse<RunnerRepoInfo>.Fail($"Target branch had no name.");
+                        var targetBranch = repo.Branches[$"origin/{patcherVersioning.TargetBranchName}"];
+                        if (targetBranch == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {patcherVersioning.TargetBranchName}");
+                        targetSha = targetBranch.Tip.Sha;
+                        target = patcherVersioning.TargetBranchName;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+                if (!ObjectId.TryParse(targetSha, out var objId)) return GetResponse<RunnerRepoInfo>.Fail("Malformed sha string");
+
+                cancel.ThrowIfCancellationRequested();
+                var commit = repo.Lookup(objId, ObjectType.Commit) as Commit;
+                if (commit == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit with given sha");
+
+                cancel.ThrowIfCancellationRequested();
+                var slnPath = GitPatcherRun.GetPathToSolution(localRepoDir);
+                if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
+
+                var foundProjSubPath = SolutionPatcherRun.AvailableProject(slnPath, proj);
+
+                if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {proj}.");
+
+                cancel.ThrowIfCancellationRequested();
+                logger?.Invoke($"Checking out {targetSha}");
+                repo.Reset(ResetMode.Hard, commit, new CheckoutOptions());
+
+                var projPath = Path.Combine(localRepoDir, foundProjSubPath);
+
+                // Compile to help prep
+                cancel.ThrowIfCancellationRequested();
+                logger?.Invoke($"Mutagen Nuget: {nugetVersioning.MutagenVersioning} {nugetVersioning.MutagenVersion}");
+                logger?.Invoke($"Synthesis Nuget: {nugetVersioning.SynthesisVersioning} {nugetVersioning.SynthesisVersion}");
+                GitPatcherRun.SwapInDesiredVersionsForSolution(
+                    slnPath,
+                    drivingProjSubPath: foundProjSubPath,
+                    mutagenVersion: nugetVersioning.MutagenVersioning == NugetVersioningEnum.Match ? null : nugetVersioning.MutagenVersion,
+                    listedMutagenVersion: out var listedMutagenVersion,
+                    synthesisVersion: nugetVersioning.SynthesisVersioning == NugetVersioningEnum.Match ? null : nugetVersioning.SynthesisVersion,
+                    listedSynthesisVersion: out var listedSynthesisVersion);
+                var compileResp = await SolutionPatcherRun.CompileWithDotnet(projPath, cancel);
+                if (compileResp.Failed) return compileResp.BubbleFailure<RunnerRepoInfo>();
+
+                return GetResponse<RunnerRepoInfo>.Succeed(
+                    new RunnerRepoInfo(
+                        slnPath: slnPath,
+                        projPath: projPath,
+                        target: target,
+                        commitMsg: commit.Message,
+                        commitDate: commit.Author.When.LocalDateTime,
+                        listedSynthesis: listedSynthesisVersion,
+                        listedMutagen: listedMutagenVersion));
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                return GetResponse<RunnerRepoInfo>.Fail(ex);
+            }
+        }
     }
 }

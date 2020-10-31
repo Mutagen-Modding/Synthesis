@@ -349,102 +349,14 @@ namespace Synthesis.Bethesda.GUI
                             if (item.runnerState.RunnableState.Failed) return item.runnerState.BubbleError<RunnerRepoInfo>();
                             if (item.proj.Failed) return item.proj.BubbleFailure<RunnerRepoInfo>();
                             if (item.libraryNugets.Failed) return item.libraryNugets.BubbleFailure<RunnerRepoInfo>();
-                            cancel.ThrowIfCancellationRequested();
 
-                            var checkoutTargetStr = item.patcherVersioning.Versioning switch
-                            {
-                                PatcherVersioningEnum.Tag => $"tag {item.patcherVersioning.TargetTag}",
-                                PatcherVersioningEnum.Branch  => $"branch {item.patcherVersioning.TargetBranchName}",
-                                PatcherVersioningEnum.Commit => $"master {item.patcherVersioning.TargetCommit}",
-                                _ => throw new NotImplementedException(),
-                            };
-                            Logger.Information($"Targeting {checkoutTargetStr}");
-
-                            using var timing = Logger.Time("runner checkout");
-                            try
-                            {
-                                const string RunnerBranch = "SynthesisRunner";
-                                using var repo = new Repository(LocalRunnerRepoDirectory);
-                                var runnerBranch = repo.Branches[RunnerBranch] ?? repo.CreateBranch(RunnerBranch);
-                                repo.Reset(ResetMode.Hard);
-                                Commands.Checkout(repo, runnerBranch);
-                                string? targetSha;
-                                string? target;
-                                switch (item.patcherVersioning.Versioning)
-                                {
-                                    case PatcherVersioningEnum.Tag:
-                                        if (string.IsNullOrWhiteSpace(item.patcherVersioning.TargetTag)) return GetResponse<RunnerRepoInfo>.Fail("No tag selected");
-                                        targetSha = repo.Tags[item.patcherVersioning.TargetTag]?.Target.Sha;
-                                        if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate tag");
-                                        target = item.patcherVersioning.TargetTag;
-                                        break;
-                                    case PatcherVersioningEnum.Commit:
-                                        targetSha = item.patcherVersioning.TargetCommit;
-                                        if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit");
-                                        target = item.patcherVersioning.TargetCommit;
-                                        break;
-                                    case PatcherVersioningEnum.Branch:
-                                        if (string.IsNullOrWhiteSpace(item.patcherVersioning.TargetBranchName)) return GetResponse<RunnerRepoInfo>.Fail($"Target branch had no name.");
-                                        var targetBranch = repo.Branches[$"origin/{item.patcherVersioning.TargetBranchName}"];
-                                        if (targetBranch == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {item.patcherVersioning.TargetBranchName}");
-                                        targetSha = targetBranch.Tip.Sha;
-                                        target = item.patcherVersioning.TargetBranchName;
-                                        break;
-                                    default:
-                                        throw new NotImplementedException();
-                                }
-                                if (!ObjectId.TryParse(targetSha, out var objId)) return GetResponse<RunnerRepoInfo>.Fail("Malformed sha string");
-
-                                cancel.ThrowIfCancellationRequested();
-                                var commit = repo.Lookup(objId, ObjectType.Commit) as Commit;
-                                if (commit == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit with given sha");
-
-                                cancel.ThrowIfCancellationRequested();
-                                var slnPath = GitPatcherRun.GetPathToSolution(LocalRunnerRepoDirectory);
-                                if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
-
-                                var foundProjSubPath = SolutionPatcherRun.AvailableProject(slnPath, item.proj.Value);
-
-                                if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {item.proj.Value}.");
-
-                                cancel.ThrowIfCancellationRequested();
-                                Logger.Information($"Checking out {targetSha}");
-                                repo.Reset(ResetMode.Hard, commit, new CheckoutOptions());
-
-                                var projPath = Path.Combine(LocalRunnerRepoDirectory, foundProjSubPath);
-
-                                // Compile to help prep
-                                cancel.ThrowIfCancellationRequested();
-                                Logger.Information($"Mutagen Nuget: {item.libraryNugets.Value.MutagenVersioning} {item.libraryNugets.Value.MutagenVersion}");
-                                Logger.Information($"Synthesis Nuget: {item.libraryNugets.Value.SynthesisVersioning} {item.libraryNugets.Value.SynthesisVersion}");
-                                GitPatcherRun.SwapInDesiredVersionsForSolution(
-                                    slnPath,
-                                    drivingProjSubPath: foundProjSubPath,
-                                    mutagenVersion: item.libraryNugets.Value.MutagenVersioning == NugetVersioningEnum.Match ? null : item.libraryNugets.Value.MutagenVersion,
-                                    listedMutagenVersion: out var listedMutagenVersion,
-                                    synthesisVersion: item.libraryNugets.Value.SynthesisVersioning == NugetVersioningEnum.Match ? null : item.libraryNugets.Value.SynthesisVersion,
-                                    listedSynthesisVersion: out var listedSynthesisVersion);
-                                var compileResp = await SolutionPatcherRun.CompileWithDotnet(projPath, cancel);
-                                if (compileResp.Failed) return compileResp.BubbleFailure<RunnerRepoInfo>();
-
-                                return GetResponse<RunnerRepoInfo>.Succeed(
-                                    new RunnerRepoInfo(
-                                        slnPath: slnPath,
-                                        projPath: projPath,
-                                        target: target,
-                                        commitMsg: commit.Message,
-                                        commitDate: commit.Author.When.LocalDateTime,
-                                        listedSynthesis: listedSynthesisVersion,
-                                        listedMutagen: listedMutagenVersion));
-                            }
-                            catch (OperationCanceledException)
-                            {
-                                throw;
-                            }
-                            catch (Exception ex)
-                            {
-                                return GetResponse<RunnerRepoInfo>.Fail(ex);
-                            }
+                            return await GitPatcherRun.CheckoutRunnerRepository(
+                                proj: item.proj.Value,
+                                localRepoDir: LocalRunnerRepoDirectory,
+                                patcherVersioning: item.patcherVersioning,
+                                nugetVersioning: item.libraryNugets.Value,
+                                logger: (s) => Logger.Information(s),
+                                cancel: cancel);
                         }
                         var ret = await Execute();
                         if (ret.RunnableState.Succeeded)
