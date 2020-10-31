@@ -296,13 +296,11 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (nuget.Mutagen.Versioning == NugetVersioningEnum.Latest && nuget.Mutagen.NewestVersion == null)
                     {
-                        return GetResponse<(NugetVersioningEnum MutaVersioning, string MutaVersion, NugetVersioningEnum SynthVersioning, string SynthVersion)>
-                            .Fail("Latest Mutagen version is desired, but latest version is not known.");
+                        return GetResponse<NugetVersioningTarget>.Fail("Latest Mutagen version is desired, but latest version is not known.");
                     }
                     if (nuget.Synthesis.Versioning == NugetVersioningEnum.Latest && nuget.Synthesis.NewestVersion == null)
                     {
-                        return GetResponse<(NugetVersioningEnum MutaVersioning, string MutaVersion, NugetVersioningEnum SynthVersioning, string SynthVersion)>
-                            .Fail("Latest Synthesis version is desired, but latest version is not known.");
+                        return GetResponse<NugetVersioningTarget>.Fail("Latest Synthesis version is desired, but latest version is not known.");
                     }
                     var muta = nuget.Mutagen.Versioning switch
                     {
@@ -318,8 +316,7 @@ namespace Synthesis.Bethesda.GUI
                         NugetVersioningEnum.Manual => (nuget.Synthesis.ManualVersion, nuget.Synthesis.Versioning),
                         _ => throw new NotImplementedException(),
                     };
-                    return GetResponse<(NugetVersioningEnum MutaVersioning, string MutaVersion, NugetVersioningEnum SynthVersioning, string SynthVersion)>
-                        .Succeed((muta.Versioning, muta.Item1!, synth.Versioning, synth.Item1!));
+                    return GetResponse<NugetVersioningTarget>.Succeed(new NugetVersioningTarget(muta.Item1, muta.Versioning, synth.Item1, synth.Versioning));
                 })
                 .Replay(1)
                 .RefCount();
@@ -418,14 +415,14 @@ namespace Synthesis.Bethesda.GUI
 
                                 // Compile to help prep
                                 cancel.ThrowIfCancellationRequested();
-                                Logger.Information($"Mutagen Nuget: {item.libraryNugets.Value.MutaVersioning} {item.libraryNugets.Value.MutaVersion}");
-                                Logger.Information($"Synthesis Nuget: {item.libraryNugets.Value.SynthVersioning} {item.libraryNugets.Value.SynthVersion}");
+                                Logger.Information($"Mutagen Nuget: {item.libraryNugets.Value.MutagenVersioning} {item.libraryNugets.Value.MutagenVersion}");
+                                Logger.Information($"Synthesis Nuget: {item.libraryNugets.Value.SynthesisVersioning} {item.libraryNugets.Value.SynthesisVersion}");
                                 GitPatcherRun.SwapInDesiredVersionsForSolution(
                                     slnPath,
                                     drivingProjSubPath: foundProjSubPath,
-                                    mutagenVersion: item.libraryNugets.Value.MutaVersioning == NugetVersioningEnum.Match ? null : item.libraryNugets.Value.MutaVersion,
+                                    mutagenVersion: item.libraryNugets.Value.MutagenVersioning == NugetVersioningEnum.Match ? null : item.libraryNugets.Value.MutagenVersion,
                                     listedMutagenVersion: out var listedMutagenVersion,
-                                    synthesisVersion: item.libraryNugets.Value.SynthVersioning == NugetVersioningEnum.Match ? null : item.libraryNugets.Value.SynthVersion,
+                                    synthesisVersion: item.libraryNugets.Value.SynthesisVersioning == NugetVersioningEnum.Match ? null : item.libraryNugets.Value.SynthesisVersion,
                                     listedSynthesisVersion: out var listedSynthesisVersion);
                                 var compileResp = await SolutionPatcherRun.CompileWithDotnet(projPath, cancel);
                                 if (compileResp.Failed) return compileResp.BubbleFailure<RunnerRepoInfo>();
@@ -470,14 +467,14 @@ namespace Synthesis.Bethesda.GUI
             _UsedMutagenVersion = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.RunnableData)
                         .Select(x => x?.ListedMutagenVersion),
-                    libraryNugets.Select(x => x.Value.MutaVersion),
+                    libraryNugets.Select(x => x.Value.MutagenVersion),
                     (matchVersion, selVersion) => (matchVersion, selVersion))
                 .ToGuiProperty(this, nameof(UsedMutagenVersion));
 
             _UsedSynthesisVersion = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.RunnableData)
                         .Select(x => x?.ListedSynthesisVersion),
-                    libraryNugets.Select(x => x.Value.SynthVersion),
+                    libraryNugets.Select(x => x.Value.SynthesisVersion),
                     (matchVersion, selVersion) => (matchVersion, selVersion))
                 .ToGuiProperty(this, nameof(UsedSynthesisVersion));
 
