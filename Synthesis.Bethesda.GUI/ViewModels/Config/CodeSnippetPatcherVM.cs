@@ -5,15 +5,14 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Reactive.Linq;
-using System.Text;
 using System.Reflection;
 using Microsoft.CodeAnalysis.Emit;
 using System.Threading;
-using Synthesis.Bethesda.Execution.Patchers;
 using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
-using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {

@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Noggog;
-using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using System;
 using System.Collections.Generic;
 using System.Linq;

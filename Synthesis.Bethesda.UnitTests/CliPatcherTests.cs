@@ -1,5 +1,4 @@
-using Synthesis.Bethesda.Execution;
-using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Patchers;
 using System;
 using System.Collections.Generic;
 using System.IO;

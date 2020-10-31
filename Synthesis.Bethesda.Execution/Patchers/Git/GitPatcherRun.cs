@@ -1,7 +1,6 @@
 using LibGit2Sharp;
 using Mutagen.Bethesda;
 using Noggog;
-using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Synthesis.Bethesda.Execution
+namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
     public class GitPatcherRun : IPatcherRun
     {

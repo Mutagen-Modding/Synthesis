@@ -1,9 +1,7 @@
 using Mutagen.Bethesda;
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers;
-using Synthesis.Bethesda.Execution.Settings;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -12,11 +10,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Reactive.Subjects;
-using System.Reactive.Linq;
 using Noggog.Utility;
 using Mutagen.Bethesda.Synthesis.CLI;
 
-namespace Synthesis.Bethesda.Execution
+namespace Synthesis.Bethesda.Execution.Patchers
 {
     public class CliPatcherRun : IPatcherRun
     {

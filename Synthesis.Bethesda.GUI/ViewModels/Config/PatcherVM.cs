@@ -11,7 +11,7 @@ using System.Text;
 using System.Windows.Input;
 using System.Threading;
 using Serilog;
-using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Synthesis.Bethesda.GUI
 {

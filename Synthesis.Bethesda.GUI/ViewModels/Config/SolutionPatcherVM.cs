@@ -10,16 +10,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Linq;
 using System.Text;
-using Buildalyzer;
 using System.Linq;
 using DynamicData.Binding;
-using Synthesis.Bethesda.Execution;
 using System.Windows.Input;
 using System.Diagnostics;
 using System.Reactive;
 using Newtonsoft.Json;
 using Synthesis.Bethesda.DTO;
-using System.Collections.ObjectModel;
+using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {

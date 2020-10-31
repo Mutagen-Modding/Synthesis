@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reactive;
 using System.Text;
 
-namespace Synthesis.Bethesda.Execution
+namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
     public class ConfigurationState : ConfigurationState<Unit>
     {

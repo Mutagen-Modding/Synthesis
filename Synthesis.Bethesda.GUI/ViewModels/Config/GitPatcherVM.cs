@@ -9,13 +9,14 @@ using System.Reactive.Linq;
 using LibGit2Sharp;
 using System.IO;
 using System.Linq;
-using Synthesis.Bethesda.Execution;
 using DynamicData.Binding;
 using DynamicData;
 using static Synthesis.Bethesda.GUI.SolutionPatcherVM;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -633,55 +634,6 @@ namespace Synthesis.Bethesda.GUI
             catch (Exception ex)
             {
                 Log.Logger.Error(ex, $"Failure deleting git repo: {this.LocalRunnerRepoDirectory}");
-            }
-        }
-
-        private class DriverRepoInfo
-        {
-            public readonly string SolutionPath;
-            public readonly List<(int Index, string Name)> Tags;
-            public readonly List<string> AvailableProjects;
-            public readonly string MasterBranchName;
-
-            public DriverRepoInfo(
-                string slnPath,
-                string masterBranchName,
-                List<(int Index, string Name)> tags,
-                List<string> availableProjects)
-            {
-                SolutionPath = slnPath;
-                Tags = tags;
-                MasterBranchName = masterBranchName;
-                AvailableProjects = availableProjects;
-            }
-        }
-
-        public class RunnerRepoInfo
-        {
-            public readonly string SolutionPath;
-            public readonly string ProjPath;
-            public readonly string? Target;
-            public readonly string CommitMessage;
-            public readonly DateTime CommitDate;
-            public readonly string? ListedMutagenVersion;
-            public readonly string? ListedSynthesisVersion;
-
-            public RunnerRepoInfo(
-                string slnPath,
-                string projPath,
-                string? target,
-                string commitMsg,
-                DateTime commitDate,
-                string? listedSynthesis,
-                string? listedMutagen)
-            {
-                SolutionPath = slnPath;
-                ProjPath = projPath;
-                Target = target;
-                CommitMessage = commitMsg;
-                CommitDate = commitDate;
-                ListedMutagenVersion = listedMutagen;
-                ListedSynthesisVersion = listedSynthesis;
             }
         }
     }

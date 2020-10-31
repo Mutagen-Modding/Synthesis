@@ -1,7 +1,8 @@
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
-using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.IO;
