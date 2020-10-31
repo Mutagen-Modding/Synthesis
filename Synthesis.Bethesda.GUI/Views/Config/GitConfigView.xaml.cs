@@ -70,7 +70,13 @@ namespace Synthesis.Bethesda.GUI.Views
                 // Bind tag picker
                 this.BindStrict(this.ViewModel, vm => vm.TargetTag, view => view.TagPickerBox.SelectedItem)
                     .DisposeWith(disposable);
+                this.BindStrict(this.ViewModel, vm => vm.LatestTag, view => view.LatestTagCheck.IsChecked)
+                    .DisposeWith(disposable);
                 this.OneWayBindStrict(this.ViewModel, vm => vm.AvailableTags, view => view.TagPickerBox.ItemsSource)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.LatestTag)
+                    .Select(x => !x)
+                    .BindToStrict(this, x => x.TagPickerBox.IsEnabled)
                     .DisposeWith(disposable);
 
                 this.BindStrict(this.ViewModel, vm => vm.TargetCommit, view => view.CommitShaBox.Text)
@@ -82,6 +88,12 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Subscribe(x => this.CommitShaBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.TargetBranchName, view => view.BranchNameBox.Text)
+                    .DisposeWith(disposable);
+                this.BindStrict(this.ViewModel, vm => vm.FollowDefaultBranch, view => view.DefaultBranchCheck.IsChecked)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.FollowDefaultBranch)
+                    .Select(x => !x)
+                    .BindToStrict(this, x => x.BranchNameBox.IsEnabled)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.RunnableData),

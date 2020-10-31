@@ -6,7 +6,6 @@ namespace Synthesis.Bethesda.Execution.Settings
 {
     public enum PatcherVersioningEnum
     {
-        Master,
         Tag,
         Branch,
         Commit,
@@ -31,10 +30,12 @@ namespace Synthesis.Bethesda.Execution.Settings
         public string ID = string.Empty;
         public string RemoteRepoPath = string.Empty;
         public string SelectedProjectSubpath = string.Empty;
-        public PatcherVersioningEnum PatcherVersioning = PatcherVersioningEnum.Master;
+        public PatcherVersioningEnum PatcherVersioning = PatcherVersioningEnum.Branch;
         public string TargetTag = string.Empty;
         public string TargetCommit = string.Empty;
         public string TargetBranch = string.Empty;
+        public bool LatestTag = true;
+        public bool FollowDefaultBranch = true;
         public MutagenVersioningEnum MutagenVersioning = MutagenVersioningEnum.Latest;
         public string ManualMutagenVersion = string.Empty;
         public SynthesisVersioningEnum SynthesisVersioning = SynthesisVersioningEnum.Latest;
@@ -47,14 +48,31 @@ namespace Synthesis.Bethesda.Execution.Settings
 
         public string PatcherVersioningString()
         {
-            return PatcherVersioning switch
+            switch (PatcherVersioning)
             {
-                PatcherVersioningEnum.Master => $"Master Tracking",
-                PatcherVersioningEnum.Tag => $"Tag: {TargetTag}",
-                PatcherVersioningEnum.Branch => $"Branch: {TargetBranch}",
-                PatcherVersioningEnum.Commit => $"Commit: {TargetCommit}",
-                _ => throw new NotImplementedException(),
-            };
+                case PatcherVersioningEnum.Tag:
+                    if (LatestTag)
+                    {
+                        return "Tag: Latest";
+                    }
+                    else
+                    {
+                        return $"Tag: {TargetTag}";
+                    }
+                case PatcherVersioningEnum.Branch:
+                    if (FollowDefaultBranch)
+                    {
+                        return "Default Branch";
+                    }
+                    else
+                    {
+                        return $"Branch: {TargetBranch}";
+                    }
+                case PatcherVersioningEnum.Commit:
+                    return $"Commit: {TargetCommit}";
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }

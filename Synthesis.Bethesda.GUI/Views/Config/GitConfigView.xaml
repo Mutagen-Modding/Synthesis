@@ -171,38 +171,57 @@
                     mahapps:HeaderedControlHelper.HeaderFontSize="16"
                     mahapps:HeaderedControlHelper.HeaderForeground="AliceBlue"
                     Background="Transparent">
-                    <TabItem Header="Latest" ToolTip="Run the patcher with the latest code from the default branch" />
-                    <TabItem Header="Tag" ToolTip="Run the patcher from a specific marked version">
-                        <ComboBox
-                            x:Name="TagPickerBox"
-                            Margin="0,3"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Top">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding}" />
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                            <ComboBox.Style>
-                                <Style BasedOn="{StaticResource Noggog.Styles.ComboBox}" TargetType="ComboBox">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding TargetTag, Converter={StaticResource StringIsWhitespaceBooleanConverter}}" Value="True">
-                                            <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ComboBox.Style>
-                        </ComboBox>
+                    <TabItem Header="Tag" ToolTip="Run the patcher from tagged versions">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Grid.Column="0"
+                                x:Name="LatestTagCheck"
+                                Margin="10,0"
+                                Content="Latest" />
+                            <ComboBox Grid.Column="1"
+                                x:Name="TagPickerBox"
+                                Margin="0,3"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                                <ComboBox.Style>
+                                    <Style BasedOn="{StaticResource Noggog.Styles.ComboBox}" TargetType="ComboBox">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding TargetTag, Converter={StaticResource StringIsWhitespaceBooleanConverter}}" Value="True">
+                                                <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBox.Style>
+                            </ComboBox>
+                        </Grid>
                     </TabItem>
-                    <TabItem Header="Branch" ToolTip="Run the patcher from a specific Git branch">
-                        <TextBox
-                            x:Name="BranchNameBox"
-                            Width="300"
-                            Margin="0,3"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Top"
-                            mahapps:TextBoxHelper.Watermark="Remote branch name"
-                            Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
+                    <TabItem Header="Branch" ToolTip="Run the patcher following a Git branch">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Grid.Column="0"
+                                x:Name="DefaultBranchCheck"
+                                Margin="10,0"
+                                Content="Latest" />
+                            <TextBox Grid.Column="1"
+                                x:Name="BranchNameBox"
+                                Width="300"
+                                Margin="0,3"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                mahapps:TextBoxHelper.Watermark="Remote branch name"
+                                Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
+                        </Grid>
                     </TabItem>
                     <TabItem Header="Commit" ToolTip="Run the patcher from a specific Git commit">
                         <TextBox

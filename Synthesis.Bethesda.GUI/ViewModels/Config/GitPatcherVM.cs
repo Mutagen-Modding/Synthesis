@@ -53,7 +53,7 @@ namespace Synthesis.Bethesda.GUI
         };
 
         [Reactive]
-        public PatcherVersioningEnum PatcherVersioning { get; set; } = PatcherVersioningEnum.Master;
+        public PatcherVersioningEnum PatcherVersioning { get; set; } = PatcherVersioningEnum.Branch;
 
         public IObservableCollection<string> AvailableTags { get; }
 
@@ -61,7 +61,13 @@ namespace Synthesis.Bethesda.GUI
         public string TargetTag { get; set; } = string.Empty;
 
         [Reactive]
+        public bool LatestTag { get; set; } = true;
+
+        [Reactive]
         public string TargetCommit { get; set; } = string.Empty;
+
+        [Reactive]
+        public bool FollowDefaultBranch { get; set; } = true;
 
         [Reactive]
         public string TargetBranchName { get; set; } = string.Empty;
@@ -247,6 +253,18 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(p => SelectedProjectPath.TargetPath = p)
                 .DisposeWith(this);
 
+            // Set latest checkboxes to drive user input
+            driverRepoInfo.Select(x => x.RunnableState.Failed ? string.Empty : x.Item.MasterBranchName)
+                .FilterSwitch(this.WhenAnyValue(x => x.FollowDefaultBranch))
+                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                .Subscribe(x => TargetBranchName = x)
+                .DisposeWith(this);
+            driverRepoInfo.Select(x => x.RunnableState.Failed ? string.Empty : x.Item.Tags.OrderByDescending(x => x.Index).Select(x => x.Name).FirstOrDefault())
+                .FilterSwitch(this.WhenAnyValue(x => x.LatestTag))
+                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                .Subscribe(x => TargetTag = x)
+                .DisposeWith(this);
+
             // Get the selected versioning preferences
             var patcherVersioning = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.PatcherVersioning),
@@ -298,14 +316,13 @@ namespace Synthesis.Bethesda.GUI
 
             // Checkout desired patcher commit on the runner repository
             var checkoutInput = Observable.CombineLatest(
-                    driverRepoInfo.Select(x => x.RunnableState.Failed ? string.Empty : x.Item.MasterBranchName),
                     runnerRepoState,
                     SelectedProjectPath.PathState()
                         .Select(x => x.Succeeded ? x : GetResponse<string>.Fail("No patcher project selected.")),
                     patcherVersioning,
                     libraryNugets,
-                    (master, runnerState, proj, patcherVersioning, libraryNugets) =>
-                    (master, runnerState, proj, patcherVersioning, libraryNugets))
+                    (runnerState, proj, patcherVersioning, libraryNugets) =>
+                    (runnerState, proj, patcherVersioning, libraryNugets))
                 .Replay(1)
                 .RefCount();
             var runnableState = checkoutInput
@@ -329,9 +346,8 @@ namespace Synthesis.Bethesda.GUI
 
                             var checkoutTargetStr = item.patcherVersioning.versioning switch
                             {
-                                PatcherVersioningEnum.Master => $"main branch {item.master}",
                                 PatcherVersioningEnum.Tag => $"tag {item.patcherVersioning.tag}",
-                                PatcherVersioningEnum.Branch => $"branch {item.patcherVersioning.branch}",
+                                PatcherVersioningEnum.Branch  => $"branch {item.patcherVersioning.branch}",
                                 PatcherVersioningEnum.Commit => $"master {item.patcherVersioning.commit}",
                                 _ => throw new NotImplementedException(),
                             };
@@ -349,20 +365,6 @@ namespace Synthesis.Bethesda.GUI
                                 string? target;
                                 switch (item.patcherVersioning.versioning)
                                 {
-                                    case PatcherVersioningEnum.Master:
-                                        targetSha = repo.Branches
-                                            .Where(b =>
-                                            {
-                                                if (!b.IsRemote) return false;
-                                                var index = b.FriendlyName.LastIndexOf('/');
-                                                if (index == -1) return false;
-                                                return b.FriendlyName.Substring(index + 1).Equals(item.master);
-                                            })
-                                            .FirstOrDefault()
-                                            ?.Tip.Sha;
-                                        if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate master commit");
-                                        target = null;
-                                        break;
                                     case PatcherVersioningEnum.Tag:
                                         if (string.IsNullOrWhiteSpace(item.patcherVersioning.tag)) return GetResponse<RunnerRepoInfo>.Fail("No tag selected");
                                         targetSha = repo.Tags[item.patcherVersioning.tag]?.Target.Sha;
@@ -533,6 +535,9 @@ namespace Synthesis.Bethesda.GUI
                 ManualSynthesisVersion = this.ManualSynthesisVersion,
                 TargetTag = this.TargetTag,
                 TargetCommit = this.TargetCommit,
+                LatestTag = this.LatestTag,
+                FollowDefaultBranch = this.FollowDefaultBranch,
+                TargetBranch = this.TargetBranchName,
             };
             CopyOverSave(ret);
             return ret;
@@ -555,6 +560,9 @@ namespace Synthesis.Bethesda.GUI
             this.ManualSynthesisVersion = settings.ManualSynthesisVersion;
             this.TargetTag = settings.TargetTag;
             this.TargetCommit = settings.TargetCommit;
+            this.FollowDefaultBranch = settings.FollowDefaultBranch;
+            this.LatestTag = settings.LatestTag;
+            this.TargetBranchName = settings.TargetBranch;
         }
 
         public override PatcherRunVM ToRunner(PatchersRunVM parent)
