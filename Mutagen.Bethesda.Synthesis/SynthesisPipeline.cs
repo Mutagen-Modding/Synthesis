@@ -1,6 +1,7 @@
 using CommandLine;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Mutagen.Bethesda.Synthesis.Internal;
+using Noggog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -56,7 +57,7 @@ namespace Mutagen.Bethesda.Synthesis
                     try
                     {
                         await Patch(
-                            GetDefaultRun(prefs.ActionsForEmptyArgs.IdentifyingModKey, prefs.ActionsForEmptyArgs.TargetRelease),
+                            GetDefaultRun(prefs, prefs.ActionsForEmptyArgs),
                             patcher,
                             prefs);
                     }
@@ -133,7 +134,7 @@ namespace Mutagen.Bethesda.Synthesis
                     try
                     {
                         Patch(
-                            GetDefaultRun(prefs.ActionsForEmptyArgs.IdentifyingModKey, prefs.ActionsForEmptyArgs.TargetRelease),
+                            GetDefaultRun(prefs, prefs.ActionsForEmptyArgs),
                             patcher,
                             prefs);
                     }
@@ -206,8 +207,11 @@ namespace Mutagen.Bethesda.Synthesis
                 using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
                 System.Console.WriteLine("Running patch.");
                 await patcher(state).ConfigureAwait(false);
-                System.Console.WriteLine($"Writing to output: {settings.OutputPath}");
-                state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)));
+                if (!settings.OutputPath.IsNullOrWhitespace())
+                {
+                    System.Console.WriteLine($"Writing to output: {settings.OutputPath}");
+                    state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)));
+                }
             }
             catch (Exception ex)
             when (Environment.GetCommandLineArgs().Length == 0
@@ -241,8 +245,11 @@ namespace Mutagen.Bethesda.Synthesis
                 using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
                 System.Console.WriteLine("Running patch.");
                 patcher(state);
-                System.Console.WriteLine($"Writing to output: {settings.OutputPath}");
-                state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)));
+                if (!settings.OutputPath.IsNullOrWhitespace())
+                {
+                    System.Console.WriteLine($"Writing to output: {settings.OutputPath}");
+                    state.PatchMod.WriteToBinaryParallel(path: settings.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)));
+                }
             }
             catch (Exception ex)
             when (Environment.GetCommandLineArgs().Length == 0
@@ -300,10 +307,10 @@ namespace Mutagen.Bethesda.Synthesis
             return loadOrderListing;
         }
 
-        public static RunSynthesisMutagenPatcher GetDefaultRun(ModKey modKey, GameRelease release)
+        public static RunSynthesisMutagenPatcher GetDefaultRun(UserPreferences prefs, RunDefaultPatcher def)
         {
-            var dataPath = Path.Combine(release.ToWjGame().MetaData().GameLocation().ToString(), "Data");
-            if (!LoadOrder.TryGetPluginsFile(release, out var path))
+            var dataPath = Path.Combine(def.TargetRelease.ToWjGame().MetaData().GameLocation().ToString(), "Data");
+            if (!LoadOrder.TryGetPluginsFile(def.TargetRelease, out var path))
             {
                 throw new FileNotFoundException("Could not locate load order automatically.");
             }
@@ -311,8 +318,8 @@ namespace Mutagen.Bethesda.Synthesis
             {
                 DataFolderPath = dataPath,
                 SourcePath = null,
-                OutputPath = Path.Combine(dataPath, modKey.FileName),
-                GameRelease = release,
+                OutputPath = prefs.NoPatch ? string.Empty : Path.Combine(dataPath, def.IdentifyingModKey.FileName),
+                GameRelease = def.TargetRelease,
                 LoadOrderFilePath = path.Path,
                 ExtraDataFolder = Path.GetFullPath("./Data")
             };

@@ -40,5 +40,12 @@ namespace Mutagen.Bethesda.Synthesis
         /// Optional cancellation token that will signal to the patcher to stop early
         /// </summary>
         public CancellationToken Cancel { get; set; } = CancellationToken.None;
+
+        /// <summary>
+        /// Indicates that a patcher does not intend to make any changes to the patch directly <br/>
+        /// Note: A SynthesisState's PatchMod object may not be set if this is turned on. <br/>
+        /// Instead, the previous patch mod can be retrieved as the last mod in the load order.
+        /// </summary>
+        public bool NoPatch { get; set; }
     }
 }
