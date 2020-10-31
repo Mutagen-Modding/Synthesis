@@ -1,69 +1,68 @@
 using Noggog;
-using Noggog.WPF;
 using System;
 using System.Collections.Generic;
 using System.Reactive;
 using System.Text;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.Execution
 {
-    public class ConfigurationStateVM : ConfigurationStateVM<Unit>
+    public class ConfigurationState : ConfigurationState<Unit>
     {
-        public static readonly ConfigurationStateVM Success = new ConfigurationStateVM();
+        public static readonly ConfigurationState Success = new ConfigurationState();
 
-        public ConfigurationStateVM() 
+        public ConfigurationState() 
             : base(Unit.Default)
         {
         }
 
-        public ConfigurationStateVM(ErrorResponse err)
+        public ConfigurationState(ErrorResponse err)
             : base(Unit.Default, err)
         {
         }
 
-        public static implicit operator ConfigurationStateVM(ErrorResponse err)
+        public static implicit operator ConfigurationState(ErrorResponse err)
         {
-            return new ConfigurationStateVM(err);
+            return new ConfigurationState(err);
         }
     }
 
-    public class ConfigurationStateVM<T> : ViewModel
+    public class ConfigurationState<T>
     {
         public bool IsHaltingError { get; set; }
         public ErrorResponse RunnableState { get; set; } = ErrorResponse.Success;
         public T Item { get; }
 
-        public ConfigurationStateVM(T item)
+        public ConfigurationState(T item)
         {
             Item = item;
         }
 
-        public ConfigurationStateVM(T item, ErrorResponse err)
+        public ConfigurationState(T item, ErrorResponse err)
             : this(item)
         {
             IsHaltingError = err.Failed;
             RunnableState = err;
         }
 
-        public ConfigurationStateVM(GetResponse<T> resp)
+        public ConfigurationState(GetResponse<T> resp)
             : this(resp.Value)
         {
             IsHaltingError = resp.Failed;
             RunnableState = resp;
         }
 
-        public ConfigurationStateVM ToUnit()
+        public ConfigurationState ToUnit()
         {
-            return new ConfigurationStateVM()
+            return new ConfigurationState()
             {
                 IsHaltingError = this.IsHaltingError,
                 RunnableState = this.RunnableState,
             };
         }
 
-        public ConfigurationStateVM<R> BubbleError<R>()
+        public ConfigurationState<R> BubbleError<R>()
         {
-            return new ConfigurationStateVM<R>(default!)
+            return new ConfigurationState<R>(default!)
             {
                 IsHaltingError = this.IsHaltingError,
                 RunnableState = this.RunnableState
@@ -75,9 +74,9 @@ namespace Synthesis.Bethesda.GUI
             return GetResponse<T>.Create(RunnableState.Succeeded, Item, RunnableState.Reason);
         }
 
-        public static implicit operator ConfigurationStateVM<T>(GetResponse<T> err)
+        public static implicit operator ConfigurationState<T>(GetResponse<T> err)
         {
-            return new ConfigurationStateVM<T>(err);
+            return new ConfigurationState<T>(err);
         }
     }
 }

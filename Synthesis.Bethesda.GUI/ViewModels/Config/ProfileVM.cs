@@ -5,6 +5,7 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Collections.Generic;
@@ -141,7 +142,7 @@ namespace Synthesis.Bethesda.GUI
                         .Transform(p => p.State, transformOnRefresh: true)
                         .QueryWhenChanged(errs =>
                         {
-                            var blocking = errs.Cast<ConfigurationStateVM?>().FirstOrDefault<ConfigurationStateVM?>(e => (!e?.RunnableState.Succeeded) ?? false);
+                            var blocking = errs.Cast<ConfigurationState?>().FirstOrDefault<ConfigurationState?>(e => (!e?.RunnableState.Succeeded) ?? false);
                             if (blocking == null) return ErrorResponse.Success;
                             return blocking.RunnableState;
                         }),

@@ -27,8 +27,8 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string> _DisplayName;
         public override string DisplayName => _DisplayName.Value;
 
-        private readonly ObservableAsPropertyHelper<ConfigurationStateVM> _State;
-        public override ConfigurationStateVM State => _State.Value;
+        private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
+        public override ConfigurationState State => _State.Value;
 
         public string ID { get; private set; } = string.Empty;
 
@@ -148,7 +148,7 @@ namespace Synthesis.Bethesda.GUI
                 .Throttle(TimeSpan.FromMilliseconds(100), RxApp.MainThreadScheduler)
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .SelectReplaceWithIntermediate(
-                    new ConfigurationStateVM<DriverRepoInfo>(default!)
+                    new ConfigurationState<DriverRepoInfo>(default!)
                     {
                         IsHaltingError = false,
                         RunnableState = ErrorResponse.Fail("Cloning driver repository"),
@@ -159,7 +159,7 @@ namespace Synthesis.Bethesda.GUI
                         using var timing = Logger.Time("Cloning driver repository");
                         // Clone and/or double check the clone is correct
                         var state = await GitPatcherRun.CheckOrCloneRepo(path.ToGetResponse(), LocalDriverRepoDirectory, (x) => Logger.Information(x), cancel);
-                        if (state.Failed) return new ConfigurationStateVM<DriverRepoInfo>(default!, (ErrorResponse)state);
+                        if (state.Failed) return new ConfigurationState<DriverRepoInfo>(default!, (ErrorResponse)state);
                         cancel.ThrowIfCancellationRequested();
 
                         // Grab all the interesting metadata
@@ -178,14 +178,14 @@ namespace Synthesis.Bethesda.GUI
                         }
                         catch (Exception ex)
                         {
-                            return new ConfigurationStateVM<DriverRepoInfo>(default!, ErrorResponse.Fail(ex));
+                            return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail(ex));
                         }
 
                         // Try to locate a solution to drive from
                         var slnPath = GitPatcherRun.GetPathToSolution(LocalDriverRepoDirectory);
-                        if (slnPath == null) return new ConfigurationStateVM<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate solution to run."));
+                        if (slnPath == null) return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate solution to run."));
                         var availableProjs = Utility.AvailableProjectSubpaths(slnPath).ToList();
-                        return new ConfigurationStateVM<DriverRepoInfo>(
+                        return new ConfigurationState<DriverRepoInfo>(
                             new DriverRepoInfo(
                                 slnPath: slnPath,
                                 masterBranchName: masterBranch,
@@ -200,13 +200,13 @@ namespace Synthesis.Bethesda.GUI
                 .Throttle(TimeSpan.FromMilliseconds(100), RxApp.MainThreadScheduler)
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .SelectReplaceWithIntermediate(
-                    new ConfigurationStateVM(ErrorResponse.Fail("Cloning runner repository"))
+                    new ConfigurationState(ErrorResponse.Fail("Cloning runner repository"))
                     {
                         IsHaltingError = false
                     },
                     async (path, cancel) =>
                     {
-                        if (path.RunnableState.Failed) return new ConfigurationStateVM(path.RunnableState);
+                        if (path.RunnableState.Failed) return new ConfigurationState(path.RunnableState);
                         var log = Logger.ForContext("RemotePath", path.Item);
                         using var timing = log.Time("runner repo");
                         return (ErrorResponse)await GitPatcherRun.CheckOrCloneRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, x => log.Information(x), cancel);
@@ -333,14 +333,14 @@ namespace Synthesis.Bethesda.GUI
                 .DistinctUntilChanged()
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .SelectReplaceWithIntermediate(
-                    new ConfigurationStateVM<RunnerRepoInfo>(default!)
+                    new ConfigurationState<RunnerRepoInfo>(default!)
                     {
                         RunnableState = ErrorResponse.Fail("Checking out the proper commit"),
                         IsHaltingError = false,
                     },
                     async (item, cancel) =>
                     {
-                        async Task<ConfigurationStateVM<RunnerRepoInfo>> Execute()
+                        async Task<ConfigurationState<RunnerRepoInfo>> Execute()
                         {
                             if (item.runnerState.RunnableState.Failed) return item.runnerState.BubbleError<RunnerRepoInfo>();
                             if (item.proj.Failed) return item.proj.BubbleFailure<RunnerRepoInfo>();
@@ -487,10 +487,10 @@ namespace Synthesis.Bethesda.GUI
                     {
                         if (driver.IsHaltingError) return driver;
                         if (runner.IsHaltingError) return runner;
-                        if (dotnet == null) return new ConfigurationStateVM(ErrorResponse.Fail("No dotnet SDK installed"));
+                        if (dotnet == null) return new ConfigurationState(ErrorResponse.Fail("No dotnet SDK installed"));
                         return checkout;
                     })
-                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), new ConfigurationStateVM(ErrorResponse.Fail("Evaluating"))
+                .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
                 {
                     IsHaltingError = false
                 });
@@ -586,11 +586,11 @@ namespace Synthesis.Bethesda.GUI
                     pathToProj: RunnableData.ProjPath));
         }
 
-        public static IObservable<ConfigurationStateVM<string>> GetRepoPathValidity(IObservable<string> repoPath)
+        public static IObservable<ConfigurationState<string>> GetRepoPathValidity(IObservable<string> repoPath)
         {
             return repoPath
                 .DistinctUntilChanged()
-                .Select(x => new ConfigurationStateVM<string>(string.Empty)
+                .Select(x => new ConfigurationState<string>(string.Empty)
                 {
                     IsHaltingError = false,
                     RunnableState = ErrorResponse.Fail("Checking remote repository correctness.")
@@ -604,12 +604,12 @@ namespace Synthesis.Bethesda.GUI
                     {
                         try
                         {
-                            if (Repository.ListRemoteReferences(p).Any()) return new ConfigurationStateVM<string>(p);
+                            if (Repository.ListRemoteReferences(p).Any()) return new ConfigurationState<string>(p);
                         }
                         catch (Exception)
                         {
                         }
-                        return new ConfigurationStateVM<string>(string.Empty, ErrorResponse.Fail("Path does not point to a valid repository."));
+                        return new ConfigurationState<string>(string.Empty, ErrorResponse.Fail("Path does not point to a valid repository."));
                     }));
         }
 

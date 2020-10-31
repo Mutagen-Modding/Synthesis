@@ -9,10 +9,9 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Text;
 using System.Windows.Input;
-using Synthesis.Bethesda.Execution.Patchers;
 using System.Threading;
-using Serilog.Core;
 using Serilog;
+using Synthesis.Bethesda.Execution;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -35,7 +34,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand DeleteCommand { get; }
 
-        public abstract ConfigurationStateVM State { get; }
+        public abstract ConfigurationState State { get; }
 
         private static int NextID;
 

@@ -45,8 +45,8 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string> _DisplayName;
         public override string DisplayName => _DisplayName.Value;
 
-        private readonly ObservableAsPropertyHelper<ConfigurationStateVM> _State;
-        public override ConfigurationStateVM State => _State.Value;
+        private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
+        public override ConfigurationState State => _State.Value;
 
         public ICommand OpenSolutionCommand { get; }
 
@@ -111,11 +111,11 @@ namespace Synthesis.Bethesda.GUI
                         .Switch(),
                     (sln, proj, dotnet) =>
                     {
-                        if (sln.Failed) return new ConfigurationStateVM(sln);
-                        if (dotnet == null) return new ConfigurationStateVM(ErrorResponse.Fail("No dotnet SDK installed"));
-                        return new ConfigurationStateVM(proj);
+                        if (sln.Failed) return new ConfigurationState(sln);
+                        if (dotnet == null) return new ConfigurationState(ErrorResponse.Fail("No dotnet SDK installed"));
+                        return new ConfigurationState(proj);
                     })
-                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), new ConfigurationStateVM(ErrorResponse.Fail("Evaluating"))
+                .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
                 {
                     IsHaltingError = false
                 });
