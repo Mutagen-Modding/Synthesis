@@ -1,3 +1,4 @@
+using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;

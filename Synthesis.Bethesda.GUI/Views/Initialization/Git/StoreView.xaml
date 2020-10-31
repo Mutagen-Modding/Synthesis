@@ -55,6 +55,7 @@
             Background="Transparent"
             Focusable="False"
             ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.VerticalScrollBarVisibility="Visible">
             <ListBox.GroupStyle>
                 <GroupStyle />
