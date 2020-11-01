@@ -170,5 +170,29 @@ namespace Synthesis.Bethesda.UnitTests
             GitPatcherRun.TurnOffNullability(root);
             elem.Value.Should().BeEquivalentTo("other");
         }
+
+        [Fact]
+        public void Match()
+        {
+            var projStr = CreateProj(
+                ("Mutagen.Bethesda", "0.0.0"),
+                ("Mutagen.Bethesda.Oblivion", "0.1.0"),
+                ("Mutagen.Bethesda.Synthesis", "0.3.0"));
+            var projXml = XElement.Parse(projStr);
+            GitPatcherRun.SwapInDesiredVersionsForProjectString(
+                projXml,
+                mutagenVersion: null,
+                listedMutagenVersion: out var _,
+                synthesisVersion: null,
+                listedSynthesisVersion: out var _);
+            var swapString = projXml.ToString();
+            var expectedString = CreateProj(
+                ("Mutagen.Bethesda", "0.0.0"),
+                ("Mutagen.Bethesda.Oblivion", "0.1.0"),
+                ("Mutagen.Bethesda.Synthesis", "0.3.0"));
+            swapString
+                .Should()
+                .BeEquivalentTo(expectedString);
+        }
     }
 }

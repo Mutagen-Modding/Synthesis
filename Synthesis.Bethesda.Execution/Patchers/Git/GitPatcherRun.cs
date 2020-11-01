@@ -250,7 +250,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             {
                 throw new ArgumentException("No ItemGroup found in project");
             }
-            if (addMissing)
+            if (addMissing && mutagenVersion != null)
             {
                 foreach (var missing in missingLibs)
                 {
