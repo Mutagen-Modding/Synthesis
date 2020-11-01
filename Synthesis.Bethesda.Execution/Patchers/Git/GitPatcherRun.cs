@@ -284,7 +284,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             GitPatcherVersioning patcherVersioning,
             NugetVersioningTarget nugetVersioning,
             Action<string>? logger,
-            CancellationToken cancel)
+            CancellationToken cancel,
+            bool compile = true)
         {
             try
             {
@@ -298,10 +299,16 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 Commands.Checkout(repo, runnerBranch);
                 string? targetSha;
                 string? target;
+                bool fetchIfMissing = patcherVersioning.Versioning switch
+                {
+                    PatcherVersioningEnum.Commit => true,
+                    _ => false
+                };
                 switch (patcherVersioning.Versioning)
                 {
                     case PatcherVersioningEnum.Tag:
                         if (string.IsNullOrWhiteSpace(patcherVersioning.Target)) return GetResponse<RunnerRepoInfo>.Fail("No tag selected");
+                        repo.Fetch();
                         targetSha = repo.Tags[patcherVersioning.Target]?.Target.Sha;
                         if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate tag");
                         target = patcherVersioning.Target;
@@ -313,6 +320,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                         break;
                     case PatcherVersioningEnum.Branch:
                         if (string.IsNullOrWhiteSpace(patcherVersioning.Target)) return GetResponse<RunnerRepoInfo>.Fail($"Target branch had no name.");
+                        repo.Fetch();
                         var targetBranch = repo.Branches[$"origin/{patcherVersioning.Target}"];
                         if (targetBranch == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {patcherVersioning.Target}");
                         targetSha = targetBranch.Tip.Sha;
@@ -325,7 +333,19 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
                 cancel.ThrowIfCancellationRequested();
                 var commit = repo.Lookup(objId, ObjectType.Commit) as Commit;
-                if (commit == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit with given sha");
+                if (commit == null)
+                {
+                    if (!fetchIfMissing)
+                    {
+                        return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit with given sha");
+                    }
+                    repo.Fetch();
+                    commit = repo.Lookup(objId, ObjectType.Commit) as Commit;
+                    if (commit == null)
+                    {
+                        return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit with given sha");
+                    }
+                }
 
                 cancel.ThrowIfCancellationRequested();
                 var slnPath = GitPatcherRun.GetPathToSolution(localRepoDir);
@@ -341,7 +361,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
                 var projPath = Path.Combine(localRepoDir, foundProjSubPath);
 
-                // Compile to help prep
                 cancel.ThrowIfCancellationRequested();
                 logger?.Invoke($"Mutagen Nuget: {nugetVersioning.MutagenVersioning} {nugetVersioning.MutagenVersion}");
                 logger?.Invoke($"Synthesis Nuget: {nugetVersioning.SynthesisVersioning} {nugetVersioning.SynthesisVersion}");
@@ -352,8 +371,13 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     listedMutagenVersion: out var listedMutagenVersion,
                     synthesisVersion: nugetVersioning.SynthesisVersioning == NugetVersioningEnum.Match ? null : nugetVersioning.SynthesisVersion,
                     listedSynthesisVersion: out var listedSynthesisVersion);
-                var compileResp = await SolutionPatcherRun.CompileWithDotnet(projPath, cancel);
-                if (compileResp.Failed) return compileResp.BubbleFailure<RunnerRepoInfo>();
+
+                // Compile to help prep
+                if (compile)
+                {
+                    var compileResp = await SolutionPatcherRun.CompileWithDotnet(projPath, cancel);
+                    if (compileResp.Failed) return compileResp.BubbleFailure<RunnerRepoInfo>();
+                }
 
                 return GetResponse<RunnerRepoInfo>.Succeed(
                     new RunnerRepoInfo(
