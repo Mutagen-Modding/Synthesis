@@ -194,5 +194,30 @@ namespace Synthesis.Bethesda.UnitTests
                 .Should()
                 .BeEquivalentTo(expectedString);
         }
+
+        [Fact]
+        public void NoMutagen()
+        {
+            var projStr = CreateProj(
+                ("Mutagen.Bethesda.Synthesis", "0.3.0"));
+            var projXml = XElement.Parse(projStr);
+            GitPatcherRun.SwapInDesiredVersionsForProjectString(
+                projXml,
+                mutagenVersion: "0.1.0",
+                listedMutagenVersion: out var _,
+                synthesisVersion: null,
+                listedSynthesisVersion: out var _);
+            var swapString = projXml.ToString();
+            var expectedString = CreateProj(
+                ("Mutagen.Bethesda.Synthesis", "0.3.0"),
+                ("Mutagen.Bethesda.Oblivion", "0.1.0"),
+                ("Mutagen.Bethesda.Skyrim", "0.1.0"),
+                ("Mutagen.Bethesda", "0.1.0"),
+                ("Mutagen.Bethesda.Core", "0.1.0"),
+                ("Mutagen.Bethesda.Kernel", "0.1.0"));
+            swapString
+                .Should()
+                .BeEquivalentTo(expectedString);
+        }
     }
 }
