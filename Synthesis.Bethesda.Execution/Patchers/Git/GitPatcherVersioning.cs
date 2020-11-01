@@ -8,20 +8,14 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
     public class GitPatcherVersioning : IEquatable<GitPatcherVersioning>
     {
         public PatcherVersioningEnum Versioning { get; }
-        public string TargetTag { get; }
-        public string TargetCommit { get; }
-        public string TargetBranchName { get; }
+        public string Target { get; }
 
         public GitPatcherVersioning(
             PatcherVersioningEnum versioning,
-            string targetTag,
-            string targetCommit,
-            string targetBranch)
+            string target)
         {
             Versioning = versioning;
-            TargetTag = targetTag;
-            TargetCommit = targetCommit;
-            TargetBranchName = targetBranch;
+            Target = target;
         }
 
         public override bool Equals(object obj)
@@ -33,9 +27,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         public bool Equals(GitPatcherVersioning other)
         {
             if (Versioning != other.Versioning) return false;
-            if (!string.Equals(TargetTag, other.TargetTag)) return false;
-            if (!string.Equals(TargetCommit, other.TargetCommit)) return false;
-            if (!string.Equals(TargetBranchName, other.TargetBranchName)) return false;
+            if (!string.Equals(Target, other.Target)) return false;
             return true;
         }
 
@@ -43,10 +35,32 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         {
             HashCode code = new HashCode();
             code.Add(Versioning);
-            code.Add(TargetTag);
-            code.Add(TargetCommit);
-            code.Add(TargetBranchName);
+            code.Add(Target);
             return code.ToHashCode();
         }
-    }
+
+        public override string ToString()
+        {
+            return Versioning switch
+            {
+                PatcherVersioningEnum.Tag => $"tag {Target}",
+                PatcherVersioningEnum.Branch => $"branch {Target}",
+                PatcherVersioningEnum.Commit => $"master {Target}",
+                _ => throw new NotImplementedException(),
+            };
+        }
+
+        public static GitPatcherVersioning Factory(PatcherVersioningEnum versioning, string tag, string commit, string branch)
+        {
+            return new GitPatcherVersioning(
+                versioning,
+                versioning switch
+                {
+                    PatcherVersioningEnum.Branch => branch,
+                    PatcherVersioningEnum.Tag => tag,
+                    PatcherVersioningEnum.Commit => commit,
+                    _ => throw new NotImplementedException(),
+                });
+        }
+}
 }

@@ -290,14 +290,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             {
                 cancel.ThrowIfCancellationRequested();
 
-                var checkoutTargetStr = patcherVersioning.Versioning switch
-                {
-                    PatcherVersioningEnum.Tag => $"tag {patcherVersioning.TargetTag}",
-                    PatcherVersioningEnum.Branch => $"branch {patcherVersioning.TargetBranchName}",
-                    PatcherVersioningEnum.Commit => $"master {patcherVersioning.TargetCommit}",
-                    _ => throw new NotImplementedException(),
-                };
-                logger?.Invoke($"Targeting {checkoutTargetStr}");
+                logger?.Invoke($"Targeting {patcherVersioning}");
 
                 using var repo = new Repository(localRepoDir);
                 var runnerBranch = repo.Branches[RunnerBranch] ?? repo.CreateBranch(RunnerBranch);
@@ -308,22 +301,22 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 switch (patcherVersioning.Versioning)
                 {
                     case PatcherVersioningEnum.Tag:
-                        if (string.IsNullOrWhiteSpace(patcherVersioning.TargetTag)) return GetResponse<RunnerRepoInfo>.Fail("No tag selected");
-                        targetSha = repo.Tags[patcherVersioning.TargetTag]?.Target.Sha;
+                        if (string.IsNullOrWhiteSpace(patcherVersioning.Target)) return GetResponse<RunnerRepoInfo>.Fail("No tag selected");
+                        targetSha = repo.Tags[patcherVersioning.Target]?.Target.Sha;
                         if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate tag");
-                        target = patcherVersioning.TargetTag;
+                        target = patcherVersioning.Target;
                         break;
                     case PatcherVersioningEnum.Commit:
-                        targetSha = patcherVersioning.TargetCommit;
+                        targetSha = patcherVersioning.Target;
                         if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit");
-                        target = patcherVersioning.TargetCommit;
+                        target = patcherVersioning.Target;
                         break;
                     case PatcherVersioningEnum.Branch:
-                        if (string.IsNullOrWhiteSpace(patcherVersioning.TargetBranchName)) return GetResponse<RunnerRepoInfo>.Fail($"Target branch had no name.");
-                        var targetBranch = repo.Branches[$"origin/{patcherVersioning.TargetBranchName}"];
-                        if (targetBranch == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {patcherVersioning.TargetBranchName}");
+                        if (string.IsNullOrWhiteSpace(patcherVersioning.Target)) return GetResponse<RunnerRepoInfo>.Fail($"Target branch had no name.");
+                        var targetBranch = repo.Branches[$"origin/{patcherVersioning.Target}"];
+                        if (targetBranch == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {patcherVersioning.Target}");
                         targetSha = targetBranch.Tip.Sha;
-                        target = patcherVersioning.TargetBranchName;
+                        target = patcherVersioning.Target;
                         break;
                     default:
                         throw new NotImplementedException();
