@@ -379,14 +379,14 @@ namespace Synthesis.Bethesda.GUI
             _UsedMutagenVersion = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.RunnableData)
                         .Select(x => x?.ListedMutagenVersion),
-                    libraryNugets.Select(x => x.Value.MutagenVersion),
+                    libraryNugets.Select(x => x.Value?.MutagenVersion),
                     (matchVersion, selVersion) => (matchVersion, selVersion))
                 .ToGuiProperty(this, nameof(UsedMutagenVersion));
 
             _UsedSynthesisVersion = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.RunnableData)
                         .Select(x => x?.ListedSynthesisVersion),
-                    libraryNugets.Select(x => x.Value.SynthesisVersion),
+                    libraryNugets.Select(x => x.Value?.SynthesisVersion),
                     (matchVersion, selVersion) => (matchVersion, selVersion))
                 .ToGuiProperty(this, nameof(UsedSynthesisVersion));
 
