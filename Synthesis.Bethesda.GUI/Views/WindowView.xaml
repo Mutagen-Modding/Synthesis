@@ -24,6 +24,9 @@
                 <DataTemplate DataType="{x:Type vm:ProfilesDisplayVM}">
                     <local:ProfilesView />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:DotNetNotInstalledVM}">
+                    <local:NoDotNetSdkInstalledView />
+                </DataTemplate>
             </ContentPresenter.Resources>
         </ContentPresenter>
         <local:ConfirmationOverlayView x:Name="ConfirmationOverlay" Visibility="Collapsed" />

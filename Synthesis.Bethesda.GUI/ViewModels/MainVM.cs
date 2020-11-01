@@ -14,8 +14,6 @@ using Synthesis.Bethesda.Execution.Settings;
 using System.Reactive;
 using System.IO;
 using Synthesis.Bethesda.Execution;
-using Noggog.Utility;
-using System.Collections.Generic;
 using Mutagen.Bethesda.Synthesis;
 
 namespace Synthesis.Bethesda.GUI
@@ -54,9 +52,9 @@ namespace Synthesis.Bethesda.GUI
 
         public MainVM()
         {
-            DotNetSdkInstalled = Observable.Return(Unit.Default)
-                .ObserveOn(RxApp.TaskpoolScheduler)
-                .SelectTask(async _ =>
+            var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), RxApp.TaskpoolScheduler)
+                .StartWith(0)
+                .SelectTask(async i =>
                 {
                     try
                     {
@@ -69,7 +67,12 @@ namespace Synthesis.Bethesda.GUI
                         Log.Logger.Error(ex, $"Error retrieving dotnet SDK version");
                         return default(Version?);
                     }
-                })
+                });
+            DotNetSdkInstalled = dotNet
+                .Take(1)
+                .Merge(dotNet
+                    .FirstAsync(v => v != null))
+                .DistinctUntilChanged()
                 .Replay(1)
                 .RefCount();
 
@@ -131,6 +134,16 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x.MutagenVersion);
             NewestSynthesisVersion = latestVersions
                 .Select(x => x.SynthesisVersion);
+
+            // Switch to DotNet screen if missing
+            DotNetSdkInstalled
+                .Subscribe(v =>
+                {
+                    if (v == null)
+                    {
+                        ActivePanel = new DotNetNotInstalledVM(this, this.ActivePanel, DotNetSdkInstalled);
+                    }
+                });
         }
 
         public void Load(SynthesisGuiSettings? guiSettings, PipelineSettings? pipeSettings)
