@@ -1,6 +1,7 @@
 using DynamicData;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Synthesis;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -35,7 +36,7 @@ namespace Synthesis.Bethesda.GUI
             var validation = Observable.CombineLatest(
                     SolutionPath.PathState(),
                     this.WhenAnyValue(x => x.ProjectName),
-                    (sln, proj) => (sln, proj, validation: ValidateProjectPath(proj, sln)))
+                    (sln, proj) => (sln, proj, validation: SolutionInitialization.ValidateProjectPath(proj, sln)))
                 .Replay(1)
                 .RefCount();
 
@@ -51,8 +52,8 @@ namespace Synthesis.Bethesda.GUI
                     return GetResponse<InitializerCall>.Succeed(async (profile) =>
                     {
                         var patcher = new SolutionPatcherVM(profile);
-                        CreateProject(i.validation.Value, patcher.Profile.Release.ToCategory());
-                        AddProjectToSolution(i.sln.Value, i.validation.Value);
+                        SolutionInitialization.CreateProject(i.validation.Value, patcher.Profile.Release.ToCategory());
+                        SolutionInitialization.AddProjectToSolution(i.sln.Value, i.validation.Value);
                         patcher.SolutionPath.TargetPath = i.sln.Value;
                         patcher.ProjectSubpath = Path.Combine(i.proj, $"{i.proj}.csproj");
                         return patcher.AsEnumerable();

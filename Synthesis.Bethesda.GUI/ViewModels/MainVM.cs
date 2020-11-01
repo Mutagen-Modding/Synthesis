@@ -16,6 +16,7 @@ using System.IO;
 using Synthesis.Bethesda.Execution;
 using Noggog.Utility;
 using System.Collections.Generic;
+using Mutagen.Bethesda.Synthesis;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -177,10 +178,10 @@ namespace Synthesis.Bethesda.GUI
                 bootstrapProjectDir.DeleteEntireFolder();
                 bootstrapProjectDir.Create();
                 var slnPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.sln");
-                ASolutionInitializer.CreateSolutionFile(slnPath);
+                SolutionInitialization.CreateSolutionFile(slnPath);
                 var projPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.csproj");
-                ASolutionInitializer.CreateProject(projPath, GameCategory.Skyrim);
-                ASolutionInitializer.AddProjectToSolution(slnPath, projPath);
+                SolutionInitialization.CreateProject(projPath, GameCategory.Skyrim);
+                SolutionInitialization.AddProjectToSolution(slnPath, projPath);
                 var ret = await DotNetQueries.QuerySynthesisVersions(projPath, current: false);
                 Log.Logger.Information("Latest published library versions:");
                 Log.Logger.Information($"  Mutagen: {ret.MutagenVersion}");

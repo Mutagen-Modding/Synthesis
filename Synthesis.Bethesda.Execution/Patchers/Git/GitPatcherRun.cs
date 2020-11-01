@@ -16,6 +16,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
     public class GitPatcherRun : IPatcherRun
     {
+        public const string RunnerBranch = "SynthesisRunner";
         public string Name { get; }
         private readonly string _localDir;
         private GithubPatcherSettings _settings;
@@ -298,7 +299,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 };
                 logger?.Invoke($"Targeting {checkoutTargetStr}");
 
-                const string RunnerBranch = "SynthesisRunner";
                 using var repo = new Repository(localRepoDir);
                 var runnerBranch = repo.Branches[RunnerBranch] ?? repo.CreateBranch(RunnerBranch);
                 repo.Reset(ResetMode.Hard);
