@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Wabbajack.Common;
 
@@ -125,7 +126,9 @@ namespace Mutagen.Bethesda.Synthesis
             where TModGetter : class, IModGetter
         {
             Console.WriteLine($"Mutagen version: {Versions.MutagenVersion}");
+            Console.WriteLine($"Mutagen sha: {Versions.MutagenSha}");
             Console.WriteLine($"Synthesis version: {Versions.SynthesisVersion}");
+            Console.WriteLine($"Synthesis sha: {Versions.SynthesisSha}");
             if (args.Length == 0)
             {
                 var prefs = userPreferences ?? new UserPreferences();
@@ -202,6 +205,7 @@ namespace Mutagen.Bethesda.Synthesis
         {
             try
             {
+                System.Console.WriteLine($"Patcher Git Sha: {Assembly.GetExecutingAssembly().GetGitSha() ?? "None"}");
                 System.Console.WriteLine("Prepping state.");
                 WarmupAll.Init();
                 using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
@@ -240,6 +244,7 @@ namespace Mutagen.Bethesda.Synthesis
         {
             try
             {
+                System.Console.WriteLine($"Patcher Git Sha: {Assembly.GetEntryAssembly().GetGitSha() ?? "None"}");
                 System.Console.WriteLine("Prepping state.");
                 WarmupAll.Init();
                 using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
