@@ -9,9 +9,6 @@ namespace Mutagen.Bethesda.Synthesis
 {
     public static class SolutionInitialization
     {
-        public static Version MutagenVersion => typeof(IMod).Assembly.GetName().Version;
-        public static Version SynthesisVersion => typeof(SynthesisPipeline).Assembly.GetName().Version;
-
         public static GetResponse<string> ValidateProjectPath(string projName, GetResponse<string> sln)
         {
             if (string.IsNullOrWhiteSpace(projName)) return GetResponse<string>.Fail("Project needs a name.");
@@ -64,8 +61,8 @@ namespace Mutagen.Bethesda.Synthesis
                 fg.AppendLine($"<ItemGroup>");
                 using (new DepthWrapper(fg))
                 {
-                    fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda\" Version=\"{MutagenVersion}\" />");
-                    fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{SynthesisVersion}\" />");
+                    fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda\" Version=\"{Versions.MutagenVersion}\" />");
+                    fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{Versions.SynthesisVersion}\" />");
                 }
                 fg.AppendLine($"</ItemGroup>");
                 fg.AppendLine();
