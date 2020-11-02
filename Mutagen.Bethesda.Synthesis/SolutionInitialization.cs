@@ -92,7 +92,7 @@ namespace Mutagen.Bethesda.Synthesis
                         using (new DepthWrapper(fg))
                         {
                             fg.AppendLine("args: args,");
-                            fg.AppendLine("patcher: RunPatch");
+                            fg.AppendLine("patcher: RunPatch,");
                             fg.AppendLine($"userPreferences: new {nameof(UserPreferences)}()");
                             using (new BraceWrapper(fg) { AppendParenthesis = true, AppendSemicolon = true })
                             {
@@ -100,7 +100,7 @@ namespace Mutagen.Bethesda.Synthesis
                                 using (new BraceWrapper(fg))
                                 {
                                     fg.AppendLine($"{nameof(RunDefaultPatcher.IdentifyingModKey)} = \"YourPatcher.esp\",");
-                                    fg.AppendLine($"{nameof(RunDefaultPatcher.TargetRelease)} = {nameof(GameRelease)}.{category.DefaultRelease()};");
+                                    fg.AppendLine($"{nameof(RunDefaultPatcher.TargetRelease)} = {nameof(GameRelease)}.{category.DefaultRelease()},");
                                 }
                             }
                         }
