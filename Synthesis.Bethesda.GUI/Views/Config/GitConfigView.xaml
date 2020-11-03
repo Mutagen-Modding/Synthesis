@@ -171,7 +171,7 @@
                     mahapps:HeaderedControlHelper.HeaderFontSize="16"
                     mahapps:HeaderedControlHelper.HeaderForeground="AliceBlue"
                     Background="Transparent">
-                    <TabItem Header="Latest Master" ToolTip="Run the patcher with the latest code" />
+                    <TabItem Header="Latest" ToolTip="Run the patcher with the latest code from the default branch" />
                     <TabItem Header="Tag" ToolTip="Run the patcher from a specific marked version">
                         <ComboBox
                             x:Name="TagPickerBox"

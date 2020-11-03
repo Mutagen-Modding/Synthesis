@@ -1,7 +1,9 @@
 using FluentAssertions;
+using Noggog;
 using Synthesis.Bethesda.Execution;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using Xunit;
@@ -42,7 +44,8 @@ namespace Synthesis.Bethesda.UnitTests
                     mutagenVersion: "0",
                     listedMutagenVersion: out var _,
                     synthesisVersion: "0",
-                    listedSynthesisVersion: out var _)
+                    listedSynthesisVersion: out var _,
+                    addMissing: false)
                 .Should()
                 .BeEquivalentTo(projStr);
         }
@@ -58,7 +61,8 @@ namespace Synthesis.Bethesda.UnitTests
                 mutagenVersion: "2.0",
                 listedMutagenVersion: out var _,
                 synthesisVersion: "3.1",
-                listedSynthesisVersion: out var _);
+                listedSynthesisVersion: out var _,
+                addMissing: false);
             var expectedString = CreateProj(
                 ("Mutagen.Bethesda", "2.0"),
                 ("Mutagen.Bethesda.Synthesis", "3.1"));
@@ -78,7 +82,8 @@ namespace Synthesis.Bethesda.UnitTests
                 mutagenVersion: "2.0",
                 listedMutagenVersion: out var _,
                 synthesisVersion: "3.1",
-                listedSynthesisVersion: out var _);
+                listedSynthesisVersion: out var _,
+                addMissing: false);
             var expectedString = CreateProj(
                 ("Mutagen.Bethesda", "2.0"),
                 ("Mutagen.Bethesda.Synthesis", "3.1"));
@@ -96,14 +101,37 @@ namespace Synthesis.Bethesda.UnitTests
                 ("Mutagen.Bethesda.Synthesis", "0.1.0"));
             var swapString = GitPatcherRun.SwapInDesiredVersionsForProjectString(
                 projStr,
-                mutagenVersion: "2.0", 
+                mutagenVersion: "2.0",
                 listedMutagenVersion: out var _,
                 synthesisVersion: "3.1",
-                listedSynthesisVersion: out var _);
+                listedSynthesisVersion: out var _,
+                addMissing: false);
             var expectedString = CreateProj(
                 ("Mutagen.Bethesda", "2.0"),
                 ("Mutagen.Bethesda.Oblivion", "2.0"),
                 ("Mutagen.Bethesda.Synthesis", "3.1"));
+            swapString
+                .Should()
+                .BeEquivalentTo(expectedString);
+        }
+
+        [Fact]
+        public void AddMissingMutagen()
+        {
+            var projStr = CreateProj(
+                ("Mutagen.Bethesda.Synthesis", "0.1.0"),
+                ("Mutagen.Bethesda.Oblivion", "0.1.0"));
+            var swapString = GitPatcherRun.SwapInDesiredVersionsForProjectString(
+                projStr,
+                mutagenVersion: "2.0",
+                listedMutagenVersion: out var _,
+                synthesisVersion: "3.1",
+                listedSynthesisVersion: out var _,
+                addMissing: true);
+            var expectedString = CreateProj(
+                ("Mutagen.Bethesda.Synthesis", "3.1").AsEnumerable()
+                    .And(GitPatcherRun.MutagenLibraries.Select(x => (x, "2.0")))
+                    .ToArray());
             swapString
                 .Should()
                 .BeEquivalentTo(expectedString);
