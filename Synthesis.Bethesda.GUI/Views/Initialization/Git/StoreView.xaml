@@ -53,7 +53,7 @@
             x:Name="PatcherReposListBox"
             Margin="0,5,0,0"
             Background="Transparent"
-            Focusable="False"
+            FocusVisualStyle="{x:Null}"
             ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.VerticalScrollBarVisibility="Visible">

@@ -9,14 +9,14 @@
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     d:DesignHeight="60"
     d:DesignWidth="800"
-    Focusable="False"
+    FocusVisualStyle="{x:Null}"
     mc:Ignorable="d">
     <Grid
         x:Name="TopGrid"
         MinHeight="24"
         Margin="0,2"
         Background="Transparent"
-        Focusable="False">
+        FocusVisualStyle="{x:Null}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30" />
             <ColumnDefinition Width="*" />

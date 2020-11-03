@@ -10,7 +10,7 @@
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    Focusable="False"
+    FocusVisualStyle="{x:Null}"
     mc:Ignorable="d">
     <Grid Margin="15,15,15,0">
         <Grid.RowDefinitions>
