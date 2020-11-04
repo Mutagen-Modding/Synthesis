@@ -12,7 +12,10 @@ namespace Synthesis.Bethesda.UnitTests
     public static class Utility
     {
         public static readonly string OverallTempFolderPath = "SynthesisUnitTests";
-        public static TempFolder GetTempFolder() => new TempFolder(Path.Combine(OverallTempFolderPath, Path.GetRandomFileName()));
+        public static TempFolder GetTempFolder() => new TempFolder(Path.Combine(OverallTempFolderPath, Path.GetRandomFileName()))
+        {
+             ThrowIfUnsuccessfulDisposal = false
+        };
         public static readonly string TypicalOutputFilename = "Synthesis.esp";
         public static readonly ModKey TestModKey = new ModKey("test", ModType.Plugin);
         public static readonly ModKey OverrideModKey = new ModKey("override", ModType.Plugin);
