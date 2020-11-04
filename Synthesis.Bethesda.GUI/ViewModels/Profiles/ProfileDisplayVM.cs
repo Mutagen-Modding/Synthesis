@@ -1,4 +1,4 @@
-﻿using DynamicData;
+using DynamicData;
 using DynamicData.Binding;
 using Mutagen.Bethesda;
 using Noggog.WPF;
@@ -27,6 +27,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand DeleteCommand { get; }
         public ICommand SwitchToCommand { get; }
+        public ICommand OpenInternalProfileFolderCommand { get; }
 
         public ProfileDisplayVM(ProfilesDisplayVM parent, ProfileVM? profile = null)
         {
@@ -63,6 +64,13 @@ namespace Synthesis.Bethesda.GUI
                     if (profile == null || profile.IsActive) return;
                     Parent.Config.SelectedProfile = profile;
                 });
+            OpenInternalProfileFolderCommand = ReactiveCommand.Create(
+                execute: () =>
+                {
+                    Utility.NavigateToPath(Profile!.ProfileDirectory);
+                },
+                canExecute: this.WhenAnyValue(x => x.Profile)
+                    .Select(x => x != null));
         }
     }
 }

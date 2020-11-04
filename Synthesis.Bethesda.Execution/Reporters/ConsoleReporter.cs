@@ -1,8 +1,6 @@
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Synthesis.Bethesda.Execution.Reporters
 {

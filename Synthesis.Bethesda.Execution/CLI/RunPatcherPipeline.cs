@@ -1,8 +1,8 @@
-using Microsoft.Build.Logging;
 using Mutagen.Bethesda;
 using Newtonsoft.Json;
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
 using System;

@@ -1,4 +1,4 @@
-﻿using Mutagen.Bethesda;
+using Mutagen.Bethesda;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -50,6 +50,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     })
                     .ObserveOnGui()
                     .BindToStrict(this, x => x.GameIconImage.Source)
+                    .DisposeWith(dispose);
+
+                this.WhenAnyValue(x => x.ViewModel!.OpenInternalProfileFolderCommand)
+                    .BindToStrict(this, x => x.ProfileInternalFilesButton.Command)
                     .DisposeWith(dispose);
             });
         }

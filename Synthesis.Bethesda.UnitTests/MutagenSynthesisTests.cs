@@ -268,5 +268,29 @@ namespace Synthesis.Bethesda.UnitTests
             list[0].Should().Be(new LoadOrderListing(Utility.TestModKey, true));
             list[1].Should().Be(new LoadOrderListing(Utility.OverrideModKey, true));
         }
+
+        [Fact]
+        public void NoPatch()
+        {
+            using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
+            var modPath = PatchModPath(dataFolder);
+            var settings = new RunSynthesisMutagenPatcher()
+            {
+                DataFolderPath = dataFolder.Dir.Path,
+                GameRelease = Mutagen.Bethesda.GameRelease.Oblivion,
+                OutputPath = string.Empty,
+                SourcePath = null,
+                LoadOrderFilePath = Utility.PathToLoadOrderFile
+            };
+            SynthesisPipeline.Instance.Patch<IOblivionMod, IOblivionModGetter>(
+                settings,
+                (state) => { },
+                new UserPreferences()
+                {
+                    NoPatch = true
+                });
+            File.Exists(modPath.Path).Should().BeFalse();
+        }
     }
 }

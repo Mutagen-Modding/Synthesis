@@ -4,18 +4,15 @@ using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Text;
 using System.Reflection;
 using Microsoft.CodeAnalysis.Emit;
-using System.Reactive;
 using System.Threading;
-using Synthesis.Bethesda.Execution.Patchers;
 using System.Threading.Tasks;
 using System.IO;
-using System.Windows.Controls;
 using System.Linq;
+using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -29,8 +26,8 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string Code { get; set; } = string.Empty;
 
-        private readonly ObservableAsPropertyHelper<ConfigurationStateVM> _State;
-        public override ConfigurationStateVM State => _State.Value;
+        private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
+        public override ConfigurationState State => _State.Value;
 
         private readonly ObservableAsPropertyHelper<string> _CompilationText;
         public string CompilationText => _CompilationText.Value;
@@ -96,7 +93,7 @@ namespace Synthesis.Bethesda.GUI
                 .Replay(1)
                 .RefCount();
 
-            IObservable<ConfigurationStateVM> compileState = compileResults
+            IObservable<ConfigurationState> compileState = compileResults
                 .Select(results => ToState(results))
                 .Replay(1)
                 .RefCount();
@@ -146,15 +143,15 @@ namespace Synthesis.Bethesda.GUI
                     if (!results.state.RunnableState.Succeeded) return results.state;
                     if (results.Item2 == null)
                     {
-                        return new ConfigurationStateVM()
+                        return new ConfigurationState()
                         {
                             RunnableState = ErrorResponse.Fail("Assembly was unexpectedly null"),
                             IsHaltingError = true,
                         };
                     }
-                    return ConfigurationStateVM.Success;
+                    return ConfigurationState.Success;
                 })
-                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), new ConfigurationStateVM(ErrorResponse.Fail("Evaluating"))
+                .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
                 {
                     IsHaltingError = false
                 });
@@ -194,18 +191,18 @@ namespace Synthesis.Bethesda.GUI
                     ActiveAssembly));
         }
 
-        private ConfigurationStateVM ToState((MemoryStream? AssemblyStream, EmitResult? CompileResults, Exception? Exception) results)
+        private ConfigurationState ToState((MemoryStream? AssemblyStream, EmitResult? CompileResults, Exception? Exception) results)
         {
             if (results.CompileResults == null)
             {
-                return new ConfigurationStateVM()
+                return new ConfigurationState()
                 {
                     RunnableState = ErrorResponse.Fail("Compiling")
                 };
             }
             if (results.Exception != null)
             {
-                return new ConfigurationStateVM()
+                return new ConfigurationState()
                 {
                     RunnableState = ErrorResponse.Fail(results.Exception),
                     IsHaltingError = true
@@ -213,7 +210,7 @@ namespace Synthesis.Bethesda.GUI
             }
             if (results.CompileResults.Success)
             {
-                return new ConfigurationStateVM()
+                return new ConfigurationState()
                 {
                     RunnableState = ErrorResponse.Succeed("Compilation successful")
                 };
@@ -223,13 +220,13 @@ namespace Synthesis.Bethesda.GUI
                 .FirstOrDefault();
             if (errDiag == null)
             {
-                return new ConfigurationStateVM()
+                return new ConfigurationState()
                 {
                     RunnableState = ErrorResponse.Fail("Unknown error"),
                     IsHaltingError = true,
                 };
             }
-            return new ConfigurationStateVM()
+            return new ConfigurationState()
             {
                 RunnableState = ErrorResponse.Fail(errDiag.ToString()),
                 IsHaltingError = true,

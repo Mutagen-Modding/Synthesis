@@ -14,8 +14,7 @@ using Synthesis.Bethesda.Execution.Settings;
 using System.Reactive;
 using System.IO;
 using Synthesis.Bethesda.Execution;
-using Noggog.Utility;
-using System.Collections.Generic;
+using Mutagen.Bethesda.Synthesis;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -53,9 +52,9 @@ namespace Synthesis.Bethesda.GUI
 
         public MainVM()
         {
-            DotNetSdkInstalled = Observable.Return(Unit.Default)
-                .ObserveOn(RxApp.TaskpoolScheduler)
-                .SelectTask(async _ =>
+            var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), RxApp.TaskpoolScheduler)
+                .StartWith(0)
+                .SelectTask(async i =>
                 {
                     try
                     {
@@ -68,7 +67,12 @@ namespace Synthesis.Bethesda.GUI
                         Log.Logger.Error(ex, $"Error retrieving dotnet SDK version");
                         return default(Version?);
                     }
-                })
+                });
+            DotNetSdkInstalled = dotNet
+                .Take(1)
+                .Merge(dotNet
+                    .FirstAsync(v => v != null))
+                .DistinctUntilChanged()
                 .Replay(1)
                 .RefCount();
 
@@ -130,6 +134,16 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x.MutagenVersion);
             NewestSynthesisVersion = latestVersions
                 .Select(x => x.SynthesisVersion);
+
+            // Switch to DotNet screen if missing
+            DotNetSdkInstalled
+                .Subscribe(v =>
+                {
+                    if (v == null)
+                    {
+                        ActivePanel = new DotNetNotInstalledVM(this, this.ActivePanel, DotNetSdkInstalled);
+                    }
+                });
         }
 
         public void Load(SynthesisGuiSettings? guiSettings, PipelineSettings? pipeSettings)
@@ -177,10 +191,10 @@ namespace Synthesis.Bethesda.GUI
                 bootstrapProjectDir.DeleteEntireFolder();
                 bootstrapProjectDir.Create();
                 var slnPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.sln");
-                ASolutionInitializer.CreateSolutionFile(slnPath);
+                SolutionInitialization.CreateSolutionFile(slnPath);
                 var projPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.csproj");
-                ASolutionInitializer.CreateProject(projPath, GameCategory.Skyrim);
-                ASolutionInitializer.AddProjectToSolution(slnPath, projPath);
+                SolutionInitialization.CreateProject(projPath, GameCategory.Skyrim);
+                SolutionInitialization.AddProjectToSolution(slnPath, projPath);
                 var ret = await DotNetQueries.QuerySynthesisVersions(projPath, current: false);
                 Log.Logger.Information("Latest published library versions:");
                 Log.Logger.Information($"  Mutagen: {ret.MutagenVersion}");

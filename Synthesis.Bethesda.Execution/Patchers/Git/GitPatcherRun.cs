@@ -1,7 +1,6 @@
 using LibGit2Sharp;
 using Mutagen.Bethesda;
 using Noggog;
-using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Collections.Generic;
@@ -13,10 +12,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Synthesis.Bethesda.Execution
+namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
     public class GitPatcherRun : IPatcherRun
     {
+        public const string RunnerBranch = "SynthesisRunner";
         public string Name { get; }
         private readonly string _localDir;
         private GithubPatcherSettings _settings;
@@ -182,35 +182,42 @@ namespace Synthesis.Bethesda.Execution
             foreach (var subProj in SolutionPatcherRun.AvailableProjects(solutionPath))
             {
                 var proj = Path.Combine(Path.GetDirectoryName(solutionPath), subProj);
-                File.WriteAllText(proj,
-                    SwapInDesiredVersionsForProjectString(
-                        File.ReadAllText(proj),
-                        mutagenVersion: mutagenVersion,
-                        listedMutagenVersion: out var curListedMutagenVersion,
-                        synthesisVersion: synthesisVersion,
-                        listedSynthesisVersion: out var curListedSynthesisVersion));
+                var projXml = XElement.Parse(File.ReadAllText(proj));
+                SwapInDesiredVersionsForProjectString(
+                    projXml,
+                    mutagenVersion: mutagenVersion,
+                    listedMutagenVersion: out var curListedMutagenVersion,
+                    synthesisVersion: synthesisVersion,
+                    listedSynthesisVersion: out var curListedSynthesisVersion);
+                TurnOffNullability(projXml);
+                File.WriteAllText(proj, projXml.ToString());
                 if (drivingProjSubPath.Equals(subProj))
                 {
                     listedMutagenVersion = curListedMutagenVersion;
                     listedSynthesisVersion = curListedSynthesisVersion;
                 }
             }
+            foreach (var item in Directory.EnumerateFiles(Path.GetDirectoryName(solutionPath), "Directory.Build.props"))
+            {
+                var projXml = XElement.Parse(File.ReadAllText(item));
+                TurnOffNullability(projXml);
+                File.WriteAllText(item, projXml.ToString());
+            }
         }
 
-        public static string SwapInDesiredVersionsForProjectString(
-            string projStr,
+        public static void SwapInDesiredVersionsForProjectString(
+            XElement proj,
             string? mutagenVersion,
             out string? listedMutagenVersion,
             string? synthesisVersion,
             out string? listedSynthesisVersion,
             bool addMissing = true)
         {
-            var root = XElement.Parse(projStr);
             listedMutagenVersion = null;
             listedSynthesisVersion = null;
             var missingLibs = new HashSet<string>(MutagenLibraries);
             XElement? itemGroup = null;
-            foreach (var group in root.Elements("ItemGroup"))
+            foreach (var group in proj.Elements("ItemGroup"))
             {
                 foreach (var elem in group.Elements().ToArray())
                 {
@@ -241,9 +248,9 @@ namespace Synthesis.Bethesda.Execution
             }
             if (itemGroup == null)
             {
-                throw new ArgumentException("No ItemGroup found in project to upgrade");
+                throw new ArgumentException("No ItemGroup found in project");
             }
-            if (addMissing)
+            if (addMissing && mutagenVersion != null)
             {
                 foreach (var missing in missingLibs)
                 {
@@ -252,7 +259,144 @@ namespace Synthesis.Bethesda.Execution
                         new XAttribute("Version", mutagenVersion)));
                 }
             }
-            return root.ToString();
+        }
+
+        public static void TurnOffNullability(XElement proj)
+        {
+            XElement? propGroup = null;
+            foreach (var group in proj.Elements("PropertyGroup"))
+            {
+                foreach (var elem in group.Elements())
+                {
+                    if (elem.Name.LocalName.Equals("WarningsAsErrors"))
+                    {
+                        var warnings = elem.Value.Split(',');
+                        elem.Value = string.Join(',', warnings.Where(x => !x.Contains("nullable", StringComparison.OrdinalIgnoreCase)));
+                    }
+                }
+                propGroup = group;
+            }
+        }
+
+        public static async Task<ConfigurationState<RunnerRepoInfo>> CheckoutRunnerRepository(
+            string proj,
+            string localRepoDir,
+            GitPatcherVersioning patcherVersioning,
+            NugetVersioningTarget nugetVersioning,
+            Action<string>? logger,
+            CancellationToken cancel,
+            bool compile = true)
+        {
+            try
+            {
+                cancel.ThrowIfCancellationRequested();
+
+                logger?.Invoke($"Targeting {patcherVersioning}");
+
+                using var repo = new Repository(localRepoDir);
+                var runnerBranch = repo.Branches[RunnerBranch] ?? repo.CreateBranch(RunnerBranch);
+                repo.Reset(ResetMode.Hard);
+                Commands.Checkout(repo, runnerBranch);
+                string? targetSha;
+                string? target;
+                bool fetchIfMissing = patcherVersioning.Versioning switch
+                {
+                    PatcherVersioningEnum.Commit => true,
+                    _ => false
+                };
+                switch (patcherVersioning.Versioning)
+                {
+                    case PatcherVersioningEnum.Tag:
+                        if (string.IsNullOrWhiteSpace(patcherVersioning.Target)) return GetResponse<RunnerRepoInfo>.Fail("No tag selected");
+                        repo.Fetch();
+                        targetSha = repo.Tags[patcherVersioning.Target]?.Target.Sha;
+                        if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate tag");
+                        target = patcherVersioning.Target;
+                        break;
+                    case PatcherVersioningEnum.Commit:
+                        targetSha = patcherVersioning.Target;
+                        if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit");
+                        target = patcherVersioning.Target;
+                        break;
+                    case PatcherVersioningEnum.Branch:
+                        if (string.IsNullOrWhiteSpace(patcherVersioning.Target)) return GetResponse<RunnerRepoInfo>.Fail($"Target branch had no name.");
+                        repo.Fetch();
+                        var targetBranch = repo.Branches[$"origin/{patcherVersioning.Target}"];
+                        if (targetBranch == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {patcherVersioning.Target}");
+                        targetSha = targetBranch.Tip.Sha;
+                        target = patcherVersioning.Target;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+                if (!ObjectId.TryParse(targetSha, out var objId)) return GetResponse<RunnerRepoInfo>.Fail("Malformed sha string");
+
+                cancel.ThrowIfCancellationRequested();
+                var commit = repo.Lookup(objId, ObjectType.Commit) as Commit;
+                if (commit == null)
+                {
+                    if (!fetchIfMissing)
+                    {
+                        return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit with given sha");
+                    }
+                    repo.Fetch();
+                    commit = repo.Lookup(objId, ObjectType.Commit) as Commit;
+                    if (commit == null)
+                    {
+                        return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit with given sha");
+                    }
+                }
+
+                cancel.ThrowIfCancellationRequested();
+                var slnPath = GitPatcherRun.GetPathToSolution(localRepoDir);
+                if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
+
+                var foundProjSubPath = SolutionPatcherRun.AvailableProject(slnPath, proj);
+
+                if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {proj}.");
+
+                cancel.ThrowIfCancellationRequested();
+                logger?.Invoke($"Checking out {targetSha}");
+                repo.Reset(ResetMode.Hard, commit, new CheckoutOptions());
+
+                var projPath = Path.Combine(localRepoDir, foundProjSubPath);
+
+                cancel.ThrowIfCancellationRequested();
+                logger?.Invoke($"Mutagen Nuget: {nugetVersioning.MutagenVersioning} {nugetVersioning.MutagenVersion}");
+                logger?.Invoke($"Synthesis Nuget: {nugetVersioning.SynthesisVersioning} {nugetVersioning.SynthesisVersion}");
+                GitPatcherRun.SwapInDesiredVersionsForSolution(
+                    slnPath,
+                    drivingProjSubPath: foundProjSubPath,
+                    mutagenVersion: nugetVersioning.MutagenVersioning == NugetVersioningEnum.Match ? null : nugetVersioning.MutagenVersion,
+                    listedMutagenVersion: out var listedMutagenVersion,
+                    synthesisVersion: nugetVersioning.SynthesisVersioning == NugetVersioningEnum.Match ? null : nugetVersioning.SynthesisVersion,
+                    listedSynthesisVersion: out var listedSynthesisVersion);
+
+                // Compile to help prep
+                if (compile)
+                {
+                    var compileResp = await SolutionPatcherRun.CompileWithDotnet(projPath, cancel);
+                    if (compileResp.Failed) return compileResp.BubbleFailure<RunnerRepoInfo>();
+                }
+
+                return GetResponse<RunnerRepoInfo>.Succeed(
+                    new RunnerRepoInfo(
+                        slnPath: slnPath,
+                        projPath: projPath,
+                        target: target,
+                        commitMsg: commit.Message,
+                        commitDate: commit.Author.When.LocalDateTime,
+                        listedSynthesis: listedSynthesisVersion,
+                        listedMutagen: listedMutagenVersion));
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                return GetResponse<RunnerRepoInfo>.Fail(ex);
+            }
         }
     }
 }

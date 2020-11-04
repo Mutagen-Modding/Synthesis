@@ -117,7 +117,7 @@ namespace Synthesis.Bethesda.GUI
                     }))
                 .ToObservableCollection(this);
 
-            OpenPopulationInfoCommand = ReactiveCommand.Create(() => Utility.OpenWebsite(Constants.ListingRepositoryAddress));
+            OpenPopulationInfoCommand = ReactiveCommand.Create(() => Utility.NavigateToPath(Constants.ListingRepositoryAddress));
             ClearSearchCommand = ReactiveCommand.Create(() => Search = string.Empty);
         }
 

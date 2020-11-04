@@ -10,15 +10,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Linq;
 using System.Text;
-using Buildalyzer;
 using System.Linq;
 using DynamicData.Binding;
-using Synthesis.Bethesda.Execution;
 using System.Windows.Input;
 using System.Diagnostics;
 using System.Reactive;
 using Newtonsoft.Json;
 using Synthesis.Bethesda.DTO;
+using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -44,8 +44,8 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string> _DisplayName;
         public override string DisplayName => _DisplayName.Value;
 
-        private readonly ObservableAsPropertyHelper<ConfigurationStateVM> _State;
-        public override ConfigurationStateVM State => _State.Value;
+        private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
+        public override ConfigurationState State => _State.Value;
 
         public ICommand OpenSolutionCommand { get; }
 
@@ -57,6 +57,11 @@ namespace Synthesis.Bethesda.GUI
 
         [Reactive]
         public bool HiddenByDefault { get; set; }
+
+        [Reactive]
+        public PreferredAutoVersioning Versioning { get; set; }
+
+        public ObservableCollectionExtended<PreferredAutoVersioning> VersioningOptions { get; } = new ObservableCollectionExtended<PreferredAutoVersioning>(EnumExt.GetValues<PreferredAutoVersioning>());
 
         public SolutionPatcherVM(ProfileVM parent, SolutionPatcherSettings? settings = null)
             : base(parent, settings)
@@ -105,11 +110,11 @@ namespace Synthesis.Bethesda.GUI
                         .Switch(),
                     (sln, proj, dotnet) =>
                     {
-                        if (sln.Failed) return new ConfigurationStateVM(sln);
-                        if (dotnet == null) return new ConfigurationStateVM(ErrorResponse.Fail("No dotnet SDK installed"));
-                        return new ConfigurationStateVM(proj);
+                        if (sln.Failed) return new ConfigurationState(sln);
+                        if (dotnet == null) return new ConfigurationState(ErrorResponse.Fail("No dotnet SDK installed"));
+                        return new ConfigurationState(proj);
                     })
-                .ToGuiProperty<ConfigurationStateVM>(this, nameof(State), new ConfigurationStateVM(ErrorResponse.Fail("Evaluating"))
+                .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
                 {
                     IsHaltingError = false
                 });
@@ -157,7 +162,9 @@ namespace Synthesis.Bethesda.GUI
                         {
                             try
                             {
-                                return JsonConvert.DeserializeObject<PatcherCustomization>(File.ReadAllText(path));
+                                return JsonConvert.DeserializeObject<PatcherCustomization>(
+                                    File.ReadAllText(path),
+                                    Execution.Constants.JsonSettings);
                             }
                             catch (Exception ex)
                             {
@@ -179,6 +186,7 @@ namespace Synthesis.Bethesda.GUI
                     this.LongDescription = info.LongDescription ?? string.Empty;
                     this.ShortDescription = info.OneLineDescription ?? string.Empty;
                     this.HiddenByDefault = info.HideByDefault;
+                    this.Versioning = info.PreferredAutoVersioning;
                 })
                 .DisposeWith(this);
 
@@ -187,8 +195,9 @@ namespace Synthesis.Bethesda.GUI
                     this.WhenAnyValue(x => x.ShortDescription),
                     this.WhenAnyValue(x => x.LongDescription),
                     this.WhenAnyValue(x => x.HiddenByDefault),
+                    this.WhenAnyValue(x => x.Versioning),
                     metaPath,
-                    (nickname, shortDesc, desc, hidden, meta) => (nickname, shortDesc, desc, hidden, meta))
+                    (nickname, shortDesc, desc, hidden, versioning, meta) => (nickname, shortDesc, desc, hidden, versioning, meta))
                 .DistinctUntilChanged()
                 .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
                 .Skip(1)
@@ -204,9 +213,11 @@ namespace Synthesis.Bethesda.GUI
                                     OneLineDescription = x.shortDesc,
                                     LongDescription = x.desc,
                                     HideByDefault = x.hidden,
-                                    Nickname = x.nickname
+                                    Nickname = x.nickname,
+                                    PreferredAutoVersioning = x.versioning
                                 },
-                                Formatting.Indented));
+                                Formatting.Indented,
+                                Execution.Constants.JsonSettings));
                     }
                     catch (Exception ex)
                     {

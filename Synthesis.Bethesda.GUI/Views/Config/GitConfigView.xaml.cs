@@ -70,7 +70,13 @@ namespace Synthesis.Bethesda.GUI.Views
                 // Bind tag picker
                 this.BindStrict(this.ViewModel, vm => vm.TargetTag, view => view.TagPickerBox.SelectedItem)
                     .DisposeWith(disposable);
+                this.BindStrict(this.ViewModel, vm => vm.LatestTag, view => view.LatestTagCheck.IsChecked)
+                    .DisposeWith(disposable);
                 this.OneWayBindStrict(this.ViewModel, vm => vm.AvailableTags, view => view.TagPickerBox.ItemsSource)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.LatestTag)
+                    .Select(x => !x)
+                    .BindToStrict(this, x => x.TagPickerBox.IsEnabled)
                     .DisposeWith(disposable);
 
                 this.BindStrict(this.ViewModel, vm => vm.TargetCommit, view => view.CommitShaBox.Text)
@@ -82,6 +88,12 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Subscribe(x => this.CommitShaBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.TargetBranchName, view => view.BranchNameBox.Text)
+                    .DisposeWith(disposable);
+                this.BindStrict(this.ViewModel, vm => vm.FollowDefaultBranch, view => view.DefaultBranchCheck.IsChecked)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.FollowDefaultBranch)
+                    .Select(x => !x)
+                    .BindToStrict(this, x => x.BranchNameBox.IsEnabled)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.RunnableData),
@@ -99,20 +111,20 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.OpenGitButton.Command)
                     .DisposeWith(disposable);
 
-                this.BindStrict(this.ViewModel, vm => vm.MutagenVersioning, view => view.MutagenVersioningTab.SelectedIndex, (e) => (int)e, i => (MutagenVersioningEnum)i)
+                this.BindStrict(this.ViewModel, vm => vm.MutagenVersioning, view => view.MutagenVersioningTab.SelectedIndex, (e) => (int)e, i => (NugetVersioningEnum)i)
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.ManualMutagenVersion, view => view.MutagenManualVersionBox.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning)
-                    .Select(x => x == MutagenVersioningEnum.Manual ? Visibility.Visible : Visibility.Hidden)
+                    .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Hidden)
                     .BindToStrict(this, x => x.MutagenManualVersionBox.Visibility)
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.SynthesisVersioning, view => view.SynthesisVersioningTab.SelectedIndex, (e) => (int)e, i => (SynthesisVersioningEnum)i)
+                this.BindStrict(this.ViewModel, vm => vm.SynthesisVersioning, view => view.SynthesisVersioningTab.SelectedIndex, (e) => (int)e, i => (NugetVersioningEnum)i)
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.ManualSynthesisVersion, view => view.SynthesisManualVersionBox.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning)
-                    .Select(x => x == SynthesisVersioningEnum.Manual ? Visibility.Visible : Visibility.Hidden)
+                    .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Hidden)
                     .BindToStrict(this, x => x.SynthesisManualVersionBox.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.UsedMutagenVersion)
@@ -132,6 +144,10 @@ namespace Synthesis.Bethesda.GUI.Views
                         return x.SelectedVersion ?? x.MatchVersion;
                     })
                     .BindToStrict(this, x => x.SynthesisVersionText.Text)
+                    .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.NavigateToInternalFilesCommand)
+                    .BindToStrict(this, x => x.OpenPatcherInternalFilesButton.Command)
                     .DisposeWith(disposable);
             });
         }

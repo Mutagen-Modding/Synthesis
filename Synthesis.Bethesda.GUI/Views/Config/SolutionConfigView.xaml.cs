@@ -69,6 +69,9 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.OpenSolutionCommand)
                     .BindToStrict(this, x => x.OpenSolutionButton.Command)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.VersioningOptions)
+                    .BindTo(this, view => view.PreferredVersioningPicker.ItemsSource)
+                    .DisposeWith(disposable);
 
                 // Bind settings
                 this.BindStrict(this.ViewModel, vm => vm.LongDescription, view => view.DescriptionBox.Text)
@@ -76,6 +79,8 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.BindStrict(this.ViewModel, vm => vm.ShortDescription, view => view.OneLineDescriptionBox.Text)
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.HiddenByDefault, view => view.HideCheckbox.IsChecked)
+                    .DisposeWith(disposable);
+                this.BindStrict(this.ViewModel, vm => vm.Versioning, view => view.PreferredVersioningPicker.SelectedItem)
                     .DisposeWith(disposable);
             });
         }

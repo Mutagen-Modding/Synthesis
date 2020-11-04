@@ -1,4 +1,5 @@
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Synthesis;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -82,7 +83,7 @@ namespace Synthesis.Bethesda.GUI
                         {
                             proj = SolutionNameProcessor(slnName);
                         }
-                        return (parentDir, sln, proj, validation: ValidateProjectPath(proj, sln));
+                        return (parentDir, sln, proj, validation: SolutionInitialization.ValidateProjectPath(proj, sln));
                     })
                 .Replay(1)
                 .RefCount();
@@ -100,9 +101,9 @@ namespace Synthesis.Bethesda.GUI
                     return GetResponse<InitializerCall>.Succeed(async (profile) =>
                     {
                         var patcher = new SolutionPatcherVM(profile);
-                        CreateSolutionFile(i.sln.Value);
-                        CreateProject(i.validation.Value, patcher.Profile.Release.ToCategory());
-                        AddProjectToSolution(i.sln.Value, i.validation.Value);
+                        SolutionInitialization.CreateSolutionFile(i.sln.Value);
+                        SolutionInitialization.CreateProject(i.validation.Value, patcher.Profile.Release.ToCategory());
+                        SolutionInitialization.AddProjectToSolution(i.sln.Value, i.validation.Value);
                         patcher.SolutionPath.TargetPath = i.sln.Value;
                         var projName = Path.GetFileNameWithoutExtension(i.validation.Value);
                         patcher.ProjectSubpath = Path.Combine(projName, $"{projName}.csproj");
