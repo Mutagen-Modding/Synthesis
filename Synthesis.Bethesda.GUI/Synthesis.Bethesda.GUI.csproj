@@ -28,6 +28,7 @@
     <None Remove="Resources\Oblivion.png" />
     <None Remove="Resources\SkyrimLE.png" />
     <None Remove="Resources\SkyrimSSE.png" />
+    <None Remove="Resources\SkyrimVR.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -79,6 +80,7 @@
     <Resource Include="Resources\Oblivion.png" />
     <Resource Include="Resources\SkyrimLE.png" />
     <Resource Include="Resources\SkyrimSSE.png" />
+    <Resource Include="Resources\SkyrimVR.png" />
   </ItemGroup>
 
   <ItemGroup>

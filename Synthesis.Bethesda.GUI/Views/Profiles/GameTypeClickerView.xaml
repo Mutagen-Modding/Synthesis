@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="Synthesis.Bethesda.GUI.Views.GameTypeClickerView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -50,6 +50,9 @@
                         </DataTrigger>
                         <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.SkyrimSE}">
                             <Setter Property="Source" Value="../../Resources/SkyrimSSE.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.SkyrimVR}">
+                            <Setter Property="Source" Value="../../Resources/SkyrimVR.png" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

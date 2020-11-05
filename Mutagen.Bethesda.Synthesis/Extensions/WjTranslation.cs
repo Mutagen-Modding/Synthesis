@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Wabbajack.Common;
@@ -14,6 +14,7 @@ namespace Mutagen.Bethesda.Synthesis
                 GameRelease.Oblivion => Game.Oblivion,
                 GameRelease.SkyrimLE => Game.Skyrim,
                 GameRelease.SkyrimSE => Game.SkyrimSpecialEdition,
+                GameRelease.SkyrimVR => Game.SkyrimVR,
                 _ => throw new NotImplementedException()
             };
         }

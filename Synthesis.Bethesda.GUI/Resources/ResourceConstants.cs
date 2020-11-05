@@ -1,4 +1,4 @@
-﻿using Mutagen.Bethesda;
+using Mutagen.Bethesda;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +14,7 @@ namespace Synthesis.Bethesda.GUI
         public static readonly string OblivionLargeIcon = Path.Combine(ResourceFolder, "Oblivion.png");
         public static readonly string SkyrimLeLargeIcon = Path.Combine(ResourceFolder, "SkyrimLE.png");
         public static readonly string SkyrimSseLargeIcon = Path.Combine(ResourceFolder, "SkyrimSSE.png");
+        public static readonly string SkyrimVrLargeIcon = Path.Combine(ResourceFolder, "SkyrimVR.png");
         public static string GetIcon(GameRelease release)
         {
             return release switch
@@ -21,6 +22,7 @@ namespace Synthesis.Bethesda.GUI
                 GameRelease.Oblivion => OblivionLargeIcon,
                 GameRelease.SkyrimLE => SkyrimLeLargeIcon,
                 GameRelease.SkyrimSE => SkyrimSseLargeIcon,
+                GameRelease.SkyrimVR => SkyrimVrLargeIcon,
                 _ => throw new NotImplementedException()
             };
         }
