@@ -11,6 +11,7 @@
     Height="450"
     MinWidth="495"
     MinHeight="375"
+    Background="{StaticResource PurpleBackgroundGradient}"
     BorderBrush="{StaticResource MahApps.Brushes.Accent2}"
     NonActiveBorderBrush="#444444"
     NonActiveWindowTitleBrush="#35000000"
@@ -19,14 +20,6 @@
     UseLayoutRounding="True"
     WindowTitleBrush="#35000000"
     mc:Ignorable="d">
-    <mahapps:MetroWindow.Background>
-        <RadialGradientBrush Center="0.5,1" GradientOrigin="0.2,1" RadiusX="6.7" RadiusY="6.7">
-            <RadialGradientBrush.GradientStops>
-                <GradientStop Offset="0.1" Color="{StaticResource PaleDarkPurple}" />
-                <GradientStop Offset="1.0" Color="{StaticResource NeonPurple}" />
-            </RadialGradientBrush.GradientStops>
-        </RadialGradientBrush>
-    </mahapps:MetroWindow.Background>
     <Grid>
         <Rectangle>
             <Rectangle.Fill>
