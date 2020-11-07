@@ -7,10 +7,12 @@
     xmlns:noggog="clr-namespace:Noggog.WPF;assembly=Noggog.WPF">
     <Color x:Key="Salmon">#e16063</Color>
     <Color x:Key="LightSalmon">#fa7376</Color>
+    <Color x:Key="WhiteSalmon">#ff999b</Color>
     <Color x:Key="SalmonTransparent">#00e16063</Color>
     <Color x:Key="DarkSalmon">#8e4d4f</Color>
     <Color x:Key="DarkSalmonTransparent">#008e4d4f</Color>
     <Color x:Key="PaleYellow">#f7b992</Color>
+    <Color x:Key="WhiteYellow">#f7cdb2</Color>
     <Color x:Key="LightBlue">#51bcfa</Color>
     <Color x:Key="PaleBlue">#57f1fc</Color>
     <Color x:Key="PaleBlueTransparent">#0057f1fc</Color>
@@ -25,10 +27,12 @@
 
     <SolidColorBrush x:Key="SalmonBrush" Color="{StaticResource Salmon}" />
     <SolidColorBrush x:Key="LightSalmonBrush" Color="{StaticResource LightSalmon}" />
+    <SolidColorBrush x:Key="WhiteSalmonBrush" Color="{StaticResource WhiteSalmon}" />
     <SolidColorBrush x:Key="SalmonTransparentBrush" Color="{StaticResource SalmonTransparent}" />
     <SolidColorBrush x:Key="DarkSalmonBrush" Color="{StaticResource DarkSalmon}" />
     <SolidColorBrush x:Key="DarkSalmonTransparentBrush" Color="{StaticResource DarkSalmonTransparent}" />
     <SolidColorBrush x:Key="PaleYellowBrush" Color="{StaticResource PaleYellow}" />
+    <SolidColorBrush x:Key="WhiteYellowBrush" Color="{StaticResource PaleYellow}" />
     <SolidColorBrush x:Key="LightBlueBrush" Color="{StaticResource LightBlue}" />
     <SolidColorBrush x:Key="PaleBlueBrush" Color="{StaticResource PaleBlue}" />
     <SolidColorBrush x:Key="BlueBrush" Color="{StaticResource Blue}" />
@@ -47,11 +51,39 @@
     <SolidColorBrush x:Key="MahApps.Brushes.TextBox.Border.Focus" Color="{StaticResource MahApps.Colors.Gray4}" />
     <Style BasedOn="{StaticResource MahApps.Styles.TabControl}" TargetType="TabControl" />
     <Style BasedOn="{StaticResource MahApps.Styles.TabItem}" TargetType="{x:Type TabItem}" />
-    
+
     <RadialGradientBrush x:Key="PurpleBackgroundGradient" Center="0.5,1" GradientOrigin="0.2,1" RadiusX="6.7" RadiusY="6.7">
         <RadialGradientBrush.GradientStops>
             <GradientStop Offset="0.1" Color="{StaticResource PaleDarkPurple}" />
             <GradientStop Offset="1.0" Color="{StaticResource NeonPurple}" />
         </RadialGradientBrush.GradientStops>
     </RadialGradientBrush>
+
+    <Style
+        x:Key="ErrorButton"
+        BasedOn="{StaticResource Noggog.Styles.Button}"
+        TargetType="Button">
+        <Style.Resources>
+            <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource Salmon}" />
+            <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource LightSalmon}" />
+            <Style TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource SalmonBrush}" />
+                <Style.Triggers>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Button}}" Value="True" />
+                            <Condition Binding="{Binding IsPressed, RelativeSource={RelativeSource AncestorType=Button}}" Value="False" />
+                        </MultiDataTrigger.Conditions>
+                        <MultiDataTrigger.Setters>
+                            <Setter Property="Foreground" Value="{StaticResource LightSalmonBrush}" />
+                        </MultiDataTrigger.Setters>
+                    </MultiDataTrigger>
+                    <DataTrigger Binding="{Binding IsPressed, RelativeSource={RelativeSource AncestorType=Button}}" Value="True">
+                        <Setter Property="Foreground" Value="{StaticResource WhiteSalmonBrush}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Style.Resources>
+        <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
+    </Style>
 </ResourceDictionary>

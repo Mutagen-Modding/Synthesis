@@ -30,6 +30,7 @@ namespace Synthesis.Bethesda.GUI
         public ICommand AddSolutionPatcherCommand { get; }
         public ICommand AddCliPatcherCommand { get; }
         public ICommand AddSnippetPatcherCommand { get; }
+        public ICommand GoToErrorPatcher { get; }
 
         public string ID { get; private set; }
 
@@ -45,8 +46,8 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<ErrorResponse> _BlockingError;
         public ErrorResponse BlockingError => _BlockingError.Value;
 
-        private readonly ObservableAsPropertyHelper<ErrorResponse> _LargeOverallError;
-        public ErrorResponse LargeOverallError => _LargeOverallError.Value;
+        private readonly ObservableAsPropertyHelper<GetResponse<PatcherVM>> _LargeOverallError;
+        public GetResponse<PatcherVM> LargeOverallError => _LargeOverallError.Value;
 
         public IObservableList<LoadOrderListing> LoadOrder { get; }
 
@@ -122,17 +123,17 @@ namespace Synthesis.Bethesda.GUI
                         .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
                     (dataFolder, loadOrder, coll) =>
                     {
-                        if (coll.Count == 0) return (ErrorResponse)ErrorResponse.Fail("There are no enabled patchers to run.");
-                        if (!dataFolder.Succeeded) return dataFolder;
-                        if (!loadOrder.Succeeded) return loadOrder;
+                        if (coll.Count == 0) return GetResponse<PatcherVM>.Fail("There are no enabled patchers to run.");
+                        if (!dataFolder.Succeeded) return dataFolder.BubbleFailure<PatcherVM>();
+                        if (!loadOrder.Succeeded) return loadOrder.BubbleFailure<PatcherVM>();
                         var blockingError = coll.FirstOrDefault(p => p.State.IsHaltingError);
                         if (blockingError != null)
                         {
-                            return ErrorResponse.Fail($"\"{blockingError.DisplayName}\" has a blocking error");
+                            return GetResponse<PatcherVM>.Fail(blockingError, $"\"{blockingError.DisplayName}\" has a blocking error");
                         }
-                        return ErrorResponse.Success;
+                        return GetResponse<PatcherVM>.Succeed(null!);
                     })
-                .ToGuiProperty<ErrorResponse>(this, nameof(LargeOverallError), ErrorResponse.Fail("Uninitialized"));
+                .ToGuiProperty(this, nameof(LargeOverallError), GetResponse<PatcherVM>.Fail("Uninitialized"));
 
             _BlockingError = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.LargeOverallError),
@@ -157,6 +158,16 @@ namespace Synthesis.Bethesda.GUI
             _IsActive = this.WhenAnyValue(x => x.Config.SelectedProfile)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsActive));
+
+            GoToErrorPatcher = ReactiveCommand.Create(
+                () =>
+                {
+                    if (LargeOverallError.Value.TryGet(out var patcher))
+                    {
+                        Config.SelectedPatcher = patcher;
+                    }
+                },
+                canExecute: this.WhenAnyValue(x => x.LargeOverallError.Value).Select(x => x != null));
         }
 
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)

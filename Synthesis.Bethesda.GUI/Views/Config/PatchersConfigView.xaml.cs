@@ -61,7 +61,7 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 // Show dimmer if in initial configuration
                 this.WhenAnyValue(x => x.ViewModel!.NewPatcher)
-                    .Select(newPatcher => newPatcher != null? Visibility.Visible : Visibility.Collapsed)
+                    .Select(newPatcher => newPatcher != null ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.InitialConfigurationDimmer.Visibility)
                     .DisposeWith(disposable);
 
@@ -82,15 +82,18 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.ProcessingRingAnimation.Visibility)
                     .DisposeWith(disposable);
 
-                // Set up large overall error icon display
-                var overallErr = this.WhenAnyFallback( x => x.ViewModel!.SelectedProfile!.LargeOverallError, fallback: ErrorResponse.Success)
+                // Set up large overall error button
+                var overallErr = this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LargeOverallError, fallback: GetResponse<PatcherVM>.Succeed(null!))
                     .Replay(1)
                     .RefCount();
                 overallErr.Select(x => x.Succeeded ? Visibility.Collapsed : Visibility.Visible)
-                    .BindToStrict(this, x => x.OverallErrorIcon.Visibility)
+                    .BindToStrict(this, x => x.OverallErrorButton.Visibility)
                     .DisposeWith(disposable);
                 overallErr.Select(x => x.Reason)
-                    .BindToStrict(this, x => x.OverallErrorIcon.ToolTip)
+                    .BindToStrict(this, x => x.OverallErrorButton.ToolTip)
+                    .DisposeWith(disposable);
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.GoToErrorPatcher)
+                    .BindToStrict(this, x => x.OverallErrorButton.Command)
                     .DisposeWith(disposable);
 
                 // Set up drag and drop systems
@@ -122,7 +125,7 @@ namespace Synthesis.Bethesda.GUI.Views
                         if (e.start.Item1 == null || e.start.Item2 == null) return;
                         var startPt = e.start.Item2.Value;
                         var position = e.move.GetPosition(PatchersList);
-                        if (Math.Abs(position.X - startPt.X) > SystemParameters.MinimumHorizontalDragDistance 
+                        if (Math.Abs(position.X - startPt.X) > SystemParameters.MinimumHorizontalDragDistance
                             || Math.Abs(position.Y - startPt.Y) > SystemParameters.MinimumVerticalDragDistance)
                         {
                             BeginDrag(e.move, e.start.Item1, startPt);
