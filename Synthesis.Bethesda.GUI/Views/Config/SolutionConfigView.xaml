@@ -78,13 +78,23 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <CheckBox Grid.Column="0"
-                x:Name="HideCheckbox"
-                Margin="0,10"
-                Content="Hide in searches"
-                ToolTip="Determines whether it shows in the Synthesis patcher browser by default" />
-            <ComboBox Grid.Column="1"
+            <ComboBox Grid.Column="0"
+                Name="VisibilityOptionPicker"
+                Margin="20,10,5,10"
+                ToolTip="Set the visibility options for your patcher">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBlock Grid.Column="1"
+                VerticalAlignment="Center"
+                Text="Visibility"
+                ToolTip="Set the visibility options for your patcher" />
+            <ComboBox Grid.Column="2"
                 x:Name="PreferredVersioningPicker"
                 Margin="20,10,5,10"
                 ToolTip="What style of versioning to prefer" >
@@ -93,7 +103,7 @@
                         <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
                     </DataTemplate>
                 </ComboBox.ItemTemplate></ComboBox>
-            <TextBlock Grid.Column="2"
+            <TextBlock Grid.Column="3"
                 VerticalAlignment="Center"
                 Text="Versioning"
                 ToolTip="What style of versioning to prefer" />

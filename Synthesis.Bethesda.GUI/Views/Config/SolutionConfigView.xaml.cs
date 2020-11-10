@@ -78,7 +78,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.ShortDescription, view => view.OneLineDescriptionBox.Text)
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.HiddenByDefault, view => view.HideCheckbox.IsChecked)
+                this.BindStrict(this.ViewModel, vm => vm.Visibility, view => view.VisibilityOptionPicker.SelectedItem)
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.Versioning, view => view.PreferredVersioningPicker.SelectedItem)
                     .DisposeWith(disposable);
