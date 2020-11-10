@@ -72,6 +72,10 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.VersioningOptions)
                     .BindTo(this, view => view.PreferredVersioningPicker.ItemsSource)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.VisibilityOptions)
+                    .BindTo(this, view => view.VisibilityOptionPicker.ItemsSource)
+                    .DisposeWith(disposable);
+
 
                 // Bind settings
                 this.BindStrict(this.ViewModel, vm => vm.LongDescription, view => view.DescriptionBox.Text)

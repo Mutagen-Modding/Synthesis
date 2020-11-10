@@ -80,9 +80,13 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <ComboBox Grid.Column="0"
+            <TextBlock Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="Visibility"
+                ToolTip="Set the visibility options for your patcher" />
+            <ComboBox Grid.Column="1"
                 Name="VisibilityOptionPicker"
-                Margin="20,10,5,10"
+                Margin="5,10,15,10"
                 ToolTip="Set the visibility options for your patcher">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
@@ -90,23 +94,20 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <TextBlock Grid.Column="1"
+            <TextBlock Grid.Column="2"
                 VerticalAlignment="Center"
-                Text="Visibility"
-                ToolTip="Set the visibility options for your patcher" />
-            <ComboBox Grid.Column="2"
+                Text="Versioning"
+                ToolTip="What style of versioning to prefer" />
+            <ComboBox Grid.Column="3"
                 x:Name="PreferredVersioningPicker"
-                Margin="20,10,5,10"
+                Margin="5,10,15,10"
                 ToolTip="What style of versioning to prefer" >
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}" />
                     </DataTemplate>
                 </ComboBox.ItemTemplate></ComboBox>
-            <TextBlock Grid.Column="3"
-                VerticalAlignment="Center"
-                Text="Versioning"
-                ToolTip="What style of versioning to prefer" />
+            
         </Grid>
     </Grid>
 </local:SolutionConfigViewBase>
