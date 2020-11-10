@@ -27,10 +27,31 @@ namespace Synthesis.Bethesda.DTO
         LatestDefaultBranch,
     }
 
+    public enum VisibilityOptions
+    {
+        /// <summary>
+        /// Completely excludes the patcher from being registered to Synthesis.
+        /// </summary>
+        [Description("Exclude")]
+        Exclude,
+
+        /// <summary>
+        /// Includes patcher into Synthesis, but hides it by default.
+        /// </summary>
+        [Description("Include But Hide")]
+        IncludeButHide,
+
+        /// <summary>
+        /// Patcher will always be visible.
+        /// </summary>
+        [Description("Always Visible")]
+        Visible
+    }
+
     public class PatcherCustomization : IEquatable<PatcherCustomization>
     {
         public string? Nickname { get; set; }
-        public bool HideByDefault { get; set; } = false;
+        public VisibilityOptions Visibility { get; set; } = VisibilityOptions.Visible;
         public string? OneLineDescription { get; set; }
         public string? LongDescription { get; set; }
         public PreferredAutoVersioning PreferredAutoVersioning { get; set; }
@@ -42,7 +63,7 @@ namespace Synthesis.Bethesda.DTO
 
         public bool Equals(PatcherCustomization other)
         {
-            if (HideByDefault != other.HideByDefault) return false;
+            if (!string.Equals(this.Visibility, other.Visibility)) return false;
             if (!string.Equals(this.OneLineDescription, other.OneLineDescription)) return false;
             if (!string.Equals(this.LongDescription, other.LongDescription)) return false;
             if (!string.Equals(this.Nickname, other.Nickname)) return false;
@@ -53,7 +74,7 @@ namespace Synthesis.Bethesda.DTO
         public override int GetHashCode()
         {
             HashCode hash = new HashCode();
-            hash.Add(HideByDefault);
+            hash.Add(Visibility);
             hash.Add(OneLineDescription);
             hash.Add(LongDescription);
             hash.Add(Nickname);
