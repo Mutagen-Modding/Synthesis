@@ -5,12 +5,87 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
+    xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     d:DesignHeight="60"
     d:DesignWidth="800"
     FocusVisualStyle="{x:Null}"
+    ToolTipService.HasDropShadow="True"
+    ToolTipService.InitialShowDelay="0"
+    ToolTipService.Placement="Right"
+    ToolTipService.ShowDuration="120000"
+    ToolTipService.VerticalOffset="2"
     mc:Ignorable="d">
+    <local:PatcherConfigListingViewBase.ToolTip>
+        <Grid
+            MaxWidth="250"
+            Margin="-5,-2"
+            Background="{StaticResource PaleDarkPurpleBrush}">
+            <Grid Margin="10,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                        x:Name="StatusTypeText"
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        FontSize="18"
+                        FontWeight="Bold">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="{StaticResource GreenBrush}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding State.RunnableState.Succeeded}" Value="False">
+                                        <Setter Property="Foreground" Value="{StaticResource PurpleForegroundBrush}" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding State.IsHaltingError}" Value="True">
+                                        <Setter Property="Foreground" Value="{StaticResource SalmonBrush}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <Grid Grid.Column="1"
+                        Height="25"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center">
+                        <icon:PackIconMaterial
+                            x:Name="ErrorIcon"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="{StaticResource RedBrush}"
+                            Kind="AlertCircle"
+                            Visibility="Collapsed" />
+                        <icon:PackIconMaterial
+                            x:Name="SuccessIcon"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="{StaticResource GreenBrush}"
+                            Kind="CheckboxMarkedCircle"
+                            Visibility="Collapsed" />
+                        <icon:PackIconFontAwesome
+                            x:Name="ProcessingRing"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="{StaticResource LightPurpleBrush}"
+                            Kind="DotCircleSolid"
+                            Visibility="Collapsed" />
+                    </Grid>
+                </Grid>
+                <TextBlock Grid.Row="1"
+                    x:Name="TooltipErrorText"
+                    Margin="0,2,0,4"
+                    TextWrapping="Wrap" />
+            </Grid>
+        </Grid>
+    </local:PatcherConfigListingViewBase.ToolTip>
     <Grid
         x:Name="TopGrid"
         MinHeight="24"

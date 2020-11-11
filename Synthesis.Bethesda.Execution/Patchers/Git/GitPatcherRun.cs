@@ -1,5 +1,6 @@
 using LibGit2Sharp;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Oblivion;
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
@@ -190,6 +191,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     synthesisVersion: synthesisVersion,
                     listedSynthesisVersion: out var curListedSynthesisVersion);
                 TurnOffNullability(projXml);
+                // Just printing on run pipeline side
+                //AddGitInfo(projXml);
                 File.WriteAllText(proj, projXml.ToString());
                 if (drivingProjSubPath.Equals(subProj))
                 {
@@ -276,6 +279,30 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 }
                 propGroup = group;
             }
+        }
+
+        public static void AddGitInfo(XElement proj)
+        {
+            XElement? itemGroup = null;
+            foreach (var group in proj.Elements("ItemGroup"))
+            {
+                foreach (var elem in group.Elements("PackageReference"))
+                {
+                    itemGroup = group;
+                    if (elem.TryGetAttributeString("Include", out var attr) && attr.Equals("GitInfo")) return;
+                }
+            }
+
+            if (itemGroup == null)
+            {
+                throw new ArgumentException("Package references found in project");
+            }
+
+            itemGroup.Add(new XElement("PackageReference",
+                new XAttribute("Include", "GitInfo"),
+                new XAttribute("Version", "*"),
+                new XElement("PrivateAssets", "all"),
+                new XElement("IncludeAssets", "runtime; build; native; contentfiles; analyzers; buildtransitive")));
         }
 
         public static async Task<ConfigurationState<RunnerRepoInfo>> CheckoutRunnerRepository(

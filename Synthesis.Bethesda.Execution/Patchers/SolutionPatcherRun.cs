@@ -83,7 +83,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             };
             var args = Parser.Default.FormatCommandLine(internalSettings);
             using var process = ProcessWrapper.Start(
-                new ProcessStartInfo("dotnet", $"run --project \"{PathToProject}\" --no-build {args}"),
+                new ProcessStartInfo("dotnet", $"run --project \"{PathToProject}\" --runtime win-x64 --no-build {args}"),
                 cancel: cancel);
             using var outputSub = process.Output.Subscribe(_output);
             using var errSub = process.Error.Subscribe(_error);
@@ -139,7 +139,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
         public static async Task<ErrorResponse> CompileWithDotnet(string targetPath, CancellationToken cancel)
         {
             using var process = ProcessWrapper.Start(
-                new ProcessStartInfo("dotnet", $"build \"{Path.GetFileName(targetPath)}\"")
+                new ProcessStartInfo("dotnet", $"build --runtime win-x64 \"{Path.GetFileName(targetPath)}\"")
                 {
                     WorkingDirectory = Path.GetDirectoryName(targetPath)
                 },

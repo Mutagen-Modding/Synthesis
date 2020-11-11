@@ -16,6 +16,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0"
             Name="TopBarGrid"
@@ -55,7 +56,7 @@
         </Grid>
         <ContentControl Grid.Row="1"
             x:Name="ConfigDetailPane"
-            Margin="7,0">
+            Margin="7,0,7,5">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type vm:CodeSnippetPatcherVM}">
                     <local:CodeSnippetConfigView />
@@ -71,5 +72,41 @@
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
+        <Ellipse Grid.Row="0" Grid.RowSpan="3"
+            x:Name="ErrorGlow"
+            Height="70"
+            Margin="15,0,-65,-35"
+            VerticalAlignment="Bottom"
+            Fill="{StaticResource DarkSalmonBrush}"
+            Opacity=".3"
+            Visibility="Collapsed">
+            <Ellipse.Effect>
+                <BlurEffect Radius="60" />
+            </Ellipse.Effect>
+        </Ellipse>
+        <Grid Grid.Row="2"
+            x:Name="ErrorGrid"
+            Margin="0,0,0,10"
+            HorizontalAlignment="Center"
+            IsHitTestVisible="False"
+            Visibility="Hidden">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <icon:PackIconMaterial Grid.Column="0"
+                x:Name="ErrorIcon"
+                Width="14"
+                Height="14"
+                Margin="8,0"
+                VerticalAlignment="Center"
+                Foreground="{StaticResource RedBrush}"
+                Kind="AlertCircle" />
+            <TextBlock Grid.Column="1"
+                x:Name="ErrorTextBlock"
+                VerticalAlignment="Center"
+                FontSize="14"
+                Foreground="{StaticResource SalmonBrush}" />
+        </Grid>
     </Grid>
 </local:PatcherConfigViewBase>
