@@ -56,12 +56,14 @@ namespace Synthesis.Bethesda.GUI
         public string LongDescription { get; set; } = string.Empty;
 
         [Reactive]
-        public bool HiddenByDefault { get; set; }
+        public VisibilityOptions Visibility { get; set; }
 
         [Reactive]
         public PreferredAutoVersioning Versioning { get; set; }
 
         public ObservableCollectionExtended<PreferredAutoVersioning> VersioningOptions { get; } = new ObservableCollectionExtended<PreferredAutoVersioning>(EnumExt.GetValues<PreferredAutoVersioning>());
+
+        public ObservableCollectionExtended<VisibilityOptions> VisibilityOptions { get; } = new ObservableCollectionExtended<VisibilityOptions>(EnumExt.GetValues<VisibilityOptions>());
 
         public SolutionPatcherVM(ProfileVM parent, SolutionPatcherSettings? settings = null)
             : base(parent, settings)
@@ -185,7 +187,7 @@ namespace Synthesis.Bethesda.GUI
                     }
                     this.LongDescription = info.LongDescription ?? string.Empty;
                     this.ShortDescription = info.OneLineDescription ?? string.Empty;
-                    this.HiddenByDefault = info.HideByDefault;
+                    this.Visibility = info.Visibility;
                     this.Versioning = info.PreferredAutoVersioning;
                 })
                 .DisposeWith(this);
@@ -194,10 +196,10 @@ namespace Synthesis.Bethesda.GUI
                     this.WhenAnyValue(x => x.DisplayName),
                     this.WhenAnyValue(x => x.ShortDescription),
                     this.WhenAnyValue(x => x.LongDescription),
-                    this.WhenAnyValue(x => x.HiddenByDefault),
+                    this.WhenAnyValue(x => x.Visibility),
                     this.WhenAnyValue(x => x.Versioning),
                     metaPath,
-                    (nickname, shortDesc, desc, hidden, versioning, meta) => (nickname, shortDesc, desc, hidden, versioning, meta))
+                    (nickname, shortDesc, desc, visibility, versioning, meta) => (nickname, shortDesc, desc, visibility, versioning, meta))
                 .DistinctUntilChanged()
                 .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
                 .Skip(1)
@@ -212,7 +214,7 @@ namespace Synthesis.Bethesda.GUI
                                 {
                                     OneLineDescription = x.shortDesc,
                                     LongDescription = x.desc,
-                                    HideByDefault = x.hidden,
+                                    Visibility = x.visibility,
                                     Nickname = x.nickname,
                                     PreferredAutoVersioning = x.versioning
                                 },
