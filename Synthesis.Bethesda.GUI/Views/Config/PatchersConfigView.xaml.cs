@@ -76,7 +76,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.RunPatchers.CanExecute)
                     .Switch()
-                    .CombineLatest(this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LargeOverallError, ErrorResponse.Success),
+                    .CombineLatest(this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LargeOverallError, GetResponse<PatcherVM>.Succeed(null!)),
                         (can, overall) => !can && overall.Succeeded)
                     .Select(show => show ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.ProcessingRingAnimation.Visibility)
