@@ -96,7 +96,13 @@ namespace Synthesis.Bethesda.GUI
                 .Filter(this.WhenAnyValue(x => x.ShowAll)
                     .DistinctUntilChanged()
                     .Select(show => new Func<PatcherStoreListingVM, bool>(
-                        (p) => show || (!p.Raw.Customization?.HideByDefault ?? true))))
+                        (p) =>
+                        {
+                            if (p.Raw.Customization?.Visibility is VisibilityOptions.Visible) return true;
+                            else if (p.Raw.Customization?.Visibility is VisibilityOptions.IncludeButHide) return show;
+                            else if (p.Raw.Customization?.Visibility is VisibilityOptions.Exclude) return false; // just in case.
+                            else return true;
+                        })))
                 .Filter(this.WhenAnyValue(x => x.Search)
                     .Debounce(TimeSpan.FromMilliseconds(350), RxApp.MainThreadScheduler)
                     .Select(x => x.Trim())
