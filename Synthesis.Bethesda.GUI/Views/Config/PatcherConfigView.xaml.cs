@@ -74,6 +74,19 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DistinctUntilChanged()
                     .Subscribe(x => this.PatcherDetailName.Text = x)
                     .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.State)
+                    .Select(x => x.IsHaltingError ? Visibility.Visible : Visibility.Hidden)
+                    .BindToStrict(this, x => x.ErrorGrid.Visibility)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.State)
+                    .Select(x => x.IsHaltingError ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.ErrorGlow.Visibility)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.State)
+                    .Select(x => x.RunnableState.Reason)
+                    .BindToStrict(this, x => x.ErrorTextBlock.Text)
+                    .DisposeWith(disposable);
             });
         }
     }

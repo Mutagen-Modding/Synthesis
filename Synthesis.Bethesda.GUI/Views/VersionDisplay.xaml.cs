@@ -31,6 +31,7 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.NewestSynthesisVersion)
                     .Switch()
                     .Select(x => x ?? "[Unknown]")
+                    .StartWith("[Querying]")
                     .BindToStrict(this, v => v.LatestSynthesisVersionText.Text)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.MutagenVersion)
@@ -39,6 +40,7 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.NewestMutagenVersion)
                     .Switch()
                     .Select(x => x ?? "[Unknown]")
+                    .StartWith("[Querying]")
                     .BindToStrict(this, v => v.LatestMutagenVersionText.Text)
                     .DisposeWith(dispose);
                 this.VersionButton.Events()
@@ -53,6 +55,29 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.VersionButton.Visibility = Visibility.Visible;
                         this.CopiedText.Visibility = Visibility.Collapsed;
                     })
+                    .DisposeWith(dispose);
+
+                var newSynthVis = Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.SynthesisVersion),
+                        this.WhenAnyValue(x => x.ViewModel!.NewestSynthesisVersion)
+                            .Switch(),
+                        (cur, next) => string.Equals(cur, next) ? Visibility.Collapsed : Visibility.Visible)
+                    .Replay(1)
+                    .RefCount();
+                newSynthVis.BindToStrict(this, x => x.LatestSynthesisVersionText.Visibility)
+                    .DisposeWith(dispose);
+                newSynthVis.BindToStrict(this, x => x.SynthesisArrow.Visibility)
+                    .DisposeWith(dispose);
+                var newMutagenVis = Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.MutagenVersion),
+                        this.WhenAnyValue(x => x.ViewModel!.NewestMutagenVersion)
+                            .Switch(),
+                        (cur, next) => string.Equals(cur, next) ? Visibility.Collapsed : Visibility.Visible)
+                    .Replay(1)
+                    .RefCount();
+                newMutagenVis.BindToStrict(this, x => x.LatestMutagenVersionText.Visibility)
+                    .DisposeWith(dispose);
+                newMutagenVis.BindToStrict(this, x => x.MutagenArrow.Visibility)
                     .DisposeWith(dispose);
             });
         }

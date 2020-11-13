@@ -205,7 +205,6 @@ namespace Mutagen.Bethesda.Synthesis
         {
             try
             {
-                System.Console.WriteLine($"Patcher Git Sha: {Assembly.GetExecutingAssembly().GetGitSha() ?? "None"}");
                 System.Console.WriteLine("Prepping state.");
                 WarmupAll.Init();
                 using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
@@ -244,7 +243,6 @@ namespace Mutagen.Bethesda.Synthesis
         {
             try
             {
-                System.Console.WriteLine($"Patcher Git Sha: {Assembly.GetEntryAssembly().GetGitSha() ?? "None"}");
                 System.Console.WriteLine("Prepping state.");
                 WarmupAll.Init();
                 using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
