@@ -72,6 +72,8 @@
         <TextBox Grid.Row="7"
             x:Name="DescriptionBox"
             mahapps:TextBoxHelper.Watermark="Description"
+            AcceptsReturn="True"
+            TextWrapping="Wrap"
             Background="{StaticResource AbyssPurpleBrush}" />
         <Grid Grid.Row="8">
             <Grid.ColumnDefinitions>
