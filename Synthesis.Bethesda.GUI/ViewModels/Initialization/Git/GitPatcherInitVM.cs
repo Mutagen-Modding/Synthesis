@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows.Input;
 
 namespace Synthesis.Bethesda.GUI
@@ -70,7 +71,9 @@ namespace Synthesis.Bethesda.GUI
                         gitHubClient.Credentials = new Credentials("9b58542a2ca303d7ced129cc404191f8eea519f7");
                         var content = await gitHubClient.Repository.Content.GetAllContents("Noggog", "Synthesis.Registry", Constants.AutomaticListingFileName);
                         if (content.Count != 1) return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
-                        var customization = JsonSerializer.Deserialize<MutagenPatchersListing>(content[0].Content);
+                        var settings = new JsonSerializerOptions();
+                        settings.Converters.Add(new JsonStringEnumConverter());
+                        var customization = JsonSerializer.Deserialize<MutagenPatchersListing>(content[0].Content, settings);
                         return customization.Repositories
                             .NotNull()
                             .SelectMany(repo =>
