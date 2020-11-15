@@ -213,9 +213,15 @@ namespace Synthesis.Bethesda.GUI
         public override void Dispose()
         {
             base.Dispose();
-            using var process = ProcessWrapper.Start(
-                new ProcessStartInfo("dotnet", $"build-server shutdown"));
-            process.Start().Wait();
+            Task.Run(async () =>
+            {
+                using var process = ProcessWrapper.Start(
+                    new ProcessStartInfo("dotnet", $"build-server shutdown"));
+                using var output = process.Output.Subscribe(x => Log.Logger.Information(x));
+                using var error = process.Error.Subscribe(x => Log.Logger.Information(x));
+                var ret = await process.Start();
+                return ret;
+            }).Wait();
         }
     }
 }
