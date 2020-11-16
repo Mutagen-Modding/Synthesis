@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.UnitTests
         public static readonly ModKey RandomModKey = new ModKey("Random", ModType.Plugin);
 
         public static string TypicalOutputFile(TempFolder tempFolder) => Path.Combine(tempFolder.Dir.Path, TypicalOutputFilename);
-        public static IEnumerable<LoadOrderListing> TypicalLoadOrder(GameRelease release, DirectoryPath dir) => LoadOrder.FromPath(PathToLoadOrderFile, release, dir);
+        public static IEnumerable<LoadOrderListing> TypicalLoadOrder(GameRelease release, DirectoryPath dir) => PluginListings.ListingsFromPath(PathToLoadOrderFile, release, dir);
 
         public static TempFolder SetupDataFolder(TempFolder tempFolder, GameRelease release, string? loadOrderPath = null)
         {
@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.UnitTests
             }
             File.Copy(testPath, Path.Combine(dataFolder.Dir.Path, TestFileName));
             File.Copy(overridePath, Path.Combine(dataFolder.Dir.Path, OverrideFileName));
-            var loadOrderListing = LoadOrder.FromPath(loadOrderPath, release, dataFolder.Dir);
+            var loadOrderListing = PluginListings.ListingsFromPath(loadOrderPath, release, dataFolder.Dir);
             LoadOrder.AlignTimestamps(loadOrderListing.OnlyEnabled().Select(m => m.ModKey), dataFolder.Dir.Path);
             return dataFolder;
         }
