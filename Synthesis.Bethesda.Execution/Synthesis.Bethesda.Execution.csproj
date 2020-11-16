@@ -31,17 +31,17 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
-    <PackageReference Include="Microsoft.Build" Version="16.7.0" />
-    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="16.7.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.7.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.7.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="3.7.0" />
-    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.20.0" />
+    <PackageReference Include="Microsoft.Build" Version="16.8.0" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="16.8.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.8.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.8.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="3.8.0" />
+    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.21.0" />
     <PackageReference Include="NuGetizer" Version="0.4.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Noggog.CSharpExt" Version="1.6.4" />
+    <PackageReference Include="Noggog.CSharpExt" Version="1.6.5" />
   </ItemGroup>
 
   <ItemGroup>

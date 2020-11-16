@@ -82,7 +82,7 @@ namespace Synthesis.Bethesda.Execution
                 {
                     try
                     {
-                        LoadOrder.Write(
+                        PluginListings.Write(
                             loadOrderPath,
                             release,
                             loadOrderList);

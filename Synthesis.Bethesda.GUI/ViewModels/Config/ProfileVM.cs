@@ -99,7 +99,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         return (Results: Observable.Empty<IChangeSet<LoadOrderListing>>(), State: Observable.Return<ErrorResponse>(ErrorResponse.Fail("Data folder not set")));
                     }
-                    var path = Mutagen.Bethesda.LoadOrder.GetPluginsPath(x.release);
+                    var path = Mutagen.Bethesda.PluginListings.GetListingsPath(x.release);
                     return (Results: Mutagen.Bethesda.LoadOrder.GetLiveLoadOrder(x.release, path, x.dataFolder.Value, out var errors), State: errors);
                 })
                 .Replay(1)
