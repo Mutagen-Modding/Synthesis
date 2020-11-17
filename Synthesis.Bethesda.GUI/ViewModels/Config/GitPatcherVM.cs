@@ -100,6 +100,9 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _UsedSynthesisVersion;
         public (string? MatchVersion, string? SelectedVersion) UsedSynthesisVersion => _UsedSynthesisVersion.Value;
 
+        private readonly ObservableAsPropertyHelper<bool> _AttemptedCheckout;
+        public bool AttemptedCheckout => _AttemptedCheckout.Value;
+
         public GitPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
         {
@@ -385,6 +388,15 @@ namespace Synthesis.Bethesda.GUI
                     })
                 .Replay(1)
                 .RefCount();
+
+            _AttemptedCheckout = checkoutInput
+                .Select(input =>
+                {
+                    return input.runnerState.RunnableState.Succeeded
+                        && input.proj.Succeeded
+                        && input.libraryNugets.Succeeded;
+                })
+                .ToGuiProperty(this, nameof(AttemptedCheckout));
 
             _RunnableData = runnableState
                 .Select(x => x.RunnableState.Succeeded ? x.Item : default(RunnerRepoInfo?))

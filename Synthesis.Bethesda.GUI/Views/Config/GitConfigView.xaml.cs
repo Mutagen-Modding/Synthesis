@@ -78,9 +78,10 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.BindStrict(this.ViewModel, vm => vm.TargetCommit, view => view.CommitShaBox.Text)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.AttemptedCheckout),
                         this.WhenAnyValue(x => x.ViewModel!.RunnableData),
                         this.WhenAnyValue(x => x.ViewModel!.PatcherVersioning),
-                        (data, patcher) => data == null && patcher == PatcherVersioningEnum.Commit)
+                        (attempted, data, patcher) => attempted && data == null && patcher == PatcherVersioningEnum.Commit)
                     .Subscribe(x => this.CommitShaBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.TargetBranchName, view => view.BranchNameBox.Text)
@@ -92,9 +93,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.BranchNameBox.IsEnabled)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.AttemptedCheckout),
                         this.WhenAnyValue(x => x.ViewModel!.RunnableData),
                         this.WhenAnyValue(x => x.ViewModel!.PatcherVersioning),
-                        (data, patcher) => data == null && patcher == PatcherVersioningEnum.Branch)
+                        (attempted, data, patcher) => attempted && data == null && patcher == PatcherVersioningEnum.Branch)
                     .Subscribe(x => this.BranchNameBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.RunnableData)
