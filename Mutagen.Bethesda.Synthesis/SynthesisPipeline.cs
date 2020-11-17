@@ -294,7 +294,9 @@ namespace Mutagen.Bethesda.Synthesis
             UserPreferences? userPrefs = null,
             bool throwOnMissingMods = true)
         {
-            var loadOrderListing = LoadOrder.FromPath(loadOrderFilePath, release, dataFolderPath);
+            // This call will impliticly get Creation Club entries, too, as the Synthesis systems should be merging
+            // things into a singular load order file for consumption here
+            var loadOrderListing = PluginListings.ListingsFromPath(loadOrderFilePath, release, dataFolderPath);
             if (userPrefs?.InclusionMods != null)
             {
                 var inclusions = userPrefs.InclusionMods.ToHashSet();
@@ -313,7 +315,7 @@ namespace Mutagen.Bethesda.Synthesis
         public static RunSynthesisMutagenPatcher GetDefaultRun(UserPreferences prefs, RunDefaultPatcher def)
         {
             var dataPath = Path.Combine(def.TargetRelease.ToWjGame().MetaData().GameLocation().ToString(), "Data");
-            if (!LoadOrder.TryGetPluginsFile(def.TargetRelease, out var path))
+            if (!PluginListings.TryGetListingsFile(def.TargetRelease, out var path))
             {
                 throw new FileNotFoundException("Could not locate load order automatically.");
             }
