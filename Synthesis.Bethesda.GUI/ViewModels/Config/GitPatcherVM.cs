@@ -316,6 +316,20 @@ namespace Synthesis.Bethesda.GUI
                         NugetVersioningEnum.Manual => (nuget.Synthesis.ManualVersion, nuget.Synthesis.Versioning),
                         _ => throw new NotImplementedException(),
                     };
+                    if (muta.Versioning == NugetVersioningEnum.Manual)
+                    {
+                        if (muta.Item1.IsNullOrWhitespace())
+                        {
+                            return GetResponse<NugetVersioningTarget>.Fail("Manual Mutagen versioning had no input");
+                        }
+                    }
+                    if (synth.Versioning == NugetVersioningEnum.Manual)
+                    {
+                        if (synth.Item1.IsNullOrWhitespace())
+                        {
+                            return GetResponse<NugetVersioningTarget>.Fail("Manual Synthesis versioning had no input");
+                        }
+                    }
                     return GetResponse<NugetVersioningTarget>.Succeed(new NugetVersioningTarget(muta.Item1, muta.Versioning, synth.Item1, synth.Versioning));
                 })
                 .Replay(1)

@@ -123,6 +123,14 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.ManualSynthesisVersion, view => view.SynthesisManualVersionBox.Text)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.ManualSynthesisVersion)
+                    .Select(x => x.IsNullOrWhitespace())
+                    .Subscribe(x => this.SynthesisManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.ManualMutagenVersion)
+                    .Select(x => x.IsNullOrWhitespace())
+                    .Subscribe(x => this.MutagenManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
+                    .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning)
                     .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Hidden)
                     .BindToStrict(this, x => x.SynthesisManualVersionBox.Visibility)
