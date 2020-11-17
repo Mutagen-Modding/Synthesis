@@ -37,10 +37,6 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.CloningRing.Visibility)
                     .DisposeWith(disposable);
-                processing
-                    .Select(x => x ?  Visibility.Collapsed : Visibility.Visible)
-                    .BindToStrict(this, x => x.OpenGitButton.Visibility)
-                    .DisposeWith(disposable);
 
                 // Bind project picker
                 this.BindStrict(this.ViewModel, vm => vm.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
