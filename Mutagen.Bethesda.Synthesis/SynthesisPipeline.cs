@@ -294,6 +294,8 @@ namespace Mutagen.Bethesda.Synthesis
             UserPreferences? userPrefs = null,
             bool throwOnMissingMods = true)
         {
+            // This call will impliticly get Creation Club entries, too, as the Synthesis systems should be merging
+            // things into a singular load order file for consumption here
             var loadOrderListing = PluginListings.ListingsFromPath(loadOrderFilePath, release, dataFolderPath);
             if (userPrefs?.InclusionMods != null)
             {
