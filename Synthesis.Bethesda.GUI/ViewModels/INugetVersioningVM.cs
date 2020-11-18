@@ -1,3 +1,4 @@
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Synthesis.Bethesda.GUI
         string ManualMutagenVersion { get; set; }
         NugetVersioningEnum SynthesisVersioning { get; set; }
         string ManualSynthesisVersion { get; set; }
-        (string? MatchVersion, string? SelectedVersion) UsedMutagenVersion { get; }
-        (string? MatchVersion, string? SelectedVersion) UsedSynthesisVersion { get; }
+        (string? MatchVersion, string? SelectedVersion) MutagenVersionDiff { get; }
+        (string? MatchVersion, string? SelectedVersion) SynthesisVersionDiff { get; }
     }
 }

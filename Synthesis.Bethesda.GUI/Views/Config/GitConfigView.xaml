@@ -95,20 +95,19 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="65" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <local:NugetVersioningView Grid.Column="0" Grid.ColumnSpan="2" />
-                <TextBlock Grid.Row="1"
+                <TextBlock Grid.Row="0"
                     Margin="0,8,0,0"
                     FontSize="14"
                     FontWeight="Bold"
                     Text="Patcher Version" />
-                <TabControl Grid.Row="2"
+                <TabControl Grid.Row="1"
                     x:Name="PatcherVersioningTab"
                     Margin="0,2,0,0"
                     mahapps:HeaderedControlHelper.HeaderFontSize="16"
@@ -177,10 +176,11 @@
                             Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
                     </TabItem>
                 </TabControl>
-                <TextBlock Grid.Row="1" Grid.RowSpan="2" Grid.Column="1"
+                <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
                     x:Name="PatcherVersionDateText"
                     Margin="0,10,0,0"
                     HorizontalAlignment="Right" />
+                <local:NugetVersioningView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" />
             </Grid>
         </ScrollViewer>
     </Grid>

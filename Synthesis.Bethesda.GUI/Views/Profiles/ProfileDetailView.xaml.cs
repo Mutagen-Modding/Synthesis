@@ -55,6 +55,10 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.OpenInternalProfileFolderCommand)
                     .BindToStrict(this, x => x.ProfileInternalFilesButton.Command)
                     .DisposeWith(dispose);
+
+                this.WhenAnyValue(x => x.ViewModel!.Profile)
+                    .BindToStrict(this, x => x.NugetVersioning.DataContext)
+                    .DisposeWith(dispose);
             });
         }
     }

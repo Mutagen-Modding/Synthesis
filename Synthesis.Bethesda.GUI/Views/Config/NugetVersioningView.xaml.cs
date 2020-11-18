@@ -45,7 +45,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Hidden)
                     .BindToStrict(this, x => x.SynthesisManualVersionBox.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.UsedMutagenVersion)
+                this.WhenAnyValue(x => x.ViewModel!.MutagenVersionDiff)
                     .Select(x =>
                     {
                         if (object.Equals(x.MatchVersion, x.SelectedVersion)) return x.MatchVersion;
@@ -54,7 +54,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     })
                     .BindToStrict(this, x => x.MutagenVersionText.Text)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.UsedSynthesisVersion)
+                this.WhenAnyValue(x => x.ViewModel!.SynthesisVersionDiff)
                     .Select(x =>
                     {
                         if (object.Equals(x.MatchVersion, x.SelectedVersion)) return x.MatchVersion;

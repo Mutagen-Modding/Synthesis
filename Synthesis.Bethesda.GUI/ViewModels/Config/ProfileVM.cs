@@ -5,21 +5,18 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
 using System.Windows.Input;
 using Wabbajack.Common;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class ProfileVM : ViewModel
+    public class ProfileVM : ViewModel, INugetVersioningVM
     {
         public ConfigurationVM Config { get; }
         public GameRelease Release { get; }
@@ -53,6 +50,26 @@ namespace Synthesis.Bethesda.GUI
 
         private readonly ObservableAsPropertyHelper<bool> _IsActive;
         public bool IsActive => _IsActive.Value;
+
+        [Reactive]
+        public NugetVersioningEnum MutagenVersioning { get; set; }
+
+        [Reactive]
+        public string ManualMutagenVersion { get; set; } = string.Empty;
+
+        [Reactive]
+        public NugetVersioningEnum SynthesisVersioning { get; set; }
+
+        [Reactive]
+        public string ManualSynthesisVersion { get; set; } = string.Empty;
+
+        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _MutagenVersionDiff;
+        public (string? MatchVersion, string? SelectedVersion) MutagenVersionDiff => _MutagenVersionDiff.Value;
+
+        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _SynthesisVersionDiff;
+        public (string? MatchVersion, string? SelectedVersion) SynthesisVersionDiff => _SynthesisVersionDiff.Value;
+
+        public IObservable<SynthesisNugetVersioning> UsedNugets { get; }
 
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
@@ -167,12 +184,49 @@ namespace Synthesis.Bethesda.GUI
                     }
                 },
                 canExecute: this.WhenAnyValue(x => x.LargeOverallError.Value).Select(x => x != null));
+
+            UsedNugets = Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.MutagenVersioning),
+                    this.WhenAnyValue(x => x.ManualMutagenVersion),
+                    parent.MainVM.NewestMutagenVersion,
+                    this.WhenAnyValue(x => x.SynthesisVersioning),
+                    this.WhenAnyValue(x => x.ManualSynthesisVersion),
+                    parent.MainVM.NewestSynthesisVersion,
+                    (mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
+                    {
+                        return new SynthesisNugetVersioning(
+                            new NugetVersioning(mutaVersioning, mutaManual, newestMuta),
+                            new NugetVersioning(synthVersioning, synthManual, newestSynth));
+                    })
+                .Replay(1)
+                .RefCount();
+
+            var nugetTarget = UsedNugets
+                .Select(nuget => nuget.TryGetTarget())
+                .Replay(1)
+                .RefCount();
+
+            _MutagenVersionDiff = Observable.CombineLatest(
+                    parent.MainVM.NewestMutagenVersion,
+                    nugetTarget.Select(x => x.Value?.MutagenVersion),
+                    (matchVersion, selVersion) => (matchVersion, selVersion))
+                .ToGuiProperty(this, nameof(MutagenVersionDiff));
+
+            _SynthesisVersionDiff = Observable.CombineLatest(
+                    parent.MainVM.NewestMutagenVersion,
+                    nugetTarget.Select(x => x.Value?.SynthesisVersion),
+                    (matchVersion, selVersion) => (matchVersion, selVersion))
+                .ToGuiProperty(this, nameof(SynthesisVersionDiff));
         }
 
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)
             : this(parent, settings.TargetRelease, id: settings.ID)
         {
             Nickname = settings.Nickname;
+            MutagenVersioning = settings.MutagenVersioning;
+            ManualMutagenVersion = settings.ManualMutagenVersion;
+            SynthesisVersioning = settings.SynthesisVersioning;
+            ManualSynthesisVersion = settings.ManualSynthesisVersion;
             Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
             {
                 return p switch
@@ -194,6 +248,10 @@ namespace Synthesis.Bethesda.GUI
                 ID = ID,
                 Nickname = Nickname,
                 TargetRelease = Release,
+                ManualMutagenVersion = ManualMutagenVersion,
+                ManualSynthesisVersion = ManualSynthesisVersion,
+                MutagenVersioning = MutagenVersioning,
+                SynthesisVersioning = SynthesisVersioning
             };
         }
 

@@ -94,11 +94,11 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string ManualSynthesisVersion { get; set; } = string.Empty;
 
-        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _UsedMutagenVersion;
-        public (string? MatchVersion, string? SelectedVersion) UsedMutagenVersion => _UsedMutagenVersion.Value;
+        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _MutagenVersionDiff;
+        public (string? MatchVersion, string? SelectedVersion) MutagenVersionDiff => _MutagenVersionDiff.Value;
 
-        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _UsedSynthesisVersion;
-        public (string? MatchVersion, string? SelectedVersion) UsedSynthesisVersion => _UsedSynthesisVersion.Value;
+        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _SynthesisVersionDiff;
+        public (string? MatchVersion, string? SelectedVersion) SynthesisVersionDiff => _SynthesisVersionDiff.Value;
 
         private readonly ObservableAsPropertyHelper<bool> _AttemptedCheckout;
         public bool AttemptedCheckout => _AttemptedCheckout.Value;
@@ -280,7 +280,7 @@ namespace Synthesis.Bethesda.GUI
                 this.WhenAnyValue(x => x.TargetBranchName),
                 (versioning, tag, commit, branch) => GitPatcherVersioning.Factory(versioning, tag, commit, branch));
 
-            var nugetVersioning = Observable.CombineLatest(
+            var nugetTarget = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.MutagenVersioning),
                     this.WhenAnyValue(x => x.ManualMutagenVersion),
                     parent.Config.MainVM.NewestMutagenVersion,
@@ -292,49 +292,8 @@ namespace Synthesis.Bethesda.GUI
                         return new SynthesisNugetVersioning(
                             new NugetVersioning(mutaVersioning, mutaManual, newestMuta),
                             new NugetVersioning(synthVersioning, synthManual, newestSynth));
-                    });
-
-            var libraryNugets = nugetVersioning
-                .Select(nuget =>
-                {
-                    if (nuget.Mutagen.Versioning == NugetVersioningEnum.Latest && nuget.Mutagen.NewestVersion == null)
-                    {
-                        return GetResponse<NugetVersioningTarget>.Fail("Latest Mutagen version is desired, but latest version is not known.");
-                    }
-                    if (nuget.Synthesis.Versioning == NugetVersioningEnum.Latest && nuget.Synthesis.NewestVersion == null)
-                    {
-                        return GetResponse<NugetVersioningTarget>.Fail("Latest Synthesis version is desired, but latest version is not known.");
-                    }
-                    var muta = nuget.Mutagen.Versioning switch
-                    {
-                        NugetVersioningEnum.Latest => (nuget.Mutagen.NewestVersion, nuget.Mutagen.Versioning),
-                        NugetVersioningEnum.Match => (null, nuget.Mutagen.Versioning),
-                        NugetVersioningEnum.Manual => (nuget.Mutagen.ManualVersion, nuget.Mutagen.Versioning),
-                        _ => throw new NotImplementedException(),
-                    };
-                    var synth = nuget.Synthesis.Versioning switch
-                    {
-                        NugetVersioningEnum.Latest => (nuget.Synthesis.NewestVersion, nuget.Synthesis.Versioning),
-                        NugetVersioningEnum.Match => (null, nuget.Synthesis.Versioning),
-                        NugetVersioningEnum.Manual => (nuget.Synthesis.ManualVersion, nuget.Synthesis.Versioning),
-                        _ => throw new NotImplementedException(),
-                    };
-                    if (muta.Versioning == NugetVersioningEnum.Manual)
-                    {
-                        if (muta.Item1.IsNullOrWhitespace())
-                        {
-                            return GetResponse<NugetVersioningTarget>.Fail("Manual Mutagen versioning had no input");
-                        }
-                    }
-                    if (synth.Versioning == NugetVersioningEnum.Manual)
-                    {
-                        if (synth.Item1.IsNullOrWhitespace())
-                        {
-                            return GetResponse<NugetVersioningTarget>.Fail("Manual Synthesis versioning had no input");
-                        }
-                    }
-                    return GetResponse<NugetVersioningTarget>.Succeed(new NugetVersioningTarget(muta.Item1, muta.Versioning, synth.Item1, synth.Versioning));
-                })
+                    })
+                .Select(nuget => nuget.TryGetTarget())
                 .Replay(1)
                 .RefCount();
 
@@ -344,7 +303,7 @@ namespace Synthesis.Bethesda.GUI
                     SelectedProjectPath.PathState()
                         .Select(x => x.Succeeded ? x : GetResponse<string>.Fail("No patcher project selected.")),
                     patcherVersioning,
-                    libraryNugets,
+                    nugetTarget,
                     (runnerState, proj, patcherVersioning, libraryNugets) =>
                     (runnerState, proj, patcherVersioning, libraryNugets))
                 .Replay(1)
@@ -402,19 +361,19 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x.RunnableState.Succeeded ? x.Item : default(RunnerRepoInfo?))
                 .ToGuiProperty(this, nameof(RunnableData));
 
-            _UsedMutagenVersion = Observable.CombineLatest(
+            _MutagenVersionDiff = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.RunnableData)
                         .Select(x => x?.ListedMutagenVersion),
-                    libraryNugets.Select(x => x.Value?.MutagenVersion),
+                    nugetTarget.Select(x => x.Value?.MutagenVersion),
                     (matchVersion, selVersion) => (matchVersion, selVersion))
-                .ToGuiProperty(this, nameof(UsedMutagenVersion));
+                .ToGuiProperty(this, nameof(MutagenVersionDiff));
 
-            _UsedSynthesisVersion = Observable.CombineLatest(
+            _SynthesisVersionDiff = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.RunnableData)
                         .Select(x => x?.ListedSynthesisVersion),
-                    libraryNugets.Select(x => x.Value?.SynthesisVersion),
+                    nugetTarget.Select(x => x.Value?.SynthesisVersion),
                     (matchVersion, selVersion) => (matchVersion, selVersion))
-                .ToGuiProperty(this, nameof(UsedSynthesisVersion));
+                .ToGuiProperty(this, nameof(SynthesisVersionDiff));
 
             _State = Observable.CombineLatest(
                     driverRepoInfo
