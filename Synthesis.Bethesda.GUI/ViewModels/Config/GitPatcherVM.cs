@@ -20,7 +20,7 @@ using Synthesis.Bethesda.Execution.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class GitPatcherVM : PatcherVM
+    public class GitPatcherVM : PatcherVM, INugetVersioningVM
     {
         [Reactive]
         public string RemoteRepoPath { get; set; } = string.Empty;

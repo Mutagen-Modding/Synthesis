@@ -1,0 +1,95 @@
+<local:NugetVersioningViewBase
+    x:Class="Synthesis.Bethesda.GUI.Views.NugetVersioningView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
+    xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:noggog="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0"
+            Margin="0,4,0,0"
+            FontSize="14"
+            FontWeight="Bold"
+            Text="Mutagen Version" />
+        <Grid x:Name="MutagenVersioningGrid" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TabControl Grid.Column="0"
+                x:Name="MutagenVersioningTab"
+                Margin="0,2,0,0"
+                mahapps:HeaderedControlHelper.HeaderFontSize="16"
+                mahapps:HeaderedControlHelper.HeaderForeground="AliceBlue"
+                Background="Transparent">
+                <TabItem Header="Latest" ToolTip="Run with the latest stable version of Mutagen" />
+                <TabItem Header="Match" ToolTip="Run with the version of Mutagen explicitly listed in the patcher" />
+                <TabItem Header="Manual" ToolTip="Run with a manually specified version of Mutagen" />
+            </TabControl>
+            <TextBox Grid.Column="1"
+                x:Name="MutagenManualVersionBox"
+                MinWidth="65"
+                Margin="0,3"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                mahapps:TextBoxHelper.Watermark="0.0.0.0"
+                noggog:ControlsHelper.ErrorTooltip="Need to specify a version"
+                Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
+        </Grid>
+        <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+            x:Name="MutagenVersionText"
+            Margin="0,10,0,0"
+            HorizontalAlignment="Right" />
+        <TextBlock Grid.Row="2"
+            Margin="0,4,0,0"
+            FontSize="14"
+            FontWeight="Bold"
+            Text="Synthesis Version" />
+        <Grid x:Name="SynthesisVersioningGrid" Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TabControl Grid.Row="5"
+                x:Name="SynthesisVersioningTab"
+                Margin="0,2,0,0"
+                mahapps:HeaderedControlHelper.HeaderFontSize="16"
+                mahapps:HeaderedControlHelper.HeaderForeground="AliceBlue"
+                Background="Transparent">
+                <TabItem Header="Latest" ToolTip="Run with the latest stable version of Synthesis" />
+                <TabItem Header="Match" ToolTip="Run with the version of Synthesis explicitly listed in the patcher" />
+                <TabItem Header="Manual" ToolTip="Run with a manually specified version of Synthesis" />
+            </TabControl>
+            <TextBox Grid.Column="1"
+                x:Name="SynthesisManualVersionBox"
+                MinWidth="65"
+                Margin="0,3"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                mahapps:TextBoxHelper.Watermark="0.0.0.0"
+                noggog:ControlsHelper.ErrorTooltip="Need to specify a version"
+                Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
+        </Grid>
+        <TextBlock Grid.Row="2" Grid.RowSpan="2" Grid.Column="1"
+            x:Name="SynthesisVersionText"
+            Margin="0,10,0,0"
+            HorizontalAlignment="Right" />
+    </Grid>
+</local:NugetVersioningViewBase>
