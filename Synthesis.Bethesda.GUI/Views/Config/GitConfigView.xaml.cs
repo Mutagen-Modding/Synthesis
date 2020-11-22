@@ -37,10 +37,6 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.CloningRing.Visibility)
                     .DisposeWith(disposable);
-                processing
-                    .Select(x => x ?  Visibility.Collapsed : Visibility.Visible)
-                    .BindToStrict(this, x => x.OpenGitButton.Visibility)
-                    .DisposeWith(disposable);
 
                 // Bind project picker
                 this.BindStrict(this.ViewModel, vm => vm.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
@@ -82,9 +78,10 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.BindStrict(this.ViewModel, vm => vm.TargetCommit, view => view.CommitShaBox.Text)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.AttemptedCheckout),
                         this.WhenAnyValue(x => x.ViewModel!.RunnableData),
                         this.WhenAnyValue(x => x.ViewModel!.PatcherVersioning),
-                        (data, patcher) => data == null && patcher == PatcherVersioningEnum.Commit)
+                        (attempted, data, patcher) => attempted && data == null && patcher == PatcherVersioningEnum.Commit)
                     .Subscribe(x => this.CommitShaBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.TargetBranchName, view => view.BranchNameBox.Text)
@@ -96,9 +93,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.BranchNameBox.IsEnabled)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.AttemptedCheckout),
                         this.WhenAnyValue(x => x.ViewModel!.RunnableData),
                         this.WhenAnyValue(x => x.ViewModel!.PatcherVersioning),
-                        (data, patcher) => data == null && patcher == PatcherVersioningEnum.Branch)
+                        (attempted, data, patcher) => attempted && data == null && patcher == PatcherVersioningEnum.Branch)
                     .Subscribe(x => this.BranchNameBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.RunnableData)
@@ -122,6 +120,14 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.BindStrict(this.ViewModel, vm => vm.SynthesisVersioning, view => view.SynthesisVersioningTab.SelectedIndex, (e) => (int)e, i => (NugetVersioningEnum)i)
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.ManualSynthesisVersion, view => view.SynthesisManualVersionBox.Text)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.ManualSynthesisVersion)
+                    .Select(x => x.IsNullOrWhitespace())
+                    .Subscribe(x => this.SynthesisManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.ManualMutagenVersion)
+                    .Select(x => x.IsNullOrWhitespace())
+                    .Subscribe(x => this.MutagenManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning)
                     .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Hidden)

@@ -113,7 +113,7 @@ namespace Synthesis.Bethesda.GUI
 
             _ProjectNameWatermark = this.WhenAnyValue(x => x.SolutionName)
                 .Select(x => string.IsNullOrWhiteSpace(x) ? "The name of the patcher" : SolutionNameProcessor(x))
-                .ToGuiProperty<string>(this, nameof(ProjectNameWatermark));
+                .ToGuiProperty<string>(this, nameof(ProjectNameWatermark), string.Empty);
         }
 
         private string SolutionNameProcessor(string slnName) => slnName.Replace(" ", string.Empty);

@@ -100,6 +100,9 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _UsedSynthesisVersion;
         public (string? MatchVersion, string? SelectedVersion) UsedSynthesisVersion => _UsedSynthesisVersion.Value;
 
+        private readonly ObservableAsPropertyHelper<bool> _AttemptedCheckout;
+        public bool AttemptedCheckout => _AttemptedCheckout.Value;
+
         public GitPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
         {
@@ -133,7 +136,7 @@ namespace Synthesis.Bethesda.GUI
                         return "Mutagen Git Patcher";
                     }
                 })
-                .ToGuiProperty<string>(this, nameof(DisplayName));
+                .ToGuiProperty<string>(this, nameof(DisplayName), string.Empty);
 
             // Check to see if remote path points to a reachable git repository
             var remoteRepoPath = GetRepoPathValidity(this.WhenAnyValue(x => x.RemoteRepoPath))
@@ -316,6 +319,20 @@ namespace Synthesis.Bethesda.GUI
                         NugetVersioningEnum.Manual => (nuget.Synthesis.ManualVersion, nuget.Synthesis.Versioning),
                         _ => throw new NotImplementedException(),
                     };
+                    if (muta.Versioning == NugetVersioningEnum.Manual)
+                    {
+                        if (muta.Item1.IsNullOrWhitespace())
+                        {
+                            return GetResponse<NugetVersioningTarget>.Fail("Manual Mutagen versioning had no input");
+                        }
+                    }
+                    if (synth.Versioning == NugetVersioningEnum.Manual)
+                    {
+                        if (synth.Item1.IsNullOrWhitespace())
+                        {
+                            return GetResponse<NugetVersioningTarget>.Fail("Manual Synthesis versioning had no input");
+                        }
+                    }
                     return GetResponse<NugetVersioningTarget>.Succeed(new NugetVersioningTarget(muta.Item1, muta.Versioning, synth.Item1, synth.Versioning));
                 })
                 .Replay(1)
@@ -372,9 +389,18 @@ namespace Synthesis.Bethesda.GUI
                 .Replay(1)
                 .RefCount();
 
+            _AttemptedCheckout = checkoutInput
+                .Select(input =>
+                {
+                    return input.runnerState.RunnableState.Succeeded
+                        && input.proj.Succeeded
+                        && input.libraryNugets.Succeeded;
+                })
+                .ToGuiProperty(this, nameof(AttemptedCheckout));
+
             _RunnableData = runnableState
                 .Select(x => x.RunnableState.Succeeded ? x.Item : default(RunnerRepoInfo?))
-                .ToGuiProperty(this, nameof(RunnableData));
+                .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?));
 
             _UsedMutagenVersion = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.RunnableData)

@@ -92,7 +92,7 @@ namespace Synthesis.Bethesda.GUI
                     x => x.SelectedPatcher,
                     x => x.NewPatcher,
                     (selected, newConfig) => (newConfig as object) ?? selected)
-                .ToGuiProperty(this, nameof(DisplayedObject));
+                .ToGuiProperty(this, nameof(DisplayedObject), default);
 
             RunPatchers = NoggogCommand.CreateFromJob(
                 extraInput: this.WhenAnyValue(x => x.SelectedProfile),
@@ -114,7 +114,7 @@ namespace Synthesis.Bethesda.GUI
                 .DisposeWith(this);
 
             _CurrentRun = createdRuns
-                .ToGuiProperty(this, nameof(CurrentRun));
+                .ToGuiProperty(this, nameof(CurrentRun), default);
 
             this.WhenAnyValue(x => x.CurrentRun)
                 .NotNull()

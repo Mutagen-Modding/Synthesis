@@ -15,6 +15,8 @@ using System.Reactive;
 using System.IO;
 using Synthesis.Bethesda.Execution;
 using Mutagen.Bethesda.Synthesis;
+using Noggog.Utility;
+using System.Diagnostics;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -206,6 +208,20 @@ namespace Synthesis.Bethesda.GUI
                 Log.Logger.Error(ex, "Error querying for latest nuget versions");
                 return (null, null);
             }
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            Task.Run(async () =>
+            {
+                using var process = ProcessWrapper.Start(
+                    new ProcessStartInfo("dotnet", $"build-server shutdown"));
+                using var output = process.Output.Subscribe(x => Log.Logger.Information(x));
+                using var error = process.Error.Subscribe(x => Log.Logger.Information(x));
+                var ret = await process.Start();
+                return ret;
+            }).Wait();
         }
     }
 }
