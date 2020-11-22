@@ -136,7 +136,7 @@ namespace Synthesis.Bethesda.GUI
                         return "Mutagen Git Patcher";
                     }
                 })
-                .ToGuiProperty<string>(this, nameof(DisplayName));
+                .ToGuiProperty<string>(this, nameof(DisplayName), string.Empty);
 
             // Check to see if remote path points to a reachable git repository
             var remoteRepoPath = GetRepoPathValidity(this.WhenAnyValue(x => x.RemoteRepoPath))
@@ -400,7 +400,7 @@ namespace Synthesis.Bethesda.GUI
 
             _RunnableData = runnableState
                 .Select(x => x.RunnableState.Succeeded ? x.Item : default(RunnerRepoInfo?))
-                .ToGuiProperty(this, nameof(RunnableData));
+                .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?));
 
             _UsedMutagenVersion = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.RunnableData)

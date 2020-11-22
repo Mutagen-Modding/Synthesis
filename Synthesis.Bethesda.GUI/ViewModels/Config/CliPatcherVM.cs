@@ -50,7 +50,7 @@ namespace Synthesis.Bethesda.GUI
                         return x.Nickname;
                     }
                 })
-                .ToGuiProperty<string>(this, nameof(DisplayName));
+                .ToGuiProperty<string>(this, nameof(DisplayName), string.Empty);
 
             _State = this.WhenAnyValue(x => x.PathToExecutable.ErrorState)
                 .Select(e =>
