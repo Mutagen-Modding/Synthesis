@@ -82,10 +82,11 @@ namespace Synthesis.Bethesda.Execution
                 {
                     try
                     {
-                        PluginListings.Write(
+                        LoadOrder.Write(
                             loadOrderPath,
                             release,
-                            loadOrderList);
+                            loadOrderList,
+                            removeImplicitMods: false);
                     }
                     catch (Exception ex)
                     {
