@@ -86,7 +86,7 @@ namespace Synthesis.Bethesda.Execution
                             loadOrderPath,
                             release,
                             loadOrderList,
-                            removeImplicitMods: false);
+                            removeImplicitMods: true);
                     }
                     catch (Exception ex)
                     {

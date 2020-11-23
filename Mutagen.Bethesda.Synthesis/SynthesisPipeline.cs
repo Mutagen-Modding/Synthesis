@@ -296,7 +296,11 @@ namespace Mutagen.Bethesda.Synthesis
         {
             // This call will impliticly get Creation Club entries, too, as the Synthesis systems should be merging
             // things into a singular load order file for consumption here
-            var loadOrderListing = PluginListings.ListingsFromPath(loadOrderFilePath, release, dataFolderPath);
+            var loadOrderListing =
+                ImplicitListings.GetListings(release, dataFolderPath)
+                    .Select(x => new LoadOrderListing(x, enabled: true))
+                .Concat(PluginListings.RawListingsFromPath(loadOrderFilePath, release))
+                .Distinct(x => x.ModKey);
             if (userPrefs?.InclusionMods != null)
             {
                 var inclusions = userPrefs.InclusionMods.ToHashSet();
