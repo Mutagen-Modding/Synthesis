@@ -399,22 +399,23 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     synthesisVersion: nugetVersioning.SynthesisVersioning == NugetVersioningEnum.Match ? null : nugetVersioning.SynthesisVersion,
                     listedSynthesisVersion: out var listedSynthesisVersion);
 
+                var runInfo = new RunnerRepoInfo(
+                    slnPath: slnPath,
+                    projPath: projPath,
+                    target: target,
+                    commitMsg: commit.Message,
+                    commitDate: commit.Author.When.LocalDateTime,
+                    listedSynthesis: listedSynthesisVersion,
+                    listedMutagen: listedMutagenVersion);
+
                 // Compile to help prep
                 if (compile)
                 {
                     var compileResp = await SolutionPatcherRun.CompileWithDotnet(projPath, cancel);
-                    if (compileResp.Failed) return compileResp.BubbleFailure<RunnerRepoInfo>();
+                    if (compileResp.Failed) return compileResp.BubbleResult(runInfo);
                 }
 
-                return GetResponse<RunnerRepoInfo>.Succeed(
-                    new RunnerRepoInfo(
-                        slnPath: slnPath,
-                        projPath: projPath,
-                        target: target,
-                        commitMsg: commit.Message,
-                        commitDate: commit.Author.When.LocalDateTime,
-                        listedSynthesis: listedSynthesisVersion,
-                        listedMutagen: listedMutagenVersion));
+                return GetResponse<RunnerRepoInfo>.Succeed(runInfo);
             }
             catch (OperationCanceledException)
             {

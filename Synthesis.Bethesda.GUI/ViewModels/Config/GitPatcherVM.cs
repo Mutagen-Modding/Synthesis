@@ -358,7 +358,7 @@ namespace Synthesis.Bethesda.GUI
                 .ToGuiProperty(this, nameof(AttemptedCheckout));
 
             _RunnableData = runnableState
-                .Select(x => x.RunnableState.Succeeded ? x.Item : default(RunnerRepoInfo?))
+                .Select(x => x.Item ?? default(RunnerRepoInfo?))
                 .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?));
 
             _MutagenVersionDiff = Observable.CombineLatest(
