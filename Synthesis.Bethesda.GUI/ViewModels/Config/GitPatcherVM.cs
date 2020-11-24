@@ -290,8 +290,8 @@ namespace Synthesis.Bethesda.GUI
                     (mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
                     {
                         return new SynthesisNugetVersioning(
-                            new NugetVersioning(mutaVersioning, mutaManual, newestMuta),
-                            new NugetVersioning(synthVersioning, synthManual, newestSynth));
+                            new NugetVersioning("Mutagen", mutaVersioning, mutaManual, newestMuta),
+                            new NugetVersioning("Synthesis", synthVersioning, synthManual, newestSynth));
                     })
                 .Select(nuget => nuget.TryGetTarget())
                 .Replay(1)
