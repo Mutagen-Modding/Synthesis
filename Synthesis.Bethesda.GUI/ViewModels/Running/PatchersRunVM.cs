@@ -148,7 +148,7 @@ namespace Synthesis.Bethesda.GUI
                         .Select(i => i as object),
                     this.ShowOverallErrorCommand.EndingExecution()
                         .Select(_ => ResultError == null ? null : new OverallErrorVM(ResultError)))
-                .ToGuiProperty(this, nameof(DetailDisplay));
+                .ToGuiProperty(this, nameof(DetailDisplay), default);
         }
 
         public async Task Run()

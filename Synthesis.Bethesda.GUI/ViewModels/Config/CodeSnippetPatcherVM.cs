@@ -54,7 +54,7 @@ namespace Synthesis.Bethesda.GUI
                         return x;
                     }
                 })
-                .ToGuiProperty<string>(this, nameof(DisplayName));
+                .ToGuiProperty<string>(this, nameof(DisplayName), string.Empty);
 
             IObservable<(MemoryStream? AssemblyStream, EmitResult? CompileResults, Exception? Exception)> compileResults =
                 Observable.Merge(
@@ -100,7 +100,7 @@ namespace Synthesis.Bethesda.GUI
 
             _CompilationText = compileState
                 .Select(err => err.RunnableState.Reason)
-                .ToGuiProperty<string>(this, nameof(CompilationText));
+                .ToGuiProperty<string>(this, nameof(CompilationText), string.Empty);
 
             _CompilationStatus = compileResults
                 .Select(results =>
@@ -135,7 +135,7 @@ namespace Synthesis.Bethesda.GUI
 
             _ActiveAssembly = stateAndAssembly
                 .Select(results => results.Item2)
-                .ToGuiProperty(this, nameof(ActiveAssembly));
+                .ToGuiProperty(this, nameof(ActiveAssembly), default);
 
             _State = stateAndAssembly
                 .Select(results =>

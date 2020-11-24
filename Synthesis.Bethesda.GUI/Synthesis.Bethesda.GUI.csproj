@@ -45,10 +45,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
-    <PackageReference Include="Loqui" Version="1.5.13" />
-    <PackageReference Include="Loqui.Generation" Version="1.5.13" />
-    <PackageReference Include="Noggog.CSharpExt" Version="1.6.5" />
-    <PackageReference Include="Noggog.WPF" Version="1.6.5" />
+    <PackageReference Include="Loqui" Version="1.5.14" />
+    <PackageReference Include="Loqui.Generation" Version="1.5.14" />
+    <PackageReference Include="Noggog.CSharpExt" Version="1.6.6" />
+    <PackageReference Include="Noggog.WPF" Version="1.6.6" />
     <PackageReference Include="NuGetizer" Version="0.4.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -60,7 +60,7 @@
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
     <PackageReference Include="Simple.Wpf.Terminal" Version="2.3.15" />
-    <PackageReference Include="System.Linq.Async" Version="4.1.1" />
+    <PackageReference Include="System.Linq.Async" Version="5.0.0" />
     <PackageReference Include="Wabbajack.Common" Version="2.2.1.1" />
   </ItemGroup>
 

@@ -103,7 +103,7 @@ namespace Synthesis.Bethesda.GUI
 
             _DataFolder = dataFolderResult
                 .Select(x => x.Value)
-                .ToGuiProperty<string>(this, nameof(DataFolder));
+                .ToGuiProperty<string>(this, nameof(DataFolder), string.Empty);
 
             var loadOrderResult = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.Release),
