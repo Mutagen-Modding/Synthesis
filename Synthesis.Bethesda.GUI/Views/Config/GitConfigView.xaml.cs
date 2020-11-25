@@ -112,6 +112,124 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.NavigateToInternalFilesCommand)
                     .BindToStrict(this, x => x.OpenPatcherInternalFilesButton.Command)
                     .DisposeWith(disposable);
+
+                #region Nuget
+                this.BindStrict(this.ViewModel, vm => vm.MutagenVersioning, view => view.Nugets.Mutagen.VersioningTab.SelectedIndex, (e) => (int)e, i => (NugetVersioningEnum)i)
+                    .DisposeWith(disposable);
+                this.BindStrict(this.ViewModel, vm => vm.SynthesisVersioning, view => view.Nugets.Synthesis.VersioningTab.SelectedIndex, (e) => (int)e, i => (NugetVersioningEnum)i)
+                    .DisposeWith(disposable);
+
+                this.BindStrict(this.ViewModel, vm => vm.ManualMutagenVersion, view => view.Nugets.Mutagen.ManualVersionBox.Text)
+                    .DisposeWith(disposable);
+                this.BindStrict(this.ViewModel, vm => vm.ManualSynthesisVersion, view => view.Nugets.Synthesis.ManualVersionBox.Text)
+                    .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning)
+                    .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.Nugets.Mutagen.ManualVersionBox.Visibility)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning)
+                    .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.Nugets.Synthesis.ManualVersionBox.Visibility)
+                    .DisposeWith(disposable);
+
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.MutagenVersionDiff),
+                        this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning),
+                        (diff, vers) =>
+                        {
+                            if (vers == NugetVersioningEnum.Match) return false;
+                            if (vers == NugetVersioningEnum.Latest && diff.MatchVersion == null) return false;
+                            return true;
+                        })
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.Nugets.Mutagen.VersionChangeArrow.Visibility)
+                    .DisposeWith(disposable);
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.SynthesisVersionDiff),
+                        this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning),
+                        (diff, vers) =>
+                        {
+                            if (vers == NugetVersioningEnum.Match) return false;
+                            if (vers == NugetVersioningEnum.Latest && diff.MatchVersion == null) return false;
+                            return true;
+                        })
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.Nugets.Synthesis.VersionChangeArrow.Visibility)
+                    .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.ManualSynthesisVersion)
+                    .Select(x => x.IsNullOrWhitespace())
+                    .Subscribe(x => this.Nugets.Synthesis.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.ManualMutagenVersion)
+                    .Select(x => x.IsNullOrWhitespace())
+                    .Subscribe(x => this.Nugets.Mutagen.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
+                    .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.MutagenVersionDiff)
+                    .Select(x => x.MatchVersion)
+                    .BindToStrict(this, x => x.Nugets.Mutagen.ListedVersionText.Text)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.SynthesisVersionDiff)
+                    .Select(x => x.MatchVersion)
+                    .BindToStrict(this, x => x.Nugets.Synthesis.ListedVersionText.Text)
+                    .DisposeWith(disposable);
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.MutagenVersionDiff),
+                        this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning),
+                        (diff, vers) =>
+                        {
+                            if (vers == NugetVersioningEnum.Match) return false;
+                            if (vers == NugetVersioningEnum.Latest && diff.SelectedVersion == null) return false;
+                            return true;
+                        })
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.Nugets.Mutagen.ListedVersionText.Visibility)
+                    .DisposeWith(disposable);
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.SynthesisVersionDiff),
+                        this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning),
+                        (diff, vers) =>
+                        {
+                            if (vers == NugetVersioningEnum.Match) return false;
+                            if (vers == NugetVersioningEnum.Latest && diff.SelectedVersion == null) return false;
+                            return true;
+                        })
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.Nugets.Synthesis.ListedVersionText.Visibility)
+                    .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.MutagenVersionDiff)
+                    .Select(x =>
+                    {
+                        if (object.Equals(x.MatchVersion, x.SelectedVersion)) return x.MatchVersion;
+                        if (x.SelectedVersion != null && x.MatchVersion != null) return x.SelectedVersion;
+                        return x.SelectedVersion ?? x.MatchVersion;
+                    })
+                    .NotNull()
+                    .BindToStrict(this, x => x.Nugets.Mutagen.TargetVersionText.Text)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.SynthesisVersionDiff)
+                    .Select(x =>
+                    {
+                        if (object.Equals(x.MatchVersion, x.SelectedVersion)) return x.MatchVersion;
+                        if (x.SelectedVersion != null && x.MatchVersion != null) return x.SelectedVersion;
+                        return x.SelectedVersion ?? x.MatchVersion;
+                    })
+                    .NotNull()
+                    .BindToStrict(this, x => x.Nugets.Synthesis.TargetVersionText.Text)
+                    .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning)
+                    .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Collapsed : Visibility.Visible)
+                    .BindToStrict(this, x => x.Nugets.Mutagen.TargetVersionText.Visibility)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning)
+                    .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Collapsed : Visibility.Visible)
+                    .BindToStrict(this, x => x.Nugets.Synthesis.TargetVersionText.Visibility)
+                    .DisposeWith(disposable);
+                #endregion
             });
         }
     }

@@ -97,6 +97,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="65" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -180,7 +181,14 @@
                     x:Name="PatcherVersionDateText"
                     Margin="0,10,0,0"
                     HorizontalAlignment="Right" />
-                <local:NugetsVersioningView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" />
+                <TextBlock Grid.Row="2"
+                    Margin="0,8,0,0"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    Text="Nuget Versions" />
+                <local:NugetsVersioningView Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                    x:Name="Nugets"
+                    Margin="0,5,0,0" />
             </Grid>
         </ScrollViewer>
     </Grid>

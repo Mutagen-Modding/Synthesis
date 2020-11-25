@@ -16,7 +16,7 @@ using Wabbajack.Common;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class ProfileVM : ViewModel, INugetVersioningVM
+    public class ProfileVM : ViewModel
     {
         public ConfigurationVM Config { get; }
         public GameRelease Release { get; }
