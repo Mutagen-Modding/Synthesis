@@ -63,14 +63,6 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string ManualSynthesisVersion { get; set; } = string.Empty;
 
-        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _MutagenVersionDiff;
-        public (string? MatchVersion, string? SelectedVersion) MutagenVersionDiff => _MutagenVersionDiff.Value;
-
-        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _SynthesisVersionDiff;
-        public (string? MatchVersion, string? SelectedVersion) SynthesisVersionDiff => _SynthesisVersionDiff.Value;
-
-        public IObservable<SynthesisNugetVersioning> UsedNugets { get; }
-
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
             ID = id ?? Guid.NewGuid().ToString();
@@ -184,39 +176,6 @@ namespace Synthesis.Bethesda.GUI
                     }
                 },
                 canExecute: this.WhenAnyValue(x => x.LargeOverallError.Value).Select(x => x != null));
-
-            UsedNugets = Observable.CombineLatest(
-                    this.WhenAnyValue(x => x.MutagenVersioning),
-                    this.WhenAnyValue(x => x.ManualMutagenVersion),
-                    parent.MainVM.NewestMutagenVersion,
-                    this.WhenAnyValue(x => x.SynthesisVersioning),
-                    this.WhenAnyValue(x => x.ManualSynthesisVersion),
-                    parent.MainVM.NewestSynthesisVersion,
-                    (mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
-                    {
-                        return new SynthesisNugetVersioning(
-                            new NugetVersioning("Mutagen", mutaVersioning, mutaManual, newestMuta),
-                            new NugetVersioning("Synthesis", synthVersioning, synthManual, newestSynth));
-                    })
-                .Replay(1)
-                .RefCount();
-
-            var nugetTarget = UsedNugets
-                .Select(nuget => nuget.TryGetTarget())
-                .Replay(1)
-                .RefCount();
-
-            _MutagenVersionDiff = Observable.CombineLatest(
-                    parent.MainVM.NewestMutagenVersion,
-                    nugetTarget.Select(x => x.Value?.MutagenVersion),
-                    (matchVersion, selVersion) => (matchVersion, selVersion))
-                .ToGuiProperty(this, nameof(MutagenVersionDiff));
-
-            _SynthesisVersionDiff = Observable.CombineLatest(
-                    parent.MainVM.NewestMutagenVersion,
-                    nugetTarget.Select(x => x.Value?.SynthesisVersion),
-                    (matchVersion, selVersion) => (matchVersion, selVersion))
-                .ToGuiProperty(this, nameof(SynthesisVersionDiff));
         }
 
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)

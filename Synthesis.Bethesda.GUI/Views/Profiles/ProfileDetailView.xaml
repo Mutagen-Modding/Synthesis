@@ -44,6 +44,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -101,10 +102,15 @@
                     <icon:PackIconFontAwesome Kind="TrashSolid" />
                 </Button>
             </Grid>
-            <local:NugetsVersioningView Grid.Row="1"
-                x:Name="NugetVersioning"
+            <TextBlock Grid.Row="1"
+                Margin="0,8,0,0"
+                FontSize="14"
+                FontWeight="Bold"
+                Text="Global Nuget Versions" />
+            <local:NugetsVersioningView Grid.Row="2"
+                x:Name="Nugets"
                 Margin="0,8,0,0" />
-            <Button Grid.Row="3"
+            <Button Grid.Row="4"
                 x:Name="ProfileInternalFilesButton"
                 Margin="0,0,0,10"
                 HorizontalAlignment="Left">
