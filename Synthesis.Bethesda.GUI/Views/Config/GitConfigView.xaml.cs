@@ -143,6 +143,7 @@ namespace Synthesis.Bethesda.GUI.Views
                             return true;
                         })
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .BindToStrict(this, x => x.Nugets.Mutagen.VersionChangeArrow.Visibility)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
@@ -155,6 +156,7 @@ namespace Synthesis.Bethesda.GUI.Views
                             return true;
                         })
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .BindToStrict(this, x => x.Nugets.Synthesis.VersionChangeArrow.Visibility)
                     .DisposeWith(disposable);
 
@@ -169,10 +171,12 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 this.WhenAnyValue(x => x.ViewModel!.MutagenVersionDiff)
                     .Select(x => x.MatchVersion)
+                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .BindToStrict(this, x => x.Nugets.Mutagen.ListedVersionText.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.SynthesisVersionDiff)
                     .Select(x => x.MatchVersion)
+                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .BindToStrict(this, x => x.Nugets.Synthesis.ListedVersionText.Text)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
@@ -185,6 +189,7 @@ namespace Synthesis.Bethesda.GUI.Views
                             return true;
                         })
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .BindToStrict(this, x => x.Nugets.Mutagen.ListedVersionText.Visibility)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
@@ -197,6 +202,7 @@ namespace Synthesis.Bethesda.GUI.Views
                             return true;
                         })
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .BindToStrict(this, x => x.Nugets.Synthesis.ListedVersionText.Visibility)
                     .DisposeWith(disposable);
 
