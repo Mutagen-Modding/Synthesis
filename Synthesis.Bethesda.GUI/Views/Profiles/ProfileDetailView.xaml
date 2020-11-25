@@ -101,7 +101,7 @@
                     <icon:PackIconFontAwesome Kind="TrashSolid" />
                 </Button>
             </Grid>
-            <local:NugetVersioningView Grid.Row="1"
+            <local:NugetsVersioningView Grid.Row="1"
                 x:Name="NugetVersioning"
                 Margin="0,8,0,0" />
             <Button Grid.Row="3"

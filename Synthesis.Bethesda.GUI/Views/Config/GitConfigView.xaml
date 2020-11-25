@@ -180,7 +180,7 @@
                     x:Name="PatcherVersionDateText"
                     Margin="0,10,0,0"
                     HorizontalAlignment="Right" />
-                <local:NugetVersioningView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" />
+                <local:NugetsVersioningView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" />
             </Grid>
         </ScrollViewer>
     </Grid>

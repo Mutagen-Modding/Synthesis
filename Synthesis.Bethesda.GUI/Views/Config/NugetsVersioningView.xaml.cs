@@ -9,14 +9,14 @@ using System.Windows;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class NugetVersioningViewBase : NoggogUserControl<INugetVersioningVM> { }
+    public class NugetsVersioningViewBase : NoggogUserControl<INugetVersioningVM> { }
 
     /// <summary>
     /// Interaction logic for NugetVersioningView.xaml
     /// </summary>
-    public partial class NugetVersioningView : NugetVersioningViewBase
+    public partial class NugetsVersioningView : NugetsVersioningViewBase
     {
-        public NugetVersioningView()
+        public NugetsVersioningView()
         {
             InitializeComponent();
             this.WhenActivated(disposable =>
