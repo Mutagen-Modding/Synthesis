@@ -312,39 +312,67 @@ namespace Synthesis.Bethesda.GUI
                 .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                 .DistinctUntilChanged()
                 .ObserveOn(RxApp.TaskpoolScheduler)
-                .SelectReplaceWithIntermediate(
-                    new ConfigurationState<RunnerRepoInfo>(default!)
+                .Select((item) =>
+                {
+                    return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
                     {
-                        RunnableState = ErrorResponse.Fail("Checking out the proper commit"),
-                        IsHaltingError = false,
-                    },
-                    async (item, cancel) =>
-                    {
-                        async Task<ConfigurationState<RunnerRepoInfo>> Execute()
+                        if (item.runnerState.RunnableState.Failed)
                         {
-                            if (item.runnerState.RunnableState.Failed) return item.runnerState.BubbleError<RunnerRepoInfo>();
-                            if (item.proj.Failed) return item.proj.BubbleFailure<RunnerRepoInfo>();
-                            if (item.libraryNugets.Failed) return item.libraryNugets.BubbleFailure<RunnerRepoInfo>();
+                            observer.OnNext(item.runnerState.BubbleError<RunnerRepoInfo>());
+                            return;
+                        }
+                        if (item.proj.Failed)
+                        {
+                            observer.OnNext(item.proj.BubbleFailure<RunnerRepoInfo>());
+                            return;
+                        }
+                        if (item.libraryNugets.Failed)
+                        {
+                            observer.OnNext(item.libraryNugets.BubbleFailure<RunnerRepoInfo>());
+                            return;
+                        }
 
-                            return await GitPatcherRun.CheckoutRunnerRepository(
-                                proj: item.proj.Value,
-                                localRepoDir: LocalRunnerRepoDirectory,
-                                patcherVersioning: item.patcherVersioning,
-                                nugetVersioning: item.libraryNugets.Value,
-                                logger: (s) => Logger.Information(s),
-                                cancel: cancel);
-                        }
-                        var ret = await Execute();
-                        if (ret.RunnableState.Succeeded)
+                        observer.OnNext(new ConfigurationState<RunnerRepoInfo>(default!)
                         {
-                            Logger.Information($"Finished checking out");
-                        }
-                        else
+                            RunnableState = ErrorResponse.Fail("Checking out the proper commit"),
+                            IsHaltingError = false,
+                        });
+
+                        var runInfo = await GitPatcherRun.CheckoutRunnerRepository(
+                            proj: item.proj.Value,
+                            localRepoDir: LocalRunnerRepoDirectory,
+                            patcherVersioning: item.patcherVersioning,
+                            nugetVersioning: item.libraryNugets.Value,
+                            logger: (s) => Logger.Information(s),
+                            cancel: cancel,
+                            compile: false);
+
+                        if (runInfo.RunnableState.Failed)
                         {
-                            Logger.Error(ret.RunnableState, $"Failed checking out");
+                            observer.OnNext(runInfo);
+                            return;
                         }
-                        return ret;
-                    })
+
+                        // Return early with the values, but mark not complete
+                        observer.OnNext(new ConfigurationState<RunnerRepoInfo>(runInfo.Item)
+                        {
+                            IsHaltingError = false,
+                            RunnableState = ErrorResponse.Fail("Compiling")
+                        });
+
+                        // Compile to help prep
+                        var compileResp = await SolutionPatcherRun.CompileWithDotnet(item.proj.Value, cancel);
+                        if (compileResp.Failed)
+                        {
+                            observer.OnNext(compileResp.BubbleFailure<RunnerRepoInfo>());
+                            return;
+                        }
+
+                        // Return things again, without error
+                        observer.OnNext(runInfo);
+                    });
+                })
+                .Switch()
                 .Replay(1)
                 .RefCount();
 
