@@ -70,7 +70,7 @@
                 Margin="0,8,0,0" />
             <TextBox Grid.Column="5"
                 x:Name="ManualVersionBox"
-                MinWidth="65"
+                MinWidth="80"
                 Margin="0,3"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"

@@ -55,13 +55,13 @@ namespace Synthesis.Bethesda.GUI
         public NugetVersioningEnum MutagenVersioning { get; set; } = NugetVersioningEnum.Manual;
 
         [Reactive]
-        public string ManualMutagenVersion { get; set; } = string.Empty;
+        public string? ManualMutagenVersion { get; set; }
 
         [Reactive]
         public NugetVersioningEnum SynthesisVersioning { get; set; } = NugetVersioningEnum.Manual;
 
         [Reactive]
-        public string ManualSynthesisVersion { get; set; } = string.Empty;
+        public string? ManualSynthesisVersion { get; set; }
 
         public IObservable<SynthesisNugetVersioning> ActiveVersioning { get; }
 
@@ -189,11 +189,31 @@ namespace Synthesis.Bethesda.GUI
                     (mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
                     {
                         return new SynthesisNugetVersioning(
-                            new NugetVersioning("Mutagen", mutaVersioning, mutaManual, newestMuta),
-                            new NugetVersioning("Synthesis", synthVersioning, synthManual, newestSynth));
+                            new NugetVersioning("Mutagen", mutaVersioning, mutaManual ?? newestMuta ?? string.Empty, newestMuta),
+                            new NugetVersioning("Synthesis", synthVersioning, synthManual ?? newestSynth ?? string.Empty, newestSynth));
                     })
                 .Replay(1)
                 .RefCount();
+
+            // Set manual if empty
+            parent.MainVM.NewestMutagenVersion
+                .Subscribe(x =>
+                {
+                    if (ManualMutagenVersion == null)
+                    {
+                        ManualMutagenVersion = x;
+                    }
+                })
+                .DisposeWith(this);
+            parent.MainVM.NewestSynthesisVersion
+                .Subscribe(x =>
+                {
+                    if (ManualSynthesisVersion == null)
+                    {
+                        ManualSynthesisVersion = x;
+                    }
+                })
+                .DisposeWith(this);
         }
 
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)
@@ -201,9 +221,9 @@ namespace Synthesis.Bethesda.GUI
         {
             Nickname = settings.Nickname;
             MutagenVersioning = settings.MutagenVersioning;
-            ManualMutagenVersion = settings.ManualMutagenVersion;
+            ManualMutagenVersion = settings.MutagenManualVersion;
             SynthesisVersioning = settings.SynthesisVersioning;
-            ManualSynthesisVersion = settings.ManualSynthesisVersion;
+            ManualSynthesisVersion = settings.SynthesisManualVersion;
             Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
             {
                 return p switch
@@ -225,8 +245,8 @@ namespace Synthesis.Bethesda.GUI
                 ID = ID,
                 Nickname = Nickname,
                 TargetRelease = Release,
-                ManualMutagenVersion = ManualMutagenVersion,
-                ManualSynthesisVersion = ManualSynthesisVersion,
+                MutagenManualVersion = ManualMutagenVersion,
+                SynthesisManualVersion = ManualSynthesisVersion,
                 MutagenVersioning = MutagenVersioning,
                 SynthesisVersioning = SynthesisVersioning
             };
