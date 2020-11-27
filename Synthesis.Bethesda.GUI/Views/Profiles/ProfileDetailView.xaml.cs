@@ -100,6 +100,15 @@ namespace Synthesis.Bethesda.GUI.Views
                 synthExtraVisible
                     .BindToStrict(this, x => x.Nugets.Synthesis.Splitter.Visibility)
                     .DisposeWith(dispose);
+
+                this.WhenAnyValue(x => x.ViewModel!.Profile!.ManualMutagenVersion)
+                    .Select(x => x.IsNullOrWhitespace())
+                    .Subscribe(x => this.Nugets.Mutagen.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
+                    .DisposeWith(dispose);
+                this.WhenAnyValue(x => x.ViewModel!.Profile!.ManualSynthesisVersion)
+                    .Select(x => x.IsNullOrWhitespace())
+                    .Subscribe(x => this.Nugets.Synthesis.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
+                    .DisposeWith(dispose);
                 #endregion
             });
         }
