@@ -16,9 +16,9 @@ namespace Synthesis.Bethesda.Execution.Settings
         public bool LatestTag = true;
         public bool FollowDefaultBranch = true;
         public bool OverrideNugetVersioning = false;
-        public NugetVersioningEnum MutagenVersioning = NugetVersioningEnum.Latest;
+        public PatcherNugetVersioningEnum MutagenVersionType = PatcherNugetVersioningEnum.Profile;
         public string ManualMutagenVersion = string.Empty;
-        public NugetVersioningEnum SynthesisVersioning = NugetVersioningEnum.Latest;
+        public PatcherNugetVersioningEnum SynthesisVersionType = PatcherNugetVersioningEnum.Profile;
         public string ManualSynthesisVersion = string.Empty;
 
         public override void Print(IRunReporter logger)

@@ -20,7 +20,7 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="70" />
-                <ColumnDefinition Width="175" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -40,6 +40,10 @@
                 mahapps:HeaderedControlHelper.HeaderFontSize="16"
                 mahapps:HeaderedControlHelper.HeaderForeground="AliceBlue"
                 Background="Transparent">
+                <TabItem
+                    x:Name="ProfileTab"
+                    Header="Profile"
+                    ToolTip="Run with the the settings inherited set in the Synthesis profile" />
                 <TabItem Header="Latest" ToolTip="Run with the latest stable version" />
                 <TabItem Header="Match" ToolTip="Run with the version explicitly listed in the patcher" />
                 <TabItem Header="Manual" ToolTip="Run with a manually specified version" />

@@ -80,6 +80,8 @@ namespace Synthesis.Bethesda.GUI.Views
                 Nugets.Synthesis.VersionChangeArrow.Visibility = Visibility.Collapsed;
                 Nugets.Mutagen.Splitter.Visibility = Visibility.Collapsed;
                 Nugets.Synthesis.Splitter.Visibility = Visibility.Collapsed;
+                Nugets.Mutagen.ProfileTab.Visibility = Visibility.Collapsed;
+                Nugets.Synthesis.ProfileTab.Visibility = Visibility.Collapsed;
 
                 var mutaExtraVisible = this.WhenAnyValue(x => x.ViewModel!.Profile!.MutagenVersioning)
                     .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Collapsed)

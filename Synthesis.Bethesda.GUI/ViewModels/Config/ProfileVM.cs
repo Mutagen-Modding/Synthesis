@@ -52,16 +52,18 @@ namespace Synthesis.Bethesda.GUI
         public bool IsActive => _IsActive.Value;
 
         [Reactive]
-        public NugetVersioningEnum MutagenVersioning { get; set; }
+        public NugetVersioningEnum MutagenVersioning { get; set; } = NugetVersioningEnum.Manual;
 
         [Reactive]
         public string ManualMutagenVersion { get; set; } = string.Empty;
 
         [Reactive]
-        public NugetVersioningEnum SynthesisVersioning { get; set; }
+        public NugetVersioningEnum SynthesisVersioning { get; set; } = NugetVersioningEnum.Manual;
 
         [Reactive]
         public string ManualSynthesisVersion { get; set; } = string.Empty;
+
+        public IObservable<SynthesisNugetVersioning> ActiveVersioning { get; }
 
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
@@ -176,6 +178,22 @@ namespace Synthesis.Bethesda.GUI
                     }
                 },
                 canExecute: this.WhenAnyValue(x => x.LargeOverallError.Value).Select(x => x != null));
+
+            ActiveVersioning = Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.MutagenVersioning),
+                    this.WhenAnyValue(x => x.ManualMutagenVersion),
+                    parent.MainVM.NewestMutagenVersion,
+                    this.WhenAnyValue(x => x.SynthesisVersioning),
+                    this.WhenAnyValue(x => x.ManualSynthesisVersion),
+                    parent.MainVM.NewestSynthesisVersion,
+                    (mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
+                    {
+                        return new SynthesisNugetVersioning(
+                            new NugetVersioning("Mutagen", mutaVersioning, mutaManual, newestMuta),
+                            new NugetVersioning("Synthesis", synthVersioning, synthManual, newestSynth));
+                    })
+                .Replay(1)
+                .RefCount();
         }
 
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)

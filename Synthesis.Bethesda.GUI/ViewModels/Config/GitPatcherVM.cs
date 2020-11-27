@@ -83,13 +83,13 @@ namespace Synthesis.Bethesda.GUI
         public ICommand NavigateToInternalFilesCommand { get; }
 
         [Reactive]
-        public NugetVersioningEnum MutagenVersioning { get; set; } = NugetVersioningEnum.Latest;
+        public PatcherNugetVersioningEnum MutagenVersioning { get; set; } = PatcherNugetVersioningEnum.Profile;
 
         [Reactive]
         public string ManualMutagenVersion { get; set; } = string.Empty;
 
         [Reactive]
-        public NugetVersioningEnum SynthesisVersioning { get; set; } = NugetVersioningEnum.Latest;
+        public PatcherNugetVersioningEnum SynthesisVersioning { get; set; } = PatcherNugetVersioningEnum.Profile;
 
         [Reactive]
         public string ManualSynthesisVersion { get; set; } = string.Empty;
@@ -281,17 +281,36 @@ namespace Synthesis.Bethesda.GUI
                 (versioning, tag, commit, branch) => GitPatcherVersioning.Factory(versioning, tag, commit, branch));
 
             var nugetTarget = Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.Profile.ActiveVersioning)
+                        .Switch(),
                     this.WhenAnyValue(x => x.MutagenVersioning),
                     this.WhenAnyValue(x => x.ManualMutagenVersion),
                     parent.Config.MainVM.NewestMutagenVersion,
                     this.WhenAnyValue(x => x.SynthesisVersioning),
                     this.WhenAnyValue(x => x.ManualSynthesisVersion),
                     parent.Config.MainVM.NewestSynthesisVersion,
-                    (mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
+                    (profile, mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
                     {
+                        NugetVersioning mutagen, synthesis;
+                        if (mutaVersioning == PatcherNugetVersioningEnum.Profile)
+                        {
+                            mutagen = profile.Mutagen;
+                        }
+                        else
+                        {
+                            mutagen = new NugetVersioning("Mutagen", mutaVersioning.ToNugetVersioningEnum(), mutaManual, newestMuta);
+                        }
+                        if (synthVersioning == PatcherNugetVersioningEnum.Profile)
+                        {
+                            synthesis = profile.Synthesis;
+                        }
+                        else
+                        {
+                            synthesis = new NugetVersioning("Synthesis", synthVersioning.ToNugetVersioningEnum(), synthManual, newestSynth);
+                        }
                         return new SynthesisNugetVersioning(
-                            new NugetVersioning("Mutagen", mutaVersioning, mutaManual, newestMuta),
-                            new NugetVersioning("Synthesis", synthVersioning, synthManual, newestSynth));
+                            mutagen: mutagen, 
+                            synthesis: synthesis);
                     })
                 .Select(nuget => nuget.TryGetTarget())
                 .Replay(1)
@@ -463,9 +482,9 @@ namespace Synthesis.Bethesda.GUI
                 ID = this.ID,
                 SelectedProjectSubpath = this.ProjectSubpath,
                 PatcherVersioning = this.PatcherVersioning,
-                MutagenVersioning = this.MutagenVersioning,
+                MutagenVersionType = this.MutagenVersioning,
                 ManualMutagenVersion = this.ManualMutagenVersion,
-                SynthesisVersioning = this.SynthesisVersioning,
+                SynthesisVersionType = this.SynthesisVersioning,
                 ManualSynthesisVersion = this.ManualSynthesisVersion,
                 TargetTag = this.TargetTag,
                 TargetCommit = this.TargetCommit,
@@ -488,8 +507,8 @@ namespace Synthesis.Bethesda.GUI
             this.ID = string.IsNullOrWhiteSpace(settings.ID) ? Guid.NewGuid().ToString() : settings.ID;
             this.ProjectSubpath = settings.SelectedProjectSubpath;
             this.PatcherVersioning = settings.PatcherVersioning;
-            this.MutagenVersioning = settings.MutagenVersioning;
-            this.SynthesisVersioning = settings.SynthesisVersioning;
+            this.MutagenVersioning = settings.MutagenVersionType;
+            this.SynthesisVersioning = settings.SynthesisVersionType;
             this.ManualMutagenVersion = settings.ManualMutagenVersion;
             this.ManualSynthesisVersion = settings.ManualSynthesisVersion;
             this.TargetTag = settings.TargetTag;

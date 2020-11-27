@@ -114,9 +114,9 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 #region Nuget
-                this.BindStrict(this.ViewModel, vm => vm.MutagenVersioning, view => view.Nugets.Mutagen.VersioningTab.SelectedIndex, (e) => (int)e, i => (NugetVersioningEnum)i)
+                this.BindStrict(this.ViewModel, vm => vm.MutagenVersioning, view => view.Nugets.Mutagen.VersioningTab.SelectedIndex, (e) => (int)e, i => (PatcherNugetVersioningEnum)i)
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.SynthesisVersioning, view => view.Nugets.Synthesis.VersioningTab.SelectedIndex, (e) => (int)e, i => (NugetVersioningEnum)i)
+                this.BindStrict(this.ViewModel, vm => vm.SynthesisVersioning, view => view.Nugets.Synthesis.VersioningTab.SelectedIndex, (e) => (int)e, i => (PatcherNugetVersioningEnum)i)
                     .DisposeWith(disposable);
 
                 this.BindStrict(this.ViewModel, vm => vm.ManualMutagenVersion, view => view.Nugets.Mutagen.ManualVersionBox.Text)
@@ -125,11 +125,11 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning)
-                    .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Collapsed)
+                    .Select(x => x == PatcherNugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.Nugets.Mutagen.ManualVersionBox.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning)
-                    .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Collapsed)
+                    .Select(x => x == PatcherNugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.Nugets.Synthesis.ManualVersionBox.Visibility)
                     .DisposeWith(disposable);
 
@@ -138,8 +138,8 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning),
                         (diff, vers) =>
                         {
-                            if (vers == NugetVersioningEnum.Match) return false;
-                            if (vers == NugetVersioningEnum.Latest && diff.MatchVersion == null) return false;
+                            if (vers == PatcherNugetVersioningEnum.Match) return false;
+                            if (vers == PatcherNugetVersioningEnum.Latest && diff.MatchVersion == null) return false;
                             return true;
                         })
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
@@ -151,8 +151,8 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning),
                         (diff, vers) =>
                         {
-                            if (vers == NugetVersioningEnum.Match) return false;
-                            if (vers == NugetVersioningEnum.Latest && diff.MatchVersion == null) return false;
+                            if (vers == PatcherNugetVersioningEnum.Match) return false;
+                            if (vers == PatcherNugetVersioningEnum.Latest && diff.MatchVersion == null) return false;
                             return true;
                         })
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
@@ -184,8 +184,8 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning),
                         (diff, vers) =>
                         {
-                            if (vers == NugetVersioningEnum.Match) return false;
-                            if (vers == NugetVersioningEnum.Latest && diff.SelectedVersion == null) return false;
+                            if (vers == PatcherNugetVersioningEnum.Match) return false;
+                            if (vers == PatcherNugetVersioningEnum.Latest && diff.SelectedVersion == null) return false;
                             return true;
                         })
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
@@ -197,8 +197,8 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning),
                         (diff, vers) =>
                         {
-                            if (vers == NugetVersioningEnum.Match) return false;
-                            if (vers == NugetVersioningEnum.Latest && diff.SelectedVersion == null) return false;
+                            if (vers == PatcherNugetVersioningEnum.Match) return false;
+                            if (vers == PatcherNugetVersioningEnum.Latest && diff.SelectedVersion == null) return false;
                             return true;
                         })
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
@@ -228,11 +228,11 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning)
-                    .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Collapsed : Visibility.Visible)
+                    .Select(x => x == PatcherNugetVersioningEnum.Manual ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.Nugets.Mutagen.TargetVersionText.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning)
-                    .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Collapsed : Visibility.Visible)
+                    .Select(x => x == PatcherNugetVersioningEnum.Manual ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.Nugets.Synthesis.TargetVersionText.Visibility)
                     .DisposeWith(disposable);
                 #endregion

@@ -1,8 +1,6 @@
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
