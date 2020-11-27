@@ -45,6 +45,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -110,7 +111,14 @@
             <local:NugetsVersioningView Grid.Row="2"
                 x:Name="Nugets"
                 Margin="0,8,0,0" />
-            <Button Grid.Row="4"
+            <Button Grid.Row="3"
+                x:Name="ResetPatchersToProfile"
+                Padding="5"
+                HorizontalAlignment="Left"
+                ToolTip="Sets all contained patchers to match and follow profile settings">
+                Reset Patchers to Profile
+            </Button>
+            <Button Grid.Row="5"
                 x:Name="ProfileInternalFilesButton"
                 Margin="0,0,0,10"
                 HorizontalAlignment="Left">

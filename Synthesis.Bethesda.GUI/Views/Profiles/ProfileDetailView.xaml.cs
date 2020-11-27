@@ -111,6 +111,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x.IsNullOrWhitespace())
                     .Subscribe(x => this.Nugets.Synthesis.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(dispose);
+
+                this.WhenAnyValue(x => x.ViewModel!.Profile!.SetAllToProfileCommand)
+                    .BindToStrict(this, x => x.ResetPatchersToProfile.Command)
+                    .DisposeWith(dispose);
                 #endregion
             });
         }

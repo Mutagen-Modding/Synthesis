@@ -65,6 +65,8 @@ namespace Synthesis.Bethesda.GUI
 
         public IObservable<SynthesisNugetVersioning> ActiveVersioning { get; }
 
+        public ICommand SetAllToProfileCommand { get; }
+
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
             ID = id ?? Guid.NewGuid().ToString();
@@ -214,6 +216,19 @@ namespace Synthesis.Bethesda.GUI
                     }
                 })
                 .DisposeWith(this);
+
+            SetAllToProfileCommand = ReactiveCommand.Create(
+                execute: () =>
+                {
+                    foreach (var patcher in Patchers.Items)
+                    {
+                        if (patcher is GitPatcherVM gitPatcher)
+                        {
+                            gitPatcher.MutagenVersioning = PatcherNugetVersioningEnum.Profile;
+                            gitPatcher.SynthesisVersioning = PatcherNugetVersioningEnum.Profile;
+                        }
+                    }
+                });
         }
 
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)
