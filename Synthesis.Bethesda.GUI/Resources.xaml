@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:Converters="clr-namespace:MahApps.Metro.Converters;assembly=MahApps.Metro"
+    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI"
     xmlns:noggog="clr-namespace:Noggog.WPF;assembly=Noggog.WPF">
     <Color x:Key="Salmon">#e16063</Color>
@@ -15,6 +16,7 @@
     <Color x:Key="WhiteYellow">#f7cdb2</Color>
     <Color x:Key="LightBlue">#51bcfa</Color>
     <Color x:Key="PaleBlue">#57f1fc</Color>
+    <Color x:Key="PaleBlueHover">#a3f9ff</Color>
     <Color x:Key="PaleBlueTransparent">#0057f1fc</Color>
     <Color x:Key="Blue">#2f5eb5</Color>
     <Color x:Key="Purple">#281d52</Color>
@@ -35,6 +37,7 @@
     <SolidColorBrush x:Key="WhiteYellowBrush" Color="{StaticResource PaleYellow}" />
     <SolidColorBrush x:Key="LightBlueBrush" Color="{StaticResource LightBlue}" />
     <SolidColorBrush x:Key="PaleBlueBrush" Color="{StaticResource PaleBlue}" />
+    <SolidColorBrush x:Key="PaleBlueHoverBrush" Color="{StaticResource PaleBlue}" />
     <SolidColorBrush x:Key="BlueBrush" Color="{StaticResource Blue}" />
     <SolidColorBrush x:Key="PurpleBrush" Color="{StaticResource Purple}" />
     <SolidColorBrush x:Key="NeonPurpleBrush" Color="{StaticResource NeonPurple}" />

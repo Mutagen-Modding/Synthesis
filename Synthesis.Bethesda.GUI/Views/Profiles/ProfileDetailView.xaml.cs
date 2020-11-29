@@ -30,18 +30,18 @@ namespace Synthesis.Bethesda.GUI.Views
         public ProfileDetailView()
         {
             InitializeComponent();
-            this.WhenActivated(dispose =>
+            this.WhenActivated(disposable =>
             {
                 this.BindStrict(this.ViewModel, vm => vm.Profile!.Nickname, view => view.ProfileDetailName.Text)
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.DeleteCommand)
                     .BindToStrict(this, x => x.DeleteButton.Command)
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.SwitchToCommand)
                     .BindToStrict(this, x => x.SelectButton.Command)
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
 
                 this.WhenAnyFallback(x => x.ViewModel!.Profile!.Release, GameRelease.SkyrimSE)
                     .ObserveOn(RxApp.TaskpoolScheduler)
@@ -51,26 +51,26 @@ namespace Synthesis.Bethesda.GUI.Views
                     })
                     .ObserveOnGui()
                     .BindToStrict(this, x => x.GameIconImage.Source)
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.OpenInternalProfileFolderCommand)
                     .BindToStrict(this, x => x.ProfileInternalFilesButton.Command)
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
 
                 #region Nuget
                 this.WhenAnyValue(x => x.ViewModel!.Profile)
                     .BindToStrict(this, x => x.Nugets.DataContext)
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
 
                 this.BindStrict(this.ViewModel, vm => vm.Profile!.MutagenVersioning, view => view.Nugets.Mutagen.VersioningTab.SelectedIndex, (e) => (int)e, i => (NugetVersioningEnum)i)
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.Profile!.SynthesisVersioning, view => view.Nugets.Synthesis.VersioningTab.SelectedIndex, (e) => (int)e, i => (NugetVersioningEnum)i)
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
 
                 this.BindStrict(this.ViewModel, vm => vm.Profile!.ManualMutagenVersion, view => view.Nugets.Mutagen.ManualVersionBox.Text)
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.Profile!.ManualSynthesisVersion, view => view.Nugets.Synthesis.ManualVersionBox.Text)
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
 
                 Nugets.Mutagen.TargetVersionText.Visibility = Visibility.Collapsed;
                 Nugets.Synthesis.TargetVersionText.Visibility = Visibility.Collapsed;
@@ -85,36 +85,69 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 var mutaExtraVisible = this.WhenAnyValue(x => x.ViewModel!.Profile!.MutagenVersioning)
                     .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Collapsed)
-                    .PublishRefCount();
+                    .Replay(1)
+                    .RefCount();
                 mutaExtraVisible
                     .BindToStrict(this, x => x.Nugets.Mutagen.ManualVersionBox.Visibility)
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
                 mutaExtraVisible
                     .BindToStrict(this, x => x.Nugets.Mutagen.Splitter.Visibility)
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
 
                 var synthExtraVisible = this.WhenAnyValue(x => x.ViewModel!.Profile!.SynthesisVersioning)
                     .Select(x => x == NugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Collapsed)
-                    .PublishRefCount();
+                    .Replay(1)
+                    .RefCount();
                 synthExtraVisible
                     .BindToStrict(this, x => x.Nugets.Synthesis.ManualVersionBox.Visibility)
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
                 synthExtraVisible
                     .BindToStrict(this, x => x.Nugets.Synthesis.Splitter.Visibility)
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.Profile!.ManualMutagenVersion)
                     .Select(x => x.IsNullOrWhitespace())
                     .Subscribe(x => this.Nugets.Mutagen.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.Profile!.ManualSynthesisVersion)
                     .Select(x => x.IsNullOrWhitespace())
                     .Subscribe(x => this.Nugets.Synthesis.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.Profile!.SetAllToProfileCommand)
                     .BindToStrict(this, x => x.ResetPatchersToProfile.Command)
-                    .DisposeWith(dispose);
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.Profile!.UpdateMutagenManualToLatestCommand)
+                    .BindToStrict(this, x => x.Nugets.Mutagen.UpdateButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.Profile!.UpdateSynthesisManualToLatestCommand)
+                    .BindToStrict(this, x => x.Nugets.Synthesis.UpdateButton.Command)
+                    .DisposeWith(disposable);
+
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.Profile!.MutagenVersioning),
+                        this.WhenAnyValue(x => x.ViewModel!.Profile!.UpdateMutagenManualToLatestCommand)
+                            .Select(x => x.CanExecute)
+                            .Switch(),
+                        (versioning, can) =>
+                        {
+                            return versioning == NugetVersioningEnum.Manual && can;
+                        })
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.Nugets.Mutagen.UpdateButton.Visibility)
+                    .DisposeWith(disposable);
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.Profile!.SynthesisVersioning),
+                        this.WhenAnyValue(x => x.ViewModel!.Profile!.UpdateSynthesisManualToLatestCommand)
+                            .Select(x => x.CanExecute)
+                            .Switch(),
+                        (versioning, can) =>
+                        {
+                            return versioning == NugetVersioningEnum.Manual && can;
+                        })
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.Nugets.Synthesis.UpdateButton.Visibility)
+                    .DisposeWith(disposable);
                 #endregion
             });
         }

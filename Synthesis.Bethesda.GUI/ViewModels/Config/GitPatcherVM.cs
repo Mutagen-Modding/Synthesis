@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers;
+using System.Reactive;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -81,6 +82,10 @@ namespace Synthesis.Bethesda.GUI
         public ICommand OpenGitPageToVersionCommand { get; }
 
         public ICommand NavigateToInternalFilesCommand { get; }
+
+        public ReactiveCommand<Unit, Unit> UpdateMutagenManualToLatestCommand { get; }
+
+        public ReactiveCommand<Unit, Unit> UpdateSynthesisManualToLatestCommand { get; }
 
         [Reactive]
         public PatcherNugetVersioningEnum MutagenVersioning { get; set; } = PatcherNugetVersioningEnum.Profile;
@@ -472,6 +477,29 @@ namespace Synthesis.Bethesda.GUI
                 });
 
             NavigateToInternalFilesCommand = ReactiveCommand.Create(() => Utility.NavigateToPath(localRepoDir));
+
+            UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(
+                objectSource: parent.Config.MainVM.NewestMutagenVersion,
+                canExecute: v =>
+                {
+                    return Observable.CombineLatest(
+                            this.WhenAnyValue(x => x.ManualMutagenVersion),
+                            v,
+                            (manual, latest) => latest != null && latest != manual);
+                },
+                execute: v => ManualMutagenVersion = v ?? string.Empty,
+                disposable: this.CompositeDisposable);
+            UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
+                objectSource: parent.Config.MainVM.NewestSynthesisVersion,
+                canExecute: v =>
+                {
+                    return Observable.CombineLatest(
+                            this.WhenAnyValue(x => x.ManualSynthesisVersion),
+                            v,
+                            (manual, latest) => latest != null && latest != manual);
+                },
+                execute: v => ManualSynthesisVersion = v ?? string.Empty,
+                disposable: this.CompositeDisposable);
         }
 
         public override PatcherSettings Save()

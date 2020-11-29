@@ -10,6 +10,7 @@ using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using Wabbajack.Common;
@@ -66,6 +67,10 @@ namespace Synthesis.Bethesda.GUI
         public IObservable<SynthesisNugetVersioning> ActiveVersioning { get; }
 
         public ICommand SetAllToProfileCommand { get; }
+
+        public ReactiveCommand<Unit, Unit> UpdateMutagenManualToLatestCommand { get; }
+
+        public ReactiveCommand<Unit, Unit> UpdateSynthesisManualToLatestCommand { get; }
 
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
@@ -229,6 +234,29 @@ namespace Synthesis.Bethesda.GUI
                         }
                     }
                 });
+
+            UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(
+                objectSource: parent.MainVM.NewestMutagenVersion,
+                canExecute: v =>
+                {
+                    return Observable.CombineLatest(
+                            this.WhenAnyValue(x => x.ManualMutagenVersion),
+                            v,
+                            (manual, latest) => latest != null && latest != manual);
+                },
+                execute: v => ManualMutagenVersion = v ?? string.Empty,
+                disposable: this.CompositeDisposable);
+            UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
+                objectSource: parent.MainVM.NewestSynthesisVersion,
+                canExecute: v =>
+                {
+                    return Observable.CombineLatest(
+                            this.WhenAnyValue(x => x.ManualSynthesisVersion),
+                            v,
+                            (manual, latest) => latest != null && latest != manual);
+                },
+                execute: v => ManualSynthesisVersion = v ?? string.Empty,
+                disposable: this.CompositeDisposable);
         }
 
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)

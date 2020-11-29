@@ -235,6 +235,38 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x == PatcherNugetVersioningEnum.Manual ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.Nugets.Synthesis.TargetVersionText.Visibility)
                     .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.UpdateMutagenManualToLatestCommand)
+                    .BindToStrict(this, x => x.Nugets.Mutagen.UpdateButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.UpdateSynthesisManualToLatestCommand)
+                    .BindToStrict(this, x => x.Nugets.Synthesis.UpdateButton.Command)
+                    .DisposeWith(disposable);
+
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning),
+                        this.WhenAnyValue(x => x.ViewModel!.UpdateMutagenManualToLatestCommand)
+                            .Select(x => x.CanExecute)
+                            .Switch(),
+                        (versioning, can) =>
+                        {
+                            return versioning == PatcherNugetVersioningEnum.Manual && can;
+                        })
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.Nugets.Mutagen.UpdateButton.Visibility)
+                    .DisposeWith(disposable);
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning),
+                        this.WhenAnyValue(x => x.ViewModel!.UpdateSynthesisManualToLatestCommand)
+                            .Select(x => x.CanExecute)
+                            .Switch(),
+                        (versioning, can) =>
+                        {
+                            return versioning == PatcherNugetVersioningEnum.Manual && can;
+                        })
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.Nugets.Synthesis.UpdateButton.Visibility)
+                    .DisposeWith(disposable);
                 #endregion
             });
         }
