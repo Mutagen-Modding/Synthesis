@@ -162,6 +162,10 @@ namespace Synthesis.Bethesda.Execution.Patchers
             var result = await process.Start().ConfigureAwait(false);
             if (result == 0) return ErrorResponse.Success;
             firstError = firstError?.TrimStart($"{targetPath} : ");
+            if (firstError == null && cancel.IsCancellationRequested)
+            {
+                firstError = "Cancelled";
+            }
             return ErrorResponse.Fail(reason: firstError ?? "Unknown Error");
         }
 

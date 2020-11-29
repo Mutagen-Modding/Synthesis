@@ -4,20 +4,6 @@ using System;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
-    public enum PatcherVersioningEnum
-    {
-        Tag,
-        Branch,
-        Commit,
-    }
-
-    public enum NugetVersioningEnum
-    {
-        Latest,
-        Match,
-        Manual,
-    }
-
     public class GithubPatcherSettings : PatcherSettings
     {
         public string ID = string.Empty;
@@ -29,9 +15,10 @@ namespace Synthesis.Bethesda.Execution.Settings
         public string TargetBranch = string.Empty;
         public bool LatestTag = true;
         public bool FollowDefaultBranch = true;
-        public NugetVersioningEnum MutagenVersioning = NugetVersioningEnum.Latest;
+        public bool OverrideNugetVersioning = false;
+        public PatcherNugetVersioningEnum MutagenVersionType = PatcherNugetVersioningEnum.Profile;
         public string ManualMutagenVersion = string.Empty;
-        public NugetVersioningEnum SynthesisVersioning = NugetVersioningEnum.Latest;
+        public PatcherNugetVersioningEnum SynthesisVersionType = PatcherNugetVersioningEnum.Profile;
         public string ManualSynthesisVersion = string.Empty;
 
         public override void Print(IRunReporter logger)

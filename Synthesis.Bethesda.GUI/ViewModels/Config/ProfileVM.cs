@@ -5,15 +5,13 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
 using System.Windows.Input;
 using Wabbajack.Common;
 
@@ -53,6 +51,26 @@ namespace Synthesis.Bethesda.GUI
 
         private readonly ObservableAsPropertyHelper<bool> _IsActive;
         public bool IsActive => _IsActive.Value;
+
+        [Reactive]
+        public NugetVersioningEnum MutagenVersioning { get; set; } = NugetVersioningEnum.Manual;
+
+        [Reactive]
+        public string? ManualMutagenVersion { get; set; }
+
+        [Reactive]
+        public NugetVersioningEnum SynthesisVersioning { get; set; } = NugetVersioningEnum.Manual;
+
+        [Reactive]
+        public string? ManualSynthesisVersion { get; set; }
+
+        public IObservable<SynthesisNugetVersioning> ActiveVersioning { get; }
+
+        public ICommand SetAllToProfileCommand { get; }
+
+        public ReactiveCommand<Unit, Unit> UpdateMutagenManualToLatestCommand { get; }
+
+        public ReactiveCommand<Unit, Unit> UpdateSynthesisManualToLatestCommand { get; }
 
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
@@ -167,12 +185,88 @@ namespace Synthesis.Bethesda.GUI
                     }
                 },
                 canExecute: this.WhenAnyValue(x => x.LargeOverallError.Value).Select(x => x != null));
+
+            ActiveVersioning = Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.MutagenVersioning),
+                    this.WhenAnyValue(x => x.ManualMutagenVersion),
+                    parent.MainVM.NewestMutagenVersion,
+                    this.WhenAnyValue(x => x.SynthesisVersioning),
+                    this.WhenAnyValue(x => x.ManualSynthesisVersion),
+                    parent.MainVM.NewestSynthesisVersion,
+                    (mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
+                    {
+                        return new SynthesisNugetVersioning(
+                            new NugetVersioning("Mutagen", mutaVersioning, mutaManual ?? newestMuta ?? string.Empty, newestMuta),
+                            new NugetVersioning("Synthesis", synthVersioning, synthManual ?? newestSynth ?? string.Empty, newestSynth));
+                    })
+                .Replay(1)
+                .RefCount();
+
+            // Set manual if empty
+            parent.MainVM.NewestMutagenVersion
+                .Subscribe(x =>
+                {
+                    if (ManualMutagenVersion == null)
+                    {
+                        ManualMutagenVersion = x;
+                    }
+                })
+                .DisposeWith(this);
+            parent.MainVM.NewestSynthesisVersion
+                .Subscribe(x =>
+                {
+                    if (ManualSynthesisVersion == null)
+                    {
+                        ManualSynthesisVersion = x;
+                    }
+                })
+                .DisposeWith(this);
+
+            SetAllToProfileCommand = ReactiveCommand.Create(
+                execute: () =>
+                {
+                    foreach (var patcher in Patchers.Items)
+                    {
+                        if (patcher is GitPatcherVM gitPatcher)
+                        {
+                            gitPatcher.MutagenVersioning = PatcherNugetVersioningEnum.Profile;
+                            gitPatcher.SynthesisVersioning = PatcherNugetVersioningEnum.Profile;
+                        }
+                    }
+                });
+
+            UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(
+                objectSource: parent.MainVM.NewestMutagenVersion,
+                canExecute: v =>
+                {
+                    return Observable.CombineLatest(
+                            this.WhenAnyValue(x => x.ManualMutagenVersion),
+                            v,
+                            (manual, latest) => latest != null && latest != manual);
+                },
+                execute: v => ManualMutagenVersion = v ?? string.Empty,
+                disposable: this.CompositeDisposable);
+            UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
+                objectSource: parent.MainVM.NewestSynthesisVersion,
+                canExecute: v =>
+                {
+                    return Observable.CombineLatest(
+                            this.WhenAnyValue(x => x.ManualSynthesisVersion),
+                            v,
+                            (manual, latest) => latest != null && latest != manual);
+                },
+                execute: v => ManualSynthesisVersion = v ?? string.Empty,
+                disposable: this.CompositeDisposable);
         }
 
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)
             : this(parent, settings.TargetRelease, id: settings.ID)
         {
             Nickname = settings.Nickname;
+            MutagenVersioning = settings.MutagenVersioning;
+            ManualMutagenVersion = settings.MutagenManualVersion;
+            SynthesisVersioning = settings.SynthesisVersioning;
+            ManualSynthesisVersion = settings.SynthesisManualVersion;
             Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
             {
                 return p switch
@@ -194,6 +288,10 @@ namespace Synthesis.Bethesda.GUI
                 ID = ID,
                 Nickname = Nickname,
                 TargetRelease = Release,
+                MutagenManualVersion = ManualMutagenVersion,
+                SynthesisManualVersion = ManualSynthesisVersion,
+                MutagenVersioning = MutagenVersioning,
+                SynthesisVersioning = SynthesisVersioning
             };
         }
 

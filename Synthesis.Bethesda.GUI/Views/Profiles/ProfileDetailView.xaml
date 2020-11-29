@@ -12,69 +12,10 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Grid Margin="15,15,15,0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0"
-            Name="TopBarGrid"
-            Background="Transparent">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="60" />
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0"
-                x:Name="SelectButton"
-                Width="30"
-                VerticalAlignment="Center">
-                <Button.Style>
-                    <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
-                        <Setter Property="Content">
-                            <Setter.Value>
-                                <icon:PackIconMaterial Kind="CircleOutline" />
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsActive}" Value="True">
-                                <Setter Property="Content">
-                                    <Setter.Value>
-                                        <icon:PackIconModern Foreground="{StaticResource LightBlueBrush}" Kind="LocationCircle" />
-                                    </Setter.Value>
-                                </Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-            <TextBox Grid.Column="1"
-                Name="ProfileDetailName"
-                Margin="0,0,15,0"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Top"
-                mahapps:TextBoxHelper.Watermark="Profile Name"
-                Background="Transparent"
-                FontSize="26"
-                FontWeight="Black" />
-            <Button Grid.Column="2"
-                x:Name="DeleteButton"
-                Margin="0,0,10,0"
-                VerticalAlignment="Center"
-                ToolTip="Delete Profile">
-                <Button.Resources>
-                    <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#44FFFFFF" />
-                    <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource Red}" />
-                    <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource RedBackground}" />
-                </Button.Resources>
-                <icon:PackIconFontAwesome Kind="TrashSolid" />
-            </Button>
-        </Grid>
         <Image Grid.Row="0" Grid.RowSpan="3"
             x:Name="GameIconImage"
-            Width="60"
-            Height="60"
+            Width="40"
+            Height="40"
             Margin="3,5"
             HorizontalAlignment="Right"
             VerticalAlignment="Top">
@@ -99,16 +40,96 @@
                 </Style>
             </Image.Style>
         </Image>
-        <Button Grid.Row="1"
-            x:Name="ProfileInternalFilesButton"
-            HorizontalAlignment="Left">
-            <StackPanel Orientation="Horizontal">
-                <icon:PackIconModern
-                    Margin="0,1,5,0"
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0"
+                Name="TopBarGrid"
+                Background="Transparent">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="40" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0"
+                    x:Name="SelectButton"
+                    Width="30"
+                    VerticalAlignment="Center">
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <icon:PackIconMaterial Kind="CircleOutline" />
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <icon:PackIconModern Foreground="{StaticResource LightBlueBrush}" Kind="LocationCircle" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <TextBox Grid.Column="1"
+                    Name="ProfileDetailName"
+                    Margin="0,0,15,0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Top"
+                    mahapps:TextBoxHelper.Watermark="Profile Name"
+                    Background="Transparent"
+                    FontSize="26"
+                    FontWeight="Black" />
+                <Button Grid.Column="2"
+                    x:Name="DeleteButton"
+                    Margin="0,0,10,0"
                     VerticalAlignment="Center"
-                    Kind="FolderEllipsis" />
-                <TextBlock VerticalAlignment="Center" Text="Profile Internal Files" />
-            </StackPanel>
-        </Button>
+                    ToolTip="Delete Profile">
+                    <Button.Resources>
+                        <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#44FFFFFF" />
+                        <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource Red}" />
+                        <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource RedBackground}" />
+                    </Button.Resources>
+                    <icon:PackIconFontAwesome Kind="TrashSolid" />
+                </Button>
+            </Grid>
+            <TextBlock Grid.Row="1"
+                Margin="0,8,0,0"
+                FontSize="14"
+                FontWeight="Bold"
+                Text="Global Nuget Versions" />
+            <local:NugetsVersioningView Grid.Row="2"
+                x:Name="Nugets"
+                Margin="0,8,0,0" />
+            <Button Grid.Row="3"
+                x:Name="ResetPatchersToProfile"
+                Padding="5"
+                HorizontalAlignment="Left"
+                ToolTip="Sets all contained patchers to match and follow profile settings">
+                Reset Patchers to Profile
+            </Button>
+            <Button Grid.Row="5"
+                x:Name="ProfileInternalFilesButton"
+                Margin="0,0,0,10"
+                HorizontalAlignment="Left">
+                <StackPanel Orientation="Horizontal">
+                    <icon:PackIconModern
+                        Margin="0,1,5,0"
+                        VerticalAlignment="Center"
+                        Kind="FolderEllipsis" />
+                    <TextBlock VerticalAlignment="Center" Text="Profile Internal Files" />
+                </StackPanel>
+            </Button>
+        </Grid>
     </Grid>
 </local:ProfileDetailViewBase>

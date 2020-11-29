@@ -1,5 +1,4 @@
 using DynamicData;
-using DynamicData.Binding;
 using Mutagen.Bethesda;
 using Noggog.WPF;
 using ReactiveUI;

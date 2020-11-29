@@ -1,3 +1,5 @@
+using Noggog;
+using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -30,6 +32,15 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         public override int GetHashCode()
         {
             return HashCode.Combine(Mutagen, Synthesis);
+        }
+
+        public GetResponse<NugetVersioningTarget> TryGetTarget()
+        {
+            var mutaVersion = this.Mutagen.TryGetVersioning(); 
+            if (mutaVersion.Failed) mutaVersion.BubbleFailure<NugetVersioningTarget>();
+            var synthesisVersion = this.Synthesis.TryGetVersioning();
+            if (synthesisVersion.Failed) synthesisVersion.BubbleFailure<NugetVersioningTarget>();
+            return GetResponse<NugetVersioningTarget>.Succeed(new NugetVersioningTarget(mutaVersion.Value, this.Mutagen.Versioning, synthesisVersion.Value, this.Synthesis.Versioning));
         }
     }
 }

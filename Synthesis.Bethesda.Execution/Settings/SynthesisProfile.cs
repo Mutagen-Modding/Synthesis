@@ -1,7 +1,5 @@
-﻿using Mutagen.Bethesda;
-using System;
+using Mutagen.Bethesda;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
@@ -11,5 +9,9 @@ namespace Synthesis.Bethesda.Execution.Settings
         public string ID = string.Empty;
         public GameRelease TargetRelease;
         public List<PatcherSettings> Patchers = new List<PatcherSettings>();
+        public NugetVersioningEnum MutagenVersioning = NugetVersioningEnum.Manual;
+        public string? MutagenManualVersion;
+        public NugetVersioningEnum SynthesisVersioning = NugetVersioningEnum.Manual;
+        public string? SynthesisManualVersion;
     }
 }

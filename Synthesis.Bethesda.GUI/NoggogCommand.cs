@@ -1,4 +1,5 @@
-﻿using Noggog.WPF;
+using Noggog;
+using Noggog.WPF;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public static class NoggogCommand
     {
-        public static ReactiveCommandBase<Unit, Unit> CreateFromJob<TJob>(
+        public static ReactiveCommand<Unit, Unit> CreateFromJob<TJob>(
             Func<(TJob Job, IObservable<Unit> CompletionSignal)> jobCreator,
             out IObservable<TJob> createdJobs,
             IObservable<bool>? canExecute = null,
@@ -33,7 +34,7 @@ namespace Synthesis.Bethesda.GUI
                 });
         }
 
-        public static ReactiveCommandBase<Unit, Unit> CreateFromJob<TInput, TJob>(
+        public static ReactiveCommand<Unit, Unit> CreateFromJob<TInput, TJob>(
             Func<TInput, (TJob? Job, IObservable<Unit> CompletionSignal)> jobCreator,
             IObservable<TInput> extraInput,
             out IObservable<TJob?> createdJobs,
@@ -65,6 +66,40 @@ namespace Synthesis.Bethesda.GUI
                     jobs.OnNext(j.Job);
                     await j.CompletionSignal;
                 });
+        }
+
+        public static ReactiveCommand<Unit, Unit> CreateFromObject<TObject>(
+            IObservable<TObject> objectSource,
+            Func<TObject, bool> canExecute,
+            Action<TObject> execute,
+            CompositeDisposable disposable)
+        {
+            var ret = ReactiveCommand.Create(
+                canExecute: objectSource.Select(canExecute),
+                execute: ActionExt.Nothing);
+            ret.WithLatestFrom(
+                    objectSource,
+                    (_, s) => s)
+                .Subscribe(execute)
+                .DisposeWith(disposable);
+            return ret;
+        }
+
+        public static ReactiveCommand<Unit, Unit> CreateFromObject<TObject>(
+            IObservable<TObject> objectSource,
+            Func<IObservable<TObject>, IObservable<bool>> canExecute,
+            Action<TObject> execute,
+            CompositeDisposable disposable)
+        {
+            var ret = ReactiveCommand.Create(
+                canExecute: canExecute(objectSource),
+                execute: ActionExt.Nothing);
+            ret.WithLatestFrom(
+                    objectSource,
+                    (_, s) => s)
+                .Subscribe(execute)
+                .DisposeWith(disposable);
+            return ret;
         }
     }
 }

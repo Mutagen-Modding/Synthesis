@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers;
+using System.Reactive;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -82,23 +83,27 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand NavigateToInternalFilesCommand { get; }
 
+        public ReactiveCommand<Unit, Unit> UpdateMutagenManualToLatestCommand { get; }
+
+        public ReactiveCommand<Unit, Unit> UpdateSynthesisManualToLatestCommand { get; }
+
         [Reactive]
-        public NugetVersioningEnum MutagenVersioning { get; set; } = NugetVersioningEnum.Latest;
+        public PatcherNugetVersioningEnum MutagenVersioning { get; set; } = PatcherNugetVersioningEnum.Profile;
 
         [Reactive]
         public string ManualMutagenVersion { get; set; } = string.Empty;
 
         [Reactive]
-        public NugetVersioningEnum SynthesisVersioning { get; set; } = NugetVersioningEnum.Latest;
+        public PatcherNugetVersioningEnum SynthesisVersioning { get; set; } = PatcherNugetVersioningEnum.Profile;
 
         [Reactive]
         public string ManualSynthesisVersion { get; set; } = string.Empty;
 
-        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _UsedMutagenVersion;
-        public (string? MatchVersion, string? SelectedVersion) UsedMutagenVersion => _UsedMutagenVersion.Value;
+        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _MutagenVersionDiff;
+        public (string? MatchVersion, string? SelectedVersion) MutagenVersionDiff => _MutagenVersionDiff.Value;
 
-        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _UsedSynthesisVersion;
-        public (string? MatchVersion, string? SelectedVersion) UsedSynthesisVersion => _UsedSynthesisVersion.Value;
+        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _SynthesisVersionDiff;
+        public (string? MatchVersion, string? SelectedVersion) SynthesisVersionDiff => _SynthesisVersionDiff.Value;
 
         private readonly ObservableAsPropertyHelper<bool> _AttemptedCheckout;
         public bool AttemptedCheckout => _AttemptedCheckout.Value;
@@ -280,61 +285,39 @@ namespace Synthesis.Bethesda.GUI
                 this.WhenAnyValue(x => x.TargetBranchName),
                 (versioning, tag, commit, branch) => GitPatcherVersioning.Factory(versioning, tag, commit, branch));
 
-            var nugetVersioning = Observable.CombineLatest(
+            var nugetTarget = Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.Profile.ActiveVersioning)
+                        .Switch(),
                     this.WhenAnyValue(x => x.MutagenVersioning),
                     this.WhenAnyValue(x => x.ManualMutagenVersion),
                     parent.Config.MainVM.NewestMutagenVersion,
                     this.WhenAnyValue(x => x.SynthesisVersioning),
                     this.WhenAnyValue(x => x.ManualSynthesisVersion),
                     parent.Config.MainVM.NewestSynthesisVersion,
-                    (mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
+                    (profile, mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
                     {
+                        NugetVersioning mutagen, synthesis;
+                        if (mutaVersioning == PatcherNugetVersioningEnum.Profile)
+                        {
+                            mutagen = profile.Mutagen;
+                        }
+                        else
+                        {
+                            mutagen = new NugetVersioning("Mutagen", mutaVersioning.ToNugetVersioningEnum(), mutaManual, newestMuta);
+                        }
+                        if (synthVersioning == PatcherNugetVersioningEnum.Profile)
+                        {
+                            synthesis = profile.Synthesis;
+                        }
+                        else
+                        {
+                            synthesis = new NugetVersioning("Synthesis", synthVersioning.ToNugetVersioningEnum(), synthManual, newestSynth);
+                        }
                         return new SynthesisNugetVersioning(
-                            new NugetVersioning(mutaVersioning, mutaManual, newestMuta),
-                            new NugetVersioning(synthVersioning, synthManual, newestSynth));
-                    });
-
-            var libraryNugets = nugetVersioning
-                .Select(nuget =>
-                {
-                    if (nuget.Mutagen.Versioning == NugetVersioningEnum.Latest && nuget.Mutagen.NewestVersion == null)
-                    {
-                        return GetResponse<NugetVersioningTarget>.Fail("Latest Mutagen version is desired, but latest version is not known.");
-                    }
-                    if (nuget.Synthesis.Versioning == NugetVersioningEnum.Latest && nuget.Synthesis.NewestVersion == null)
-                    {
-                        return GetResponse<NugetVersioningTarget>.Fail("Latest Synthesis version is desired, but latest version is not known.");
-                    }
-                    var muta = nuget.Mutagen.Versioning switch
-                    {
-                        NugetVersioningEnum.Latest => (nuget.Mutagen.NewestVersion, nuget.Mutagen.Versioning),
-                        NugetVersioningEnum.Match => (null, nuget.Mutagen.Versioning),
-                        NugetVersioningEnum.Manual => (nuget.Mutagen.ManualVersion, nuget.Mutagen.Versioning),
-                        _ => throw new NotImplementedException(),
-                    };
-                    var synth = nuget.Synthesis.Versioning switch
-                    {
-                        NugetVersioningEnum.Latest => (nuget.Synthesis.NewestVersion, nuget.Synthesis.Versioning),
-                        NugetVersioningEnum.Match => (null, nuget.Synthesis.Versioning),
-                        NugetVersioningEnum.Manual => (nuget.Synthesis.ManualVersion, nuget.Synthesis.Versioning),
-                        _ => throw new NotImplementedException(),
-                    };
-                    if (muta.Versioning == NugetVersioningEnum.Manual)
-                    {
-                        if (muta.Item1.IsNullOrWhitespace())
-                        {
-                            return GetResponse<NugetVersioningTarget>.Fail("Manual Mutagen versioning had no input");
-                        }
-                    }
-                    if (synth.Versioning == NugetVersioningEnum.Manual)
-                    {
-                        if (synth.Item1.IsNullOrWhitespace())
-                        {
-                            return GetResponse<NugetVersioningTarget>.Fail("Manual Synthesis versioning had no input");
-                        }
-                    }
-                    return GetResponse<NugetVersioningTarget>.Succeed(new NugetVersioningTarget(muta.Item1, muta.Versioning, synth.Item1, synth.Versioning));
-                })
+                            mutagen: mutagen, 
+                            synthesis: synthesis);
+                    })
+                .Select(nuget => nuget.TryGetTarget())
                 .Replay(1)
                 .RefCount();
 
@@ -344,7 +327,7 @@ namespace Synthesis.Bethesda.GUI
                     SelectedProjectPath.PathState()
                         .Select(x => x.Succeeded ? x : GetResponse<string>.Fail("No patcher project selected.")),
                     patcherVersioning,
-                    libraryNugets,
+                    nugetTarget,
                     (runnerState, proj, patcherVersioning, libraryNugets) =>
                     (runnerState, proj, patcherVersioning, libraryNugets))
                 .Replay(1)
@@ -353,39 +336,67 @@ namespace Synthesis.Bethesda.GUI
                 .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                 .DistinctUntilChanged()
                 .ObserveOn(RxApp.TaskpoolScheduler)
-                .SelectReplaceWithIntermediate(
-                    new ConfigurationState<RunnerRepoInfo>(default!)
+                .Select((item) =>
+                {
+                    return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
                     {
-                        RunnableState = ErrorResponse.Fail("Checking out the proper commit"),
-                        IsHaltingError = false,
-                    },
-                    async (item, cancel) =>
-                    {
-                        async Task<ConfigurationState<RunnerRepoInfo>> Execute()
+                        if (item.runnerState.RunnableState.Failed)
                         {
-                            if (item.runnerState.RunnableState.Failed) return item.runnerState.BubbleError<RunnerRepoInfo>();
-                            if (item.proj.Failed) return item.proj.BubbleFailure<RunnerRepoInfo>();
-                            if (item.libraryNugets.Failed) return item.libraryNugets.BubbleFailure<RunnerRepoInfo>();
+                            observer.OnNext(item.runnerState.BubbleError<RunnerRepoInfo>());
+                            return;
+                        }
+                        if (item.proj.Failed)
+                        {
+                            observer.OnNext(item.proj.BubbleFailure<RunnerRepoInfo>());
+                            return;
+                        }
+                        if (item.libraryNugets.Failed)
+                        {
+                            observer.OnNext(item.libraryNugets.BubbleFailure<RunnerRepoInfo>());
+                            return;
+                        }
 
-                            return await GitPatcherRun.CheckoutRunnerRepository(
-                                proj: item.proj.Value,
-                                localRepoDir: LocalRunnerRepoDirectory,
-                                patcherVersioning: item.patcherVersioning,
-                                nugetVersioning: item.libraryNugets.Value,
-                                logger: (s) => Logger.Information(s),
-                                cancel: cancel);
-                        }
-                        var ret = await Execute();
-                        if (ret.RunnableState.Succeeded)
+                        observer.OnNext(new ConfigurationState<RunnerRepoInfo>(default!)
                         {
-                            Logger.Information($"Finished checking out");
-                        }
-                        else
+                            RunnableState = ErrorResponse.Fail("Checking out the proper commit"),
+                            IsHaltingError = false,
+                        });
+
+                        var runInfo = await GitPatcherRun.CheckoutRunnerRepository(
+                            proj: item.proj.Value,
+                            localRepoDir: LocalRunnerRepoDirectory,
+                            patcherVersioning: item.patcherVersioning,
+                            nugetVersioning: item.libraryNugets.Value,
+                            logger: (s) => Logger.Information(s),
+                            cancel: cancel,
+                            compile: false);
+
+                        if (runInfo.RunnableState.Failed)
                         {
-                            Logger.Error(ret.RunnableState, $"Failed checking out");
+                            observer.OnNext(runInfo);
+                            return;
                         }
-                        return ret;
-                    })
+
+                        // Return early with the values, but mark not complete
+                        observer.OnNext(new ConfigurationState<RunnerRepoInfo>(runInfo.Item)
+                        {
+                            IsHaltingError = false,
+                            RunnableState = ErrorResponse.Fail("Compiling")
+                        });
+
+                        // Compile to help prep
+                        var compileResp = await SolutionPatcherRun.CompileWithDotnet(item.proj.Value, cancel);
+                        if (compileResp.Failed)
+                        {
+                            observer.OnNext(compileResp.BubbleFailure<RunnerRepoInfo>());
+                            return;
+                        }
+
+                        // Return things again, without error
+                        observer.OnNext(runInfo);
+                    });
+                })
+                .Switch()
                 .Replay(1)
                 .RefCount();
 
@@ -399,22 +410,22 @@ namespace Synthesis.Bethesda.GUI
                 .ToGuiProperty(this, nameof(AttemptedCheckout));
 
             _RunnableData = runnableState
-                .Select(x => x.RunnableState.Succeeded ? x.Item : default(RunnerRepoInfo?))
+                .Select(x => x.Item ?? default(RunnerRepoInfo?))
                 .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?));
 
-            _UsedMutagenVersion = Observable.CombineLatest(
+            _MutagenVersionDiff = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.RunnableData)
                         .Select(x => x?.ListedMutagenVersion),
-                    libraryNugets.Select(x => x.Value?.MutagenVersion),
+                    nugetTarget.Select(x => x.Value?.MutagenVersion),
                     (matchVersion, selVersion) => (matchVersion, selVersion))
-                .ToGuiProperty(this, nameof(UsedMutagenVersion));
+                .ToGuiProperty(this, nameof(MutagenVersionDiff));
 
-            _UsedSynthesisVersion = Observable.CombineLatest(
+            _SynthesisVersionDiff = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.RunnableData)
                         .Select(x => x?.ListedSynthesisVersion),
-                    libraryNugets.Select(x => x.Value?.SynthesisVersion),
+                    nugetTarget.Select(x => x.Value?.SynthesisVersion),
                     (matchVersion, selVersion) => (matchVersion, selVersion))
-                .ToGuiProperty(this, nameof(UsedSynthesisVersion));
+                .ToGuiProperty(this, nameof(SynthesisVersionDiff));
 
             _State = Observable.CombineLatest(
                     driverRepoInfo
@@ -466,6 +477,29 @@ namespace Synthesis.Bethesda.GUI
                 });
 
             NavigateToInternalFilesCommand = ReactiveCommand.Create(() => Utility.NavigateToPath(localRepoDir));
+
+            UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(
+                objectSource: parent.Config.MainVM.NewestMutagenVersion,
+                canExecute: v =>
+                {
+                    return Observable.CombineLatest(
+                            this.WhenAnyValue(x => x.ManualMutagenVersion),
+                            v,
+                            (manual, latest) => latest != null && latest != manual);
+                },
+                execute: v => ManualMutagenVersion = v ?? string.Empty,
+                disposable: this.CompositeDisposable);
+            UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
+                objectSource: parent.Config.MainVM.NewestSynthesisVersion,
+                canExecute: v =>
+                {
+                    return Observable.CombineLatest(
+                            this.WhenAnyValue(x => x.ManualSynthesisVersion),
+                            v,
+                            (manual, latest) => latest != null && latest != manual);
+                },
+                execute: v => ManualSynthesisVersion = v ?? string.Empty,
+                disposable: this.CompositeDisposable);
         }
 
         public override PatcherSettings Save()
@@ -476,9 +510,9 @@ namespace Synthesis.Bethesda.GUI
                 ID = this.ID,
                 SelectedProjectSubpath = this.ProjectSubpath,
                 PatcherVersioning = this.PatcherVersioning,
-                MutagenVersioning = this.MutagenVersioning,
+                MutagenVersionType = this.MutagenVersioning,
                 ManualMutagenVersion = this.ManualMutagenVersion,
-                SynthesisVersioning = this.SynthesisVersioning,
+                SynthesisVersionType = this.SynthesisVersioning,
                 ManualSynthesisVersion = this.ManualSynthesisVersion,
                 TargetTag = this.TargetTag,
                 TargetCommit = this.TargetCommit,
@@ -501,8 +535,8 @@ namespace Synthesis.Bethesda.GUI
             this.ID = string.IsNullOrWhiteSpace(settings.ID) ? Guid.NewGuid().ToString() : settings.ID;
             this.ProjectSubpath = settings.SelectedProjectSubpath;
             this.PatcherVersioning = settings.PatcherVersioning;
-            this.MutagenVersioning = settings.MutagenVersioning;
-            this.SynthesisVersioning = settings.SynthesisVersioning;
+            this.MutagenVersioning = settings.MutagenVersionType;
+            this.SynthesisVersioning = settings.SynthesisVersionType;
             this.ManualMutagenVersion = settings.ManualMutagenVersion;
             this.ManualSynthesisVersion = settings.ManualSynthesisVersion;
             this.TargetTag = settings.TargetTag;
