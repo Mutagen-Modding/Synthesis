@@ -150,6 +150,13 @@ namespace Synthesis.Bethesda.GUI
                         }
                         return GetResponse<PatcherVM>.Succeed(null!);
                     })
+                .Do(x =>
+                {
+                    if (x.Failed)
+                    {
+                        Log.Logger.Warning($"Encountered blocking overall error: {x.Reason}");
+                    }
+                })
                 .ToGuiProperty(this, nameof(LargeOverallError), GetResponse<PatcherVM>.Fail("Uninitialized"));
 
             _BlockingError = Observable.CombineLatest(
