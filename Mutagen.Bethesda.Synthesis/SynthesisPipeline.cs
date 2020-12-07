@@ -26,12 +26,12 @@ namespace Mutagen.Bethesda.Synthesis
         public static readonly SynthesisPipeline Instance = new SynthesisPipeline();
 
         public delegate void PatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
-            where TMod : class, IMod, TModGetter
-            where TModGetter : class, IModGetter;
+            where TMod : class, IContextMod<TMod>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod>;
 
         public delegate Task AsyncPatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
-            where TMod : class, IMod, TModGetter
-            where TModGetter : class, IModGetter;
+            where TMod : class, IContextMod<TMod>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod>;
 
         #region Patch
         /// <summary>
@@ -47,8 +47,8 @@ namespace Mutagen.Bethesda.Synthesis
             string[] args,
             AsyncPatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
-            where TMod : class, IMod, TModGetter
-            where TModGetter : class, IModGetter
+            where TMod : class, IContextMod<TMod>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod>
         {
             if (args.Length == 0)
             {
@@ -122,8 +122,8 @@ namespace Mutagen.Bethesda.Synthesis
             string[] args,
             PatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
-            where TMod : class, IMod, TModGetter
-            where TModGetter : class, IModGetter
+            where TMod : class, IContextMod<TMod>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod>
         {
             Console.WriteLine($"Mutagen version: {Versions.MutagenVersion}");
             Console.WriteLine($"Mutagen sha: {Versions.MutagenSha}");
@@ -200,8 +200,8 @@ namespace Mutagen.Bethesda.Synthesis
             RunSynthesisMutagenPatcher settings,
             AsyncPatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
-            where TMod : class, IMod, TModGetter
-            where TModGetter : class, IModGetter
+            where TMod : class, IContextMod<TMod>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod>
         {
             try
             {
@@ -238,8 +238,8 @@ namespace Mutagen.Bethesda.Synthesis
             RunSynthesisMutagenPatcher settings,
             PatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
-            where TMod : class, IMod, TModGetter
-            where TModGetter : class, IModGetter
+            where TMod : class, IContextMod<TMod>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod>
         {
             try
             {
