@@ -45,10 +45,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
-    <PackageReference Include="Loqui" Version="1.5.14" />
-    <PackageReference Include="Loqui.Generation" Version="1.5.14" />
-    <PackageReference Include="Noggog.CSharpExt" Version="1.6.6" />
-    <PackageReference Include="Noggog.WPF" Version="1.6.6" />
+    <PackageReference Include="Loqui" Version="1.5.15" />
+    <PackageReference Include="Loqui.Generation" Version="1.5.15" />
+    <PackageReference Include="Noggog.CSharpExt" Version="1.6.7" />
+    <PackageReference Include="Noggog.WPF" Version="1.6.7" />
     <PackageReference Include="NuGetizer" Version="0.4.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

@@ -12,8 +12,8 @@ namespace Mutagen.Bethesda.Synthesis.Internal
     public class Utility
     {
         public static SynthesisState<TMod, TModGetter> ToState<TMod, TModGetter>(RunSynthesisMutagenPatcher settings, UserPreferences userPrefs)
-            where TMod : class, IMod, TModGetter
-            where TModGetter : class, IModGetter
+            where TMod : class, IContextMod<TMod>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod>
         {
             // Confirm target game release matches
             var regis = settings.GameRelease.ToCategory().ToModRegistration();
@@ -75,7 +75,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                     readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(new ModPath(modKey, settings.SourcePath), settings.GameRelease);
                 }
                 loadOrder.Add(new ModListing<TModGetter>(readOnlyPatchMod, enabled: true));
-                cache = loadOrder.ToImmutableLinkCache();
+                cache = loadOrder.ToImmutableLinkCache<TMod, TModGetter>();
             }
             else
             {
