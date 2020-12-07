@@ -47,6 +47,17 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.OpenProfilesPageCommand)
                     .BindToStrict(this, x => x.OpenProfilesPageButton.Command)
                     .DisposeWith(dispose);
+
+                this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.UpdateProfileNugetVersionCommand)
+                    .Cast<ICommand>()
+                    .BindToStrict(this, x => x.UpdateButton.Command)
+                    .DisposeWith(dispose);
+                this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.UpdateProfileNugetVersionCommand)
+                    .Select(x => x.CanExecute ?? Observable.Return(false))
+                    .Switch()
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.UpdateButton.Visibility)
+                    .DisposeWith(dispose);
             });
         }
     }

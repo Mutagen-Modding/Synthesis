@@ -29,6 +29,7 @@ namespace Synthesis.Bethesda.GUI
         public ICommand AddCliPatcherCommand { get; }
         public ICommand AddSnippetPatcherCommand { get; }
         public ICommand GoToErrorPatcher { get; }
+        public IReactiveCommand UpdateProfileNugetVersionCommand { get; }
 
         public string ID { get; private set; }
 
@@ -245,27 +246,45 @@ namespace Synthesis.Bethesda.GUI
                 });
 
             UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(
-                objectSource: parent.MainVM.NewestMutagenVersion,
+                objectSource: parent.MainVM.NewestMutagenVersion
+                    .ObserveOnGui(),
                 canExecute: v =>
                 {
                     return Observable.CombineLatest(
+                            this.WhenAnyValue(x => x.MutagenVersioning),
                             this.WhenAnyValue(x => x.ManualMutagenVersion),
                             v,
-                            (manual, latest) => latest != null && latest != manual);
+                            (versioning, manual, latest) =>
+                            {
+                                if (versioning != NugetVersioningEnum.Manual) return false;
+                                return latest != null && latest != manual;
+                            })
+                        .ObserveOnGui();
                 },
                 execute: v => ManualMutagenVersion = v ?? string.Empty,
                 disposable: this.CompositeDisposable);
             UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
-                objectSource: parent.MainVM.NewestSynthesisVersion,
+                objectSource: parent.MainVM.NewestSynthesisVersion
+                    .ObserveOnGui(),
                 canExecute: v =>
                 {
                     return Observable.CombineLatest(
+                            this.WhenAnyValue(x => x.SynthesisVersioning),
                             this.WhenAnyValue(x => x.ManualSynthesisVersion),
                             v,
-                            (manual, latest) => latest != null && latest != manual);
+                            (versioning, manual, latest) =>
+                            {
+                                if (versioning != NugetVersioningEnum.Manual) return false;
+                                return latest != null && latest != manual;
+                            })
+                        .ObserveOnGui();
                 },
                 execute: v => ManualSynthesisVersion = v ?? string.Empty,
                 disposable: this.CompositeDisposable);
+
+            UpdateProfileNugetVersionCommand = CommandExt.CreateCombinedAny(
+                this.UpdateMutagenManualToLatestCommand, 
+                this.UpdateSynthesisManualToLatestCommand);
         }
 
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)

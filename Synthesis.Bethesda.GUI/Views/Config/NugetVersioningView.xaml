@@ -78,44 +78,10 @@
                 mahapps:TextBoxHelper.Watermark="0.0.0.0"
                 noggog:ControlsHelper.ErrorTooltip="Need to specify a version"
                 Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
-            <Button Grid.Column="6"
+            <local:UpdateButtonControl Grid.Column="6"
                 x:Name="UpdateButton"
                 Margin="10,0,0,0"
-                ToolTip="Update available"
-                Visibility="Collapsed">
-                <Button.Resources>
-                    <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource PaleBlueHover}" />
-                    <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource LightBlue}" />
-                </Button.Resources>
-                <Button.Style>
-                    <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
-                        <Setter Property="Foreground" Value="{StaticResource PaleBlueBrush}" />
-                        <Setter Property="Effect">
-                            <Setter.Value>
-                                <DropShadowEffect
-                                    BlurRadius="15"
-                                    Opacity="0.5"
-                                    ShadowDepth="0"
-                                    Color="{StaticResource PaleBlue}" />
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True">
-                                <Setter Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect
-                                            BlurRadius="18"
-                                            Opacity="0.8"
-                                            ShadowDepth="0"
-                                            Color="{StaticResource PaleBlue}" />
-                                    </Setter.Value>
-                                </Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-                <icon:PackIconMaterial Kind="ArrowUpBoldCircle" />
-            </Button>
+                Visibility="Collapsed" />
         </Grid>
     </Border>
 </UserControl>
