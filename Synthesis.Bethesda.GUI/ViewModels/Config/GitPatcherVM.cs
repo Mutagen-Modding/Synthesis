@@ -18,6 +18,7 @@ using System.Windows.Input;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers;
 using System.Reactive;
+using System.Text;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -296,25 +297,31 @@ namespace Synthesis.Bethesda.GUI
                     parent.Config.MainVM.NewestSynthesisVersion,
                     (profile, mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
                     {
+                        var sb = new StringBuilder("Switching nuget targets");
                         NugetVersioning mutagen, synthesis;
                         if (mutaVersioning == PatcherNugetVersioningEnum.Profile)
                         {
+                            sb.Append($"  Mutagen following profile: {profile.Mutagen}");
                             mutagen = profile.Mutagen;
                         }
                         else
                         {
                             mutagen = new NugetVersioning("Mutagen", mutaVersioning.ToNugetVersioningEnum(), mutaManual, newestMuta);
+                            sb.Append($"  {mutagen}");
                         }
                         if (synthVersioning == PatcherNugetVersioningEnum.Profile)
                         {
+                            sb.Append($"  Synthesis following profile: {profile.Synthesis}");
                             synthesis = profile.Synthesis;
                         }
                         else
                         {
                             synthesis = new NugetVersioning("Synthesis", synthVersioning.ToNugetVersioningEnum(), synthManual, newestSynth);
+                            sb.Append($"  {synthesis}");
                         }
+                        Logger.Information(sb.ToString());
                         return new SynthesisNugetVersioning(
-                            mutagen: mutagen, 
+                            mutagen: mutagen,
                             synthesis: synthesis);
                     })
                 .Select(nuget => nuget.TryGetTarget())
@@ -340,60 +347,69 @@ namespace Synthesis.Bethesda.GUI
                 {
                     return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
                     {
-                        if (item.runnerState.RunnableState.Failed)
+                        try
                         {
-                            observer.OnNext(item.runnerState.BubbleError<RunnerRepoInfo>());
-                            return;
-                        }
-                        if (item.proj.Failed)
-                        {
-                            observer.OnNext(item.proj.BubbleFailure<RunnerRepoInfo>());
-                            return;
-                        }
-                        if (item.libraryNugets.Failed)
-                        {
-                            observer.OnNext(item.libraryNugets.BubbleFailure<RunnerRepoInfo>());
-                            return;
-                        }
+                            if (item.runnerState.RunnableState.Failed)
+                            {
+                                observer.OnNext(item.runnerState.BubbleError<RunnerRepoInfo>());
+                                return;
+                            }
+                            if (item.proj.Failed)
+                            {
+                                observer.OnNext(item.proj.BubbleFailure<RunnerRepoInfo>());
+                                return;
+                            }
+                            if (item.libraryNugets.Failed)
+                            {
+                                observer.OnNext(item.libraryNugets.BubbleFailure<RunnerRepoInfo>());
+                                return;
+                            }
 
-                        observer.OnNext(new ConfigurationState<RunnerRepoInfo>(default!)
-                        {
-                            RunnableState = ErrorResponse.Fail("Checking out the proper commit"),
-                            IsHaltingError = false,
-                        });
+                            Logger.Information("Checking out the proper commit");
+                            observer.OnNext(new ConfigurationState<RunnerRepoInfo>(default!)
+                            {
+                                RunnableState = ErrorResponse.Fail("Checking out the proper commit"),
+                                IsHaltingError = false,
+                            });
 
-                        var runInfo = await GitPatcherRun.CheckoutRunnerRepository(
-                            proj: item.proj.Value,
-                            localRepoDir: LocalRunnerRepoDirectory,
-                            patcherVersioning: item.patcherVersioning,
-                            nugetVersioning: item.libraryNugets.Value,
-                            logger: (s) => Logger.Information(s),
-                            cancel: cancel,
-                            compile: false);
+                            var runInfo = await GitPatcherRun.CheckoutRunnerRepository(
+                                proj: item.proj.Value,
+                                localRepoDir: LocalRunnerRepoDirectory,
+                                patcherVersioning: item.patcherVersioning,
+                                nugetVersioning: item.libraryNugets.Value,
+                                logger: (s) => Logger.Information(s),
+                                cancel: cancel,
+                                compile: false);
 
-                        if (runInfo.RunnableState.Failed)
-                        {
+                            if (runInfo.RunnableState.Failed)
+                            {
+                                observer.OnNext(runInfo);
+                                return;
+                            }
+
+                            // Return early with the values, but mark not complete
+                            observer.OnNext(new ConfigurationState<RunnerRepoInfo>(runInfo.Item)
+                            {
+                                IsHaltingError = false,
+                                RunnableState = ErrorResponse.Fail("Compiling")
+                            });
+
+                            // Compile to help prep
+                            var compileResp = await SolutionPatcherRun.CompileWithDotnet(item.proj.Value, cancel);
+                            if (compileResp.Failed)
+                            {
+                                observer.OnNext(compileResp.BubbleFailure<RunnerRepoInfo>());
+                                return;
+                            }
+
+                            // Return things again, without error
                             observer.OnNext(runInfo);
-                            return;
                         }
-
-                        // Return early with the values, but mark not complete
-                        observer.OnNext(new ConfigurationState<RunnerRepoInfo>(runInfo.Item)
+                        catch (Exception ex)
                         {
-                            IsHaltingError = false,
-                            RunnableState = ErrorResponse.Fail("Compiling")
-                        });
-
-                        // Compile to help prep
-                        var compileResp = await SolutionPatcherRun.CompileWithDotnet(item.proj.Value, cancel);
-                        if (compileResp.Failed)
-                        {
-                            observer.OnNext(compileResp.BubbleFailure<RunnerRepoInfo>());
-                            return;
+                            Logger.Error($"Error checking out runner repository: {ex}");
+                            throw;
                         }
-
-                        // Return things again, without error
-                        observer.OnNext(runInfo);
                     });
                 })
                 .Switch()

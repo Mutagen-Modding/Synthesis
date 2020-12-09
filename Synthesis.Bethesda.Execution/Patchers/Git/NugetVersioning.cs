@@ -65,5 +65,10 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             }
             return ret;
         }
+
+        public override string ToString()
+        {
+            return $"{Nickname} ==> Manual: {ManualVersion} Newest: {NewestVersion} ==> {Versioning}";
+        }
     }
 }

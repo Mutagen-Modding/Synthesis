@@ -206,6 +206,7 @@ namespace Synthesis.Bethesda.GUI
                             new NugetVersioning("Mutagen", mutaVersioning, mutaManual ?? newestMuta ?? string.Empty, newestMuta),
                             new NugetVersioning("Synthesis", synthVersioning, synthManual ?? newestSynth ?? string.Empty, newestSynth));
                     })
+                .Do(x => Log.Logger.Information($"Swapped profile {Nickname} to {x}"))
                 .Replay(1)
                 .RefCount();
 

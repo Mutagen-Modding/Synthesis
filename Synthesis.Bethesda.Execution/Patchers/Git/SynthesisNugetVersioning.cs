@@ -42,5 +42,10 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             if (synthesisVersion.Failed) synthesisVersion.BubbleFailure<NugetVersioningTarget>();
             return GetResponse<NugetVersioningTarget>.Succeed(new NugetVersioningTarget(mutaVersion.Value, this.Mutagen.Versioning, synthesisVersion.Value, this.Synthesis.Versioning));
         }
+
+        public override string ToString()
+        {
+            return $"({Mutagen})({Synthesis})";
+        }
     }
 }
