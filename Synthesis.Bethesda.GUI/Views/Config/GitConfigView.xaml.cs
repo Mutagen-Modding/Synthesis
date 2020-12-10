@@ -60,44 +60,44 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, view => view.AdvancedSettingsArea.Visibility)
                     .DisposeWith(disposable);
 
-                this.BindStrict(this.ViewModel, vm => vm.PatcherVersioning, view => view.PatcherVersioningTab.SelectedIndex, (e) => (int)e, i => (PatcherVersioningEnum)i)
+                this.BindStrict(this.ViewModel, vm => vm.PatcherVersioning, view => view.PatcherVersioning.TabControl.SelectedIndex, (e) => (int)e, i => (PatcherVersioningEnum)i)
                     .DisposeWith(disposable);
 
                 // Bind tag picker
-                this.BindStrict(this.ViewModel, vm => vm.TargetTag, view => view.TagPickerBox.SelectedItem)
+                this.BindStrict(this.ViewModel, vm => vm.TargetTag, view => view.PatcherVersioning.TagPickerBox.SelectedItem)
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.LatestTag, view => view.LatestTagCheck.IsChecked)
+                this.BindStrict(this.ViewModel, vm => vm.LatestTag, view => view.PatcherVersioning.LatestTagCheck.IsChecked)
                     .DisposeWith(disposable);
-                this.OneWayBindStrict(this.ViewModel, vm => vm.AvailableTags, view => view.TagPickerBox.ItemsSource)
+                this.OneWayBindStrict(this.ViewModel, vm => vm.AvailableTags, view => view.PatcherVersioning.TagPickerBox.ItemsSource)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.LatestTag)
                     .Select(x => !x)
-                    .BindToStrict(this, x => x.TagPickerBox.IsEnabled)
+                    .BindToStrict(this, x => x.PatcherVersioning.TagPickerBox.IsEnabled)
                     .DisposeWith(disposable);
 
-                this.BindStrict(this.ViewModel, vm => vm.TargetCommit, view => view.CommitShaBox.Text)
+                this.BindStrict(this.ViewModel, vm => vm.TargetCommit, view => view.PatcherVersioning.CommitShaBox.Text)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.AttemptedCheckout),
                         this.WhenAnyValue(x => x.ViewModel!.RunnableData),
                         this.WhenAnyValue(x => x.ViewModel!.PatcherVersioning),
                         (attempted, data, patcher) => attempted && data == null && patcher == PatcherVersioningEnum.Commit)
-                    .Subscribe(x => this.CommitShaBox.SetValue(ControlsHelper.InErrorProperty, x))
+                    .Subscribe(x => this.PatcherVersioning.CommitShaBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.TargetBranchName, view => view.BranchNameBox.Text)
+                this.BindStrict(this.ViewModel, vm => vm.TargetBranchName, view => view.PatcherVersioning.BranchNameBox.Text)
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.FollowDefaultBranch, view => view.DefaultBranchCheck.IsChecked)
+                this.BindStrict(this.ViewModel, vm => vm.FollowDefaultBranch, view => view.PatcherVersioning.DefaultBranchCheck.IsChecked)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.FollowDefaultBranch)
                     .Select(x => !x)
-                    .BindToStrict(this, x => x.BranchNameBox.IsEnabled)
+                    .BindToStrict(this, x => x.PatcherVersioning.BranchNameBox.IsEnabled)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.AttemptedCheckout),
                         this.WhenAnyValue(x => x.ViewModel!.RunnableData),
                         this.WhenAnyValue(x => x.ViewModel!.PatcherVersioning),
                         (attempted, data, patcher) => attempted && data == null && patcher == PatcherVersioningEnum.Branch)
-                    .Subscribe(x => this.BranchNameBox.SetValue(ControlsHelper.InErrorProperty, x))
+                    .Subscribe(x => this.PatcherVersioning.BranchNameBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.RunnableData)
                     .Select(x => x == null ? string.Empty : x.CommitDate.ToString())
