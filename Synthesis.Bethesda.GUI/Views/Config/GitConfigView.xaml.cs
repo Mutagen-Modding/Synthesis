@@ -82,6 +82,7 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.WhenAnyValue(x => x.ViewModel!.RunnableData),
                         this.WhenAnyValue(x => x.ViewModel!.PatcherVersioning),
                         (attempted, data, patcher) => attempted && data == null && patcher == PatcherVersioningEnum.Commit)
+                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .Subscribe(x => this.PatcherVersioning.CommitShaBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.TargetBranchName, view => view.PatcherVersioning.BranchNameBox.Text)
@@ -97,6 +98,7 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.WhenAnyValue(x => x.ViewModel!.RunnableData),
                         this.WhenAnyValue(x => x.ViewModel!.PatcherVersioning),
                         (attempted, data, patcher) => attempted && data == null && patcher == PatcherVersioningEnum.Branch)
+                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .Subscribe(x => this.PatcherVersioning.BranchNameBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.RunnableData)
@@ -162,10 +164,12 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 this.WhenAnyValue(x => x.ViewModel!.ManualSynthesisVersion)
                     .Select(x => x.IsNullOrWhitespace())
+                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .Subscribe(x => this.Nugets.Synthesis.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.ManualMutagenVersion)
                     .Select(x => x.IsNullOrWhitespace())
+                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .Subscribe(x => this.Nugets.Mutagen.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
 
