@@ -99,7 +99,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="67" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -111,18 +111,9 @@
                     FontSize="14"
                     FontWeight="Bold"
                     Text="Versioning" />
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <local:PatcherVersioningView Grid.Column="0"
-                        x:Name="PatcherVersioning"
-                        HorizontalAlignment="Left" />
-                    <TextBlock Grid.Column="1"
-                        x:Name="PatcherVersionDateText"
-                        HorizontalAlignment="Right" />
-                </Grid>
+                <local:PatcherVersioningView Grid.Row="1"
+                    x:Name="PatcherVersioning"
+                    HorizontalAlignment="Left" />
                 <local:NugetsVersioningView Grid.Row="2"
                     x:Name="Nugets"
                     Margin="0,5,0,0" />
