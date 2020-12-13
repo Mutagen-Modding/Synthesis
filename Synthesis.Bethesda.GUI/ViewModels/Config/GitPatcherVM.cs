@@ -213,9 +213,8 @@ namespace Synthesis.Bethesda.GUI
                     async (path, cancel) =>
                     {
                         if (path.RunnableState.Failed) return new ConfigurationState(path.RunnableState);
-                        var log = Logger.ForContext("RemotePath", path.Item);
-                        using var timing = log.Time("runner repo");
-                        return (ErrorResponse)await GitPatcherRun.CheckOrCloneRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, x => log.Information(x), cancel);
+                        using var timing = Logger.Time($"runner repo: {path.Item}");
+                        return (ErrorResponse)await GitPatcherRun.CheckOrCloneRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, x => Logger.Information(x), cancel);
                     })
                 .Replay(1)
                 .RefCount();
@@ -479,6 +478,10 @@ namespace Synthesis.Bethesda.GUI
                     });
                 })
                 .Switch()
+                .StartWith(new ConfigurationState<RunnerRepoInfo>(GetResponse<RunnerRepoInfo>.Fail("Constructing runnable state"))
+                {
+                    IsHaltingError = false
+                })
                 .Replay(1)
                 .RefCount();
 
@@ -517,12 +520,21 @@ namespace Synthesis.Bethesda.GUI
                         .Select(x => x.ToUnit()),
                     this.WhenAnyValue(x => x.Profile.Config.MainVM)
                         .Select(x => x.DotNetSdkInstalled)
-                        .Switch(),
+                        .Switch()
+                        .Select(x => (x, true))
+                        .StartWith((default(System.Version?), false)),
                     (driver, runner, checkout, dotnet) =>
                     {
                         if (driver.IsHaltingError) return driver;
                         if (runner.IsHaltingError) return runner;
-                        if (dotnet == null) return new ConfigurationState(ErrorResponse.Fail("No dotnet SDK installed"));
+                        if (!dotnet.Item2)
+                        {
+                            return new ConfigurationState(ErrorResponse.Fail("Determining DotNet SDK installed"))
+                            {
+                                IsHaltingError = false
+                            };
+                        }
+                        if (dotnet.Item1 == null) return new ConfigurationState(ErrorResponse.Fail("No DotNet SDK installed"));
                         return checkout;
                     })
                 .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
