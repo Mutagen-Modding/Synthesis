@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Wabbajack.Common;
 
@@ -30,6 +31,9 @@ namespace Synthesis.Bethesda.GUI
         public ICommand AddSnippetPatcherCommand { get; }
         public ICommand GoToErrorPatcher { get; }
         public IReactiveCommand UpdateProfileNugetVersionCommand { get; }
+        public ICommand EnableAllPatchersCommand { get; }
+        public ICommand DisableAllPatchersCommand { get; }
+        public ReactiveCommand<Unit, Unit> UpdateAllPatchersCommand { get; }
 
         public string ID { get; private set; }
 
@@ -285,6 +289,49 @@ namespace Synthesis.Bethesda.GUI
             UpdateProfileNugetVersionCommand = CommandExt.CreateCombinedAny(
                 this.UpdateMutagenManualToLatestCommand, 
                 this.UpdateSynthesisManualToLatestCommand);
+
+            EnableAllPatchersCommand = ReactiveCommand.Create(() =>
+            {
+                foreach (var patcher in this.Patchers.Items)
+                {
+                    patcher.IsOn = true;
+                }
+            });
+            DisableAllPatchersCommand = ReactiveCommand.Create(() =>
+            {
+                foreach (var patcher in this.Patchers.Items)
+                {
+                    patcher.IsOn = false;
+                }
+            });
+            var allCommands = Patchers.Connect()
+                .Transform(x => x as GitPatcherVM)
+                .NotNull()
+                .Transform(x => CommandVM.Factory(x.UpdateAllCommand))
+                .AsObservableList();
+            UpdateAllPatchersCommand = ReactiveCommand.CreateFromTask(
+                canExecute: allCommands.Connect()
+                    .AutoRefresh(x => x.CanExecute)
+                    .Filter(p => p.CanExecute)
+                    .QueryWhenChanged(q => q.Count > 0),
+                execute: () =>
+                {
+                    return Task.WhenAll(allCommands.Items
+                        .Select(async cmd =>
+                        {
+                            try
+                            {
+                                if (cmd.CanExecute)
+                                {
+                                    await cmd.Command.Execute();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Logger.Error(ex, "Error updating a patcher");
+                            }
+                        }));
+                });
         }
 
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)

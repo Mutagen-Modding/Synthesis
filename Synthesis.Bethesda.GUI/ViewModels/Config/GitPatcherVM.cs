@@ -87,6 +87,8 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand NavigateToInternalFilesCommand { get; }
 
+        public ReactiveCommand<Unit, Unit> UpdateAllCommand { get; }
+
         public ReactiveCommand<Unit, Unit> UpdateToBranchCommand { get; }
 
         public ReactiveCommand<Unit, Unit> UpdateToTagCommand { get; }
@@ -316,6 +318,8 @@ namespace Synthesis.Bethesda.GUI
                     this.WhenAnyValue(x => x.TargetCommit),
                     (branch, target) => (BranchSha: branch, Current: target)),
                 canExecute: o => o.BranchSha != null && o.BranchSha != o.Current,
+                extraCanExecute: this.WhenAnyValue(x => x.PatcherVersioning)
+                    .Select(vers => vers == PatcherVersioningEnum.Branch),
                 execute: o =>
                 {
                     this.TargetCommit = o.BranchSha!;
@@ -333,9 +337,11 @@ namespace Synthesis.Bethesda.GUI
                         this.WhenAnyValue(x => x.TargetCommit),
                         this.WhenAnyValue(x => x.TargetTag),
                         (TargetSha, TargetTag) => (TargetSha, TargetTag)),
-                    (tag, target) => (TagSha: tag?.Sha, Tag: tag?.Name, Current: target)),
+                    (tag, target) => (TagSha: tag?.Sha, Tag: tag?.Name, Current:target )),
                 canExecute: o => (o.TagSha != null && o.Tag != null)
                     && (o.TagSha != o.Current.TargetSha || o.Tag != o.Current.TargetTag),
+                extraCanExecute: this.WhenAnyValue(x => x.PatcherVersioning)
+                    .Select(vers => vers == PatcherVersioningEnum.Tag),
                 execute: o =>
                 {
                     this.TargetTag = o.Tag!;
@@ -582,6 +588,8 @@ namespace Synthesis.Bethesda.GUI
                             (manual, latest) => latest != null && latest != manual);
                 },
                 execute: v => ManualMutagenVersion = v ?? string.Empty,
+                extraCanExecute: this.WhenAnyValue(x => x.MutagenVersioning)
+                    .Select(vers => vers == PatcherNugetVersioningEnum.Manual),
                 disposable: this.CompositeDisposable);
             UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
                 objectSource: parent.Config.MainVM.NewestSynthesisVersion,
@@ -593,7 +601,15 @@ namespace Synthesis.Bethesda.GUI
                             (manual, latest) => latest != null && latest != manual);
                 },
                 execute: v => ManualSynthesisVersion = v ?? string.Empty,
+                extraCanExecute: this.WhenAnyValue(x => x.SynthesisVersioning)
+                    .Select(vers => vers == PatcherNugetVersioningEnum.Manual),
                 disposable: this.CompositeDisposable);
+
+            UpdateAllCommand = CommandExt.CreateCombinedAny(
+                UpdateMutagenManualToLatestCommand,
+                UpdateSynthesisManualToLatestCommand,
+                UpdateToBranchCommand,
+                UpdateToTagCommand);
         }
 
         public override PatcherSettings Save()

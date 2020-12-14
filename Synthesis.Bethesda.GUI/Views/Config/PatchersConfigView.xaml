@@ -13,9 +13,9 @@
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="20" />
-            <RowDefinition Height="*" />
+            <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition
@@ -27,10 +27,83 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Row="2" Grid.Column="0">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <ListBox Grid.Row="0"
+            <Grid Grid.Row="0" Margin="0,3,0,3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0"
+                    x:Name="DisableAllPatchersButton"
+                    Margin="6,0,0,0"
+                    ToolTip="Disable all patchers">
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <icon:PackIconMaterial Kind="CheckboxBlankCircleOutline" />
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <icon:PackIconMaterial Foreground="{StaticResource YellowBrush}" Kind="CheckboxBlankCircleOutline">
+                                                <icon:PackIconMaterial.Effect>
+                                                    <DropShadowEffect
+                                                        BlurRadius="15"
+                                                        ShadowDepth="0"
+                                                        Color="{StaticResource Salmon}" />
+                                                </icon:PackIconMaterial.Effect>
+                                            </icon:PackIconMaterial>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Grid.Column="1"
+                    x:Name="EnableAllPatchersButton"
+                    Margin="5,0,0,0"
+                    ToolTip="Enable all patchers">
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <icon:PackIconMaterial Kind="CheckboxMarkedCircle" />
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <icon:PackIconMaterial Foreground="{StaticResource YellowBrush}" Kind="CheckboxMarkedCircle">
+                                                <icon:PackIconMaterial.Effect>
+                                                    <DropShadowEffect
+                                                        BlurRadius="15"
+                                                        ShadowDepth="0"
+                                                        Color="{StaticResource Salmon}" />
+                                                </icon:PackIconMaterial.Effect>
+                                            </icon:PackIconMaterial>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <local:UpdateButtonControl Grid.Column="3"
+                    x:Name="UpdateAllPatchersButton"
+                    Margin="0,0,4,0"
+                    ToolTip="Update all manually controlled patchers:&#x0a; - Mutagen and Synthesis versions used&#x0a; - Patcher code" />
+            </Grid>
+            <ListBox Grid.Row="1"
                 Name="PatchersList"
                 AllowDrop="True"
                 Background="Transparent"
@@ -43,7 +116,7 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Button Grid.Row="1"
+            <Button Grid.Row="2"
                 x:Name="GoButton"
                 HorizontalContentAlignment="Stretch">
                 <Grid Margin="0,6,0,6">
@@ -76,7 +149,7 @@
                         Kind="Send" />
                 </Grid>
             </Button>
-            <Button Grid.Row="1"
+            <Button Grid.Row="2"
                 x:Name="OverallErrorButton"
                 Margin="0,6,0,6"
                 Style="{StaticResource ErrorButton}"
@@ -94,7 +167,7 @@
                         Text="Blocking Error" />
                 </StackPanel>
             </Button>
-            <Grid Grid.Row="1"
+            <Grid Grid.Row="2"
                 x:Name="GoAreaOverlay"
                 Margin="4,6,0,6">
                 <Grid.ColumnDefinitions>

@@ -80,6 +80,25 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyFallback(x => x.ViewModel!.DeleteCommand)
                     .BindToStrict(this, x => x.DeleteContextMenuButton.Command)
                     .DisposeWith(disposable);
+
+                // Update button
+                this.WhenAnyFallback(x => x.ViewModel)
+                    .Select(patcher => (patcher as GitPatcherVM)?.UpdateAllCommand)
+                    .BindToStrict(this, x => x.UpdateButton.Command)
+                    .DisposeWith(disposable);
+                var hasAnyUpdateCmd = this.WhenAnyFallback(x => x.ViewModel)
+                    .Select(patcher => (patcher as GitPatcherVM)?.UpdateAllCommand.CanExecute)
+                    .Switch()
+                    .Replay(1)
+                    .RefCount();
+                hasAnyUpdateCmd
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.UpdateButton.Visibility)
+                    .DisposeWith(disposable);
+                hasAnyUpdateCmd
+                    .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
+                    .BindToStrict(this, x => x.PatcherTypeIcon.Visibility)
+                    .DisposeWith(disposable);
             });
         }
     }

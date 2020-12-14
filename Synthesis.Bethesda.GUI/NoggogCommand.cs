@@ -87,12 +87,54 @@ namespace Synthesis.Bethesda.GUI
 
         public static ReactiveCommand<Unit, Unit> CreateFromObject<TObject>(
             IObservable<TObject> objectSource,
+            Func<TObject, bool> canExecute,
+            IObservable<bool> extraCanExecute,
+            Action<TObject> execute,
+            CompositeDisposable disposable)
+        {
+            var ret = ReactiveCommand.Create(
+                canExecute: Observable.CombineLatest(
+                    objectSource.Select(canExecute),
+                    extraCanExecute,
+                    (obj, ex) => obj && ex),
+                execute: ActionExt.Nothing);
+            ret.WithLatestFrom(
+                    objectSource,
+                    (_, s) => s)
+                .Subscribe(execute)
+                .DisposeWith(disposable);
+            return ret;
+        }
+
+        public static ReactiveCommand<Unit, Unit> CreateFromObject<TObject>(
+            IObservable<TObject> objectSource,
             Func<IObservable<TObject>, IObservable<bool>> canExecute,
             Action<TObject> execute,
             CompositeDisposable disposable)
         {
             var ret = ReactiveCommand.Create(
-                canExecute: canExecute(objectSource),
+                canExecute: canExecute(objectSource.ObserveOnGui()),
+                execute: ActionExt.Nothing);
+            ret.WithLatestFrom(
+                    objectSource,
+                    (_, s) => s)
+                .Subscribe(execute)
+                .DisposeWith(disposable);
+            return ret;
+        }
+
+        public static ReactiveCommand<Unit, Unit> CreateFromObject<TObject>(
+            IObservable<TObject> objectSource,
+            Func<IObservable<TObject>, IObservable<bool>> canExecute,
+            IObservable<bool> extraCanExecute,
+            Action<TObject> execute,
+            CompositeDisposable disposable)
+        {
+            var ret = ReactiveCommand.Create(
+                canExecute: Observable.CombineLatest(
+                    canExecute(objectSource.ObserveOnGui()),
+                    extraCanExecute,
+                    (obj, extra) => obj && extra),
                 execute: ActionExt.Nothing);
             ret.WithLatestFrom(
                     objectSource,
