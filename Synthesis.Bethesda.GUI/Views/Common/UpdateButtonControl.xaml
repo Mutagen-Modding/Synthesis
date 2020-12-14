@@ -8,7 +8,7 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <Button Command="{Binding Command, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Updates available">
+    <Button Command="{Binding Command, RelativeSource={RelativeSource AncestorType=UserControl}}">
         <Button.Style>
             <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
                 <Style.Resources>

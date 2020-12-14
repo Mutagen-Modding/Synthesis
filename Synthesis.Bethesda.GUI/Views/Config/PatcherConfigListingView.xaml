@@ -316,6 +316,7 @@
             </icon:PackIconMaterial.Style>
         </icon:PackIconMaterial>
         <ContentControl Grid.Column="3"
+            x:Name="PatcherTypeIcon"
             Margin="0,0,6,0"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"

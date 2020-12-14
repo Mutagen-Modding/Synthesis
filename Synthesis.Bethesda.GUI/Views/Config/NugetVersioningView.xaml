@@ -81,6 +81,7 @@
             <local:UpdateButtonControl Grid.Column="6"
                 x:Name="UpdateButton"
                 Margin="10,0,0,0"
+                ToolTip="Update available"
                 Visibility="Collapsed" />
         </Grid>
     </Border>

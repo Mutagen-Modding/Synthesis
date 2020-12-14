@@ -38,9 +38,6 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.BlockingIssueDisplayCircle.Visibility)
                     .DisposeWith(disposable);
-                //this.WhenAnyFallback(x => x.ViewModel!.DisplayName)
-                //    .BindToStrict(this, x => x.TooltipPatcherName.Text)
-                //    .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.State.RunnableState.Reason)
                     .BindToStrict(this, x => x.TooltipErrorText.Text)
                     .DisposeWith(disposable);

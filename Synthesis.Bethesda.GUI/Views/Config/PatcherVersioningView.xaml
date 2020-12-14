@@ -78,7 +78,9 @@
                                 Margin="10,0"
                                 Content="Auto"
                                 ToolTip="Automatically update to the latest version" />
-                            <local:UpdateButtonControl x:Name="UpdateTagButton" Grid.Column="2" />
+                            <local:UpdateButtonControl Grid.Column="2"
+                                x:Name="UpdateTagButton"
+                                ToolTip="Update available" />
                         </Grid>
                     </TabItem>
                     <TabItem Header="Branch" ToolTip="Run the patcher following a Git branch">
@@ -109,7 +111,8 @@
                                 ToolTip="Follow the main branch of the repository" />
                             <local:UpdateButtonControl Grid.Column="3"
                                 x:Name="UpdateBranchButton"
-                                Margin="5,0,0,0" />
+                                Margin="5,0,0,0"
+                                ToolTip="Update available" />
                         </Grid>
                     </TabItem>
                     <TabItem Header="Commit" ToolTip="Run the patcher from a specific Git commit">

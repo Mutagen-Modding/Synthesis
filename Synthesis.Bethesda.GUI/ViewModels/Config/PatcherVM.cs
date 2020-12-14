@@ -75,6 +75,6 @@ namespace Synthesis.Bethesda.GUI
             Profile.Patchers.Remove(this);
         }
 
-        protected ILogger Logger =>  Log.Logger.ForContext(nameof(DisplayName), DisplayName);
+        protected ILogger Logger => Log.Logger.ForContext(nameof(DisplayName), DisplayName);
     }
 }
