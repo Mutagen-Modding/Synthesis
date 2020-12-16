@@ -316,6 +316,7 @@
             </icon:PackIconMaterial.Style>
         </icon:PackIconMaterial>
         <ContentControl Grid.Column="3"
+            x:Name="PatcherTypeIcon"
             Margin="0,0,6,0"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
@@ -335,5 +336,10 @@
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
+        <local:UpdateButtonControl Grid.Column="3"
+            x:Name="UpdateButton"
+            Margin="0,0,4,0"
+            ToolTip="Update available for patcher.  Either:&#x0a; - Mutagen and Synthesis versions used&#x0a; - Patcher code"
+            Visibility="Collapsed" />
     </Grid>
 </local:PatcherConfigListingViewBase>

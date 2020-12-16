@@ -60,49 +60,84 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, view => view.AdvancedSettingsArea.Visibility)
                     .DisposeWith(disposable);
 
-                this.BindStrict(this.ViewModel, vm => vm.PatcherVersioning, view => view.PatcherVersioningTab.SelectedIndex, (e) => (int)e, i => (PatcherVersioningEnum)i)
+                #region Patcher Versioning
+                this.BindStrict(this.ViewModel, vm => vm.PatcherVersioning, view => view.PatcherVersioning.TabControl.SelectedIndex, (e) => (int)e, i => (PatcherVersioningEnum)i)
                     .DisposeWith(disposable);
 
                 // Bind tag picker
-                this.BindStrict(this.ViewModel, vm => vm.TargetTag, view => view.TagPickerBox.SelectedItem)
+                this.BindStrict(this.ViewModel, vm => vm.TargetTag, view => view.PatcherVersioning.TagPickerBox.SelectedItem)
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.LatestTag, view => view.LatestTagCheck.IsChecked)
+                this.BindStrict(this.ViewModel, vm => vm.TagAutoUpdate, view => view.PatcherVersioning.LatestTagCheck.IsChecked)
                     .DisposeWith(disposable);
-                this.OneWayBindStrict(this.ViewModel, vm => vm.AvailableTags, view => view.TagPickerBox.ItemsSource)
+                this.OneWayBindStrict(this.ViewModel, vm => vm.AvailableTags, view => view.PatcherVersioning.TagPickerBox.ItemsSource)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.LatestTag)
+                this.WhenAnyValue(x => x.ViewModel!.TagAutoUpdate)
                     .Select(x => !x)
-                    .BindToStrict(this, x => x.TagPickerBox.IsEnabled)
+                    .BindToStrict(this, x => x.PatcherVersioning.TagPickerBox.IsEnabled)
                     .DisposeWith(disposable);
 
-                this.BindStrict(this.ViewModel, vm => vm.TargetCommit, view => view.CommitShaBox.Text)
+                this.BindStrict(this.ViewModel, vm => vm.TargetCommit, view => view.PatcherVersioning.CurrentCommit.Text)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.AttemptedCheckout),
                         this.WhenAnyValue(x => x.ViewModel!.RunnableData),
-                        this.WhenAnyValue(x => x.ViewModel!.PatcherVersioning),
-                        (attempted, data, patcher) => attempted && data == null && patcher == PatcherVersioningEnum.Commit)
-                    .Subscribe(x => this.CommitShaBox.SetValue(ControlsHelper.InErrorProperty, x))
+                        (attempted, data) => attempted && data == null)
+                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                    .Subscribe(x => this.PatcherVersioning.CurrentCommit.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.TargetBranchName, view => view.BranchNameBox.Text)
+                this.BindStrict(this.ViewModel, vm => vm.TargetBranchName, view => view.PatcherVersioning.BranchNameBox.Text)
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.FollowDefaultBranch, view => view.DefaultBranchCheck.IsChecked)
+                this.BindStrict(this.ViewModel, vm => vm.BranchAutoUpdate, view => view.PatcherVersioning.AutoBranchCheck.IsChecked)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.FollowDefaultBranch)
+                this.BindStrict(this.ViewModel, vm => vm.BranchFollowMain, view => view.PatcherVersioning.DefaultBranchCheck.IsChecked)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.BranchFollowMain)
                     .Select(x => !x)
-                    .BindToStrict(this, x => x.BranchNameBox.IsEnabled)
+                    .BindToStrict(this, x => x.PatcherVersioning.BranchNameBox.IsEnabled)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.AttemptedCheckout),
                         this.WhenAnyValue(x => x.ViewModel!.RunnableData),
                         this.WhenAnyValue(x => x.ViewModel!.PatcherVersioning),
                         (attempted, data, patcher) => attempted && data == null && patcher == PatcherVersioningEnum.Branch)
-                    .Subscribe(x => this.BranchNameBox.SetValue(ControlsHelper.InErrorProperty, x))
+                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                    .Subscribe(x => this.PatcherVersioning.BranchNameBox.SetValue(ControlsHelper.InErrorProperty, x))
+                    .DisposeWith(disposable);
+
+                // Bind right side stat text
+                this.WhenAnyValue(x => x.ViewModel!.RunnableData)
+                    .Select(x => x == null ? string.Empty : x.CommitDate.ToShortDateString())
+                    .BindToStrict(this, view => view.PatcherVersioning.DateText.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.RunnableData)
-                    .Select(x => x == null ? string.Empty : x.CommitDate.ToString())
-                    .BindToStrict(this, view => view.PatcherVersionDateText.Text)
+                    .Select(x => x == null ? string.Empty : x.CommitDate.ToShortTimeString())
+                    .BindToStrict(this, view => view.PatcherVersioning.TimeText.Text)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.TargetCommit)
+                    .Select(x => x.IsNullOrWhitespace() || x.Length < 7 ? x : x.Substring(0, 7))
+                    .BindToStrict(this, view => view.PatcherVersioning.ShaText.Text)
+                    .DisposeWith(disposable);
+
+                // Bind update buttons
+                this.WhenAnyFallback(x => x.ViewModel!.UpdateToTagCommand)
+                    .Select(x => x?.CanExecute ?? Observable.Return(false))
+                    .Switch()
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.PatcherVersioning.UpdateTagButton.Visibility)
+                    .DisposeWith(disposable);
+                this.WhenAnyFallback(x => x.ViewModel!.UpdateToBranchCommand)
+                    .Select(x => x?.CanExecute ?? Observable.Return(false))
+                    .Switch()
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.PatcherVersioning.UpdateBranchButton.Visibility)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.UpdateToTagCommand)
+                    .BindToStrict(this, x => x.PatcherVersioning.UpdateTagButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.UpdateToBranchCommand)
+                    .BindToStrict(this, x => x.PatcherVersioning.UpdateBranchButton.Command)
+                    .DisposeWith(disposable);
+                #endregion
 
                 // Bind git open commands
                 this.WhenAnyValue(x => x.ViewModel!.OpenGitPageCommand)
@@ -162,10 +197,12 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 this.WhenAnyValue(x => x.ViewModel!.ManualSynthesisVersion)
                     .Select(x => x.IsNullOrWhitespace())
+                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .Subscribe(x => this.Nugets.Synthesis.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.ManualMutagenVersion)
                     .Select(x => x.IsNullOrWhitespace())
+                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .Subscribe(x => this.Nugets.Mutagen.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
 

@@ -64,13 +64,16 @@ namespace Synthesis.Bethesda.GUI
         public string TargetTag { get; set; } = string.Empty;
 
         [Reactive]
-        public bool LatestTag { get; set; } = true;
+        public bool TagAutoUpdate { get; set; } = true;
 
         [Reactive]
         public string TargetCommit { get; set; } = string.Empty;
 
         [Reactive]
-        public bool FollowDefaultBranch { get; set; } = true;
+        public bool BranchAutoUpdate { get; set; } = true;
+
+        [Reactive]
+        public bool BranchFollowMain { get; set; } = true;
 
         [Reactive]
         public string TargetBranchName { get; set; } = string.Empty;
@@ -83,6 +86,12 @@ namespace Synthesis.Bethesda.GUI
         public ICommand OpenGitPageToVersionCommand { get; }
 
         public ICommand NavigateToInternalFilesCommand { get; }
+
+        public ReactiveCommand<Unit, Unit> UpdateAllCommand { get; }
+
+        public ReactiveCommand<Unit, Unit> UpdateToBranchCommand { get; }
+
+        public ReactiveCommand<Unit, Unit> UpdateToTagCommand { get; }
 
         public ReactiveCommand<Unit, Unit> UpdateMutagenManualToLatestCommand { get; }
 
@@ -123,26 +132,8 @@ namespace Synthesis.Bethesda.GUI
             _DisplayName = this.WhenAnyValue(
                 x => x.Nickname,
                 x => x.RemoteRepoPath,
-                (nickname, path) =>
-                {
-                    if (!string.IsNullOrWhiteSpace(nickname)) return nickname;
-                    try
-                    {
-                        if (string.IsNullOrWhiteSpace(path)) return "Mutagen Git Patcher";
-                        var span = path.AsSpan();
-                        var slashIndex = span.LastIndexOf('/');
-                        if (slashIndex != -1)
-                        {
-                            span = span.Slice(slashIndex + 1);
-                        }
-                        return span.ToString();
-                    }
-                    catch (Exception)
-                    {
-                        return "Mutagen Git Patcher";
-                    }
-                })
-                .ToGuiProperty<string>(this, nameof(DisplayName), string.Empty);
+                GetNickname)
+                .ToGuiProperty<string>(this, nameof(DisplayName), GetNickname(Nickname, RemoteRepoPath));
 
             // Check to see if remote path points to a reachable git repository
             var remoteRepoPath = GetRepoPathValidity(this.WhenAnyValue(x => x.RemoteRepoPath))
@@ -173,7 +164,8 @@ namespace Synthesis.Bethesda.GUI
                         cancel.ThrowIfCancellationRequested();
 
                         // Grab all the interesting metadata
-                        List<(int Index, string Name)> tags;
+                        List<(int Index, string Name, string Sha)> tags;
+                        Dictionary<string, string> branchShas;
                         string masterBranch;
                         try
                         {
@@ -184,7 +176,12 @@ namespace Synthesis.Bethesda.GUI
                             Commands.Checkout(repo, master);
                             Signature author = new Signature("please", "whymustidothis@gmail.com", DateTimeOffset.Now);
                             Commands.Pull(repo, author, null);
-                            tags = repo.Tags.Select(tag => tag.FriendlyName).WithIndex().ToList();
+                            tags = repo.Tags.Select(tag => (tag.FriendlyName, tag.Target.Sha))
+                                .WithIndex()
+                                .Select(x => (x.Index, x.Item.FriendlyName, x.Item.Sha))
+                                .ToList();
+                            branchShas = repo.Branches
+                                .ToDictionary(x => x.FriendlyName, x => x.Tip.Sha);
                         }
                         catch (Exception ex)
                         {
@@ -199,6 +196,7 @@ namespace Synthesis.Bethesda.GUI
                             new DriverRepoInfo(
                                 slnPath: slnPath,
                                 masterBranchName: masterBranch,
+                                branchShas: branchShas,
                                 tags: tags,
                                 availableProjects: availableProjs));
                     })
@@ -217,9 +215,8 @@ namespace Synthesis.Bethesda.GUI
                     async (path, cancel) =>
                     {
                         if (path.RunnableState.Failed) return new ConfigurationState(path.RunnableState);
-                        var log = Logger.ForContext("RemotePath", path.Item);
-                        using var timing = log.Time("runner repo");
-                        return (ErrorResponse)await GitPatcherRun.CheckOrCloneRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, x => log.Information(x), cancel);
+                        using var timing = Logger.Time($"runner repo: {path.Item}");
+                        return (ErrorResponse)await GitPatcherRun.CheckOrCloneRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, x => Logger.Information(x), cancel);
                     })
                 .Replay(1)
                 .RefCount();
@@ -241,19 +238,19 @@ namespace Synthesis.Bethesda.GUI
                 this.WhenAnyValue(x => x.AvailableProjects.Count),
                 (targetPath, count) => (targetPath, count));
             AvailableTags = driverRepoInfo
-                .Select(x => x.Item?.Tags ?? Enumerable.Empty<(int Index, string Name)>())
+                .Select(x => x.Item?.Tags ?? Enumerable.Empty<(int Index, string Name, string Sha)>())
                 .Select(x => x.AsObservableChangeSet())
                 .Switch()
                 .Filter(
                     tagInput.Select(x =>
                     {
-                        if (x.count == 0) return new Func<(int Index, string Name), bool>(_ => false);
-                        if (x.count == 1) return new Func<(int Index, string Name), bool>(_ => true);
-                        if (!x.targetPath.EndsWith(".csproj")) return new Func<(int Index, string Name), bool>(_ => false);
+                        if (x.count == 0) return new Func<(int Index, string Name, string Sha), bool>(_ => false);
+                        if (x.count == 1) return new Func<(int Index, string Name, string Sha), bool>(_ => true);
+                        if (!x.targetPath.EndsWith(".csproj")) return new Func<(int Index, string Name, string Sha), bool>(_ => false);
                         var projName = Path.GetFileName(x.targetPath);
-                        return new Func<(int Index, string Name), bool>(i => i.Name.StartsWith(projName, StringComparison.OrdinalIgnoreCase));
+                        return new Func<(int Index, string Name, string Sha), bool>(i => i.Name.StartsWith(projName, StringComparison.OrdinalIgnoreCase));
                     }))
-                .Sort(SortExpressionComparer<(int Index, string Name)>.Descending(x => x.Index))
+                .Sort(SortExpressionComparer<(int Index, string Name, string Sha)>.Descending(x => x.Index))
                 .Transform(x => x.Name)
                 .ToObservableCollection(this);
 
@@ -267,16 +264,90 @@ namespace Synthesis.Bethesda.GUI
                 .DisposeWith(this);
 
             // Set latest checkboxes to drive user input
-            driverRepoInfo.Select(x => x.RunnableState.Failed ? string.Empty : x.Item.MasterBranchName)
-                .FilterSwitch(this.WhenAnyValue(x => x.FollowDefaultBranch))
+            driverRepoInfo
+                .FilterSwitch(this.WhenAnyValue(x => x.BranchFollowMain))
                 .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
-                .Subscribe(x => TargetBranchName = x)
+                .Subscribe(state =>
+                {
+                    if (state.RunnableState.Succeeded)
+                    {
+                        this.TargetBranchName = state.Item.MasterBranchName;
+                    }
+                })
                 .DisposeWith(this);
-            driverRepoInfo.Select(x => x.RunnableState.Failed ? string.Empty : x.Item.Tags.OrderByDescending(x => x.Index).Select(x => x.Name).FirstOrDefault())
-                .FilterSwitch(this.WhenAnyValue(x => x.LatestTag))
+            Observable.CombineLatest(
+                    driverRepoInfo,
+                    this.WhenAnyValue(x => x.TargetBranchName),
+                    (Driver, TargetBranch) => (Driver, TargetBranch))
+                .FilterSwitch(
+                    Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.BranchAutoUpdate),
+                        this.WhenAnyValue(x => x.PatcherVersioning),
+                        (autoBranch, versioning) => autoBranch && versioning == PatcherVersioningEnum.Branch))
                 .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
-                .Subscribe(x => TargetTag = x)
+                .Subscribe(x =>
+                {
+                    if (x.Driver.RunnableState.Succeeded
+                        && x.Driver.Item.BranchShas.TryGetValue(x.TargetBranch, out var masterSha))
+                    {
+                        this.TargetCommit = masterSha;
+                    }
+                })
                 .DisposeWith(this);
+            driverRepoInfo.Select(x => x.RunnableState.Failed ? default : x.Item.Tags.OrderByDescending(x => x.Index).FirstOrDefault())
+                .FilterSwitch(
+                    Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.TagAutoUpdate),
+                        this.WhenAnyValue(x => x.PatcherVersioning),
+                        (autoTag, versioning) => autoTag && versioning == PatcherVersioningEnum.Tag))
+                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                .Subscribe(x =>
+                {
+                    this.TargetTag = x.Name;
+                    this.TargetCommit = x.Sha;
+                })
+                .DisposeWith(this);
+
+            // Set up update available systems
+            UpdateToBranchCommand = NoggogCommand.CreateFromObject(
+                objectSource: Observable.CombineLatest(
+                    Observable.CombineLatest(
+                        driverRepoInfo.Select(x => x.RunnableState.Failed ? default : x.Item.BranchShas),
+                        this.WhenAnyValue(x => x.TargetBranchName),
+                        (dict, branch) => dict?.GetOrDefault(branch)),
+                    this.WhenAnyValue(x => x.TargetCommit),
+                    (branch, target) => (BranchSha: branch, Current: target)),
+                canExecute: o => o.BranchSha != null && o.BranchSha != o.Current,
+                extraCanExecute: this.WhenAnyValue(x => x.PatcherVersioning)
+                    .Select(vers => vers == PatcherVersioningEnum.Branch),
+                execute: o =>
+                {
+                    this.TargetCommit = o.BranchSha!;
+                },
+                this.CompositeDisposable);
+            UpdateToTagCommand = NoggogCommand.CreateFromObject(
+                objectSource: Observable.CombineLatest(
+                    Observable.CombineLatest(
+                        driverRepoInfo.Select(x => x.RunnableState.Failed ? default : x.Item.Tags),
+                        this.WhenAnyValue(x => x.TargetTag),
+                        (tags, tag) => tags?
+                            .Where(tagItem => tagItem.Name == tag)
+                            .FirstOrDefault()),
+                    Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.TargetCommit),
+                        this.WhenAnyValue(x => x.TargetTag),
+                        (TargetSha, TargetTag) => (TargetSha, TargetTag)),
+                    (tag, target) => (TagSha: tag?.Sha, Tag: tag?.Name, Current:target )),
+                canExecute: o => (o.TagSha != null && o.Tag != null)
+                    && (o.TagSha != o.Current.TargetSha || o.Tag != o.Current.TargetTag),
+                extraCanExecute: this.WhenAnyValue(x => x.PatcherVersioning)
+                    .Select(vers => vers == PatcherVersioningEnum.Tag),
+                execute: o =>
+                {
+                    this.TargetTag = o.Tag!;
+                    this.TargetCommit = o.TagSha!;
+                },
+                this.CompositeDisposable);
 
             // Get the selected versioning preferences
             var patcherVersioning = Observable.CombineLatest(
@@ -413,6 +484,10 @@ namespace Synthesis.Bethesda.GUI
                     });
                 })
                 .Switch()
+                .StartWith(new ConfigurationState<RunnerRepoInfo>(GetResponse<RunnerRepoInfo>.Fail("Constructing runnable state"))
+                {
+                    IsHaltingError = false
+                })
                 .Replay(1)
                 .RefCount();
 
@@ -451,12 +526,21 @@ namespace Synthesis.Bethesda.GUI
                         .Select(x => x.ToUnit()),
                     this.WhenAnyValue(x => x.Profile.Config.MainVM)
                         .Select(x => x.DotNetSdkInstalled)
-                        .Switch(),
+                        .Switch()
+                        .Select(x => (x, true))
+                        .StartWith((default(System.Version?), false)),
                     (driver, runner, checkout, dotnet) =>
                     {
                         if (driver.IsHaltingError) return driver;
                         if (runner.IsHaltingError) return runner;
-                        if (dotnet == null) return new ConfigurationState(ErrorResponse.Fail("No dotnet SDK installed"));
+                        if (!dotnet.Item2)
+                        {
+                            return new ConfigurationState(ErrorResponse.Fail("Determining DotNet SDK installed"))
+                            {
+                                IsHaltingError = false
+                            };
+                        }
+                        if (dotnet.Item1 == null) return new ConfigurationState(ErrorResponse.Fail("No DotNet SDK installed"));
                         return checkout;
                     })
                 .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
@@ -504,6 +588,8 @@ namespace Synthesis.Bethesda.GUI
                             (manual, latest) => latest != null && latest != manual);
                 },
                 execute: v => ManualMutagenVersion = v ?? string.Empty,
+                extraCanExecute: this.WhenAnyValue(x => x.MutagenVersioning)
+                    .Select(vers => vers == PatcherNugetVersioningEnum.Manual),
                 disposable: this.CompositeDisposable);
             UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
                 objectSource: parent.Config.MainVM.NewestSynthesisVersion,
@@ -515,7 +601,15 @@ namespace Synthesis.Bethesda.GUI
                             (manual, latest) => latest != null && latest != manual);
                 },
                 execute: v => ManualSynthesisVersion = v ?? string.Empty,
+                extraCanExecute: this.WhenAnyValue(x => x.SynthesisVersioning)
+                    .Select(vers => vers == PatcherNugetVersioningEnum.Manual),
                 disposable: this.CompositeDisposable);
+
+            UpdateAllCommand = CommandExt.CreateCombinedAny(
+                UpdateMutagenManualToLatestCommand,
+                UpdateSynthesisManualToLatestCommand,
+                UpdateToBranchCommand,
+                UpdateToTagCommand);
         }
 
         public override PatcherSettings Save()
@@ -532,8 +626,8 @@ namespace Synthesis.Bethesda.GUI
                 ManualSynthesisVersion = this.ManualSynthesisVersion,
                 TargetTag = this.TargetTag,
                 TargetCommit = this.TargetCommit,
-                LatestTag = this.LatestTag,
-                FollowDefaultBranch = this.FollowDefaultBranch,
+                LatestTag = this.TagAutoUpdate,
+                FollowDefaultBranch = this.BranchAutoUpdate,
                 TargetBranch = this.TargetBranchName,
             };
             CopyOverSave(ret);
@@ -557,8 +651,8 @@ namespace Synthesis.Bethesda.GUI
             this.ManualSynthesisVersion = settings.ManualSynthesisVersion;
             this.TargetTag = settings.TargetTag;
             this.TargetCommit = settings.TargetCommit;
-            this.FollowDefaultBranch = settings.FollowDefaultBranch;
-            this.LatestTag = settings.LatestTag;
+            this.BranchAutoUpdate = settings.FollowDefaultBranch;
+            this.TagAutoUpdate = settings.LatestTag;
             this.TargetBranchName = settings.TargetBranch;
         }
 
@@ -625,6 +719,26 @@ namespace Synthesis.Bethesda.GUI
             catch (Exception ex)
             {
                 Log.Logger.Error(ex, $"Failure deleting git repo: {this.LocalRunnerRepoDirectory}");
+            }
+        }
+
+        private static string GetNickname(string nickname, string path)
+        {
+            if (!string.IsNullOrWhiteSpace(nickname)) return nickname;
+            try
+            {
+                if (string.IsNullOrWhiteSpace(path)) return "Mutagen Git Patcher";
+                var span = path.AsSpan();
+                var slashIndex = span.LastIndexOf('/');
+                if (slashIndex != -1)
+                {
+                    span = span.Slice(slashIndex + 1);
+                }
+                return span.ToString();
+            }
+            catch (Exception)
+            {
+                return "Mutagen Git Patcher";
             }
         }
     }

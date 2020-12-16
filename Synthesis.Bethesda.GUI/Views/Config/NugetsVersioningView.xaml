@@ -14,15 +14,13 @@
             <RowDefinition Height="4" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <local:NugetVersioningView Grid.Row="0" Grid.Column="0"
+        <local:NugetVersioningView Grid.Row="0"
             x:Name="Mutagen"
-            Title="Mutagen" />
-        <local:NugetVersioningView Grid.Row="2" Grid.Column="0"
+            Title="Mutagen"
+            HorizontalAlignment="Left" />
+        <local:NugetVersioningView Grid.Row="2"
             x:Name="Synthesis"
-            Title="Synthesis" />
+            Title="Synthesis"
+            HorizontalAlignment="Left" />
     </Grid>
 </UserControl>

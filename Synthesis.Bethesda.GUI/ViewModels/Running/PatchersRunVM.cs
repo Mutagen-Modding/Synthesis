@@ -96,7 +96,7 @@ namespace Synthesis.Bethesda.GUI
                     SelectedPatcher = vm;
                     Log.Logger
                         .ForContext(nameof(PatcherVM.DisplayName), i.data.Run.Name)
-                        .Error(i.data.Error, $"Error while prepping {i.type}");
+                        .Error(i.data.Error, $"Error while {i.type}");
                 })
                 .DisposeWith(this);
             _reporter.Starting

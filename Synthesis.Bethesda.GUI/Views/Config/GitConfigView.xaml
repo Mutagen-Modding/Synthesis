@@ -18,12 +18,16 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
             Margin="0,4"
             FontSize="14"
             FontWeight="Bold"
             Text="Repository Path" />
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
             <TextBox Name="RepositoryPath" Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
             <Grid Margin="8,0" HorizontalAlignment="Right">
                 <Grid.ColumnDefinitions>
@@ -52,14 +56,14 @@
                 </Button>
             </Grid>
         </Grid>
-        <TextBlock Grid.Row="2"
+        <TextBlock Grid.Row="2" Grid.ColumnSpan="2"
             x:Name="ProjectTitle"
             Margin="0,8,0,4"
             FontSize="14"
             FontWeight="Bold"
             Text="Project"
             Visibility="Collapsed" />
-        <Button Grid.Row="2"
+        <Button Grid.Row="2" Grid.ColumnSpan="2"
             x:Name="OpenPatcherInternalFilesButton"
             Margin="8,0"
             HorizontalAlignment="Right"
@@ -69,7 +73,7 @@
             </Button.Resources>
             <icon:PackIconModern Kind="FolderEllipsis" />
         </Button>
-        <ComboBox Grid.Row="3"
+        <ComboBox Grid.Row="3" Grid.ColumnSpan="2"
             x:Name="ProjectsPickerBox"
             Visibility="Collapsed">
             <ComboBox.ItemTemplate>
@@ -87,7 +91,7 @@
                 </Style>
             </ComboBox.Style>
         </ComboBox>
-        <ScrollViewer Grid.Row="4"
+        <ScrollViewer Grid.Row="4" Grid.ColumnSpan="2"
             x:Name="AdvancedSettingsArea"
             Margin="0,4,0,0"
             ScrollViewer.HorizontalScrollBarVisibility="Auto"
@@ -95,7 +99,6 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="65" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -104,89 +107,14 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Row="0"
-                    Margin="0,8,0,0"
+                    Margin="0,8,0,5"
                     FontSize="14"
                     FontWeight="Bold"
-                    Text="Patcher Version" />
-                <TabControl Grid.Row="1"
-                    x:Name="PatcherVersioningTab"
-                    Margin="0,2,0,0"
-                    mahapps:HeaderedControlHelper.HeaderFontSize="16"
-                    mahapps:HeaderedControlHelper.HeaderForeground="AliceBlue"
-                    Background="Transparent">
-                    <TabItem Header="Tag" ToolTip="Run the patcher from tagged versions">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <CheckBox Grid.Column="0"
-                                x:Name="LatestTagCheck"
-                                Margin="10,0"
-                                Content="Latest" />
-                            <ComboBox Grid.Column="1"
-                                x:Name="TagPickerBox"
-                                Margin="0,3"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Top">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                                <ComboBox.Style>
-                                    <Style BasedOn="{StaticResource Noggog.Styles.ComboBox}" TargetType="ComboBox">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding TargetTag, Converter={StaticResource StringIsWhitespaceBooleanConverter}}" Value="True">
-                                                <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ComboBox.Style>
-                            </ComboBox>
-                        </Grid>
-                    </TabItem>
-                    <TabItem Header="Branch" ToolTip="Run the patcher following a Git branch">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <CheckBox Grid.Column="0"
-                                x:Name="DefaultBranchCheck"
-                                Margin="10,0"
-                                Content="Latest" />
-                            <TextBox Grid.Column="1"
-                                x:Name="BranchNameBox"
-                                Width="300"
-                                Margin="0,3"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Top"
-                                mahapps:TextBoxHelper.Watermark="Remote branch name"
-                                Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
-                        </Grid>
-                    </TabItem>
-                    <TabItem Header="Commit" ToolTip="Run the patcher from a specific Git commit">
-                        <TextBox
-                            x:Name="CommitShaBox"
-                            Width="300"
-                            Margin="0,3"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Top"
-                            mahapps:TextBoxHelper.Watermark="Commit sha"
-                            Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
-                    </TabItem>
-                </TabControl>
-                <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
-                    x:Name="PatcherVersionDateText"
-                    Margin="0,10,0,0"
-                    HorizontalAlignment="Right" />
-                <TextBlock Grid.Row="2"
-                    Margin="0,8,0,0"
-                    FontSize="14"
-                    FontWeight="Bold"
-                    Text="Nuget Versions" />
-                <local:NugetsVersioningView Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                    Text="Versioning" />
+                <local:PatcherVersioningView Grid.Row="1"
+                    x:Name="PatcherVersioning"
+                    HorizontalAlignment="Left" />
+                <local:NugetsVersioningView Grid.Row="2"
                     x:Name="Nugets"
                     Margin="0,5,0,0" />
             </Grid>

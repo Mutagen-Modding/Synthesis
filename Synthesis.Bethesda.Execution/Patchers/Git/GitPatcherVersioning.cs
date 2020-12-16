@@ -45,7 +45,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             {
                 PatcherVersioningEnum.Tag => $"tag {Target}",
                 PatcherVersioningEnum.Branch => $"branch {Target}",
-                PatcherVersioningEnum.Commit => $"master {Target}",
+                PatcherVersioningEnum.Commit => $"commit {Target}",
                 _ => throw new NotImplementedException(),
             };
         }

@@ -159,6 +159,23 @@ namespace Synthesis.Bethesda.GUI.Views
                         }
                     })
                     .DisposeWith(disposable);
+
+                // Bind top patcher list buttons
+                this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.EnableAllPatchersCommand)
+                    .BindToStrict(this, x => x.EnableAllPatchersButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.DisableAllPatchersCommand)
+                    .BindToStrict(this, x => x.DisableAllPatchersButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.UpdateAllPatchersCommand)
+                    .BindToStrict(this, x => x.UpdateAllPatchersButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.UpdateAllPatchersCommand)
+                    .Select(x => x.CanExecute)
+                    .Switch()
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.UpdateAllPatchersButton.Visibility)
+                    .DisposeWith(disposable);
             });
         }
 
