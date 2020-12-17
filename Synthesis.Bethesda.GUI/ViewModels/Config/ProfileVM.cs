@@ -96,8 +96,13 @@ namespace Synthesis.Bethesda.GUI
                 {
                     try
                     {
+                        var wjMeta = x.ToWjGame().MetaData();
+                        if (wjMeta == null)
+                        {
+                            return GetResponse<string>.Fail("Could not automatically locate Data folder.  Run Steam/GoG/etc once to properly register things.");
+                        }
                         return GetResponse<string>.Succeed(
-                            Path.Combine(x.ToWjGame().MetaData().GameLocation().ToString(), "Data"));
+                            Path.Combine(wjMeta.GameLocation().ToString(), "Data"));
                     }
                     catch (Exception ex)
                     {
