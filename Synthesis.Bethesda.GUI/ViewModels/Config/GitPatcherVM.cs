@@ -512,7 +512,7 @@ namespace Synthesis.Bethesda.GUI
                             });
 
                             // Compile to help prep
-                            var compileResp = await SolutionPatcherRun.CompileWithDotnet(item.proj.Value, cancel);
+                            var compileResp = await SolutionPatcherRun.CompileWithDotnet(item.proj.Value, cancel, Logger.Information);
                             if (compileResp.Failed)
                             {
                                 observer.OnNext(compileResp.BubbleFailure<RunnerRepoInfo>());

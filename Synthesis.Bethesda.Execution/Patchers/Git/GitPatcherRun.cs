@@ -411,7 +411,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 // Compile to help prep
                 if (compile)
                 {
-                    var compileResp = await SolutionPatcherRun.CompileWithDotnet(projPath, cancel);
+                    var compileResp = await SolutionPatcherRun.CompileWithDotnet(projPath, cancel, logger);
                     if (compileResp.Failed) return compileResp.BubbleResult(runInfo);
                 }
 

@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 Task.Run(async () =>
                 {
                     _output.OnNext($"Compiling");
-                    var resp = await CompileWithDotnet(PathToProject, cancel ?? CancellationToken.None).ConfigureAwait(false);
+                    var resp = await CompileWithDotnet(PathToProject, cancel ?? CancellationToken.None, _output.OnNext).ConfigureAwait(false);
                     if (!resp.Succeeded)
                     {
                         throw new SynthesisBuildFailure(resp.Reason);
@@ -136,7 +136,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             return (true, default);
         }
 
-        public static async Task<ErrorResponse> CompileWithDotnet(string targetPath, CancellationToken cancel)
+        public static async Task<ErrorResponse> CompileWithDotnet(string targetPath, CancellationToken cancel, Action<string>? log)
         {
             using var process = ProcessWrapper.Start(
                 new ProcessStartInfo("dotnet", $"build --runtime win-x64 \"{Path.GetFileName(targetPath)}\"")
@@ -144,6 +144,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                     WorkingDirectory = Path.GetDirectoryName(targetPath)
                 },
                 cancel: cancel);
+            log?.Invoke($"({process.StartInfo.WorkingDirectory}): {process.StartInfo.FileName} {process.StartInfo.Arguments}");
             string? firstError = null;
             bool buildFailed = false;
             process.Output.Subscribe(o =>
