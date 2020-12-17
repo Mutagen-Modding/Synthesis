@@ -64,13 +64,13 @@ namespace Synthesis.Bethesda.GUI
         public string TargetTag { get; set; } = string.Empty;
 
         [Reactive]
-        public bool TagAutoUpdate { get; set; } = true;
+        public bool TagAutoUpdate { get; set; } = false;
 
         [Reactive]
         public string TargetCommit { get; set; } = string.Empty;
 
         [Reactive]
-        public bool BranchAutoUpdate { get; set; } = true;
+        public bool BranchAutoUpdate { get; set; } = false;
 
         [Reactive]
         public bool BranchFollowMain { get; set; } = true;
