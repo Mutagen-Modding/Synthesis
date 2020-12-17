@@ -57,7 +57,8 @@
                                 Width="100"
                                 Margin="0,3"
                                 HorizontalAlignment="Left"
-                                VerticalAlignment="Top">
+                                VerticalAlignment="Top"
+                                ToolTip="Tag to follow">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding}" />
@@ -98,7 +99,8 @@
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 mahapps:TextBoxHelper.Watermark="Remote branch name"
-                                Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
+                                Style="{StaticResource Noggog.Styles.TextBox.ErrorState}"
+                                ToolTip="Name of the branch to follow" />
                             <CheckBox Grid.Column="1"
                                 x:Name="AutoBranchCheck"
                                 Margin="10,0,0,0"
