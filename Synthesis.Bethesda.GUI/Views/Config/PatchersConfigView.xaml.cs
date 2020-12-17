@@ -86,7 +86,12 @@ namespace Synthesis.Bethesda.GUI.Views
                 var overallErr = this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LargeOverallError, fallback: GetResponse<PatcherVM>.Succeed(null!))
                     .Replay(1)
                     .RefCount();
-                overallErr.Select(x => x.Succeeded ? Visibility.Collapsed : Visibility.Visible)
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.PatchersDisplay.Count)
+                            .Select(c => c > 0),
+                        overallErr.Select(x => x.Succeeded),
+                        (hasPatchers, succeeded) => hasPatchers && !succeeded)
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.OverallErrorButton.Visibility)
                     .DisposeWith(disposable);
                 overallErr.Select(x => x.Reason)
@@ -161,6 +166,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Bind top patcher list buttons
+                this.WhenAnyValue(x => x.ViewModel!.PatchersDisplay.Count)
+                    .Select(c => c == 0 ? Visibility.Hidden : Visibility.Visible)
+                    .BindToStrict(this, x => x.TopAllPatchersControls.Visibility)
+                    .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.EnableAllPatchersCommand)
                     .BindToStrict(this, x => x.EnableAllPatchersButton.Command)
                     .DisposeWith(disposable);

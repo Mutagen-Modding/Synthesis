@@ -64,13 +64,13 @@ namespace Synthesis.Bethesda.GUI
         public string TargetTag { get; set; } = string.Empty;
 
         [Reactive]
-        public bool TagAutoUpdate { get; set; } = true;
+        public bool TagAutoUpdate { get; set; } = false;
 
         [Reactive]
         public string TargetCommit { get; set; } = string.Empty;
 
         [Reactive]
-        public bool BranchAutoUpdate { get; set; } = true;
+        public bool BranchAutoUpdate { get; set; } = false;
 
         [Reactive]
         public bool BranchFollowMain { get; set; } = true;
@@ -308,13 +308,50 @@ namespace Synthesis.Bethesda.GUI
                 })
                 .DisposeWith(this);
 
+            var targetBranchSha = Observable.CombineLatest(
+                    driverRepoInfo.Select(x => x.RunnableState.Failed ? default : x.Item.BranchShas),
+                    this.WhenAnyValue(x => x.TargetBranchName),
+                    (dict, branch) => dict?.GetOrDefault(branch))
+                .Replay(1)
+                .RefCount();
+            var targetTag = Observable.CombineLatest(
+                    driverRepoInfo.Select(x => x.RunnableState.Failed ? default : x.Item.Tags),
+                    this.WhenAnyValue(x => x.TargetTag),
+                    (tags, tag) => tags?
+                        .Where(tagItem => tagItem.Name == tag)
+                        .FirstOrDefault())
+                .Replay(1)
+                .RefCount();
+
+            // Set up empty target autofill
+            // Usually for initial bootstrapping
+            Observable.CombineLatest(
+                    targetBranchSha,
+                    this.WhenAnyValue(x => x.TargetCommit),
+                    (targetBranchSha, targetCommit) => (targetBranchSha, targetCommit))
+                .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+                .Where(x => x.targetBranchSha != null && TargetCommit.IsNullOrWhitespace())
+                .Subscribe(x =>
+                {
+                    this.TargetCommit = x.targetBranchSha ?? string.Empty;
+                })
+                .DisposeWith(this);
+            Observable.CombineLatest(
+                    targetTag,
+                    this.WhenAnyValue(x => x.TargetCommit),
+                    (targetTagSha, targetCommit) => (targetTagSha, targetCommit))
+                .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+                .Where(x => x.targetTagSha != null && TargetCommit.IsNullOrWhitespace())
+                .Subscribe(x =>
+                {
+                    this.TargetCommit = x.targetTagSha?.Sha ?? string.Empty;
+                })
+                .DisposeWith(this);
+
             // Set up update available systems
             UpdateToBranchCommand = NoggogCommand.CreateFromObject(
                 objectSource: Observable.CombineLatest(
-                    Observable.CombineLatest(
-                        driverRepoInfo.Select(x => x.RunnableState.Failed ? default : x.Item.BranchShas),
-                        this.WhenAnyValue(x => x.TargetBranchName),
-                        (dict, branch) => dict?.GetOrDefault(branch)),
+                    targetBranchSha,
                     this.WhenAnyValue(x => x.TargetCommit),
                     (branch, target) => (BranchSha: branch, Current: target)),
                 canExecute: o => o.BranchSha != null && o.BranchSha != o.Current,
@@ -327,17 +364,12 @@ namespace Synthesis.Bethesda.GUI
                 this.CompositeDisposable);
             UpdateToTagCommand = NoggogCommand.CreateFromObject(
                 objectSource: Observable.CombineLatest(
-                    Observable.CombineLatest(
-                        driverRepoInfo.Select(x => x.RunnableState.Failed ? default : x.Item.Tags),
-                        this.WhenAnyValue(x => x.TargetTag),
-                        (tags, tag) => tags?
-                            .Where(tagItem => tagItem.Name == tag)
-                            .FirstOrDefault()),
+                    targetTag,
                     Observable.CombineLatest(
                         this.WhenAnyValue(x => x.TargetCommit),
                         this.WhenAnyValue(x => x.TargetTag),
                         (TargetSha, TargetTag) => (TargetSha, TargetTag)),
-                    (tag, target) => (TagSha: tag?.Sha, Tag: tag?.Name, Current:target )),
+                    (tag, target) => (TagSha: tag?.Sha, Tag: tag?.Name, Current:target)),
                 canExecute: o => (o.TagSha != null && o.Tag != null)
                     && (o.TagSha != o.Current.TargetSha || o.Tag != o.Current.TargetTag),
                 extraCanExecute: this.WhenAnyValue(x => x.PatcherVersioning)
@@ -355,7 +387,21 @@ namespace Synthesis.Bethesda.GUI
                 this.WhenAnyValue(x => x.TargetTag),
                 this.WhenAnyValue(x => x.TargetCommit),
                 this.WhenAnyValue(x => x.TargetBranchName),
-                (versioning, tag, commit, branch) => GitPatcherVersioning.Factory(versioning, tag, commit, branch));
+                this.WhenAnyValue(x => x.TagAutoUpdate),
+                this.WhenAnyValue(x => x.BranchAutoUpdate),
+                (versioning, tag, commit, branch, tagAuto, branchAuto) =>
+                {
+                    return GitPatcherVersioning.Factory(
+                        versioning: versioning,
+                        tag: tag,
+                        commit: commit,
+                        branch: branch,
+                        autoTag: tagAuto,
+                        autoBranch: branchAuto);
+                })
+                .DistinctUntilChanged()
+                .Replay(1)
+                .RefCount();
 
             var nugetTarget = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.Profile.ActiveVersioning)

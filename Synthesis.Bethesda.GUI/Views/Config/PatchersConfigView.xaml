@@ -19,11 +19,11 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition
-                Width="*"
+                Width="2*"
                 MinWidth="200"
                 MaxWidth="400" />
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="5*" />
         </Grid.ColumnDefinitions>
         <Grid Grid.Row="2" Grid.Column="0">
             <Grid.RowDefinitions>
@@ -31,7 +31,9 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0" Margin="0,3,0,3">
+            <Grid Grid.Row="0"
+                x:Name="TopAllPatchersControls"
+                Margin="0,3,0,3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />

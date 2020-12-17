@@ -50,8 +50,31 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             };
         }
 
-        public static GitPatcherVersioning Factory(PatcherVersioningEnum versioning, string tag, string commit, string branch)
+        public static GitPatcherVersioning Factory(
+            PatcherVersioningEnum versioning,
+            string tag,
+            string commit,
+            string branch,
+            bool autoTag,
+            bool autoBranch)
         {
+            switch (versioning)
+            {
+                case PatcherVersioningEnum.Tag:
+                    if (!autoTag)
+                    {
+                        versioning = PatcherVersioningEnum.Commit;
+                    }
+                    break;
+                case PatcherVersioningEnum.Branch:
+                    if (!autoBranch)
+                    {
+                        versioning = PatcherVersioningEnum.Commit;
+                    }
+                    break;
+                default:
+                    break;
+            }
             return new GitPatcherVersioning(
                 versioning,
                 versioning switch
@@ -62,5 +85,5 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     _ => throw new NotImplementedException(),
                 });
         }
-}
+    }
 }

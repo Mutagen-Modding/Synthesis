@@ -114,7 +114,14 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, view => view.PatcherVersioning.TimeText.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.TargetCommit)
-                    .Select(x => x.IsNullOrWhitespace() || x.Length < 7 ? x : x.Substring(0, 7))
+                    .Select(x =>
+                    {
+                        if (x.IsNullOrWhitespace())
+                        {
+                            return "No target";
+                        }
+                        return x.Length < 7 ? x : x.Substring(0, 7);
+                    })
                     .BindToStrict(this, view => view.PatcherVersioning.ShaText.Text)
                     .DisposeWith(disposable);
 
