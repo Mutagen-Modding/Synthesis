@@ -482,7 +482,6 @@ namespace Synthesis.Bethesda.GUI
                                 return;
                             }
 
-                            Logger.Information("Checking out the proper commit");
                             observer.OnNext(new ConfigurationState<RunnerRepoInfo>(default!)
                             {
                                 RunnableState = ErrorResponse.Fail("Checking out the proper commit"),
