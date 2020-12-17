@@ -59,15 +59,15 @@ namespace Synthesis.Bethesda.GUI
                 .Select(p => p.ToRunner(this)));
             PatchersDisplay = Patchers.Connect()
                 .ToObservableCollection(this);
-            if (parent.SelectedPatcher != null
-                && Patchers.TryGetValue(parent.SelectedPatcher.InternalID, out var run))
+            if (profile.SelectedPatcher != null
+                && Patchers.TryGetValue(profile.SelectedPatcher.InternalID, out var run))
             {
                 SelectedPatcher = run;
             }
 
             BackCommand = ReactiveCommand.Create(() =>
             {
-                parent.SelectedPatcher = SelectedPatcher?.Config;
+                profile.SelectedPatcher = SelectedPatcher?.Config;
                 parent.MainVM.ActivePanel = parent;
             },
             canExecute: this.WhenAnyValue(x => x.Running)

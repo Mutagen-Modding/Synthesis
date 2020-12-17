@@ -45,7 +45,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.PatchersList.ItemsSource)
                     .DisposeWith(disposable);
 
-                this.BindStrict(this.ViewModel, vm => vm.SelectedPatcher, view => view.PatchersList.SelectedItem)
+                this.BindStrict(this.ViewModel, vm => vm.SelectedProfile!.SelectedPatcher, view => view.PatchersList.SelectedItem)
                     .DisposeWith(disposable);
 
                 // Wire up patcher config data context and visibility

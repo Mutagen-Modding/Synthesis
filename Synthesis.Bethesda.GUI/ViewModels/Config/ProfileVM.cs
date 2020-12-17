@@ -77,6 +77,9 @@ namespace Synthesis.Bethesda.GUI
 
         public ReactiveCommand<Unit, Unit> UpdateSynthesisManualToLatestCommand { get; }
 
+        [Reactive]
+        public PatcherVM? SelectedPatcher { get; set; }
+
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
             ID = id ?? Guid.NewGuid().ToString();
@@ -198,7 +201,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (LargeOverallError.Value.TryGet(out var patcher))
                     {
-                        Config.SelectedPatcher = patcher;
+                        SelectedPatcher = patcher;
                     }
                 },
                 canExecute: this.WhenAnyValue(x => x.LargeOverallError.Value).Select(x => x != null));
@@ -378,7 +381,7 @@ namespace Synthesis.Bethesda.GUI
         private void SetPatcherForInitialConfiguration(PatcherVM patcher)
         {
             patcher.Profile.Patchers.Add(patcher);
-            Config.SelectedPatcher = patcher;
+            SelectedPatcher = patcher;
         }
 
         private void SetInitializer(PatcherInitVM initializer)

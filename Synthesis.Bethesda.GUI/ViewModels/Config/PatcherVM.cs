@@ -43,7 +43,7 @@ namespace Synthesis.Bethesda.GUI
             InternalID = Interlocked.Increment(ref NextID);
 
             Profile = parent;
-            _IsSelected = this.WhenAnyValue(x => x.Profile.Config.SelectedPatcher)
+            _IsSelected = this.WhenAnyValue(x => x.Profile.SelectedPatcher)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsSelected));
 
