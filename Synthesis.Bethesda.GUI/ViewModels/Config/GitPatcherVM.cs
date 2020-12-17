@@ -398,7 +398,10 @@ namespace Synthesis.Bethesda.GUI
                         branch: branch,
                         autoTag: tagAuto,
                         autoBranch: branchAuto);
-                });
+                })
+                .DistinctUntilChanged()
+                .Replay(1)
+                .RefCount();
 
             var nugetTarget = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.Profile.ActiveVersioning)
