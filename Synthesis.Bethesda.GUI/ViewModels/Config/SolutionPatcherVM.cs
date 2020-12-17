@@ -162,6 +162,7 @@ namespace Synthesis.Bethesda.GUI
                         .StartWith(Unit.Default)
                         .Select(_ =>
                         {
+                            if (!File.Exists(path)) return default;
                             try
                             {
                                 return JsonConvert.DeserializeObject<PatcherCustomization>(
