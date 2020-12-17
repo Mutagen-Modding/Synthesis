@@ -355,7 +355,18 @@ namespace Synthesis.Bethesda.GUI
                 this.WhenAnyValue(x => x.TargetTag),
                 this.WhenAnyValue(x => x.TargetCommit),
                 this.WhenAnyValue(x => x.TargetBranchName),
-                (versioning, tag, commit, branch) => GitPatcherVersioning.Factory(versioning, tag, commit, branch));
+                this.WhenAnyValue(x => x.TagAutoUpdate),
+                this.WhenAnyValue(x => x.BranchAutoUpdate),
+                (versioning, tag, commit, branch, tagAuto, branchAuto) =>
+                {
+                    return GitPatcherVersioning.Factory(
+                        versioning: versioning,
+                        tag: tag,
+                        commit: commit,
+                        branch: branch,
+                        autoTag: tagAuto,
+                        autoBranch: branchAuto);
+                });
 
             var nugetTarget = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.Profile.ActiveVersioning)
