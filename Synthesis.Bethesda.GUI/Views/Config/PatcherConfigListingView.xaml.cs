@@ -87,7 +87,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.UpdateButton.Command)
                     .DisposeWith(disposable);
                 var hasAnyUpdateCmd = this.WhenAnyFallback(x => x.ViewModel)
-                    .Select(patcher => (patcher as GitPatcherVM)?.UpdateAllCommand.CanExecute)
+                    .Select(patcher => (patcher as GitPatcherVM)?.UpdateAllCommand.CanExecute ?? Observable.Return(false))
                     .Switch()
                     .Replay(1)
                     .RefCount();
