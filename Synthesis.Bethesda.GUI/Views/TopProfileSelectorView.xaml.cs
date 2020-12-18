@@ -49,7 +49,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(dispose);
 
                 this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.UpdateProfileNugetVersionCommand)
-                    .Cast<ICommand>()
+                    .Select(x => x as ICommand)
                     .BindToStrict(this, x => x.UpdateButton.Command)
                     .DisposeWith(dispose);
                 this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.UpdateProfileNugetVersionCommand)
