@@ -107,17 +107,22 @@
                 Margin="0,8,0,0"
                 FontSize="14"
                 FontWeight="Bold"
-                Text="Global Nuget Versions" />
+                Text="Nuget Versions" />
             <local:NugetsVersioningView Grid.Row="2"
                 x:Name="Nugets"
                 Margin="0,8,0,0" />
-            <Button Grid.Row="3"
-                x:Name="ResetPatchersToProfile"
-                Padding="5"
-                HorizontalAlignment="Left"
-                ToolTip="Sets all contained patchers to match and follow profile settings">
-                Reset Patchers to Profile
-            </Button>
+            <StackPanel Grid.Row="3" Orientation="Horizontal">
+                <Button
+                    x:Name="ResetPatchersToProfile"
+                    Padding="5"
+                    HorizontalAlignment="Left"
+                    ToolTip="Sets all contained patchers to match and follow profile settings">
+                    Reset Patchers to Profile
+                </Button>
+                <CheckBox x:Name="PrereleaseCheckbox" Margin="20,0,0,0">
+                    Prereleases
+                </CheckBox>
+            </StackPanel>
             <Button Grid.Row="5"
                 x:Name="ProfileInternalFilesButton"
                 Margin="0,0,0,10"

@@ -129,13 +129,27 @@ namespace Synthesis.Bethesda.GUI
                 .CombineLatest(
                     DotNetSdkInstalled,
                     (_, v) => v)
-                .SelectTask(GetLatestVersions)
+                .SelectTask(async v =>
+                {
+                    var normalUpdateTask = GetLatestVersions(v, includePrerelease: false);
+                    var prereleaseUpdateTask = GetLatestVersions(v, includePrerelease: true);
+                    await Task.WhenAll(normalUpdateTask, prereleaseUpdateTask);
+                    return (Normal: await normalUpdateTask, Prerelease: await prereleaseUpdateTask);
+                })
                 .Replay(1)
                 .RefCount();
-            NewestMutagenVersion = latestVersions
-                .Select(x => x.MutagenVersion);
-            NewestSynthesisVersion = latestVersions
-                .Select(x => x.SynthesisVersion);
+            NewestMutagenVersion = Observable.CombineLatest(
+                    latestVersions,
+                    this.WhenAnyFallback(x=> x.Configuration.SelectedProfile!.ConsiderPrereleaseNugets),
+                    (vers, prereleases) => prereleases ? vers.Prerelease.MutagenVersion : vers.Normal.MutagenVersion)
+                .Replay(1)
+                .RefCount();
+            NewestSynthesisVersion = Observable.CombineLatest(
+                    latestVersions,
+                    this.WhenAnyFallback(x => x.Configuration.SelectedProfile!.ConsiderPrereleaseNugets),
+                    (vers, prereleases) => prereleases ? vers.Prerelease.SynthesisVersion : vers.Normal.SynthesisVersion)
+                .Replay(1)
+                .RefCount();
 
             // Switch to DotNet screen if missing
             DotNetSdkInstalled
@@ -179,7 +193,7 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public async Task<(string? MutagenVersion, string? SynthesisVersion)> GetLatestVersions(Version? dotNetVersion)
+        public async Task<(string? MutagenVersion, string? SynthesisVersion)> GetLatestVersions(Version? dotNetVersion, bool includePrerelease)
         {
             try
             {
@@ -197,7 +211,7 @@ namespace Synthesis.Bethesda.GUI
                 var projPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.csproj");
                 SolutionInitialization.CreateProject(projPath, GameCategory.Skyrim);
                 SolutionInitialization.AddProjectToSolution(slnPath, projPath);
-                var ret = await DotNetQueries.QuerySynthesisVersions(projPath, current: false);
+                var ret = await DotNetQueries.QuerySynthesisVersions(projPath, current: false, includePrerelease: includePrerelease);
                 Log.Logger.Information("Latest published library versions:");
                 Log.Logger.Information($"  Mutagen: {ret.MutagenVersion}");
                 Log.Logger.Information($"  Synthesis: {ret.SynthesisVersion}");

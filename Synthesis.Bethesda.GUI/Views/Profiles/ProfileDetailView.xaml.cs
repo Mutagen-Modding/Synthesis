@@ -148,6 +148,9 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.Nugets.Synthesis.UpdateButton.Visibility)
                     .DisposeWith(disposable);
+
+                this.BindStrict(this.ViewModel, vm => vm.Profile!.ConsiderPrereleaseNugets, view => view.PrereleaseCheckbox.IsChecked)
+                    .DisposeWith(disposable);
                 #endregion
             });
         }

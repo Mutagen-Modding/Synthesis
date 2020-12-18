@@ -80,6 +80,9 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public PatcherVM? SelectedPatcher { get; set; }
 
+        [Reactive]
+        public bool ConsiderPrereleaseNugets { get; set; }
+
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
             ID = id ?? Guid.NewGuid().ToString();
