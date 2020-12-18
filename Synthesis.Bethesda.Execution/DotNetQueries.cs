@@ -80,7 +80,7 @@ namespace Synthesis.Bethesda.Execution
                 .Substring(startIndex + 2)
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries)
                 .WithIndex()
-                .Where(x => x.Index == 0 || Version.TryParse(x.Item, out _))
+                .Where(x => x.Index == 0 || x.Item != "(D)")
                 .Select(x => x.Item)
                 .ToArray();
             package = split[0];
