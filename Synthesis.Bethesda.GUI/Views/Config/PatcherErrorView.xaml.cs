@@ -1,9 +1,8 @@
-﻿using Noggog.WPF;
+using Noggog.WPF;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,21 +16,26 @@ using System.Windows.Shapes;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class OverallErrorViewBase : NoggogUserControl<OverallErrorVM> { }
+    public class PatcherErrorViewBase : NoggogUserControl<ErrorVM> { }
 
     /// <summary>
-    /// Interaction logic for OverallErrorView.xaml
+    /// Interaction logic for PatcherErrorView.xaml
     /// </summary>
-    public partial class OverallErrorView : OverallErrorViewBase
+    public partial class PatcherErrorView : PatcherErrorViewBase
     {
-        public OverallErrorView()
+        public PatcherErrorView()
         {
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel!.Exception)
-                    .Select(x => x.ToString())
+                this.WhenAnyFallback(x => x.ViewModel!.Title)
+                    .BindToStrict(this, x => x.TitleBlock.Text)
+                    .DisposeWith(disposable);
+                this.WhenAnyFallback(x => x.ViewModel!.String)
                     .BindToStrict(this, x => x.ErrorOutputBox.Text)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.BackCommand)
+                    .BindToStrict(this, x => x.CloseErrorButton.Command)
                     .DisposeWith(disposable);
             });
         }

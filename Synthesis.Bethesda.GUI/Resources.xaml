@@ -89,4 +89,13 @@
         </Style.Resources>
         <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
     </Style>
+
+    <Style
+        x:Key="ErrorBox"
+        BasedOn="{StaticResource Noggog.Styles.TextBox}"
+        TargetType="TextBox">
+        <Setter Property="BorderBrush" Value="{StaticResource DarkSalmonBrush}" />
+        <Setter Property="Controls:ControlsHelper.FocusBorderBrush" Value="{StaticResource DarkSalmonBrush}" />
+        <Setter Property="Controls:ControlsHelper.MouseOverBorderBrush" Value="{StaticResource DarkSalmonBrush}" />
+    </Style>
 </ResourceDictionary>

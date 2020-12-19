@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.GUI
         public ICommand AddSolutionPatcherCommand { get; }
         public ICommand AddCliPatcherCommand { get; }
         public ICommand AddSnippetPatcherCommand { get; }
-        public ICommand GoToErrorPatcher { get; }
+        public ICommand GoToErrorCommand { get; }
         public IReactiveCommand UpdateProfileNugetVersionCommand { get; }
         public ICommand EnableAllPatchersCommand { get; }
         public ICommand DisableAllPatchersCommand { get; }
@@ -77,11 +77,20 @@ namespace Synthesis.Bethesda.GUI
 
         public ReactiveCommand<Unit, Unit> UpdateSynthesisManualToLatestCommand { get; }
 
-        [Reactive]
-        public PatcherVM? SelectedPatcher { get; set; }
+        private readonly ObservableAsPropertyHelper<PatcherVM?> _SelectedPatcher;
+        public PatcherVM? SelectedPatcher => _SelectedPatcher.Value;
 
         [Reactive]
         public bool ConsiderPrereleaseNugets { get; set; }
+
+        [Reactive]
+        public string DataPathOverride { get; set; } = string.Empty;
+
+        [Reactive]
+        public bool WantsDataPathOverride { get; set; }
+
+        [Reactive]
+        public ViewModel? DisplayedObject { get; set; }
 
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
@@ -96,25 +105,48 @@ namespace Synthesis.Bethesda.GUI
             ProfileDirectory = Path.Combine(Execution.Constants.WorkingDirectory, ID);
             WorkingDirectory = Execution.Constants.ProfileWorkingDirectory(ID);
 
-            var dataFolderResult = this.WhenAnyValue(x => x.Release)
-                .ObserveOn(RxApp.TaskpoolScheduler)
+            var dataFolderResult = Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.WantsDataPathOverride),
+                    this.WhenAnyValue(x => x.DataPathOverride),
+                    (wants, path) => wants ? path : null)
+                // If we did not override data path, bounce off location systems
+                .Select(path =>
+                {
+                    if (path != null) return Observable.Return(GetResponse<string>.Succeed(path));
+                    return this.WhenAnyValue(x => x.Release)
+                        .ObserveOn(RxApp.TaskpoolScheduler)
+                        .Select(x =>
+                        {
+                            try
+                            {
+                                var wjMeta = x.ToWjGame().MetaData();
+                                if (wjMeta == null)
+                                {
+                                    return GetResponse<string>.Fail("Could not automatically locate Data folder.  Run Steam/GoG/etc once to properly register things.");
+                                }
+                                return GetResponse<string>.Succeed(
+                                    Path.Combine(wjMeta.GameLocation().ToString(), "Data"));
+                            }
+                            catch (Exception ex)
+                            {
+                                return GetResponse<string>.Fail(string.Empty, ex);
+                            }
+                        });
+                })
+                .Switch()
+                // Watch folder for existance
                 .Select(x =>
                 {
-                    try
-                    {
-                        var wjMeta = x.ToWjGame().MetaData();
-                        if (wjMeta == null)
+                    if (x.Failed) return Observable.Return(x);
+                    return Noggog.ObservableExt.WatchFile(x.Value)
+                        .StartWith(Unit.Default)
+                        .Select(_ =>
                         {
-                            return GetResponse<string>.Fail("Could not automatically locate Data folder.  Run Steam/GoG/etc once to properly register things.");
-                        }
-                        return GetResponse<string>.Succeed(
-                            Path.Combine(wjMeta.GameLocation().ToString(), "Data"));
-                    }
-                    catch (Exception ex)
-                    {
-                        return GetResponse<string>.Fail(string.Empty, ex);
-                    }
+                            if (Directory.Exists(x.Value)) return x;
+                            return GetResponse<string>.Fail($"Data folder did not exist: {x.Value}");
+                        });
                 })
+                .Switch()
                 .Replay(1)
                 .RefCount();
 
@@ -131,7 +163,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (x.dataFolder.Failed)
                     {
-                        return (Results: Observable.Empty<IChangeSet<LoadOrderListing>>(), State: Observable.Return<ErrorResponse>(ErrorResponse.Fail("Data folder not set")));
+                        return (Results: Observable.Empty<IChangeSet<LoadOrderListing>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
                     }
                     return (Results: Mutagen.Bethesda.LoadOrder.GetLiveLoadOrder(x.release, x.dataFolder.Value, out var errors), State: errors);
                 })
@@ -199,15 +231,25 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsActive));
 
-            GoToErrorPatcher = ReactiveCommand.Create(
-                () =>
+            GoToErrorCommand = NoggogCommand.CreateFromObject(
+                objectSource: this.WhenAnyValue(x => x.LargeOverallError),
+                canExecute: o => o.Failed,
+                execute: o =>
                 {
-                    if (LargeOverallError.Value.TryGet(out var patcher))
+                    if (o.Value.TryGet(out var patcher))
                     {
-                        SelectedPatcher = patcher;
+                        DisplayedObject = patcher;
+                    }
+                    else
+                    {
+                        DisplayedObject = new ErrorVM(title: "Overall Blocking Error", str: o.Reason);
                     }
                 },
-                canExecute: this.WhenAnyValue(x => x.LargeOverallError.Value).Select(x => x != null));
+                disposable: this.CompositeDisposable);
+
+            _SelectedPatcher = this.WhenAnyValue(x => x.DisplayedObject)
+                .Select(x => x as PatcherVM)
+                .ToGuiProperty(this, nameof(SelectedPatcher), default);
 
             ActiveVersioning = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.MutagenVersioning),
@@ -353,6 +395,8 @@ namespace Synthesis.Bethesda.GUI
             ManualMutagenVersion = settings.MutagenManualVersion;
             SynthesisVersioning = settings.SynthesisVersioning;
             ManualSynthesisVersion = settings.SynthesisManualVersion;
+            DataPathOverride = settings.DataPathOverride ?? string.Empty;
+            WantsDataPathOverride = settings.DataPathOverride != null;
             Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
             {
                 return p switch
@@ -377,14 +421,15 @@ namespace Synthesis.Bethesda.GUI
                 MutagenManualVersion = ManualMutagenVersion,
                 SynthesisManualVersion = ManualSynthesisVersion,
                 MutagenVersioning = MutagenVersioning,
-                SynthesisVersioning = SynthesisVersioning
+                SynthesisVersioning = SynthesisVersioning,
+                DataPathOverride = WantsDataPathOverride ? DataPathOverride : null
             };
         }
 
         private void SetPatcherForInitialConfiguration(PatcherVM patcher)
         {
             patcher.Profile.Patchers.Add(patcher);
-            SelectedPatcher = patcher;
+            DisplayedObject = patcher;
         }
 
         private void SetInitializer(PatcherInitVM initializer)

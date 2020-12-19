@@ -34,12 +34,28 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand DeleteCommand { get; }
 
+        public ICommand GoToErrorCommand => NoggogCommand.CreateFromObject(
+            objectSource: this.WhenAnyValue(x => x.State.RunnableState),
+            canExecute: x => x.Failed,
+            execute: x =>
+            {
+                DisplayedObject = new ErrorVM("Error", x.Reason, backAction: () =>
+                {
+                    DisplayedObject = this;
+                });
+            },
+            disposable: this.CompositeDisposable);
+
         public abstract ConfigurationState State { get; }
+
+        [Reactive]
+        public ViewModel DisplayedObject { get; set; }
 
         private static int NextID;
 
         public PatcherVM(ProfileVM parent, PatcherSettings? settings)
         {
+            DisplayedObject = this;
             InternalID = Interlocked.Increment(ref NextID);
 
             Profile = parent;
@@ -58,6 +74,14 @@ namespace Synthesis.Bethesda.GUI
                     $"Are you sure you want to delete {DisplayName}?",
                     Delete);
             });
+
+            this.WhenAnyValue(x => x.IsSelected)
+                .DistinctUntilChanged()
+                .Where(x => x)
+                .Subscribe(_ =>
+                {
+                    DisplayedObject = this;
+                });
         }
 
         public abstract PatcherSettings Save();

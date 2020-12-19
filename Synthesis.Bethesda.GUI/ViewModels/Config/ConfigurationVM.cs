@@ -86,7 +86,7 @@ namespace Synthesis.Bethesda.GUI
                 .DisposeWith(this);
 
             _DisplayedObject = Observable.CombineLatest(
-                    this.WhenAnyValue(x => x.SelectedProfile!.SelectedPatcher),
+                    this.WhenAnyValue(x => x.SelectedProfile!.DisplayedObject),
                     this.WhenAnyValue(x => x.NewPatcher),
                     (selected, newConfig) => (newConfig as object) ?? selected)
                 .ToGuiProperty(this, nameof(DisplayedObject), default);
@@ -160,7 +160,7 @@ namespace Synthesis.Bethesda.GUI
             }
             patchersToAdd.ForEach(p => p.IsOn = true);
             SelectedProfile.Patchers.AddRange(patchersToAdd);
-            SelectedProfile.SelectedPatcher = patchersToAdd.First();
+            SelectedProfile.DisplayedObject = patchersToAdd.First();
         }
     }
 }

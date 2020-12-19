@@ -67,7 +67,7 @@ namespace Synthesis.Bethesda.GUI
 
             BackCommand = ReactiveCommand.Create(() =>
             {
-                profile.SelectedPatcher = SelectedPatcher?.Config;
+                profile.DisplayedObject = SelectedPatcher?.Config;
                 parent.MainVM.ActivePanel = parent;
             },
             canExecute: this.WhenAnyValue(x => x.Running)
@@ -147,7 +147,7 @@ namespace Synthesis.Bethesda.GUI
                     this.WhenAnyValue(x => x.SelectedPatcher)
                         .Select(i => i as object),
                     this.ShowOverallErrorCommand.EndingExecution()
-                        .Select(_ => ResultError == null ? null : new OverallErrorVM(ResultError)))
+                        .Select(_ => ResultError == null ? null : new ErrorVM("Patching Error", ResultError.ToString())))
                 .ToGuiProperty(this, nameof(DetailDisplay), default);
         }
 
