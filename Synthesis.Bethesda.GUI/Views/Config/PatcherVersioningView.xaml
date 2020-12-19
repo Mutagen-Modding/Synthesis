@@ -23,8 +23,8 @@
         <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
             Margin="0,0,6,0"
             Padding="10,0"
-            Background="#18000000"
-            BorderBrush="#333333"
+            Background="{StaticResource TransparentGrayBackgroundBrush}"
+            BorderBrush="{StaticResource GrayBorderBrush}"
             BorderThickness="1"
             CornerRadius="5">
             <Grid>
