@@ -45,7 +45,6 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -103,27 +102,50 @@
                     <icon:PackIconFontAwesome Kind="TrashSolid" />
                 </Button>
             </Grid>
-            <TextBlock Grid.Row="1"
-                Margin="0,8,0,0"
-                FontSize="14"
-                FontWeight="Bold"
-                Text="Nuget Versions" />
-            <local:NugetsVersioningView Grid.Row="2"
-                x:Name="Nugets"
-                Margin="0,8,0,0" />
-            <StackPanel Grid.Row="3" Orientation="Horizontal">
-                <Button
-                    x:Name="ResetPatchersToProfile"
-                    Padding="5"
-                    HorizontalAlignment="Left"
-                    ToolTip="Sets all contained patchers to match and follow profile settings">
-                    Reset Patchers to Profile
-                </Button>
-                <CheckBox x:Name="PrereleaseCheckbox" Margin="20,0,0,0">
-                    Prereleases
-                </CheckBox>
-            </StackPanel>
-            <Button Grid.Row="5"
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0"
+                    Margin="0,8,0,0"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    Text="Nuget Versions" />
+                <local:NugetsVersioningView Grid.Row="1"
+                    x:Name="Nugets"
+                    Margin="0,8,0,0" />
+                <StackPanel Grid.Row="2" Orientation="Horizontal">
+                    <Button
+                        x:Name="ResetPatchersToProfile"
+                        Padding="5"
+                        HorizontalAlignment="Left"
+                        ToolTip="Sets all contained patchers to match and follow profile settings">
+                        Reset Patchers to Profile
+                    </Button>
+                    <CheckBox x:Name="PrereleaseCheckbox" Margin="20,0,0,0">
+                        Prereleases
+                    </CheckBox>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0"
+                    Margin="0,8,0,0"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    Text="Data Folder Location" />
+                <TextBox Grid.Row="1"
+                    x:Name="DataFolderOverrideBox"
+                    mahapps:TextBoxHelper.Watermark="Automatic detection"
+                    ToolTip="Location of your data folder.  Default setting is to locate it automatically." />
+            </Grid>
+            <Button Grid.Row="4"
                 x:Name="ProfileInternalFilesButton"
                 Margin="0,0,0,10"
                 HorizontalAlignment="Left">

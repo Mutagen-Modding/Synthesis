@@ -152,6 +152,11 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.BindStrict(this.ViewModel, vm => vm.Profile!.ConsiderPrereleaseNugets, view => view.PrereleaseCheckbox.IsChecked)
                     .DisposeWith(disposable);
                 #endregion
+
+                this.BindStrict(this.ViewModel, x => x!.Profile!.DataPathOverride, x => x.DataFolderOverrideBox.Text,
+                        vmToViewConverter: vm => vm ?? string.Empty,
+                        viewToVmConverter: view => view.IsNullOrWhitespace() ? null : view)
+                    .DisposeWith(disposable);
             });
         }
     }

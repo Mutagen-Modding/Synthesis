@@ -84,10 +84,7 @@ namespace Synthesis.Bethesda.GUI
         public bool ConsiderPrereleaseNugets { get; set; }
 
         [Reactive]
-        public string DataPathOverride { get; set; } = string.Empty;
-
-        [Reactive]
-        public bool WantsDataPathOverride { get; set; }
+        public string? DataPathOverride { get; set; }
 
         [Reactive]
         public ViewModel? DisplayedObject { get; set; }
@@ -105,11 +102,7 @@ namespace Synthesis.Bethesda.GUI
             ProfileDirectory = Path.Combine(Execution.Constants.WorkingDirectory, ID);
             WorkingDirectory = Execution.Constants.ProfileWorkingDirectory(ID);
 
-            var dataFolderResult = Observable.CombineLatest(
-                    this.WhenAnyValue(x => x.WantsDataPathOverride),
-                    this.WhenAnyValue(x => x.DataPathOverride),
-                    (wants, path) => wants ? path : null)
-                // If we did not override data path, bounce off location systems
+            var dataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
                 .Select(path =>
                 {
                     if (path != null) return Observable.Return(GetResponse<string>.Succeed(path));
@@ -395,8 +388,7 @@ namespace Synthesis.Bethesda.GUI
             ManualMutagenVersion = settings.MutagenManualVersion;
             SynthesisVersioning = settings.SynthesisVersioning;
             ManualSynthesisVersion = settings.SynthesisManualVersion;
-            DataPathOverride = settings.DataPathOverride ?? string.Empty;
-            WantsDataPathOverride = settings.DataPathOverride != null;
+            DataPathOverride = settings.DataPathOverride;
             Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
             {
                 return p switch
@@ -422,7 +414,7 @@ namespace Synthesis.Bethesda.GUI
                 SynthesisManualVersion = ManualSynthesisVersion,
                 MutagenVersioning = MutagenVersioning,
                 SynthesisVersioning = SynthesisVersioning,
-                DataPathOverride = WantsDataPathOverride ? DataPathOverride : null
+                DataPathOverride = DataPathOverride
             };
         }
 
