@@ -46,7 +46,7 @@ namespace Synthesis.Bethesda.GUI
         public override string DisplayName => _DisplayName.Value;
 
         private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
-        public override ConfigurationState State => _State.Value;
+        public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
 
         public ICommand OpenSolutionCommand { get; }
 

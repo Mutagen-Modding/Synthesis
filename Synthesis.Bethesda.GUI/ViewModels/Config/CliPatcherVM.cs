@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.GUI
         };
 
         private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
-        public override ConfigurationState State => _State.Value;
+        public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
 
         public CliPatcherVM(ProfileVM parent, CliPatcherSettings? settings = null)
             : base(parent, settings)

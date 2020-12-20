@@ -37,13 +37,7 @@ namespace Synthesis.Bethesda.GUI
         public ICommand GoToErrorCommand => NoggogCommand.CreateFromObject(
             objectSource: this.WhenAnyValue(x => x.State.RunnableState),
             canExecute: x => x.Failed,
-            execute: x =>
-            {
-                DisplayedObject = new ErrorVM("Error", x.Reason, backAction: () =>
-                {
-                    DisplayedObject = this;
-                });
-            },
+            execute: x => DisplayedObject = ErrorVM,
             disposable: this.CompositeDisposable);
 
         public abstract ConfigurationState State { get; }
@@ -53,10 +47,16 @@ namespace Synthesis.Bethesda.GUI
 
         private static int NextID;
 
+        public ErrorVM ErrorVM { get; }
+
         public PatcherVM(ProfileVM parent, PatcherSettings? settings)
         {
             DisplayedObject = this;
             InternalID = Interlocked.Increment(ref NextID);
+            ErrorVM = new ErrorVM("Error", backAction: () =>
+            {
+                DisplayedObject = this;
+            });
 
             Profile = parent;
             _IsSelected = this.WhenAnyValue(x => x.Profile.SelectedPatcher)
@@ -81,7 +81,22 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(_ =>
                 {
                     DisplayedObject = this;
-                });
+                })
+                .DisposeWith(this);
+
+            this.WhenAnyValue(x => x.State.RunnableState)
+                .Subscribe(state =>
+                {
+                    if (state.Failed)
+                    {
+                        ErrorVM.String = state.Reason;
+                    }
+                    else
+                    {
+                        ErrorVM.String = null;
+                    }
+                })
+                .DisposeWith(this);
         }
 
         public abstract PatcherSettings Save();

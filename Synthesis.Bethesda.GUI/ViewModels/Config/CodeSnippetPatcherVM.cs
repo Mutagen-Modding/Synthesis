@@ -27,7 +27,7 @@ namespace Synthesis.Bethesda.GUI
         public string Code { get; set; } = string.Empty;
 
         private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
-        public override ConfigurationState State => _State.Value;
+        public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
 
         private readonly ObservableAsPropertyHelper<string> _CompilationText;
         public string CompilationText => _CompilationText.Value;

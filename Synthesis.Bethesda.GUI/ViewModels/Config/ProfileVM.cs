@@ -89,6 +89,8 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public ViewModel? DisplayedObject { get; set; }
 
+        public ErrorVM OverallErrorVM { get; } = new ErrorVM("Overall Blocking Error");
+
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
             ID = id ?? Guid.NewGuid().ToString();
@@ -247,10 +249,34 @@ namespace Synthesis.Bethesda.GUI
                     }
                     else
                     {
-                        DisplayedObject = new ErrorVM(title: "Overall Blocking Error", str: o.Reason);
+                        var curDisplayed = DisplayedObject;
+                        if (!(curDisplayed is ErrorVM))
+                        {
+                            OverallErrorVM.BackAction = () => DisplayedObject = curDisplayed;
+                        }
+                        else
+                        {
+                            OverallErrorVM.BackAction = null;
+                        }
+                        DisplayedObject = OverallErrorVM;
                     }
                 },
                 disposable: this.CompositeDisposable);
+
+            // Forward overall errors into VM
+            this.WhenAnyValue(x => x.LargeOverallError)
+                .Subscribe(err =>
+                {
+                    if (err.Succeeded || err.Value != null)
+                    {
+                        OverallErrorVM.String = null;
+                    }
+                    else
+                    {
+                        OverallErrorVM.String = err.Reason;
+                    }
+                })
+                .DisposeWith(this);
 
             _SelectedPatcher = this.WhenAnyValue(x => x.DisplayedObject)
                 .Select(x => x as PatcherVM)
