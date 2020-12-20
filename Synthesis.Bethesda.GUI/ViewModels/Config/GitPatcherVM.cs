@@ -602,7 +602,7 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x.AsObservableChangeSet())
                 .Switch()
                 .Except(this.Profile.LoadOrder.Connect()
-                    .Transform(x => x.ModKey))
+                    .Transform(x => x.Listing.ModKey))
                 .RefCount();
 
             _State = Observable.CombineLatest(

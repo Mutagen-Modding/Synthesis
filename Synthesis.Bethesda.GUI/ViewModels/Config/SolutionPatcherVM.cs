@@ -267,7 +267,7 @@ namespace Synthesis.Bethesda.GUI
                     if (isSelected)
                     {
                         return this.Profile.LoadOrder.Connect()
-                            .Transform(x => x.ModKey)
+                            .Transform(x => x.Listing.ModKey)
                             .AddKey(x => x)
                             .Except(RequiredMods.Connect());
                     }

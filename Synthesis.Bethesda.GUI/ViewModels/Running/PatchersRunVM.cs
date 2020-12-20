@@ -167,7 +167,7 @@ namespace Synthesis.Bethesda.GUI
                             outputPath: output,
                             dataFolder: RunningProfile.DataFolder,
                             release: RunningProfile.Release,
-                            loadOrder: RunningProfile.LoadOrder.Items,
+                            loadOrder: RunningProfile.LoadOrder.Items.Select(x => x.Listing),
                             cancellation: _cancel.Token,
                             reporter: _reporter,
                             patchers: Patchers.Items.Select(vm => (vm.Config.InternalID, vm.Run)));

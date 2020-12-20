@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<GetResponse<PatcherVM>> _LargeOverallError;
         public GetResponse<PatcherVM> LargeOverallError => _LargeOverallError.Value;
 
-        public IObservableList<LoadOrderListing> LoadOrder { get; }
+        public IObservableList<LoadOrderEntryVM> LoadOrder { get; }
 
         private readonly ObservableAsPropertyHelper<bool> _IsActive;
         public bool IsActive => _IsActive.Value;
@@ -156,9 +156,12 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (x.dataFolder.Failed)
                     {
-                        return (Results: Observable.Empty<IChangeSet<LoadOrderListing>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
+                        return (Results: Observable.Empty<IChangeSet<LoadOrderEntryVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
                     }
-                    return (Results: Mutagen.Bethesda.LoadOrder.GetLiveLoadOrder(x.release, x.dataFolder.Value, out var errors), State: errors);
+                    var liveLo = Mutagen.Bethesda.LoadOrder.GetLiveLoadOrder(x.release, x.dataFolder.Value, out var errors)
+                        .Transform(listing => new LoadOrderEntryVM(listing, x.dataFolder.Value))
+                        .DisposeMany();
+                    return (Results: liveLo, State: errors);
                 })
                 .Replay(1)
                 .RefCount();
@@ -179,11 +182,19 @@ namespace Synthesis.Bethesda.GUI
                         .AutoRefresh(x => x.State)
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
-                    (dataFolder, loadOrder, coll) =>
+                    LoadOrder.Connect()
+                        .AutoRefresh(x => x.Exists)
+                        .Filter(x => !x.Exists && x.Listing.Enabled)
+                        .QueryWhenChanged(q => q),
+                    (dataFolder, loadOrder, coll, missingMods) =>
                     {
                         if (coll.Count == 0) return GetResponse<PatcherVM>.Fail("There are no enabled patchers to run.");
                         if (!dataFolder.Succeeded) return dataFolder.BubbleFailure<PatcherVM>();
                         if (!loadOrder.Succeeded) return loadOrder.BubbleFailure<PatcherVM>();
+                        if (missingMods.Count > 0)
+                        {
+                            return GetResponse<PatcherVM>.Fail($"Load order had mods that were missing:{Environment.NewLine}{string.Join(Environment.NewLine, missingMods.Select(x => x.Listing.ModKey))}");
+                        }
                         var blockingError = coll.FirstOrDefault(p => p.State.IsHaltingError);
                         if (blockingError != null)
                         {
@@ -333,7 +344,7 @@ namespace Synthesis.Bethesda.GUI
                 disposable: this.CompositeDisposable);
 
             UpdateProfileNugetVersionCommand = CommandExt.CreateCombinedAny(
-                this.UpdateMutagenManualToLatestCommand, 
+                this.UpdateMutagenManualToLatestCommand,
                 this.UpdateSynthesisManualToLatestCommand);
 
             EnableAllPatchersCommand = ReactiveCommand.Create(() =>
