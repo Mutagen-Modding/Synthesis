@@ -618,6 +618,7 @@ namespace Synthesis.Bethesda.GUI
                         .StartWith((default(System.Version?), false)),
                     missingReqMods
                         .QueryWhenChanged()
+                        .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
                         .StartWith(ListExt.Empty<ModKey>()),
                     (driver, runner, checkout, dotnet, reqModsMissing) =>
                     {

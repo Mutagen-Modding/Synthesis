@@ -185,7 +185,8 @@ namespace Synthesis.Bethesda.GUI
                     LoadOrder.Connect()
                         .AutoRefresh(x => x.Exists)
                         .Filter(x => !x.Exists && x.Listing.Enabled)
-                        .QueryWhenChanged(q => q),
+                        .QueryWhenChanged(q => q)
+                        .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler),
                     (dataFolder, loadOrder, coll, missingMods) =>
                     {
                         if (coll.Count == 0) return GetResponse<PatcherVM>.Fail("There are no enabled patchers to run.");
