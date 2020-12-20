@@ -19,6 +19,9 @@ using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers;
 using System.Reactive;
 using System.Text;
+using Synthesis.Bethesda.DTO;
+using Newtonsoft.Json;
+using Mutagen.Bethesda;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -563,6 +566,45 @@ namespace Synthesis.Bethesda.GUI
                     (matchVersion, selVersion) => (matchVersion, selVersion))
                 .ToGuiProperty(this, nameof(SynthesisVersionDiff));
 
+            var patcherConfiguration = runnableState
+                .Select(x =>
+                {
+                    if (x.RunnableState.Failed) return Observable.Return(default(PatcherCustomization?));
+                    var confPath = Path.Combine(Path.GetDirectoryName(x.Item.ProjPath)!, Constants.MetaFileName);
+                    return Noggog.ObservableExt.WatchFile(confPath)
+                        .StartWith(Unit.Default)
+                        .Select(x =>
+                        {
+                            try
+                            {
+                                if (!File.Exists(confPath)) return default;
+                                return JsonConvert.DeserializeObject<PatcherCustomization>(
+                                    File.ReadAllText(confPath),
+                                    Execution.Constants.JsonSettings);
+                            }
+                            catch (Exception)
+                            {
+                                return default(PatcherCustomization?);
+                            }
+                        });
+                })
+                .Switch()
+                .Replay(1)
+                .RefCount();
+
+            var missingReqMods = patcherConfiguration
+                .Select(conf =>
+                {
+                    if (conf == null) return Enumerable.Empty<ModKey>();
+                    return conf.RequiredMods
+                        .SelectWhere(x => TryGet<ModKey>.Create(ModKey.TryFromNameAndExtension(x, out var modKey), modKey));
+                })
+                .Select(x => x.AsObservableChangeSet())
+                .Switch()
+                .Except(this.Profile.LoadOrder.Connect()
+                    .Transform(x => x.ModKey))
+                .RefCount();
+
             _State = Observable.CombineLatest(
                     driverRepoInfo
                         .Select(x => x.ToUnit()),
@@ -574,7 +616,10 @@ namespace Synthesis.Bethesda.GUI
                         .Switch()
                         .Select(x => (x, true))
                         .StartWith((default(System.Version?), false)),
-                    (driver, runner, checkout, dotnet) =>
+                    missingReqMods
+                        .QueryWhenChanged()
+                        .StartWith(ListExt.Empty<ModKey>()),
+                    (driver, runner, checkout, dotnet, reqModsMissing) =>
                     {
                         if (driver.IsHaltingError) return driver;
                         if (runner.IsHaltingError) return runner;
@@ -586,6 +631,10 @@ namespace Synthesis.Bethesda.GUI
                             };
                         }
                         if (dotnet.Item1 == null) return new ConfigurationState(ErrorResponse.Fail("No DotNet SDK installed"));
+                        if (reqModsMissing.Count > 0)
+                        {
+                            return new ConfigurationState(ErrorResponse.Fail($"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));
+                        }
                         return checkout;
                     })
                 .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
