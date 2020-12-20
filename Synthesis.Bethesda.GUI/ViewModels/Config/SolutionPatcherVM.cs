@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers;
+using Mutagen.Bethesda;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -65,6 +66,22 @@ namespace Synthesis.Bethesda.GUI
 
         public ObservableCollectionExtended<VisibilityOptions> VisibilityOptions { get; } = new ObservableCollectionExtended<VisibilityOptions>(EnumExt.GetValues<VisibilityOptions>());
 
+        public SourceCache<ModKey, ModKey> RequiredMods { get; } = new SourceCache<ModKey, ModKey>(x => x);
+
+        public IObservableCollection<RequiredModVM> RequiredModsDisplay { get; }
+
+        public IObservableCollection<DetectedModVM> DetectedMods { get; }
+
+        [Reactive]
+        public string AddRequiredModInput { get; set; } = string.Empty;
+
+        public ICommand AddRequiredModCommand { get; }
+
+        public ICommand ClearSearchCommand { get; }
+
+        [Reactive]
+        public string DetectedModsSearch { get; set; } = string.Empty;
+
         public SolutionPatcherVM(ProfileVM parent, SolutionPatcherSettings? settings = null)
             : base(parent, settings)
         {
@@ -96,6 +113,11 @@ namespace Synthesis.Bethesda.GUI
                 this.WhenAnyValue(x => x.SolutionPath.TargetPath))
                 .ObserveOnGui()
                 .ToObservableCollection(this);
+
+            RequiredModsDisplay = RequiredMods.Connect()
+                .Sort(ModKey.Alphabetical, SortOptimisations.ComparesImmutableValuesOnly, resetThreshold: 0)
+                .Transform(x => new RequiredModVM(x, this))
+                .ToObservableCollection(this.CompositeDisposable);
 
             var projPath = SolutionPatcherConfigLogic.ProjectPath(
                 solutionPath: this.WhenAnyValue(x => x.SolutionPath.TargetPath),
@@ -160,6 +182,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     return Noggog.ObservableExt.WatchFile(path)
                         .StartWith(Unit.Default)
+                        .Throttle(TimeSpan.FromMilliseconds(500), RxApp.MainThreadScheduler)
                         .Select(_ =>
                         {
                             if (!File.Exists(path)) return default;
@@ -190,6 +213,8 @@ namespace Synthesis.Bethesda.GUI
                     this.ShortDescription = info.OneLineDescription ?? string.Empty;
                     this.Visibility = info.Visibility;
                     this.Versioning = info.PreferredAutoVersioning;
+                    this.RequiredMods.SetTo(info.RequiredMods
+                        .SelectWhere(x => TryGet<ModKey>.Create(ModKey.TryFromNameAndExtension(x, out var modKey), modKey)));
                 })
                 .DisposeWith(this);
 
@@ -199,8 +224,12 @@ namespace Synthesis.Bethesda.GUI
                     this.WhenAnyValue(x => x.LongDescription),
                     this.WhenAnyValue(x => x.Visibility),
                     this.WhenAnyValue(x => x.Versioning),
+                    this.RequiredMods
+                        .Connect()
+                        .Sort(ModKey.Alphabetical, SortOptimisations.ComparesImmutableValuesOnly, resetThreshold: 0)
+                        .QueryWhenChanged(),
                     metaPath,
-                    (nickname, shortDesc, desc, visibility, versioning, meta) => (nickname, shortDesc, desc, visibility, versioning, meta))
+                    (nickname, shortDesc, desc, visibility, versioning, reqMods, meta) => (nickname, shortDesc, desc, visibility, versioning, reqMods: reqMods.Items.Select(x => x.FileName).OrderBy(x => x).ToArray(), meta))
                 .DistinctUntilChanged()
                 .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
                 .Skip(1)
@@ -217,7 +246,8 @@ namespace Synthesis.Bethesda.GUI
                                     LongDescription = x.desc,
                                     Visibility = x.visibility,
                                     Nickname = x.nickname,
-                                    PreferredAutoVersioning = x.versioning
+                                    PreferredAutoVersioning = x.versioning,
+                                    RequiredMods = x.reqMods
                                 },
                                 Formatting.Indented,
                                 Execution.Constants.JsonSettings));
@@ -228,6 +258,55 @@ namespace Synthesis.Bethesda.GUI
                     }
                 })
                 .DisposeWith(this);
+
+            DetectedMods = this.WhenAnyValue(x => x.IsSelected)
+                .Select(isSelected =>
+                {
+                    if (isSelected)
+                    {
+                        return this.Profile.LoadOrder.Connect()
+                            .Transform(x => x.ModKey)
+                            .AddKey(x => x)
+                            .Except(RequiredMods.Connect());
+                    }
+                    else
+                    {
+                        return Observable.Empty<IChangeSet<ModKey, ModKey>>();
+                    }
+                })
+                .Switch()
+                .Filter(this.WhenAnyValue(x => x.DetectedModsSearch)
+                    .Debounce(TimeSpan.FromMilliseconds(350), RxApp.MainThreadScheduler)
+                    .Select(x => x.Trim())
+                    .DistinctUntilChanged()
+                    .Select(search =>
+                    {
+                        if (string.IsNullOrWhiteSpace(search))
+                        {
+                            return new Func<ModKey, bool>(_ => true);
+                        }
+                        return new Func<ModKey, bool>(
+                            (p) =>
+                            {
+                                if (p.FileName.Contains(search, StringComparison.OrdinalIgnoreCase)) return true;
+                                return false;
+                            });
+                    }))
+                .Transform(x => new DetectedModVM(x, this))
+                .ToObservableCollection(this.CompositeDisposable);
+
+            AddRequiredModCommand = NoggogCommand.CreateFromObject(
+                objectSource: this.WhenAnyValue(x => x.AddRequiredModInput)
+                    .Select(x => TryGet<ModKey>.Create(ModKey.TryFromNameAndExtension(x, out var modKey), modKey)),
+                canExecute: x => x.Succeeded,
+                execute: x =>
+                {
+                    RequiredMods.AddOrUpdate(x.Value);
+                    AddRequiredModInput = string.Empty;
+                },
+                disposable: this.CompositeDisposable);
+
+            ClearSearchCommand = ReactiveCommand.Create(() => DetectedModsSearch = string.Empty);
         }
 
         public override PatcherSettings Save()
@@ -292,6 +371,34 @@ namespace Synthesis.Bethesda.GUI
                     .Replay(1)
                     .RefCount();
             }
+        }
+    }
+
+    public class DetectedModVM : ViewModel
+    {
+        public ModKey ModKey { get; }
+        public SolutionPatcherVM Patcher { get; }
+        public ICommand AddAsRequiredModCommand { get; }
+
+        public DetectedModVM(ModKey modKey, SolutionPatcherVM slnPatcher)
+        {
+            Patcher = slnPatcher;
+            ModKey = modKey;
+            AddAsRequiredModCommand = ReactiveCommand.Create(() => slnPatcher.RequiredMods.AddOrUpdate(modKey));
+        }
+    }
+
+    public class RequiredModVM : ViewModel
+    {
+        public ModKey ModKey { get; }
+        public SolutionPatcherVM Patcher { get; }
+        public ICommand RemoveAsRequiredModCommand { get; }
+
+        public RequiredModVM(ModKey modKey, SolutionPatcherVM slnPatcher)
+        {
+            Patcher = slnPatcher;
+            ModKey = modKey;
+            RemoveAsRequiredModCommand = ReactiveCommand.Create(() => slnPatcher.RequiredMods.RemoveKey(modKey));
         }
     }
 }
