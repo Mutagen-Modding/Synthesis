@@ -179,29 +179,33 @@ namespace Synthesis.Bethesda.GUI
                         .Select(x => x.State)
                         .Switch(),
                     Patchers.Connect()
-                        .AutoRefresh(x => x.IsOn)
-                        .Filter(p => p.IsOn)
-                        .AutoRefresh(x => x.State)
+                        .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
+                        .QueryWhenChanged(q => q)
+                        .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
+                    Patchers.Connect()
+                        .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
+                        .FilterOnObservable(p => p.WhenAnyValue(x => x.State.IsHaltingError), scheduler: RxApp.MainThreadScheduler)
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
                     LoadOrder.Connect()
-                        .AutoRefresh(x => x.Exists)
-                        .Filter(x => !x.Exists && x.Listing.Enabled)
+                        .FilterOnObservable(
+                            x => x.WhenAnyValue(y => y.Exists)
+                                .Select(x => !x),
+                            scheduler: RxApp.MainThreadScheduler)
                         .QueryWhenChanged(q => q)
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler),
-                    (dataFolder, loadOrder, coll, missingMods) =>
+                    (dataFolder, loadOrder, enabledPatchers, erroredEnabledPatchers, missingMods) =>
                     {
-                        if (coll.Count == 0) return GetResponse<PatcherVM>.Fail("There are no enabled patchers to run.");
+                        if (enabledPatchers.Count == 0) return GetResponse<PatcherVM>.Fail("There are no enabled patchers to run.");
                         if (!dataFolder.Succeeded) return dataFolder.BubbleFailure<PatcherVM>();
                         if (!loadOrder.Succeeded) return loadOrder.BubbleFailure<PatcherVM>();
                         if (missingMods.Count > 0)
                         {
                             return GetResponse<PatcherVM>.Fail($"Load order had mods that were missing:{Environment.NewLine}{string.Join(Environment.NewLine, missingMods.Select(x => x.Listing.ModKey))}");
                         }
-                        var blockingError = coll.FirstOrDefault(p => p.State.IsHaltingError);
-                        if (blockingError != null)
+                        if (erroredEnabledPatchers.Count > 0)
                         {
-                            return GetResponse<PatcherVM>.Fail(blockingError, $"\"{blockingError.DisplayName}\" has a blocking error");
+                            return GetResponse<PatcherVM>.Fail(erroredEnabledPatchers.First(), $"\"{erroredEnabledPatchers.First().DisplayName}\" has a blocking error");
                         }
                         return GetResponse<PatcherVM>.Succeed(null!);
                     })
