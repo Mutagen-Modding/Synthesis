@@ -227,9 +227,11 @@ namespace Synthesis.Bethesda.GUI
                     this.RequiredMods
                         .Connect()
                         .Sort(ModKey.Alphabetical, SortOptimisations.ComparesImmutableValuesOnly, resetThreshold: 0)
-                        .QueryWhenChanged(),
+                        .QueryWhenChanged()
+                        .Select(x => x.Items)
+                        .StartWith(Enumerable.Empty<ModKey>()),
                     metaPath,
-                    (nickname, shortDesc, desc, visibility, versioning, reqMods, meta) => (nickname, shortDesc, desc, visibility, versioning, reqMods: reqMods.Items.Select(x => x.FileName).OrderBy(x => x).ToArray(), meta))
+                    (nickname, shortDesc, desc, visibility, versioning, reqMods, meta) => (nickname, shortDesc, desc, visibility, versioning, reqMods: reqMods.Select(x => x.FileName).OrderBy(x => x).ToArray(), meta))
                 .DistinctUntilChanged()
                 .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
                 .Skip(1)
