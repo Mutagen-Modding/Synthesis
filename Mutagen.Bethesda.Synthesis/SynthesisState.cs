@@ -10,8 +10,8 @@ namespace Mutagen.Bethesda.Synthesis
     /// <summary>
     /// A class housing all the tools, parameters, and entry points for a typical Synthesis patcher
     /// </summary>
-    public class SynthesisState<TMod, TModGetter> : ISynthesisState
-        where TMod : class, IMod, TModGetter
+    public class SynthesisState<TModSetter, TModGetter> : ISynthesisState
+        where TModSetter : class, IMod, TModGetter
         where TModGetter : class, IModGetter
     {
         /// <summary>
@@ -45,7 +45,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// Previous patchers in the pipeline will have already added content.  Your changes should build
         /// upon that content as appropriate, and mesh any changes to produce the final patch file.
         /// </summary>
-        public TMod PatchMod { get; }
+        public TModSetter PatchMod { get; }
         IModGetter ISynthesisState.PatchMod => PatchMod;
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Mutagen.Bethesda.Synthesis
             LoadOrder<IModListing<TModGetter>> loadOrder,
 
             ILinkCache linkCache,
-            TMod patchMod,
+            TModSetter patchMod,
             string extraDataPath,
             CancellationToken cancellation)
         {

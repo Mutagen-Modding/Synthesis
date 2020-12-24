@@ -11,15 +11,15 @@ namespace Mutagen.Bethesda.Synthesis.Internal
 {
     public class Utility
     {
-        public static SynthesisState<TMod, TModGetter> ToState<TMod, TModGetter>(RunSynthesisMutagenPatcher settings, UserPreferences userPrefs)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>
+        public static SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, UserPreferences userPrefs)
+            where TModSetter : class, IContextMod<TModSetter>, TModGetter
+            where TModGetter : class, IContextGetterMod<TModSetter>
         {
             // Confirm target game release matches
             var regis = settings.GameRelease.ToCategory().ToModRegistration();
-            if (!typeof(TMod).IsAssignableFrom(regis.SetterType))
+            if (!typeof(TModSetter).IsAssignableFrom(regis.SetterType))
             {
-                throw new ArgumentException($"Target mod type {typeof(TMod)} was not of the expected type {regis.SetterType}");
+                throw new ArgumentException($"Target mod type {typeof(TModSetter)} was not of the expected type {regis.SetterType}");
             }
             if (!typeof(TModGetter).IsAssignableFrom(regis.GetterType))
             {
@@ -58,7 +58,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             var modKey = BaseSynthesis.Constants.SynthesisModKey;
 
             // Create or import patch mod
-            TMod patchMod;
+            TModSetter patchMod;
             ILinkCache cache;
             if (userPrefs.NoPatch)
             {
@@ -75,23 +75,23 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                     readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(new ModPath(modKey, settings.SourcePath), settings.GameRelease);
                 }
                 loadOrder.Add(new ModListing<TModGetter>(readOnlyPatchMod, enabled: true));
-                cache = loadOrder.ToImmutableLinkCache<TMod, TModGetter>();
+                cache = loadOrder.ToImmutableLinkCache<TModSetter, TModGetter>();
             }
             else
             {
                 if (settings.SourcePath == null)
                 {
-                    patchMod = ModInstantiator<TMod>.Activator(modKey, settings.GameRelease);
+                    patchMod = ModInstantiator<TModSetter>.Activator(modKey, settings.GameRelease);
                 }
                 else
                 {
-                    patchMod = ModInstantiator<TMod>.Importer(new ModPath(modKey, settings.SourcePath), settings.GameRelease);
+                    patchMod = ModInstantiator<TModSetter>.Importer(new ModPath(modKey, settings.SourcePath), settings.GameRelease);
                 }
                 cache = loadOrder.ToMutableLinkCache(patchMod);
                 loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));
             }
 
-            return new SynthesisState<TMod, TModGetter>(
+            return new SynthesisState<TModSetter, TModGetter>(
                 settings: settings,
                 loadOrder: loadOrder,
                 rawLoadOrder: rawLoadOrder,
