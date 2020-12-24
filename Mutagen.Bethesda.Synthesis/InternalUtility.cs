@@ -59,7 +59,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
 
             // Create or import patch mod
             TModSetter patchMod;
-            ILinkCache cache;
+            ILinkCache<TModSetter> cache;
             if (userPrefs.NoPatch)
             {
                 // Pass null, even though it isn't normally
