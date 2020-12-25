@@ -195,6 +195,7 @@ namespace Synthesis.Bethesda.Execution
                     File.Delete(outputPath);
                 }
                 File.Copy(prevPath!.Path, outputPath);
+                reporter.Write(default!, default, $"Exported patch to: {outputPath}");
                 return true;
             }
             catch (Exception ex)
