@@ -174,6 +174,7 @@ namespace Synthesis.Bethesda.GUI
                         {
                             using var repo = new Repository(LocalDriverRepoDirectory);
                             var master = repo.Branches.Where(b => b.IsCurrentRepositoryHead).FirstOrDefault();
+                            if (master == null) return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate master branch."));
                             masterBranch = master.FriendlyName;
                             repo.Reset(ResetMode.Hard);
                             Commands.Checkout(repo, master);
