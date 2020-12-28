@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                     throw new ArgumentNullException("Profile", "Could not locate profile to run");
                 }
 
-                SynthesisProfile profile;
+                SynthesisProfile? profile;
                 if (string.IsNullOrWhiteSpace(run.ProfileName))
                 {
                     profile = JsonConvert.DeserializeObject<SynthesisProfile>(File.ReadAllText(run.ProfileDefinitionPath), Constants.JsonSettings)!;
@@ -45,7 +45,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                     });
                 }
 
-                if (string.IsNullOrWhiteSpace(profile.ID))
+                if (string.IsNullOrWhiteSpace(profile?.ID))
                 {
                     throw new ArgumentException("File did not point to a valid profile");
                 }

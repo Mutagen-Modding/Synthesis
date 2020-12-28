@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>net5.0;netstandard2.1</TargetFrameworks>
     <Authors>Noggog</Authors>
     <Company>Mutagen</Company>
     <Product>Synthesis</Product>

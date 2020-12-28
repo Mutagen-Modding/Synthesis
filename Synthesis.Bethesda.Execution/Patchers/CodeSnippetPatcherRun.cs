@@ -47,7 +47,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
         {
             Name = name;
             Code = string.Empty;
-            AssemblyName = assembly.FullName;
+            AssemblyName = assembly.FullName!;
             _assembly = assembly;
         }
 
@@ -76,7 +76,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 new[]
                 {
                     synthesisState,
-                });
+                })!;
             await t;
             synthesisState.PatchMod.WriteToBinaryParallel(
                 settings.OutputPath,
@@ -119,7 +119,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             var deleg = lambda.Compile();
             return (RunSynthesisMutagenPatcher settings, UserPreferences? prefs) =>
             {
-                return (ISynthesisState)deleg.DynamicInvoke(settings, prefs);
+                return (ISynthesisState)deleg.DynamicInvoke(settings, prefs)!;
             };
         }
 

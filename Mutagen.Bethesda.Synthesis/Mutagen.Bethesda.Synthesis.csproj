@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>net5.0;netstandard2.1</TargetFrameworks>
     <Authors>Noggog</Authors>
     <Company>Mutagen</Company>
     <Product>Synthesis</Product>

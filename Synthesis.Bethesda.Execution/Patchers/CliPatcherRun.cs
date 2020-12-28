@@ -60,7 +60,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 using ProcessWrapper process = ProcessWrapper.Start(
                     new ProcessStartInfo(PathToExecutable, args)
                     {
-                        WorkingDirectory = Path.GetDirectoryName(PathToExecutable)
+                        WorkingDirectory = Path.GetDirectoryName(PathToExecutable)!
                     },
                     cancel);
                 using var outputSub = process.Output.Subscribe(_output);

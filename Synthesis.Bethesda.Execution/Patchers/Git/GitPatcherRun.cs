@@ -160,7 +160,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             }
         }
 
-        public static string GetPathToSolution(string pathToRepo)
+        public static string? GetPathToSolution(string pathToRepo)
         {
             return Directory.EnumerateFiles(pathToRepo, "*.sln").FirstOrDefault();
         }
@@ -182,7 +182,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             listedSynthesisVersion = null;
             foreach (var subProj in SolutionPatcherRun.AvailableProjects(solutionPath))
             {
-                var proj = Path.Combine(Path.GetDirectoryName(solutionPath), subProj);
+                var proj = Path.Combine(Path.GetDirectoryName(solutionPath)!, subProj);
                 var projXml = XElement.Parse(File.ReadAllText(proj));
                 SwapInDesiredVersionsForProjectString(
                     projXml,
@@ -200,7 +200,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     listedSynthesisVersion = curListedSynthesisVersion;
                 }
             }
-            foreach (var item in Directory.EnumerateFiles(Path.GetDirectoryName(solutionPath), "Directory.Build.props"))
+            foreach (var item in Directory.EnumerateFiles(Path.GetDirectoryName(solutionPath)!, "Directory.Build.props"))
             {
                 var projXml = XElement.Parse(File.ReadAllText(item));
                 TurnOffNullability(projXml);

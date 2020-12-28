@@ -41,7 +41,7 @@ namespace Mutagen.Bethesda.Synthesis
 
         public static string[] CreateProject(string projPath, GameCategory category)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(projPath));
+            Directory.CreateDirectory(Path.GetDirectoryName(projPath)!);
             var projName = Path.GetFileNameWithoutExtension(projPath);
 
             // Generate Project File

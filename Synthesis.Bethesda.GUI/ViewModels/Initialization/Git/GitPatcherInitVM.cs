@@ -73,7 +73,7 @@ namespace Synthesis.Bethesda.GUI
                         if (content.Count != 1) return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
                         var settings = new JsonSerializerOptions();
                         settings.Converters.Add(new JsonStringEnumConverter());
-                        var customization = JsonSerializer.Deserialize<MutagenPatchersListing>(content[0].Content, settings);
+                        var customization = JsonSerializer.Deserialize<MutagenPatchersListing>(content[0].Content, settings)!;
                         return customization.Repositories
                             .NotNull()
                             .SelectMany(repo =>

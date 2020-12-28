@@ -17,13 +17,14 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             Synthesis = synthesis;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is SynthesisNugetVersioning vers && Equals(vers);
         }
 
-        public bool Equals(SynthesisNugetVersioning other)
+        public bool Equals(SynthesisNugetVersioning? other)
         {
+            if (other == null) return false;
             if (!Mutagen.Equals(other.Mutagen)) return false;
             if (!Synthesis.Equals(other.Synthesis)) return false;
             return true;

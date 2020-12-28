@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <AssemblyName>Synthesis</AssemblyName>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <PackageId>Synthesis.Bethesda.GUI</PackageId>
     <Authors>Noggog</Authors>
@@ -15,6 +15,7 @@
     <Platforms>x64</Platforms>
     <ApplicationIcon>mushroom.ico</ApplicationIcon>
     <IncludeSymbolsInSingleFile>true</IncludeSymbolsInSingleFile>
+    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
   </PropertyGroup>
 
   <ItemGroup>

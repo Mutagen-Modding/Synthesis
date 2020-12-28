@@ -57,13 +57,14 @@ namespace Synthesis.Bethesda.DTO
         public PreferredAutoVersioning PreferredAutoVersioning { get; set; }
         public string[] RequiredMods { get; set; } = Array.Empty<string>();
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is PatcherCustomization info && this.Equals(info);
         }
 
-        public bool Equals(PatcherCustomization other)
+        public bool Equals(PatcherCustomization? other)
         {
+            if (other == null) return false;
             if (!string.Equals(this.Visibility, other.Visibility)) return false;
             if (!string.Equals(this.OneLineDescription, other.OneLineDescription)) return false;
             if (!string.Equals(this.LongDescription, other.LongDescription)) return false;

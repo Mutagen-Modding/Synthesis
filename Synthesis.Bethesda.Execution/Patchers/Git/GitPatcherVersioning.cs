@@ -18,14 +18,15 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             Target = target;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is GitPatcherVersioning rhs)) return false;
             return Equals(rhs);
         }
 
-        public bool Equals(GitPatcherVersioning other)
+        public bool Equals(GitPatcherVersioning? other)
         {
+            if (other == null) return false;
             if (Versioning != other.Versioning) return false;
             if (!string.Equals(Target, other.Target)) return false;
             return true;
