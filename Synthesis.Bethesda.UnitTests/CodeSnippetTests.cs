@@ -161,7 +161,7 @@ namespace Synthesis.Bethesda.UnitTests
                 SourcePath = null
             };
             var factory = CodeSnippetPatcherRun.ConstructStateFactory(GameRelease.Oblivion);
-            var stateObj = factory(settings, new UserPreferences());
+            var stateObj = factory(settings, new PatcherPreferences());
             Assert.NotNull(stateObj);
             using var state = stateObj as SynthesisState<IOblivionMod, IOblivionModGetter>;
             Assert.NotNull(state);

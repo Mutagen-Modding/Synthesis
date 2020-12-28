@@ -11,7 +11,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
 {
     public class Utility
     {
-        public static SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, UserPreferences userPrefs)
+        public static SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs)
             where TModSetter : class, IContextMod<TModSetter>, TModGetter
             where TModGetter : class, IContextGetterMod<TModSetter>
         {

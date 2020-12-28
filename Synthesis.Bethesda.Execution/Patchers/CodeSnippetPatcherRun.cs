@@ -63,7 +63,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 throw new ArgumentException("Could not find compiled class within assembly.");
             }
             var patcherCodeClass = System.Activator.CreateInstance(type);
-            var userPrefs = new UserPreferences()
+            var userPrefs = new PatcherPreferences()
             {
                 Cancel = cancel ?? CancellationToken.None
             };
@@ -100,11 +100,11 @@ namespace Synthesis.Bethesda.Execution.Patchers
             }
         }
 
-        internal static Func<RunSynthesisMutagenPatcher, UserPreferences?, ISynthesisState> ConstructStateFactory(GameRelease release)
+        internal static Func<RunSynthesisMutagenPatcher, PatcherPreferences?, ISynthesisState> ConstructStateFactory(GameRelease release)
         {
             var regis = release.ToCategory().ToModRegistration();
             var cliSettingsParam = Expression.Parameter(typeof(RunSynthesisMutagenPatcher));
-            var userPrefs = Expression.Parameter(typeof(UserPreferences));
+            var userPrefs = Expression.Parameter(typeof(PatcherPreferences));
             MethodCallExpression callExp = Expression.Call(
                 typeof(Mutagen.Bethesda.Synthesis.Internal.Utility),
                 nameof(Mutagen.Bethesda.Synthesis.Internal.Utility.ToState),
@@ -117,7 +117,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 userPrefs);
             LambdaExpression lambda = Expression.Lambda(callExp, cliSettingsParam, userPrefs);
             var deleg = lambda.Compile();
-            return (RunSynthesisMutagenPatcher settings, UserPreferences? prefs) =>
+            return (RunSynthesisMutagenPatcher settings, PatcherPreferences? prefs) =>
             {
                 return (ISynthesisState)deleg.DynamicInvoke(settings, prefs)!;
             };

@@ -207,7 +207,7 @@ namespace Mutagen.Bethesda.Synthesis
             {
                 System.Console.WriteLine("Prepping state.");
                 WarmupAll.Init();
-                using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
+                using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences?.ToPatcherPrefs() ?? new PatcherPreferences());
                 System.Console.WriteLine("Running patch.");
                 await patcher(state).ConfigureAwait(false);
                 if (!settings.OutputPath.IsNullOrWhitespace())
@@ -245,7 +245,7 @@ namespace Mutagen.Bethesda.Synthesis
             {
                 System.Console.WriteLine("Prepping state.");
                 WarmupAll.Init();
-                using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences ?? new UserPreferences());
+                using var state = Utility.ToState<TMod, TModGetter>(settings, userPreferences?.ToPatcherPrefs() ?? new PatcherPreferences());
                 System.Console.WriteLine("Running patch.");
                 patcher(state);
                 if (!settings.OutputPath.IsNullOrWhitespace())
@@ -276,7 +276,7 @@ namespace Mutagen.Bethesda.Synthesis
 
         public IEnumerable<LoadOrderListing> GetLoadOrder(
             RunSynthesisMutagenPatcher settings,
-            UserPreferences? userPrefs = null,
+            PatcherPreferences? userPrefs = null,
             bool throwOnMissingMods = true)
         {
             return GetLoadOrder(
@@ -291,7 +291,7 @@ namespace Mutagen.Bethesda.Synthesis
             GameRelease release,
             string loadOrderFilePath,
             string dataFolderPath,
-            UserPreferences? userPrefs = null,
+            PatcherPreferences? userPrefs = null,
             bool throwOnMissingMods = true)
         {
             // This call will impliticly get Creation Club entries, too, as the Synthesis systems should be merging
@@ -327,7 +327,7 @@ namespace Mutagen.Bethesda.Synthesis
             {
                 DataFolderPath = dataPath,
                 SourcePath = null,
-                OutputPath = prefs.NoPatch ? string.Empty : Path.Combine(dataPath, def.IdentifyingModKey.FileName),
+                OutputPath = Path.Combine(dataPath, def.IdentifyingModKey.FileName),
                 GameRelease = def.TargetRelease,
                 LoadOrderFilePath = path.Path,
                 ExtraDataFolder = Path.GetFullPath("./Data")
