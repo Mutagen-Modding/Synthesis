@@ -27,7 +27,7 @@ jobs:
     - name: Publish Nugets to Nuget.org
       run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --no-symbols true
     - name: Pack
-      run: dotnet publish "Synthesis.Bethesda.GUI/Synthesis.Bethesda.GUI.csproj" -r win-x64 /p:PublishSingleFile=True --self-contained false --configuration Release /p:IncludeSymbolsInSingleFile=true
+      run: dotnet publish "Synthesis.Bethesda.GUI/Synthesis.Bethesda.GUI.csproj" -r win-x64 -f net5.0 /p:PublishSingleFile=True --self-contained false --configuration Release /p:IncludeSymbolsInSingleFile=true
     - name: Publish Synthesis GUI to Github
       uses: svenstaro/upload-release-action@v2
       with:
