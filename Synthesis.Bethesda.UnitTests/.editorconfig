@@ -1,0 +1,4 @@
+[*.cs]
+ 
+# CS1066: // Optional parameter has no effect 
+dotnet_diagnostic.CS1066.severity = silent 

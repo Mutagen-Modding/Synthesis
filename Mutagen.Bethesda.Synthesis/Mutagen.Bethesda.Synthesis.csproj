@@ -16,6 +16,7 @@
     <PackageProjectUrl>https://github.com/Noggog/Synthesis</PackageProjectUrl>
     <Copyright>2020</Copyright>
     <IsPackable>true</IsPackable>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

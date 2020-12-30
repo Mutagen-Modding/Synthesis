@@ -11,6 +11,22 @@ namespace Mutagen.Bethesda.Synthesis.Internal
 {
     public class Utility
     {
+        public static GameCategory TypeToGameCategory<TMod>()
+            where TMod : IModGetter
+        {
+            switch (typeof(TMod).Name)
+            {
+                case "ISkyrimMod":
+                case "ISkyrimModGetter":
+                    return GameCategory.Skyrim;
+                case "IOblivionMod":
+                case "IOblivionModGetter":
+                    return GameCategory.Oblivion;
+                default:
+                    throw new ArgumentException($"Unknown game type for: {typeof(TMod).Name}");
+            }
+        }
+
         public static SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs)
             where TModSetter : class, IContextMod<TModSetter>, TModGetter
             where TModGetter : class, IContextGetterMod<TModSetter>
@@ -99,6 +115,21 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 patchMod: patchMod,
                 extraDataPath: settings.ExtraDataFolder == null ? string.Empty : Path.GetFullPath(settings.ExtraDataFolder),
                 cancellation: userPrefs.Cancel);
+        }
+
+        public static ISynthesisState ToState(GameCategory category, RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs)
+        {
+            var regis = category.ToModRegistration();
+            var method = typeof(Utility).GetMethods()
+                .Where(m => m.Name == nameof(ToState))
+                .Where(m => m.ContainsGenericParameters)
+                .First()
+                .MakeGenericMethod(regis.SetterType, regis.GetterType);
+            return (ISynthesisState)method.Invoke(null, new object[]
+            {
+                settings, 
+                userPrefs,
+            })!;
         }
 
         public static void AddImplicitMasters(RunSynthesisMutagenPatcher settings, ExtendedList<LoadOrderListing> loadOrderListing)

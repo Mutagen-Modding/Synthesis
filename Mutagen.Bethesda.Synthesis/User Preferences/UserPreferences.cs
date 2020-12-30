@@ -60,5 +60,13 @@ namespace Mutagen.Bethesda.Synthesis
                 Cancel = Cancel,
             };
         }
+
+        public RunPreferences ToRunPrefs()
+        {
+            return new RunPreferences()
+            {
+                ActionsForEmptyArgs = ActionsForEmptyArgs
+            };
+        }
     }
 }
