@@ -527,8 +527,9 @@ namespace Synthesis.Bethesda.GUI
                         }
                         catch (Exception ex)
                         {
-                            Logger.Error($"Error checking out runner repository: {ex}");
-                            throw;
+                            var str = $"Error checking out runner repository: {ex}";
+                            Logger.Error(str);
+                            observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
                         }
                     });
                 })
