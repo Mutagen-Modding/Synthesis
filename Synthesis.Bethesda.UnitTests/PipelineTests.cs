@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.UnitTests
                     $"*{Utility.TestModKey.FileName}",
                     $"{Utility.OverrideModKey.FileName}",
                 });
-            var listings = SynthesisPipeline.Instance.GetLoadOrder(
+            var listings = new SynthesisPipeline().GetLoadOrder(
                 GameRelease.SkyrimSE,
                 loadOrderFilePath: pluginPath,
                 dataFolderPath: dataFolder).ToList();
