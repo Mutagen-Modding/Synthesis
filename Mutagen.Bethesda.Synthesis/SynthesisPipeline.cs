@@ -29,11 +29,19 @@ namespace Mutagen.Bethesda.Synthesis
         #endregion
 
         #region Delegates
-        public delegate void PatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
+        public delegate void DepreciatedPatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
             where TMod : class, IContextMod<TMod>, TModGetter
             where TModGetter : class, IContextGetterMod<TMod>;
 
-        public delegate Task AsyncPatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
+        public delegate Task DepreciatedAsyncPatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
+            where TMod : class, IContextMod<TMod>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod>;
+
+        public delegate void PatcherFunction<TMod, TModGetter>(IPatcherState<TMod, TModGetter> state)
+            where TMod : class, IContextMod<TMod>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod>;
+
+        public delegate Task AsyncPatcherFunction<TMod, TModGetter>(IPatcherState<TMod, TModGetter> state)
             where TMod : class, IContextMod<TMod>, TModGetter
             where TModGetter : class, IContextGetterMod<TMod>;
 
@@ -218,7 +226,7 @@ namespace Mutagen.Bethesda.Synthesis
                 if (!prefs.NoPatch)
                 {
                     System.Console.WriteLine($"Writing to output: {args.OutputPath}");
-                    state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(state.LoadOrder.Select(x => x.ModKey)));
+                    state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)));
                 }
             }
             catch (Exception ex)
@@ -233,6 +241,17 @@ namespace Mutagen.Bethesda.Synthesis
         #endregion
 
         #region Depreciated Patch Finisher
+        private SynthesisState<TMod, TModGetter> ToDepreciatedState<TMod, TModGetter>(IPatcherState<TMod, TModGetter> state)
+            where TMod : class, IContextMod<TMod>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod>
+        {
+            if (state is SynthesisState<TMod, TModGetter> depreciatedState)
+            {
+                return depreciatedState;
+            }
+            throw new ArgumentException("Using the depreciated \'Patch\' call is causing problems.  Upgrade to the newest API");
+        }
+
         /// <summary>
         /// Takes in the main line command arguments, and handles PatcherRunSettings CLI inputs.
         /// </summary>
@@ -245,12 +264,12 @@ namespace Mutagen.Bethesda.Synthesis
         [Obsolete("Using the AddPatch().Run() combination chain is the new preferred API")]
         public async Task<int> Patch<TMod, TModGetter>(
             string[] args,
-            AsyncPatcherFunction<TMod, TModGetter> patcher,
+            DepreciatedAsyncPatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
             where TMod : class, IContextMod<TMod>, TModGetter
             where TModGetter : class, IContextGetterMod<TMod>
         {
-            return await AddPatch(patcher, userPreferences?.ToPatcherPrefs())
+            return await AddPatch<TMod, TModGetter>(state => patcher(ToDepreciatedState(state)), userPreferences?.ToPatcherPrefs())
                 .Run(args, userPreferences?.ToRunPrefs());
         }
 
@@ -266,12 +285,12 @@ namespace Mutagen.Bethesda.Synthesis
         [Obsolete("Using the AddPatch().Run() combination chain is the new preferred API")]
         public int Patch<TMod, TModGetter>(
             string[] args,
-            PatcherFunction<TMod, TModGetter> patcher,
+            DepreciatedPatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
             where TMod : class, IContextMod<TMod>, TModGetter
             where TModGetter : class, IContextGetterMod<TMod>
         {
-            return AddPatch(patcher, userPreferences?.ToPatcherPrefs())
+            return AddPatch<TMod, TModGetter>(state => patcher(ToDepreciatedState(state)), userPreferences?.ToPatcherPrefs())
                 .Run(args, userPreferences?.ToRunPrefs()).Result;
         }
 
@@ -286,12 +305,12 @@ namespace Mutagen.Bethesda.Synthesis
         [Obsolete("Using the AddPatch().Run() combination chain is the new preferred API")]
         public async Task Patch<TMod, TModGetter>(
             RunSynthesisMutagenPatcher settings,
-            AsyncPatcherFunction<TMod, TModGetter> patcher,
+            DepreciatedAsyncPatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
             where TMod : class, IContextMod<TMod>, TModGetter
             where TModGetter : class, IContextGetterMod<TMod>
         {
-            await AddPatch(patcher, userPreferences?.ToPatcherPrefs())
+            await AddPatch<TMod, TModGetter>(state => patcher(ToDepreciatedState(state)), userPreferences?.ToPatcherPrefs())
                 .Run(settings, userPreferences?.ToRunPrefs());
         }
 
@@ -306,12 +325,12 @@ namespace Mutagen.Bethesda.Synthesis
         [Obsolete("Using the AddPatch().Run() combination chain is the new preferred API")]
         public void Patch<TMod, TModGetter>(
             RunSynthesisMutagenPatcher settings,
-            PatcherFunction<TMod, TModGetter> patcher,
+            DepreciatedPatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
             where TMod : class, IContextMod<TMod>, TModGetter
             where TModGetter : class, IContextGetterMod<TMod>
         {
-            AddPatch(patcher, userPreferences?.ToPatcherPrefs())
+            AddPatch<TMod, TModGetter>(state => patcher(ToDepreciatedState(state)), userPreferences?.ToPatcherPrefs())
                 .Run(settings, userPreferences?.ToRunPrefs()).Wait();
         }
         #endregion
@@ -327,7 +346,7 @@ namespace Mutagen.Bethesda.Synthesis
 
         public static RunSynthesisMutagenPatcher GetDefaultRun(GameRelease release, ModKey targetModKey)
         {
-            
+
             var dataPath = Path.Combine(Wabbajack.Common.GameExtensions.MetaData(release.ToWjGame()).GameLocation().ToString(), "Data");
             if (!PluginListings.TryGetListingsFile(release, out var path))
             {

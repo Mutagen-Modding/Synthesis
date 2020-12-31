@@ -42,8 +42,8 @@ namespace Synthesis.Bethesda.UnitTests
                 settings,
                 new PatcherPreferences(),
                 Synthesis.Bethesda.Constants.SynthesisModKey);
-            state.LoadOrder.Should().HaveCount(3);
-            state.LoadOrder.Select(l => l.ModKey).Should().Equal(new ModKey[]
+            state.RawLoadOrder.Should().HaveCount(3);
+            state.RawLoadOrder.Select(l => l.ModKey).Should().Equal(new ModKey[]
             {
                 Utility.TestFileName,
                 Utility.OverrideModKey,
@@ -80,8 +80,8 @@ namespace Synthesis.Bethesda.UnitTests
                 settings,
                 new PatcherPreferences(),
                 output.ModKey);
-            state.LoadOrder.Should().HaveCount(3);
-            state.LoadOrder.Select(l => l.ModKey).Should().Equal(new ModKey[]
+            state.RawLoadOrder.Should().HaveCount(3);
+            state.RawLoadOrder.Select(l => l.ModKey).Should().Equal(new ModKey[]
             {
                 Utility.TestFileName,
                 Utility.OverrideModKey,

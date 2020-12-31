@@ -116,7 +116,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 cancellation: userPrefs.Cancel);
         }
 
-        public static ISynthesisState ToState(GameCategory category, RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
+        public static IPatcherState ToState(GameCategory category, RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
         {
             var regis = category.ToModRegistration();
             var method = typeof(Utility).GetMethods()
@@ -124,7 +124,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 .Where(m => m.ContainsGenericParameters)
                 .First()
                 .MakeGenericMethod(regis.SetterType, regis.GetterType);
-            return (ISynthesisState)method.Invoke(null, new object[]
+            return (IPatcherState)method.Invoke(null, new object[]
             {
                 settings, 
                 userPrefs,

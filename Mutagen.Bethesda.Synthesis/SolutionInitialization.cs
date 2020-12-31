@@ -114,7 +114,7 @@ namespace Mutagen.Bethesda.Synthesis
                     }
                     fg.AppendLine();
 
-                    fg.AppendLine($"public static void RunPatch(SynthesisState<I{category}Mod, I{category}ModGetter> state)");
+                    fg.AppendLine($"public static void RunPatch({nameof(IPatcherState)}<I{category}Mod, I{category}ModGetter> state)");
                     using (new BraceWrapper(fg))
                     {
                         fg.AppendLine($"//Your code here!");
