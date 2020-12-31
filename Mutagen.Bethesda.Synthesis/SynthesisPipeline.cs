@@ -2,13 +2,13 @@ using CommandLine;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Mutagen.Bethesda.Synthesis.Internal;
 using Noggog;
+using Synthesis.Bethesda;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Wabbajack.Common;
 using SynthesisBase = Synthesis.Bethesda;
 
 namespace Mutagen.Bethesda.Synthesis
@@ -36,12 +36,17 @@ namespace Mutagen.Bethesda.Synthesis
         public delegate Task AsyncPatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
             where TMod : class, IContextMod<TMod>, TModGetter
             where TModGetter : class, IContextGetterMod<TMod>;
+
+        public delegate void CheckerFunction(ISynthesisRunnabilityState state);
+
+        public delegate Task AsyncCheckerFunction(ISynthesisRunnabilityState state);
         #endregion
 
         #region Members
         record PatcherListing(Func<object, Task> Patcher, PatcherPreferences? Prefs);
 
         private readonly Dictionary<GameCategory, PatcherListing> _patchers = new Dictionary<GameCategory, PatcherListing>();
+        private List<AsyncCheckerFunction> _runnabilityChecks = new List<AsyncCheckerFunction>();
         #endregion
 
         #region AddPatch
@@ -88,6 +93,37 @@ namespace Mutagen.Bethesda.Synthesis
         }
         #endregion
 
+        #region Runnability Checks
+        public SynthesisPipeline AddRunnabilityCheck(CheckerFunction action)
+        {
+            _runnabilityChecks.Add(async (c) => action(c));
+            return this;
+        }
+
+        public SynthesisPipeline AddRunnabilityCheck(AsyncCheckerFunction action)
+        {
+            _runnabilityChecks.Add(action);
+            return this;
+        }
+
+        private async Task<int> CheckRunnability(CheckRunnability args)
+        {
+            var patcher = _patchers.GetOrDefault(args.GameRelease.ToCategory());
+            var loadOrder = Utility.GetLoadOrder(
+                release: args.GameRelease,
+                loadOrderFilePath: args.LoadOrderFilePath,
+                dataFolderPath: args.DataFolderPath,
+                patcher?.Prefs)
+                .ToList();
+            var state = new SynthesisRunnabilityState(args, loadOrder);
+            await Task.WhenAll(_runnabilityChecks.Select(check =>
+            {
+                return check(state);
+            }));
+            return 0;
+        }
+        #endregion
+
         #region Capstone Run
         public async Task<int> Run(
             string[] args,
@@ -127,7 +163,7 @@ namespace Mutagen.Bethesda.Synthesis
             {
                 s.IgnoreUnknownArguments = true;
             });
-            return await parser.ParseArguments(args, typeof(RunSynthesisMutagenPatcher))
+            return await parser.ParseArguments(args, typeof(RunSynthesisMutagenPatcher), typeof(CheckRunnability))
                 .MapResult(
                     async (RunSynthesisMutagenPatcher settings) =>
                     {
@@ -142,6 +178,7 @@ namespace Mutagen.Bethesda.Synthesis
                         }
                         return 0;
                     },
+                    (CheckRunnability checkRunnabiity) => CheckRunnability(checkRunnabiity),
                     async _ =>
                     {
                         return -1;
@@ -290,7 +327,8 @@ namespace Mutagen.Bethesda.Synthesis
 
         public static RunSynthesisMutagenPatcher GetDefaultRun(GameRelease release, ModKey targetModKey)
         {
-            var dataPath = Path.Combine(release.ToWjGame().MetaData().GameLocation().ToString(), "Data");
+            
+            var dataPath = Path.Combine(Wabbajack.Common.GameExtensions.MetaData(release.ToWjGame()).GameLocation().ToString(), "Data");
             if (!PluginListings.TryGetListingsFile(release, out var path))
             {
                 throw new FileNotFoundException("Could not locate load order automatically.");
