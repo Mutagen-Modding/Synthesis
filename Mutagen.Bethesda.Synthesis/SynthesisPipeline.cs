@@ -124,10 +124,18 @@ namespace Mutagen.Bethesda.Synthesis
                 patcher?.Prefs)
                 .ToList();
             var state = new RunnabilityState(args, loadOrder);
-            await Task.WhenAll(_runnabilityChecks.Select(check =>
+            try
             {
-                return check(state);
-            }));
+                await Task.WhenAll(_runnabilityChecks.Select(check =>
+                {
+                    return check(state);
+                }));
+            }
+            catch (Exception ex)
+            {
+                System.Console.Error.Write(ex);
+                return ErrorCodes.NotRunnable;
+            }
             return 0;
         }
         #endregion

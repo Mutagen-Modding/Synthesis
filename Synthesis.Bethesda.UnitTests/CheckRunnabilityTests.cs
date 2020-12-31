@@ -16,18 +16,15 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task Failure()
         {
-            await Assert.ThrowsAsync<ArithmeticException>(async () =>
-            {
-                using var tmpFolder = Utility.GetTempFolder(nameof(CheckRunnabilityTests));
-                using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimSE);
-                (await new SynthesisPipeline()
-                    .AddRunnabilityCheck(state =>
-                    {
-                        throw new ArithmeticException();
-                    })
-                    .Run($"check-runnability -g SkyrimSE -d {dataFolder.Dir.Path}".Split(' ')))
-                    .Should().Be(0);
-            });
+            using var tmpFolder = Utility.GetTempFolder(nameof(CheckRunnabilityTests));
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimSE);
+            (await new SynthesisPipeline()
+                .AddRunnabilityCheck(state =>
+                {
+                    throw new ArithmeticException();
+                })
+                .Run($"check-runnability -g SkyrimSE -d {dataFolder.Dir.Path}".Split(' ')))
+                .Should().Be(ErrorCodes.NotRunnable);
         }
 
         [Fact]
