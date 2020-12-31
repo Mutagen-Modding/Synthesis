@@ -10,7 +10,7 @@ namespace Mutagen.Bethesda.Synthesis
     /// <summary>
     /// A class housing all the tools, parameters, and entry points for a typical Synthesis check runnability analysis
     /// </summary>
-    public class SynthesisRunnabilityState : ISynthesisRunnabilityState
+    public class RunnabilityState : IRunnabilityState
     {
         /// <summary>
         /// Instructions given to the patcher from the Synthesis pipeline
@@ -20,14 +20,15 @@ namespace Mutagen.Bethesda.Synthesis
         /// <summary>
         /// A list of ModKeys as they appeared, and whether they were enabled
         /// </summary>
-        public IReadOnlyList<LoadOrderListing> RawLoadOrder { get; }
+        public IReadOnlyList<LoadOrderListing> LoadOrder { get; }
+        IEnumerable<LoadOrderListing> IRunnabilityState.LoadOrder => this.LoadOrder;
 
-        public SynthesisRunnabilityState(
+        public RunnabilityState(
             CheckRunnability settings,
             IReadOnlyList<LoadOrderListing> rawLoadOrder)
         {
             Settings = settings;
-            RawLoadOrder = rawLoadOrder;
+            LoadOrder = rawLoadOrder;
         }
     }
 }

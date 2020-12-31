@@ -5,9 +5,10 @@ using System.Text;
 
 namespace Mutagen.Bethesda.Synthesis
 {
-    public interface ISynthesisRunnabilityState
+    public interface IRunnabilityState
+
     {
         CheckRunnability Settings { get; }
-        IReadOnlyList<LoadOrderListing> RawLoadOrder { get; }
+        IEnumerable<LoadOrderListing> LoadOrder { get; }
     }
 }

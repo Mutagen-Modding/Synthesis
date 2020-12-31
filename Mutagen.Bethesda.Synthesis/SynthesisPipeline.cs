@@ -37,9 +37,9 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IContextMod<TMod>, TModGetter
             where TModGetter : class, IContextGetterMod<TMod>;
 
-        public delegate void CheckerFunction(ISynthesisRunnabilityState state);
+        public delegate void CheckerFunction(IRunnabilityState state);
 
-        public delegate Task AsyncCheckerFunction(ISynthesisRunnabilityState state);
+        public delegate Task AsyncCheckerFunction(IRunnabilityState state);
         #endregion
 
         #region Members
@@ -115,7 +115,7 @@ namespace Mutagen.Bethesda.Synthesis
                 dataFolderPath: args.DataFolderPath,
                 patcher?.Prefs)
                 .ToList();
-            var state = new SynthesisRunnabilityState(args, loadOrder);
+            var state = new RunnabilityState(args, loadOrder);
             await Task.WhenAll(_runnabilityChecks.Select(check =>
             {
                 return check(state);
