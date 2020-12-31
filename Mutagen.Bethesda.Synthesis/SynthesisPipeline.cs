@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Wabbajack.Common;
+using SynthesisBase = Synthesis.Bethesda;
 
 namespace Mutagen.Bethesda.Synthesis
 {
@@ -102,6 +103,7 @@ namespace Mutagen.Bethesda.Synthesis
                 {
                     await Run(
                         GetDefaultRun(preferences.ActionsForEmptyArgs.TargetRelease, preferences.ActionsForEmptyArgs.IdentifyingModKey),
+                        preferences.ActionsForEmptyArgs.IdentifyingModKey,
                         preferences);
                 }
                 catch (Exception ex)
@@ -146,9 +148,17 @@ namespace Mutagen.Bethesda.Synthesis
                     });
         }
 
-        public async Task Run(
+        public Task Run(
             RunSynthesisMutagenPatcher args,
             RunPreferences? preferences = null)
+        {
+            return Run(args, SynthesisBase.Constants.SynthesisModKey, preferences);
+        }
+
+        private async Task Run(
+            RunSynthesisMutagenPatcher args,
+            ModKey exportKey,
+            RunPreferences? preferences)
         {
             try
             {
@@ -165,7 +175,7 @@ namespace Mutagen.Bethesda.Synthesis
                 WarmupAll.Init();
                 System.Console.WriteLine("Prepping state.");
                 var prefs = patcher.Prefs ?? new PatcherPreferences();
-                using var state = Utility.ToState(cat, args, prefs);
+                using var state = Utility.ToState(cat, args, prefs, exportKey);
                 await patcher.Patcher(state).ConfigureAwait(false);
                 System.Console.WriteLine("Running patch.");
                 if (!prefs.NoPatch)

@@ -134,7 +134,8 @@ namespace Synthesis.Bethesda.UnitTests
                     SourcePath = null,
                     LoadOrderFilePath = Utility.PathToLoadOrderFile
                 },
-                new PatcherPreferences());
+                new PatcherPreferences(),
+                Synthesis.Bethesda.Constants.SynthesisModKey);
             Assert.Equal(state.PatchMod.ModKey, state.LoadOrder.Last().Key);
         }
 
@@ -154,7 +155,8 @@ namespace Synthesis.Bethesda.UnitTests
                     SourcePath = prevPath,
                     LoadOrderFilePath = Utility.PathToLoadOrderFile
                 },
-                new PatcherPreferences());
+                new PatcherPreferences(),
+                Synthesis.Bethesda.Constants.SynthesisModKey);
             Assert.Equal(state.PatchMod.ModKey, state.LoadOrder.Last().Key);
         }
 
@@ -184,7 +186,8 @@ namespace Synthesis.Bethesda.UnitTests
                     SourcePath = prevPath,
                     LoadOrderFilePath = pluginsPath
                 },
-                new PatcherPreferences());
+                new PatcherPreferences(),
+                Synthesis.Bethesda.Constants.SynthesisModKey);
             Assert.Equal(3, state.LoadOrder.Count);
             Assert.Equal(Utility.TestModKey, state.LoadOrder[0].ModKey);
             Assert.Equal(Utility.OverrideModKey, state.LoadOrder[1].ModKey);
@@ -215,7 +218,8 @@ namespace Synthesis.Bethesda.UnitTests
                     SourcePath = prevPath,
                     LoadOrderFilePath = pluginsPath
                 },
-                new PatcherPreferences());
+                new PatcherPreferences(),
+                Synthesis.Bethesda.Constants.SynthesisModKey);
             state.LoadOrder.PriorityOrder.Should().HaveCount(2);
             state.RawLoadOrder.Should().HaveCount(2);
             state.RawLoadOrder[0].Should().Be(new LoadOrderListing(Utility.TestModKey, true));

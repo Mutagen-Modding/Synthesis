@@ -27,7 +27,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             }
         }
 
-        public static SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs)
+        public static SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
             where TModSetter : class, IContextMod<TModSetter>, TModGetter
             where TModGetter : class, IContextGetterMod<TModSetter>
         {
@@ -48,7 +48,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             var rawLoadOrder = loadOrderListing.Select(x => new LoadOrderListing(x.ModKey, x.Enabled)).ToExtendedList();
 
             // Trim past Synthesis.esp
-            var synthIndex = loadOrderListing.IndexOf(BaseSynthesis.Constants.SynthesisModKey, (listing, key) => listing.ModKey == key);
+            var synthIndex = loadOrderListing.IndexOf(exportKey, (listing, key) => listing.ModKey == key);
             if (synthIndex != -1)
             {
                 loadOrderListing.RemoveToCount(synthIndex);
@@ -70,9 +70,6 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 loadOrderListing,
                 settings.GameRelease);
 
-            // Get Modkey from output path
-            var modKey = BaseSynthesis.Constants.SynthesisModKey;
-
             // Create or import patch mod
             TModSetter patchMod;
             ILinkCache<TModSetter> cache;
@@ -84,11 +81,11 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 TModGetter readOnlyPatchMod;
                 if (settings.SourcePath == null)
                 {
-                    readOnlyPatchMod = ModInstantiator<TModGetter>.Activator(modKey, settings.GameRelease);
+                    readOnlyPatchMod = ModInstantiator<TModGetter>.Activator(exportKey, settings.GameRelease);
                 }
                 else
                 {
-                    readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(new ModPath(modKey, settings.SourcePath), settings.GameRelease);
+                    readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease);
                 }
                 loadOrder.Add(new ModListing<TModGetter>(readOnlyPatchMod, enabled: true));
                 cache = loadOrder.ToImmutableLinkCache<TModSetter, TModGetter>();
@@ -97,11 +94,11 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             {
                 if (settings.SourcePath == null)
                 {
-                    patchMod = ModInstantiator<TModSetter>.Activator(modKey, settings.GameRelease);
+                    patchMod = ModInstantiator<TModSetter>.Activator(exportKey, settings.GameRelease);
                 }
                 else
                 {
-                    patchMod = ModInstantiator<TModSetter>.Importer(new ModPath(modKey, settings.SourcePath), settings.GameRelease);
+                    patchMod = ModInstantiator<TModSetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease);
                 }
                 cache = loadOrder.ToMutableLinkCache(patchMod);
                 loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));
@@ -117,7 +114,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 cancellation: userPrefs.Cancel);
         }
 
-        public static ISynthesisState ToState(GameCategory category, RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs)
+        public static ISynthesisState ToState(GameCategory category, RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
         {
             var regis = category.ToModRegistration();
             var method = typeof(Utility).GetMethods()
@@ -129,6 +126,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             {
                 settings, 
                 userPrefs,
+                exportKey,
             })!;
         }
 

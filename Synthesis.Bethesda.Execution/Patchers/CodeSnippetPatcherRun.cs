@@ -68,7 +68,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 Cancel = cancel ?? CancellationToken.None
             };
             var internalSettings = RunSynthesisMutagenPatcher.Factory(settings);
-            using var synthesisState = ConstructStateFactory(settings.GameRelease)(internalSettings, userPrefs);
+            using var synthesisState = ConstructStateFactory(settings.GameRelease)(internalSettings, userPrefs, Synthesis.Bethesda.Constants.SynthesisModKey);
             Task t = (Task)type.InvokeMember("Run",
                 BindingFlags.Default | BindingFlags.InvokeMethod,
                 null,
@@ -100,11 +100,12 @@ namespace Synthesis.Bethesda.Execution.Patchers
             }
         }
 
-        internal static Func<RunSynthesisMutagenPatcher, PatcherPreferences?, ISynthesisState> ConstructStateFactory(GameRelease release)
+        internal static Func<RunSynthesisMutagenPatcher, PatcherPreferences?, ModKey, ISynthesisState> ConstructStateFactory(GameRelease release)
         {
             var regis = release.ToCategory().ToModRegistration();
             var cliSettingsParam = Expression.Parameter(typeof(RunSynthesisMutagenPatcher));
             var userPrefs = Expression.Parameter(typeof(PatcherPreferences));
+            var modKey = Expression.Parameter(typeof(ModKey));
             MethodCallExpression callExp = Expression.Call(
                 typeof(Mutagen.Bethesda.Synthesis.Internal.Utility),
                 nameof(Mutagen.Bethesda.Synthesis.Internal.Utility.ToState),
@@ -114,12 +115,13 @@ namespace Synthesis.Bethesda.Execution.Patchers
                     regis.GetterType,
                 },
                 cliSettingsParam,
-                userPrefs);
-            LambdaExpression lambda = Expression.Lambda(callExp, cliSettingsParam, userPrefs);
+                userPrefs,
+                modKey);
+            LambdaExpression lambda = Expression.Lambda(callExp, cliSettingsParam, userPrefs, modKey);
             var deleg = lambda.Compile();
-            return (RunSynthesisMutagenPatcher settings, PatcherPreferences? prefs) =>
+            return (RunSynthesisMutagenPatcher settings, PatcherPreferences? prefs, ModKey modKey) =>
             {
-                return (ISynthesisState)deleg.DynamicInvoke(settings, prefs)!;
+                return (ISynthesisState)deleg.DynamicInvoke(settings, prefs, modKey)!;
             };
         }
 
