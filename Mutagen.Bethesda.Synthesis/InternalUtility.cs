@@ -43,7 +43,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             }
 
             // Get load order
-            var loadOrderListing = SynthesisPipeline.Instance.GetLoadOrder(settings, userPrefs)
+            var loadOrderListing = GetLoadOrder(settings.GameRelease, settings.LoadOrderFilePath, settings.DataFolderPath, userPrefs)
                 .ToExtendedList();
             var rawLoadOrder = loadOrderListing.Select(x => new LoadOrderListing(x.ModKey, x.Enabled)).ToExtendedList();
 
@@ -146,6 +146,34 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                     loadOrderListing[i] = new LoadOrderListing(listing.ModKey, enabled: true);
                 }
             }
+        }
+
+        public static IEnumerable<LoadOrderListing> GetLoadOrder(
+            GameRelease release,
+            string loadOrderFilePath,
+            string dataFolderPath,
+            PatcherPreferences? userPrefs = null)
+        {
+            // This call will impliticly get Creation Club entries, too, as the Synthesis systems should be merging
+            // things into a singular load order file for consumption here
+            var loadOrderListing =
+                ImplicitListings.GetListings(release, dataFolderPath)
+                    .Select(x => new LoadOrderListing(x, enabled: true))
+                .Concat(PluginListings.RawListingsFromPath(loadOrderFilePath, release))
+                .Distinct(x => x.ModKey);
+            if (userPrefs?.InclusionMods != null)
+            {
+                var inclusions = userPrefs.InclusionMods.ToHashSet();
+                loadOrderListing = loadOrderListing
+                    .Where(m => inclusions.Contains(m.ModKey));
+            }
+            if (userPrefs?.ExclusionMods != null)
+            {
+                var exclusions = userPrefs.ExclusionMods.ToHashSet();
+                loadOrderListing = loadOrderListing
+                    .Where(m => !exclusions.Contains(m.ModKey));
+            }
+            return loadOrderListing;
         }
     }
 }

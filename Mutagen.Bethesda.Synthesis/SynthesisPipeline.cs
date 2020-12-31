@@ -288,48 +288,6 @@ namespace Mutagen.Bethesda.Synthesis
             };
         }
 
-        public IEnumerable<LoadOrderListing> GetLoadOrder(
-            RunSynthesisMutagenPatcher settings,
-            PatcherPreferences? userPrefs = null,
-            bool throwOnMissingMods = true)
-        {
-            return GetLoadOrder(
-                release: settings.GameRelease,
-                loadOrderFilePath: settings.LoadOrderFilePath,
-                dataFolderPath: settings.DataFolderPath,
-                userPrefs: userPrefs,
-                throwOnMissingMods: throwOnMissingMods);
-        }
-
-        public IEnumerable<LoadOrderListing> GetLoadOrder(
-            GameRelease release,
-            string loadOrderFilePath,
-            string dataFolderPath,
-            PatcherPreferences? userPrefs = null,
-            bool throwOnMissingMods = true)
-        {
-            // This call will impliticly get Creation Club entries, too, as the Synthesis systems should be merging
-            // things into a singular load order file for consumption here
-            var loadOrderListing =
-                ImplicitListings.GetListings(release, dataFolderPath)
-                    .Select(x => new LoadOrderListing(x, enabled: true))
-                .Concat(PluginListings.RawListingsFromPath(loadOrderFilePath, release))
-                .Distinct(x => x.ModKey);
-            if (userPrefs?.InclusionMods != null)
-            {
-                var inclusions = userPrefs.InclusionMods.ToHashSet();
-                loadOrderListing = loadOrderListing
-                    .Where(m => inclusions.Contains(m.ModKey));
-            }
-            if (userPrefs?.ExclusionMods != null)
-            {
-                var exclusions = userPrefs.ExclusionMods.ToHashSet();
-                loadOrderListing = loadOrderListing
-                    .Where(m => !exclusions.Contains(m.ModKey));
-            }
-            return loadOrderListing;
-        }
-
         public static RunSynthesisMutagenPatcher GetDefaultRun(GameRelease release, ModKey targetModKey)
         {
             var dataPath = Path.Combine(release.ToWjGame().MetaData().GameLocation().ToString(), "Data");
