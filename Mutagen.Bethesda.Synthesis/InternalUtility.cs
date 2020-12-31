@@ -158,9 +158,12 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             // things into a singular load order file for consumption here
             var loadOrderListing =
                 ImplicitListings.GetListings(release, dataFolderPath)
-                    .Select(x => new LoadOrderListing(x, enabled: true))
-                .Concat(PluginListings.RawListingsFromPath(loadOrderFilePath, release))
-                .Distinct(x => x.ModKey);
+                    .Select(x => new LoadOrderListing(x, enabled: true));
+            if (!loadOrderFilePath.IsNullOrWhitespace())
+            {
+                loadOrderListing = loadOrderListing.Concat(PluginListings.RawListingsFromPath(loadOrderFilePath, release));
+            }
+            loadOrderListing = loadOrderListing.Distinct(x => x.ModKey);
             if (userPrefs?.InclusionMods != null)
             {
                 var inclusions = userPrefs.InclusionMods.ToHashSet();
