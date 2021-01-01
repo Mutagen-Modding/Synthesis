@@ -16,6 +16,7 @@
     <ApplicationIcon>mushroom.ico</ApplicationIcon>
     <IncludeSymbolsInSingleFile>true</IncludeSymbolsInSingleFile>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
+    <StartupObject>Synthesis.Bethesda.GUI.App</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
