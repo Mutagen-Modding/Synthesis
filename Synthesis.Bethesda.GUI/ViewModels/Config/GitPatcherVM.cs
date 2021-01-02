@@ -373,7 +373,7 @@ namespace Synthesis.Bethesda.GUI
                         this.WhenAnyValue(x => x.TargetCommit),
                         this.WhenAnyValue(x => x.TargetTag),
                         (TargetSha, TargetTag) => (TargetSha, TargetTag)),
-                    (tag, target) => (TagSha: tag?.Sha, Tag: tag?.Name, Current:target)),
+                    (tag, target) => (TagSha: tag?.Sha, Tag: tag?.Name, Current: target)),
                 canExecute: o => (o.TagSha != null && o.Tag != null)
                     && (o.TagSha != o.Current.TargetSha || o.Tag != o.Current.TargetTag),
                 extraCanExecute: this.WhenAnyValue(x => x.PatcherVersioning)
@@ -507,7 +507,6 @@ namespace Synthesis.Bethesda.GUI
                                 return;
                             }
 
-                            // Return things again, without error
                             observer.OnNext(runInfo);
                         }
                         catch (Exception ex)
@@ -635,13 +634,66 @@ namespace Synthesis.Bethesda.GUI
                 .Replay(1)
                 .RefCount();
 
+            var runnability = Observable.CombineLatest(
+                    compilation,
+                    parent.WhenAnyValue(x => x.DataFolder),
+                    parent.LoadOrder.Connect()
+                        .QueryWhenChanged(),
+                    (comp, data, loadOrder) => (comp, data, loadOrder))
+                .Select(i =>
+                {
+                    return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
+                    {
+                        if (i.comp.RunnableState.Failed)
+                        {
+                            observer.OnNext(i.comp);
+                            return;
+                        }
+
+                        // Return early with the values, but mark not complete
+                        observer.OnNext(new ConfigurationState<RunnerRepoInfo>(i.comp.Item)
+                        {
+                            IsHaltingError = false,
+                            RunnableState = ErrorResponse.Fail("Checking runnability")
+                        });
+
+                        try
+                        {
+                            var runnability = await Synthesis.Bethesda.Execution.CLI.Commands.CheckRunnability(
+                                path: i.comp.Item.ProjPath,
+                                directExe: false,
+                                release: parent.Release,
+                                dataFolder: i.data,
+                                cancel: cancel,
+                                loadOrder: i.loadOrder.Select(lvm => lvm.Listing));
+                            if (runnability.Failed)
+                            {
+                                observer.OnNext(runnability.BubbleFailure<RunnerRepoInfo>());
+                                return;
+                            }
+
+                            // Return things again, without error
+                            observer.OnNext(i.comp);
+                        }
+                        catch (Exception ex)
+                        {
+                            var str = $"Error checking runnability on runner repository: {ex}";
+                            Logger.Error(str);
+                            observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
+                        }
+                    });
+                })
+                .Switch()
+                .Replay(1)
+                .RefCount();
+
             _State = Observable.CombineLatest(
                     driverRepoInfo
                         .Select(x => x.ToUnit()),
                     runnerRepoState,
                     runnableState
                         .Select(x => x.ToUnit()),
-                    compilation,
+                    runnability,
                     this.WhenAnyValue(x => x.Profile.Config.MainVM)
                         .Select(x => x.DotNetSdkInstalled)
                         .Switch()
@@ -651,7 +703,7 @@ namespace Synthesis.Bethesda.GUI
                         .QueryWhenChanged()
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
                         .StartWith(ListExt.Empty<ModKey>()),
-                    (driver, runner, checkout, compilation, dotnet, reqModsMissing) =>
+                    (driver, runner, checkout, runnability, dotnet, reqModsMissing) =>
                     {
                         if (driver.IsHaltingError) return driver;
                         if (runner.IsHaltingError) return runner;
@@ -667,7 +719,7 @@ namespace Synthesis.Bethesda.GUI
                         {
                             return new ConfigurationState(ErrorResponse.Fail($"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));
                         }
-                        if (compilation.RunnableState.Failed) return compilation.BubbleError();
+                        if (runnability.RunnableState.Failed) return runnability.BubbleError();
                         return checkout;
                     })
                 .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))

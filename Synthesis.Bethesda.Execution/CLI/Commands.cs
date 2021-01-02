@@ -1,15 +1,19 @@
+using CommandLine;
 using Mutagen.Bethesda;
 using Newtonsoft.Json;
 using Noggog;
+using Noggog.Utility;
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.Execution.CLI
@@ -17,7 +21,7 @@ namespace Synthesis.Bethesda.Execution.CLI
     /// <summary>
     /// Class that runs the patcher pipeline headless without a GUI
     /// </summary>
-    public static class RunPatcherPipeline
+    public static class Commands
     {
         public static async Task Run(RunPatcherPipelineInstructions run, IRunReporter? reporter = null)
         {
@@ -104,6 +108,84 @@ namespace Synthesis.Bethesda.Execution.CLI
             {
                 reporter.ReportOverallProblem(ex);
             }
+        }
+
+        public static async Task<ErrorResponse> CheckRunnability(
+            string path,
+            bool directExe,
+            GameRelease release,
+            string dataFolder,
+            IEnumerable<LoadOrderListing> loadOrder,
+            CancellationToken? cancel = null)
+        {
+            using var loadOrderFile = new TempFile(
+                Path.Combine(Synthesis.Bethesda.Execution.Constants.WorkingDirectory, "RunnabilityChecks", Path.GetRandomFileName()));
+
+            LoadOrder.Write(
+                loadOrderFile.File.Path,
+                release,
+                loadOrder,
+                removeImplicitMods: true);
+
+            return await CheckRunnability(
+                path,
+                directExe: directExe,
+                release: release,
+                dataFolder: dataFolder,
+                loadOrderPath: loadOrderFile.File.Path,
+                cancel: cancel);
+        }
+
+        public static async Task<ErrorResponse> CheckRunnability(
+            string path,
+            bool directExe,
+            GameRelease release,
+            string dataFolder,
+            string loadOrderPath,
+            CancellationToken? cancel = null)
+        {
+            var checkState = new Synthesis.Bethesda.CheckRunnability()
+            {
+                DataFolderPath = dataFolder,
+                GameRelease = release,
+                LoadOrderFilePath = loadOrderPath
+            };
+
+            ProcessStartInfo startInfo;
+            if (directExe)
+            {
+                startInfo = new ProcessStartInfo(path, Parser.Default.FormatCommandLine(checkState));
+            }
+            else
+            {
+                startInfo = new ProcessStartInfo("dotnet", $"run --project \"{path}\" --runtime win-x64 --no-build {Parser.Default.FormatCommandLine(checkState)}");
+            }
+
+            using var proc = ProcessWrapper.Start(
+                startInfo,
+                cancel: cancel);
+
+            var results = new List<string>();
+            void AddResult(string s)
+            {
+                if (results.Count < 100)
+                {
+                    results.Add(s);
+                }
+            }
+            using var ouputSub = proc.Output.Subscribe(AddResult);
+            using var errSub = proc.Error.Subscribe(AddResult);
+
+            var result = await proc.Start();
+
+            if (result == ErrorCodes.NotRunnable)
+            {
+                return ErrorResponse.Fail(string.Join(Environment.NewLine, results));
+            }
+
+            // Other error codes are likely the target app just not handling runnability checks, so return as runnable unless
+            // explicity told otherwise with the above error code
+            return ErrorResponse.Success;
         }
     }
 }

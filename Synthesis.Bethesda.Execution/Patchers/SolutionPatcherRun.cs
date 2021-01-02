@@ -72,6 +72,19 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 using var repo = new Repository(repoPath);
                 _output.OnNext($"Sha {repo.Head.Tip.Sha}");
             }
+            
+            var runnability = await Synthesis.Bethesda.Execution.CLI.Commands.CheckRunnability(
+                PathToProject,
+                directExe: false,
+                release: settings.GameRelease,
+                dataFolder: settings.DataFolderPath,
+                loadOrderPath: settings.LoadOrderFilePath);
+
+            if (runnability.Failed)
+            {
+                throw new CliUnsuccessfulRunException(ErrorCodes.NotRunnable, runnability.Reason);
+            }
+
             var internalSettings = new RunSynthesisMutagenPatcher()
             {
                 DataFolderPath = settings.DataFolderPath,
