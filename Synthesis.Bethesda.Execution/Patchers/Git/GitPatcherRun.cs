@@ -191,6 +191,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     synthesisVersion: synthesisVersion,
                     listedSynthesisVersion: out var curListedSynthesisVersion);
                 TurnOffNullability(projXml);
+                RemoveGitInfo(projXml);
                 File.WriteAllText(proj, projXml.ToString());
                 if (drivingProjSubPath.Equals(subProj))
                 {
@@ -276,6 +277,22 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     }
                 }
                 propGroup = group;
+            }
+        }
+
+        public static void RemoveGitInfo(XElement proj)
+        {
+            foreach (var group in proj.Elements("ItemGroup"))
+            {
+                foreach (var elem in group.Elements("PackageReference").ToList())
+                {
+                    if (elem.TryGetAttributeString("Include", out var includeAttr)
+                        && includeAttr == "GitInfo")
+                    {
+                        elem.Remove();
+                        break;
+                    }
+                }
             }
         }
 
