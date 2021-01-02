@@ -160,6 +160,8 @@ namespace Synthesis.Bethesda.Execution.Patchers
             log?.Invoke($"({process.StartInfo.WorkingDirectory}): {process.StartInfo.FileName} {process.StartInfo.Arguments}");
             string? firstError = null;
             bool buildFailed = false;
+            List<string> output = new List<string>();
+            int totalLen = 0;
             process.Output.Subscribe(o =>
             {
                 if (o.StartsWith("Build FAILED"))
@@ -172,6 +174,11 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 {
                     firstError = o;
                 }
+                if (totalLen < 10_000)
+                {
+                    totalLen += o.Length;
+                    output.Add(o);
+                }
             });
             var result = await process.Run().ConfigureAwait(false);
             if (result == 0) return ErrorResponse.Success;
@@ -180,7 +187,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             {
                 firstError = "Cancelled";
             }
-            return ErrorResponse.Fail(reason: firstError ?? "Unknown Error");
+            return ErrorResponse.Fail(reason: firstError ?? $"Unknown Error: {string.Join(Environment.NewLine, output)}");
         }
 
         public static IEnumerable<string> AvailableProjects(string solutionPath)
