@@ -507,21 +507,6 @@ namespace Synthesis.Bethesda.GUI
                                 return;
                             }
 
-                            // Return early with the values, but mark not complete
-                            observer.OnNext(new ConfigurationState<RunnerRepoInfo>(runInfo.Item)
-                            {
-                                IsHaltingError = false,
-                                RunnableState = ErrorResponse.Fail("Compiling")
-                            });
-
-                            // Compile to help prep
-                            var compileResp = await SolutionPatcherRun.CompileWithDotnet(item.proj.Value, cancel, Logger.Information);
-                            if (compileResp.Failed)
-                            {
-                                observer.OnNext(compileResp.BubbleFailure<RunnerRepoInfo>());
-                                return;
-                            }
-
                             // Return things again, without error
                             observer.OnNext(runInfo);
                         }
@@ -607,12 +592,56 @@ namespace Synthesis.Bethesda.GUI
                     .Transform(x => x.Listing.ModKey))
                 .RefCount();
 
+            var compilation = runnableState
+                .Select(state =>
+                {
+                    return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
+                    {
+                        if (state.RunnableState.Failed)
+                        {
+                            observer.OnNext(state);
+                            return;
+                        }
+
+                        try
+                        {
+                            // Return early with the values, but mark not complete
+                            observer.OnNext(new ConfigurationState<RunnerRepoInfo>(state.Item)
+                            {
+                                IsHaltingError = false,
+                                RunnableState = ErrorResponse.Fail("Compiling")
+                            });
+
+                            // Compile to help prep
+                            var compileResp = await SolutionPatcherRun.CompileWithDotnet(state.Item.ProjPath, cancel, Logger.Information);
+                            if (compileResp.Failed)
+                            {
+                                observer.OnNext(compileResp.BubbleFailure<RunnerRepoInfo>());
+                                return;
+                            }
+
+                            // Return things again, without error
+                            observer.OnNext(state);
+                        }
+                        catch (Exception ex)
+                        {
+                            var str = $"Error checking out runner repository: {ex}";
+                            Logger.Error(str);
+                            observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
+                        }
+                    });
+                })
+                .Switch()
+                .Replay(1)
+                .RefCount();
+
             _State = Observable.CombineLatest(
                     driverRepoInfo
                         .Select(x => x.ToUnit()),
                     runnerRepoState,
                     runnableState
                         .Select(x => x.ToUnit()),
+                    compilation,
                     this.WhenAnyValue(x => x.Profile.Config.MainVM)
                         .Select(x => x.DotNetSdkInstalled)
                         .Switch()
@@ -622,7 +651,7 @@ namespace Synthesis.Bethesda.GUI
                         .QueryWhenChanged()
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
                         .StartWith(ListExt.Empty<ModKey>()),
-                    (driver, runner, checkout, dotnet, reqModsMissing) =>
+                    (driver, runner, checkout, compilation, dotnet, reqModsMissing) =>
                     {
                         if (driver.IsHaltingError) return driver;
                         if (runner.IsHaltingError) return runner;
@@ -638,6 +667,7 @@ namespace Synthesis.Bethesda.GUI
                         {
                             return new ConfigurationState(ErrorResponse.Fail($"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));
                         }
+                        if (compilation.RunnableState.Failed) return compilation.BubbleError();
                         return checkout;
                     })
                 .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
