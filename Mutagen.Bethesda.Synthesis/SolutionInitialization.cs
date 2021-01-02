@@ -63,13 +63,6 @@ namespace Mutagen.Bethesda.Synthesis
                 {
                     fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda\" Version=\"{Versions.MutagenVersion}\" />");
                     fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{Versions.SynthesisVersion}\" />");
-                    fg.AppendLine($"<PackageReference Include=\"GitInfo\" Version=\"*\">");
-                    using (new DepthWrapper(fg))
-                    {
-                        fg.AppendLine($"<PrivateAssets>all</PrivateAssets>");
-                        fg.AppendLine($"<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>");
-                    }
-                    fg.AppendLine($"</PackageReference>");
                 }
                 fg.AppendLine($"</ItemGroup>");
                 fg.AppendLine();
