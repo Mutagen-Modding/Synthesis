@@ -161,7 +161,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                 startInfo = new ProcessStartInfo("dotnet", $"run --project \"{path}\" --runtime win-x64 --no-build {Parser.Default.FormatCommandLine(checkState)}");
             }
 
-            using var proc = ProcessWrapper.Start(
+            using var proc = ProcessWrapper.Create(
                 startInfo,
                 cancel: cancel);
 
@@ -176,7 +176,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             using var ouputSub = proc.Output.Subscribe(AddResult);
             using var errSub = proc.Error.Subscribe(AddResult);
 
-            var result = await proc.Start();
+            var result = await proc.Run();
 
             if (result == ErrorCodes.NotRunnable)
             {
