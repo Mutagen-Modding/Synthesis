@@ -16,15 +16,15 @@ namespace Synthesis.Bethesda.Execution
         {
             // Run restore first
             {
-                using var restore = ProcessWrapper.Start(
+                using var restore = ProcessWrapper.Create(
                     new ProcessStartInfo("dotnet", $"restore \"{projectPath}\""));
-                await restore.Start();
+                await restore.Run();
             }
 
             bool on = false;
             List<string> lines = new List<string>();
             List<string> errors = new List<string>();
-            using var process = ProcessWrapper.Start(
+            using var process = ProcessWrapper.Create(
                 new ProcessStartInfo("dotnet", $"list \"{projectPath}\" package{(outdated ? " --outdated" : null)}{(includePrerelease ? " --include-prerelease" : null)}"));
             using var outSub = process.Output.Subscribe(s =>
             {
@@ -37,7 +37,7 @@ namespace Synthesis.Bethesda.Execution
                 lines.Add(s);
             });
             using var errSub = process.Error.Subscribe(s => errors.Add(s));
-            var result = await process.Start();
+            var result = await process.Run();
             if (errors.Count > 0)
             {
                 throw new ArgumentException($"Error while retrieving nuget listings: \n{string.Join("\n", errors)}");
@@ -111,13 +111,13 @@ namespace Synthesis.Bethesda.Execution
 
         public static async Task<Version> DotNetSdkVersion()
         {
-            using var proc = ProcessWrapper.Start(
+            using var proc = ProcessWrapper.Create(
                 new System.Diagnostics.ProcessStartInfo("dotnet", "--version"));
             List<string> outs = new List<string>();
             using var outp = proc.Output.Subscribe(o => outs.Add(o));
             List<string> errs = new List<string>();
             using var errp = proc.Error.Subscribe(o => errs.Add(o));
-            var result = await proc.Start();
+            var result = await proc.Run();
             if (errs.Count > 0)
             {
                 throw new ArgumentException($"{string.Join("\n", errs)}");

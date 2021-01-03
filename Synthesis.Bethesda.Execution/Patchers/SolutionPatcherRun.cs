@@ -82,12 +82,12 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 SourcePath = settings.SourcePath
             };
             var args = Parser.Default.FormatCommandLine(internalSettings);
-            using var process = ProcessWrapper.Start(
+            using var process = ProcessWrapper.Create(
                 new ProcessStartInfo("dotnet", $"run --project \"{PathToProject}\" --runtime win-x64 --no-build {args}"),
                 cancel: cancel);
             using var outputSub = process.Output.Subscribe(_output);
             using var errSub = process.Error.Subscribe(_error);
-            var result = await process.Start().ConfigureAwait(false);
+            var result = await process.Run().ConfigureAwait(false);
             if (result != 0)
             {
                 throw new CliUnsuccessfulRunException(result, "Error running solution patcher");
@@ -138,7 +138,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
 
         public static async Task<ErrorResponse> CompileWithDotnet(string targetPath, CancellationToken cancel, Action<string>? log)
         {
-            using var process = ProcessWrapper.Start(
+            using var process = ProcessWrapper.Create(
                 new ProcessStartInfo("dotnet", $"build --runtime win-x64 \"{Path.GetFileName(targetPath)}\"")
                 {
                     WorkingDirectory = Path.GetDirectoryName(targetPath)!
@@ -160,7 +160,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                     firstError = o;
                 }
             });
-            var result = await process.Start().ConfigureAwait(false);
+            var result = await process.Run().ConfigureAwait(false);
             if (result == 0) return ErrorResponse.Success;
             firstError = firstError?.TrimStart($"{targetPath} : ");
             if (firstError == null && cancel.IsCancellationRequested)

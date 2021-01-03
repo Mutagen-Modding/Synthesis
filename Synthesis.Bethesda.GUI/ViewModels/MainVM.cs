@@ -229,11 +229,11 @@ namespace Synthesis.Bethesda.GUI
             base.Dispose();
             Task.Run(async () =>
             {
-                using var process = ProcessWrapper.Start(
+                using var process = ProcessWrapper.Create(
                     new ProcessStartInfo("dotnet", $"build-server shutdown"));
                 using var output = process.Output.Subscribe(x => Log.Logger.Information(x));
                 using var error = process.Error.Subscribe(x => Log.Logger.Information(x));
-                var ret = await process.Start();
+                var ret = await process.Run();
                 return ret;
             }).Wait();
         }

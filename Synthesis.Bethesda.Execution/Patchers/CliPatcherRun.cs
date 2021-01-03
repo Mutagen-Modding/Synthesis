@@ -57,7 +57,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             var args = Parser.Default.FormatCommandLine(internalSettings);
             try
             {
-                using ProcessWrapper process = ProcessWrapper.Start(
+                using ProcessWrapper process = ProcessWrapper.Create(
                     new ProcessStartInfo(PathToExecutable, args)
                     {
                         WorkingDirectory = Path.GetDirectoryName(PathToExecutable)!
@@ -65,7 +65,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                     cancel);
                 using var outputSub = process.Output.Subscribe(_output);
                 using var errSub = process.Error.Subscribe(_error);
-                var result = await process.Start();
+                var result = await process.Run();
                 if (result != 0)
                 {
                     throw new CliUnsuccessfulRunException(
