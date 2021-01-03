@@ -65,7 +65,7 @@ namespace Synthesis.Bethesda.UnitTests
                     $"*{Utility.OverrideFileName}",
                     $"*{output.ModKey.FileName}",
                     $"*{Utility.OtherFileName}",
-                    $"*{Utility.TypicalOutputFilename}",
+                    $"*{Utility.SynthesisModKey}",
                 });
             var settings = new RunSynthesisMutagenPatcher()
             {

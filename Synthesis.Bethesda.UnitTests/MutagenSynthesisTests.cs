@@ -221,9 +221,10 @@ namespace Synthesis.Bethesda.UnitTests
                 new PatcherPreferences(),
                 Synthesis.Bethesda.Constants.SynthesisModKey);
             state.LoadOrder.PriorityOrder.Should().HaveCount(2);
-            state.RawLoadOrder.Should().HaveCount(2);
+            state.RawLoadOrder.Should().HaveCount(3);
             state.RawLoadOrder[0].Should().Be(new LoadOrderListing(Utility.TestModKey, true));
             state.RawLoadOrder[1].Should().Be(new LoadOrderListing(Utility.OverrideModKey, false));
+            state.RawLoadOrder[2].Should().Be(new LoadOrderListing(Utility.SynthesisModKey, true));
         }
 
         [Fact]

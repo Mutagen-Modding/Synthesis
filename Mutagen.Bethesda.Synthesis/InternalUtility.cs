@@ -88,6 +88,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                     readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease);
                 }
                 loadOrder.Add(new ModListing<TModGetter>(readOnlyPatchMod, enabled: true));
+                rawLoadOrder.Add(new LoadOrderListing(readOnlyPatchMod.ModKey, enabled: true));
                 cache = loadOrder.ToImmutableLinkCache<TModSetter, TModGetter>();
             }
             else
@@ -102,6 +103,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 }
                 cache = loadOrder.ToMutableLinkCache(patchMod);
                 loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));
+                rawLoadOrder.Add(new LoadOrderListing(patchMod.ModKey, enabled: true));
             }
 
             return new SynthesisState<TModSetter, TModGetter>(

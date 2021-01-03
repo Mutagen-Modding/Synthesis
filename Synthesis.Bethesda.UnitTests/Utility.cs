@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.UnitTests
         {
              ThrowIfUnsuccessfulDisposal = false
         };
-        public static readonly string TypicalOutputFilename = "Synthesis.esp";
+        public static readonly ModKey SynthesisModKey = new ModKey("Synthesis", ModType.Plugin);
         public static readonly ModKey TestModKey = new ModKey("test", ModType.Plugin);
         public static readonly ModKey OverrideModKey = new ModKey("override", ModType.Plugin);
         public static readonly string TestFileName = "test.esp";
@@ -30,7 +30,7 @@ namespace Synthesis.Bethesda.UnitTests
         public static readonly string PathToLoadOrderFile = "Plugins.txt";
         public static readonly ModKey RandomModKey = new ModKey("Random", ModType.Plugin);
 
-        public static ModPath TypicalOutputFile(TempFolder tempFolder) => Path.Combine(tempFolder.Dir.Path, TypicalOutputFilename);
+        public static ModPath TypicalOutputFile(TempFolder tempFolder) => Path.Combine(tempFolder.Dir.Path, SynthesisModKey.FileName);
         public static IEnumerable<LoadOrderListing> TypicalLoadOrder(GameRelease release, DirectoryPath dir) => PluginListings.ListingsFromPath(PathToLoadOrderFile, release, dir);
 
         public static TempFolder SetupDataFolder(TempFolder tempFolder, GameRelease release, string? loadOrderPath = null)
