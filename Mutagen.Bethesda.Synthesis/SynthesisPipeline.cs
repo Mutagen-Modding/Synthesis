@@ -126,13 +126,13 @@ namespace Mutagen.Bethesda.Synthesis
 
         #region Open For Settings
 
-        public delegate void OpenForSettingsFunction(IOpenForSettingsState state);
+        public delegate void OpenForSettingsFunction();
 
-        public delegate Task AsyncOpenForSettingsFunction(IOpenForSettingsState state);
+        public delegate Task AsyncOpenForSettingsFunction();
 
         public SynthesisPipeline SetOpenForSettings(OpenForSettingsFunction action)
         {
-            SetOpenForSettings(async (a) => action(a));
+            SetOpenForSettings(async () => action());
             return this;
         }
 
@@ -152,15 +152,7 @@ namespace Mutagen.Bethesda.Synthesis
             {
                 throw new ArgumentException("Patcher cannot open for settings.");
             }
-            var patcher = _patchers.GetOrDefault(args.GameRelease.ToCategory());
-            var loadOrder = Utility.GetLoadOrder(
-                release: args.GameRelease,
-                loadOrderFilePath: args.LoadOrderFilePath,
-                dataFolderPath: args.DataFolderPath,
-                patcher?.Prefs)
-                .ToList();
-            var state = new OpenForSettingsState(args, loadOrder);
-            await _openForSettings(state);
+            await _openForSettings();
             return 0;
         }
         #endregion
@@ -180,7 +172,12 @@ namespace Mutagen.Bethesda.Synthesis
         {
             if (args.Length == 0)
             {
-                if (preferences?.ActionsForEmptyArgs == null) return -1;
+                if (preferences?.ActionsForEmptyArgs == null)
+                {
+                    if (_openForSettings == null) return -1;
+                    await _openForSettings();
+                    return 0;
+                }
                 var category = preferences.ActionsForEmptyArgs.TargetRelease.ToCategory();
                 if (!_patchers.TryGetValue(category, out var patchers)) return -1;
 
@@ -227,7 +224,7 @@ namespace Mutagen.Bethesda.Synthesis
                         }
                         return 0;
                     },
-                    (CheckRunnability checkRunnabiity) => CheckRunnability(checkRunnabiity),
+                    (CheckRunnability checkRunnability) => CheckRunnability(checkRunnability),
                     (OpenForSettings openForSettings) => OpenForSettings(openForSettings),
                     async _ =>
                     {
