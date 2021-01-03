@@ -225,6 +225,16 @@ namespace Mutagen.Bethesda.Synthesis
                 {
                     throw new ArgumentException($"No applicable patchers for {cat}");
                 }
+                if (_runnabilityChecks.Count > 0)
+                {
+                    System.Console.WriteLine("Checking runnability");
+                    await CheckRunnability(new CheckRunnability()
+                    {
+                        DataFolderPath = args.DataFolderPath,
+                        GameRelease = args.GameRelease,
+                        LoadOrderFilePath = args.LoadOrderFilePath
+                    });
+                }
                 WarmupAll.Init();
                 System.Console.WriteLine("Prepping state.");
                 var prefs = patcher.Prefs ?? new PatcherPreferences();
