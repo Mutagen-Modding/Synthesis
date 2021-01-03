@@ -28,33 +28,12 @@ namespace Mutagen.Bethesda.Synthesis
         public static readonly SynthesisPipeline Instance = new SynthesisPipeline();
         #endregion
 
-        #region Delegates
-        public delegate void DepreciatedPatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>;
-
-        public delegate Task DepreciatedAsyncPatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>;
-
-        public delegate void PatcherFunction<TMod, TModGetter>(IPatcherState<TMod, TModGetter> state)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>;
-
-        public delegate Task AsyncPatcherFunction<TMod, TModGetter>(IPatcherState<TMod, TModGetter> state)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>;
-
-        public delegate void CheckerFunction(IRunnabilityState state);
-
-        public delegate Task AsyncCheckerFunction(IRunnabilityState state);
-        #endregion
-
         #region Members
         record PatcherListing(Func<object, Task> Patcher, PatcherPreferences? Prefs);
 
         private readonly Dictionary<GameCategory, PatcherListing> _patchers = new Dictionary<GameCategory, PatcherListing>();
         private List<AsyncCheckerFunction> _runnabilityChecks = new List<AsyncCheckerFunction>();
+        private AsyncOpenForSettingsFunction? _openForSettings;
         #endregion
 
         #region AddPatch
@@ -102,6 +81,11 @@ namespace Mutagen.Bethesda.Synthesis
         #endregion
 
         #region Runnability Checks
+
+        public delegate void CheckerFunction(IRunnabilityState state);
+
+        public delegate Task AsyncCheckerFunction(IRunnabilityState state);
+
         public SynthesisPipeline AddRunnabilityCheck(CheckerFunction action)
         {
             _runnabilityChecks.Add(async (c) => action(c));
@@ -140,7 +124,56 @@ namespace Mutagen.Bethesda.Synthesis
         }
         #endregion
 
+        #region Open For Settings
+
+        public delegate void OpenForSettingsFunction(IOpenForSettingsState state);
+
+        public delegate Task AsyncOpenForSettingsFunction(IOpenForSettingsState state);
+
+        public SynthesisPipeline SetOpenForSettings(OpenForSettingsFunction action)
+        {
+            SetOpenForSettings(async (a) => action(a));
+            return this;
+        }
+
+        public SynthesisPipeline SetOpenForSettings(AsyncOpenForSettingsFunction action)
+        {
+            if (_openForSettings != null)
+            {
+                throw new ArgumentException("Cannot add more than one callback for opening settings");
+            }
+            _openForSettings = action;
+            return this;
+        }
+
+        private async Task<int> OpenForSettings(OpenForSettings args)
+        {
+            if (_openForSettings == null)
+            {
+                throw new ArgumentException("Patcher cannot open for settings.");
+            }
+            var patcher = _patchers.GetOrDefault(args.GameRelease.ToCategory());
+            var loadOrder = Utility.GetLoadOrder(
+                release: args.GameRelease,
+                loadOrderFilePath: args.LoadOrderFilePath,
+                dataFolderPath: args.DataFolderPath,
+                patcher?.Prefs)
+                .ToList();
+            var state = new OpenForSettingsState(args, loadOrder);
+            await _openForSettings(state);
+            return 0;
+        }
+        #endregion
+
         #region Capstone Run
+        public delegate void PatcherFunction<TMod, TModGetter>(IPatcherState<TMod, TModGetter> state)
+            where TMod : class, IContextMod<TMod>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod>;
+
+        public delegate Task AsyncPatcherFunction<TMod, TModGetter>(IPatcherState<TMod, TModGetter> state)
+            where TMod : class, IContextMod<TMod>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod>;
+
         public async Task<int> Run(
             string[] args,
             RunPreferences? preferences = null)
@@ -179,7 +212,7 @@ namespace Mutagen.Bethesda.Synthesis
             {
                 s.IgnoreUnknownArguments = true;
             });
-            return await parser.ParseArguments(args, typeof(RunSynthesisMutagenPatcher), typeof(CheckRunnability))
+            return await parser.ParseArguments(args, typeof(RunSynthesisMutagenPatcher), typeof(CheckRunnability), typeof(OpenForSettings))
                 .MapResult(
                     async (RunSynthesisMutagenPatcher settings) =>
                     {
@@ -195,6 +228,7 @@ namespace Mutagen.Bethesda.Synthesis
                         return 0;
                     },
                     (CheckRunnability checkRunnabiity) => CheckRunnability(checkRunnabiity),
+                    (OpenForSettings openForSettings) => OpenForSettings(openForSettings),
                     async _ =>
                     {
                         return -1;
@@ -259,6 +293,14 @@ namespace Mutagen.Bethesda.Synthesis
         #endregion
 
         #region Depreciated Patch Finisher
+        public delegate void DepreciatedPatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
+            where TMod : class, IContextMod<TMod>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod>;
+
+        public delegate Task DepreciatedAsyncPatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
+            where TMod : class, IContextMod<TMod>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod>;
+
         private SynthesisState<TMod, TModGetter> ToDepreciatedState<TMod, TModGetter>(IPatcherState<TMod, TModGetter> state)
             where TMod : class, IContextMod<TMod>, TModGetter
             where TModGetter : class, IContextGetterMod<TMod>
