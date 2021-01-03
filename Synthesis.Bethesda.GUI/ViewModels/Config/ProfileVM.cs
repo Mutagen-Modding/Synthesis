@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.GUI
         public ICommand AddSolutionPatcherCommand { get; }
         public ICommand AddCliPatcherCommand { get; }
         public ICommand AddSnippetPatcherCommand { get; }
-        public ICommand GoToErrorPatcher { get; }
+        public ICommand GoToErrorCommand { get; }
         public IReactiveCommand UpdateProfileNugetVersionCommand { get; }
         public ICommand EnableAllPatchersCommand { get; }
         public ICommand DisableAllPatchersCommand { get; }
@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<GetResponse<PatcherVM>> _LargeOverallError;
         public GetResponse<PatcherVM> LargeOverallError => _LargeOverallError.Value;
 
-        public IObservableList<LoadOrderListing> LoadOrder { get; }
+        public IObservableList<LoadOrderEntryVM> LoadOrder { get; }
 
         private readonly ObservableAsPropertyHelper<bool> _IsActive;
         public bool IsActive => _IsActive.Value;
@@ -77,6 +77,20 @@ namespace Synthesis.Bethesda.GUI
 
         public ReactiveCommand<Unit, Unit> UpdateSynthesisManualToLatestCommand { get; }
 
+        private readonly ObservableAsPropertyHelper<PatcherVM?> _SelectedPatcher;
+        public PatcherVM? SelectedPatcher => _SelectedPatcher.Value;
+
+        [Reactive]
+        public bool ConsiderPrereleaseNugets { get; set; }
+
+        [Reactive]
+        public string? DataPathOverride { get; set; }
+
+        [Reactive]
+        public ViewModel? DisplayedObject { get; set; }
+
+        public ErrorVM OverallErrorVM { get; } = new ErrorVM("Overall Blocking Error");
+
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
             ID = id ?? Guid.NewGuid().ToString();
@@ -90,20 +104,44 @@ namespace Synthesis.Bethesda.GUI
             ProfileDirectory = Path.Combine(Execution.Constants.WorkingDirectory, ID);
             WorkingDirectory = Execution.Constants.ProfileWorkingDirectory(ID);
 
-            var dataFolderResult = this.WhenAnyValue(x => x.Release)
-                .ObserveOn(RxApp.TaskpoolScheduler)
+            var dataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
+                .Select(path =>
+                {
+                    if (path != null) return Observable.Return(GetResponse<string>.Succeed(path));
+                    return this.WhenAnyValue(x => x.Release)
+                        .ObserveOn(RxApp.TaskpoolScheduler)
+                        .Select(x =>
+                        {
+                            try
+                            {
+                                var wjMeta = x.ToWjGame().MetaData();
+                                if (wjMeta == null)
+                                {
+                                    return GetResponse<string>.Fail("Could not automatically locate Data folder.  Run Steam/GoG/etc once to properly register things.");
+                                }
+                                return GetResponse<string>.Succeed(
+                                    Path.Combine(wjMeta.GameLocation().ToString(), "Data"));
+                            }
+                            catch (Exception ex)
+                            {
+                                return GetResponse<string>.Fail(string.Empty, ex);
+                            }
+                        });
+                })
+                .Switch()
+                // Watch folder for existance
                 .Select(x =>
                 {
-                    try
-                    {
-                        return GetResponse<string>.Succeed(
-                            Path.Combine(x.ToWjGame().MetaData().GameLocation().ToString(), "Data"));
-                    }
-                    catch (Exception ex)
-                    {
-                        return GetResponse<string>.Fail(string.Empty, ex);
-                    }
+                    if (x.Failed) return Observable.Return(x);
+                    return Noggog.ObservableExt.WatchFile(x.Value)
+                        .StartWith(Unit.Default)
+                        .Select(_ =>
+                        {
+                            if (Directory.Exists(x.Value)) return x;
+                            return GetResponse<string>.Fail($"Data folder did not exist: {x.Value}");
+                        });
                 })
+                .Switch()
                 .Replay(1)
                 .RefCount();
 
@@ -120,9 +158,12 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (x.dataFolder.Failed)
                     {
-                        return (Results: Observable.Empty<IChangeSet<LoadOrderListing>>(), State: Observable.Return<ErrorResponse>(ErrorResponse.Fail("Data folder not set")));
+                        return (Results: Observable.Empty<IChangeSet<LoadOrderEntryVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
                     }
-                    return (Results: Mutagen.Bethesda.LoadOrder.GetLiveLoadOrder(x.release, x.dataFolder.Value, out var errors), State: errors);
+                    var liveLo = Mutagen.Bethesda.LoadOrder.GetLiveLoadOrder(x.release, x.dataFolder.Value, out var errors)
+                        .Transform(listing => new LoadOrderEntryVM(listing, x.dataFolder.Value))
+                        .DisposeMany();
+                    return (Results: liveLo, State: errors);
                 })
                 .Replay(1)
                 .RefCount();
@@ -138,20 +179,36 @@ namespace Synthesis.Bethesda.GUI
                         .Select(x => x.State)
                         .Switch(),
                     Patchers.Connect()
-                        .AutoRefresh(x => x.IsOn)
-                        .Filter(p => p.IsOn)
-                        .AutoRefresh(x => x.State)
+                        .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
-                    (dataFolder, loadOrder, coll) =>
+                    Patchers.Connect()
+                        .FilterOnObservable(p => Observable.CombineLatest(
+                            p.WhenAnyValue(x => x.IsOn),
+                            p.WhenAnyValue(x => x.State.IsHaltingError),
+                            (on, halting) => on && halting),
+                            scheduler: RxApp.MainThreadScheduler)
+                        .QueryWhenChanged(q => q)
+                        .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
+                    LoadOrder.Connect()
+                        .FilterOnObservable(
+                            x => x.WhenAnyValue(y => y.Exists)
+                                .Select(x => !x),
+                            scheduler: RxApp.MainThreadScheduler)
+                        .QueryWhenChanged(q => q)
+                        .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler),
+                    (dataFolder, loadOrder, enabledPatchers, erroredEnabledPatchers, missingMods) =>
                     {
-                        if (coll.Count == 0) return GetResponse<PatcherVM>.Fail("There are no enabled patchers to run.");
+                        if (enabledPatchers.Count == 0) return GetResponse<PatcherVM>.Fail("There are no enabled patchers to run.");
                         if (!dataFolder.Succeeded) return dataFolder.BubbleFailure<PatcherVM>();
                         if (!loadOrder.Succeeded) return loadOrder.BubbleFailure<PatcherVM>();
-                        var blockingError = coll.FirstOrDefault(p => p.State.IsHaltingError);
-                        if (blockingError != null)
+                        if (missingMods.Count > 0)
                         {
-                            return GetResponse<PatcherVM>.Fail(blockingError, $"\"{blockingError.DisplayName}\" has a blocking error");
+                            return GetResponse<PatcherVM>.Fail($"Load order had mods that were missing:{Environment.NewLine}{string.Join(Environment.NewLine, missingMods.Select(x => x.Listing.ModKey))}");
+                        }
+                        if (erroredEnabledPatchers.Count > 0)
+                        {
+                            return GetResponse<PatcherVM>.Fail(erroredEnabledPatchers.First(), $"\"{erroredEnabledPatchers.First().DisplayName}\" has a blocking error");
                         }
                         return GetResponse<PatcherVM>.Succeed(null!);
                     })
@@ -188,15 +245,49 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsActive));
 
-            GoToErrorPatcher = ReactiveCommand.Create(
-                () =>
+            GoToErrorCommand = NoggogCommand.CreateFromObject(
+                objectSource: this.WhenAnyValue(x => x.LargeOverallError),
+                canExecute: o => o.Failed,
+                execute: o =>
                 {
-                    if (LargeOverallError.Value.TryGet(out var patcher))
+                    if (o.Value.TryGet(out var patcher))
                     {
-                        Config.SelectedPatcher = patcher;
+                        DisplayedObject = patcher;
+                    }
+                    else
+                    {
+                        var curDisplayed = DisplayedObject;
+                        if (!(curDisplayed is ErrorVM))
+                        {
+                            OverallErrorVM.BackAction = () => DisplayedObject = curDisplayed;
+                        }
+                        else
+                        {
+                            OverallErrorVM.BackAction = null;
+                        }
+                        DisplayedObject = OverallErrorVM;
                     }
                 },
-                canExecute: this.WhenAnyValue(x => x.LargeOverallError.Value).Select(x => x != null));
+                disposable: this.CompositeDisposable);
+
+            // Forward overall errors into VM
+            this.WhenAnyValue(x => x.LargeOverallError)
+                .Subscribe(err =>
+                {
+                    if (err.Succeeded || err.Value != null)
+                    {
+                        OverallErrorVM.String = null;
+                    }
+                    else
+                    {
+                        OverallErrorVM.String = err.Reason;
+                    }
+                })
+                .DisposeWith(this);
+
+            _SelectedPatcher = this.WhenAnyValue(x => x.DisplayedObject)
+                .Select(x => x as PatcherVM)
+                .ToGuiProperty(this, nameof(SelectedPatcher), default);
 
             ActiveVersioning = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.MutagenVersioning),
@@ -287,7 +378,7 @@ namespace Synthesis.Bethesda.GUI
                 disposable: this.CompositeDisposable);
 
             UpdateProfileNugetVersionCommand = CommandExt.CreateCombinedAny(
-                this.UpdateMutagenManualToLatestCommand, 
+                this.UpdateMutagenManualToLatestCommand,
                 this.UpdateSynthesisManualToLatestCommand);
 
             EnableAllPatchersCommand = ReactiveCommand.Create(() =>
@@ -342,6 +433,7 @@ namespace Synthesis.Bethesda.GUI
             ManualMutagenVersion = settings.MutagenManualVersion;
             SynthesisVersioning = settings.SynthesisVersioning;
             ManualSynthesisVersion = settings.SynthesisManualVersion;
+            DataPathOverride = settings.DataPathOverride;
             Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
             {
                 return p switch
@@ -366,14 +458,15 @@ namespace Synthesis.Bethesda.GUI
                 MutagenManualVersion = ManualMutagenVersion,
                 SynthesisManualVersion = ManualSynthesisVersion,
                 MutagenVersioning = MutagenVersioning,
-                SynthesisVersioning = SynthesisVersioning
+                SynthesisVersioning = SynthesisVersioning,
+                DataPathOverride = DataPathOverride
             };
         }
 
         private void SetPatcherForInitialConfiguration(PatcherVM patcher)
         {
             patcher.Profile.Patchers.Add(patcher);
-            Config.SelectedPatcher = patcher;
+            DisplayedObject = patcher;
         }
 
         private void SetInitializer(PatcherInitVM initializer)

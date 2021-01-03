@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.UnitTests
                     $"*{Utility.TestModKey.FileName}",
                     $"{Utility.OverrideModKey.FileName}",
                 });
-            var listings = SynthesisPipeline.Instance.GetLoadOrder(
+            var listings = Mutagen.Bethesda.Synthesis.Internal.Utility.GetLoadOrder(
                 GameRelease.SkyrimSE,
                 loadOrderFilePath: pluginPath,
                 dataFolderPath: dataFolder).ToList();
@@ -40,6 +40,18 @@ namespace Synthesis.Bethesda.UnitTests
                 new LoadOrderListing(Utility.TestModKey, true),
                 new LoadOrderListing(Utility.OverrideModKey, false),
             });
+        }
+
+        [Fact]
+        public void GetLoadOrder_NoLoadOrderPath()
+        {
+            using var tmpFolder = Utility.GetTempFolder();
+            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimSE);
+            var lo = Mutagen.Bethesda.Synthesis.Internal.Utility.GetLoadOrder(
+                GameRelease.SkyrimSE, 
+                string.Empty,
+                dataFolder.Dir.Path);
+            lo.Select(l => l.ModKey).Should().BeEmpty();
         }
     }
 }

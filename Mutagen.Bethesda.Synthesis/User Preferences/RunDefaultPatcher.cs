@@ -19,6 +19,6 @@ namespace Mutagen.Bethesda.Synthesis
         /// <summary>
         /// Whether to block automatic exit and wait for user to press return before exiting
         /// </summary>
-        public bool BlockAutomaticExit { get; set; } = true;
+        public bool BlockAutomaticExit { get; set; } = false;
     }
 }

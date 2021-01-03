@@ -11,15 +11,31 @@ namespace Mutagen.Bethesda.Synthesis.Internal
 {
     public class Utility
     {
-        public static SynthesisState<TMod, TModGetter> ToState<TMod, TModGetter>(RunSynthesisMutagenPatcher settings, UserPreferences userPrefs)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>
+        public static GameCategory TypeToGameCategory<TMod>()
+            where TMod : IModGetter
+        {
+            switch (typeof(TMod).Name)
+            {
+                case "ISkyrimMod":
+                case "ISkyrimModGetter":
+                    return GameCategory.Skyrim;
+                case "IOblivionMod":
+                case "IOblivionModGetter":
+                    return GameCategory.Oblivion;
+                default:
+                    throw new ArgumentException($"Unknown game type for: {typeof(TMod).Name}");
+            }
+        }
+
+        public static SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
+            where TModSetter : class, IContextMod<TModSetter>, TModGetter
+            where TModGetter : class, IContextGetterMod<TModSetter>
         {
             // Confirm target game release matches
             var regis = settings.GameRelease.ToCategory().ToModRegistration();
-            if (!typeof(TMod).IsAssignableFrom(regis.SetterType))
+            if (!typeof(TModSetter).IsAssignableFrom(regis.SetterType))
             {
-                throw new ArgumentException($"Target mod type {typeof(TMod)} was not of the expected type {regis.SetterType}");
+                throw new ArgumentException($"Target mod type {typeof(TModSetter)} was not of the expected type {regis.SetterType}");
             }
             if (!typeof(TModGetter).IsAssignableFrom(regis.GetterType))
             {
@@ -27,12 +43,12 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             }
 
             // Get load order
-            var loadOrderListing = SynthesisPipeline.Instance.GetLoadOrder(settings, userPrefs)
+            var loadOrderListing = GetLoadOrder(settings.GameRelease, settings.LoadOrderFilePath, settings.DataFolderPath, userPrefs)
                 .ToExtendedList();
             var rawLoadOrder = loadOrderListing.Select(x => new LoadOrderListing(x.ModKey, x.Enabled)).ToExtendedList();
 
             // Trim past Synthesis.esp
-            var synthIndex = loadOrderListing.IndexOf(BaseSynthesis.Constants.SynthesisModKey, (listing, key) => listing.ModKey == key);
+            var synthIndex = loadOrderListing.IndexOf(exportKey, (listing, key) => listing.ModKey == key);
             if (synthIndex != -1)
             {
                 loadOrderListing.RemoveToCount(synthIndex);
@@ -54,12 +70,9 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 loadOrderListing,
                 settings.GameRelease);
 
-            // Get Modkey from output path
-            var modKey = BaseSynthesis.Constants.SynthesisModKey;
-
             // Create or import patch mod
-            TMod patchMod;
-            ILinkCache cache;
+            TModSetter patchMod;
+            ILinkCache<TModSetter> cache;
             if (userPrefs.NoPatch)
             {
                 // Pass null, even though it isn't normally
@@ -68,30 +81,32 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 TModGetter readOnlyPatchMod;
                 if (settings.SourcePath == null)
                 {
-                    readOnlyPatchMod = ModInstantiator<TModGetter>.Activator(modKey, settings.GameRelease);
+                    readOnlyPatchMod = ModInstantiator<TModGetter>.Activator(exportKey, settings.GameRelease);
                 }
                 else
                 {
-                    readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(new ModPath(modKey, settings.SourcePath), settings.GameRelease);
+                    readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease);
                 }
                 loadOrder.Add(new ModListing<TModGetter>(readOnlyPatchMod, enabled: true));
-                cache = loadOrder.ToImmutableLinkCache<TMod, TModGetter>();
+                rawLoadOrder.Add(new LoadOrderListing(readOnlyPatchMod.ModKey, enabled: true));
+                cache = loadOrder.ToImmutableLinkCache<TModSetter, TModGetter>();
             }
             else
             {
                 if (settings.SourcePath == null)
                 {
-                    patchMod = ModInstantiator<TMod>.Activator(modKey, settings.GameRelease);
+                    patchMod = ModInstantiator<TModSetter>.Activator(exportKey, settings.GameRelease);
                 }
                 else
                 {
-                    patchMod = ModInstantiator<TMod>.Importer(new ModPath(modKey, settings.SourcePath), settings.GameRelease);
+                    patchMod = ModInstantiator<TModSetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease);
                 }
                 cache = loadOrder.ToMutableLinkCache(patchMod);
                 loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));
+                rawLoadOrder.Add(new LoadOrderListing(patchMod.ModKey, enabled: true));
             }
 
-            return new SynthesisState<TMod, TModGetter>(
+            return new SynthesisState<TModSetter, TModGetter>(
                 settings: settings,
                 loadOrder: loadOrder,
                 rawLoadOrder: rawLoadOrder,
@@ -99,6 +114,22 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 patchMod: patchMod,
                 extraDataPath: settings.ExtraDataFolder == null ? string.Empty : Path.GetFullPath(settings.ExtraDataFolder),
                 cancellation: userPrefs.Cancel);
+        }
+
+        public static IPatcherState ToState(GameCategory category, RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
+        {
+            var regis = category.ToModRegistration();
+            var method = typeof(Utility).GetMethods()
+                .Where(m => m.Name == nameof(ToState))
+                .Where(m => m.ContainsGenericParameters)
+                .First()
+                .MakeGenericMethod(regis.SetterType, regis.GetterType);
+            return (IPatcherState)method.Invoke(null, new object[]
+            {
+                settings, 
+                userPrefs,
+                exportKey,
+            })!;
         }
 
         public static void AddImplicitMasters(RunSynthesisMutagenPatcher settings, ExtendedList<LoadOrderListing> loadOrderListing)
@@ -117,6 +148,37 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                     loadOrderListing[i] = new LoadOrderListing(listing.ModKey, enabled: true);
                 }
             }
+        }
+
+        public static IEnumerable<LoadOrderListing> GetLoadOrder(
+            GameRelease release,
+            string loadOrderFilePath,
+            string dataFolderPath,
+            PatcherPreferences? userPrefs = null)
+        {
+            // This call will impliticly get Creation Club entries, too, as the Synthesis systems should be merging
+            // things into a singular load order file for consumption here
+            var loadOrderListing =
+                ImplicitListings.GetListings(release, dataFolderPath)
+                    .Select(x => new LoadOrderListing(x, enabled: true));
+            if (!loadOrderFilePath.IsNullOrWhitespace())
+            {
+                loadOrderListing = loadOrderListing.Concat(PluginListings.RawListingsFromPath(loadOrderFilePath, release));
+            }
+            loadOrderListing = loadOrderListing.Distinct(x => x.ModKey);
+            if (userPrefs?.InclusionMods != null)
+            {
+                var inclusions = userPrefs.InclusionMods.ToHashSet();
+                loadOrderListing = loadOrderListing
+                    .Where(m => inclusions.Contains(m.ModKey));
+            }
+            if (userPrefs?.ExclusionMods != null)
+            {
+                var exclusions = userPrefs.ExclusionMods.ToHashSet();
+                loadOrderListing = loadOrderListing
+                    .Where(m => !exclusions.Contains(m.ModKey));
+            }
+            return loadOrderListing;
         }
     }
 }

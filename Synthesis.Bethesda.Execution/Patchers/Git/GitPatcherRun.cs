@@ -160,7 +160,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             }
         }
 
-        public static string GetPathToSolution(string pathToRepo)
+        public static string? GetPathToSolution(string pathToRepo)
         {
             return Directory.EnumerateFiles(pathToRepo, "*.sln").FirstOrDefault();
         }
@@ -182,7 +182,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             listedSynthesisVersion = null;
             foreach (var subProj in SolutionPatcherRun.AvailableProjects(solutionPath))
             {
-                var proj = Path.Combine(Path.GetDirectoryName(solutionPath), subProj);
+                var proj = Path.Combine(Path.GetDirectoryName(solutionPath)!, subProj);
                 var projXml = XElement.Parse(File.ReadAllText(proj));
                 SwapInDesiredVersionsForProjectString(
                     projXml,
@@ -191,8 +191,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     synthesisVersion: synthesisVersion,
                     listedSynthesisVersion: out var curListedSynthesisVersion);
                 TurnOffNullability(projXml);
-                // Just printing on run pipeline side
-                //AddGitInfo(projXml);
+                RemoveGitInfo(projXml);
                 File.WriteAllText(proj, projXml.ToString());
                 if (drivingProjSubPath.Equals(subProj))
                 {
@@ -200,7 +199,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     listedSynthesisVersion = curListedSynthesisVersion;
                 }
             }
-            foreach (var item in Directory.EnumerateFiles(Path.GetDirectoryName(solutionPath), "Directory.Build.props"))
+            foreach (var item in Directory.EnumerateFiles(Path.GetDirectoryName(solutionPath)!, "Directory.Build.props"))
             {
                 var projXml = XElement.Parse(File.ReadAllText(item));
                 TurnOffNullability(projXml);
@@ -281,28 +280,20 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             }
         }
 
-        public static void AddGitInfo(XElement proj)
+        public static void RemoveGitInfo(XElement proj)
         {
-            XElement? itemGroup = null;
             foreach (var group in proj.Elements("ItemGroup"))
             {
-                foreach (var elem in group.Elements("PackageReference"))
+                foreach (var elem in group.Elements("PackageReference").ToList())
                 {
-                    itemGroup = group;
-                    if (elem.TryGetAttributeString("Include", out var attr) && attr.Equals("GitInfo")) return;
+                    if (elem.TryGetAttributeString("Include", out var includeAttr)
+                        && includeAttr == "GitInfo")
+                    {
+                        elem.Remove();
+                        break;
+                    }
                 }
             }
-
-            if (itemGroup == null)
-            {
-                throw new ArgumentException("Package references found in project");
-            }
-
-            itemGroup.Add(new XElement("PackageReference",
-                new XAttribute("Include", "GitInfo"),
-                new XAttribute("Version", "*"),
-                new XElement("PrivateAssets", "all"),
-                new XElement("IncludeAssets", "runtime; build; native; contentfiles; analyzers; buildtransitive")));
         }
 
         public static async Task<ConfigurationState<RunnerRepoInfo>> CheckoutRunnerRepository(
@@ -411,7 +402,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 // Compile to help prep
                 if (compile)
                 {
-                    var compileResp = await SolutionPatcherRun.CompileWithDotnet(projPath, cancel);
+                    var compileResp = await SolutionPatcherRun.CompileWithDotnet(projPath, cancel, logger);
                     if (compileResp.Failed) return compileResp.BubbleResult(runInfo);
                 }
 

@@ -13,8 +13,8 @@
     mc:Ignorable="d">
     <Border
         Padding="10,0"
-        Background="#18000000"
-        BorderBrush="#333333"
+        Background="{StaticResource TransparentGrayBackgroundBrush}"
+        BorderBrush="{StaticResource GrayBorderBrush}"
         BorderThickness="1"
         CornerRadius="5">
         <Grid>
@@ -37,10 +37,7 @@
                 x:Name="VersioningTab"
                 Margin="0,2,0,0"
                 HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                mahapps:HeaderedControlHelper.HeaderFontSize="16"
-                mahapps:HeaderedControlHelper.HeaderForeground="AliceBlue"
-                Background="Transparent">
+                VerticalAlignment="Center">
                 <TabItem
                     x:Name="ProfileTab"
                     Header="Profile"
@@ -53,7 +50,7 @@
                 x:Name="Splitter"
                 Width="1"
                 Margin="6,6,10,6"
-                Fill="#333333" />
+                Fill="{StaticResource GrayBorderBrush}" />
             <TextBlock Grid.Column="3"
                 x:Name="ListedVersionText"
                 Margin="0,8,0,0"

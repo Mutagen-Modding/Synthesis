@@ -3,6 +3,7 @@ using Noggog.WPF;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -37,7 +38,7 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel)
                     .BindToStrict(this, x => x.PatcherIconDisplay.DataContext)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel)
+                this.WhenAnyValue(x => x.ViewModel!.DisplayedObject)
                     .BindToStrict(this, x => x.ConfigDetailPane.Content)
                     .DisposeWith(disposable);
 
@@ -75,16 +76,25 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Subscribe(x => this.PatcherDetailName.Text = x)
                     .DisposeWith(disposable);
 
-                this.WhenAnyValue(x => x.ViewModel!.State)
-                    .Select(x => x.IsHaltingError ? Visibility.Visible : Visibility.Hidden)
-                    .BindToStrict(this, x => x.ErrorGrid.Visibility)
+                var errorDisp = Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.State.IsHaltingError),
+                        this.WhenAnyValue(x => x.ViewModel!.DisplayedObject),
+                        (halting, disp) => halting && !(disp is ErrorVM))
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .Replay(1)
+                    .RefCount();
+                errorDisp
+                    .BindToStrict(this, x => x.ErrorButton.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.State)
-                    .Select(x => x.IsHaltingError ? Visibility.Visible : Visibility.Collapsed)
+                this.WhenAnyValue(x => x.ViewModel!.GoToErrorCommand)
+                    .BindToStrict(this, x => x.ErrorButton.Command)
+                    .DisposeWith(disposable);
+                errorDisp
                     .BindToStrict(this, x => x.ErrorGlow.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.State)
                     .Select(x => x.RunnableState.Reason)
+                    .Select(x => x.Split(Environment.NewLine).FirstOrDefault())
                     .BindToStrict(this, x => x.ErrorTextBlock.Text)
                     .DisposeWith(disposable);
             });

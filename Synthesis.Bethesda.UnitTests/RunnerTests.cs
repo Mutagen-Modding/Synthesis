@@ -188,7 +188,7 @@ namespace Synthesis.Bethesda.UnitTests
             Assert.True(patcher.WasRun);
             Assert.True(reporter.Success);
             Assert.True(reporter.PatcherComplete.Count > 0);
-            Assert.NotEqual(output, reporter.PatcherComplete[0].OutputPath);
+            Assert.NotEqual(output.Path, reporter.PatcherComplete[0].OutputPath);
             Assert.True(File.Exists(reporter.PatcherComplete[0].OutputPath));
         }
 

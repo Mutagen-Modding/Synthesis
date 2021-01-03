@@ -36,9 +36,6 @@ namespace Synthesis.Bethesda.GUI
         public ProfileVM? SelectedProfile { get; set; }
 
         [Reactive]
-        public PatcherVM? SelectedPatcher { get; set; }
-
-        [Reactive]
         public PatcherInitVM? NewPatcher { get; set; }
 
         private readonly ObservableAsPropertyHelper<object?> _DisplayedObject;
@@ -88,9 +85,9 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe()
                 .DisposeWith(this);
 
-            _DisplayedObject = this.WhenAnyValue(
-                    x => x.SelectedPatcher,
-                    x => x.NewPatcher,
+            _DisplayedObject = Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.SelectedProfile!.DisplayedObject),
+                    this.WhenAnyValue(x => x.NewPatcher),
                     (selected, newConfig) => (newConfig as object) ?? selected)
                 .ToGuiProperty(this, nameof(DisplayedObject), default);
 
@@ -157,9 +154,13 @@ namespace Synthesis.Bethesda.GUI
         {
             NewPatcher = null;
             if (patchersToAdd.Count == 0) return;
+            if (SelectedProfile == null)
+            {
+                throw new ArgumentNullException("Selected profile unexpectedly null");
+            }
             patchersToAdd.ForEach(p => p.IsOn = true);
-            SelectedProfile?.Patchers.AddRange(patchersToAdd);
-            SelectedPatcher = patchersToAdd.First();
+            SelectedProfile.Patchers.AddRange(patchersToAdd);
+            SelectedProfile.DisplayedObject = patchersToAdd.First();
         }
     }
 }

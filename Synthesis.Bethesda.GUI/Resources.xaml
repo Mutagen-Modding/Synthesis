@@ -1,11 +1,8 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-    xmlns:Converters="clr-namespace:MahApps.Metro.Converters;assembly=MahApps.Metro"
-    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI"
-    xmlns:noggog="clr-namespace:Noggog.WPF;assembly=Noggog.WPF">
+    xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro">
     <Color x:Key="Salmon">#e16063</Color>
     <Color x:Key="LightSalmon">#fa7376</Color>
     <Color x:Key="WhiteSalmon">#ff999b</Color>
@@ -26,6 +23,8 @@
     <Color x:Key="DarkPurple">#211c4a</Color>
     <Color x:Key="PaleDarkPurple">#201f24</Color>
     <Color x:Key="AbyssPurple">#15131c</Color>
+    <Color x:Key="TransparentGrayBackground">#18000000</Color>
+    <Color x:Key="GrayBorder">#333333</Color>
 
     <SolidColorBrush x:Key="SalmonBrush" Color="{StaticResource Salmon}" />
     <SolidColorBrush x:Key="LightSalmonBrush" Color="{StaticResource LightSalmon}" />
@@ -46,13 +45,19 @@
     <SolidColorBrush x:Key="DarkPurpleBrush" Color="{StaticResource DarkPurple}" />
     <SolidColorBrush x:Key="PaleDarkPurpleBrush" Color="{StaticResource PaleDarkPurple}" />
     <SolidColorBrush x:Key="AbyssPurpleBrush" Color="{StaticResource AbyssPurple}" />
+    <SolidColorBrush x:Key="TransparentGrayBackgroundBrush" Color="{StaticResource TransparentGrayBackground}" />
+    <SolidColorBrush x:Key="GrayBorderBrush" Color="{StaticResource GrayBorder}" />
 
     <!--  Overrides  -->
     <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource LightBlue}" />
     <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="{StaticResource MahApps.Colors.ThemeForeground}" />
     <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource PaleBlue}" />
     <SolidColorBrush x:Key="MahApps.Brushes.TextBox.Border.Focus" Color="{StaticResource MahApps.Colors.Gray4}" />
-    <Style BasedOn="{StaticResource MahApps.Styles.TabControl}" TargetType="TabControl" />
+    <Style BasedOn="{StaticResource MahApps.Styles.TabControl}" TargetType="TabControl">
+        <Setter Property="mahapps:HeaderedControlHelper.HeaderFontSize" Value="16" />
+        <Setter Property="mahapps:HeaderedControlHelper.HeaderForeground" Value="AliceBlue" />
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
     <Style BasedOn="{StaticResource MahApps.Styles.TabItem}" TargetType="{x:Type TabItem}" />
 
     <RadialGradientBrush x:Key="PurpleBackgroundGradient" Center="0.5,1" GradientOrigin="0.2,1" RadiusX="6.7" RadiusY="6.7">
@@ -88,5 +93,14 @@
             </Style>
         </Style.Resources>
         <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
+    </Style>
+
+    <Style
+        x:Key="ErrorBox"
+        BasedOn="{StaticResource Noggog.Styles.TextBox}"
+        TargetType="TextBox">
+        <Setter Property="BorderBrush" Value="{StaticResource DarkSalmonBrush}" />
+        <Setter Property="mahapps:ControlsHelper.FocusBorderBrush" Value="{StaticResource DarkSalmonBrush}" />
+        <Setter Property="mahapps:ControlsHelper.MouseOverBorderBrush" Value="{StaticResource DarkSalmonBrush}" />
     </Style>
 </ResourceDictionary>

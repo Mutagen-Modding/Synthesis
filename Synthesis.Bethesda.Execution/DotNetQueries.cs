@@ -12,20 +12,20 @@ namespace Synthesis.Bethesda.Execution
 {
     public static class DotNetQueries
     {
-        public static async Task<IEnumerable<(string Package, string Requested, string Resolved, string Latest)>> NugetListingQuery(string projectPath, bool queryServer)
+        public static async Task<IEnumerable<(string Package, string Requested, string Resolved, string Latest)>> NugetListingQuery(string projectPath, bool outdated, bool includePrerelease)
         {
             // Run restore first
             {
-                using var restore = ProcessWrapper.Start(
+                using var restore = ProcessWrapper.Create(
                     new ProcessStartInfo("dotnet", $"restore \"{projectPath}\""));
-                await restore.Start();
+                await restore.Run();
             }
 
             bool on = false;
             List<string> lines = new List<string>();
             List<string> errors = new List<string>();
-            using var process = ProcessWrapper.Start(
-                new ProcessStartInfo("dotnet", $"list \"{projectPath}\" package{(queryServer ? " --outdated" : null)}"));
+            using var process = ProcessWrapper.Create(
+                new ProcessStartInfo("dotnet", $"list \"{projectPath}\" package{(outdated ? " --outdated" : null)}{(includePrerelease ? " --include-prerelease" : null)}"));
             using var outSub = process.Output.Subscribe(s =>
             {
                 if (s.Contains("Top-level Package"))
@@ -37,7 +37,7 @@ namespace Synthesis.Bethesda.Execution
                 lines.Add(s);
             });
             using var errSub = process.Error.Subscribe(s => errors.Add(s));
-            var result = await process.Start();
+            var result = await process.Run();
             if (errors.Count > 0)
             {
                 throw new ArgumentException($"Error while retrieving nuget listings: \n{string.Join("\n", errors)}");
@@ -80,7 +80,7 @@ namespace Synthesis.Bethesda.Execution
                 .Substring(startIndex + 2)
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries)
                 .WithIndex()
-                .Where(x => x.Index == 0 || Version.TryParse(x.Item, out _))
+                .Where(x => x.Index == 0 || x.Item != "(D)")
                 .Select(x => x.Item)
                 .ToArray();
             package = split[0];
@@ -90,10 +90,10 @@ namespace Synthesis.Bethesda.Execution
             return true;
         }
 
-        public static async Task<(string? MutagenVersion, string? SynthesisVersion)> QuerySynthesisVersions(string projectPath, bool current)
+        public static async Task<(string? MutagenVersion, string? SynthesisVersion)> QuerySynthesisVersions(string projectPath, bool current, bool includePrerelease)
         {
             string? mutagenVersion = null, synthesisVersion = null;
-            var queries = await NugetListingQuery(projectPath, !current);
+            var queries = await NugetListingQuery(projectPath, outdated: !current, includePrerelease: includePrerelease);
             foreach (var item in queries)
             {
                 if (item.Package.StartsWith("Mutagen.Bethesda")
@@ -111,13 +111,13 @@ namespace Synthesis.Bethesda.Execution
 
         public static async Task<Version> DotNetSdkVersion()
         {
-            using var proc = ProcessWrapper.Start(
+            using var proc = ProcessWrapper.Create(
                 new System.Diagnostics.ProcessStartInfo("dotnet", "--version"));
             List<string> outs = new List<string>();
             using var outp = proc.Output.Subscribe(o => outs.Add(o));
             List<string> errs = new List<string>();
             using var errp = proc.Error.Subscribe(o => errs.Add(o));
-            var result = await proc.Start();
+            var result = await proc.Run();
             if (errs.Count > 0)
             {
                 throw new ArgumentException($"{string.Join("\n", errs)}");

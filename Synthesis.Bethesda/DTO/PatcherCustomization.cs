@@ -55,19 +55,22 @@ namespace Synthesis.Bethesda.DTO
         public string? OneLineDescription { get; set; }
         public string? LongDescription { get; set; }
         public PreferredAutoVersioning PreferredAutoVersioning { get; set; }
+        public string[] RequiredMods { get; set; } = Array.Empty<string>();
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is PatcherCustomization info && this.Equals(info);
         }
 
-        public bool Equals(PatcherCustomization other)
+        public bool Equals(PatcherCustomization? other)
         {
+            if (other == null) return false;
             if (!string.Equals(this.Visibility, other.Visibility)) return false;
             if (!string.Equals(this.OneLineDescription, other.OneLineDescription)) return false;
             if (!string.Equals(this.LongDescription, other.LongDescription)) return false;
             if (!string.Equals(this.Nickname, other.Nickname)) return false;
             if (!string.Equals(this.PreferredAutoVersioning, other.PreferredAutoVersioning)) return false;
+            if (!RequiredMods.SequenceEqual(other.RequiredMods)) return false;
             return true;
         }
 
@@ -79,6 +82,7 @@ namespace Synthesis.Bethesda.DTO
             hash.Add(LongDescription);
             hash.Add(Nickname);
             hash.Add(PreferredAutoVersioning);
+            hash.Add(RequiredMods);
             return hash.ToHashCode();
         }
     }

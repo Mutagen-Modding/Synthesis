@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 Task.Run(async () =>
                 {
                     _output.OnNext($"Compiling");
-                    var resp = await CompileWithDotnet(PathToProject, cancel ?? CancellationToken.None).ConfigureAwait(false);
+                    var resp = await CompileWithDotnet(PathToProject, cancel ?? CancellationToken.None, _output.OnNext).ConfigureAwait(false);
                     if (!resp.Succeeded)
                     {
                         throw new SynthesisBuildFailure(resp.Reason);
@@ -72,6 +72,19 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 using var repo = new Repository(repoPath);
                 _output.OnNext($"Sha {repo.Head.Tip.Sha}");
             }
+            
+            var runnability = await Synthesis.Bethesda.Execution.CLI.Commands.CheckRunnability(
+                PathToProject,
+                directExe: false,
+                release: settings.GameRelease,
+                dataFolder: settings.DataFolderPath,
+                loadOrderPath: settings.LoadOrderFilePath);
+
+            if (runnability.Failed)
+            {
+                throw new CliUnsuccessfulRunException(ErrorCodes.NotRunnable, runnability.Reason);
+            }
+
             var internalSettings = new RunSynthesisMutagenPatcher()
             {
                 DataFolderPath = settings.DataFolderPath,
@@ -82,12 +95,12 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 SourcePath = settings.SourcePath
             };
             var args = Parser.Default.FormatCommandLine(internalSettings);
-            using var process = ProcessWrapper.Start(
+            using var process = ProcessWrapper.Create(
                 new ProcessStartInfo("dotnet", $"run --project \"{PathToProject}\" --runtime win-x64 --no-build {args}"),
                 cancel: cancel);
             using var outputSub = process.Output.Subscribe(_output);
             using var errSub = process.Error.Subscribe(_error);
-            var result = await process.Start().ConfigureAwait(false);
+            var result = await process.Run().ConfigureAwait(false);
             if (result != 0)
             {
                 throw new CliUnsuccessfulRunException(result, "Error running solution patcher");
@@ -136,16 +149,19 @@ namespace Synthesis.Bethesda.Execution.Patchers
             return (true, default);
         }
 
-        public static async Task<ErrorResponse> CompileWithDotnet(string targetPath, CancellationToken cancel)
+        public static async Task<ErrorResponse> CompileWithDotnet(string targetPath, CancellationToken cancel, Action<string>? log)
         {
-            using var process = ProcessWrapper.Start(
+            using var process = ProcessWrapper.Create(
                 new ProcessStartInfo("dotnet", $"build --runtime win-x64 \"{Path.GetFileName(targetPath)}\"")
                 {
-                    WorkingDirectory = Path.GetDirectoryName(targetPath)
+                    WorkingDirectory = Path.GetDirectoryName(targetPath)!
                 },
                 cancel: cancel);
+            log?.Invoke($"({process.StartInfo.WorkingDirectory}): {process.StartInfo.FileName} {process.StartInfo.Arguments}");
             string? firstError = null;
             bool buildFailed = false;
+            List<string> output = new List<string>();
+            int totalLen = 0;
             process.Output.Subscribe(o =>
             {
                 if (o.StartsWith("Build FAILED"))
@@ -158,15 +174,20 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 {
                     firstError = o;
                 }
+                if (totalLen < 10_000)
+                {
+                    totalLen += o.Length;
+                    output.Add(o);
+                }
             });
-            var result = await process.Start().ConfigureAwait(false);
+            var result = await process.Run().ConfigureAwait(false);
             if (result == 0) return ErrorResponse.Success;
             firstError = firstError?.TrimStart($"{targetPath} : ");
             if (firstError == null && cancel.IsCancellationRequested)
             {
                 firstError = "Cancelled";
             }
-            return ErrorResponse.Fail(reason: firstError ?? "Unknown Error");
+            return ErrorResponse.Fail(reason: firstError ?? $"Unknown Error: {string.Join(Environment.NewLine, output)}");
         }
 
         public static IEnumerable<string> AvailableProjects(string solutionPath)
@@ -193,7 +214,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
 
         private async Task CopyOverExtraData()
         {
-            var inputExtraData = new DirectoryInfo(Path.Combine(Path.GetDirectoryName(PathToProject), "Data"));
+            var inputExtraData = new DirectoryInfo(Path.Combine(Path.GetDirectoryName(PathToProject)!, "Data"));
             if (!inputExtraData.Exists)
             {
                 _output.OnNext("No extra data to consider.");

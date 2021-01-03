@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.CLI
                             {
                                 settings.DataFolderPath = settings.GameRelease.ToWjGame().MetaData().GameLocation().ToString();
                             }
-                            await RunPatcherPipeline.Run(settings, new ConsoleReporter());
+                            await Commands.Run(settings, new ConsoleReporter());
                         }
                         catch (Exception ex)
                         {

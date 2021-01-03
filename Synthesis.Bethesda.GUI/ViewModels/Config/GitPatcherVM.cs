@@ -19,6 +19,9 @@ using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers;
 using System.Reactive;
 using System.Text;
+using Synthesis.Bethesda.DTO;
+using Newtonsoft.Json;
+using Mutagen.Bethesda;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -31,7 +34,7 @@ namespace Synthesis.Bethesda.GUI
         public override string DisplayName => _DisplayName.Value;
 
         private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
-        public override ConfigurationState State => _State.Value;
+        public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
 
         public string ID { get; private set; } = string.Empty;
 
@@ -171,6 +174,7 @@ namespace Synthesis.Bethesda.GUI
                         {
                             using var repo = new Repository(LocalDriverRepoDirectory);
                             var master = repo.Branches.Where(b => b.IsCurrentRepositoryHead).FirstOrDefault();
+                            if (master == null) return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate master branch."));
                             masterBranch = master.FriendlyName;
                             repo.Reset(ResetMode.Hard);
                             Commands.Checkout(repo, master);
@@ -369,7 +373,7 @@ namespace Synthesis.Bethesda.GUI
                         this.WhenAnyValue(x => x.TargetCommit),
                         this.WhenAnyValue(x => x.TargetTag),
                         (TargetSha, TargetTag) => (TargetSha, TargetTag)),
-                    (tag, target) => (TagSha: tag?.Sha, Tag: tag?.Name, Current:target)),
+                    (tag, target) => (TagSha: tag?.Sha, Tag: tag?.Name, Current: target)),
                 canExecute: o => (o.TagSha != null && o.Tag != null)
                     && (o.TagSha != o.Current.TargetSha || o.Tag != o.Current.TargetTag),
                 extraCanExecute: this.WhenAnyValue(x => x.PatcherVersioning)
@@ -482,7 +486,6 @@ namespace Synthesis.Bethesda.GUI
                                 return;
                             }
 
-                            Logger.Information("Checking out the proper commit");
                             observer.OnNext(new ConfigurationState<RunnerRepoInfo>(default!)
                             {
                                 RunnableState = ErrorResponse.Fail("Checking out the proper commit"),
@@ -504,28 +507,13 @@ namespace Synthesis.Bethesda.GUI
                                 return;
                             }
 
-                            // Return early with the values, but mark not complete
-                            observer.OnNext(new ConfigurationState<RunnerRepoInfo>(runInfo.Item)
-                            {
-                                IsHaltingError = false,
-                                RunnableState = ErrorResponse.Fail("Compiling")
-                            });
-
-                            // Compile to help prep
-                            var compileResp = await SolutionPatcherRun.CompileWithDotnet(item.proj.Value, cancel);
-                            if (compileResp.Failed)
-                            {
-                                observer.OnNext(compileResp.BubbleFailure<RunnerRepoInfo>());
-                                return;
-                            }
-
-                            // Return things again, without error
                             observer.OnNext(runInfo);
                         }
                         catch (Exception ex)
                         {
-                            Logger.Error($"Error checking out runner repository: {ex}");
-                            throw;
+                            var str = $"Error checking out runner repository: {ex}";
+                            Logger.Error(str);
+                            observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
                         }
                     });
                 })
@@ -564,18 +552,158 @@ namespace Synthesis.Bethesda.GUI
                     (matchVersion, selVersion) => (matchVersion, selVersion))
                 .ToGuiProperty(this, nameof(SynthesisVersionDiff));
 
+            var patcherConfiguration = runnableState
+                .Select(x =>
+                {
+                    if (x.RunnableState.Failed) return Observable.Return(default(PatcherCustomization?));
+                    var confPath = Path.Combine(Path.GetDirectoryName(x.Item.ProjPath)!, Constants.MetaFileName);
+                    return Noggog.ObservableExt.WatchFile(confPath)
+                        .StartWith(Unit.Default)
+                        .Select(x =>
+                        {
+                            try
+                            {
+                                if (!File.Exists(confPath)) return default;
+                                return JsonConvert.DeserializeObject<PatcherCustomization>(
+                                    File.ReadAllText(confPath),
+                                    Execution.Constants.JsonSettings);
+                            }
+                            catch (Exception)
+                            {
+                                return default(PatcherCustomization?);
+                            }
+                        });
+                })
+                .Switch()
+                .Replay(1)
+                .RefCount();
+
+            var missingReqMods = patcherConfiguration
+                .Select(conf =>
+                {
+                    if (conf == null) return Enumerable.Empty<ModKey>();
+                    return conf.RequiredMods
+                        .SelectWhere(x => TryGet<ModKey>.Create(ModKey.TryFromNameAndExtension(x, out var modKey), modKey));
+                })
+                .Select(x => x.AsObservableChangeSet())
+                .Switch()
+                .Except(this.Profile.LoadOrder.Connect()
+                    .Transform(x => x.Listing.ModKey))
+                .RefCount();
+
+            var compilation = runnableState
+                .Select(state =>
+                {
+                    return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
+                    {
+                        if (state.RunnableState.Failed)
+                        {
+                            observer.OnNext(state);
+                            return;
+                        }
+
+                        try
+                        {
+                            // Return early with the values, but mark not complete
+                            observer.OnNext(new ConfigurationState<RunnerRepoInfo>(state.Item)
+                            {
+                                IsHaltingError = false,
+                                RunnableState = ErrorResponse.Fail("Compiling")
+                            });
+
+                            // Compile to help prep
+                            var compileResp = await SolutionPatcherRun.CompileWithDotnet(state.Item.ProjPath, cancel, Logger.Information);
+                            if (compileResp.Failed)
+                            {
+                                observer.OnNext(compileResp.BubbleFailure<RunnerRepoInfo>());
+                                return;
+                            }
+
+                            // Return things again, without error
+                            observer.OnNext(state);
+                        }
+                        catch (Exception ex)
+                        {
+                            var str = $"Error checking out runner repository: {ex}";
+                            Logger.Error(str);
+                            observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
+                        }
+                    });
+                })
+                .Switch()
+                .Replay(1)
+                .RefCount();
+
+            var runnability = Observable.CombineLatest(
+                    compilation,
+                    parent.WhenAnyValue(x => x.DataFolder),
+                    parent.LoadOrder.Connect()
+                        .QueryWhenChanged(),
+                    (comp, data, loadOrder) => (comp, data, loadOrder))
+                .Select(i =>
+                {
+                    return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
+                    {
+                        if (i.comp.RunnableState.Failed)
+                        {
+                            observer.OnNext(i.comp);
+                            return;
+                        }
+
+                        // Return early with the values, but mark not complete
+                        observer.OnNext(new ConfigurationState<RunnerRepoInfo>(i.comp.Item)
+                        {
+                            IsHaltingError = false,
+                            RunnableState = ErrorResponse.Fail("Checking runnability")
+                        });
+
+                        try
+                        {
+                            var runnability = await Synthesis.Bethesda.Execution.CLI.Commands.CheckRunnability(
+                                path: i.comp.Item.ProjPath,
+                                directExe: false,
+                                release: parent.Release,
+                                dataFolder: i.data,
+                                cancel: cancel,
+                                loadOrder: i.loadOrder.Select(lvm => lvm.Listing));
+                            if (runnability.Failed)
+                            {
+                                observer.OnNext(runnability.BubbleFailure<RunnerRepoInfo>());
+                                return;
+                            }
+
+                            // Return things again, without error
+                            observer.OnNext(i.comp);
+                        }
+                        catch (Exception ex)
+                        {
+                            var str = $"Error checking runnability on runner repository: {ex}";
+                            Logger.Error(str);
+                            observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
+                        }
+                    });
+                })
+                .Switch()
+                .Replay(1)
+                .RefCount();
+
             _State = Observable.CombineLatest(
                     driverRepoInfo
                         .Select(x => x.ToUnit()),
                     runnerRepoState,
                     runnableState
                         .Select(x => x.ToUnit()),
+                    runnability,
                     this.WhenAnyValue(x => x.Profile.Config.MainVM)
                         .Select(x => x.DotNetSdkInstalled)
                         .Switch()
                         .Select(x => (x, true))
                         .StartWith((default(System.Version?), false)),
-                    (driver, runner, checkout, dotnet) =>
+                    missingReqMods
+                        .QueryWhenChanged()
+                        .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+                        .StartWith(ListExt.Empty<ModKey>()),
+                    (driver, runner, checkout, runnability, dotnet, reqModsMissing) =>
                     {
                         if (driver.IsHaltingError) return driver;
                         if (runner.IsHaltingError) return runner;
@@ -587,6 +715,11 @@ namespace Synthesis.Bethesda.GUI
                             };
                         }
                         if (dotnet.Item1 == null) return new ConfigurationState(ErrorResponse.Fail("No DotNet SDK installed"));
+                        if (reqModsMissing.Count > 0)
+                        {
+                            return new ConfigurationState(ErrorResponse.Fail($"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));
+                        }
+                        if (runnability.RunnableState.Failed) return runnability.BubbleError();
                         return checkout;
                     })
                 .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))

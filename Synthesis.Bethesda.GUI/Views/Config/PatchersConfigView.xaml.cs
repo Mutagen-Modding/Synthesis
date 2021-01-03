@@ -45,12 +45,12 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.PatchersList.ItemsSource)
                     .DisposeWith(disposable);
 
-                this.BindStrict(this.ViewModel, vm => vm.SelectedPatcher, view => view.PatchersList.SelectedItem)
+                this.BindStrict(this.ViewModel, vm => vm.SelectedProfile!.DisplayedObject, view => view.PatchersList.SelectedItem)
                     .DisposeWith(disposable);
 
                 // Wire up patcher config data context and visibility
                 this.WhenAnyValue(x => x.ViewModel!.DisplayedObject)
-                    .BindToStrict(this, x => x.DetailControl.DataContext)
+                    .BindToStrict(this, x => x.DetailControl.Content)
                     .DisposeWith(disposable);
 
                 // Only show help if zero patchers
@@ -97,7 +97,7 @@ namespace Synthesis.Bethesda.GUI.Views
                 overallErr.Select(x => x.Reason)
                     .BindToStrict(this, x => x.OverallErrorButton.ToolTip)
                     .DisposeWith(disposable);
-                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.GoToErrorPatcher)
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.GoToErrorCommand)
                     .BindToStrict(this, x => x.OverallErrorButton.Command)
                     .DisposeWith(disposable);
 

@@ -86,6 +86,25 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.Versioning, view => view.PreferredVersioningPicker.SelectedItem)
                     .DisposeWith(disposable);
+
+                #region Required Mods
+                this.BindStrict(this.ViewModel, vm => vm.AddRequiredModInput, view => view.AddRequiredModBox.Text)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.RequiredModsDisplay)
+                    .BindToStrict(this, v => v.RequiredModsList.ItemsSource)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.AddRequiredModCommand)
+                    .BindToStrict(this, x => x.AddRequiredModButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.DetectedMods)
+                    .BindToStrict(this, v => v.DetectedModsList.ItemsSource)
+                    .DisposeWith(disposable);
+                this.BindStrict(this.ViewModel, vm => vm.DetectedModsSearch, view => view.SearchBox.Text)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.ClearSearchCommand)
+                    .BindToStrict(this, x => x.ClearSearchButton.Command)
+                    .DisposeWith(disposable);
+                #endregion
             });
         }
     }

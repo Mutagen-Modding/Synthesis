@@ -1,4 +1,4 @@
-﻿<local:MainRunViewBase
+<local:MainRunViewBase
     x:Class="Synthesis.Bethesda.GUI.Views.MainRunView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -128,8 +128,8 @@
                 <DataTemplate DataType="{x:Type vm:PatcherRunVM}">
                     <local:PatcherRunView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:OverallErrorVM}">
-                    <local:OverallErrorView />
+                <DataTemplate DataType="{x:Type vm:ErrorVM}">
+                    <local:ErrorView />
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>

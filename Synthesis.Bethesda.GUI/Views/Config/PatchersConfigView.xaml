@@ -344,7 +344,15 @@
             Margin="0,0,-4,0"
             Fill="#AA000000"
             Visibility="Collapsed" />
-        <local:PatcherConfigView Grid.Row="0" Grid.RowSpan="3" Grid.Column="2"
-            x:Name="DetailControl" />
+        <ContentControl x:Name="DetailControl" Grid.Row="0" Grid.RowSpan="3" Grid.Column="2">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type vm:PatcherVM}" >
+                    <local:PatcherConfigView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:ErrorVM}" >
+                    <local:ErrorView />
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
     </Grid>
 </local:PatchersConfigViewBase>

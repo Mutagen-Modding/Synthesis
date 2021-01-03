@@ -139,7 +139,7 @@ namespace Synthesis.Bethesda.UnitTests
                     DataFolderPath = dataFolder.Dir.Path,
                     GameRelease = GameRelease.Oblivion,
                     LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                    SourcePath = i == 1 ? outputFile : null
+                    SourcePath = i == 1 ? outputFile.Path : null
                 });
             }
             using var mod = OblivionMod.CreateFromBinaryOverlay(outputFile);
@@ -161,7 +161,7 @@ namespace Synthesis.Bethesda.UnitTests
                 SourcePath = null
             };
             var factory = CodeSnippetPatcherRun.ConstructStateFactory(GameRelease.Oblivion);
-            var stateObj = factory(settings, new UserPreferences());
+            var stateObj = factory(settings, new PatcherPreferences(), Synthesis.Bethesda.Constants.SynthesisModKey);
             Assert.NotNull(stateObj);
             using var state = stateObj as SynthesisState<IOblivionMod, IOblivionModGetter>;
             Assert.NotNull(state);

@@ -56,7 +56,7 @@ namespace Synthesis.Bethesda.GUI
             });
             return ReactiveCommand.CreateFromTask(
                 canExecute: Observable.CombineLatest(
-                    canExecute,
+                    canExecute ?? Observable.Return(true),
                     gotInput.ObserveOnGui(),
                     (canExecute, gotInput) => canExecute && gotInput),
                 outputScheduler: outputScheduler,

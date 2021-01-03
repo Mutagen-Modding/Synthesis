@@ -148,7 +148,15 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.Nugets.Synthesis.UpdateButton.Visibility)
                     .DisposeWith(disposable);
+
+                this.BindStrict(this.ViewModel, vm => vm.Profile!.ConsiderPrereleaseNugets, view => view.PrereleaseCheckbox.IsChecked)
+                    .DisposeWith(disposable);
                 #endregion
+
+                this.BindStrict(this.ViewModel, x => x!.Profile!.DataPathOverride, x => x.DataFolderOverrideBox.Text,
+                        vmToViewConverter: vm => vm ?? string.Empty,
+                        viewToVmConverter: view => view.IsNullOrWhitespace() ? null : view)
+                    .DisposeWith(disposable);
             });
         }
     }

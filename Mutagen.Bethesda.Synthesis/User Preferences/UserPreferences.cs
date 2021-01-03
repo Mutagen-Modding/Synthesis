@@ -47,5 +47,26 @@ namespace Mutagen.Bethesda.Synthesis
         /// Instead, the previous patch mod can be retrieved as the last mod in the load order.
         /// </summary>
         public bool NoPatch { get; set; }
+
+        public PatcherPreferences ToPatcherPrefs()
+        {
+            return new PatcherPreferences()
+            {
+                AddImplicitMasters = AddImplicitMasters,
+                ExclusionMods = ExclusionMods,
+                IncludeDisabledMods = IncludeDisabledMods,
+                InclusionMods = InclusionMods,
+                NoPatch = NoPatch,
+                Cancel = Cancel,
+            };
+        }
+
+        public RunPreferences ToRunPrefs()
+        {
+            return new RunPreferences()
+            {
+                ActionsForEmptyArgs = ActionsForEmptyArgs
+            };
+        }
     }
 }

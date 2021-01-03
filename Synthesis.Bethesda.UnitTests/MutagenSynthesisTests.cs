@@ -7,16 +7,15 @@ using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using Noggog.Utility;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests
 {
     public class MutagenSynthesisTests
     {
-        private void PatchFunction(SynthesisState<IOblivionMod, IOblivionModGetter> state)
+        private async Task PatchFunction(SynthesisState<IOblivionMod, IOblivionModGetter> state)
         {
             // Add a new NPC
             state.PatchMod.Npcs.AddNew();
@@ -38,12 +37,12 @@ namespace Synthesis.Bethesda.UnitTests
         protected ModPath PatchModPath(TempFolder dataFolder) => new ModPath(PatchModKey, Path.Combine(dataFolder.Dir.Path, PatchModKey.ToString()));
 
         [Fact]
-        public void TypicalPatcher_FreshStart()
+        public async Task TypicalPatcher_FreshStart()
         {
             using var tmpFolder = Utility.GetTempFolder();
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
-            SynthesisPipeline.Instance.Patch<IOblivionMod, IOblivionModGetter>(
+            await new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(
                 new RunSynthesisMutagenPatcher()
                 {
                     DataFolderPath = dataFolder.Dir.Path,
@@ -62,7 +61,7 @@ namespace Synthesis.Bethesda.UnitTests
         }
 
         [Fact]
-        public void TypicalPatcher_HasSource()
+        public async Task TypicalPatcher_HasSource()
         {
             using var tmpFolder = Utility.GetTempFolder();
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
@@ -75,7 +74,7 @@ namespace Synthesis.Bethesda.UnitTests
                 SourcePath = null,
                 LoadOrderFilePath = Utility.PathToLoadOrderFile
             };
-            SynthesisPipeline.Instance.Patch<IOblivionMod, IOblivionModGetter>(settings, PatchFunction);
+            await new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(settings, PatchFunction);
             Assert.True(File.Exists(modPath.Path));
             using (var patch = OblivionMod.CreateFromBinaryOverlay(modPath))
             {
@@ -87,7 +86,7 @@ namespace Synthesis.Bethesda.UnitTests
 
             // Run a second time, with sourcepath set containing previous patch
             settings.SourcePath = modPath;
-            SynthesisPipeline.Instance.Patch<IOblivionMod, IOblivionModGetter>(settings, PatchFunction);
+            await new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(settings, PatchFunction);
             Assert.True(File.Exists(modPath.Path));
             using (var patch = OblivionMod.CreateFromBinaryOverlay(modPath))
             {
@@ -100,14 +99,14 @@ namespace Synthesis.Bethesda.UnitTests
         }
 
         [Fact]
-        public void MisalignedGameTypes()
+        public async Task MisalignedGameTypes()
         {
             using var tmpFolder = Utility.GetTempFolder();
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
-            Assert.Throws<ArgumentException>(() =>
+            await Assert.ThrowsAsync<ArgumentException>(() =>
             {
-                SynthesisPipeline.Instance.Patch<IOblivionMod, IOblivionModGetter>(
+                return new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(
                    new RunSynthesisMutagenPatcher()
                    {
                        DataFolderPath = dataFolder.Dir.Path,
@@ -135,7 +134,8 @@ namespace Synthesis.Bethesda.UnitTests
                     SourcePath = null,
                     LoadOrderFilePath = Utility.PathToLoadOrderFile
                 },
-                new UserPreferences());
+                new PatcherPreferences(),
+                Synthesis.Bethesda.Constants.SynthesisModKey);
             Assert.Equal(state.PatchMod.ModKey, state.LoadOrder.Last().Key);
         }
 
@@ -155,7 +155,8 @@ namespace Synthesis.Bethesda.UnitTests
                     SourcePath = prevPath,
                     LoadOrderFilePath = Utility.PathToLoadOrderFile
                 },
-                new UserPreferences());
+                new PatcherPreferences(),
+                Synthesis.Bethesda.Constants.SynthesisModKey);
             Assert.Equal(state.PatchMod.ModKey, state.LoadOrder.Last().Key);
         }
 
@@ -185,7 +186,8 @@ namespace Synthesis.Bethesda.UnitTests
                     SourcePath = prevPath,
                     LoadOrderFilePath = pluginsPath
                 },
-                new UserPreferences());
+                new PatcherPreferences(),
+                Synthesis.Bethesda.Constants.SynthesisModKey);
             Assert.Equal(3, state.LoadOrder.Count);
             Assert.Equal(Utility.TestModKey, state.LoadOrder[0].ModKey);
             Assert.Equal(Utility.OverrideModKey, state.LoadOrder[1].ModKey);
@@ -216,17 +218,19 @@ namespace Synthesis.Bethesda.UnitTests
                     SourcePath = prevPath,
                     LoadOrderFilePath = pluginsPath
                 },
-                new UserPreferences());
+                new PatcherPreferences(),
+                Synthesis.Bethesda.Constants.SynthesisModKey);
             state.LoadOrder.PriorityOrder.Should().HaveCount(2);
-            state.RawLoadOrder.Should().HaveCount(2);
+            state.RawLoadOrder.Should().HaveCount(3);
             state.RawLoadOrder[0].Should().Be(new LoadOrderListing(Utility.TestModKey, true));
             state.RawLoadOrder[1].Should().Be(new LoadOrderListing(Utility.OverrideModKey, false));
+            state.RawLoadOrder[2].Should().Be(new LoadOrderListing(Utility.SynthesisModKey, true));
         }
 
         [Fact]
-        public void EmptyArgs_NoRun()
+        public async Task EmptyArgs_NoRun()
         {
-            SynthesisPipeline.Instance.Patch<IOblivionMod, IOblivionModGetter>(
+            await new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(
                 new string[0],
                 PatchFunction);
         }
@@ -283,7 +287,7 @@ namespace Synthesis.Bethesda.UnitTests
                 SourcePath = null,
                 LoadOrderFilePath = Utility.PathToLoadOrderFile
             };
-            SynthesisPipeline.Instance.Patch<IOblivionMod, IOblivionModGetter>(
+            new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(
                 settings,
                 (state) => { },
                 new UserPreferences()

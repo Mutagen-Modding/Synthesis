@@ -47,7 +47,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
         {
             Name = name;
             Code = string.Empty;
-            AssemblyName = assembly.FullName;
+            AssemblyName = assembly.FullName!;
             _assembly = assembly;
         }
 
@@ -63,12 +63,12 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 throw new ArgumentException("Could not find compiled class within assembly.");
             }
             var patcherCodeClass = System.Activator.CreateInstance(type);
-            var userPrefs = new UserPreferences()
+            var userPrefs = new PatcherPreferences()
             {
                 Cancel = cancel ?? CancellationToken.None
             };
             var internalSettings = RunSynthesisMutagenPatcher.Factory(settings);
-            using var synthesisState = ConstructStateFactory(settings.GameRelease)(internalSettings, userPrefs);
+            using var synthesisState = ConstructStateFactory(settings.GameRelease)(internalSettings, userPrefs, Synthesis.Bethesda.Constants.SynthesisModKey);
             Task t = (Task)type.InvokeMember("Run",
                 BindingFlags.Default | BindingFlags.InvokeMethod,
                 null,
@@ -76,14 +76,14 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 new[]
                 {
                     synthesisState,
-                });
+                })!;
             await t;
             synthesisState.PatchMod.WriteToBinaryParallel(
                 settings.OutputPath,
                 new BinaryWriteParameters()
                 {
                     ModKey = BinaryWriteParameters.ModKeyOption.NoCheck,
-                    MastersListOrdering = new BinaryWriteParameters.MastersListOrderingByLoadOrder(synthesisState.LoadOrder.Where(i => i.Enabled).Select(i => i.ModKey))
+                    MastersListOrdering = new BinaryWriteParameters.MastersListOrderingByLoadOrder(synthesisState.RawLoadOrder.Where(i => i.Enabled).Select(i => i.ModKey))
                 });
         }
 
@@ -100,11 +100,12 @@ namespace Synthesis.Bethesda.Execution.Patchers
             }
         }
 
-        internal static Func<RunSynthesisMutagenPatcher, UserPreferences?, ISynthesisState> ConstructStateFactory(GameRelease release)
+        internal static Func<RunSynthesisMutagenPatcher, PatcherPreferences?, ModKey, IPatcherState> ConstructStateFactory(GameRelease release)
         {
             var regis = release.ToCategory().ToModRegistration();
             var cliSettingsParam = Expression.Parameter(typeof(RunSynthesisMutagenPatcher));
-            var userPrefs = Expression.Parameter(typeof(UserPreferences));
+            var userPrefs = Expression.Parameter(typeof(PatcherPreferences));
+            var modKey = Expression.Parameter(typeof(ModKey));
             MethodCallExpression callExp = Expression.Call(
                 typeof(Mutagen.Bethesda.Synthesis.Internal.Utility),
                 nameof(Mutagen.Bethesda.Synthesis.Internal.Utility.ToState),
@@ -114,12 +115,13 @@ namespace Synthesis.Bethesda.Execution.Patchers
                     regis.GetterType,
                 },
                 cliSettingsParam,
-                userPrefs);
-            LambdaExpression lambda = Expression.Lambda(callExp, cliSettingsParam, userPrefs);
+                userPrefs,
+                modKey);
+            LambdaExpression lambda = Expression.Lambda(callExp, cliSettingsParam, userPrefs, modKey);
             var deleg = lambda.Compile();
-            return (RunSynthesisMutagenPatcher settings, UserPreferences? prefs) =>
+            return (RunSynthesisMutagenPatcher settings, PatcherPreferences? prefs, ModKey modKey) =>
             {
-                return (ISynthesisState)deleg.DynamicInvoke(settings, prefs);
+                return (IPatcherState)deleg.DynamicInvoke(settings, prefs, modKey)!;
             };
         }
 

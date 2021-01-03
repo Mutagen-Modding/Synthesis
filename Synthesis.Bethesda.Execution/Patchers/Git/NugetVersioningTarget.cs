@@ -29,9 +29,10 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             return obj is NugetVersioningTarget target && Equals(target);
         }
 
-        public bool Equals(NugetVersioningTarget other)
+        public bool Equals(NugetVersioningTarget? other)
         {
-            return MutagenVersion == other.MutagenVersion &&
+            return other != null &&
+                   MutagenVersion == other.MutagenVersion &&
                    MutagenVersioning == other.MutagenVersioning &&
                    SynthesisVersion == other.SynthesisVersion &&
                    SynthesisVersioning == other.SynthesisVersioning;

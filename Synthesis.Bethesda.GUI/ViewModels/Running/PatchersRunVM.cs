@@ -59,15 +59,15 @@ namespace Synthesis.Bethesda.GUI
                 .Select(p => p.ToRunner(this)));
             PatchersDisplay = Patchers.Connect()
                 .ToObservableCollection(this);
-            if (parent.SelectedPatcher != null
-                && Patchers.TryGetValue(parent.SelectedPatcher.InternalID, out var run))
+            if (profile.SelectedPatcher != null
+                && Patchers.TryGetValue(profile.SelectedPatcher.InternalID, out var run))
             {
                 SelectedPatcher = run;
             }
 
             BackCommand = ReactiveCommand.Create(() =>
             {
-                parent.SelectedPatcher = SelectedPatcher?.Config;
+                profile.DisplayedObject = SelectedPatcher?.Config;
                 parent.MainVM.ActivePanel = parent;
             },
             canExecute: this.WhenAnyValue(x => x.Running)
@@ -147,7 +147,7 @@ namespace Synthesis.Bethesda.GUI
                     this.WhenAnyValue(x => x.SelectedPatcher)
                         .Select(i => i as object),
                     this.ShowOverallErrorCommand.EndingExecution()
-                        .Select(_ => ResultError == null ? null : new OverallErrorVM(ResultError)))
+                        .Select(_ => ResultError == null ? null : new ErrorVM("Patching Error", ResultError.ToString())))
                 .ToGuiProperty(this, nameof(DetailDisplay), default);
         }
 
@@ -167,7 +167,7 @@ namespace Synthesis.Bethesda.GUI
                             outputPath: output,
                             dataFolder: RunningProfile.DataFolder,
                             release: RunningProfile.Release,
-                            loadOrder: RunningProfile.LoadOrder.Items,
+                            loadOrder: RunningProfile.LoadOrder.Items.Select(x => x.Listing),
                             cancellation: _cancel.Token,
                             reporter: _reporter,
                             patchers: Patchers.Items.Select(vm => (vm.Config.InternalID, vm.Run)));

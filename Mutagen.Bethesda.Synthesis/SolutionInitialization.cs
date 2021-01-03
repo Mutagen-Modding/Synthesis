@@ -41,7 +41,7 @@ namespace Mutagen.Bethesda.Synthesis
 
         public static string[] CreateProject(string projPath, GameCategory category)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(projPath));
+            Directory.CreateDirectory(Path.GetDirectoryName(projPath)!);
             var projName = Path.GetFileNameWithoutExtension(projPath);
 
             // Generate Project File
@@ -63,13 +63,6 @@ namespace Mutagen.Bethesda.Synthesis
                 {
                     fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda\" Version=\"{Versions.MutagenVersion}\" />");
                     fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{Versions.SynthesisVersion}\" />");
-                    fg.AppendLine($"<PackageReference Include=\"GitInfo\" Version=\"*\">");
-                    using (new DepthWrapper(fg))
-                    {
-                        fg.AppendLine($"<PrivateAssets>all</PrivateAssets>");
-                        fg.AppendLine($"<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>");
-                    }
-                    fg.AppendLine($"</PackageReference>");
                 }
                 fg.AppendLine($"</ItemGroup>");
                 fg.AppendLine();
@@ -85,6 +78,7 @@ namespace Mutagen.Bethesda.Synthesis
             fg.AppendLine("using Mutagen.Bethesda;");
             fg.AppendLine("using Mutagen.Bethesda.Synthesis;");
             fg.AppendLine($"using Mutagen.Bethesda.{category};");
+            fg.AppendLine("using System.Threading.Tasks;");
             fg.AppendLine();
             fg.AppendLine($"namespace {projName}");
             using (new BraceWrapper(fg))
@@ -92,15 +86,14 @@ namespace Mutagen.Bethesda.Synthesis
                 fg.AppendLine($"public class Program");
                 using (new BraceWrapper(fg))
                 {
-                    fg.AppendLine("public static int Main(string[] args)");
+                    fg.AppendLine("public static async Task<int> Main(string[] args)");
                     using (new BraceWrapper(fg))
                     {
-                        fg.AppendLine($"return SynthesisPipeline.Instance.Patch<I{category}Mod, I{category}ModGetter>(");
+                        fg.AppendLine($"return await SynthesisPipeline.Instance");
                         using (new DepthWrapper(fg))
                         {
-                            fg.AppendLine("args: args,");
-                            fg.AppendLine("patcher: RunPatch,");
-                            fg.AppendLine($"userPreferences: new {nameof(UserPreferences)}()");
+                            fg.AppendLine($".AddPatch<I{category}Mod, I{category}ModGetter>(RunPatch)");
+                            fg.AppendLine($".Run(args, new {nameof(RunPreferences)}()");
                             using (new BraceWrapper(fg) { AppendParenthesis = true, AppendSemicolon = true })
                             {
                                 fg.AppendLine($"{nameof(UserPreferences.ActionsForEmptyArgs)} = new {nameof(RunDefaultPatcher)}()");
@@ -108,14 +101,13 @@ namespace Mutagen.Bethesda.Synthesis
                                 {
                                     fg.AppendLine($"{nameof(RunDefaultPatcher.IdentifyingModKey)} = \"YourPatcher.esp\",");
                                     fg.AppendLine($"{nameof(RunDefaultPatcher.TargetRelease)} = {nameof(GameRelease)}.{category.DefaultRelease()},");
-                                    fg.AppendLine($"{nameof(RunDefaultPatcher.BlockAutomaticExit)} = true,");
                                 }
                             }
                         }
                     }
                     fg.AppendLine();
 
-                    fg.AppendLine($"public static void RunPatch(SynthesisState<I{category}Mod, I{category}ModGetter> state)");
+                    fg.AppendLine($"public static void RunPatch({nameof(IPatcherState)}<I{category}Mod, I{category}ModGetter> state)");
                     using (new BraceWrapper(fg))
                     {
                         fg.AppendLine($"//Your code here!");

@@ -69,6 +69,15 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             };
         }
 
+        public ConfigurationState BubbleError()
+        {
+            return new ConfigurationState(default!)
+            {
+                IsHaltingError = this.IsHaltingError,
+                RunnableState = this.RunnableState
+            };
+        }
+
         public GetResponse<T> ToGetResponse()
         {
             return GetResponse<T>.Create(RunnableState.Succeeded, Item, RunnableState.Reason);
