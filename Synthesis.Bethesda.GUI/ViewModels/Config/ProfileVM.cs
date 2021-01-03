@@ -208,7 +208,8 @@ namespace Synthesis.Bethesda.GUI
                         }
                         if (erroredEnabledPatchers.Count > 0)
                         {
-                            return GetResponse<PatcherVM>.Fail(erroredEnabledPatchers.First(), $"\"{erroredEnabledPatchers.First().DisplayName}\" has a blocking error");
+                            var errPatcher = erroredEnabledPatchers.First();
+                            return GetResponse<PatcherVM>.Fail(errPatcher, $"\"{errPatcher.DisplayName}\" has a blocking error: {errPatcher.State.RunnableState.Reason}");
                         }
                         return GetResponse<PatcherVM>.Succeed(null!);
                     })
