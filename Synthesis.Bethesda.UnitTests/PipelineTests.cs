@@ -45,7 +45,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void GetLoadOrder_NoLoadOrderPath()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
+            using var tmpFolder = Utility.GetTempFolder();
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimSE);
             var lo = Mutagen.Bethesda.Synthesis.Internal.Utility.GetLoadOrder(
                 GameRelease.SkyrimSE, 
