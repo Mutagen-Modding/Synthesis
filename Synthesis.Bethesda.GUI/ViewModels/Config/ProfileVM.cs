@@ -179,22 +179,20 @@ namespace Synthesis.Bethesda.GUI
                         .Select(x => x.State)
                         .Switch(),
                     Patchers.Connect()
-                        .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
+                        .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn))
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
                     Patchers.Connect()
                         .FilterOnObservable(p => Observable.CombineLatest(
                             p.WhenAnyValue(x => x.IsOn),
                             p.WhenAnyValue(x => x.State.IsHaltingError),
-                            (on, halting) => on && halting),
-                            scheduler: RxApp.MainThreadScheduler)
+                            (on, halting) => on && halting))
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
                     LoadOrder.Connect()
                         .FilterOnObservable(
                             x => x.WhenAnyValue(y => y.Exists)
-                                .Select(x => !x),
-                            scheduler: RxApp.MainThreadScheduler)
+                                .Select(x => !x))
                         .QueryWhenChanged(q => q)
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler),
                     (dataFolder, loadOrder, enabledPatchers, erroredEnabledPatchers, missingMods) =>
