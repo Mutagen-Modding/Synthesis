@@ -39,7 +39,7 @@ namespace Mutagen.Bethesda.Synthesis
             }
         }
 
-        public static string[] CreateProject(string projPath, GameCategory category)
+        public static string[] CreateProject(string projPath, GameCategory category, bool insertOldVersion = false)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(projPath)!);
             var projName = Path.GetFileNameWithoutExtension(projPath);
@@ -61,8 +61,8 @@ namespace Mutagen.Bethesda.Synthesis
                 fg.AppendLine($"<ItemGroup>");
                 using (new DepthWrapper(fg))
                 {
-                    fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda\" Version=\"{Versions.MutagenVersion}\" />");
-                    fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{Versions.SynthesisVersion}\" />");
+                    fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda\" Version=\"{(insertOldVersion ? Versions.OldMutagenVersion : Versions.MutagenVersion)}\" />");
+                    fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{(insertOldVersion ? Versions.OldSynthesisVersion : Versions.SynthesisVersion)}\" />");
                 }
                 fg.AppendLine($"</ItemGroup>");
                 fg.AppendLine();

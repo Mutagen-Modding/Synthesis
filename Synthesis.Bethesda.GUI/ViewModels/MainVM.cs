@@ -209,7 +209,7 @@ namespace Synthesis.Bethesda.GUI
                 var slnPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.sln");
                 SolutionInitialization.CreateSolutionFile(slnPath);
                 var projPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.csproj");
-                SolutionInitialization.CreateProject(projPath, GameCategory.Skyrim);
+                SolutionInitialization.CreateProject(projPath, GameCategory.Skyrim, insertOldVersion: true);
                 SolutionInitialization.AddProjectToSolution(slnPath, projPath);
                 var ret = await DotNetQueries.QuerySynthesisVersions(projPath, current: false, includePrerelease: includePrerelease);
                 Log.Logger.Information("Latest published library versions:");
