@@ -17,6 +17,10 @@ namespace Synthesis.Bethesda.GUI.Views
             DependencyProperty.RegisterAttached("AutoScrollToEndHandler",
                 typeof(TextEditorAutoScrollToEndHandler), typeof(TextEditorEx));
 
+        public static readonly DependencyProperty DoScrollOnChangeProperty =
+            DependencyProperty.RegisterAttached("DoScrollOnChange",
+                typeof(bool), typeof(TextEditorEx));
+
         private static void HookupAutoScrollToEnd(DependencyObject d,
                 DependencyPropertyChangedEventArgs e)
         {
@@ -43,19 +47,28 @@ namespace Synthesis.Bethesda.GUI.Views
             if (value)
                 instance.SetValue(AutoScrollHandlerProperty, new TextEditorAutoScrollToEndHandler(instance));
         }
+
+        public static bool GetDoScrollOnChange(TextEditor instance)
+        {
+            return (bool)instance.GetValue(DoScrollOnChangeProperty);
+        }
+
+        public static void SetDoScrollOnChange(TextEditor instance, bool value)
+        {
+            instance.SetValue(DoScrollOnChangeProperty, value);
+        }
     }
 
     public class TextEditorAutoScrollToEndHandler : DependencyObject, IDisposable
     {
         readonly TextEditor _editor;
-        bool m_doScroll = true;
 
         public TextEditorAutoScrollToEndHandler(TextEditor editor)
         {
             if (editor == null) { throw new ArgumentNullException(nameof(editor)); }
 
             _editor = editor;
-            _editor.ScrollToEnd();
+            _editor.SetValue(TextEditorEx.DoScrollOnChangeProperty, true);
             _editor.TextChanged += TextChangedEvent;
             _editor.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(ScrollChanged));
         }
@@ -65,13 +78,15 @@ namespace Synthesis.Bethesda.GUI.Views
             // User scroll event : set or unset autoscroll mode
             if (e.ExtentHeightChange == 0)
             {
-                m_doScroll = e.ViewportHeight + e.VerticalOffset >= e.ExtentHeight; 
+                _editor.SetValue(
+                    TextEditorEx.DoScrollOnChangeProperty,
+                    e.ViewportHeight + e.VerticalOffset >= e.ExtentHeight);
             }
         }
 
         private void TextChangedEvent(object? sender, EventArgs args)
         {
-            if (m_doScroll)
+            if ((bool)_editor.GetValue(TextEditorEx.DoScrollOnChangeProperty))
             {
                 _editor.ScrollToEnd();
             }

@@ -51,6 +51,14 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(count => count > 0 ? Visibility.Visible : Visibility.Hidden)
                     .BindToStrict(this, x => x.OutputBox.Visibility)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.OutputDisplay)
+                    .ObserveOnGui()
+                    .Delay(TimeSpan.FromMilliseconds(50), RxApp.MainThreadScheduler)
+                    .Subscribe(_ =>
+                    {
+                        OutputBox.SetValue(TextEditorEx.DoScrollOnChangeProperty, true);
+                    })
+                    .DisposeWith(disposable);
             });
         }
     }

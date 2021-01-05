@@ -39,6 +39,9 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<bool> _IsErrored;
         public bool IsErrored => _IsErrored.Value;
 
+        [Reactive]
+        public bool AutoScrolling { get; set; }
+
         public PatcherRunVM(PatchersRunVM parent, PatcherVM config, IPatcherRun run)
         {
             Run = run;

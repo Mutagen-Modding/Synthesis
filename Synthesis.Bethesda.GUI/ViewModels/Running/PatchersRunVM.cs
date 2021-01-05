@@ -50,6 +50,8 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<object?> _DetailDisplay;
         public object? DetailDisplay => _DetailDisplay.Value;
 
+        private PatcherRunVM? _previousPatcher;
+
         public PatchersRunVM(ConfigurationVM parent, ProfileVM profile)
         {
             Config = parent;
@@ -108,6 +110,14 @@ namespace Synthesis.Bethesda.GUI
                     Log.Logger
                         .ForContext(nameof(PatcherVM.DisplayName), i.Run.Name)
                         .Information($"Starting");
+
+                    // Handle automatic selection advancement
+                    if (_previousPatcher == SelectedPatcher
+                        && (SelectedPatcher?.AutoScrolling ?? true))
+                    {
+                        SelectedPatcher = vm;
+                    }
+                    _previousPatcher = vm;
                 })
                 .DisposeWith(this);
             _reporter.RunSuccessful

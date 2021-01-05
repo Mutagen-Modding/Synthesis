@@ -61,6 +61,7 @@
             Margin="0,10"
             Padding="4,2"
             local:TextEditorEx.AutoScrollToEnd="True"
+            local:TextEditorEx.DoScrollOnChange="{Binding AutoScrolling, Mode=OneWayToSource}"
             Background="#33000000"
             BorderBrush="{StaticResource MahApps.Brushes.Gray}"
             BorderThickness="1"
