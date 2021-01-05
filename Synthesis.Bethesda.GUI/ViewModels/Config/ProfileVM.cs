@@ -179,21 +179,24 @@ namespace Synthesis.Bethesda.GUI
                         .Select(x => x.State)
                         .Switch(),
                     Patchers.Connect()
+                        .ObserveOnGui()
                         .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
                     Patchers.Connect()
+                        .ObserveOnGui()
                         .FilterOnObservable(p => Observable.CombineLatest(
                             p.WhenAnyValue(x => x.IsOn),
                             p.WhenAnyValue(x => x.State.IsHaltingError),
-                            (on, halting) => on && halting),
+                            (on, halting) => on && halting), 
                             scheduler: RxApp.MainThreadScheduler)
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
                     LoadOrder.Connect()
+                        .ObserveOnGui()
                         .FilterOnObservable(
                             x => x.WhenAnyValue(y => y.Exists)
-                                .Select(x => !x),
+                                .Select(x => !x), 
                             scheduler: RxApp.MainThreadScheduler)
                         .QueryWhenChanged(q => q)
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler),
@@ -208,7 +211,8 @@ namespace Synthesis.Bethesda.GUI
                         }
                         if (erroredEnabledPatchers.Count > 0)
                         {
-                            return GetResponse<PatcherVM>.Fail(erroredEnabledPatchers.First(), $"\"{erroredEnabledPatchers.First().DisplayName}\" has a blocking error");
+                            var errPatcher = erroredEnabledPatchers.First();
+                            return GetResponse<PatcherVM>.Fail(errPatcher, $"\"{errPatcher.DisplayName}\" has a blocking error: {errPatcher.State.RunnableState.Reason}");
                         }
                         return GetResponse<PatcherVM>.Succeed(null!);
                     })
@@ -224,9 +228,10 @@ namespace Synthesis.Bethesda.GUI
             _BlockingError = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.LargeOverallError),
                     Patchers.Connect()
-                        .AutoRefresh(x => x.IsOn)
+                        .ObserveOnGui()
+                        .AutoRefresh(x => x.IsOn, scheduler: RxApp.MainThreadScheduler)
                         .Filter(p => p.IsOn)
-                        .AutoRefresh(x => x.State)
+                        .AutoRefresh(x => x.State, scheduler: RxApp.MainThreadScheduler)
                         .Transform(p => p.State, transformOnRefresh: true)
                         .QueryWhenChanged(errs =>
                         {
