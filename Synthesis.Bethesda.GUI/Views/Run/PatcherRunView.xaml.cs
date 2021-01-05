@@ -2,18 +2,9 @@ using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Reactive.Linq;
+using Noggog;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -53,10 +44,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Set up text output
-                this.WhenAnyValue(x => x.ViewModel!.OutputLineDisplay)
-                    .BindToStrict(this, x => x.OutputBox.ItemsSource)
+                this.WhenAnyValue(x => x.ViewModel!.OutputDisplay)
+                    .BindToStrict(this, x => x.OutputBox.Document)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.OutputLineDisplay.Count)
+                this.WhenAnyValue(x => x.ViewModel!.OutputDisplay.TextLength)
                     .Select(count => count > 0 ? Visibility.Visible : Visibility.Hidden)
                     .BindToStrict(this, x => x.OutputBox.Visibility)
                     .DisposeWith(disposable);
