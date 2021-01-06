@@ -33,7 +33,6 @@ namespace Synthesis.Bethesda.GUI
                 execute: x =>
                 {
                     x?.Invoke();
-                    BackAction = null;
                 },
                 disposable: this.CompositeDisposable);
 
