@@ -79,7 +79,7 @@ namespace Synthesis.Bethesda.UnitTests
             };
             var outputFile = Utility.TypicalOutputFile(tmpFolder);
             var snippet = new CodeSnippetPatcherRun(settings);
-            await snippet.Prep(GameRelease.Oblivion);
+            await snippet.Prep(GameRelease.Oblivion, CancellationToken.None);
             await snippet.Run(new RunSynthesisPatcher()
             {
                 OutputPath = ModPath.FromPath(outputFile),
@@ -87,7 +87,7 @@ namespace Synthesis.Bethesda.UnitTests
                 GameRelease = GameRelease.Oblivion,
                 LoadOrderFilePath = Utility.PathToLoadOrderFile,
                 SourcePath = null
-            });
+            }, CancellationToken.None);
         }
 
         [Fact]
@@ -105,7 +105,7 @@ namespace Synthesis.Bethesda.UnitTests
             };
             var outputFile = Utility.TypicalOutputFile(tmpFolder);
             var snippet = new CodeSnippetPatcherRun(settings);
-            await snippet.Prep(GameRelease.Oblivion);
+            await snippet.Prep(GameRelease.Oblivion, CancellationToken.None);
             await snippet.Run(new RunSynthesisPatcher()
             {
                 OutputPath = ModPath.FromPath(outputFile),
@@ -113,7 +113,7 @@ namespace Synthesis.Bethesda.UnitTests
                 GameRelease = GameRelease.Oblivion,
                 LoadOrderFilePath = Utility.PathToLoadOrderFile,
                 SourcePath = null
-            });
+            }, CancellationToken.None);
             Assert.True(File.Exists(outputFile));
         }
 
@@ -132,7 +132,7 @@ namespace Synthesis.Bethesda.UnitTests
             for (int i = 0; i < 2; i++)
             {
                 var snippet = new CodeSnippetPatcherRun(settings);
-                await snippet.Prep(GameRelease.Oblivion);
+                await snippet.Prep(GameRelease.Oblivion, CancellationToken.None);
                 await snippet.Run(new RunSynthesisPatcher()
                 {
                     OutputPath = ModPath.FromPath(outputFile),
@@ -140,7 +140,7 @@ namespace Synthesis.Bethesda.UnitTests
                     GameRelease = GameRelease.Oblivion,
                     LoadOrderFilePath = Utility.PathToLoadOrderFile,
                     SourcePath = i == 1 ? outputFile.Path : null
-                });
+                }, CancellationToken.None);
             }
             using var mod = OblivionMod.CreateFromBinaryOverlay(outputFile);
             Assert.Equal(2, mod.Npcs.Count);

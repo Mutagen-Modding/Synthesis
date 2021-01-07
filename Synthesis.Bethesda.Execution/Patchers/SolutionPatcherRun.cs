@@ -46,13 +46,13 @@ namespace Synthesis.Bethesda.Execution.Patchers
             Name = name;
         }
 
-        public async Task Prep(GameRelease release, CancellationToken? cancel = null)
+        public async Task Prep(GameRelease release, CancellationToken cancel)
         {
             await Task.WhenAll(
                 Task.Run(async () =>
                 {
                     _output.OnNext($"Compiling");
-                    var resp = await CompileWithDotnet(PathToProject, cancel ?? CancellationToken.None, _output.OnNext).ConfigureAwait(false);
+                    var resp = await CompileWithDotnet(PathToProject, cancel, _output.OnNext).ConfigureAwait(false);
                     if (!resp.Succeeded)
                     {
                         throw new SynthesisBuildFailure(resp.Reason);
@@ -64,7 +64,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 })).ConfigureAwait(false); ;
         }
 
-        public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
+        public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)
         {
             var repoPath = Path.GetDirectoryName(PathToSolution);
             if (Repository.IsValid(repoPath))
@@ -78,7 +78,8 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 directExe: false,
                 release: settings.GameRelease,
                 dataFolder: settings.DataFolderPath,
-                loadOrderPath: settings.LoadOrderFilePath);
+                loadOrderPath: settings.LoadOrderFilePath,
+                cancel: cancel);
 
             if (runnability.Failed)
             {

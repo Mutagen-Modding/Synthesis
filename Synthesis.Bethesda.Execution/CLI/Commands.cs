@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.Execution.CLI
     /// </summary>
     public static class Commands
     {
-        public static async Task Run(RunPatcherPipelineInstructions run, IRunReporter? reporter = null)
+        public static async Task Run(RunPatcherPipelineInstructions run, CancellationToken cancel, IRunReporter? reporter = null)
         {
             try
             {
@@ -101,7 +101,8 @@ namespace Synthesis.Bethesda.Execution.CLI
                     release: run.GameRelease,
                     patchers: patchers,
                     sourcePath: run.SourcePath == null ? default : ModPath.FromPath(run.SourcePath),
-                    reporter: reporter);
+                    reporter: reporter,
+                    cancel: cancel);
             }
             catch (Exception ex)
             when (reporter != null)
@@ -116,7 +117,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             GameRelease release,
             string dataFolder,
             IEnumerable<LoadOrderListing> loadOrder,
-            CancellationToken? cancel = null)
+            CancellationToken cancel)
         {
             using var loadOrderFile = new TempFile(
                 Path.Combine(Synthesis.Bethesda.Execution.Constants.WorkingDirectory, "RunnabilityChecks", Path.GetRandomFileName()));
@@ -142,7 +143,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             GameRelease release,
             string dataFolder,
             string loadOrderPath,
-            CancellationToken? cancel = null)
+            CancellationToken cancel)
         {
             var checkState = new Synthesis.Bethesda.CheckRunnability()
             {

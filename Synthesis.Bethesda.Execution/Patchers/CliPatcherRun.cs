@@ -43,13 +43,13 @@ namespace Synthesis.Bethesda.Execution.Patchers
         {
         }
 
-        public async Task Prep(GameRelease release, CancellationToken? cancel = null)
+        public async Task Prep(GameRelease release, CancellationToken cancel)
         {
         }
 
-        public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
+        public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)
         {
-            if (cancel?.IsCancellationRequested ?? false) return;
+            if (cancel.IsCancellationRequested) return;
 
             var internalSettings = RunSynthesisMutagenPatcher.Factory(settings);
             internalSettings.ExtraDataFolder = PathToExtraData;

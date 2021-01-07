@@ -6,18 +6,20 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.Execution
 {
     public static class DotNetQueries
     {
-        public static async Task<IEnumerable<(string Package, string Requested, string Resolved, string Latest)>> NugetListingQuery(string projectPath, bool outdated, bool includePrerelease)
+        public static async Task<IEnumerable<(string Package, string Requested, string Resolved, string Latest)>> NugetListingQuery(string projectPath, bool outdated, bool includePrerelease, CancellationToken cancel)
         {
             // Run restore first
             {
                 using var restore = ProcessWrapper.Create(
-                    new ProcessStartInfo("dotnet", $"restore \"{projectPath}\""));
+                    new ProcessStartInfo("dotnet", $"restore \"{projectPath}\""),
+                    cancel: cancel);
                 await restore.Run();
             }
 
@@ -25,7 +27,8 @@ namespace Synthesis.Bethesda.Execution
             List<string> lines = new List<string>();
             List<string> errors = new List<string>();
             using var process = ProcessWrapper.Create(
-                new ProcessStartInfo("dotnet", $"list \"{projectPath}\" package{(outdated ? " --outdated" : null)}{(includePrerelease ? " --include-prerelease" : null)}"));
+                new ProcessStartInfo("dotnet", $"list \"{projectPath}\" package{(outdated ? " --outdated" : null)}{(includePrerelease ? " --include-prerelease" : null)}"),
+                cancel: cancel);
             using var outSub = process.Output.Subscribe(s =>
             {
                 if (s.Contains("Top-level Package"))
@@ -90,10 +93,10 @@ namespace Synthesis.Bethesda.Execution
             return true;
         }
 
-        public static async Task<(string? MutagenVersion, string? SynthesisVersion)> QuerySynthesisVersions(string projectPath, bool current, bool includePrerelease)
+        public static async Task<(string? MutagenVersion, string? SynthesisVersion)> QuerySynthesisVersions(string projectPath, bool current, bool includePrerelease, CancellationToken cancel)
         {
             string? mutagenVersion = null, synthesisVersion = null;
-            var queries = await NugetListingQuery(projectPath, outdated: !current, includePrerelease: includePrerelease);
+            var queries = await NugetListingQuery(projectPath, outdated: !current, includePrerelease: includePrerelease, cancel: cancel);
             foreach (var item in queries)
             {
                 if (item.Package.StartsWith("Mutagen.Bethesda")
@@ -109,10 +112,11 @@ namespace Synthesis.Bethesda.Execution
             return (mutagenVersion, synthesisVersion);
         }
 
-        public static async Task<Version> DotNetSdkVersion()
+        public static async Task<Version> DotNetSdkVersion(CancellationToken cancel)
         {
             using var proc = ProcessWrapper.Create(
-                new System.Diagnostics.ProcessStartInfo("dotnet", "--version"));
+                new System.Diagnostics.ProcessStartInfo("dotnet", "--version"),
+                cancel: cancel);
             List<string> outs = new List<string>();
             using var outp = proc.Output.Subscribe(o => outs.Add(o));
             List<string> errs = new List<string>();

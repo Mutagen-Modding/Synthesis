@@ -4,6 +4,7 @@ using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.Reporters;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Wabbajack.Common;
 
@@ -24,7 +25,7 @@ namespace Synthesis.Bethesda.CLI
                             {
                                 settings.DataFolderPath = settings.GameRelease.ToWjGame().MetaData().GameLocation().ToString();
                             }
-                            await Commands.Run(settings, new ConsoleReporter());
+                            await Commands.Run(settings, CancellationToken.None, new ConsoleReporter());
                         }
                         catch (Exception ex)
                         {

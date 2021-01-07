@@ -22,6 +22,7 @@ using System.Text;
 using Synthesis.Bethesda.DTO;
 using Newtonsoft.Json;
 using Mutagen.Bethesda;
+using System.Threading;
 
 namespace Synthesis.Bethesda.GUI
 {

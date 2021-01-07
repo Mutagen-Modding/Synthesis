@@ -51,7 +51,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             _assembly = assembly;
         }
 
-        public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
+        public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)
         {
             if (_assembly == null)
             {
@@ -65,7 +65,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             var patcherCodeClass = System.Activator.CreateInstance(type);
             var userPrefs = new PatcherPreferences()
             {
-                Cancel = cancel ?? CancellationToken.None
+                Cancel = cancel
             };
             var internalSettings = RunSynthesisMutagenPatcher.Factory(settings);
             using var synthesisState = ConstructStateFactory(settings.GameRelease)(internalSettings, userPrefs, Synthesis.Bethesda.Constants.SynthesisModKey);
@@ -87,12 +87,11 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 });
         }
 
-        public async Task Prep(GameRelease release, CancellationToken? cancel = null)
+        public async Task Prep(GameRelease release, CancellationToken cancel)
         {
             if (_assembly != null) return;
-            cancel ??= CancellationToken.None;
 
-            var emitResult = Compile(release, cancel.Value, out _assembly);
+            var emitResult = Compile(release, cancel, out _assembly);
             if (!emitResult.Success)
             {
                 var err = emitResult.Diagnostics.First(d => d.Severity == DiagnosticSeverity.Error);
