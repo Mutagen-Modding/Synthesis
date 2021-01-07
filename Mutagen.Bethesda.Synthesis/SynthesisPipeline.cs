@@ -5,6 +5,7 @@ using Noggog;
 using Synthesis.Bethesda;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -34,6 +35,8 @@ namespace Mutagen.Bethesda.Synthesis
         private readonly Dictionary<GameCategory, PatcherListing> _patchers = new Dictionary<GameCategory, PatcherListing>();
         private List<AsyncCheckerFunction> _runnabilityChecks = new List<AsyncCheckerFunction>();
         private AsyncOpenForSettingsFunction? _openForSettings;
+        internal Action<int>? _onShutdown;
+        private AdjustArgumentsFunction? _argumentAdjustment;
         #endregion
 
         #region AddPatch
@@ -118,7 +121,7 @@ namespace Mutagen.Bethesda.Synthesis
             catch (Exception ex)
             {
                 System.Console.Error.Write(ex);
-                return ErrorCodes.NotRunnable;
+                return (int)ErrorCodes.NotRunnable;
             }
             return 0;
         }
@@ -126,13 +129,13 @@ namespace Mutagen.Bethesda.Synthesis
 
         #region Open For Settings
 
-        public delegate void OpenForSettingsFunction();
+        public delegate void OpenForSettingsFunction(Rectangle rectangle);
 
-        public delegate Task AsyncOpenForSettingsFunction();
+        public delegate Task AsyncOpenForSettingsFunction(Rectangle rectangle);
 
         public SynthesisPipeline SetOpenForSettings(OpenForSettingsFunction action)
         {
-            SetOpenForSettings(async () => action());
+            SetOpenForSettings(async (r) => action(r));
             return this;
         }
 
@@ -148,12 +151,35 @@ namespace Mutagen.Bethesda.Synthesis
 
         private async Task<int> OpenForSettings(OpenForSettings args)
         {
+            if (args.SupportQuery)
+            {
+                return (int)(_openForSettings == null ? ErrorCodes.Unsupported : ErrorCodes.OpensForSettings);
+            }
             if (_openForSettings == null)
             {
                 throw new ArgumentException("Patcher cannot open for settings.");
             }
-            await _openForSettings();
+            await _openForSettings(
+                new Rectangle(
+                    x: args.Left,
+                    y: args.Top,
+                    width: args.Width,
+                    height: args.Height));
             return 0;
+        }
+        #endregion
+
+        #region Argument Adjustment
+        public delegate string[] AdjustArgumentsFunction(string[] args);
+
+        public SynthesisPipeline AdjustArguments(AdjustArgumentsFunction adjustment)
+        {
+            if (_argumentAdjustment != null)
+            {
+                throw new ArgumentException("Cannot add more than one callback for adjusting arguments");
+            }
+            _argumentAdjustment = adjustment;
+            return this;
         }
         #endregion
 
@@ -170,12 +196,29 @@ namespace Mutagen.Bethesda.Synthesis
             string[] args,
             RunPreferences? preferences = null)
         {
+            return HandleOnShutdown(await InternalRun(args, preferences));
+        }
+
+        private async Task<int> InternalRun(
+            string[] args,
+            RunPreferences? preferences = null)
+        {
+            if (_argumentAdjustment != null)
+            {
+                args = _argumentAdjustment(args);
+            }    
+
             if (args.Length == 0)
             {
                 if (preferences?.ActionsForEmptyArgs == null)
                 {
                     if (_openForSettings == null) return -1;
-                    await _openForSettings();
+                    await _openForSettings(
+                        new Rectangle(
+                            x: 15,
+                            y: 15,
+                            width: 15,
+                            height: 15));
                     return 0;
                 }
                 var category = preferences.ActionsForEmptyArgs.TargetRelease.ToCategory();
@@ -418,6 +461,12 @@ namespace Mutagen.Bethesda.Synthesis
                 LoadOrderFilePath = path.Path,
                 ExtraDataFolder = Path.GetFullPath("./Data")
             };
+        }
+
+        private int HandleOnShutdown(int result)
+        {
+            _onShutdown?.Invoke(result);
+            return result;
         }
     }
 }

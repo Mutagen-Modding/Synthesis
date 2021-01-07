@@ -91,33 +91,57 @@
                 </Style>
             </ComboBox.Style>
         </ComboBox>
-        <ScrollViewer Grid.Row="4" Grid.ColumnSpan="2"
-            x:Name="AdvancedSettingsArea"
-            Margin="0,4,0,0"
-            ScrollViewer.HorizontalScrollBarVisibility="Auto"
-            ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="0"
-                    Margin="0,8,0,5"
-                    FontSize="14"
-                    FontWeight="Bold"
-                    Text="Versioning" />
-                <local:PatcherVersioningView Grid.Row="1"
-                    x:Name="PatcherVersioning"
-                    HorizontalAlignment="Left" />
-                <local:NugetsVersioningView Grid.Row="2"
-                    x:Name="Nugets"
-                    Margin="0,5,0,0" />
-            </Grid>
-        </ScrollViewer>
+        <TabControl Grid.Row="4" Grid.ColumnSpan="2"
+            Margin="0,5,0,0">
+            <TabItem Header="Settings">
+                <Grid>
+                    <TextBlock
+                        x:Name="NoSettingsText"
+                        Margin="5,4"
+                        FontWeight="Bold"
+                        Text="No Settings"
+                        Visibility="Collapsed" />
+                    <Button
+                        x:Name="OpenSettingsButton"
+                        Margin="15,5,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        ToolTip="Open patcher application to edit its settings"
+                        Visibility="Collapsed">
+                        <StackPanel Orientation="Horizontal">
+                            <icon:PackIconMaterial VerticalAlignment="Center" Kind="Cog" />
+                            <TextBlock
+                                Margin="4,0,0,1"
+                                VerticalAlignment="Center"
+                                FontSize="13"
+                                Text="OPEN SETTINGS" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Versioning">
+                <ScrollViewer
+                    x:Name="AdvancedSettingsArea"
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <local:PatcherVersioningView Grid.Row="0"
+                            x:Name="PatcherVersioning"
+                            HorizontalAlignment="Left" />
+                        <local:NugetsVersioningView Grid.Row="1"
+                            x:Name="Nugets"
+                            Margin="0,5,0,0" />
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
     </Grid>
 </local:GitConfigViewBase>

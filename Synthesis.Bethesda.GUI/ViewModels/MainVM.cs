@@ -18,6 +18,8 @@ using Mutagen.Bethesda.Synthesis;
 using Noggog.Utility;
 using System.Diagnostics;
 using System.Threading;
+using System.Windows;
+using System.Drawing;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -53,8 +55,16 @@ namespace Synthesis.Bethesda.GUI
         public IObservable<string?> NewestMutagenVersion { get; }
         public IObservable<Version?> DotNetSdkInstalled { get; }
 
-        public MainVM()
+        private Window _window;
+        public Rectangle Rectangle => new Rectangle(
+            x: (int)_window.Left,
+            y: (int)_window.Top,
+            width: (int)_window.Width,
+            height: (int)_window.Height);
+
+        public MainVM(Window window)
         {
+            _window = window;
             var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), RxApp.TaskpoolScheduler)
                 .StartWith(0)
                 .SelectTask(async i =>

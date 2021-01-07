@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda
 {
-    public static class ErrorCodes
+    public enum ErrorCodes
     {
-        public const int NotRunnable = 1753;
+        NotRunnable = 1753,
+        OpensForSettings = 1754,
+        Unsupported = -1,
     }
 }

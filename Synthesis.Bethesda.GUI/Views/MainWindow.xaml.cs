@@ -28,7 +28,7 @@ namespace Synthesis.Bethesda.GUI.Views
             Log.Logger.Information("============== Opening Synthesis ==============");
             Log.Logger.Information("===============================================");
             const string GuiSettingsPath = "GuiSettings.json";
-            var mainVM = new MainVM();
+            var mainVM = new MainVM(this);
             SynthesisGuiSettings? guiSettings = null;
             if (File.Exists(GuiSettingsPath))
             {

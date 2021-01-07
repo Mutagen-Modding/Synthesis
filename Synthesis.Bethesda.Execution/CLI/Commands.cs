@@ -10,6 +10,7 @@ using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -111,6 +112,43 @@ namespace Synthesis.Bethesda.Execution.CLI
             }
         }
 
+        public static async Task<bool> HasSettingsToOpen(
+            string path,
+            bool directExe,
+            CancellationToken cancel)
+        {
+            using var proc = ProcessWrapper.Create(
+                GetStart(path, directExe, new Synthesis.Bethesda.OpenForSettings()
+                {
+                    SupportQuery = true
+                }),
+                cancel: cancel,
+                hookOntoOutput: false);
+
+            return (int)ErrorCodes.OpensForSettings == await proc.Run();
+        }
+
+        public static async Task<int> OpenForSettings(
+            string path,
+            bool directExe,
+            Rectangle rect,
+            CancellationToken cancel)
+        {
+            using var proc = ProcessWrapper.Create(
+                GetStart(path, directExe, new Synthesis.Bethesda.OpenForSettings()
+                {
+                    SupportQuery = false,
+                    Left = rect.Left,
+                    Top = rect.Top,
+                    Height = rect.Height,
+                    Width = rect.Width
+                }),
+                cancel: cancel,
+                hookOntoOutput: false);
+
+            return await proc.Run();
+        }
+
         public static async Task<ErrorResponse> CheckRunnability(
             string path,
             bool directExe,
@@ -152,18 +190,8 @@ namespace Synthesis.Bethesda.Execution.CLI
                 LoadOrderFilePath = loadOrderPath
             };
 
-            ProcessStartInfo startInfo;
-            if (directExe)
-            {
-                startInfo = new ProcessStartInfo(path, Parser.Default.FormatCommandLine(checkState));
-            }
-            else
-            {
-                startInfo = new ProcessStartInfo("dotnet", $"run --project \"{path}\" --runtime win-x64 --no-build {Parser.Default.FormatCommandLine(checkState)}");
-            }
-
             using var proc = ProcessWrapper.Create(
-                startInfo,
+                GetStart(path, directExe, checkState),
                 cancel: cancel);
 
             var results = new List<string>();
@@ -179,7 +207,7 @@ namespace Synthesis.Bethesda.Execution.CLI
 
             var result = await proc.Run();
 
-            if (result == ErrorCodes.NotRunnable)
+            if (result == (int)ErrorCodes.NotRunnable)
             {
                 return ErrorResponse.Fail(string.Join(Environment.NewLine, results));
             }
@@ -187,6 +215,18 @@ namespace Synthesis.Bethesda.Execution.CLI
             // Other error codes are likely the target app just not handling runnability checks, so return as runnable unless
             // explicity told otherwise with the above error code
             return ErrorResponse.Success;
+        }
+
+        private static ProcessStartInfo GetStart(string path, bool directExe, object args)
+        {
+            if (directExe)
+            {
+                return new ProcessStartInfo(path, Parser.Default.FormatCommandLine(args));
+            }
+            else
+            {
+                return new ProcessStartInfo("dotnet", $"run --project \"{path}\" --runtime win-x64 --no-build {Parser.Default.FormatCommandLine(args)}");
+            }
         }
     }
 }

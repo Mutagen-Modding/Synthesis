@@ -312,6 +312,20 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.Nugets.Synthesis.UpdateButton.Visibility)
                     .DisposeWith(disposable);
                 #endregion
+
+                #region Settings
+                this.WhenAnyValue(x => x.ViewModel!.CanOpenSettings)
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.OpenSettingsButton.Visibility)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.HasSettings)
+                    .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
+                    .BindToStrict(this, x => x.NoSettingsText.Visibility)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.OpenSettingsCommand)
+                    .BindToStrict(this, x => x.OpenSettingsButton.Command)
+                    .DisposeWith(disposable);
+                #endregion
             });
         }
     }
