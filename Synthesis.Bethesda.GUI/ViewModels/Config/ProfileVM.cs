@@ -439,6 +439,7 @@ namespace Synthesis.Bethesda.GUI
             SynthesisVersioning = settings.SynthesisVersioning;
             ManualSynthesisVersion = settings.SynthesisManualVersion;
             DataPathOverride = settings.DataPathOverride;
+            ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
             Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
             {
                 return p switch
@@ -464,7 +465,8 @@ namespace Synthesis.Bethesda.GUI
                 SynthesisManualVersion = ManualSynthesisVersion,
                 MutagenVersioning = MutagenVersioning,
                 SynthesisVersioning = SynthesisVersioning,
-                DataPathOverride = DataPathOverride
+                DataPathOverride = DataPathOverride,
+                ConsiderPrereleaseNugets = ConsiderPrereleaseNugets,
             };
         }
 

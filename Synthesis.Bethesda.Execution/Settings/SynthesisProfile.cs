@@ -14,5 +14,6 @@ namespace Synthesis.Bethesda.Execution.Settings
         public NugetVersioningEnum SynthesisVersioning = NugetVersioningEnum.Manual;
         public string? SynthesisManualVersion;
         public string? DataPathOverride;
+        public bool ConsiderPrereleaseNugets;
     }
 }
