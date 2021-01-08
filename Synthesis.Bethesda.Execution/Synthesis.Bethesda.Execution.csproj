@@ -36,12 +36,12 @@
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="3.8.0" />
-    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.23.3.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.23.4" />
     <PackageReference Include="NuGetizer" Version="0.6.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Noggog.CSharpExt" Version="2.3.0.1-dev" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.4" />
   </ItemGroup>
 
   <ItemGroup>
