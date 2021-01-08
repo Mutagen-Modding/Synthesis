@@ -69,7 +69,7 @@ namespace Synthesis.Bethesda.GUI
 
             DeleteCommand = ReactiveCommand.Create(() =>
             {
-                parent.Config.MainVM.ActiveConfirmation = new ConfirmationActionVM(
+                parent.Config.MainVM.TargetConfirmation = new ConfirmationActionVM(
                     "Confirm",
                     $"Are you sure you want to delete {DisplayName}?",
                     Delete);

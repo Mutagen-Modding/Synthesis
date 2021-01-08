@@ -1,4 +1,4 @@
-﻿<local:OverlayViewBase
+<local:OverlayViewBase
     x:Class="Synthesis.Bethesda.GUI.Views.OverlayView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -70,12 +70,11 @@
                     TextWrapping="Wrap" />
                 <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                     x:Name="DescriptionBlock"
-                    Margin="25,0"
+                    Margin="25,0,25,25"
                     FontSize="14"
                     TextWrapping="Wrap" />
                 <Button Grid.Row="2" Grid.Column="0"
                     x:Name="CancelButton"
-                    Margin="0,25,0,0"
                     HorizontalContentAlignment="Stretch">
                     <Grid Background="Transparent">
                         <Grid.ColumnDefinitions>
@@ -106,7 +105,6 @@
                 </Button>
                 <Button Grid.Row="2" Grid.Column="1"
                     x:Name="AcceptButton"
-                    Margin="0,25,0,0"
                     HorizontalContentAlignment="Stretch">
                     <Grid Background="Transparent">
                         <Grid.ColumnDefinitions>

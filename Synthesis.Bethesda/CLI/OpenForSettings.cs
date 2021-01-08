@@ -6,12 +6,9 @@ using System.Text;
 
 namespace Synthesis.Bethesda
 {
-    [Verb("open-for-settings", HelpText = "Informs the patcher to open in settings mode, if it supports it.")]
+    [Verb("open-for-settings", HelpText = "Informs the patcher to open in settings mode")]
     public class OpenForSettings
     {
-        [Option('s', "SupportQuery", Required = false, HelpText = "Parameter to signify a test query to see if a patcher has settings to open.")]
-        public bool SupportQuery { get; set; }
-
         [Option('t', "Top", Required = false, HelpText = "Top location to consider when positioning")]
         public int Top { get; set; }
 
@@ -27,7 +24,6 @@ namespace Synthesis.Bethesda
         public override string ToString()
         {
             return $"{nameof(OpenForSettings)} => \n"
-                + $"  {nameof(SupportQuery)} => {this.SupportQuery} \n"
                 + $"  {nameof(Top)} => {this.Top} \n"
                 + $"  {nameof(Left)} => {this.Left} \n"
                 + $"  {nameof(Width)} => {this.Width} \n"

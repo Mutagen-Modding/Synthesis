@@ -1,4 +1,4 @@
-﻿using Noggog.WPF;
+using Noggog.WPF;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,11 +8,11 @@ namespace Synthesis.Bethesda.GUI
 {
     public class ConfirmationActionVM : ViewModel
     {
-        public Action ToDo { get; }
+        public Action? ToDo { get; }
         public string Title { get; }
         public string Description { get; }
 
-        public ConfirmationActionVM(string title, string description, Action toDo)
+        public ConfirmationActionVM(string title, string description, Action? toDo)
         {
             Title = title;
             Description = description;

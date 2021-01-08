@@ -36,7 +36,7 @@ namespace Synthesis.Bethesda.GUI
         public ICommand OpenProfilesPageCommand { get; }
 
         [Reactive]
-        public ConfirmationActionVM? ActiveConfirmation { get; set; }
+        public ConfirmationActionVM? TargetConfirmation { get; set; }
 
         public ObservableCollectionExtended<IDE> IdeOptions { get; } = new ObservableCollectionExtended<IDE>();
 
@@ -61,6 +61,12 @@ namespace Synthesis.Bethesda.GUI
             y: (int)_window.Top,
             width: (int)_window.Width,
             height: (int)_window.Height);
+
+        private readonly ObservableAsPropertyHelper<ConfirmationActionVM?> _ActiveConfirmation;
+        public ConfirmationActionVM? ActiveConfirmation => _ActiveConfirmation.Value;
+
+        private readonly ObservableAsPropertyHelper<bool> _InModal;
+        public bool InModal => _InModal.Value;
 
         public MainVM(Window window)
         {
@@ -91,14 +97,23 @@ namespace Synthesis.Bethesda.GUI
 
             Configuration = new ConfigurationVM(this);
             ActivePanel = Configuration;
-            DiscardActionCommand = ReactiveCommand.Create(() => { ActiveConfirmation = null; });
-            ConfirmActionCommand = ReactiveCommand.Create(
-                () =>
+            DiscardActionCommand = NoggogCommand.CreateFromObject(
+                objectSource: this.WhenAnyValue(x => x.TargetConfirmation),
+                canExecute: target => target != null,
+                execute: (_) =>
                 {
-                    if (ActiveConfirmation == null) return;
-                    ActiveConfirmation.ToDo();
-                    ActiveConfirmation = null;
-                });
+                    TargetConfirmation = null;
+                },
+                disposable: this.CompositeDisposable);
+            ConfirmActionCommand = NoggogCommand.CreateFromObject(
+                objectSource: this.WhenAnyFallback(x => x.TargetConfirmation!.ToDo),
+                canExecute: toDo => toDo != null,
+                execute: toDo =>
+                {
+                    toDo?.Invoke();
+                    TargetConfirmation = null;
+                },
+                disposable: this.CompositeDisposable);
 
             _Hot = this.WhenAnyValue(x => x.ActivePanel)
                 .Select(x =>
@@ -171,6 +186,31 @@ namespace Synthesis.Bethesda.GUI
                         ActivePanel = new DotNetNotInstalledVM(this, this.ActivePanel, DotNetSdkInstalled);
                     }
                 });
+
+            _ActiveConfirmation = Observable.CombineLatest(
+                    this.WhenAnyFallback(x => x.Configuration.SelectedProfile!.SelectedPatcher)
+                        .Select(x =>
+                        {
+                            if (x is not GitPatcherVM gitPatcher) return Observable.Return(default(GitPatcherVM?));
+                            return gitPatcher.WhenAnyValue(x => x.SettingsOpen)
+                                .Select(open => open ? (GitPatcherVM?)gitPatcher : null);
+                        })
+                        .Switch(),
+                    this.WhenAnyValue(x => x.TargetConfirmation),
+                    (openPatcher, target) =>
+                    {
+                        if (target != null) return target;
+                        if (openPatcher == null) return default(ConfirmationActionVM?);
+                        return new ConfirmationActionVM(
+                            "External Patcher Settings Open",
+                            $"{openPatcher.Nickname} is open for settings manipulation.",
+                            toDo: null);
+                    })
+                .ToGuiProperty(this, nameof(ActiveConfirmation), default(ConfirmationActionVM?));
+
+            _InModal = this.WhenAnyValue(x => x.ActiveConfirmation)
+                .Select(x => x != null)
+                .ToGuiProperty(this, nameof(InModal));
         }
 
         public void Load(SynthesisGuiSettings? guiSettings, PipelineSettings? pipeSettings)

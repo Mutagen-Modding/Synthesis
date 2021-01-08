@@ -83,7 +83,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
 
             if (runnability.Failed)
             {
-                throw new CliUnsuccessfulRunException((int)ErrorCodes.NotRunnable, runnability.Reason);
+                throw new CliUnsuccessfulRunException((int)Codes.NotRunnable, runnability.Reason);
             }
 
             var internalSettings = new RunSynthesisMutagenPatcher()

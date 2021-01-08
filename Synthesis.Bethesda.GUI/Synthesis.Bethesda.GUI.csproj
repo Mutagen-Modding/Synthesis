@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -17,6 +17,7 @@
     <IncludeSymbolsInSingleFile>true</IncludeSymbolsInSingleFile>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <StartupObject>Synthesis.Bethesda.GUI.App</StartupObject>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

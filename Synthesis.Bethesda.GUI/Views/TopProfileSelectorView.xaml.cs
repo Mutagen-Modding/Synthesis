@@ -58,6 +58,11 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.UpdateButton.Visibility)
                     .DisposeWith(dispose);
+
+                this.WhenAnyValue(x => x.ViewModel!.InModal)
+                    .Select(x => !x)
+                    .BindToStrict(this, x => x.IsEnabled)
+                    .DisposeWith(dispose);
             });
         }
     }

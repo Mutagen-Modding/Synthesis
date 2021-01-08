@@ -91,7 +91,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand NavigateToInternalFilesCommand { get; }
 
-        public ICommand OpenSettingsCommand { get; }
+        public ReactiveCommand<Unit, Unit> OpenSettingsCommand { get; }
 
         public ReactiveCommand<Unit, Unit> UpdateAllCommand { get; }
 
@@ -124,11 +124,11 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<bool> _AttemptedCheckout;
         public bool AttemptedCheckout => _AttemptedCheckout.Value;
 
-        private readonly ObservableAsPropertyHelper<bool> _CanOpenSettings;
-        public bool CanOpenSettings => _CanOpenSettings.Value;
+        private readonly ObservableAsPropertyHelper<SettingsTarget> _SettingsTarget;
+        public SettingsTarget SettingsTarget => _SettingsTarget.Value;
 
-        private readonly ObservableAsPropertyHelper<bool> _HasSettings;
-        public bool HasSettings => _HasSettings.Value;
+        private readonly ObservableAsPropertyHelper<bool> _SettingsOpen;
+        public bool SettingsOpen => _SettingsOpen.Value;
 
         public GitPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
@@ -643,17 +643,17 @@ namespace Synthesis.Bethesda.GUI
                 .Replay(1)
                 .RefCount();
 
-            _CanOpenSettings = compilation
+            _SettingsTarget = compilation
                 .Select(i =>
                 {
-                    return Observable.Create<bool>(async (observer, cancel) =>
+                    return Observable.Create<SettingsTarget>(async (observer, cancel) =>
                     {
-                        observer.OnNext(false);
+                        observer.OnNext(new SettingsTarget(SettingsStyle.None, null));
                         if (i.RunnableState.Failed) return;
 
                         try
                         {
-                            var result = await Synthesis.Bethesda.Execution.CLI.Commands.HasSettingsToOpen(
+                            var result = await Synthesis.Bethesda.Execution.CLI.Commands.GetSettingsStyle(
                                 i.Item.ProjPath,
                                 directExe: false,
                                 cancel: cancel);
@@ -666,12 +666,13 @@ namespace Synthesis.Bethesda.GUI
                     });
                 })
                 .Switch()
-                .ToGuiProperty(this, nameof(CanOpenSettings));
+                .ToGuiProperty(this, nameof(SettingsTarget), new SettingsTarget(SettingsStyle.None, null));
 
             OpenSettingsCommand = NoggogCommand.CreateFromObject(
                 objectSource: compilation,
                 canExecute: x => true,
-                extraCanExecute: this.WhenAnyValue(x => x.CanOpenSettings),
+                extraCanExecute: this.WhenAnyValue(x => x.SettingsTarget)
+                    .Select(x => x.Style == SettingsStyle.Open),
                 execute: async (o) =>
                 {
                     var result = await Synthesis.Bethesda.Execution.CLI.Commands.OpenForSettings(
@@ -682,8 +683,8 @@ namespace Synthesis.Bethesda.GUI
                 },
                 disposable: this.CompositeDisposable);
 
-            _HasSettings = this.WhenAnyValue(x => x.CanOpenSettings)
-                .ToGuiProperty(this, nameof(HasSettings));
+            _SettingsOpen = OpenSettingsCommand.IsExecuting
+                .ToGuiProperty(this, nameof(SettingsOpen));
 
             var runnability = Observable.CombineLatest(
                     compilation,

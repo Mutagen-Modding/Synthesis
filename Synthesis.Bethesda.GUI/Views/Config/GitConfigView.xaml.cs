@@ -314,12 +314,12 @@ namespace Synthesis.Bethesda.GUI.Views
                 #endregion
 
                 #region Settings
-                this.WhenAnyValue(x => x.ViewModel!.CanOpenSettings)
-                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                this.WhenAnyValue(x => x.ViewModel!.SettingsTarget)
+                    .Select(x => x.Style == SettingsStyle.Open ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.OpenSettingsButton.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.HasSettings)
-                    .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
+                this.WhenAnyValue(x => x.ViewModel!.SettingsTarget)
+                    .Select(x => x.Style == SettingsStyle.None ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.NoSettingsText.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.OpenSettingsCommand)
