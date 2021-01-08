@@ -29,6 +29,6 @@
                 </DataTemplate>
             </ContentPresenter.Resources>
         </ContentPresenter>
-        <local:ConfirmationOverlayView x:Name="ConfirmationOverlay" Visibility="Collapsed" />
+        <local:OverlayView x:Name="ConfirmationOverlay" Visibility="Collapsed" />
     </Grid>
 </local:WindowViewBase>

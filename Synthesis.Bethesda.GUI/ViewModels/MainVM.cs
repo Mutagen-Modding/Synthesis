@@ -31,8 +31,8 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public ViewModel ActivePanel { get; set; }
 
-        public ICommand ConfirmActionCommand { get; }
-        public ICommand DiscardActionCommand { get; }
+        public ReactiveCommand<Unit, Unit> ConfirmActionCommand { get; }
+        public ReactiveCommand<Unit, Unit> DiscardActionCommand { get; }
         public ICommand OpenProfilesPageCommand { get; }
 
         [Reactive]
@@ -91,7 +91,7 @@ namespace Synthesis.Bethesda.GUI
 
             Configuration = new ConfigurationVM(this);
             ActivePanel = Configuration;
-            DiscardActionCommand = ReactiveCommand.Create(() => ActiveConfirmation = null);
+            DiscardActionCommand = ReactiveCommand.Create(() => { ActiveConfirmation = null; });
             ConfirmActionCommand = ReactiveCommand.Create(
                 () =>
                 {

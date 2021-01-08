@@ -1,30 +1,19 @@
 using Noggog.WPF;
 using ReactiveUI;
-using System;
 using System.Reactive.Disposables;
-using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class ConfirmationOverlayViewBase : NoggogUserControl<MainVM> { }
+    public class OverlayViewBase : NoggogUserControl<MainVM> { }
 
     /// <summary>
-    /// Interaction logic for ConfirmationOverlayView.xaml
+    /// Interaction logic for OverlayView.xaml
     /// </summary>
-    public partial class ConfirmationOverlayView : ConfirmationOverlayViewBase
+    public partial class OverlayView : OverlayViewBase
     {
-        public ConfirmationOverlayView()
+        public OverlayView()
         {
             InitializeComponent();
             this.WhenActivated(disposable =>
@@ -40,8 +29,20 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.ConfirmActionCommand)
                     .BindToStrict(this, x => x.AcceptButton.Command)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.ConfirmActionCommand)
+                    .Select(x => x?.CanExecute ?? Observable.Return(false))
+                    .Switch()
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.AcceptButton.Visibility)
+                    .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.DiscardActionCommand)
                     .BindToStrict(this, x => x.CancelButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.DiscardActionCommand)
+                    .Select(x => x?.CanExecute ?? Observable.Return(false))
+                    .Switch()
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.CancelButton.Visibility)
                     .DisposeWith(disposable);
             });
         }
