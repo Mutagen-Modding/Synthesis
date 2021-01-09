@@ -77,7 +77,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     try
                     {
-                        var ret = await DotNetQueries.DotNetSdkVersion(CancellationToken.None);
+                        var ret = await DotNetCommands.DotNetSdkVersion(CancellationToken.None);
                         Log.Logger.Information($"dotnet SDK: {ret}");
                         return ret;
                     }
@@ -192,7 +192,7 @@ namespace Synthesis.Bethesda.GUI
                         .Select(x =>
                         {
                             if (x is not GitPatcherVM gitPatcher) return Observable.Return(default(GitPatcherVM?));
-                            return gitPatcher.WhenAnyValue(x => x.SettingsOpen)
+                            return gitPatcher.WhenAnyValue(x => x.PatcherSettings.SettingsOpen)
                                 .Select(open => open ? (GitPatcherVM?)gitPatcher : null);
                         })
                         .Switch(),
@@ -262,7 +262,7 @@ namespace Synthesis.Bethesda.GUI
                 var projPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.csproj");
                 SolutionInitialization.CreateProject(projPath, GameCategory.Skyrim, insertOldVersion: true);
                 SolutionInitialization.AddProjectToSolution(slnPath, projPath);
-                var ret = await DotNetQueries.QuerySynthesisVersions(projPath, current: false, includePrerelease: includePrerelease, CancellationToken.None);
+                var ret = await DotNetCommands.QuerySynthesisVersions(projPath, current: false, includePrerelease: includePrerelease, CancellationToken.None);
                 Log.Logger.Information("Latest published library versions:");
                 Log.Logger.Information($"  Mutagen: {ret.MutagenVersion}");
                 Log.Logger.Information($"  Synthesis: {ret.SynthesisVersion}");

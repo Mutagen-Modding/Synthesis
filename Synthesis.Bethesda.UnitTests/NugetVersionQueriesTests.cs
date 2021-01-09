@@ -12,7 +12,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void TypicalNugetParse()
         {
-            DotNetQueries.TryParseLibraryLine(
+            DotNetCommands.TryParseLibraryLine(
                 "   > Mutagen.Bethesda.Synthesis      0.10.7.0    0.10.7   0.10.8.1",
                 out var package,
                 out var requested,
@@ -28,7 +28,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void DepreciatedNugetParse()
         {
-            DotNetQueries.TryParseLibraryLine(
+            DotNetCommands.TryParseLibraryLine(
                 "   > Mutagen.Bethesda.Synthesis      0.10.7.0    0.10.7 (D)   0.10.8.1",
                 out var package,
                 out var requested,

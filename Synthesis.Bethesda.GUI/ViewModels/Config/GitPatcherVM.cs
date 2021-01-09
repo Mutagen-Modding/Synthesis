@@ -13,7 +13,6 @@ using DynamicData.Binding;
 using DynamicData;
 using static Synthesis.Bethesda.GUI.SolutionPatcherVM;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers;
@@ -91,8 +90,6 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand NavigateToInternalFilesCommand { get; }
 
-        public ReactiveCommand<Unit, Unit> OpenSettingsCommand { get; }
-
         public ReactiveCommand<Unit, Unit> UpdateAllCommand { get; }
 
         public ReactiveCommand<Unit, Unit> UpdateToBranchCommand { get; }
@@ -124,11 +121,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<bool> _AttemptedCheckout;
         public bool AttemptedCheckout => _AttemptedCheckout.Value;
 
-        private readonly ObservableAsPropertyHelper<SettingsTarget> _SettingsTarget;
-        public SettingsTarget SettingsTarget => _SettingsTarget.Value;
-
-        private readonly ObservableAsPropertyHelper<bool> _SettingsOpen;
-        public bool SettingsOpen => _SettingsOpen.Value;
+        public PatcherSettingsVM PatcherSettings { get; }
 
         public GitPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
@@ -643,49 +636,6 @@ namespace Synthesis.Bethesda.GUI
                 .Replay(1)
                 .RefCount();
 
-            _SettingsTarget = compilation
-                .Select(i =>
-                {
-                    return Observable.Create<SettingsTarget>(async (observer, cancel) =>
-                    {
-                        observer.OnNext(new SettingsTarget(SettingsStyle.None, null));
-                        if (i.RunnableState.Failed) return;
-
-                        try
-                        {
-                            var result = await Synthesis.Bethesda.Execution.CLI.Commands.GetSettingsStyle(
-                                i.Item.ProjPath,
-                                directExe: false,
-                                cancel: cancel);
-                            observer.OnNext(result);
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error($"Error checking if patcher can open settings: {ex}");
-                        }
-                    });
-                })
-                .Switch()
-                .ToGuiProperty(this, nameof(SettingsTarget), new SettingsTarget(SettingsStyle.None, null));
-
-            OpenSettingsCommand = NoggogCommand.CreateFromObject(
-                objectSource: compilation,
-                canExecute: x => true,
-                extraCanExecute: this.WhenAnyValue(x => x.SettingsTarget)
-                    .Select(x => x.Style == SettingsStyle.Open),
-                execute: async (o) =>
-                {
-                    var result = await Synthesis.Bethesda.Execution.CLI.Commands.OpenForSettings(
-                        o.Item.ProjPath,
-                        directExe: false,
-                        rect: this.Profile.Config.MainVM.Rectangle,
-                        cancel: CancellationToken.None);
-                },
-                disposable: this.CompositeDisposable);
-
-            _SettingsOpen = OpenSettingsCommand.IsExecuting
-                .ToGuiProperty(this, nameof(SettingsOpen));
-
             var runnability = Observable.CombineLatest(
                     compilation,
                     parent.WhenAnyValue(x => x.DataFolder),
@@ -841,6 +791,16 @@ namespace Synthesis.Bethesda.GUI
                 UpdateSynthesisManualToLatestCommand,
                 UpdateToBranchCommand,
                 UpdateToTagCommand);
+
+            PatcherSettings = new PatcherSettingsVM(
+                Logger, 
+                this, 
+                compilation.Select(c =>
+                {
+                    if (c.RunnableState.Failed) return c.RunnableState.BubbleFailure<string>();
+                    return GetResponse<string>.Succeed(c.Item.ProjPath);
+                }));
+            this.CompositeDisposable.Add(PatcherSettings);
         }
 
         public override PatcherSettings Save()

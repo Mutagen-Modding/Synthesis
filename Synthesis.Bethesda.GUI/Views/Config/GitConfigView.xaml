@@ -94,30 +94,7 @@
         <TabControl Grid.Row="4" Grid.ColumnSpan="2"
             Margin="0,5,0,0">
             <TabItem Header="Settings">
-                <Grid>
-                    <TextBlock
-                        x:Name="NoSettingsText"
-                        Margin="5,4"
-                        FontWeight="Bold"
-                        Text="No Settings"
-                        Visibility="Collapsed" />
-                    <Button
-                        x:Name="OpenSettingsButton"
-                        Margin="15,5,0,0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        ToolTip="Open patcher application to edit its settings"
-                        Visibility="Collapsed">
-                        <StackPanel Orientation="Horizontal">
-                            <icon:PackIconMaterial VerticalAlignment="Center" Kind="Cog" />
-                            <TextBlock
-                                Margin="4,0,0,1"
-                                VerticalAlignment="Center"
-                                FontSize="13"
-                                Text="OPEN SETTINGS" />
-                        </StackPanel>
-                    </Button>
-                </Grid>
+                <local:PatcherSettingsView x:Name="PatcherSettings" />
             </TabItem>
             <TabItem Header="Versioning">
                 <ScrollViewer

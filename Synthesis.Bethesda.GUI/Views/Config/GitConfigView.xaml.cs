@@ -313,19 +313,9 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 #endregion
 
-                #region Settings
-                this.WhenAnyValue(x => x.ViewModel!.SettingsTarget)
-                    .Select(x => x.Style == SettingsStyle.Open ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.OpenSettingsButton.Visibility)
+                this.WhenAnyFallback(x => x.ViewModel!.PatcherSettings)
+                    .BindToStrict(this, x => x.PatcherSettings.DataContext)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.SettingsTarget)
-                    .Select(x => x.Style == SettingsStyle.None ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.NoSettingsText.Visibility)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.OpenSettingsCommand)
-                    .BindToStrict(this, x => x.OpenSettingsButton.Command)
-                    .DisposeWith(disposable);
-                #endregion
             });
         }
     }
