@@ -45,24 +45,24 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public static async Task<GetResponse<Type>> ExtractTypeFromApp(string projPath, string targetType, CancellationToken cancel)
+        public static async Task<GetResponse<Type?[]>> ExtractTypesFromApp(string projPath, string[] targetTypes, CancellationToken cancel)
         {
             var exec = await DotNetCommands.GetExecutablePath(projPath, cancel);
-            if (exec.Failed) return exec.BubbleFailure<Type>();
+            if (exec.Failed) return exec.BubbleFailure<Type?[]>();
             var context = new AssemblyLoadContext(Guid.NewGuid().ToString(), isCollectible: true);
             try
             {
                 var assemb = context.LoadFromAssemblyPath(exec.Value);
-                var type = assemb.GetType(targetType);
-                if (type == null)
+                Type?[] ret = new Type[targetTypes.Length];
+                for (int i = 0; i < targetTypes.Length; i++)
                 {
-                    return GetResponse<Type>.Fail($"Could not find type {targetType} in assembly {exec.Value} from project {projPath}");
+                    ret[i] = assemb.GetType(targetTypes[i]);
                 }
-                return GetResponse<Type>.Succeed(type);
+                return GetResponse<Type?[]>.Succeed(ret);
             }
             catch (Exception ex)
             {
-                return GetResponse<Type>.Fail(ex);
+                return GetResponse<Type?[]>.Fail(ex);
             }
             finally
             {

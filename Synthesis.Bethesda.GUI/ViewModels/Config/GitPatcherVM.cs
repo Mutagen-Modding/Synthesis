@@ -822,6 +822,7 @@ namespace Synthesis.Bethesda.GUI
                 TargetBranch = this.TargetBranchName,
             };
             CopyOverSave(ret);
+            PatcherSettings.Persist(Logger);
             return ret;
         }
 
@@ -853,6 +854,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 throw new ArgumentNullException(nameof(RunnableData));
             }
+            PatcherSettings.Persist(Logger);
             return new PatcherRunVM(
                 parent,
                 this,

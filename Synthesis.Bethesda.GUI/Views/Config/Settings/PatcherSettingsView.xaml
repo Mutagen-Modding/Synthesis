@@ -48,5 +48,17 @@
                     Color="Red" />
             </mahapps:ProgressRing.Effect>
         </mahapps:ProgressRing>
+        <TabControl x:Name="ReflectionSettingTabs" Visibility="Collapsed">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Nickname}" />
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <local:ReflectionSettingNodeView />
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
     </Grid>
 </local:PatcherSettingsViewBase>

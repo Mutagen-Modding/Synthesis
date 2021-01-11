@@ -43,6 +43,7 @@
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.1.0-preview1" />
     <PackageReference Include="Buildalyzer" Version="3.1.1" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
     <PackageReference Include="GitInfo" Version="2.1.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

@@ -1,11 +1,8 @@
 using MahApps.Metro.Controls;
 using Synthesis.Bethesda.Execution.Settings;
 using Newtonsoft.Json;
-using Noggog.WPF;
 using System.IO;
 using System;
-using Newtonsoft.Json.Converters;
-using Noggog;
 using Newtonsoft.Json.Linq;
 
 namespace Synthesis.Bethesda.GUI.Views
