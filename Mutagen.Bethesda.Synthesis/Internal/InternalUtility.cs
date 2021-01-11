@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using BaseSynthesis = Synthesis.Bethesda;
 
 namespace Mutagen.Bethesda.Synthesis.Internal
 {

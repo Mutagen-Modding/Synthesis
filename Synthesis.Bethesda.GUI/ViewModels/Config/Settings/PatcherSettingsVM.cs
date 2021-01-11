@@ -92,12 +92,8 @@ namespace Synthesis.Bethesda.GUI
                 {
                     return Observable.Create<(bool Processing, ReflectionSettingsVM[] SettingsVM)>(async (observer, cancel) =>
                     {
-                        if (i.projPath.Failed)
-                        {
-                            observer.OnNext((true, Array.Empty<ReflectionSettingsVM>()));
-                            return;
-                        }
-                        else if (i.settingsTarget.Style != SettingsStyle.SpecifiedClass
+                        if (i.projPath.Failed
+                            || i.settingsTarget.Style != SettingsStyle.SpecifiedClass
                             || i.settingsTarget.Targets.Length == 0)
                         {
                             observer.OnNext((false, Array.Empty<ReflectionSettingsVM>()));
