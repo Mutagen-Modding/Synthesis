@@ -1,0 +1,103 @@
+<local:EnumerableIntSettingsNodeViewBase
+    x:Class="Synthesis.Bethesda.GUI.Views.EnumerableIntSettingsNodeView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:xwpf="http://schemas.xceed.com/wpf/xaml/toolkit"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <Border Style="{StaticResource ReflectionSettingBorder}">
+        <Grid MinHeight="25">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="140" />
+                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <!--  Disable virtualization to power numbering via Alternate Index systems  -->
+            <ListBox Grid.Column="0" Grid.ColumnSpan="2"
+                x:Name="ItemsControl"
+                MaxHeight="250"
+                HorizontalAlignment="Left"
+                Background="Transparent"
+                ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                VirtualizingPanel.IsVirtualizing="False">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid
+                            x:Name="ItemGrid"
+                            Margin="0,0,5,0"
+                            HorizontalAlignment="Left"
+                            Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="106" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                Margin="0,0,4,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Foreground="{StaticResource MahApps.Brushes.Gray8}"
+                                Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplatedParent.(ItemsControl.AlternationIndex)}"
+                                ToolTip="Index of item on the list" />
+                            <xwpf:IntegerUpDown Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource ReflectionIntSpinner}"
+                                Value="{Binding Value}" />
+                            <Button Grid.Column="2"
+                                Command="{Binding DeleteCommand}"
+                                ToolTip="Add another item">
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource CloseButton}" TargetType="Button">
+                                        <Setter Property="Visibility" Value="Hidden" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=ItemGrid}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <icon:PackIconMaterial
+                                    Width="8"
+                                    Height="8"
+                                    Margin="3,0,0,0"
+                                    Kind="Close" />
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <TextBlock Grid.Column="0"
+                x:Name="SettingNameBlock"
+                Margin="0,4,6,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Style="{StaticResource ReflectionSettingName}" />
+            <TextBlock Grid.Column="0" Grid.ColumnSpan="2"
+                x:Name="NoItemsBlock"
+                Width="80"
+                Margin="123,4,0,0"
+                HorizontalAlignment="Left"
+                Foreground="{StaticResource MahApps.Brushes.Gray8}"
+                Text="No items" />
+            <Button Grid.Column="2"
+                x:Name="AddButton"
+                Width="40"
+                Margin="5,6"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                HorizontalContentAlignment="Left"
+                VerticalContentAlignment="Top">
+                <icon:PackIconMaterial
+                    Width="10"
+                    Height="10"
+                    Kind="Plus" />
+            </Button>
+        </Grid>
+    </Border>
+</local:EnumerableIntSettingsNodeViewBase>

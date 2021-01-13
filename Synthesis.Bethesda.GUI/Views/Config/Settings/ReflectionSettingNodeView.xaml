@@ -17,7 +17,8 @@
         <ListBox Grid.Row="1"
             x:Name="Nodes"
             Background="Transparent"
-            ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}">
+            ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
+            ScrollViewer.CanContentScroll="False">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <local:SettingsNodeView x:Name="TopNodeView" Margin="5,3" />

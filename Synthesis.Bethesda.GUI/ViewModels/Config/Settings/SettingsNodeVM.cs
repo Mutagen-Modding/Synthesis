@@ -28,6 +28,17 @@ namespace Synthesis.Bethesda.GUI
                     return new IntSettingsNodeVM(memberName, defaultVal);
                 case "Double":
                     return new DoubleSettingsNodeVM(memberName, defaultVal);
+                case "Array`1":
+                case "List`1":
+                case "IEnumerable`1":
+                    switch (targetType.GenericTypeArguments[0].Name)
+                    {
+                        case "Int32":
+                            return new EnumerableIntSettingsNodeVM(memberName, defaultVal);
+                        default:
+                            return new UnknownSettingsNodeVM(memberName);
+                    }
+                case "HashSet`1":
                 default:
                     return new UnknownSettingsNodeVM(memberName);
             }

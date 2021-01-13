@@ -13,50 +13,19 @@
     <ContentControl Content="{Binding}">
         <ContentControl.Resources>
             <DataTemplate DataType="{x:Type vm:BoolSettingsNodeVM}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock
-                        MinWidth="100"
-                        Margin="0,0,6,0"
-                        VerticalAlignment="Center"
-                        Text="{Binding MemberName}" />
-                    <CheckBox IsChecked="{Binding Value}" />
-                </StackPanel>
+                <local:BoolSettingsNodeView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:IntSettingsNodeVM}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock
-                        MinWidth="100"
-                        Margin="0,0,6,0"
-                        VerticalAlignment="Center"
-                        Text="{Binding MemberName}" />
-                    <xwpf:IntegerUpDown
-                        MinWidth="65"
-                        VerticalAlignment="Center"
-                        Foreground="White"
-                        Value="{Binding Value}" />
-                </StackPanel>
+                <local:IntSettingsNodeView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:DoubleSettingsNodeVM}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock
-                        MinWidth="100"
-                        Margin="0,0,6,0"
-                        VerticalAlignment="Center"
-                        Text="{Binding MemberName}" />
-                    <xwpf:DoubleUpDown
-                        MinWidth="65"
-                        VerticalAlignment="Center"
-                        Foreground="White"
-                        Value="{Binding Value}" />
-                </StackPanel>
+                <local:DoubleSettingsNodeView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:EnumerableIntSettingsNodeVM}">
+                <local:EnumerableIntSettingsNodeView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:UnknownSettingsNodeVM}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="{Binding MemberName}" />
-                </Grid>
+                <local:UnknownSettingsNodeView />
             </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>

@@ -87,7 +87,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Converters\" />
+    <Compile Update="Views\Config\Settings\FieldViews\BoolSettingsNodeView - Copy.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>BoolSettingsNodeView.xaml.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <!-- Replace inherited target -->
