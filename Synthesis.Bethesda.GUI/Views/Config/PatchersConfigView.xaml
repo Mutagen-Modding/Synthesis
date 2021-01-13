@@ -20,8 +20,8 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition
                 Width="2*"
-                MinWidth="200"
-                MaxWidth="400" />
+                MinWidth="180"
+                MaxWidth="260" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="5*" />
         </Grid.ColumnDefinitions>
@@ -344,12 +344,13 @@
             Margin="0,0,-4,0"
             Fill="#AA000000"
             Visibility="Collapsed" />
-        <ContentControl x:Name="DetailControl" Grid.Row="0" Grid.RowSpan="3" Grid.Column="2">
+        <ContentControl Grid.Row="0" Grid.RowSpan="3" Grid.Column="2"
+            x:Name="DetailControl">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type vm:PatcherVM}" >
+                <DataTemplate DataType="{x:Type vm:PatcherVM}">
                     <local:PatcherConfigView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:ErrorVM}" >
+                <DataTemplate DataType="{x:Type vm:ErrorVM}">
                     <local:ErrorView />
                 </DataTemplate>
             </ContentControl.Resources>
