@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[MemberName] = new JArray(Values.Select(x => x.Value).ToArray());
+            obj[MemberName] = new JArray(Values.Select(x => ((IBasicSettingsNodeVM)x.Value).Value).ToArray());
         }
 
         public static EnumerableSettingsNodeVM Factory<TItem, TWrapper>(string memberName, object? defaultVal, TWrapper prototype)
