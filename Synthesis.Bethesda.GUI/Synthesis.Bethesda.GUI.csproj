@@ -85,14 +85,6 @@
     <Resource Include="Resources\SkyrimSSE.png" />
     <Resource Include="Resources\SkyrimVR.png" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Views\Config\Settings\FieldViews\BoolSettingsNodeView - Copy.xaml.cs">
-      <SubType>Code</SubType>
-      <DependentUpon>BoolSettingsNodeView.xaml.cs</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
   <!-- Replace inherited target -->
   <Target Name="SetVersion" BeforeTargets="GetAssemblyVersion;GetPackageVersion" DependsOnTargets="GitVersion" Returns="$(PackageVersion)">
     <PropertyGroup>
