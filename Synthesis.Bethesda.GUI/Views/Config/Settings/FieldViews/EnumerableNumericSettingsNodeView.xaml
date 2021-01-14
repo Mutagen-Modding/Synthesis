@@ -1,0 +1,161 @@
+<UserControl
+    x:Class="Synthesis.Bethesda.GUI.Views.EnumerableNumericSettingsNodeView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
+    xmlns:xwpf="http://schemas.xceed.com/wpf/xaml/toolkit"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <Border Style="{StaticResource ReflectionSettingBorder}">
+        <Grid MinHeight="25">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="140" />
+                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <!--  Disable virtualization to power numbering via Alternate Index systems  -->
+            <ListBox Grid.Column="0" Grid.ColumnSpan="2"
+                MaxHeight="250"
+                HorizontalAlignment="Left"
+                AlternationCount="{Binding Values.Count}"
+                Background="Transparent"
+                BorderThickness="0"
+                ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
+                ItemsSource="{Binding Values}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                VirtualizingPanel.IsVirtualizing="False">
+                <ListBox.Style>
+                    <Style TargetType="ListBox">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Values.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.Style>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid
+                            x:Name="ItemGrid"
+                            Margin="0,0,5,0"
+                            HorizontalAlignment="Left"
+                            Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="106" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                Margin="0,0,4,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Foreground="{StaticResource MahApps.Brushes.Gray8}"
+                                Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplatedParent.(ItemsControl.AlternationIndex)}"
+                                ToolTip="Index of item on the list" />
+                            <ContentPresenter Grid.Column="1"
+                                x:Name="ValueContent"
+                                Content="{Binding Value}">
+                                <ContentPresenter.Resources>
+                                    <DataTemplate DataType="{x:Type vm:Int8SettingsNodeVM}">
+                                        <xwpf:SByteUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:Int16SettingsNodeVM}">
+                                        <xwpf:ShortUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:Int32SettingsNodeVM}">
+                                        <xwpf:IntegerUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:Int64SettingsNodeVM}">
+                                        <xwpf:LongUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:UInt8SettingsNodeVM}">
+                                        <xwpf:ByteUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:UInt16SettingsNodeVM}">
+                                        <xwpf:UShortUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:UInt32SettingsNodeVM}">
+                                        <xwpf:UIntegerUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:UInt64SettingsNodeVM}">
+                                        <xwpf:ULongUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:DoubleSettingsNodeVM}">
+                                        <xwpf:DoubleUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:DecimalSettingsNodeVM}">
+                                        <xwpf:DecimalUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:FloatSettingsNodeVM}">
+                                        <xwpf:SingleUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                                    </DataTemplate>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
+                            <Button Grid.Column="2"
+                                Command="{Binding DeleteCommand}"
+                                ToolTip="Add another item">
+                                <Button.Style>
+                                    <Style BasedOn="{StaticResource CloseButton}" TargetType="Button">
+                                        <Setter Property="Visibility" Value="Hidden" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=ItemGrid}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <icon:PackIconMaterial
+                                    Width="8"
+                                    Height="8"
+                                    Margin="3,0,0,0"
+                                    Kind="Close" />
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <TextBlock Grid.Column="0"
+                Margin="0,4,6,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Style="{StaticResource ReflectionSettingName}"
+                Text="{Binding MemberName}" />
+            <TextBlock Grid.Column="0" Grid.ColumnSpan="2"
+                x:Name="NoItemsBlock"
+                Width="80"
+                Margin="123,4,0,0"
+                HorizontalAlignment="Left"
+                Foreground="{StaticResource MahApps.Brushes.Gray8}"
+                Text="No items">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Values.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <Button Grid.Column="2"
+                Width="40"
+                Margin="5,6"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                HorizontalContentAlignment="Left"
+                VerticalContentAlignment="Top"
+                Command="{Binding AddCommand}">
+                <icon:PackIconMaterial
+                    Width="10"
+                    Height="10"
+                    Kind="Plus" />
+            </Button>
+        </Grid>
+    </Border>
+</UserControl>

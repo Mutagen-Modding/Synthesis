@@ -1,32 +1,21 @@
-using Newtonsoft.Json.Linq;
-using ReactiveUI.Fody.Helpers;
-using Serilog;
 using System.Text.Json;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class DoubleSettingsNodeVM : SettingsNodeVM
+    public class DoubleSettingsNodeVM : BasicSettingsNodeVM<double>
     {
-        [Reactive]
-        public double Value { get; set; }
-
         public DoubleSettingsNodeVM(string memberName, object? defaultVal)
-            : base(memberName, typeof(bool))
+            : base(memberName, defaultVal)
         {
-            if (defaultVal is double b)
-            {
-                Value = b;
-            }
         }
 
-        public override void Import(JsonProperty property, ILogger logger)
+        public DoubleSettingsNodeVM()
+            : base(string.Empty, default)
         {
-            Value = property.Value.GetDouble();
         }
 
-        public override void Persist(JObject obj, ILogger logger)
-        {
-            obj[MemberName] = Value;
-        }
+        public override double Get(JsonElement property) => property.GetDouble();
+
+        public override double GetDefault() => default(double);
     }
 }

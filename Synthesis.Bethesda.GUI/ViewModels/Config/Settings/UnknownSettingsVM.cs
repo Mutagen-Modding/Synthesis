@@ -8,11 +8,11 @@ namespace Synthesis.Bethesda.GUI
     public class UnknownSettingsNodeVM : SettingsNodeVM
     {
         public UnknownSettingsNodeVM(string memberName)
-            : base(memberName, typeof(object))
+            : base(memberName)
         {
         }
 
-        public override void Import(JsonProperty property, ILogger logger)
+        public override void Import(JsonElement property, ILogger logger)
         {
             logger.Error($"Tried to import for unknown setting: {this.MemberName}");
         }

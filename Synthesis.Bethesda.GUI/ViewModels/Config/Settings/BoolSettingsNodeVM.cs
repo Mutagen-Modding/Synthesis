@@ -1,32 +1,21 @@
-using Newtonsoft.Json.Linq;
-using ReactiveUI.Fody.Helpers;
-using Serilog;
 using System.Text.Json;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class BoolSettingsNodeVM : SettingsNodeVM
+    public class BoolSettingsNodeVM : BasicSettingsNodeVM<bool>
     {
-        [Reactive]
-        public bool Value { get; set; }
-
         public BoolSettingsNodeVM(string memberName, object? defaultVal)
-            : base(memberName, typeof(bool))
+            : base(memberName, defaultVal)
         {
-            if (defaultVal is bool b)
-            {
-                Value = b;
-            }
         }
 
-        public override void Import(JsonProperty property, ILogger logger)
+        public BoolSettingsNodeVM()
+            : base(string.Empty, default)
         {
-            Value = property.Value.GetBoolean();
         }
 
-        public override void Persist(JObject obj, ILogger logger)
-        {
-            obj[MemberName] = Value;
-        }
+        public override bool Get(JsonElement property) => property.GetBoolean();
+
+        public override bool GetDefault() => default(bool);
     }
 }

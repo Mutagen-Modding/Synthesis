@@ -13,7 +13,7 @@ namespace Synthesis.Bethesda.GUI
         public IEnumerable<bool> Value { get; set; } = Enumerable.Empty<bool>();
 
         public EnumerableBoolSettingsNodeVM(string memberName, object? defaultVal)
-            : base(memberName, typeof(IEnumerable<bool>))
+            : base(memberName)
         {
             if (defaultVal is IEnumerable<bool> b)
             {
@@ -21,7 +21,7 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public override void Import(JsonProperty property, ILogger logger)
+        public override void Import(JsonElement property, ILogger logger)
         {
             int wer = 23;
             wer++;

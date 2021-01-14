@@ -75,7 +75,7 @@ namespace Synthesis.Bethesda.GUI
                 }
                 try
                 {
-                    node.Import(elem, logger);
+                    node.Import(elem.Value, logger);
                 }
                 catch (InvalidOperationException ex)
                 {

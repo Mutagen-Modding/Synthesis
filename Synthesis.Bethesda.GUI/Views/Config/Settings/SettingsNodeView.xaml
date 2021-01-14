@@ -15,14 +15,63 @@
             <DataTemplate DataType="{x:Type vm:BoolSettingsNodeVM}">
                 <local:BoolSettingsNodeView />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:IntSettingsNodeVM}">
-                <local:IntSettingsNodeView />
+            <DataTemplate DataType="{x:Type vm:Int8SettingsNodeVM}">
+                <local:BasicSettingsNodeView>
+                    <xwpf:SByteUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                </local:BasicSettingsNodeView>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:Int16SettingsNodeVM}">
+                <local:BasicSettingsNodeView>
+                    <xwpf:ShortUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                </local:BasicSettingsNodeView>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:Int32SettingsNodeVM}">
+                <local:BasicSettingsNodeView>
+                    <xwpf:IntegerUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                </local:BasicSettingsNodeView>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:Int64SettingsNodeVM}">
+                <local:BasicSettingsNodeView>
+                    <xwpf:LongUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                </local:BasicSettingsNodeView>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:UInt8SettingsNodeVM}">
+                <local:BasicSettingsNodeView>
+                    <xwpf:ByteUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                </local:BasicSettingsNodeView>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:UInt16SettingsNodeVM}">
+                <local:BasicSettingsNodeView>
+                    <xwpf:UShortUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                </local:BasicSettingsNodeView>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:UInt32SettingsNodeVM}">
+                <local:BasicSettingsNodeView>
+                    <xwpf:UIntegerUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                </local:BasicSettingsNodeView>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:UInt64SettingsNodeVM}">
+                <local:BasicSettingsNodeView>
+                    <xwpf:ULongUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                </local:BasicSettingsNodeView>
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:DoubleSettingsNodeVM}">
-                <local:DoubleSettingsNodeView />
+                <local:BasicSettingsNodeView>
+                    <xwpf:DoubleUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                </local:BasicSettingsNodeView>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:EnumerableIntSettingsNodeVM}">
-                <local:EnumerableIntSettingsNodeView />
+            <DataTemplate DataType="{x:Type vm:DecimalSettingsNodeVM}">
+                <local:BasicSettingsNodeView>
+                    <xwpf:DecimalUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                </local:BasicSettingsNodeView>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:FloatSettingsNodeVM}">
+                <local:BasicSettingsNodeView>
+                    <xwpf:SingleUpDown Style="{StaticResource ReflectionIntSpinner}" Value="{Binding Value}" />
+                </local:BasicSettingsNodeView>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:EnumerableSettingsNodeVM}">
+                <local:EnumerableNumericSettingsNodeView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:UnknownSettingsNodeVM}">
                 <local:UnknownSettingsNodeView />
