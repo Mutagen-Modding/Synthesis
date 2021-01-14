@@ -10,15 +10,16 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <Grid Margin="5,5">
+    <Grid>
         <TextBlock
             x:Name="NoSettingsText"
+            Margin="10,10,0,0"
             FontWeight="Bold"
             Text="No Settings"
             Visibility="Collapsed" />
         <Button
             x:Name="OpenSettingsButton"
-            Margin="10,0,0,0"
+            Margin="10,10,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             ToolTip="Open patcher application to edit its settings"
@@ -36,8 +37,10 @@
             x:Name="ProcessingRing"
             Width="14"
             Height="14"
+            Margin="10,10,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
+            FontWeight="Bold"
             Foreground="{StaticResource PaleYellowBrush}"
             ToolTip="Cloning repository"
             Visibility="Collapsed">
@@ -48,7 +51,19 @@
                     Color="Red" />
             </mahapps:ProgressRing.Effect>
         </mahapps:ProgressRing>
-        <TabControl x:Name="ReflectionSettingTabs" Visibility="Collapsed">
+        <TabControl
+            x:Name="ReflectionSettingTabs"
+            Margin="-8,0,0,0"
+            Visibility="Collapsed">
+            <TabControl.Resources>
+                <Style BasedOn="{StaticResource MahApps.Styles.TabItem}" TargetType="{x:Type TabItem}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ItemsSource.Count, ElementName=ReflectionSettingTabs}" Value="1">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TabControl.Resources>
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Nickname}" />
