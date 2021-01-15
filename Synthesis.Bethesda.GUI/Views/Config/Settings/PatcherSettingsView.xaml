@@ -33,24 +33,44 @@
                     Text="OPEN SETTINGS" />
             </StackPanel>
         </Button>
-        <mahapps:ProgressRing
+        <StackPanel
             x:Name="ProcessingRing"
-            Width="14"
-            Height="14"
             Margin="10,10,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            FontWeight="Bold"
-            Foreground="{StaticResource PaleYellowBrush}"
-            ToolTip="Cloning repository"
+            Orientation="Horizontal"
             Visibility="Collapsed">
-            <mahapps:ProgressRing.Effect>
+            <StackPanel.Effect>
                 <DropShadowEffect
                     BlurRadius="10"
                     ShadowDepth="0"
                     Color="Red" />
-            </mahapps:ProgressRing.Effect>
-        </mahapps:ProgressRing>
+            </StackPanel.Effect>
+            <mahapps:ProgressRing
+                Width="14"
+                Height="14"
+                FontWeight="Bold"
+                Foreground="{StaticResource PaleYellowBrush}" />
+            <TextBlock Foreground="{StaticResource PaleYellowBrush}" Text="Loading settings" />
+        </StackPanel>
+        <StackPanel
+            x:Name="ErrorPanel"
+            Margin="10,10,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Orientation="Horizontal"
+            Visibility="Collapsed">
+            <icon:PackIconMaterial
+                Width="18"
+                Height="18"
+                Foreground="{StaticResource SalmonBrush}"
+                Kind="AlertCircle" />
+            <TextBlock
+                Margin="5,0,0,0"
+                VerticalAlignment="Center"
+                Foreground="{StaticResource SalmonBrush}"
+                Text="Error loading settings" />
+        </StackPanel>
         <TabControl
             x:Name="ReflectionSettingTabs"
             Margin="-8,0,0,0"

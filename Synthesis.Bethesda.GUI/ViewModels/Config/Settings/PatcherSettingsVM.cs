@@ -33,6 +33,9 @@ namespace Synthesis.Bethesda.GUI
         private Lazy<IObservableCollection<ReflectionSettingsVM>> _reflectionSettings;
         public IObservableCollection<ReflectionSettingsVM> ReflectionSettings => _reflectionSettings.Value;
 
+        private readonly ObservableAsPropertyHelper<ErrorResponse> _Error;
+        public ErrorResponse Error => _Error.Value;
+
         public PatcherSettingsVM(
             ILogger logger,
             PatcherVM parent,
@@ -90,13 +93,13 @@ namespace Synthesis.Bethesda.GUI
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .Select(i =>
                 {
-                    return Observable.Create<(bool Processing, ReflectionSettingsVM[] SettingsVM)>(async (observer, cancel) =>
+                    return Observable.Create<(bool Processing, GetResponse<ReflectionSettingsVM[]> SettingsVM)>(async (observer, cancel) =>
                     {
                         if (i.projPath.Failed
                             || i.settingsTarget.Style != SettingsStyle.SpecifiedClass
                             || i.settingsTarget.Targets.Length == 0)
                         {
-                            observer.OnNext((false, Array.Empty<ReflectionSettingsVM>()));
+                            observer.OnNext((false, GetResponse<ReflectionSettingsVM[]>.Succeed(Array.Empty<ReflectionSettingsVM>())));
                             return;
                         }
 
@@ -111,7 +114,7 @@ namespace Synthesis.Bethesda.GUI
                             if (types.Failed)
                             {
                                 Logger.Error($"Error checking if patcher can open settings: {types.Reason}");
-                                observer.OnNext((false, Array.Empty<ReflectionSettingsVM>()));
+                                observer.OnNext((false, types.BubbleFailure<ReflectionSettingsVM[]>()));
                                 return;
                             }
                             var vms = await Task.WhenAll(types.Value.Select(async (t, index) =>
@@ -132,7 +135,7 @@ namespace Synthesis.Bethesda.GUI
                         catch (Exception ex)
                         {
                             Logger.Error($"Error checking if patcher can open settings: {ex}");
-                            observer.OnNext((false, Array.Empty<ReflectionSettingsVM>()));
+                            observer.OnNext((false, GetResponse<ReflectionSettingsVM[]>.Fail(ex)));
                             return;
                         }
                     });
@@ -150,17 +153,21 @@ namespace Synthesis.Bethesda.GUI
                 return targetSettingsVM
                    .Select(x =>
                    {
-                       if (x.Processing)
+                       if (x.Processing || x.SettingsVM.Failed)
                        {
                            return Enumerable.Empty<ReflectionSettingsVM>()
                                .AsObservableChangeSet(x => (StringCaseAgnostic)x.SettingsPath);
                        }
-                       return x.SettingsVM.AsObservableChangeSet(x => (StringCaseAgnostic)x.SettingsPath);
+                       return x.SettingsVM.Value.AsObservableChangeSet(x => (StringCaseAgnostic)x.SettingsPath);
                    })
                    .Switch()
                    .ToObservableCollection(this.CompositeDisposable);
             },
             isThreadSafe: true);
+
+            _Error = targetSettingsVM
+                .Select(x => (ErrorResponse)x.SettingsVM)
+                .ToGuiProperty(this, nameof(Error), deferSubscription: true);
         }
 
         public void Persist(ILogger logger)
