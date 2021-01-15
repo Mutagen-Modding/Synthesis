@@ -107,34 +107,38 @@ namespace Synthesis.Bethesda.GUI
 
                         try
                         {
-                            var types = await Utility.ExtractTypesFromApp(
+                            var vms = await Utility.ExtractInfoFromProject<ReflectionSettingsVM[]>(
                                 projPath: i.projPath.Value,
-                                targetTypes: i.settingsTarget.Targets.Select(s => s.TypeName).ToArray(),
-                                cancel: cancel);
-                            if (types.Failed)
+                                cancel: cancel,
+                                getter: (assemb) =>
+                                {
+                                    return i.settingsTarget.Targets
+                                        .Select((s, index) =>
+                                        {
+                                            var t = assemb.GetType(s.TypeName);
+                                            if (t == null) return null;
+                                            return new ReflectionSettingsVM(
+                                                t,
+                                                nickname: i.settingsTarget.Targets[index].Nickname,
+                                                settingsPath: Path.Combine(
+                                                    Path.Combine(Execution.Constants.TypicalExtraData, parent.DisplayName),
+                                                    i.settingsTarget.Targets[index].Path));
+                                        })
+                                        .NotNull()
+                                        .ToArray();
+                                });
+                            if (vms.Failed)
                             {
-                                Logger.Error($"Error checking if patcher can open settings: {types.Reason}");
-                                observer.OnNext((false, types.BubbleFailure<ReflectionSettingsVM[]>()));
+                                Logger.Error($"Error creating reflection GUI: {vms.Reason}");
+                                observer.OnNext((false, vms.BubbleFailure<ReflectionSettingsVM[]>()));
                                 return;
                             }
-                            var vms = await Task.WhenAll(types.Value.Select(async (t, index) =>
-                            {
-                                if (t == null) return null;
-                                var settings = await ReflectionSettingsVM.Factory(
-                                    t,
-                                    i.settingsTarget.Targets[index].Nickname,
-                                    Path.Combine(
-                                        Path.Combine(Execution.Constants.TypicalExtraData, parent.DisplayName),
-                                        i.settingsTarget.Targets[index].Path),
-                                    logger,
-                                    cancel);
-                                return settings;
-                            }));
-                            observer.OnNext((false, vms.NotNull().ToArray()));
+                            await Task.WhenAll(vms.Value.Select(vm => vm.Import(logger, cancel)));
+                            observer.OnNext((false, vms.Value));
                         }
                         catch (Exception ex)
                         {
-                            Logger.Error($"Error checking if patcher can open settings: {ex}");
+                            Logger.Error($"Error creating reflection GUI: {ex}");
                             observer.OnNext((false, GetResponse<ReflectionSettingsVM[]>.Fail(ex)));
                             return;
                         }
@@ -161,6 +165,7 @@ namespace Synthesis.Bethesda.GUI
                        return x.SettingsVM.Value.AsObservableChangeSet(x => (StringCaseAgnostic)x.SettingsPath);
                    })
                    .Switch()
+                   .ObserveOnGui()
                    .ToObservableCollection(this.CompositeDisposable);
             },
             isThreadSafe: true);

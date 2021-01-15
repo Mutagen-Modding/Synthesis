@@ -17,12 +17,14 @@ namespace Synthesis.Bethesda.GUI
     public class ReflectionSettingsVM : ViewModel
     {
         private readonly Dictionary<string, SettingsNodeVM> _nodes;
-        public string SettingsPath { get; private set; } = string.Empty;
-        public string Nickname { get; private set; } = string.Empty;
+        public string SettingsPath { get; }
+        public string Nickname { get; }
         public ObservableCollection<SettingsNodeVM> Nodes { get; }
 
-        private ReflectionSettingsVM(Type type, CancellationToken cancel)
+        public ReflectionSettingsVM(Type type, string nickname, string settingsPath)
         {
+            Nickname = nickname;
+            SettingsPath = settingsPath;
             var defaultObj = Activator.CreateInstance(type);
             _nodes = type.GetMembers()
                 .Where(m => m.MemberType == MemberTypes.Property
@@ -32,9 +34,9 @@ namespace Synthesis.Bethesda.GUI
                     switch (m)
                     {
                         case PropertyInfo prop:
-                            return SettingsNodeVM.Factory(m.Name, prop.PropertyType, prop.GetValue(defaultObj), cancel);
+                            return SettingsNodeVM.Factory(m.Name, prop.PropertyType, prop.GetValue(defaultObj));
                         case FieldInfo field:
-                            return SettingsNodeVM.Factory(m.Name, field.FieldType, field.GetValue(defaultObj), cancel);
+                            return SettingsNodeVM.Factory(m.Name, field.FieldType, field.GetValue(defaultObj));
                         default:
                             throw new ArgumentException();
                     }
@@ -43,23 +45,7 @@ namespace Synthesis.Bethesda.GUI
             Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
         }
 
-        public static async Task<ReflectionSettingsVM> Factory(
-            Type type,
-            string nickname,
-            string inputPath,
-            ILogger logger,
-            CancellationToken cancel)
-        {
-            var ret = new ReflectionSettingsVM(type, cancel)
-            {
-                SettingsPath = inputPath,
-                Nickname = nickname,
-            };
-            await ret.Import(logger, cancel);
-            return ret;
-        }
-
-        private async Task Import(
+        public async Task Import(
             ILogger logger,
             CancellationToken cancel)
         {

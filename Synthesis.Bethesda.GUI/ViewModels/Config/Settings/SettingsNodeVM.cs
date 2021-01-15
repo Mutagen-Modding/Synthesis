@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.GUI
             MemberName = memberName;
         }
 
-        public static SettingsNodeVM Factory(string memberName, Type targetType, object? defaultVal, CancellationToken cancel)
+        public static SettingsNodeVM Factory(string memberName, Type targetType, object? defaultVal)
         {
             switch (targetType.Name)
             {
