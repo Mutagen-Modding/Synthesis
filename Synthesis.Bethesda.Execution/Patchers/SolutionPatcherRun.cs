@@ -153,7 +153,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
         public static async Task<ErrorResponse> CompileWithDotnet(string targetPath, CancellationToken cancel, Action<string>? log)
         {
             using var process = ProcessWrapper.Create(
-                new ProcessStartInfo("dotnet", DotNetCommands.GetBuildString($"\"{Path.GetFileName(targetPath)}\"")
+                new ProcessStartInfo("dotnet", DotNetCommands.GetBuildString($"\"{Path.GetFileName(targetPath)}\""))
                 {
                     WorkingDirectory = Path.GetDirectoryName(targetPath)!
                 },
