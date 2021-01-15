@@ -12,8 +12,12 @@ using System.Threading.Tasks;
 namespace Synthesis.Bethesda.Execution
 {
     public static class DotNetCommands
-
     {
+        public static string GetBuildString(string args)
+        {
+            return $"build --runtime win-x64 {args}";
+        }
+
         public static async Task<IEnumerable<(string Package, string Requested, string Resolved, string Latest)>> NugetListingQuery(string projectPath, bool outdated, bool includePrerelease, CancellationToken cancel)
         {
             // Run restore first
@@ -144,7 +148,7 @@ namespace Synthesis.Bethesda.Execution
             // Tried using Buildalyzer, but it has a lot of bad side effects like clearing build outputs when
             // locating information like this.
             using var proc = ProcessWrapper.Create(
-                new System.Diagnostics.ProcessStartInfo("dotnet", $"build --runtime win-x64 \"{projectPath}\""),
+                new System.Diagnostics.ProcessStartInfo("dotnet", GetBuildString($"\"{projectPath}\"")),
                 cancel: cancel);
             List<string> outs = new List<string>();
             using var outp = proc.Output.Subscribe(o => outs.Add(o));
