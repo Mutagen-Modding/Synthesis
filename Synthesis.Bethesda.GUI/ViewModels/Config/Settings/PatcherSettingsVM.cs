@@ -12,6 +12,7 @@ using DynamicData;
 using DynamicData.Binding;
 using System.IO;
 using Synthesis.Bethesda.DTO;
+using ReactiveUI.Fody.Helpers;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -35,6 +36,9 @@ namespace Synthesis.Bethesda.GUI
 
         private readonly ObservableAsPropertyHelper<ErrorResponse> _Error;
         public ErrorResponse Error => _Error.Value;
+
+        [Reactive]
+        public ReflectionSettingsVM? SelectedSettings { get; set; }
 
         public PatcherSettingsVM(
             ILogger logger,
@@ -159,13 +163,17 @@ namespace Synthesis.Bethesda.GUI
                    {
                        if (x.Processing || x.SettingsVM.Failed)
                        {
-                           return Enumerable.Empty<ReflectionSettingsVM>()
-                               .AsObservableChangeSet(x => (StringCaseAgnostic)x.SettingsPath);
+                           return Enumerable.Empty<ReflectionSettingsVM>();
                        }
-                       return x.SettingsVM.Value.AsObservableChangeSet(x => (StringCaseAgnostic)x.SettingsPath);
+                       return x.SettingsVM.Value;
+                   })
+                   .ObserveOnGui()
+                   .Select(x =>
+                   {
+                       SelectedSettings = x.FirstOrDefault();
+                       return x.AsObservableChangeSet(x => (StringCaseAgnostic)x.SettingsPath);
                    })
                    .Switch()
-                   .ObserveOnGui()
                    .ToObservableCollection(this.CompositeDisposable);
             },
             isThreadSafe: true);
