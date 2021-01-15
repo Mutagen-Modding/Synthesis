@@ -144,7 +144,7 @@ namespace Synthesis.Bethesda.Execution
             // Tried using Buildalyzer, but it has a lot of bad side effects like clearing build outputs when
             // locating information like this.
             using var proc = ProcessWrapper.Create(
-                new System.Diagnostics.ProcessStartInfo("dotnet", $"build \"{projectPath}\""),
+                new System.Diagnostics.ProcessStartInfo("dotnet", $"build --runtime win-x64 \"{projectPath}\""),
                 cancel: cancel);
             List<string> outs = new List<string>();
             using var outp = proc.Output.Subscribe(o => outs.Add(o));

@@ -799,7 +799,8 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (c.RunnableState.Failed) return c.RunnableState.BubbleFailure<string>();
                     return GetResponse<string>.Succeed(c.Item.ProjPath);
-                }));
+                })
+                .DistinctUntilChanged(x => x.Value));
             this.CompositeDisposable.Add(PatcherSettings);
         }
 

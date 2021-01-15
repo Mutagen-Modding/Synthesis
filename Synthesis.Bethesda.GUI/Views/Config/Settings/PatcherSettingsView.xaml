@@ -51,7 +51,11 @@
                 Height="14"
                 FontWeight="Bold"
                 Foreground="{StaticResource PaleYellowBrush}" />
-            <TextBlock Foreground="{StaticResource PaleYellowBrush}" Text="Loading settings" />
+            <TextBlock
+                Margin="5,0,0,0"
+                VerticalAlignment="Center"
+                Foreground="{StaticResource PaleYellowBrush}"
+                Text="Loading settings" />
         </StackPanel>
         <StackPanel
             x:Name="ErrorPanel"
