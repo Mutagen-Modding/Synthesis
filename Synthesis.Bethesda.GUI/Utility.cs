@@ -114,6 +114,11 @@ namespace Synthesis.Bethesda.GUI
         public static async Task<GetResponse<TRet>> ExtractInfoFromProject<TRet>(string projPath, CancellationToken cancel, Func<Assembly, GetResponse<TRet>> getter)
         {
             if (cancel.IsCancellationRequested) return GetResponse<TRet>.Fail("Cancelled");
+
+            // We copy to a temp folder, as despite all the hoops jumped through to unload the assembly,
+            // it still seems to lock the dll files.  For whatever reason, though, deleting the folder
+            // containing all those files seems to work out? This is definitely a hack.  Unload should
+            // ideally just work out of the box.
             using var tempFolder = new TempFolder(Path.Combine(Synthesis.Bethesda.Execution.Constants.WorkingDirectory, "Loading", Path.GetRandomFileName()));
             if (cancel.IsCancellationRequested) return GetResponse<TRet>.Fail("Cancelled");
             CopyDirectory(Path.GetDirectoryName(projPath)!, tempFolder.Dir.Path, cancel);
