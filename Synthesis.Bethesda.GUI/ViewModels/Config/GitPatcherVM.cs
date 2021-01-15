@@ -123,6 +123,10 @@ namespace Synthesis.Bethesda.GUI
 
         public PatcherSettingsVM PatcherSettings { get; }
 
+        public record StatusRecord(string Text, bool Processing, bool Blocking, ICommand? Command);
+        private readonly ObservableAsPropertyHelper<StatusRecord> _StatusDisplay;
+        public StatusRecord StatusDisplay => _StatusDisplay.Value;
+
         public GitPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
         {
@@ -802,6 +806,90 @@ namespace Synthesis.Bethesda.GUI
                 })
                 .DistinctUntilChanged(x => x.Value));
             this.CompositeDisposable.Add(PatcherSettings);
+
+            _StatusDisplay = Observable.CombineLatest(
+                driverRepoInfo,
+                runnableState,
+                compilation,
+                runnability,
+                (driver, runnable, comp, runnability) =>
+                {
+                    if (driver.RunnableState.Failed)
+                    {
+                        if (driver.IsHaltingError)
+                        {
+                            return new StatusRecord(
+                                Text: "Blocking Error",
+                                Processing: false,
+                                Blocking: true,
+                                Command: null);
+                        }
+                        return new StatusRecord(
+                            Text: "Analyzing repository",
+                            Processing: true,
+                            Blocking: false,
+                            Command: null);
+                    }
+                    if (runnable.RunnableState.Failed)
+                    {
+                        if (runnable.IsHaltingError)
+                        {
+                            return new StatusRecord(
+                                Text: "Blocking Error",
+                                Processing: false,
+                                Blocking: true,
+                                Command: null);
+                        }
+                        return new StatusRecord(
+                            Text: "Checking out desired state",
+                            Processing: true,
+                            Blocking: false,
+                            Command: null);
+                    }
+                    if (comp.RunnableState.Failed)
+                    {
+                        if (comp.IsHaltingError)
+                        {
+                            return new StatusRecord(
+                                Text: "Blocking Error",
+                                Processing: false,
+                                Blocking: true,
+                                Command: null);
+                        }
+                        return new StatusRecord(
+                            Text: "Compiling",
+                            Processing: true,
+                            Blocking: false,
+                            Command: null);
+                    }
+                    if (runnability.RunnableState.Failed)
+                    {
+                        if (runnability.IsHaltingError)
+                        {
+                            return new StatusRecord(
+                                Text: "Blocking Error",
+                                Processing: false,
+                                Blocking: true,
+                                Command: null);
+                        }
+                        return new StatusRecord(
+                            Text: "Checking runnability",
+                            Processing: true,
+                            Blocking: false,
+                            Command: null);
+                    }
+                    return new StatusRecord(
+                        Text: "Ready",
+                        Processing: false,
+                        Blocking: false,
+                        Command: null);
+                })
+                .ToGuiProperty(this, nameof(StatusDisplay), 
+                    new StatusRecord(
+                        Text: "Initializing",
+                        Processing: false,
+                        Blocking: false,
+                        Command: null));
         }
 
         public override PatcherSettings Save()

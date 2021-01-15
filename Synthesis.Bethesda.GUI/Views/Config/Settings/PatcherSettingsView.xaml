@@ -40,17 +40,18 @@
             VerticalAlignment="Top"
             Orientation="Horizontal"
             Visibility="Collapsed">
-            <StackPanel.Effect>
-                <DropShadowEffect
-                    BlurRadius="10"
-                    ShadowDepth="0"
-                    Color="Red" />
-            </StackPanel.Effect>
             <mahapps:ProgressRing
                 Width="14"
                 Height="14"
                 FontWeight="Bold"
-                Foreground="{StaticResource PaleYellowBrush}" />
+                Foreground="{StaticResource PaleYellowBrush}">
+                <mahapps:ProgressRing.Effect>
+                    <DropShadowEffect
+                        BlurRadius="10"
+                        ShadowDepth="0"
+                        Color="Red" />
+                </mahapps:ProgressRing.Effect>
+            </mahapps:ProgressRing>
             <TextBlock
                 Margin="5,0,0,0"
                 VerticalAlignment="Center"

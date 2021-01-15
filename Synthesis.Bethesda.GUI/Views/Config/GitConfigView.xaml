@@ -7,17 +7,49 @@
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DataContext=""
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Grid>
-        <TabControl Margin="0,5,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0"
+            x:Name="StatusBlock"
+            Margin="5,-3,0,0">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray4}" />
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding StatusDisplay.Processing}" Value="False" />
+                                <Condition Binding="{Binding StatusDisplay.Blocking}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Foreground" Value="{StaticResource PurpleForegroundBrush}" />
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <DataTrigger Binding="{Binding StatusDisplay.Blocking}" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource SalmonBrush}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding StatusDisplay.Processing}" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource PaleYellowBrush}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <TabControl Grid.Row="1" Margin="0,5,0,0">
             <TabItem Header="Settings">
                 <local:PatcherSettingsView x:Name="PatcherSettings" />
             </TabItem>
             <TabItem Header="Versioning">
-                <ScrollViewer Margin="0,5,0,0"
+                <ScrollViewer
                     x:Name="AdvancedSettingsArea"
+                    Margin="0,5,0,0"
                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
                     ScrollViewer.VerticalScrollBarVisibility="Auto">
                     <Grid>

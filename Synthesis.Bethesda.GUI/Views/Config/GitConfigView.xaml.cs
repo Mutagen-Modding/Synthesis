@@ -316,6 +316,13 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyFallback(x => x.ViewModel!.PatcherSettings)
                     .BindToStrict(this, x => x.PatcherSettings.DataContext)
                     .DisposeWith(disposable);
+
+                #region Status Block
+                this.WhenAnyFallback(x => x.ViewModel!.StatusDisplay.Text)
+                    .Throttle(TimeSpan.FromMilliseconds(50), RxApp.MainThreadScheduler)
+                    .BindToStrict(this, x => x.StatusBlock.Text)
+                    .DisposeWith(disposable);
+                #endregion
             });
         }
     }
