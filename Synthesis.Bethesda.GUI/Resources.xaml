@@ -136,6 +136,7 @@
 
     <Style x:Key="ReflectionSettingName" TargetType="TextBlock">
         <Setter Property="MinWidth" Value="100" />
+        <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
     <Style x:Key="ReflectionSettingBorder" TargetType="Border">
