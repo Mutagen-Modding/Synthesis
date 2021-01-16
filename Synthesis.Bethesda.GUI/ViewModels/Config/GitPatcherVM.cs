@@ -27,6 +27,8 @@ namespace Synthesis.Bethesda.GUI
 {
     public class GitPatcherVM : PatcherVM
     {
+        public override bool IsNameEditable => false;
+
         [Reactive]
         public string RemoteRepoPath { get; set; } = string.Empty;
 

@@ -49,6 +49,8 @@ namespace Synthesis.Bethesda.GUI
 
         public ErrorVM ErrorVM { get; }
 
+        public virtual bool IsNameEditable => true;
+
         public PatcherVM(ProfileVM parent, PatcherSettings? settings)
         {
             DisplayedObject = this;
