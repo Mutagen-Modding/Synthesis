@@ -8,6 +8,8 @@ namespace Synthesis.Bethesda.GUI
     public interface IBasicSettingsNodeVM
     {
         object Value { get; }
+
+        bool IsSelected { get; set; }
     }
 
     public abstract class BasicSettingsNodeVM<T> : SettingsNodeVM, IBasicSettingsNodeVM
@@ -16,6 +18,9 @@ namespace Synthesis.Bethesda.GUI
         public T Value { get; set; }
 
         object IBasicSettingsNodeVM.Value => this.Value!;
+
+        [Reactive]
+        public bool IsSelected { get; set; }
 
         public BasicSettingsNodeVM(string memberName, object? defaultVal)
             : base(memberName)

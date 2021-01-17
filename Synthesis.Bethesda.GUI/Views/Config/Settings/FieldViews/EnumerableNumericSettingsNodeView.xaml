@@ -15,7 +15,7 @@
         <Grid MinHeight="25">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="140" />
-                <ColumnDefinition Width="60" />
+                <ColumnDefinition Width="70" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0"
@@ -31,10 +31,14 @@
                 HorizontalAlignment="Left"
                 Background="Transparent"
                 BorderThickness="0"
-                ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 SelectionMode="Extended"
                 VirtualizingPanel.IsVirtualizing="False">
+                <ListBox.ItemContainerStyle>
+                    <Style BasedOn="{StaticResource Noggog.Styles.ListBoxItem.Plain}" TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
                 <ListBox.Style>
                     <Style TargetType="ListBox">
                         <Style.Triggers>
@@ -56,9 +60,11 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <Rectangle Grid.Column="1"
-                                Margin="0,-2"
-                                Fill="{StaticResource PurpleSlightlyLightBrush}"
+                            <Border Grid.Column="1"
+                                Margin="0,-3,-3,-3"
+                                Background="{StaticResource DarkPurpleBrush}"
+                                BorderBrush="{StaticResource SalmonBrush}"
+                                BorderThickness="0,0,2,0"
                                 Visibility="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}" />
                             <TextBlock Grid.Column="0"
                                 Margin="0,0,4,0"

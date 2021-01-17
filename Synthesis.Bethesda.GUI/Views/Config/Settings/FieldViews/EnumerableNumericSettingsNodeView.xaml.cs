@@ -1,10 +1,15 @@
 using Noggog.WPF;
 using ReactiveUI;
+using System;
 using System.Collections;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using Xceed.Wpf.Toolkit;
+using Xceed.Wpf.Toolkit.Primitives;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -42,6 +47,23 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.SettingsListBox.SelectedItems)
                     .BindTo(this, x => x.ViewModel!.SelectedValues)
+                    .DisposeWith(disposable);
+                // Focus and select new item on add
+                this.WhenAnyValue(x => x.ViewModel!.AddCommand)
+                    .Select(x => x.EndingExecution())
+                    .Switch()
+                    .Delay(TimeSpan.FromMilliseconds(50), RxApp.MainThreadScheduler)
+                    .Subscribe(_ =>
+                    {
+                        var item = this.ViewModel?.Values.LastOrDefault();
+                        if (item == null) return;
+                        this.SettingsListBox.SelectedItem = item;
+                        var listBoxItem = this.SettingsListBox
+                            .ItemContainerGenerator
+                            .ContainerFromItem(item) as ListBoxItem;
+                        if (listBoxItem == null) return;
+                        listBoxItem.GetChildOfType<WatermarkTextBox>()?.Focus();
+                    })
                     .DisposeWith(disposable);
             });
         }

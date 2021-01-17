@@ -1,6 +1,5 @@
 using Noggog.WPF;
-using ReactiveUI;
-using System;
+using ReactiveUI.Fody.Helpers;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -10,6 +9,9 @@ namespace Synthesis.Bethesda.GUI
         public TWrapper Value { get; }
 
         object IBasicSettingsNodeVM.Value => this.Value;
+
+        [Reactive]
+        public bool IsSelected { get; set; }
 
         public ListElementWrapperVM(TItem value)
         {

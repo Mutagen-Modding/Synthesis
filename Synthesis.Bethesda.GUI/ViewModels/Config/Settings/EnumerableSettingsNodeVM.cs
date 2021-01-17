@@ -19,7 +19,7 @@ namespace Synthesis.Bethesda.GUI
     {
         private Func<JsonElement, IBasicSettingsNodeVM> _get;
         public ObservableCollection<IBasicSettingsNodeVM> Values { get; } = new ObservableCollection<IBasicSettingsNodeVM>();
-        public ICommand AddCommand { get; private set; } = null!;
+        public ReactiveCommand<Unit, Unit> AddCommand { get; private set; } = null!;
         public ReactiveCommand<Unit, Unit> DeleteCommand { get; private set; }
 
         [Reactive]
@@ -77,7 +77,13 @@ namespace Synthesis.Bethesda.GUI
                     return new ListElementWrapperVM<TItem, TWrapper>(x);
                 }));
             }
-            ret.AddCommand = ReactiveCommand.Create(() => ret.Values.Add(new ListElementWrapperVM<TItem, TWrapper>(prototype.GetDefault())));
+            ret.AddCommand = ReactiveCommand.Create(() =>
+            {
+                ret.Values.Add(new ListElementWrapperVM<TItem, TWrapper>(prototype.GetDefault())
+                {
+                    IsSelected = true
+                });
+            });
             return ret;
         }
     }

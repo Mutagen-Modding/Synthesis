@@ -12,6 +12,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -167,6 +169,21 @@ namespace Synthesis.Bethesda.GUI
                 // right away, GC has to kick in later to collect all the stuff.
                 alc.Unload();
             }
+        }
+
+        public static T? GetChildOfType<T>(this DependencyObject depObj)
+            where T : DependencyObject
+        {
+            if (depObj == null) return null;
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(depObj, i);
+
+                var result = (child as T) ?? GetChildOfType<T>(child);
+                if (result != null) return result;
+            }
+            return null;
         }
     }
 }
