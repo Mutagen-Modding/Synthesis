@@ -34,6 +34,7 @@
                 ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
                 ItemsSource="{Binding Values}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                SelectionMode="Extended"
                 VirtualizingPanel.IsVirtualizing="False">
                 <ListBox.Style>
                     <Style TargetType="ListBox">
@@ -56,13 +57,27 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
+                            <Rectangle Grid.Column="1"
+                                Margin="0,-2"
+                                Fill="{StaticResource PurpleSlightlyLightBrush}"
+                                Visibility="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}" />
                             <TextBlock Grid.Column="0"
                                 Margin="0,0,4,0"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center"
-                                Foreground="{StaticResource MahApps.Brushes.Gray8}"
                                 Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplatedParent.(ItemsControl.AlternationIndex)}"
-                                ToolTip="Index of item on the list" />
+                                ToolTip="Index of item on the list">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray8}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                                                <Setter Property="Foreground" Value="{StaticResource PaleYellowBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                             <ContentPresenter Grid.Column="1"
                                 x:Name="ValueContent"
                                 Content="{Binding Value}">
@@ -137,12 +152,15 @@
                             </ContentPresenter>
                             <Button Grid.Column="2"
                                 Command="{Binding DeleteCommand}"
-                                ToolTip="Add another item">
+                                ToolTip="Delete item">
                                 <Button.Style>
                                     <Style BasedOn="{StaticResource CloseButton}" TargetType="Button">
                                         <Setter Property="Visibility" Value="Hidden" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsMouseOver, ElementName=ItemGrid}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
                                                 <Setter Property="Visibility" Value="Visible" />
                                             </DataTrigger>
                                         </Style.Triggers>

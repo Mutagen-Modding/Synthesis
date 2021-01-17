@@ -20,6 +20,8 @@
     <Color x:Key="PaleBlueTransparent">#0057f1fc</Color>
     <Color x:Key="Blue">#2f5eb5</Color>
     <Color x:Key="Purple">#281d52</Color>
+    <Color x:Key="PurpleSlightlyLight">#372773</Color>
+    <Color x:Key="PurpleTransparent">#00281d52</Color>
     <Color x:Key="NeonPurple">#4817ff</Color>
     <Color x:Key="LightPurple">#7458db</Color>
     <Color x:Key="PurpleForeground">#8c76db</Color>
@@ -44,6 +46,7 @@
     <SolidColorBrush x:Key="PaleBlueHoverBrush" Color="{StaticResource PaleBlue}" />
     <SolidColorBrush x:Key="BlueBrush" Color="{StaticResource Blue}" />
     <SolidColorBrush x:Key="PurpleBrush" Color="{StaticResource Purple}" />
+    <SolidColorBrush x:Key="PurpleSlightlyLightBrush" Color="{StaticResource PurpleSlightlyLight}" />
     <SolidColorBrush x:Key="NeonPurpleBrush" Color="{StaticResource NeonPurple}" />
     <SolidColorBrush x:Key="LightPurpleBrush" Color="{StaticResource LightPurple}" />
     <SolidColorBrush x:Key="PurpleForegroundBrush" Color="{StaticResource PurpleForeground}" />
