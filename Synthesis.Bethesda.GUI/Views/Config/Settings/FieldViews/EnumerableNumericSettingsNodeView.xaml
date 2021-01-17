@@ -18,6 +18,12 @@
                 <ColumnDefinition Width="80" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                Margin="0,4,6,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Style="{StaticResource ReflectionSettingName}"
+                Text="{Binding MemberName}" />
             <!--  Disable virtualization to power numbering via Alternate Index systems  -->
             <ListBox Grid.Column="0" Grid.ColumnSpan="2"
                 MaxHeight="250"
@@ -152,12 +158,6 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <TextBlock Grid.Column="0"
-                Margin="0,4,6,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Style="{StaticResource ReflectionSettingName}"
-                Text="{Binding MemberName}" />
             <TextBlock Grid.Column="0" Grid.ColumnSpan="2"
                 x:Name="NoItemsBlock"
                 Width="80"
