@@ -42,7 +42,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[MemberName] = Value as JToken;
+            obj[MemberName] = JToken.FromObject(Value!);
         }
 
         public abstract T Get(JsonElement property);
