@@ -14,25 +14,28 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock
-            x:Name="TitleBlock"
-            Margin="5,0,0,2"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            FontSize="16"
-            FontWeight="Black"
-            Foreground="{StaticResource SalmonBrush}" />
-        <Button
-            x:Name="CloseErrorButton"
+        <StackPanel Grid.Row="0"
             Margin="0,0,5,0"
-            HorizontalAlignment="Right"
-            Style="{StaticResource ErrorButton}">
-            <icon:PackIconMaterial
-                Width="15"
-                Height="15"
+            HorizontalAlignment="Left"
+            Orientation="Horizontal">
+            <Button
+                x:Name="CloseErrorButton"
                 VerticalAlignment="Center"
-                Kind="ChevronDown" />
-        </Button>
+                Style="{StaticResource ErrorButton}">
+                <icon:PackIconMaterial
+                    Width="15"
+                    Height="15"
+                    VerticalAlignment="Center"
+                    Kind="ChevronDown" />
+            </Button>
+            <TextBlock
+                x:Name="TitleBlock"
+                Margin="5,0,0,2"
+                VerticalAlignment="Center"
+                FontSize="16"
+                FontWeight="Black"
+                Foreground="{StaticResource SalmonBrush}" />
+        </StackPanel>
         <TextBox Grid.Row="1"
             x:Name="ErrorOutputBox"
             Background="#33000000"
