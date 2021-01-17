@@ -4,7 +4,8 @@
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mahconv="clr-namespace:MahApps.Metro.Converters;assembly=MahApps.Metro"
-    xmlns:xwpf="http://schemas.xceed.com/wpf/xaml/toolkit">
+    xmlns:xwpf="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:xwpfThemes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit">
     <Color x:Key="Salmon">#e16063</Color>
     <Color x:Key="LightSalmon">#fa7376</Color>
     <Color x:Key="WhiteSalmon">#ff999b</Color>
@@ -145,13 +146,6 @@
         <Setter Property="BorderBrush" Value="{StaticResource GrayBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="5" />
-    </Style>
-
-    <Style x:Key="ReflectionIntSpinner" TargetType="xwpf:InputBase">
-        <Setter Property="Width" Value="80" />
-        <Setter Property="Background" Value="#FF000000" />
-        <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="Foreground" Value="White" />
     </Style>
 
     <Style BasedOn="{StaticResource Noggog.Styles.Checkbox}" TargetType="{x:Type CheckBox}">
@@ -561,6 +555,105 @@
         <Setter Property="mahapps:TabControlHelper.UnderlineMouseOverSelectedBrush" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabControl}}, Path=(mahapps:TabControlHelper.UnderlineMouseOverSelectedBrush), Mode=OneWay}" />
         <Setter Property="mahapps:TabControlHelper.UnderlinePlacement" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabControl}}, Path=(mahapps:TabControlHelper.UnderlinePlacement), Mode=OneWay}" />
         <Setter Property="mahapps:TabControlHelper.UnderlineSelectedBrush" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabControl}}, Path=(mahapps:TabControlHelper.UnderlineSelectedBrush), Mode=OneWay}" />
+    </Style>
+
+    <DataTemplate x:Key="DefaultWatermarkTemplate">
+        <ContentControl
+            Margin="0,0,3,0"
+            Content="{Binding}"
+            Focusable="False"
+            Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+    </DataTemplate>
+
+    <Style x:Key="NoggogNumericUpDown" TargetType="{x:Type xwpf:InputBase}">
+        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static xwpfThemes:ResourceKeys.ControlNormalBorderKey}}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="HorizontalContentAlignment" Value="Right" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="TextAlignment" Value="Right" />
+        <Setter Property="WatermarkTemplate" Value="{StaticResource DefaultWatermarkTemplate}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Control">
+                    <xwpf:ButtonSpinner
+                        x:Name="PART_Spinner"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch"
+                        AllowSpin="{Binding AllowSpin, RelativeSource={RelativeSource TemplatedParent}}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        ButtonSpinnerLocation="{Binding ButtonSpinnerLocation, RelativeSource={RelativeSource TemplatedParent}}"
+                        IsTabStop="False"
+                        ShowButtonSpinner="{Binding ShowButtonSpinner, RelativeSource={RelativeSource TemplatedParent}}">
+                        <xwpf:WatermarkTextBox
+                            x:Name="PART_TextBox"
+                            MinWidth="20"
+                            Padding="{TemplateBinding Padding}"
+                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                            AcceptsReturn="False"
+                            AutoMoveFocus="{Binding AutoMoveFocus, RelativeSource={RelativeSource TemplatedParent}}"
+                            AutoSelectBehavior="{Binding AutoSelectBehavior, RelativeSource={RelativeSource TemplatedParent}}"
+                            Background="Black"
+                            BorderThickness="0"
+                            ContextMenu="{TemplateBinding ContextMenu}"
+                            FontFamily="{TemplateBinding FontFamily}"
+                            FontSize="{TemplateBinding FontSize}"
+                            FontStretch="{TemplateBinding FontStretch}"
+                            FontStyle="{TemplateBinding FontStyle}"
+                            FontWeight="{TemplateBinding FontWeight}"
+                            Foreground="{TemplateBinding Foreground}"
+                            IsTabStop="True"
+                            IsUndoEnabled="{Binding IsUndoEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                            MaxLength="{Binding MaxLength, RelativeSource={RelativeSource TemplatedParent}}"
+                            TabIndex="{TemplateBinding TabIndex}"
+                            TextAlignment="{Binding TextAlignment, RelativeSource={RelativeSource TemplatedParent}}"
+                            TextWrapping="NoWrap"
+                            Watermark="{Binding Watermark, RelativeSource={RelativeSource TemplatedParent}}"
+                            WatermarkTemplate="{Binding WatermarkTemplate, RelativeSource={RelativeSource TemplatedParent}}" />
+                    </xwpf:ButtonSpinner>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static xwpfThemes:ResourceKeys.ControlMouseOverBorderKey}}" />
+                        </Trigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsReadOnly, RelativeSource={RelativeSource Self}}" Value="False" />
+                                <Condition Binding="{Binding AllowTextInput, RelativeSource={RelativeSource Self}}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter TargetName="PART_TextBox" Property="IsReadOnly" Value="True" />
+                        </MultiDataTrigger>
+                        <DataTrigger Binding="{Binding IsReadOnly, RelativeSource={RelativeSource Self}}" Value="True">
+                            <Setter TargetName="PART_TextBox" Property="IsReadOnly" Value="True" />
+                        </DataTrigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static xwpfThemes:ResourceKeys.ControlSelectedBorderKey}}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                        </Trigger>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="PART_TextBox" Property="FocusManager.FocusedElement" Value="{Binding ElementName=PART_TextBox}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style
+        x:Key="ReflectionIntSpinner"
+        BasedOn="{StaticResource NoggogNumericUpDown}"
+        TargetType="xwpf:InputBase">
+        <Setter Property="Width" Value="80" />
+        <Setter Property="Background" Value="#FF000000" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Foreground" Value="White" />
     </Style>
 
 </ResourceDictionary>
