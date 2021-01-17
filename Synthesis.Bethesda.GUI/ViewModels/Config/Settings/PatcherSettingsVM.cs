@@ -124,9 +124,8 @@ namespace Synthesis.Bethesda.GUI
                                             return new ReflectionSettingsVM(
                                                 t,
                                                 nickname: i.settingsTarget.Targets[index].Nickname,
-                                                settingsPath: Path.Combine(
-                                                    Path.Combine(Execution.Constants.TypicalExtraData, parent.DisplayName),
-                                                    i.settingsTarget.Targets[index].Path));
+                                                settingsFolder: Path.Combine(Execution.Constants.TypicalExtraData, parent.DisplayName),
+                                                settingsSubPath: i.settingsTarget.Targets[index].Path);
                                         })
                                         .NotNull()
                                         .ToArray();
@@ -171,7 +170,7 @@ namespace Synthesis.Bethesda.GUI
                    .Select(x =>
                    {
                        SelectedSettings = x.FirstOrDefault();
-                       return x.AsObservableChangeSet(x => (StringCaseAgnostic)x.SettingsPath);
+                       return x.AsObservableChangeSet(x => (StringCaseAgnostic)x.SettingsSubPath);
                    })
                    .Switch()
                    .ToObservableCollection(this.CompositeDisposable);

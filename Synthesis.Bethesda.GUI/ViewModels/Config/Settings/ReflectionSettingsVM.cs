@@ -11,20 +11,28 @@ using System.Collections.ObjectModel;
 using Serilog;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using LibGit2Sharp;
 
 namespace Synthesis.Bethesda.GUI
 {
     public class ReflectionSettingsVM : ViewModel
     {
         private readonly Dictionary<string, SettingsNodeVM> _nodes;
-        public string SettingsPath { get; }
+        public string SettingsFolder { get; }
+        public string SettingsSubPath { get; }
+        public string SettingsPath => Path.Combine(SettingsFolder, SettingsSubPath);
         public string Nickname { get; }
         public ObservableCollection<SettingsNodeVM> Nodes { get; }
 
-        public ReflectionSettingsVM(Type type, string nickname, string settingsPath)
+        public ReflectionSettingsVM(
+            Type type, 
+            string nickname, 
+            string settingsFolder,
+            string settingsSubPath)
         {
             Nickname = nickname;
-            SettingsPath = settingsPath;
+            SettingsFolder = settingsFolder;
+            SettingsSubPath = settingsSubPath;
             var defaultObj = Activator.CreateInstance(type);
             _nodes = type.GetMembers()
                 .Where(m => m.MemberType == MemberTypes.Property
@@ -79,6 +87,20 @@ namespace Synthesis.Bethesda.GUI
             }
             Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
             File.WriteAllText(SettingsPath, doc.ToString());
+            if (!Repository.IsValid(SettingsFolder))
+            {
+                Repository.Init(SettingsFolder);
+            }
+            using var repo = new Repository(SettingsFolder);
+            Commands.Stage(repo, SettingsSubPath);
+            var sig = new Signature("Synthesis", "someEmail@gmail.com", DateTimeOffset.Now);
+            try
+            {
+                repo.Commit("Settings changed", sig, sig);
+            }
+            catch (EmptyCommitException)
+            {
+            }
         }
     }
 }
