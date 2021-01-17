@@ -12,10 +12,10 @@
     mc:Ignorable="d">
     <ContentControl Content="{Binding}">
         <ContentControl.Resources>
-            <DataTemplate DataType="{x:Type vm:BoolSettingsNodeVM}">
+            <DataTemplate DataType="{x:Type vm:BoolSettingsVM}">
                 <local:BoolSettingsNodeView />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:Int8SettingsNodeVM}">
+            <DataTemplate DataType="{x:Type vm:Int8SettingsVM}">
                 <local:BasicSettingsNodeView>
                     <xwpf:SByteUpDown
                         ShowButtonSpinner="False"
@@ -23,7 +23,7 @@
                         Value="{Binding Value}" />
                 </local:BasicSettingsNodeView>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:Int16SettingsNodeVM}">
+            <DataTemplate DataType="{x:Type vm:Int16SettingsVM}">
                 <local:BasicSettingsNodeView>
                     <xwpf:ShortUpDown
                         ShowButtonSpinner="False"
@@ -31,7 +31,7 @@
                         Value="{Binding Value}" />
                 </local:BasicSettingsNodeView>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:Int32SettingsNodeVM}">
+            <DataTemplate DataType="{x:Type vm:Int32SettingsVM}">
                 <local:BasicSettingsNodeView>
                     <xwpf:IntegerUpDown
                         ShowButtonSpinner="False"
@@ -39,7 +39,7 @@
                         Value="{Binding Value}" />
                 </local:BasicSettingsNodeView>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:Int64SettingsNodeVM}">
+            <DataTemplate DataType="{x:Type vm:Int64SettingsVM}">
                 <local:BasicSettingsNodeView>
                     <xwpf:LongUpDown
                         ShowButtonSpinner="False"
@@ -47,7 +47,7 @@
                         Value="{Binding Value}" />
                 </local:BasicSettingsNodeView>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:UInt8SettingsNodeVM}">
+            <DataTemplate DataType="{x:Type vm:UInt8SettingsVM}">
                 <local:BasicSettingsNodeView>
                     <xwpf:ByteUpDown
                         ShowButtonSpinner="False"
@@ -55,7 +55,7 @@
                         Value="{Binding Value}" />
                 </local:BasicSettingsNodeView>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:UInt16SettingsNodeVM}">
+            <DataTemplate DataType="{x:Type vm:UInt16SettingsVM}">
                 <local:BasicSettingsNodeView>
                     <xwpf:UShortUpDown
                         ShowButtonSpinner="False"
@@ -63,7 +63,7 @@
                         Value="{Binding Value}" />
                 </local:BasicSettingsNodeView>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:UInt32SettingsNodeVM}">
+            <DataTemplate DataType="{x:Type vm:UInt32SettingsVM}">
                 <local:BasicSettingsNodeView>
                     <xwpf:UIntegerUpDown
                         ShowButtonSpinner="False"
@@ -71,7 +71,7 @@
                         Value="{Binding Value}" />
                 </local:BasicSettingsNodeView>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:UInt64SettingsNodeVM}">
+            <DataTemplate DataType="{x:Type vm:UInt64SettingsVM}">
                 <local:BasicSettingsNodeView>
                     <xwpf:ULongUpDown
                         ShowButtonSpinner="False"
@@ -79,7 +79,7 @@
                         Value="{Binding Value}" />
                 </local:BasicSettingsNodeView>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:DoubleSettingsNodeVM}">
+            <DataTemplate DataType="{x:Type vm:DoubleSettingsVM}">
                 <local:BasicSettingsNodeView>
                     <xwpf:DoubleUpDown
                         ShowButtonSpinner="False"
@@ -87,7 +87,7 @@
                         Value="{Binding Value}" />
                 </local:BasicSettingsNodeView>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:DecimalSettingsNodeVM}">
+            <DataTemplate DataType="{x:Type vm:DecimalSettingsVM}">
                 <local:BasicSettingsNodeView>
                     <xwpf:DecimalUpDown
                         ShowButtonSpinner="False"
@@ -95,7 +95,7 @@
                         Value="{Binding Value}" />
                 </local:BasicSettingsNodeView>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:FloatSettingsNodeVM}">
+            <DataTemplate DataType="{x:Type vm:FloatSettingsVM}">
                 <local:BasicSettingsNodeView>
                     <xwpf:SingleUpDown
                         ShowButtonSpinner="False"
@@ -103,10 +103,10 @@
                         Value="{Binding Value}" />
                 </local:BasicSettingsNodeView>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:EnumerableSettingsNodeVM}">
+            <DataTemplate DataType="{x:Type vm:EnumerableSettingsVM}">
                 <local:EnumerableNumericSettingsNodeView />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:UnknownSettingsNodeVM}">
+            <DataTemplate DataType="{x:Type vm:UnknownSettingsVM}">
                 <local:UnknownSettingsNodeView />
             </DataTemplate>
         </ContentControl.Resources>

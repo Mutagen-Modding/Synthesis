@@ -4,7 +4,7 @@ using System.Reactive.Disposables;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class BoolSettingsNodeViewBase : NoggogUserControl<BoolSettingsNodeVM> { }
+    public class BoolSettingsNodeViewBase : NoggogUserControl<BoolSettingsVM> { }
 
     /// <summary>
     /// Interaction logic for BoolSettingsNodeView.xaml

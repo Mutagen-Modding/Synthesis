@@ -2,14 +2,14 @@ using System.Text.Json;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class DoubleSettingsNodeVM : BasicSettingsNodeVM<double>
+    public class DoubleSettingsVM : BasicSettingsVM<double>
     {
-        public DoubleSettingsNodeVM(string memberName, object? defaultVal)
+        public DoubleSettingsVM(string memberName, object? defaultVal)
             : base(memberName, defaultVal)
         {
         }
 
-        public DoubleSettingsNodeVM()
+        public DoubleSettingsVM()
             : base(string.Empty, default)
         {
         }

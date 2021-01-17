@@ -4,7 +4,7 @@ using System.Reactive.Disposables;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class UnknownSettingsNodeViewBase : NoggogUserControl<UnknownSettingsNodeVM> { }
+    public class UnknownSettingsNodeViewBase : NoggogUserControl<UnknownSettingsVM> { }
 
     /// <summary>
     /// Unknowneraction logic for UnknownSettingsNodeView.xaml

@@ -13,7 +13,7 @@ using Xceed.Wpf.Toolkit.Primitives;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class EnumerableNumericSettingsNodeViewBase : NoggogUserControl<EnumerableSettingsNodeVM> { }
+    public class EnumerableNumericSettingsNodeViewBase : NoggogUserControl<EnumerableSettingsVM> { }
 
     /// <summary>
     /// EnumerableInteraction logic for EnumerableNumericSettingsNodeView.xaml

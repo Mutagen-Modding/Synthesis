@@ -21,29 +21,29 @@ namespace Synthesis.Bethesda.GUI
             switch (targetType.Name)
             {
                 case "Boolean":
-                    return new BoolSettingsNodeVM(memberName, defaultVal);
+                    return new BoolSettingsVM(memberName, defaultVal);
                 case "SByte":
-                    return new Int8SettingsNodeVM(memberName, defaultVal);
+                    return new Int8SettingsVM(memberName, defaultVal);
                 case "Int16":
-                    return new Int16SettingsNodeVM(memberName, defaultVal);
+                    return new Int16SettingsVM(memberName, defaultVal);
                 case "Int32":
-                    return new Int32SettingsNodeVM(memberName, defaultVal);
+                    return new Int32SettingsVM(memberName, defaultVal);
                 case "Int64":
-                    return new Int64SettingsNodeVM(memberName, defaultVal);
+                    return new Int64SettingsVM(memberName, defaultVal);
                 case "Byte":
-                    return new UInt8SettingsNodeVM(memberName, defaultVal);
+                    return new UInt8SettingsVM(memberName, defaultVal);
                 case "UInt16":
-                    return new UInt16SettingsNodeVM(memberName, defaultVal);
+                    return new UInt16SettingsVM(memberName, defaultVal);
                 case "UInt32":
-                    return new UInt32SettingsNodeVM(memberName, defaultVal);
+                    return new UInt32SettingsVM(memberName, defaultVal);
                 case "UInt64":
-                    return new UInt64SettingsNodeVM(memberName, defaultVal);
+                    return new UInt64SettingsVM(memberName, defaultVal);
                 case "Double":
-                    return new DoubleSettingsNodeVM(memberName, defaultVal);
+                    return new DoubleSettingsVM(memberName, defaultVal);
                 case "Single":
-                    return new FloatSettingsNodeVM(memberName, defaultVal);
+                    return new FloatSettingsVM(memberName, defaultVal);
                 case "Decimal":
-                    return new DecimalSettingsNodeVM(memberName, defaultVal);
+                    return new DecimalSettingsVM(memberName, defaultVal);
                 case "Array`1":
                 case "List`1":
                 case "IEnumerable`1":
@@ -51,32 +51,32 @@ namespace Synthesis.Bethesda.GUI
                     switch (targetType.GenericTypeArguments[0].Name)
                     {
                         case "SByte":
-                            return EnumerableSettingsNodeVM.Factory<sbyte, Int8SettingsNodeVM>(memberName, defaultVal, new Int8SettingsNodeVM());
+                            return EnumerableSettingsVM.Factory<sbyte, Int8SettingsVM>(memberName, defaultVal, new Int8SettingsVM());
                         case "Int16":
-                            return EnumerableSettingsNodeVM.Factory<short, Int16SettingsNodeVM>(memberName, defaultVal, new Int16SettingsNodeVM());
+                            return EnumerableSettingsVM.Factory<short, Int16SettingsVM>(memberName, defaultVal, new Int16SettingsVM());
                         case "Int32":
-                            return EnumerableSettingsNodeVM.Factory<int, Int32SettingsNodeVM>(memberName, defaultVal, new Int32SettingsNodeVM());
+                            return EnumerableSettingsVM.Factory<int, Int32SettingsVM>(memberName, defaultVal, new Int32SettingsVM());
                         case "Int64":
-                            return EnumerableSettingsNodeVM.Factory<long, Int64SettingsNodeVM>(memberName, defaultVal, new Int64SettingsNodeVM());
+                            return EnumerableSettingsVM.Factory<long, Int64SettingsVM>(memberName, defaultVal, new Int64SettingsVM());
                         case "Byte":
-                            return EnumerableSettingsNodeVM.Factory<byte, UInt8SettingsNodeVM>(memberName, defaultVal, new UInt8SettingsNodeVM());
+                            return EnumerableSettingsVM.Factory<byte, UInt8SettingsVM>(memberName, defaultVal, new UInt8SettingsVM());
                         case "UInt16":
-                            return EnumerableSettingsNodeVM.Factory<ushort, UInt16SettingsNodeVM>(memberName, defaultVal, new UInt16SettingsNodeVM());
+                            return EnumerableSettingsVM.Factory<ushort, UInt16SettingsVM>(memberName, defaultVal, new UInt16SettingsVM());
                         case "UInt32":
-                            return EnumerableSettingsNodeVM.Factory<uint, UInt32SettingsNodeVM>(memberName, defaultVal, new UInt32SettingsNodeVM());
+                            return EnumerableSettingsVM.Factory<uint, UInt32SettingsVM>(memberName, defaultVal, new UInt32SettingsVM());
                         case "UInt64":
-                            return EnumerableSettingsNodeVM.Factory<ulong, UInt64SettingsNodeVM>(memberName, defaultVal, new UInt64SettingsNodeVM());
+                            return EnumerableSettingsVM.Factory<ulong, UInt64SettingsVM>(memberName, defaultVal, new UInt64SettingsVM());
                         case "Double":
-                            return EnumerableSettingsNodeVM.Factory<double, DoubleSettingsNodeVM>(memberName, defaultVal, new DoubleSettingsNodeVM());
+                            return EnumerableSettingsVM.Factory<double, DoubleSettingsVM>(memberName, defaultVal, new DoubleSettingsVM());
                         case "Single":
-                            return EnumerableSettingsNodeVM.Factory<float, FloatSettingsNodeVM>(memberName, defaultVal, new FloatSettingsNodeVM());
+                            return EnumerableSettingsVM.Factory<float, FloatSettingsVM>(memberName, defaultVal, new FloatSettingsVM());
                         case "Decimal":
-                            return EnumerableSettingsNodeVM.Factory<decimal, DecimalSettingsNodeVM>(memberName, defaultVal, new DecimalSettingsNodeVM());
+                            return EnumerableSettingsVM.Factory<decimal, DecimalSettingsVM>(memberName, defaultVal, new DecimalSettingsVM());
                         default:
-                            return new UnknownSettingsNodeVM(memberName);
+                            return new UnknownSettingsVM(memberName);
                     }
                 default:
-                    return new UnknownSettingsNodeVM(memberName);
+                    return new UnknownSettingsVM(memberName);
             }
         }
 

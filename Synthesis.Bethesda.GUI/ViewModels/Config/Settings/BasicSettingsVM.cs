@@ -12,7 +12,7 @@ namespace Synthesis.Bethesda.GUI
         bool IsSelected { get; set; }
     }
 
-    public abstract class BasicSettingsNodeVM<T> : SettingsNodeVM, IBasicSettingsNodeVM
+    public abstract class BasicSettingsVM<T> : SettingsNodeVM, IBasicSettingsNodeVM
     {
         [Reactive]
         public T Value { get; set; }
@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool IsSelected { get; set; }
 
-        public BasicSettingsNodeVM(string memberName, object? defaultVal)
+        public BasicSettingsVM(string memberName, object? defaultVal)
             : base(memberName)
         {
             if (defaultVal is T item)

@@ -15,7 +15,7 @@ using System.Windows.Input;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class EnumerableSettingsNodeVM : SettingsNodeVM
+    public class EnumerableSettingsVM : SettingsNodeVM
     {
         private Func<JsonElement, IBasicSettingsNodeVM> _get;
         public ObservableCollection<IBasicSettingsNodeVM> Values { get; } = new ObservableCollection<IBasicSettingsNodeVM>();
@@ -25,7 +25,7 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public IList? SelectedValues { get; set; }
 
-        public EnumerableSettingsNodeVM(string memberName, Func<JsonElement, IBasicSettingsNodeVM> get)
+        public EnumerableSettingsVM(string memberName, Func<JsonElement, IBasicSettingsNodeVM> get)
             : base(memberName)
         {
             _get = get;
@@ -58,16 +58,16 @@ namespace Synthesis.Bethesda.GUI
             obj[MemberName] = new JArray(Values.Select(x => ((IBasicSettingsNodeVM)x.Value).Value).ToArray());
         }
 
-        public static EnumerableSettingsNodeVM Factory<TItem, TWrapper>(string memberName, object? defaultVal, TWrapper prototype)
-            where TWrapper : BasicSettingsNodeVM<TItem>, new()
+        public static EnumerableSettingsVM Factory<TItem, TWrapper>(string memberName, object? defaultVal, TWrapper prototype)
+            where TWrapper : BasicSettingsVM<TItem>, new()
         {
-            EnumerableSettingsNodeVM ret = null!;
+            EnumerableSettingsVM ret = null!;
             Func<JsonElement, IBasicSettingsNodeVM> add = new Func<JsonElement, IBasicSettingsNodeVM>((elem) =>
             {
                 return new ListElementWrapperVM<TItem, TWrapper>(
                     prototype.Get(elem));
             });
-            ret = new EnumerableSettingsNodeVM(
+            ret = new EnumerableSettingsVM(
                 memberName,
                 add);
             if (defaultVal is IEnumerable<TItem> items)

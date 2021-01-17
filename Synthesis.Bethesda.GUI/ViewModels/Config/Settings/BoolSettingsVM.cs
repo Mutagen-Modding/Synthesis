@@ -2,14 +2,15 @@ using System.Text.Json;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class BoolSettingsNodeVM : BasicSettingsNodeVM<bool>
+    public class BoolSettingsVM
+        : BasicSettingsVM<bool>
     {
-        public BoolSettingsNodeVM(string memberName, object? defaultVal)
+        public BoolSettingsVM(string memberName, object? defaultVal)
             : base(memberName, defaultVal)
         {
         }
 
-        public BoolSettingsNodeVM()
+        public BoolSettingsVM()
             : base(string.Empty, default)
         {
         }

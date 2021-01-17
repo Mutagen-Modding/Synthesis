@@ -5,9 +5,9 @@ using System.Text.Json;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class UnknownSettingsNodeVM : SettingsNodeVM
+    public class UnknownSettingsVM : SettingsNodeVM
     {
-        public UnknownSettingsNodeVM(string memberName)
+        public UnknownSettingsVM(string memberName)
             : base(memberName)
         {
         }

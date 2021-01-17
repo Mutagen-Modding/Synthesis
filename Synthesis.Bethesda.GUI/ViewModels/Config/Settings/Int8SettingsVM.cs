@@ -2,14 +2,14 @@ using System.Text.Json;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class Int8SettingsNodeVM : BasicSettingsNodeVM<sbyte>
+    public class Int8SettingsVM : BasicSettingsVM<sbyte>
     {
-        public Int8SettingsNodeVM(string memberName, object? defaultVal)
+        public Int8SettingsVM(string memberName, object? defaultVal)
             : base(memberName, defaultVal)
         {
         }
 
-        public Int8SettingsNodeVM()
+        public Int8SettingsVM()
             : base(string.Empty, default)
         {
         }
