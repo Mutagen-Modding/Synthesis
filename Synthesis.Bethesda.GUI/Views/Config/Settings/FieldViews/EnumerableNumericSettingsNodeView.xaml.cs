@@ -1,6 +1,9 @@
 using Noggog.WPF;
 using ReactiveUI;
+using System.Collections;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Synthesis.Bethesda.GUI.Views
@@ -8,7 +11,7 @@ namespace Synthesis.Bethesda.GUI.Views
     public class EnumerableNumericSettingsNodeViewBase : NoggogUserControl<EnumerableSettingsNodeVM> { }
 
     /// <summary>
-    /// EnumerableInteraction logic for EnumerableIntSettingsNodeView.xaml
+    /// EnumerableInteraction logic for EnumerableNumericSettingsNodeView.xaml
     /// </summary>
     public partial class EnumerableNumericSettingsNodeView : EnumerableNumericSettingsNodeViewBase
     {
@@ -28,6 +31,17 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.AddCommand)
                     .BindToStrict(this, x => x.AddButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.DeleteCommand)
+                    .BindToStrict(this, x => x.DeleteButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.DeleteCommand.CanExecute)
+                    .Switch()
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.DeleteButton.Visibility)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.SettingsListBox.SelectedItems)
+                    .BindTo(this, x => x.ViewModel!.SelectedValues)
                     .DisposeWith(disposable);
             });
         }

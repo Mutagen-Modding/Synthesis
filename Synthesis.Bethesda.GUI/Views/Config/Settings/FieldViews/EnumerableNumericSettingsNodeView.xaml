@@ -15,7 +15,7 @@
         <Grid MinHeight="25">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="140" />
-                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="60" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0"
@@ -149,28 +149,6 @@
                                     </DataTemplate>
                                 </ContentPresenter.Resources>
                             </ContentPresenter>
-                            <Button Grid.Column="2"
-                                Command="{Binding DeleteCommand}"
-                                ToolTip="Delete item">
-                                <Button.Style>
-                                    <Style BasedOn="{StaticResource CloseButton}" TargetType="Button">
-                                        <Setter Property="Visibility" Value="Hidden" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=ItemGrid}" Value="True">
-                                                <Setter Property="Visibility" Value="Visible" />
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
-                                                <Setter Property="Visibility" Value="Visible" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <icon:PackIconMaterial
-                                    Width="8"
-                                    Height="8"
-                                    Margin="3,0,0,0"
-                                    Kind="Close" />
-                            </Button>
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -200,11 +178,27 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 HorizontalContentAlignment="Left"
-                VerticalContentAlignment="Top">
+                VerticalContentAlignment="Top"
+                ToolTip="Add new item">
                 <icon:PackIconMaterial
                     Width="10"
                     Height="10"
                     Kind="Plus" />
+            </Button>
+            <Button Grid.Column="2"
+                x:Name="DeleteButton"
+                Width="40"
+                Margin="60,6"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                HorizontalContentAlignment="Left"
+                VerticalContentAlignment="Top"
+                Style="{StaticResource ErrorButton}"
+                ToolTip="Delete selected items">
+                <icon:PackIconMaterial
+                    Width="10"
+                    Height="10"
+                    Kind="Close" />
             </Button>
         </Grid>
     </Border>
