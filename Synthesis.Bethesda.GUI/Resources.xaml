@@ -28,6 +28,8 @@
     <Color x:Key="AbyssPurple">#15131c</Color>
     <Color x:Key="TransparentGrayBackground">#18000000</Color>
     <Color x:Key="GrayBorder">#333333</Color>
+    <Color x:Key="GrayHoveredBorder">#494949</Color>
+    <Color x:Key="GrayHighlightedBorder">#666666</Color>
 
     <SolidColorBrush x:Key="SalmonBrush" Color="{StaticResource Salmon}" />
     <SolidColorBrush x:Key="LightSalmonBrush" Color="{StaticResource LightSalmon}" />
@@ -50,6 +52,8 @@
     <SolidColorBrush x:Key="AbyssPurpleBrush" Color="{StaticResource AbyssPurple}" />
     <SolidColorBrush x:Key="TransparentGrayBackgroundBrush" Color="{StaticResource TransparentGrayBackground}" />
     <SolidColorBrush x:Key="GrayBorderBrush" Color="{StaticResource GrayBorder}" />
+    <SolidColorBrush x:Key="GrayHoverBorderBrush" Color="{StaticResource GrayHoveredBorder}" />
+    <SolidColorBrush x:Key="GrayHighlightedBorderBrush" Color="{StaticResource GrayHighlightedBorder}" />
 
     <!--  Overrides  -->
     <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource LightBlue}" />
@@ -146,6 +150,20 @@
         <Setter Property="BorderBrush" Value="{StaticResource GrayBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="5" />
+        <Style.Triggers>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter Property="BorderBrush" Value="{StaticResource MahApps.Brushes.Gray}" />
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsKeyboardFocusWithin" Value="False" />
+                    <Condition Property="IsMouseOver" Value="True" />
+                </MultiTrigger.Conditions>
+                <MultiTrigger.Setters>
+                    <Setter Property="BorderBrush" Value="{StaticResource GrayHoverBorderBrush}" />
+                </MultiTrigger.Setters>
+            </MultiTrigger>
+        </Style.Triggers>
     </Style>
 
     <Style BasedOn="{StaticResource Noggog.Styles.Checkbox}" TargetType="{x:Type CheckBox}">
