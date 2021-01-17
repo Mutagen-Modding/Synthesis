@@ -137,6 +137,12 @@
         x:Key="ErrorBox"
         BasedOn="{StaticResource Noggog.Styles.TextBox}"
         TargetType="TextBox">
+        <Setter Property="Background" Value="#33000000" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="TextWrapping" Value="WrapWithOverflow" />
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="BorderBrush" Value="{StaticResource DarkSalmonBrush}" />
         <Setter Property="mahapps:ControlsHelper.FocusBorderBrush" Value="{StaticResource DarkSalmonBrush}" />
         <Setter Property="mahapps:ControlsHelper.MouseOverBorderBrush" Value="{StaticResource DarkSalmonBrush}" />

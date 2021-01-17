@@ -38,13 +38,7 @@
         </StackPanel>
         <TextBox Grid.Row="1"
             x:Name="ErrorOutputBox"
-            Background="#33000000"
-            BorderThickness="1"
-            HorizontalScrollBarVisibility="Auto"
-            IsReadOnly="True"
-            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-            Style="{StaticResource ErrorBox}"
-            TextWrapping="Wrap">
+            Style="{StaticResource ErrorBox}">
             <TextBox.Resources>
                 <SolidColorBrush x:Key="TextBoxFocusBackgroundBrush" Color="#33000000" />
             </TextBox.Resources>

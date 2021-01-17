@@ -49,9 +49,8 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x.Failed ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.ErrorPanel.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.Error)
-                    .Select(x => x.Failed ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.ErrorPanel.Visibility)
+                this.WhenAnyValue(x => x.ViewModel!.Error.Reason)
+                    .BindToStrict(this, x => x.ErrorBox.Text)
                     .DisposeWith(disposable);
             });
         }

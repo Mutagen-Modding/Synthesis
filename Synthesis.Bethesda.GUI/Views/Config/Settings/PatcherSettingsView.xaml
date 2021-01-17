@@ -58,24 +58,35 @@
                 Foreground="{StaticResource PaleYellowBrush}"
                 Text="Loading settings" />
         </StackPanel>
-        <StackPanel
+        <Grid
             x:Name="ErrorPanel"
             Margin="10,10,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Orientation="Horizontal"
             Visibility="Collapsed">
-            <icon:PackIconMaterial
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <icon:PackIconMaterial Grid.Row="0" Grid.Column="0"
                 Width="18"
                 Height="18"
                 Foreground="{StaticResource SalmonBrush}"
                 Kind="AlertCircle" />
-            <TextBlock
+            <TextBlock Grid.Row="0" Grid.Column="1"
                 Margin="5,0,0,0"
                 VerticalAlignment="Center"
                 Foreground="{StaticResource SalmonBrush}"
                 Text="Error loading settings" />
-        </StackPanel>
+            <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                x:Name="ErrorBox"
+                Margin="0,5,0,0"
+                Style="{StaticResource ErrorBox}" />
+        </Grid>
         <TabControl
             x:Name="ReflectionSettingTabs"
             Margin="-8,0,0,0"
