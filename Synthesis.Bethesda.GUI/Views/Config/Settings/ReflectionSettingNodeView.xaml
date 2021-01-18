@@ -8,22 +8,15 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <!--<TextBlock x:Name="PathBlock" Grid.Row="0" />-->
-        <ListBox Grid.Row="1"
-            x:Name="Nodes"
-            Background="Transparent"
-            ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
-            ScrollViewer.CanContentScroll="False">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <local:SettingsNodeView x:Name="TopNodeView" Margin="5,3" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-    </Grid>
+    <ListBox
+        x:Name="Nodes"
+        Background="Transparent"
+        ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
+        ScrollViewer.CanContentScroll="False">
+        <ListBox.ItemTemplate>
+            <DataTemplate>
+                <local:SettingsNodeView x:Name="TopNodeView" Margin="5,3" />
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
 </local:ReflectionSettingNodeViewBase>

@@ -15,7 +15,12 @@ using LibGit2Sharp;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class ReflectionSettingsVM : ViewModel
+    public interface IReflectionObjectSettingsVM
+    {
+        ObservableCollection<SettingsNodeVM> Nodes { get; }
+    }
+
+    public class ReflectionSettingsVM : ViewModel, IReflectionObjectSettingsVM
     {
         private readonly Dictionary<string, SettingsNodeVM> _nodes;
         public string SettingsFolder { get; }
@@ -25,6 +30,7 @@ namespace Synthesis.Bethesda.GUI
         public ObservableCollection<SettingsNodeVM> Nodes { get; }
 
         public ReflectionSettingsVM(
+            Assembly assemb,
             Type type, 
             string nickname, 
             string settingsFolder,
@@ -33,22 +39,7 @@ namespace Synthesis.Bethesda.GUI
             Nickname = nickname;
             SettingsFolder = settingsFolder;
             SettingsSubPath = settingsSubPath;
-            var defaultObj = Activator.CreateInstance(type);
-            _nodes = type.GetMembers()
-                .Where(m => m.MemberType == MemberTypes.Property
-                    || m.MemberType == MemberTypes.Field)
-                .Select(m =>
-                {
-                    switch (m)
-                    {
-                        case PropertyInfo prop:
-                            return SettingsNodeVM.Factory(m.Name, prop.PropertyType, prop.GetValue(defaultObj));
-                        case FieldInfo field:
-                            return SettingsNodeVM.Factory(m.Name, field.FieldType, field.GetValue(defaultObj));
-                        default:
-                            throw new ArgumentException();
-                    }
-                })
+            _nodes = SettingsNodeVM.Factory(assemb, type)
                 .ToDictionary(x => x.MemberName);
             Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
         }
@@ -60,31 +51,13 @@ namespace Synthesis.Bethesda.GUI
             if (!File.Exists(SettingsPath)) return;
             var txt = await File.ReadAllTextAsync(SettingsPath, cancel);
             var json = JsonDocument.Parse(txt);
-            foreach (var elem in json.RootElement.EnumerateObject())
-            {
-                if (!_nodes.TryGetValue(elem.Name, out var node))
-                {
-                    logger.Error($"Could not locate proper node for setting with name: {elem.Name}");
-                    continue;
-                }
-                try
-                {
-                    node.Import(elem.Value, logger);
-                }
-                catch (InvalidOperationException ex)
-                {
-                    logger.Error(ex, $"Error parsing {elem.Name}");
-                }
-            }
+            ObjectSettingsVM.ImportStatic(_nodes, json.RootElement, logger);
         }
 
         public void Persist(ILogger logger)
         {
             var doc = new JObject();
-            foreach (var node in _nodes.Values)
-            {
-                node.Persist(doc, logger);
-            }
+            ObjectSettingsVM.PersistStatic(_nodes, null, doc, logger);
             Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
             File.WriteAllText(SettingsPath, doc.ToString());
             if (!Repository.IsValid(SettingsFolder))

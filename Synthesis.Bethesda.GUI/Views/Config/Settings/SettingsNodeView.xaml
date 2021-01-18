@@ -106,6 +106,9 @@
             <DataTemplate DataType="{x:Type vm:EnumerableSettingsVM}">
                 <local:EnumerableNumericSettingsNodeView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ObjectSettingsVM}">
+                <local:ObjectSettingsNodeView />
+            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:UnknownSettingsVM}">
                 <local:UnknownSettingsNodeView />
             </DataTemplate>

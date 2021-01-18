@@ -2,6 +2,8 @@ using Newtonsoft.Json.Linq;
 using Noggog.WPF;
 using Serilog;
 using System;
+using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading;
 
@@ -16,7 +18,28 @@ namespace Synthesis.Bethesda.GUI
             MemberName = memberName;
         }
 
-        public static SettingsNodeVM Factory(string memberName, Type targetType, object? defaultVal)
+        public static SettingsNodeVM[] Factory(Assembly assemb, Type type)
+        {
+            var defaultObj = Activator.CreateInstance(type);
+            return type.GetMembers()
+                .Where(m => m.MemberType == MemberTypes.Property
+                    || m.MemberType == MemberTypes.Field)
+                .Select(m =>
+                {
+                    switch (m)
+                    {
+                        case PropertyInfo prop:
+                            return MemberFactory(assemb, m.Name, prop.PropertyType, prop.GetValue(defaultObj));
+                        case FieldInfo field:
+                            return MemberFactory(assemb, m.Name, field.FieldType, field.GetValue(defaultObj));
+                        default:
+                            throw new ArgumentException();
+                    }
+                })
+                .ToArray();
+        }
+
+        public static SettingsNodeVM MemberFactory(Assembly assemb, string memberName, Type targetType, object? defaultVal)
         {
             switch (targetType.Name)
             {
@@ -76,6 +99,11 @@ namespace Synthesis.Bethesda.GUI
                             return new UnknownSettingsVM(memberName);
                     }
                 default:
+                    var foundType = assemb.GetType(targetType.FullName!);
+                    if (foundType != null)
+                    {
+                        return new ObjectSettingsVM(memberName, assemb, foundType);
+                    }
                     return new UnknownSettingsVM(memberName);
             }
         }
