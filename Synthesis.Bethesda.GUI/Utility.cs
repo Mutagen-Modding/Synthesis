@@ -94,14 +94,7 @@ namespace Synthesis.Bethesda.GUI
             projPath = Path.Combine(tempFolder.Dir.Path, Path.GetFileName(projPath));
             var exec = await DotNetCommands.GetExecutablePath(projPath, cancel);
             if (exec.Failed) return exec.BubbleFailure<TRet>();
-            WeakReference hostAlcWeakRef;
-            var ret = AssemblyLoading.ExecuteAndUnload(exec.Value, out hostAlcWeakRef, getter);
-            for (int i = 0; hostAlcWeakRef.IsAlive && (i < 10); i++)
-            {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-            }
-            return ret;
+            return AssemblyLoading.ExecuteAndForceUnload(exec.Value, getter);
         }
     }
 }
