@@ -1,6 +1,9 @@
+using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Windows;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -18,6 +21,10 @@ namespace Synthesis.Bethesda.GUI.Views
             {
                 this.WhenAnyValue(x => x.ViewModel!.MemberName)
                     .BindToStrict(this, x => x.SettingNameBlock.Text)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.MemberName)
+                    .Select(x => x.IsNullOrWhitespace() ? Visibility.Collapsed : Visibility.Visible)
+                    .BindToStrict(this, x => x.SettingNameBlock.Visibility)
                     .DisposeWith(disposable);
             });
         }

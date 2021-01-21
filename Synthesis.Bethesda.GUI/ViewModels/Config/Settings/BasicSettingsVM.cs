@@ -14,6 +14,8 @@ namespace Synthesis.Bethesda.GUI
 
     public abstract class BasicSettingsVM<T> : SettingsNodeVM, IBasicSettingsNodeVM
     {
+        public T DefaultValue { get; }
+
         [Reactive]
         public T Value { get; set; }
 
@@ -28,10 +30,12 @@ namespace Synthesis.Bethesda.GUI
             if (defaultVal is T item)
             {
                 Value = item;
+                DefaultValue = item;
             }
             else
             {
                 Value = default!;
+                DefaultValue = default!;
             }
         }
 

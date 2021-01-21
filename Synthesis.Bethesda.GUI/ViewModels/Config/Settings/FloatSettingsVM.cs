@@ -17,5 +17,7 @@ namespace Synthesis.Bethesda.GUI
         public override float Get(JsonElement property) => property.GetSingle();
 
         public override float GetDefault() => default(float);
+
+        public override SettingsNodeVM Duplicate() => new FloatSettingsVM(MemberName, DefaultValue);
     }
 }

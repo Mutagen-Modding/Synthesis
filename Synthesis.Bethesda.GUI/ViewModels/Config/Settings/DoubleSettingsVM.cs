@@ -17,5 +17,7 @@ namespace Synthesis.Bethesda.GUI
         public override double Get(JsonElement property) => property.GetDouble();
 
         public override double GetDefault() => default(double);
+
+        public override SettingsNodeVM Duplicate() => new DoubleSettingsVM(MemberName, DefaultValue);
     }
 }

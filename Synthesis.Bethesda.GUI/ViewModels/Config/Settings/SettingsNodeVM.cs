@@ -70,7 +70,6 @@ namespace Synthesis.Bethesda.GUI
                 case "Array`1":
                 case "List`1":
                 case "IEnumerable`1":
-                case "HashSet`1":
                     switch (targetType.GenericTypeArguments[0].Name)
                     {
                         case "SByte":
@@ -96,13 +95,22 @@ namespace Synthesis.Bethesda.GUI
                         case "Decimal":
                             return EnumerableSettingsVM.Factory<decimal, DecimalSettingsVM>(memberName, defaultVal, new DecimalSettingsVM());
                         default:
+                            {
+                                var foundType = assemb.GetType(targetType.GenericTypeArguments[0].FullName!);
+                                if (foundType != null)
+                                {
+                                    return new EnumerableObjectSettingsVM(memberName, assemb, foundType);
+                                }
+                            }
                             return new UnknownSettingsVM(memberName);
                     }
                 default:
-                    var foundType = assemb.GetType(targetType.FullName!);
-                    if (foundType != null)
                     {
-                        return new ObjectSettingsVM(memberName, assemb, foundType);
+                        var foundType = assemb.GetType(targetType.FullName!);
+                        if (foundType != null)
+                        {
+                            return new ObjectSettingsVM(memberName, assemb, foundType);
+                        }
                     }
                     return new UnknownSettingsVM(memberName);
             }
@@ -111,5 +119,7 @@ namespace Synthesis.Bethesda.GUI
         public abstract void Import(JsonElement property, ILogger logger);
 
         public abstract void Persist(JObject obj, ILogger logger);
+
+        public abstract SettingsNodeVM Duplicate();
     }
 }

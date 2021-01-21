@@ -1,4 +1,5 @@
 using Newtonsoft.Json.Linq;
+using Noggog;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,13 @@ namespace Synthesis.Bethesda.GUI
     {
         private readonly Dictionary<string, SettingsNodeVM> _nodes;
         public ObservableCollection<SettingsNodeVM> Nodes { get; }
+
+        public ObjectSettingsVM(string memberName, Dictionary<string, SettingsNodeVM> nodes)
+            : base(memberName)
+        {
+            _nodes = nodes;
+            Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
+        }
 
         public ObjectSettingsVM(string memberName, Assembly assemb, Type t)
             : base(memberName)
@@ -61,7 +69,7 @@ namespace Synthesis.Bethesda.GUI
             JObject obj,
             ILogger logger)
         {
-            if (name != null)
+            if (!name.IsNullOrWhitespace())
             {
                 var subObj = new JObject();
                 obj[name] = subObj;
@@ -71,6 +79,15 @@ namespace Synthesis.Bethesda.GUI
             {
                 node.Persist(obj, logger);
             }
+        }
+
+        public override SettingsNodeVM Duplicate()
+        {
+            return new ObjectSettingsVM(
+                MemberName,
+                this._nodes.Values
+                    .Select(f => f.Duplicate())
+                    .ToDictionary(f => f.MemberName));
         }
     }
 }

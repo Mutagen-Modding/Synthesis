@@ -17,5 +17,7 @@ namespace Synthesis.Bethesda.GUI
         public override decimal Get(JsonElement property) => property.GetDecimal();
 
         public override decimal GetDefault() => default(decimal);
+
+        public override SettingsNodeVM Duplicate() => new DecimalSettingsVM(MemberName, DefaultValue);
     }
 }

@@ -17,5 +17,7 @@ namespace Synthesis.Bethesda.GUI
         public override short Get(JsonElement property) => property.GetInt16();
 
         public override short GetDefault() => default(short);
+
+        public override SettingsNodeVM Duplicate() => new Int16SettingsVM(MemberName, DefaultValue);
     }
 }

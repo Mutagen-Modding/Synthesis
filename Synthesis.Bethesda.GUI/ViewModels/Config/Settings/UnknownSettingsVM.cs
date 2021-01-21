@@ -20,5 +20,7 @@ namespace Synthesis.Bethesda.GUI
         public override void Persist(JObject obj, ILogger logger)
         {
         }
+
+        public override SettingsNodeVM Duplicate() => this;
     }
 }

@@ -17,5 +17,7 @@ namespace Synthesis.Bethesda.GUI
         public override long Get(JsonElement property) => property.GetInt64();
 
         public override long GetDefault() => default(long);
+
+        public override SettingsNodeVM Duplicate() => new Int64SettingsVM(MemberName, DefaultValue);
     }
 }

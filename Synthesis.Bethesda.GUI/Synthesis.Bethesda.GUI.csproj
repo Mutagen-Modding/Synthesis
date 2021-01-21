@@ -86,6 +86,12 @@
     <Resource Include="Resources\SkyrimSSE.png" />
     <Resource Include="Resources\SkyrimVR.png" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\Config\Settings\FieldViews\EnumerableObjectSettingsNodeView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
   <!-- Replace inherited target -->
   <Target Name="SetVersion" BeforeTargets="GetAssemblyVersion;GetPackageVersion" DependsOnTargets="GitVersion" Returns="$(PackageVersion)">
     <PropertyGroup>

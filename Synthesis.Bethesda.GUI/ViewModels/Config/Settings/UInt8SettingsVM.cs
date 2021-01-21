@@ -17,5 +17,7 @@ namespace Synthesis.Bethesda.GUI
         public override byte Get(JsonElement property) => property.GetByte();
 
         public override byte GetDefault() => default(byte);
+
+        public override SettingsNodeVM Duplicate() => new UInt8SettingsVM(MemberName, DefaultValue);
     }
 }

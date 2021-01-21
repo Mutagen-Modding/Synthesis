@@ -17,7 +17,8 @@ namespace Synthesis.Bethesda.GUI
 {
     public class EnumerableSettingsVM : SettingsNodeVM
     {
-        private Func<JsonElement, IBasicSettingsNodeVM> _get;
+        private Func<JsonElement, IBasicSettingsNodeVM> _import;
+        private Action<ObservableCollection<IBasicSettingsNodeVM>> _add;
         public ObservableCollection<IBasicSettingsNodeVM> Values { get; } = new ObservableCollection<IBasicSettingsNodeVM>();
         public ReactiveCommand<Unit, Unit> AddCommand { get; private set; } = null!;
         public ReactiveCommand<Unit, Unit> DeleteCommand { get; private set; }
@@ -25,10 +26,14 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public IList? SelectedValues { get; set; }
 
-        public EnumerableSettingsVM(string memberName, Func<JsonElement, IBasicSettingsNodeVM> get)
+        public EnumerableSettingsVM(
+            string memberName,
+            Func<JsonElement, IBasicSettingsNodeVM> get,
+            Action<ObservableCollection<IBasicSettingsNodeVM>> add)
             : base(memberName)
         {
-            _get = get;
+            _import = get;
+            _add = add;
             DeleteCommand = ReactiveCommand.Create(
                 execute: () =>
                 {
@@ -42,6 +47,11 @@ namespace Synthesis.Bethesda.GUI
                 },
                 canExecute: this.WhenAnyValue(x => x.SelectedValues!.Count)
                     .Select(x => x > 0));
+            AddCommand = ReactiveCommand.Create(
+                execute: () =>
+                {
+                    _add(Values);
+                });
         }
 
         public override void Import(JsonElement property, ILogger logger)
@@ -49,7 +59,7 @@ namespace Synthesis.Bethesda.GUI
             Values.Clear();
             foreach (var elem in property.EnumerateArray())
             {
-                Values.Add(_get(elem));
+                Values.Add(_import(elem));
             }
         }
 
@@ -62,14 +72,21 @@ namespace Synthesis.Bethesda.GUI
             where TWrapper : BasicSettingsVM<TItem>, new()
         {
             EnumerableSettingsVM ret = null!;
-            Func<JsonElement, IBasicSettingsNodeVM> add = new Func<JsonElement, IBasicSettingsNodeVM>((elem) =>
+            Func<JsonElement, IBasicSettingsNodeVM> import = new Func<JsonElement, IBasicSettingsNodeVM>((elem) =>
             {
                 return new ListElementWrapperVM<TItem, TWrapper>(
                     prototype.Get(elem));
             });
             ret = new EnumerableSettingsVM(
                 memberName,
-                add);
+                import,
+                (list) =>
+                {
+                    list.Add(new ListElementWrapperVM<TItem, TWrapper>(prototype.GetDefault())
+                    {
+                        IsSelected = true
+                    });
+                });
             if (defaultVal is IEnumerable<TItem> items)
             {
                 ret.Values.SetTo(items.Select(x =>
@@ -77,14 +94,12 @@ namespace Synthesis.Bethesda.GUI
                     return new ListElementWrapperVM<TItem, TWrapper>(x);
                 }));
             }
-            ret.AddCommand = ReactiveCommand.Create(() =>
-            {
-                ret.Values.Add(new ListElementWrapperVM<TItem, TWrapper>(prototype.GetDefault())
-                {
-                    IsSelected = true
-                });
-            });
             return ret;
+        }
+
+        public override SettingsNodeVM Duplicate()
+        {
+            return new EnumerableSettingsVM(string.Empty, _import, _add);
         }
     }
 }

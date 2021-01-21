@@ -17,5 +17,7 @@ namespace Synthesis.Bethesda.GUI
         public override ulong Get(JsonElement property) => property.GetUInt64();
 
         public override ulong GetDefault() => default(ulong);
+
+        public override SettingsNodeVM Duplicate() => new UInt64SettingsVM(MemberName, DefaultValue);
     }
 }
