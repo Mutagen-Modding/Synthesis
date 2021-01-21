@@ -22,8 +22,6 @@ namespace Synthesis.Bethesda.GUI.Views
     /// </summary>
     public partial class PatchersConfigView : PatchersConfigViewBase
     {
-        private const string DragParamName = "dragData";
-
         public PatchersConfigView()
         {
             InitializeComponent();
@@ -101,68 +99,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.OverallErrorButton.Command)
                     .DisposeWith(disposable);
 
-                // Set up drag and drop systems
-                var startPt = Observable.Merge(
-                        PatchersList.Events().PreviewMouseLeftButtonDown
-                            .Select(e =>
-                            {
-                                var item = VisualTreeHelper.HitTest(this.PatchersList, Mouse.GetPosition(this.PatchersList)).VisualHit;
-                                if (!item.TryGetAncestor<ListBoxItem>(out var hoveredItem))
-                                {
-                                    return (default(ListBoxItem?), default(Point?));
-                                }
-                                return (hoveredItem, e.GetPosition(PatchersList));
-                            }),
-                        PatchersList.Events().PreviewMouseLeftButtonUp
-                            .Select(e => (default(ListBoxItem?), default(Point?))))
-                    .DistinctUntilChanged()
-                    .Replay(1)
-                    .RefCount();
-
-                PatchersList.Events().MouseMove
-                    .FilterSwitch(startPt.Select(p => p.Item1 != null && p.Item2 != null))
-                    .Where(x => x.LeftButton == MouseButtonState.Pressed)
-                    .WithLatestFrom(
-                        startPt,
-                        (move, start) => (move, start))
-                    .Subscribe(e =>
-                    {
-                        if (e.start.Item1 == null || e.start.Item2 == null) return;
-                        var startPt = e.start.Item2.Value;
-                        var position = e.move.GetPosition(PatchersList);
-                        if (Math.Abs(position.X - startPt.X) > SystemParameters.MinimumHorizontalDragDistance
-                            || Math.Abs(position.Y - startPt.Y) > SystemParameters.MinimumVerticalDragDistance)
-                        {
-                            BeginDrag(e.move, e.start.Item1, startPt);
-                        }
-                    })
-                    .DisposeWith(disposable);
-
-                PatchersList.Events().Drop
-                    .Subscribe(e =>
-                    {
-                        if (!e.Data.GetDataPresent(DragParamName)) return;
-                        var vm = e.Data.GetData(DragParamName) as PatcherVM;
-                        if (vm == null) return;
-                        var profile = ViewModel?.SelectedProfile;
-                        if (!object.ReferenceEquals(profile, vm.Profile)) return;
-
-                        if (!(e.OriginalSource is DependencyObject dep)) return;
-                        if (!dep.TryGetAncestor<ListBoxItem>(out var targetItem)) return;
-                        if (!(targetItem.DataContext is PatcherVM targetPatcher)) return;
-                        var index = profile.Patchers.Items.IndexOf(targetPatcher);
-
-                        if (index >= 0)
-                        {
-                            profile.Patchers.Remove(vm);
-                            profile.Patchers.Insert(index, vm);
-                        }
-                        else
-                        {
-                            profile.Patchers.Remove(vm);
-                            profile.Patchers.Add(vm);
-                        }
-                    })
+                Noggog.WPF.Drag.ListBoxDragDrop<PatcherVM>(this.PatchersList, () => this.ViewModel?.SelectedProfile?.Patchers)
                     .DisposeWith(disposable);
 
                 // Bind top patcher list buttons
@@ -187,54 +124,5 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
             });
         }
-
-        #region Drag Drop
-        private void BeginDrag(MouseEventArgs e, ListBoxItem listBoxItem, Point startPoint)
-        {
-            if (!(listBoxItem.DataContext is PatcherVM patcherVM)) return;
-
-            var listBox = PatchersList;
-
-            //setup the drag adorner.
-            var adorner = InitialiseAdorner(listBoxItem);
-
-            //add handles to update the adorner.
-            DragEventHandler previewDrag = (object sender, DragEventArgs e) =>
-            {
-                adorner.OffsetLeft = e.GetPosition(listBox).X;
-                adorner.OffsetTop = e.GetPosition(listBox).Y - startPoint.Y;
-            };
-            DragEventHandler enter = (object sender, DragEventArgs e) =>
-            {
-                if (!e.Data.GetDataPresent(DragParamName) || sender == e.Source)
-                {
-                    e.Effects = DragDropEffects.None;
-                }
-            };
-            listBox.PreviewDragOver += previewDrag;
-            //listBox.DragLeave += dragLeave;
-            listBox.DragEnter += enter;
-
-            DataObject data = new DataObject(DragParamName, patcherVM);
-            DragDropEffects de = DragDrop.DoDragDrop(listBox, data, DragDropEffects.Move);
-
-            //cleanup
-            listBox.PreviewDragOver -= previewDrag;
-            //listBox.DragLeave -= dragLeave;
-            listBox.DragEnter -= enter;
-
-            AdornerLayer.GetAdornerLayer(listBox).Remove(adorner);
-        }
-
-        private DragAdorner InitialiseAdorner(ListBoxItem listBoxItem)
-        {
-            VisualBrush brush = new VisualBrush(listBoxItem);
-            var adorner = new DragAdorner((UIElement)listBoxItem, listBoxItem.RenderSize, brush);
-            adorner.Opacity = 0.5;
-            var layer = AdornerLayer.GetAdornerLayer(PatchersList as Visual);
-            layer.Add(adorner);
-            return adorner;
-        }
-        #endregion
     }
 }
