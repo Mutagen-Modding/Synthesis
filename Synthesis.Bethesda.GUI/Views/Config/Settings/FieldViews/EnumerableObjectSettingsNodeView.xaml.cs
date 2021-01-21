@@ -65,6 +65,9 @@ namespace Synthesis.Bethesda.GUI.Views
                         listBoxItem.GetChildOfType<WatermarkTextBox>()?.Focus();
                     })
                     .DisposeWith(disposable);
+
+                Noggog.WPF.Drag.ListBoxDragDrop(this.SettingsListBox, () => this.ViewModel?.Values)
+                    .DisposeWith(disposable);
             });
         }
     }

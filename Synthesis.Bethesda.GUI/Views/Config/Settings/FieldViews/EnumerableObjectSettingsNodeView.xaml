@@ -33,6 +33,7 @@
                 x:Name="SettingsListBox"
                 MaxHeight="250"
                 HorizontalAlignment="Left"
+                AllowDrop="True"
                 Background="Transparent"
                 BorderThickness="0"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
