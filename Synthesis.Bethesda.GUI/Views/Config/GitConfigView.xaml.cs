@@ -21,36 +21,6 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.BindStrict(this.ViewModel, vm => vm.RemoteRepoPath, view => view.RepositoryPath.Text)
-                    .DisposeWith(disposable);
-
-                var processing = Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.RepoValidity),
-                        this.WhenAnyValue(x => x.ViewModel!.State),
-                        (repo, state) => repo.Succeeded && !state.IsHaltingError && state.RunnableState.Failed);
-
-                this.WhenAnyValue(x => x.ViewModel!.RepoValidity)
-                    .BindError(this.RepositoryPath)
-                    .DisposeWith(disposable);
-
-                processing
-                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.CloningRing.Visibility)
-                    .DisposeWith(disposable);
-
-                // Bind project picker
-                this.BindStrict(this.ViewModel, vm => vm.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
-                    .DisposeWith(disposable);
-                this.OneWayBindStrict(this.ViewModel, vm => vm.AvailableProjects, view => view.ProjectsPickerBox.ItemsSource)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid)
-                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, view => view.ProjectsPickerBox.Visibility)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid)
-                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, view => view.ProjectTitle.Visibility)
-                    .DisposeWith(disposable);
 
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid),
@@ -145,15 +115,6 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.PatcherVersioning.UpdateBranchButton.Command)
                     .DisposeWith(disposable);
                 #endregion
-
-                // Bind git open commands
-                this.WhenAnyValue(x => x.ViewModel!.OpenGitPageCommand)
-                    .BindToStrict(this, x => x.OpenGitButton.Command)
-                    .DisposeWith(disposable);
-
-                this.WhenAnyValue(x => x.ViewModel!.NavigateToInternalFilesCommand)
-                    .BindToStrict(this, x => x.OpenPatcherInternalFilesButton.Command)
-                    .DisposeWith(disposable);
 
                 #region Nuget
                 this.BindStrict(this.ViewModel, vm => vm.MutagenVersioning, view => view.Nugets.Mutagen.VersioningTab.SelectedIndex, (e) => (int)e, i => (PatcherNugetVersioningEnum)i)
