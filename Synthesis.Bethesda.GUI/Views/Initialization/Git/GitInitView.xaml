@@ -55,7 +55,7 @@
             </TabItem>
             <TabItem Header="Input">
                 <Grid>
-                    <local:GitConfigView DataContext="{Binding Patcher}" />
+                    <local:GitTargetView DataContext="{Binding Patcher}" />
                     <local:BottomDecisionButtonsView x:Name="ConfirmButton" />
                 </Grid>
             </TabItem>
