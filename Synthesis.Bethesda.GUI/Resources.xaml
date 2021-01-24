@@ -677,6 +677,7 @@
         x:Key="ReflectionIntSpinner"
         BasedOn="{StaticResource NoggogNumericUpDown}"
         TargetType="xwpf:InputBase">
+        <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="Width" Value="80" />
         <Setter Property="Background" Value="#FF000000" />
         <Setter Property="BorderBrush" Value="Transparent" />

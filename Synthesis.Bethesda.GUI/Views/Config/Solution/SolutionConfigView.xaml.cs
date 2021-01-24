@@ -88,21 +88,21 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 #region Required Mods
-                this.BindStrict(this.ViewModel, vm => vm.AddRequiredModInput, view => view.AddRequiredModBox.Text)
+                this.BindStrict(this.ViewModel, vm => vm.AddRequiredModInput, view => view.RequiredMods.AddRequiredModBox.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.RequiredModsDisplay)
-                    .BindToStrict(this, v => v.RequiredModsList.ItemsSource)
+                    .BindToStrict(this, v => v.RequiredMods.RequiredModsList.ItemsSource)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.AddRequiredModCommand)
-                    .BindToStrict(this, x => x.AddRequiredModButton.Command)
+                    .BindToStrict(this, x => x.RequiredMods.AddRequiredModButton.Command)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.DetectedMods)
-                    .BindToStrict(this, v => v.DetectedModsList.ItemsSource)
+                    .BindToStrict(this, v => v.RequiredMods.DetectedModsList.ItemsSource)
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.DetectedModsSearch, view => view.SearchBox.Text)
+                this.BindStrict(this.ViewModel, vm => vm.DetectedModsSearch, view => view.RequiredMods.SearchBox.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.ClearSearchCommand)
-                    .BindToStrict(this, x => x.ClearSearchButton.Command)
+                    .BindToStrict(this, x => x.RequiredMods.ClearSearchButton.Command)
                     .DisposeWith(disposable);
                 #endregion
             });

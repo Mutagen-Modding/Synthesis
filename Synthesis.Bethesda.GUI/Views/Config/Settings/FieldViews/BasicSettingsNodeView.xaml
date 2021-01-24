@@ -11,14 +11,18 @@
     <UserControl.Template>
         <ControlTemplate TargetType="UserControl">
             <Border Style="{StaticResource ReflectionSettingBorder}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
                         Margin="0,0,6,0"
                         VerticalAlignment="Center"
                         Style="{StaticResource ReflectionSettingName}"
                         Text="{Binding MemberName}" />
-                    <ContentPresenter VerticalAlignment="Center" />
-                </StackPanel>
+                    <ContentPresenter Grid.Column="1" VerticalAlignment="Center" />
+                </Grid>
             </Border>
         </ControlTemplate>
     </UserControl.Template>
