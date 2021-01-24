@@ -66,21 +66,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ObservableCollectionExtended<VisibilityOptions> VisibilityOptions { get; } = new ObservableCollectionExtended<VisibilityOptions>(EnumExt.GetValues<VisibilityOptions>());
 
-        public SourceCache<ModKey, ModKey> RequiredMods { get; } = new SourceCache<ModKey, ModKey>(x => x);
-
-        public IObservableCollection<RequiredModVM> RequiredModsDisplay { get; }
-
-        public IObservableCollection<DetectedModVM> DetectedMods { get; }
-
-        [Reactive]
-        public string AddRequiredModInput { get; set; } = string.Empty;
-
-        public ICommand AddRequiredModCommand { get; }
-
-        public ICommand ClearSearchCommand { get; }
-
-        [Reactive]
-        public string DetectedModsSearch { get; set; } = string.Empty;
+        public RequiredModsVM RequiredMods { get; }
 
         public SolutionPatcherVM(ProfileVM parent, SolutionPatcherSettings? settings = null)
             : base(parent, settings)
@@ -109,15 +95,12 @@ namespace Synthesis.Bethesda.GUI
                 })
                 .ToProperty(this, nameof(DisplayName), Nickname);
 
+            RequiredMods = new RequiredModsVM(this.Profile.LoadOrder.Connect());
+
             AvailableProjects = SolutionPatcherConfigLogic.AvailableProject(
                 this.WhenAnyValue(x => x.SolutionPath.TargetPath))
                 .ObserveOnGui()
                 .ToObservableCollection(this);
-
-            RequiredModsDisplay = RequiredMods.Connect()
-                .Sort(ModKey.Alphabetical, SortOptimisations.ComparesImmutableValuesOnly, resetThreshold: 0)
-                .Transform(x => new RequiredModVM(x, this))
-                .ToObservableCollection(this.CompositeDisposable);
 
             var projPath = SolutionPatcherConfigLogic.ProjectPath(
                 solutionPath: this.WhenAnyValue(x => x.SolutionPath.TargetPath),
@@ -213,7 +196,7 @@ namespace Synthesis.Bethesda.GUI
                     this.ShortDescription = info.OneLineDescription ?? string.Empty;
                     this.Visibility = info.Visibility;
                     this.Versioning = info.PreferredAutoVersioning;
-                    this.RequiredMods.SetTo(info.RequiredMods
+                    this.RequiredMods.RequiredMods.SetTo(info.RequiredMods
                         .SelectWhere(x => TryGet<ModKey>.Create(ModKey.TryFromNameAndExtension(x, out var modKey), modKey)));
                 })
                 .DisposeWith(this);
@@ -224,7 +207,7 @@ namespace Synthesis.Bethesda.GUI
                     this.WhenAnyValue(x => x.LongDescription),
                     this.WhenAnyValue(x => x.Visibility),
                     this.WhenAnyValue(x => x.Versioning),
-                    this.RequiredMods
+                    this.RequiredMods.RequiredMods
                         .Connect()
                         .Sort(ModKey.Alphabetical, SortOptimisations.ComparesImmutableValuesOnly, resetThreshold: 0)
                         .QueryWhenChanged()
@@ -260,55 +243,6 @@ namespace Synthesis.Bethesda.GUI
                     }
                 })
                 .DisposeWith(this);
-
-            DetectedMods = this.WhenAnyValue(x => x.IsSelected)
-                .Select(isSelected =>
-                {
-                    if (isSelected)
-                    {
-                        return this.Profile.LoadOrder.Connect()
-                            .Transform(x => x.Listing.ModKey)
-                            .AddKey(x => x)
-                            .Except(RequiredMods.Connect());
-                    }
-                    else
-                    {
-                        return Observable.Empty<IChangeSet<ModKey, ModKey>>();
-                    }
-                })
-                .Switch()
-                .Filter(this.WhenAnyValue(x => x.DetectedModsSearch)
-                    .Debounce(TimeSpan.FromMilliseconds(350), RxApp.MainThreadScheduler)
-                    .Select(x => x.Trim())
-                    .DistinctUntilChanged()
-                    .Select(search =>
-                    {
-                        if (string.IsNullOrWhiteSpace(search))
-                        {
-                            return new Func<ModKey, bool>(_ => true);
-                        }
-                        return new Func<ModKey, bool>(
-                            (p) =>
-                            {
-                                if (p.FileName.Contains(search, StringComparison.OrdinalIgnoreCase)) return true;
-                                return false;
-                            });
-                    }))
-                .Transform(x => new DetectedModVM(x, this))
-                .ToObservableCollection(this.CompositeDisposable);
-
-            AddRequiredModCommand = NoggogCommand.CreateFromObject(
-                objectSource: this.WhenAnyValue(x => x.AddRequiredModInput)
-                    .Select(x => TryGet<ModKey>.Create(ModKey.TryFromNameAndExtension(x, out var modKey), modKey)),
-                canExecute: x => x.Succeeded,
-                execute: x =>
-                {
-                    RequiredMods.AddOrUpdate(x.Value);
-                    AddRequiredModInput = string.Empty;
-                },
-                disposable: this.CompositeDisposable);
-
-            ClearSearchCommand = ReactiveCommand.Create(() => DetectedModsSearch = string.Empty);
         }
 
         public override PatcherSettings Save()
@@ -379,28 +313,28 @@ namespace Synthesis.Bethesda.GUI
     public class DetectedModVM : ViewModel
     {
         public ModKey ModKey { get; }
-        public SolutionPatcherVM Patcher { get; }
+        public RequiredModsVM RequiredMods { get; }
         public ICommand AddAsRequiredModCommand { get; }
 
-        public DetectedModVM(ModKey modKey, SolutionPatcherVM slnPatcher)
+        public DetectedModVM(ModKey modKey, RequiredModsVM reqMods)
         {
-            Patcher = slnPatcher;
+            RequiredMods = reqMods;
             ModKey = modKey;
-            AddAsRequiredModCommand = ReactiveCommand.Create(() => slnPatcher.RequiredMods.AddOrUpdate(modKey));
+            AddAsRequiredModCommand = ReactiveCommand.Create(() => reqMods.RequiredMods.AddOrUpdate(modKey));
         }
     }
 
     public class RequiredModVM : ViewModel
     {
         public ModKey ModKey { get; }
-        public SolutionPatcherVM Patcher { get; }
+        public RequiredModsVM RequiredMods { get; }
         public ICommand RemoveAsRequiredModCommand { get; }
 
-        public RequiredModVM(ModKey modKey, SolutionPatcherVM slnPatcher)
+        public RequiredModVM(ModKey modKey, RequiredModsVM reqMods)
         {
-            Patcher = slnPatcher;
+            RequiredMods = reqMods;
             ModKey = modKey;
-            RemoveAsRequiredModCommand = ReactiveCommand.Create(() => slnPatcher.RequiredMods.RemoveKey(modKey));
+            RemoveAsRequiredModCommand = ReactiveCommand.Create(() => reqMods.RequiredMods.RemoveKey(modKey));
         }
     }
 }

@@ -113,7 +113,7 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Required Mods">
-                <local:RequiredModsView x:Name="RequiredMods" />
+                <local:RequiredModsView x:Name="RequiredMods" RequiredModsLabel="Required Mods" />
             </TabItem>
         </TabControl>
     </Grid>
