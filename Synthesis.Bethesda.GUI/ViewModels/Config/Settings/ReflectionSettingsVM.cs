@@ -30,7 +30,7 @@ namespace Synthesis.Bethesda.GUI
         public ObservableCollection<SettingsNodeVM> Nodes { get; }
 
         public ReflectionSettingsVM(
-            Assembly assemb,
+            SettingsParameters param,
             Type type, 
             string nickname, 
             string settingsFolder,
@@ -39,7 +39,7 @@ namespace Synthesis.Bethesda.GUI
             Nickname = nickname;
             SettingsFolder = settingsFolder;
             SettingsSubPath = settingsSubPath;
-            _nodes = SettingsNodeVM.Factory(assemb, type)
+            _nodes = SettingsNodeVM.Factory(param, type)
                 .ToDictionary(x => x.MemberName);
             Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
         }

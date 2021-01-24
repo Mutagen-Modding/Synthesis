@@ -18,7 +18,7 @@ namespace Synthesis.Bethesda.GUI
             MemberName = memberName;
         }
 
-        public static SettingsNodeVM[] Factory(Assembly assemb, Type type)
+        public static SettingsNodeVM[] Factory(SettingsParameters param, Type type)
         {
             var defaultObj = Activator.CreateInstance(type);
             return type.GetMembers()
@@ -29,9 +29,9 @@ namespace Synthesis.Bethesda.GUI
                     switch (m)
                     {
                         case PropertyInfo prop:
-                            return MemberFactory(assemb, m.Name, prop.PropertyType, prop.GetValue(defaultObj));
+                            return MemberFactory(param, m.Name, prop.PropertyType, prop.GetValue(defaultObj));
                         case FieldInfo field:
-                            return MemberFactory(assemb, m.Name, field.FieldType, field.GetValue(defaultObj));
+                            return MemberFactory(param, m.Name, field.FieldType, field.GetValue(defaultObj));
                         default:
                             throw new ArgumentException();
                     }
@@ -39,7 +39,7 @@ namespace Synthesis.Bethesda.GUI
                 .ToArray();
         }
 
-        public static SettingsNodeVM MemberFactory(Assembly assemb, string memberName, Type targetType, object? defaultVal)
+        public static SettingsNodeVM MemberFactory(SettingsParameters param, string memberName, Type targetType, object? defaultVal)
         {
             switch (targetType.Name)
             {
@@ -98,20 +98,20 @@ namespace Synthesis.Bethesda.GUI
                             return EnumerableSettingsVM.Factory<decimal, DecimalSettingsVM>(memberName, defaultVal, new DecimalSettingsVM());
                         default:
                             {
-                                var foundType = assemb.GetType(targetType.GenericTypeArguments[0].FullName!);
+                                var foundType = param.Assembly.GetType(targetType.GenericTypeArguments[0].FullName!);
                                 if (foundType != null)
                                 {
-                                    return new EnumerableObjectSettingsVM(memberName, assemb, foundType);
+                                    return new EnumerableObjectSettingsVM(param, memberName, foundType);
                                 }
                             }
                             return new UnknownSettingsVM(memberName);
                     }
                 default:
                     {
-                        var foundType = assemb.GetType(targetType.FullName!);
+                        var foundType = param.Assembly.GetType(targetType.FullName!);
                         if (foundType != null)
                         {
-                            return new ObjectSettingsVM(memberName, assemb, foundType);
+                            return new ObjectSettingsVM(param, memberName, foundType);
                         }
                     }
                     return new UnknownSettingsVM(memberName);

@@ -42,10 +42,10 @@ namespace Synthesis.Bethesda.GUI
             Init();
         }
 
-        public EnumerableObjectSettingsVM(string memberName, Assembly assemb, Type t)
+        public EnumerableObjectSettingsVM(SettingsParameters param, string memberName, Type t)
             : base(memberName)
         {
-            _prototype = new ObjectSettingsVM(string.Empty, assemb, t);
+            _prototype = new ObjectSettingsVM(param, string.Empty, t);
             Init();
         }
 
@@ -102,10 +102,10 @@ namespace Synthesis.Bethesda.GUI
                 .ToArray());
         }
 
-        public static EnumerableObjectSettingsVM Factory<TItem, TWrapper>(string memberName, object? defaultVal, Assembly assemb, Type t)
+        public static EnumerableObjectSettingsVM Factory<TItem, TWrapper>(SettingsParameters param, string memberName, object? defaultVal, Type t)
             where TWrapper : BasicSettingsVM<TItem>, new()
         {
-            var ret = new EnumerableObjectSettingsVM(memberName, assemb, t);
+            var ret = new EnumerableObjectSettingsVM(param, memberName, t);
             if (defaultVal != null)
             {
                 throw new NotImplementedException();
