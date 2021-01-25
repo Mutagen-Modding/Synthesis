@@ -1,4 +1,6 @@
 using Mutagen.Bethesda;
+using Newtonsoft.Json.Linq;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,5 +30,46 @@ namespace Synthesis.Bethesda.GUI
         }
 
         public override ModKey GetDefault() => ModKey.Null;
+
+        public override void Import(JsonElement property, ILogger logger)
+        {
+            Value = Import(property);
+        }
+
+        public static ModKey Import(JsonElement property)
+        {
+            if (ModKey.TryFromNameAndExtension(property.GetString(), out var modKey))
+            {
+                return modKey;
+            }
+            else
+            {
+                return ModKey.Null;
+            }
+        }
+
+        public override void Persist(JObject obj, ILogger logger)
+        {
+            if (Value.IsNull)
+            {
+                obj[MemberName] = JToken.FromObject(string.Empty);
+            }
+            else
+            {
+                obj[MemberName] = JToken.FromObject(Value.ToString());
+            }
+        }
+
+        public static string Persist(ModKey modKey)
+        {
+            if (modKey.IsNull)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return modKey.ToString();
+            }
+        }
     }
 }

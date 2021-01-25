@@ -10,8 +10,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Text;
 using System.Text.Json;
-using System.Windows.Input;
+using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -68,38 +69,9 @@ namespace Synthesis.Bethesda.GUI
             obj[MemberName] = new JArray(Values.Select(x => ((IBasicSettingsNodeVM)x.Value).Value).ToArray());
         }
 
-        public static EnumerableSettingsVM Factory<TItem, TWrapper>(string memberName, object? defaultVal, TWrapper prototype)
-            where TWrapper : BasicSettingsVM<TItem>, new()
-        {
-            EnumerableSettingsVM ret = null!;
-            Func<JsonElement, IBasicSettingsNodeVM> import = new Func<JsonElement, IBasicSettingsNodeVM>((elem) =>
-            {
-                return new ListElementWrapperVM<TItem, TWrapper>(
-                    prototype.Get(elem));
-            });
-            ret = new EnumerableSettingsVM(
-                memberName,
-                import,
-                (list) =>
-                {
-                    list.Add(new ListElementWrapperVM<TItem, TWrapper>(prototype.GetDefault())
-                    {
-                        IsSelected = true
-                    });
-                });
-            if (defaultVal is IEnumerable<TItem> items)
-            {
-                ret.Values.SetTo(items.Select(x =>
-                {
-                    return new ListElementWrapperVM<TItem, TWrapper>(x);
-                }));
-            }
-            return ret;
-        }
-
         public override SettingsNodeVM Duplicate()
         {
-            return new EnumerableSettingsVM(string.Empty, _import, _add);
+            return new EnumerableNumericSettingsVM(string.Empty, _import, _add);
         }
     }
 }

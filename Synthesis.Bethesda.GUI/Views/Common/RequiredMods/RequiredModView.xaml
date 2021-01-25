@@ -17,9 +17,11 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Column="0"
+        <TextBox Grid.Column="0"
             x:Name="TitleBlock"
-            Margin="3,0,0,0" />
+            Margin="3,0,0,0"
+            Background="Transparent"
+            IsReadOnly="True" />
         <Button x:Name="AddButton" Grid.Column="1">
             <icon:PackIconMaterialDesign Height="10" Kind="Close" />
         </Button>

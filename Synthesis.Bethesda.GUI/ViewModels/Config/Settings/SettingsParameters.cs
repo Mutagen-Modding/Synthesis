@@ -1,3 +1,4 @@
+using DynamicData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,5 +8,7 @@ using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public record SettingsParameters(Assembly Assembly);
+    public record SettingsParameters(
+        Assembly Assembly,
+        IObservable<IChangeSet<LoadOrderEntryVM>> DetectedLoadOrder);
 }

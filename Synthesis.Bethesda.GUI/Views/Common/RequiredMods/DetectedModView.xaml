@@ -20,6 +20,10 @@
         <Button x:Name="AddButton" Grid.Column="0">
             <icon:PackIconFontAwesome Height="10" Kind="ChevronLeftSolid" />
         </Button>
-        <TextBlock x:Name="TitleBlock" Grid.Column="1" />
+        <TextBox Grid.Column="1"
+            x:Name="TitleBlock"
+            Margin="3,0,0,0"
+            Background="Transparent"
+            IsReadOnly="True" />
     </Grid>
 </local:DetectedModViewBase>
