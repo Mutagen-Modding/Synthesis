@@ -644,6 +644,7 @@ namespace Synthesis.Bethesda.GUI
                     });
                 })
                 .Switch()
+                .StartWith(new ConfigurationState<RunnerRepoInfo>(GetResponse<RunnerRepoInfo>.Fail("Compilation uninitialized")))
                 .Replay(1)
                 .RefCount();
 
@@ -651,7 +652,8 @@ namespace Synthesis.Bethesda.GUI
                     compilation,
                     parent.WhenAnyValue(x => x.DataFolder),
                     parent.LoadOrder.Connect()
-                        .QueryWhenChanged(),
+                        .QueryWhenChanged()
+                        .StartWith(ListExt.Empty<LoadOrderEntryVM>()),
                     (comp, data, loadOrder) => (comp, data, loadOrder))
                 .Select(i =>
                 {

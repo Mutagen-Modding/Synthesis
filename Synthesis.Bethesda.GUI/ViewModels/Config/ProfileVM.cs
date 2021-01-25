@@ -143,6 +143,7 @@ namespace Synthesis.Bethesda.GUI
                         });
                 })
                 .Switch()
+                .StartWith(GetResponse<string>.Fail("Data folder uninitialized"))
                 .Replay(1)
                 .RefCount();
 
@@ -181,6 +182,7 @@ namespace Synthesis.Bethesda.GUI
                         .DisposeMany();
                     return (Results: liveLo, State: errors);
                 })
+                .StartWith((Results: Observable.Empty<IChangeSet<LoadOrderEntryVM>>(), State: Observable.Return(ErrorResponse.Fail("Load order uninitialized"))))
                 .Replay(1)
                 .RefCount();
 
@@ -230,6 +232,7 @@ namespace Synthesis.Bethesda.GUI
                                 .Select(x => !x), 
                             scheduler: RxApp.MainThreadScheduler)
                         .QueryWhenChanged(q => q)
+                        .StartWith(Noggog.ListExt.Empty<LoadOrderEntryVM>())
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler),
                     (dataFolder, loadOrder, enabledPatchers, erroredEnabledPatchers, missingMods) =>
                     {
