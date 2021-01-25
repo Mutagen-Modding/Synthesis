@@ -403,6 +403,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 if (compile)
                 {
                     var compileResp = await SolutionPatcherRun.CompileWithDotnet(projPath, cancel, logger);
+                    logger?.Invoke("Finished compiling");
                     if (compileResp.Failed) return compileResp.BubbleResult(runInfo);
                 }
 

@@ -511,10 +511,12 @@ namespace Synthesis.Bethesda.GUI
 
                             if (runInfo.RunnableState.Failed)
                             {
+                                Logger.Error($"Checking out runner repository failed: {runInfo.RunnableState.Reason}");
                                 observer.OnNext(runInfo);
                                 return;
                             }
 
+                            Logger.Error($"Checking out runner repository succeeded");
                             observer.OnNext(runInfo);
                         }
                         catch (Exception ex)
@@ -612,6 +614,7 @@ namespace Synthesis.Bethesda.GUI
 
                         try
                         {
+                            Logger.Information("Compiling");
                             // Return early with the values, but mark not complete
                             observer.OnNext(new ConfigurationState<RunnerRepoInfo>(state.Item)
                             {
@@ -623,11 +626,13 @@ namespace Synthesis.Bethesda.GUI
                             var compileResp = await SolutionPatcherRun.CompileWithDotnet(state.Item.ProjPath, cancel, Logger.Information);
                             if (compileResp.Failed)
                             {
+                                Logger.Information($"Compiling failed: {compileResp.Reason}");
                                 observer.OnNext(compileResp.BubbleFailure<RunnerRepoInfo>());
                                 return;
                             }
 
                             // Return things again, without error
+                            Logger.Information("Finished compiling");
                             observer.OnNext(state);
                         }
                         catch (Exception ex)
@@ -658,6 +663,7 @@ namespace Synthesis.Bethesda.GUI
                             return;
                         }
 
+                        Logger.Information("Checking runnability");
                         // Return early with the values, but mark not complete
                         observer.OnNext(new ConfigurationState<RunnerRepoInfo>(i.comp.Item)
                         {
@@ -676,11 +682,13 @@ namespace Synthesis.Bethesda.GUI
                                 loadOrder: i.loadOrder.Select(lvm => lvm.Listing));
                             if (runnability.Failed)
                             {
+                                Logger.Information($"Checking runnability failed: {runnability.Reason}");
                                 observer.OnNext(runnability.BubbleFailure<RunnerRepoInfo>());
                                 return;
                             }
 
                             // Return things again, without error
+                            Logger.Information("Checking runnability succeeded");
                             observer.OnNext(i.comp);
                         }
                         catch (Exception ex)
@@ -717,6 +725,7 @@ namespace Synthesis.Bethesda.GUI
                         if (runner.IsHaltingError) return runner;
                         if (!dotnet.Item2)
                         {
+                            Logger.Information("Determining DotNet SDK installed");
                             return new ConfigurationState(ErrorResponse.Fail("Determining DotNet SDK installed"))
                             {
                                 IsHaltingError = false
@@ -727,8 +736,18 @@ namespace Synthesis.Bethesda.GUI
                         {
                             return new ConfigurationState(ErrorResponse.Fail($"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));
                         }
-                        if (runnability.RunnableState.Failed) return runnability.BubbleError();
-                        return checkout;
+                        if (runnability.RunnableState.Failed)
+                        {
+                            Logger.Information("State deferred to runnability");
+                            return runnability.BubbleError();
+                        }
+                        if (checkout.RunnableState.Failed)
+                        {
+                            Logger.Information("State deferred to checkout");
+                            return checkout.BubbleError();
+                        }
+                        Logger.Information("State returned success!");
+                        return ConfigurationState.Success;
                     })
                 .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
                 {

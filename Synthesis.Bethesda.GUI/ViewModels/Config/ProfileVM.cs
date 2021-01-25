@@ -108,6 +108,7 @@ namespace Synthesis.Bethesda.GUI
                 .Select(path =>
                 {
                     if (path != null) return Observable.Return(GetResponse<string>.Succeed(path));
+                    Log.Logger.Information("Starting to locate data folder");
                     return this.WhenAnyValue(x => x.Release)
                         .ObserveOn(RxApp.TaskpoolScheduler)
                         .Select(x =>
@@ -149,6 +150,20 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x.Value)
                 .ToGuiProperty<string>(this, nameof(DataFolder), string.Empty);
 
+            dataFolderResult
+                .Subscribe(d =>
+                {
+                    if (d.Failed)
+                    {
+                        Log.Logger.Error($"Could not locate data folder: {d.Reason}");
+                    }
+                    else
+                    {
+                        Log.Logger.Information($"Data Folder: {d.Value}");
+                    }
+                })
+                .DisposeWith(this);
+
             var loadOrderResult = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.Release),
                     dataFolderResult,
@@ -160,6 +175,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         return (Results: Observable.Empty<IChangeSet<LoadOrderEntryVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
                     }
+                    Log.Logger.Error($"Getting live load order for {x.release} -> {x.dataFolder.Value}");
                     var liveLo = Mutagen.Bethesda.LoadOrder.GetLiveLoadOrder(x.release, x.dataFolder.Value, out var errors)
                         .Transform(listing => new LoadOrderEntryVM(listing, x.dataFolder.Value))
                         .DisposeMany();
@@ -172,6 +188,21 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x.Results)
                 .Switch()
                 .AsObservableList();
+
+            loadOrderResult.Select(lo => lo.State)
+                .Switch()
+                .Subscribe(loErr =>
+                {
+                    if (loErr.Succeeded)
+                    {
+                        Log.Logger.Information($"Load order location successful");
+                    }
+                    else
+                    {
+                        Log.Logger.Information($"Load order location error: {loErr.Reason}");
+                    }
+                })
+                .DisposeWith(this);
 
             _LargeOverallError = Observable.CombineLatest(
                     dataFolderResult,
@@ -223,7 +254,7 @@ namespace Synthesis.Bethesda.GUI
                         Log.Logger.Warning($"Encountered blocking overall error: {x.Reason}");
                     }
                 })
-                .ToGuiProperty(this, nameof(LargeOverallError), GetResponse<PatcherVM>.Fail("Uninitialized"));
+                .ToGuiProperty(this, nameof(LargeOverallError), GetResponse<PatcherVM>.Fail("Uninitialized overall error"));
 
             _BlockingError = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.LargeOverallError),
@@ -244,7 +275,7 @@ namespace Synthesis.Bethesda.GUI
                     if (!overall.Succeeded) return overall;
                     return patchers;
                 })
-                .ToGuiProperty<ErrorResponse>(this, nameof(BlockingError), ErrorResponse.Fail("Uninitialized"));
+                .ToGuiProperty<ErrorResponse>(this, nameof(BlockingError), ErrorResponse.Fail("Uninitialized blocking error"));
 
             _IsActive = this.WhenAnyValue(x => x.Config.SelectedProfile)
                 .Select(x => x == this)
