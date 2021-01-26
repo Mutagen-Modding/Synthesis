@@ -57,7 +57,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         public async Task Prep(GameRelease release, CancellationToken cancel)
         {
             _output.OnNext("Cloning repository");
-            var cloneResult = await CheckOrCloneRepo(GetResponse<string>.Succeed(_settings.RemoteRepoPath), _localDir, (x) => _output.OnNext(x), cancel);
+            var cloneResult = await GitUtility.CheckOrCloneRepo(GetResponse<string>.Succeed(_settings.RemoteRepoPath), _localDir, (x) => _output.OnNext(x), cancel);
             if (cloneResult.Failed)
             {
                 throw new SynthesisBuildFailure(cloneResult.Reason);
@@ -92,72 +92,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             using var outputSub = SolutionRun.Output.Subscribe(this._output);
             using var errSub = SolutionRun.Error.Subscribe(this._error);
             await SolutionRun.Run(settings, cancel).ConfigureAwait(false);
-        }
-
-        private static bool DeleteOldRepo(
-            string localDir,
-            GetResponse<string> remoteUrl,
-            Action<string> logger)
-        {
-            if (!Directory.Exists(localDir))
-            {
-                logger("No local repository exists.  No cleaning to do.");
-                return false;
-            }
-            var dirInfo = new DirectoryPath(localDir);
-            if (remoteUrl.Failed)
-            {
-                logger("No remote repository.  Deleting local.");
-                dirInfo.DeleteEntireFolder();
-                return false;
-            }
-            try
-            {
-                using var repo = new Repository(localDir);
-                // If it's the same remote repo, don't delete
-                if (repo.Network.Remotes.FirstOrDefault()?.Url.Equals(remoteUrl.Value) ?? false)
-                {
-                    logger("Remote repository target matched local folder's repo.  Keeping clone.");
-                    return true;
-                }
-            }
-            catch (RepositoryNotFoundException)
-            {
-                logger("Repository corrupted.  Deleting local.");
-                dirInfo.DeleteEntireFolder();
-                return false;
-            }
-
-            logger("Remote address targeted a different repository.  Deleting local.");
-            dirInfo.DeleteEntireFolder();
-            return false;
-        }
-
-        public static async Task<GetResponse<(string Remote, string Local)>> CheckOrCloneRepo(
-            GetResponse<string> remote,
-            string localDir,
-            Action<string> logger,
-            CancellationToken cancel)
-        {
-            try
-            {
-                cancel.ThrowIfCancellationRequested();
-                if (DeleteOldRepo(localDir: localDir, remoteUrl: remote, logger: logger))
-                {
-                    // Short circuiting deletion
-                    return GetResponse<(string Remote, string Local)>.Succeed((remote.Value, localDir), remote.Reason);
-                }
-                cancel.ThrowIfCancellationRequested();
-                if (remote.Failed) return GetResponse<(string Remote, string Local)>.Fail((remote.Value, string.Empty), remote.Reason);
-                logger($"Cloning remote {remote.Value}");
-                var clonePath = Repository.Clone(remote.Value, localDir);
-                return GetResponse<(string Remote, string Local)>.Succeed((remote.Value, clonePath), remote.Reason);
-            }
-            catch (Exception ex)
-            {
-                logger($"Failure while checking/cloning repository: {ex}");
-                return GetResponse<(string Remote, string Local)>.Fail((remote.Value, string.Empty), ex);
-            }
         }
 
         public static string? GetPathToSolution(string pathToRepo)

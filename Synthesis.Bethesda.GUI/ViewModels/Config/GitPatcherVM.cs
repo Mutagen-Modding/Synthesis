@@ -21,6 +21,7 @@ using System.Text;
 using Synthesis.Bethesda.DTO;
 using Newtonsoft.Json;
 using Mutagen.Bethesda;
+using Synthesis.Bethesda.Execution;
 using System.Threading;
 
 namespace Synthesis.Bethesda.GUI
@@ -170,7 +171,7 @@ namespace Synthesis.Bethesda.GUI
                         if (!path.IsHaltingError && path.RunnableState.Failed) return path.BubbleError<DriverRepoInfo>();
                         using var timing = Logger.Time("Cloning driver repository");
                         // Clone and/or double check the clone is correct
-                        var state = await GitPatcherRun.CheckOrCloneRepo(path.ToGetResponse(), LocalDriverRepoDirectory, (x) => Logger.Information(x), cancel);
+                        var state = await GitUtility.CheckOrCloneRepo(path.ToGetResponse(), LocalDriverRepoDirectory, (x) => Logger.Information(x), cancel);
                         if (state.Failed) return new ConfigurationState<DriverRepoInfo>(default!, (ErrorResponse)state);
                         cancel.ThrowIfCancellationRequested();
 
@@ -228,7 +229,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         if (path.RunnableState.Failed) return new ConfigurationState(path.RunnableState);
                         using var timing = Logger.Time($"runner repo: {path.Item}");
-                        return (ErrorResponse)await GitPatcherRun.CheckOrCloneRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, x => Logger.Information(x), cancel);
+                        return (ErrorResponse)await GitUtility.CheckOrCloneRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, x => Logger.Information(x), cancel);
                     })
                 .Replay(1)
                 .RefCount();

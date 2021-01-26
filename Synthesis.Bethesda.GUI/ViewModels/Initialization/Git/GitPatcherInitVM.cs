@@ -1,19 +1,22 @@
 using DynamicData;
 using DynamicData.Binding;
+using LibGit2Sharp;
 using Noggog;
 using Noggog.WPF;
-using Octokit;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.DTO;
+using Synthesis.Bethesda.Execution;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Windows.Input;
 
 namespace Synthesis.Bethesda.GUI
@@ -67,13 +70,38 @@ namespace Synthesis.Bethesda.GUI
                 {
                     try
                     {
-                        var gitHubClient = new GitHubClient(new ProductHeaderValue("Synthesis"));
-                        gitHubClient.Credentials = new Credentials("9b58542a2ca303d7ced129cc404191f8eea519f7");
-                        var content = await gitHubClient.Repository.Content.GetAllContents("Noggog", "Synthesis.Registry", Constants.AutomaticListingFileName);
-                        if (content.Count != 1) return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
+                        var localRepoPath = await GitUtility.CheckOrCloneRepo(
+                            GetResponse<string>.Succeed("https://github.com/Mutagen-Modding/Synthesis.Registry"),
+                            Path.Combine(profile.WorkingDirectory, "Registry"),
+                            Log.Logger.Error,
+                            CancellationToken.None);
+                        if (localRepoPath.Failed)
+                        {
+                            Error = localRepoPath;
+                            return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
+                        }
+                        using var repo = new Repository(localRepoPath.Value.Local);
+
+                        var master = repo.Branches.Where(b => b.IsCurrentRepositoryHead).FirstOrDefault();
+                        if (master == null)
+                        {
+                            Error = ErrorResponse.Fail("Could not find master branch");
+                            Log.Logger.Error(Error.Reason);
+                            return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
+                        }
+                        repo.Reset(ResetMode.Hard);
+                        Commands.Checkout(repo, master);
+
+                        var listingPath = Path.Combine(repo.Info.WorkingDirectory, Constants.AutomaticListingFileName);
+                        if (!File.Exists(listingPath))
+                        {
+                            Error = ErrorResponse.Fail("Could not locate listing file");
+                            Log.Logger.Error(Error.Reason);
+                            return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
+                        }
                         var settings = new JsonSerializerOptions();
                         settings.Converters.Add(new JsonStringEnumConverter());
-                        var customization = JsonSerializer.Deserialize<MutagenPatchersListing>(content[0].Content, settings)!;
+                        var customization = JsonSerializer.Deserialize<MutagenPatchersListing>(File.ReadAllText(listingPath), settings)!;
                         return customization.Repositories
                             .NotNull()
                             .SelectMany(repo =>
