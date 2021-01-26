@@ -7,16 +7,25 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+
                 <!--  MahApps.Metro resource dictionaries.  -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Buttons.xaml" />
+
                 <!--  Accent and AppTheme setting  -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Purple.xaml" />
+
                 <!--  Noggog Theming  -->
                 <ResourceDictionary Source="pack://application:,,,/Noggog.WPF;component/TypicalTheming.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Noggog.WPF;component/Converters/Converters.xaml" />
+
+                <!--  Mutagen Theming  -->
+                <ResourceDictionary Source="pack://application:,,,/Mutagen.Bethesda.WPF;component/Controls.xaml" />
+
+                <!--  Synthesis Theming  -->
                 <ResourceDictionary Source="pack://application:,,,/Synthesis;component/Resources.xaml" />
+
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
