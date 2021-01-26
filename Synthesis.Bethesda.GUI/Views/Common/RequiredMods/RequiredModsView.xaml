@@ -7,7 +7,7 @@
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:mutagenWpf="clr-namespace:Mutagen.Bethesda.WPF.Controls;assembly=Mutagen.Bethesda.WPF"
+    xmlns:mutagenWpf="clr-namespace:Mutagen.Bethesda.WPF;assembly=Mutagen.Bethesda.WPF"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
