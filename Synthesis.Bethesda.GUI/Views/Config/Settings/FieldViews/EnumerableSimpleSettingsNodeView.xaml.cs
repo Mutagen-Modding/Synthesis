@@ -13,14 +13,14 @@ using Xceed.Wpf.Toolkit.Primitives;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class EnumerableNumericSettingsNodeViewBase : NoggogUserControl<EnumerableNumericSettingsVM> { }
+    public class EnumerableSimpleSettingsNodeViewBase : NoggogUserControl<EnumerableSettingsVM> { }
 
     /// <summary>
     /// EnumerableInteraction logic for EnumerableNumericSettingsNodeView.xaml
     /// </summary>
-    public partial class EnumerableNumericSettingsNodeView : EnumerableNumericSettingsNodeViewBase
+    public partial class EnumerableSimpleSettingsNodeView : EnumerableSimpleSettingsNodeViewBase
     {
-        public EnumerableNumericSettingsNodeView()
+        public EnumerableSimpleSettingsNodeView()
         {
             InitializeComponent();
             this.WhenActivated(disposable =>

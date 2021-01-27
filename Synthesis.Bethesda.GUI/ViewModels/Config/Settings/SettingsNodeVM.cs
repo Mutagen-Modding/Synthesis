@@ -70,6 +70,8 @@ namespace Synthesis.Bethesda.GUI
                     return new DecimalSettingsVM(memberName, defaultVal);
                 case "ModKey":
                     return new ModKeySettingsVM(memberName, defaultVal);
+                case "FormKey":
+                    return new FormKeySettingsVM(memberName, defaultVal);
                 case "Array`1":
                 case "List`1":
                 case "IEnumerable`1":
@@ -99,6 +101,8 @@ namespace Synthesis.Bethesda.GUI
                             return EnumerableNumericSettingsVM.Factory<decimal, DecimalSettingsVM>(memberName, defaultVal, new DecimalSettingsVM());
                         case "ModKey":
                             return EnumerableModKeySettingsVM.Factory(param, memberName, defaultVal);
+                        case "FormKey":
+                            return EnumerableFormKeySettingsVM.Factory(memberName, defaultVal);
                         default:
                             {
                                 var foundType = param.Assembly.GetType(targetType.GenericTypeArguments[0].FullName!);

@@ -105,10 +105,10 @@
                 </local:BasicSettingsNodeView>
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:EnumerableNumericSettingsVM}">
-                <local:EnumerableNumericSettingsNodeView />
+                <local:EnumerableSimpleSettingsNodeView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:EnumerableModKeySettingsVM}">
-                <local:ModKeysSettingsNodeView />
+                <local:EnumerableModKeySettingsNodeView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:ObjectSettingsVM}">
                 <local:ObjectSettingsNodeView />
@@ -123,6 +123,14 @@
                 <local:BasicSettingsNodeView>
                     <mutagenWpf:ModKeyBox ModKey="{Binding Value}" />
                 </local:BasicSettingsNodeView>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:FormKeySettingsVM}">
+                <local:BasicSettingsNodeView>
+                    <mutagenWpf:FormKeyBox FormKey="{Binding Value}" />
+                </local:BasicSettingsNodeView>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:EnumerableFormKeySettingsVM}">
+                <local:EnumerableSimpleSettingsNodeView />
             </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>
