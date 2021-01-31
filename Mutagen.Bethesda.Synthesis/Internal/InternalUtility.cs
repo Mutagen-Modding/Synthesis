@@ -27,8 +27,8 @@ namespace Mutagen.Bethesda.Synthesis.Internal
         }
 
         public static SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
-            where TModSetter : class, IContextMod<TModSetter>, TModGetter
-            where TModGetter : class, IContextGetterMod<TModSetter>
+            where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
+            where TModGetter : class, IContextGetterMod<TModSetter, TModGetter>
         {
             // Confirm target game release matches
             var regis = settings.GameRelease.ToCategory().ToModRegistration();
@@ -71,7 +71,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
 
             // Create or import patch mod
             TModSetter patchMod;
-            ILinkCache<TModSetter> cache;
+            ILinkCache<TModSetter, TModGetter> cache;
             if (userPrefs.NoPatch)
             {
                 // Pass null, even though it isn't normally

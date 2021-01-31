@@ -53,8 +53,8 @@ namespace Mutagen.Bethesda.Synthesis
         public SynthesisPipeline AddPatch<TMod, TModGetter>(
             AsyncPatcherFunction<TMod, TModGetter> patcher,
             PatcherPreferences? userPreferences = null)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>
+            where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod, TModGetter>
         {
             var cata = GameCategoryHelper.FromModType<TModGetter>();
             if (_patchers.TryGetValue(cata, out var _))
@@ -78,8 +78,8 @@ namespace Mutagen.Bethesda.Synthesis
         public SynthesisPipeline AddPatch<TMod, TModGetter>(
             PatcherFunction<TMod, TModGetter> patcher,
             PatcherPreferences? userPreferences = null)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>
+            where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod, TModGetter>
         {
             return AddPatch<TMod, TModGetter>(async (s) => patcher(s), userPreferences);
         }
@@ -224,12 +224,12 @@ namespace Mutagen.Bethesda.Synthesis
 
         #region Capstone Run
         public delegate void PatcherFunction<TMod, TModGetter>(IPatcherState<TMod, TModGetter> state)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>;
+            where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod, TModGetter>;
 
         public delegate Task AsyncPatcherFunction<TMod, TModGetter>(IPatcherState<TMod, TModGetter> state)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>;
+            where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod, TModGetter>;
 
         public async Task<int> Run(
             string[] args,
@@ -380,16 +380,16 @@ namespace Mutagen.Bethesda.Synthesis
 
         #region Depreciated Patch Finisher
         public delegate void DepreciatedPatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>;
+            where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod, TModGetter>;
 
         public delegate Task DepreciatedAsyncPatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>;
+            where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod, TModGetter>;
 
         private SynthesisState<TMod, TModGetter> ToDepreciatedState<TMod, TModGetter>(IPatcherState<TMod, TModGetter> state)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>
+            where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod, TModGetter>
         {
             if (state is SynthesisState<TMod, TModGetter> depreciatedState)
             {
@@ -412,8 +412,8 @@ namespace Mutagen.Bethesda.Synthesis
             string[] args,
             DepreciatedAsyncPatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>
+            where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod, TModGetter>
         {
             return await AddPatch<TMod, TModGetter>(state => patcher(ToDepreciatedState(state)), userPreferences?.ToPatcherPrefs())
                 .Run(args, userPreferences?.ToRunPrefs());
@@ -433,8 +433,8 @@ namespace Mutagen.Bethesda.Synthesis
             string[] args,
             DepreciatedPatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>
+            where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod, TModGetter>
         {
             return AddPatch<TMod, TModGetter>(state => patcher(ToDepreciatedState(state)), userPreferences?.ToPatcherPrefs())
                 .Run(args, userPreferences?.ToRunPrefs()).Result;
@@ -453,8 +453,8 @@ namespace Mutagen.Bethesda.Synthesis
             RunSynthesisMutagenPatcher settings,
             DepreciatedAsyncPatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>
+            where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod, TModGetter>
         {
             await AddPatch<TMod, TModGetter>(state => patcher(ToDepreciatedState(state)), userPreferences?.ToPatcherPrefs())
                 .Run(settings, userPreferences?.ToRunPrefs());
@@ -473,8 +473,8 @@ namespace Mutagen.Bethesda.Synthesis
             RunSynthesisMutagenPatcher settings,
             DepreciatedPatcherFunction<TMod, TModGetter> patcher,
             UserPreferences? userPreferences = null)
-            where TMod : class, IContextMod<TMod>, TModGetter
-            where TModGetter : class, IContextGetterMod<TMod>
+            where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
+            where TModGetter : class, IContextGetterMod<TMod, TModGetter>
         {
             AddPatch<TMod, TModGetter>(state => patcher(ToDepreciatedState(state)), userPreferences?.ToPatcherPrefs())
                 .Run(settings, userPreferences?.ToRunPrefs()).Wait();
