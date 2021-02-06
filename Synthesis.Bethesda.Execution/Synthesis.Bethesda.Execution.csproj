@@ -24,6 +24,12 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DocumentationFile>Synthesis.Bethesda.Execution.xml</DocumentationFile>
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Buildalyzer" Version="3.2.0" />
     <PackageReference Include="GitInfo" Version="2.1.2">
@@ -36,7 +42,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="3.8.0" />
-    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.25.0.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.25.1.1-dev" />
     <PackageReference Include="NuGetizer" Version="0.6.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

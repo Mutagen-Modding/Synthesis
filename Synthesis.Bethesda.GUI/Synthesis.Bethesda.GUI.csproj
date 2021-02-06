@@ -14,10 +14,14 @@
     <Company>Mutagen</Company>
     <Platforms>x64</Platforms>
     <ApplicationIcon>mushroom.ico</ApplicationIcon>
-    <IncludeSymbolsInSingleFile>true</IncludeSymbolsInSingleFile>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <StartupObject>Synthesis.Bethesda.GUI.App</StartupObject>
     <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|x64'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
@@ -51,7 +55,7 @@
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
     <PackageReference Include="Loqui" Version="2.5.0.1-dev" />
     <PackageReference Include="Loqui.Generation" Version="2.5.0.1-dev" />
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.25.0.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.25.1.1-dev" />
     <PackageReference Include="Noggog.CSharpExt" Version="2.5.0.1-dev" />
     <PackageReference Include="Noggog.WPF" Version="2.5.0.1-dev" />
     <PackageReference Include="NuGetizer" Version="0.6.0">

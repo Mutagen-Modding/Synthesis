@@ -25,13 +25,19 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DocumentationFile>Mutagen.Bethesda.Synthesis.xml</DocumentationFile>
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="GitInfo" Version="2.1.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Mutagen.Bethesda" Version="0.25.0.1-dev" />
-    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.25.0.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda" Version="0.25.1.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.25.1.1-dev" />
     <PackageReference Include="NuGetizer" Version="0.6.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
