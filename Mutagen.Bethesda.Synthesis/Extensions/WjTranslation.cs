@@ -15,6 +15,7 @@ namespace Mutagen.Bethesda.Synthesis
                 GameRelease.SkyrimLE => Game.Skyrim,
                 GameRelease.SkyrimSE => Game.SkyrimSpecialEdition,
                 GameRelease.SkyrimVR => Game.SkyrimVR,
+                GameRelease.Fallout4 => Game.Fallout4,
                 _ => throw new NotImplementedException()
             };
         }

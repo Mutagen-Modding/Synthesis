@@ -1,4 +1,4 @@
-﻿using DynamicData;
+using DynamicData;
 using DynamicData.Binding;
 using Mutagen.Bethesda;
 using Noggog;
@@ -7,6 +7,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Synthesis.Bethesda.GUI
@@ -23,7 +24,8 @@ namespace Synthesis.Bethesda.GUI
 
         public NewProfileVM(ConfigurationVM config, Action<ProfileVM> postRun)
         {
-            ReleaseOptions.AddRange(EnumExt.GetValues<GameRelease>());
+            ReleaseOptions.AddRange(EnumExt.GetValues<GameRelease>()
+                .Where(x => x != GameRelease.Fallout4));
 
             this.WhenAnyValue(x => x.SelectedGame)
                 .Subscribe(game =>
