@@ -132,6 +132,14 @@
             <DataTemplate DataType="{x:Type vm:EnumerableFormKeySettingsVM}">
                 <local:EnumerableSimpleSettingsNodeView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:FormLinkSettingsVM}">
+                <local:BasicSettingsNodeView>
+                    <mutagenWpf:FormKeyPicker
+                        FormKey="{Binding Value}"
+                        LinkCache="{Binding LinkCache}"
+                        ScopedTypes="{Binding ScopedTypes, Mode=OneWay}" />
+                </local:BasicSettingsNodeView>
+            </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>
 </UserControl>

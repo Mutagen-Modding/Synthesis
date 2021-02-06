@@ -115,6 +115,12 @@ namespace Synthesis.Bethesda.GUI
                     }
                 default:
                     {
+                        if (targetType.Name.Contains("FormLink")
+                            && targetType.IsGenericType
+                            && targetType.GenericTypeArguments.Length == 1)
+                        {
+                            return new FormLinkSettingsVM(param, memberName, targetType);
+                        }
                         var foundType = param.Assembly.GetType(targetType.FullName!);
                         if (foundType != null)
                         {

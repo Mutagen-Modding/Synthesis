@@ -12,6 +12,7 @@ using Serilog;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using LibGit2Sharp;
+using Noggog;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -42,6 +43,7 @@ namespace Synthesis.Bethesda.GUI
             _nodes = SettingsNodeVM.Factory(param, type)
                 .ToDictionary(x => x.MemberName);
             Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
+            CompositeDisposable.Add(_nodes.Values);
         }
 
         public async Task Import(

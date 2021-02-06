@@ -1,4 +1,5 @@
 using DynamicData;
+using Mutagen.Bethesda;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,6 @@ namespace Synthesis.Bethesda.GUI
 {
     public record SettingsParameters(
         Assembly Assembly,
-        IObservable<IChangeSet<LoadOrderEntryVM>> DetectedLoadOrder);
+        IObservable<IChangeSet<LoadOrderEntryVM>> DetectedLoadOrder,
+        IObservable<ILinkCache> LinkCache);
 }

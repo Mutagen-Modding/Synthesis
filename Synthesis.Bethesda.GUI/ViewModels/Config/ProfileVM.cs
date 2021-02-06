@@ -11,6 +11,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -90,6 +91,8 @@ namespace Synthesis.Bethesda.GUI
         public ViewModel? DisplayedObject { get; set; }
 
         public ErrorVM OverallErrorVM { get; } = new ErrorVM("Overall Blocking Error");
+
+        public IObservable<ILinkCache> SimpleLinkCache { get; }
 
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
@@ -462,8 +465,33 @@ namespace Synthesis.Bethesda.GUI
                             }
                         }));
                 });
-        }
 
+            SimpleLinkCache = Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.DataFolder),
+                    this.WhenAnyValue(x => x.Release),
+                    this.LoadOrder.Connect()
+                        .QueryWhenChanged()
+                        .Select(q => q.Where(x => x.Listing.Enabled).Select(x => x.Listing.ModKey).ToArray())
+                        .StartWithEmpty(),
+                    (dataFolder, rel, loadOrder) => (dataFolder, rel, loadOrder))
+                .Throttle(TimeSpan.FromMilliseconds(100), RxApp.TaskpoolScheduler)
+                .Select(x =>
+                {
+                    return Observable.Create<ILinkCache>(obs =>
+                    {
+                        var loadOrder = Mutagen.Bethesda.LoadOrder.Import(
+                            x.dataFolder,
+                            x.loadOrder,
+                            factory: (modPath) => ModInstantiator.Importer(modPath, x.rel));
+                        obs.OnNext(loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlySimple()));
+                        return Disposable.Empty;
+                    });
+                })
+                .Switch()
+                .Replay(1)
+                .RefCount();
+        }
+           
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)
             : this(parent, settings.TargetRelease, id: settings.ID)
         {
