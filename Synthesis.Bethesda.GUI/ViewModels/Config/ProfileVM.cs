@@ -1,6 +1,5 @@
 using DynamicData;
 using Mutagen.Bethesda;
-using Mutagen.Bethesda.Synthesis;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -15,7 +14,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Wabbajack.Common;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -118,13 +116,11 @@ namespace Synthesis.Bethesda.GUI
                         {
                             try
                             {
-                                var wjMeta = x.ToWjGame().MetaData();
-                                if (wjMeta == null)
+                                if (!GameLocations.TryGetGameFolder(x, out var gameFolder))
                                 {
                                     return GetResponse<string>.Fail("Could not automatically locate Data folder.  Run Steam/GoG/etc once to properly register things.");
                                 }
-                                return GetResponse<string>.Succeed(
-                                    Path.Combine(wjMeta.GameLocation().ToString(), "Data"));
+                                return GetResponse<string>.Succeed(Path.Combine(gameFolder, "Data"));
                             }
                             catch (Exception ex)
                             {

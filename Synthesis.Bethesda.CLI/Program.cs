@@ -1,12 +1,13 @@
 using CommandLine;
+using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.Reporters;
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Wabbajack.Common;
 
 namespace Synthesis.Bethesda.CLI
 {
@@ -23,7 +24,11 @@ namespace Synthesis.Bethesda.CLI
                             // Locate data folder
                             if (string.IsNullOrWhiteSpace(settings.DataFolderPath))
                             {
-                                settings.DataFolderPath = settings.GameRelease.ToWjGame().MetaData().GameLocation().ToString();
+                                if (!GameLocations.TryGetGameFolder(settings.GameRelease, out var gameFolder))
+                                {
+                                    throw new DirectoryNotFoundException("Could not find game folder automatically");
+                                }
+                                settings.DataFolderPath = Path.Combine(gameFolder, "Data");
                             }
                             await Commands.Run(settings, CancellationToken.None, new ConsoleReporter());
                         }

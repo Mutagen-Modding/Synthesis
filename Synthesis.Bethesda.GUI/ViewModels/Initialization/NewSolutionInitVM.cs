@@ -5,12 +5,8 @@ using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Data.HashFunction.xxHash;
 using System.IO;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.GUI
 {

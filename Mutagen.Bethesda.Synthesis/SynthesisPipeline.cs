@@ -492,12 +492,17 @@ namespace Mutagen.Bethesda.Synthesis
 
         public static RunSynthesisMutagenPatcher GetDefaultRun(GameRelease release, ModKey targetModKey)
         {
+            if (!GameLocations.TryGetGameFolder(release, out var gameFolder))
+            {
+                throw new DirectoryNotFoundException("Could not locate game folder automatically.");
+            }
 
-            var dataPath = Path.Combine(Wabbajack.Common.GameExtensions.MetaData(release.ToWjGame()).GameLocation().ToString(), "Data");
             if (!PluginListings.TryGetListingsFile(release, out var path))
             {
                 throw new FileNotFoundException("Could not locate load order automatically.");
             }
+
+            var dataPath = Path.Combine(gameFolder, "Data");
             return new RunSynthesisMutagenPatcher()
             {
                 DataFolderPath = dataPath,
