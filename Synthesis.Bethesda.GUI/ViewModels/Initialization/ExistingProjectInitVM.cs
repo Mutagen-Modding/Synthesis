@@ -1,11 +1,10 @@
-using Buildalyzer;
 using DynamicData;
 using DynamicData.Binding;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using Synthesis.Bethesda.Execution.Patchers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,7 +39,7 @@ namespace Synthesis.Bethesda.GUI
 
             AvailableProjects = this.WhenAnyValue(x => x.SolutionPath.TargetPath)
                 .ObserveOn(RxApp.TaskpoolScheduler)
-                .Select(x => Utility.AvailableProjectSubpaths(x))
+                .Select(x => SolutionPatcherRun.AvailableProjectSubpaths(x))
                 .Select(x => x.AsObservableChangeSet())
                 .Switch()
                 .ObserveOnGui()

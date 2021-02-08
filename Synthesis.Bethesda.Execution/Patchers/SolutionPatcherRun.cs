@@ -193,5 +193,19 @@ namespace Synthesis.Bethesda.Execution.Patchers
             _output.OnNext($"  To: {outputExtraData}");
             inputExtraData.DeepCopy(outputExtraData);
         }
+
+        public static IEnumerable<string> AvailableProjectSubpaths(string solutionPath)
+        {
+            if (!File.Exists(solutionPath)) return Enumerable.Empty<string>();
+            try
+            {
+                var manager = new AnalyzerManager(solutionPath);
+                return manager.Projects.Keys.Select(projPath => projPath.TrimStart($"{Path.GetDirectoryName(solutionPath)}\\"!));
+            }
+            catch (Exception)
+            {
+                return Enumerable.Empty<string>();
+            }
+        }
     }
 }

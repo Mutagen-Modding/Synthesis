@@ -204,7 +204,7 @@ namespace Synthesis.Bethesda.GUI
                         // Try to locate a solution to drive from
                         var slnPath = GitPatcherRun.GetPathToSolution(LocalDriverRepoDirectory);
                         if (slnPath == null) return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate solution to run."));
-                        var availableProjs = Utility.AvailableProjectSubpaths(slnPath).ToList();
+                        var availableProjs = SolutionPatcherRun.AvailableProjectSubpaths(slnPath).ToList();
                         return new ConfigurationState<DriverRepoInfo>(
                             new DriverRepoInfo(
                                 slnPath: slnPath,
