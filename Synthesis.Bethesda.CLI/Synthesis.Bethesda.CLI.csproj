@@ -8,6 +8,8 @@
     <Product>Synthesis</Product>
     <Description>A lightweight wrapper CLI to run Synthesis pipelines without a GUI</Description>
     <Platforms>x64</Platforms>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>

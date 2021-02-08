@@ -1,16 +1,13 @@
 <Project>
   <PropertyGroup>
-    <Nullable>enable</Nullable>
-    <WarningsAsErrors>nullable</WarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GitInfoReportImportance Condition="$(Configuration) == 'Release'">high</GitInfoReportImportance>
-    <Version>0.13.2.1-dev</Version>
   </PropertyGroup>
 
   <!-- To be redefined by GitInfo after restore. -->
   <Target Name="GitVersion" />
 
-  <!--<Target Name="SetVersion"
+  <Target Name="SetVersion"
 		  BeforeTargets="GetAssemblyVersion;GetPackageVersion;GetProjectVersion"
 		  DependsOnTargets="GitVersion"
 		  Returns="$(PackageVersion)">
@@ -22,5 +19,5 @@
       <Version>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(DevLabel)</Version>
       <InformationalVersion>$(PackageVersion)</InformationalVersion>
     </PropertyGroup>
-  </Target>-->
+  </Target>
 </Project>
