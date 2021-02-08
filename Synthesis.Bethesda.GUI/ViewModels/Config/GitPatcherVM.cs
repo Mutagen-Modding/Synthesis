@@ -624,7 +624,7 @@ namespace Synthesis.Bethesda.GUI
                             });
 
                             // Compile to help prep
-                            var compileResp = await SolutionPatcherRun.CompileWithDotnet(state.Item.ProjPath, cancel, Logger.Information);
+                            var compileResp = await DotNetCommands.Compile(state.Item.ProjPath, cancel, Logger.Information);
                             if (compileResp.Failed)
                             {
                                 Logger.Information($"Compiling failed: {compileResp.Reason}");

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -172,6 +173,47 @@ namespace Synthesis.Bethesda.Execution
                 return GetResponse<string>.Fail("Could not locate target executable.");
             }
             return GetResponse<string>.Succeed(line.Substring(index + delimiter.Length).Trim());
+        }
+
+        public static async Task<ErrorResponse> Compile(string targetPath, CancellationToken cancel, Action<string>? log)
+        {
+            using var process = ProcessWrapper.Create(
+                new ProcessStartInfo("dotnet", GetBuildString($"\"{Path.GetFileName(targetPath)}\""))
+                {
+                    WorkingDirectory = Path.GetDirectoryName(targetPath)!
+                },
+                cancel: cancel);
+            log?.Invoke($"({process.StartInfo.WorkingDirectory}): {process.StartInfo.FileName} {process.StartInfo.Arguments}");
+            string? firstError = null;
+            bool buildFailed = false;
+            List<string> output = new List<string>();
+            int totalLen = 0;
+            process.Output.Subscribe(o =>
+            {
+                if (o.StartsWith("Build FAILED"))
+                {
+                    buildFailed = true;
+                }
+                else if (buildFailed
+                    && firstError == null
+                    && !string.IsNullOrWhiteSpace(o))
+                {
+                    firstError = o;
+                }
+                if (totalLen < 10_000)
+                {
+                    totalLen += o.Length;
+                    output.Add(o);
+                }
+            });
+            var result = await process.Run().ConfigureAwait(false);
+            if (result == 0) return ErrorResponse.Success;
+            firstError = firstError?.TrimStart($"{targetPath} : ");
+            if (firstError == null && cancel.IsCancellationRequested)
+            {
+                firstError = "Cancelled";
+            }
+            return ErrorResponse.Fail(reason: firstError ?? $"Unknown Error: {string.Join(Environment.NewLine, output)}");
         }
     }
 }

@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 Task.Run(async () =>
                 {
                     _output.OnNext($"Compiling");
-                    var resp = await CompileWithDotnet(PathToProject, cancel, _output.OnNext).ConfigureAwait(false);
+                    var resp = await DotNetCommands.Compile(PathToProject, cancel, _output.OnNext).ConfigureAwait(false);
                     if (!resp.Succeeded)
                     {
                         throw new SynthesisBuildFailure(resp.Reason);
@@ -148,47 +148,6 @@ namespace Synthesis.Bethesda.Execution.Patchers
             }
 
             return (true, default);
-        }
-
-        public static async Task<ErrorResponse> CompileWithDotnet(string targetPath, CancellationToken cancel, Action<string>? log)
-        {
-            using var process = ProcessWrapper.Create(
-                new ProcessStartInfo("dotnet", DotNetCommands.GetBuildString($"\"{Path.GetFileName(targetPath)}\""))
-                {
-                    WorkingDirectory = Path.GetDirectoryName(targetPath)!
-                },
-                cancel: cancel);
-            log?.Invoke($"({process.StartInfo.WorkingDirectory}): {process.StartInfo.FileName} {process.StartInfo.Arguments}");
-            string? firstError = null;
-            bool buildFailed = false;
-            List<string> output = new List<string>();
-            int totalLen = 0;
-            process.Output.Subscribe(o =>
-            {
-                if (o.StartsWith("Build FAILED"))
-                {
-                    buildFailed = true;
-                }
-                else if (buildFailed 
-                    && firstError == null
-                    && !string.IsNullOrWhiteSpace(o))
-                {
-                    firstError = o;
-                }
-                if (totalLen < 10_000)
-                {
-                    totalLen += o.Length;
-                    output.Add(o);
-                }
-            });
-            var result = await process.Run().ConfigureAwait(false);
-            if (result == 0) return ErrorResponse.Success;
-            firstError = firstError?.TrimStart($"{targetPath} : ");
-            if (firstError == null && cancel.IsCancellationRequested)
-            {
-                firstError = "Cancelled";
-            }
-            return ErrorResponse.Fail(reason: firstError ?? $"Unknown Error: {string.Join(Environment.NewLine, output)}");
         }
 
         public static IEnumerable<string> AvailableProjects(string solutionPath)
