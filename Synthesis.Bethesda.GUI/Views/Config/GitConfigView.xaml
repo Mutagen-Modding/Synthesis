@@ -56,22 +56,18 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <local:PatcherVersioningView Grid.Row="0"
+                        <local:GitTargetView Grid.Row="0" />
+                        <local:PatcherVersioningView Grid.Row="1"
                             x:Name="PatcherVersioning"
+                            Margin="0,15,0,0"
                             HorizontalAlignment="Left" />
-                        <local:NugetsVersioningView Grid.Row="1"
+                        <local:NugetsVersioningView Grid.Row="2"
                             x:Name="Nugets"
                             Margin="0,5,0,0" />
                     </Grid>
                 </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Target">
-                <local:GitTargetView />
             </TabItem>
         </TabControl>
     </Grid>

@@ -21,7 +21,6 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid),
                         this.WhenAnyValue(x => x.ViewModel!.SelectedProjectPath.ErrorState),
