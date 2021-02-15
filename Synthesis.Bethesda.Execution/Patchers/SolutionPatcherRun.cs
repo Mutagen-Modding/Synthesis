@@ -99,6 +99,8 @@ namespace Synthesis.Bethesda.Execution.Patchers
             using var process = ProcessWrapper.Create(
                 new ProcessStartInfo("dotnet", $"run --project \"{PathToProject}\" --runtime win-x64 --no-build {args}"),
                 cancel: cancel);
+            _output.OnNext("Running");
+            _output.OnNext($"({process.StartInfo.WorkingDirectory}): {process.StartInfo.FileName} {process.StartInfo.Arguments}");
             using var outputSub = process.Output.Subscribe(_output);
             using var errSub = process.Error.Subscribe(_error);
             var result = await process.Run().ConfigureAwait(false);

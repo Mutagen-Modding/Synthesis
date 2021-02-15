@@ -103,7 +103,6 @@ namespace Synthesis.Bethesda.ImpactTester
                             if (compile.Failed)
                             {
                                 System.Console.WriteLine("Failed compilation");
-                                System.Console.WriteLine(compile.Reason);
                             }
                             projResults.Add((dependency, proj, compile));
                         }

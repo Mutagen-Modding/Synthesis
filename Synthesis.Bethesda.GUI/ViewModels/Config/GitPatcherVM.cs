@@ -526,6 +526,7 @@ namespace Synthesis.Bethesda.GUI
                             Logger.Error(str);
                             observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
                         }
+                        observer.OnCompleted();
                     });
                 })
                 .Switch()
@@ -642,6 +643,7 @@ namespace Synthesis.Bethesda.GUI
                             Logger.Error(str);
                             observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
                         }
+                        observer.OnCompleted();
                     });
                 })
                 .Switch()
@@ -700,6 +702,7 @@ namespace Synthesis.Bethesda.GUI
                             Logger.Error(str);
                             observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
                         }
+                        observer.OnCompleted();
                     });
                 })
                 .Switch()

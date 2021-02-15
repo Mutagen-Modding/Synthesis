@@ -67,6 +67,7 @@ namespace Synthesis.Bethesda.GUI
                         {
                             Logger.Error($"Error checking if patcher can open settings: {ex}");
                         }
+                        observer.OnCompleted();
                     });
                 })
                 .Switch()
@@ -144,8 +145,8 @@ namespace Synthesis.Bethesda.GUI
                         {
                             Logger.Error($"Error creating reflection GUI: {ex}");
                             observer.OnNext((false, GetResponse<ReflectionSettingsVM[]>.Fail(ex)));
-                            return;
                         }
+                        observer.OnCompleted();
                     });
                 })
                 .Switch()

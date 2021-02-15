@@ -480,6 +480,7 @@ namespace Synthesis.Bethesda.GUI
                             x.loadOrder,
                             factory: (modPath) => ModInstantiator.Importer(modPath, x.rel));
                         obs.OnNext(loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()));
+                        obs.OnCompleted();
                         return Disposable.Empty;
                     });
                 })

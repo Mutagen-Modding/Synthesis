@@ -196,7 +196,8 @@ namespace Synthesis.Bethesda.Execution
                 }
                 else if (buildFailed
                     && firstError == null
-                    && !string.IsNullOrWhiteSpace(o))
+                    && !string.IsNullOrWhiteSpace(o)
+                    && o.StartsWith("error"))
                 {
                     firstError = o;
                 }
