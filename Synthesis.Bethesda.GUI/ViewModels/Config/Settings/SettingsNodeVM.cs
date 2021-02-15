@@ -76,55 +76,88 @@ namespace Synthesis.Bethesda.GUI
                 case "Array`1":
                 case "List`1":
                 case "IEnumerable`1":
-                    var firstGen = targetType.GenericTypeArguments[0];
-                    switch (firstGen.Name)
                     {
-                        case "SByte":
-                            return EnumerableNumericSettingsVM.Factory<sbyte, Int8SettingsVM>(memberName, defaultVal, new Int8SettingsVM());
-                        case "Int16":
-                            return EnumerableNumericSettingsVM.Factory<short, Int16SettingsVM>(memberName, defaultVal, new Int16SettingsVM());
-                        case "Int32":
-                            return EnumerableNumericSettingsVM.Factory<int, Int32SettingsVM>(memberName, defaultVal, new Int32SettingsVM());
-                        case "Int64":
-                            return EnumerableNumericSettingsVM.Factory<long, Int64SettingsVM>(memberName, defaultVal, new Int64SettingsVM());
-                        case "Byte":
-                            return EnumerableNumericSettingsVM.Factory<byte, UInt8SettingsVM>(memberName, defaultVal, new UInt8SettingsVM());
-                        case "UInt16":
-                            return EnumerableNumericSettingsVM.Factory<ushort, UInt16SettingsVM>(memberName, defaultVal, new UInt16SettingsVM());
-                        case "UInt32":
-                            return EnumerableNumericSettingsVM.Factory<uint, UInt32SettingsVM>(memberName, defaultVal, new UInt32SettingsVM());
-                        case "UInt64":
-                            return EnumerableNumericSettingsVM.Factory<ulong, UInt64SettingsVM>(memberName, defaultVal, new UInt64SettingsVM());
-                        case "Double":
-                            return EnumerableNumericSettingsVM.Factory<double, DoubleSettingsVM>(memberName, defaultVal, new DoubleSettingsVM());
-                        case "Single":
-                            return EnumerableNumericSettingsVM.Factory<float, FloatSettingsVM>(memberName, defaultVal, new FloatSettingsVM());
-                        case "Decimal":
-                            return EnumerableNumericSettingsVM.Factory<decimal, DecimalSettingsVM>(memberName, defaultVal, new DecimalSettingsVM());
-                        case "ModKey":
-                            return EnumerableModKeySettingsVM.Factory(param, memberName, defaultVal);
-                        case "FormKey":
-                            return EnumerableFormKeySettingsVM.Factory(memberName, defaultVal);
-                        default:
-                            {
-                                if (firstGen.Name.Contains("FormLink")
-                                    && firstGen.IsGenericType
-                                    && firstGen.GenericTypeArguments.Length == 1)
+                        var firstGen = targetType.GenericTypeArguments[0];
+                        switch (firstGen.Name)
+                        {
+                            case "SByte":
+                                return EnumerableNumericSettingsVM.Factory<sbyte, Int8SettingsVM>(memberName, defaultVal, new Int8SettingsVM());
+                            case "Int16":
+                                return EnumerableNumericSettingsVM.Factory<short, Int16SettingsVM>(memberName, defaultVal, new Int16SettingsVM());
+                            case "Int32":
+                                return EnumerableNumericSettingsVM.Factory<int, Int32SettingsVM>(memberName, defaultVal, new Int32SettingsVM());
+                            case "Int64":
+                                return EnumerableNumericSettingsVM.Factory<long, Int64SettingsVM>(memberName, defaultVal, new Int64SettingsVM());
+                            case "Byte":
+                                return EnumerableNumericSettingsVM.Factory<byte, UInt8SettingsVM>(memberName, defaultVal, new UInt8SettingsVM());
+                            case "UInt16":
+                                return EnumerableNumericSettingsVM.Factory<ushort, UInt16SettingsVM>(memberName, defaultVal, new UInt16SettingsVM());
+                            case "UInt32":
+                                return EnumerableNumericSettingsVM.Factory<uint, UInt32SettingsVM>(memberName, defaultVal, new UInt32SettingsVM());
+                            case "UInt64":
+                                return EnumerableNumericSettingsVM.Factory<ulong, UInt64SettingsVM>(memberName, defaultVal, new UInt64SettingsVM());
+                            case "Double":
+                                return EnumerableNumericSettingsVM.Factory<double, DoubleSettingsVM>(memberName, defaultVal, new DoubleSettingsVM());
+                            case "Single":
+                                return EnumerableNumericSettingsVM.Factory<float, FloatSettingsVM>(memberName, defaultVal, new FloatSettingsVM());
+                            case "Decimal":
+                                return EnumerableNumericSettingsVM.Factory<decimal, DecimalSettingsVM>(memberName, defaultVal, new DecimalSettingsVM());
+                            case "ModKey":
+                                return EnumerableModKeySettingsVM.Factory(param, memberName, defaultVal);
+                            case "FormKey":
+                                return EnumerableFormKeySettingsVM.Factory(memberName, defaultVal);
+                            default:
                                 {
-                                    var formLinkGen = firstGen.GenericTypeArguments[0];
-                                    if (!LoquiRegistration.TryGetRegister(formLinkGen, out var regis))
+                                    if (firstGen.Name.Contains("FormLink")
+                                        && firstGen.IsGenericType
+                                        && firstGen.GenericTypeArguments.Length == 1)
                                     {
-                                        throw new ArgumentException($"Can't create a formlink control for type: {formLinkGen}");
+                                        var formLinkGen = firstGen.GenericTypeArguments[0];
+                                        if (!LoquiRegistration.TryGetRegister(formLinkGen, out var regis))
+                                        {
+                                            throw new ArgumentException($"Can't create a formlink control for type: {formLinkGen}");
+                                        }
+                                        return EnumerableFormLinkSettingsVM.Factory(param, memberName, regis.GetterType, defaultVal);
                                     }
-                                    return EnumerableFormLinkSettingsVM.Factory(param, memberName, regis.GetterType, defaultVal);
+                                    var foundType = param.Assembly.GetType(firstGen.FullName!);
+                                    if (foundType != null)
+                                    {
+                                        return new EnumerableObjectSettingsVM(param, memberName, foundType);
+                                    }
                                 }
-                                var foundType = param.Assembly.GetType(firstGen.FullName!);
-                                if (foundType != null)
+                                return new UnknownSettingsVM(memberName);
+                        }
+                    }
+                case "HashSet`1":
+                    {
+                        var firstGen = targetType.GenericTypeArguments[0];
+                        switch (firstGen.Name)
+                        {
+                            case "ModKey":
+                                return EnumerableModKeySettingsVM.Factory(param, memberName, defaultVal);
+                            case "FormKey":
+                                return EnumerableFormKeySettingsVM.Factory(memberName, defaultVal);
+                            default:
                                 {
-                                    return new EnumerableObjectSettingsVM(param, memberName, foundType);
+                                    if (firstGen.Name.Contains("FormLink")
+                                        && firstGen.IsGenericType
+                                        && firstGen.GenericTypeArguments.Length == 1)
+                                    {
+                                        var formLinkGen = firstGen.GenericTypeArguments[0];
+                                        if (!LoquiRegistration.TryGetRegister(formLinkGen, out var regis))
+                                        {
+                                            throw new ArgumentException($"Can't create a formlink control for type: {formLinkGen}");
+                                        }
+                                        return EnumerableFormLinkSettingsVM.Factory(param, memberName, regis.GetterType, defaultVal);
+                                    }
+                                    var foundType = param.Assembly.GetType(firstGen.FullName!);
+                                    if (foundType != null)
+                                    {
+                                        return new EnumerableObjectSettingsVM(param, memberName, foundType);
+                                    }
                                 }
-                            }
-                            return new UnknownSettingsVM(memberName);
+                                return new UnknownSettingsVM(memberName);
+                        }
                     }
                 default:
                     {
