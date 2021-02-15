@@ -68,7 +68,7 @@
                                     <Style BasedOn="{StaticResource Noggog.Styles.ComboBox}" TargetType="ComboBox">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding TargetTag, Converter={StaticResource StringIsWhitespaceBooleanConverter}}" Value="True">
-                                                <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}" />
+                                                <Setter Property="BorderBrush" Value="{StaticResource Noggog.Brushes.Warning.Foreground}" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>

@@ -1,4 +1,4 @@
-﻿<local:CodeSnippetConfigViewBase
+<local:CodeSnippetConfigViewBase
     x:Class="Synthesis.Bethesda.GUI.Views.CodeSnippetConfigView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -48,10 +48,10 @@
                         <Style TargetType="icon:PackIconFontAwesome">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding CompilationStatus}" Value="{x:Static vm:CodeCompilationStatus.Error}">
-                                    <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
+                                    <Setter Property="Foreground" Value="{StaticResource Noggog.Brushes.Red.Foreground}" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding CompilationStatus}" Value="{x:Static vm:CodeCompilationStatus.Successful}">
-                                    <Setter Property="Foreground" Value="{StaticResource GreenBrush}" />
+                                    <Setter Property="Foreground" Value="{StaticResource Noggog.Brushes.Green.Foreground}" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding CompilationStatus}" Value="{x:Static vm:CodeCompilationStatus.Compiling}">
                                     <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray7}" />

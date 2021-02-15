@@ -40,7 +40,7 @@
                         FontWeight="Bold">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
-                                <Setter Property="Foreground" Value="{StaticResource GreenBrush}" />
+                                <Setter Property="Foreground" Value="{StaticResource Noggog.Brushes.Green.Foreground}" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding State.RunnableState.Succeeded}" Value="False">
                                         <Setter Property="Foreground" Value="{StaticResource PurpleForegroundBrush}" />
@@ -60,14 +60,14 @@
                             x:Name="ErrorIcon"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Foreground="{StaticResource RedBrush}"
+                            Foreground="{StaticResource Noggog.Brushes.Red.Foreground}"
                             Kind="AlertCircle"
                             Visibility="Collapsed" />
                         <icon:PackIconMaterial
                             x:Name="SuccessIcon"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Foreground="{StaticResource GreenBrush}"
+                            Foreground="{StaticResource Noggog.Brushes.Green.Foreground}"
                             Kind="CheckboxMarkedCircle"
                             Visibility="Collapsed" />
                         <icon:PackIconFontAwesome
@@ -142,7 +142,7 @@
                             <MultiDataTrigger.Setters>
                                 <Setter Property="Content">
                                     <Setter.Value>
-                                        <icon:PackIconMaterial Foreground="{StaticResource YellowBrush}" Kind="CheckboxMarkedCircle">
+                                        <icon:PackIconMaterial Foreground="{StaticResource Noggog.Brushes.Yellow.Foreground}" Kind="CheckboxMarkedCircle">
                                             <icon:PackIconMaterial.Effect>
                                                 <DropShadowEffect
                                                     BlurRadius="15"
@@ -162,7 +162,7 @@
                             <MultiDataTrigger.Setters>
                                 <Setter Property="Content">
                                     <Setter.Value>
-                                        <icon:PackIconMaterial Foreground="{StaticResource YellowBrush}" Kind="CheckboxBlankCircleOutline">
+                                        <icon:PackIconMaterial Foreground="{StaticResource Noggog.Brushes.Yellow.Foreground}" Kind="CheckboxBlankCircleOutline">
                                             <icon:PackIconMaterial.Effect>
                                                 <DropShadowEffect
                                                     BlurRadius="15"
@@ -300,7 +300,7 @@
                                 <Condition Binding="{Binding State.IsHaltingError}" Value="True" />
                             </MultiDataTrigger.Conditions>
                             <MultiDataTrigger.Setters>
-                                <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
+                                <Setter Property="Foreground" Value="{StaticResource Noggog.Brushes.Red.Foreground}" />
                                 <Setter Property="Effect">
                                     <Setter.Value>
                                         <DropShadowEffect

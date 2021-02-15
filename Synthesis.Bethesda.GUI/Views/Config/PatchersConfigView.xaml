@@ -55,7 +55,7 @@
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Content">
                                         <Setter.Value>
-                                            <icon:PackIconMaterial Foreground="{StaticResource YellowBrush}" Kind="CheckboxBlankCircleOutline">
+                                            <icon:PackIconMaterial Foreground="{StaticResource Noggog.Brushes.Yellow.Foreground}" Kind="CheckboxBlankCircleOutline">
                                                 <icon:PackIconMaterial.Effect>
                                                     <DropShadowEffect
                                                         BlurRadius="15"
@@ -85,7 +85,7 @@
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Content">
                                         <Setter.Value>
-                                            <icon:PackIconMaterial Foreground="{StaticResource YellowBrush}" Kind="CheckboxMarkedCircle">
+                                            <icon:PackIconMaterial Foreground="{StaticResource Noggog.Brushes.Yellow.Foreground}" Kind="CheckboxMarkedCircle">
                                                 <icon:PackIconMaterial.Effect>
                                                     <DropShadowEffect
                                                         BlurRadius="15"

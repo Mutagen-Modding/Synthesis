@@ -44,7 +44,7 @@
                 <Button.Resources>
                     <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#44FFFFFF" />
                     <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource Salmon}" />
-                    <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource Red}" />
+                    <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource Noggog.Colors.Red.Foreground}" />
                 </Button.Resources>
                 <icon:PackIconFontAwesome Kind="TrashSolid" />
             </Button>
