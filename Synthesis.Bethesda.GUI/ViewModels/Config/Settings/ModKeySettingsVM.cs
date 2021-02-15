@@ -1,3 +1,4 @@
+using DynamicData;
 using Mutagen.Bethesda;
 using Newtonsoft.Json.Linq;
 using Serilog;
@@ -12,17 +13,18 @@ namespace Synthesis.Bethesda.GUI
 {
     public class ModKeySettingsVM : BasicSettingsVM<ModKey>
     {
-        public ModKeySettingsVM(string memberName, object? defaultVal)
+        public IObservable<IChangeSet<ModKey>> DetectedLoadOrder { get; }
+
+        public ModKeySettingsVM(
+            IObservable<IChangeSet<ModKey>> detectedLoadOrder, 
+            string memberName, 
+            object? defaultVal)
             : base(memberName, defaultVal)
         {
+            DetectedLoadOrder = detectedLoadOrder;
         }
 
-        public ModKeySettingsVM()
-            : base(string.Empty, default)
-        {
-        }
-
-        public override SettingsNodeVM Duplicate() => new ModKeySettingsVM(MemberName, DefaultValue);
+        public override SettingsNodeVM Duplicate() => new ModKeySettingsVM(DetectedLoadOrder, MemberName, DefaultValue);
 
         public override ModKey Get(JsonElement property)
         {

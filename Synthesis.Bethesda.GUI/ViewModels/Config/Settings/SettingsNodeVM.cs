@@ -70,7 +70,7 @@ namespace Synthesis.Bethesda.GUI
                 case "Decimal":
                     return new DecimalSettingsVM(memberName, defaultVal);
                 case "ModKey":
-                    return new ModKeySettingsVM(memberName, defaultVal);
+                    return new ModKeySettingsVM(param.DetectedLoadOrder.Transform(x => x.Listing.ModKey), memberName, defaultVal);
                 case "FormKey":
                     return new FormKeySettingsVM(memberName, defaultVal);
                 case "Array`1":

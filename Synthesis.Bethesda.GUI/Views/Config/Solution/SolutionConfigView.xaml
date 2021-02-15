@@ -7,6 +7,7 @@
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mutaWpf="clr-namespace:Mutagen.Bethesda.WPF;assembly=Mutagen.Bethesda.WPF"
     xmlns:noggog="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -113,7 +114,7 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Required Mods">
-                <local:RequiredModsView x:Name="RequiredMods" RequiredModsLabel="Required Mods" />
+                <mutaWpf:ModKeyMultiPicker x:Name="RequiredMods" />
             </TabItem>
         </TabControl>
     </Grid>

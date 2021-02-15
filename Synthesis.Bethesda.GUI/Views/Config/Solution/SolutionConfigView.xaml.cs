@@ -88,7 +88,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.RequiredMods)
-                    .BindToStrict(this, x => x.RequiredMods.DataContext)
+                    .BindToStrict(this, x => x.RequiredMods.ModKeys)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.DetectedMods)
+                    .BindToStrict(this, x => x.RequiredMods.SearchableMods)
                     .DisposeWith(disposable);
             });
         }

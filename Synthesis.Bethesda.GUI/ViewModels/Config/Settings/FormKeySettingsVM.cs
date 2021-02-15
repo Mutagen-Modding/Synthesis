@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.GUI
         {
         }
 
-        public override SettingsNodeVM Duplicate() => new ModKeySettingsVM(MemberName, DefaultValue);
+        public override SettingsNodeVM Duplicate() => new FormKeySettingsVM(MemberName, DefaultValue);
 
         public override FormKey Get(JsonElement property)
         {

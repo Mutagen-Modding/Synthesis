@@ -1,5 +1,6 @@
 using DynamicData;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.WPF;
 using Newtonsoft.Json.Linq;
 using Noggog;
 using ReactiveUI;
@@ -19,46 +20,64 @@ namespace Synthesis.Bethesda.GUI
 {
     public class EnumerableModKeySettingsVM : SettingsNodeVM
     {
-        private readonly IObservable<IChangeSet<LoadOrderEntryVM>> _detectedLoadOrder;
         private readonly ModKey[] _defaultVal;
-
-        public RequiredModsVM AddedModsVM { get; }
+        public ObservableCollection<ModKeyItemViewModel> Values { get; } = new ObservableCollection<ModKeyItemViewModel>();
+        public IObservable<IChangeSet<ModKey>> DetectedLoadOrder { get; }
 
         public EnumerableModKeySettingsVM(
-            IObservable<IChangeSet<LoadOrderEntryVM>> detectedLoadOrder,
+            IObservable<IChangeSet<ModKey>> detectedLoadOrder,
             string memberName,
             IEnumerable<ModKey> defaultVal)
             : base(memberName)
         {
             _defaultVal = defaultVal.ToArray();
-            _detectedLoadOrder = detectedLoadOrder;
-            AddedModsVM = new RequiredModsVM(detectedLoadOrder);
-            AddedModsVM.RequiredMods.SetTo(defaultVal);
+            DetectedLoadOrder = detectedLoadOrder;
+            Values.SetTo(defaultVal.Select(i => new ModKeyItemViewModel(i)));
         }
 
         public static EnumerableModKeySettingsVM Factory(SettingsParameters param, string memberName, object? defaultVal)
         {
             return new EnumerableModKeySettingsVM(
-                param.DetectedLoadOrder,
+                param.DetectedLoadOrder.Transform(x => x.Listing.ModKey),
                 memberName,
                 defaultVal as IEnumerable<ModKey> ?? Enumerable.Empty<ModKey>());
         }
 
         public override void Import(JsonElement property, ILogger logger)
         {
-            AddedModsVM.RequiredMods.SetTo(
-                property.EnumerateArray()
-                .Select(elem => ModKeySettingsVM.Import(elem)));
+            Values.Clear();
+            foreach (var elem in property.EnumerateArray())
+            {
+                if (ModKey.TryFromNameAndExtension(elem.GetString(), out var modKey))
+                {
+                    Values.Add(new ModKeyItemViewModel(modKey));
+                }
+                else
+                {
+                    Values.Add(new ModKeyItemViewModel(ModKey.Null));
+                }
+            }
         }
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[MemberName] = new JArray(AddedModsVM.RequiredMods.Items.Select(x => ModKeySettingsVM.Persist(x)).ToArray());
+            obj[MemberName] = new JArray(Values
+                .Select(x =>
+                {
+                    if (x.ModKey.IsNull)
+                    {
+                        return string.Empty;
+                    }
+                    else
+                    {
+                        return x.ModKey.ToString();
+                    }
+                }).ToArray());
         }
 
         public override SettingsNodeVM Duplicate()
         {
-            return new EnumerableModKeySettingsVM(_detectedLoadOrder, MemberName, _defaultVal);
+            return new EnumerableModKeySettingsVM(DetectedLoadOrder, MemberName, _defaultVal);
         }
     }
 }

@@ -19,8 +19,11 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.MemberName)
                     .BindToStrict(this, x => x.SettingsNameBlock.Text)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.AddedModsVM)
-                    .BindToStrict(this, x => x.RequiredModsPicker.DataContext)
+                this.WhenAnyValue(x => x.ViewModel!.Values)
+                    .BindToStrict(this, x => x.RequiredModsPicker.ModKeys)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.DetectedLoadOrder)
+                    .BindToStrict(this, x => x.RequiredModsPicker.SearchableMods)
                     .DisposeWith(disposable);
             });
         }

@@ -23,29 +23,35 @@ namespace Synthesis.Bethesda.GUI
     {
         public ObservableCollection<FormKeyItemViewModel> Values { get; } = new ObservableCollection<FormKeyItemViewModel>();
 
+        private readonly IFormLink[] _defaultVal;
         private readonly IObservable<ILinkCache> _linkCacheObs;
         private readonly ObservableAsPropertyHelper<ILinkCache?> _LinkCache;
         public ILinkCache? LinkCache => _LinkCache.Value;
 
         public IEnumerable<Type> ScopedTypes { get; }
 
-        public EnumerableFormLinkSettingsVM(IObservable<ILinkCache> linkCache, Type type, string memberName)
+        public EnumerableFormLinkSettingsVM(
+            IObservable<ILinkCache> linkCache, 
+            Type type,
+            string memberName,
+            IEnumerable<IFormLink> defaultVal)
             : base(memberName)
         {
             ScopedTypes = type.AsEnumerable();
+            _defaultVal = defaultVal.ToArray();
             _linkCacheObs = linkCache;
             _LinkCache = linkCache
                 .ToGuiProperty(this, nameof(LinkCache), default(ILinkCache?));
+            Values.SetTo(defaultVal.Select(i => new FormKeyItemViewModel(i.FormKey)));
         }
 
         public static SettingsNodeVM Factory(SettingsParameters param, string memberName, Type type, object? defaultVal)
         {
-            var ret = new EnumerableFormLinkSettingsVM(param.LinkCache, type, memberName);
-            if (defaultVal is IEnumerable<IFormLink> items)
-            {
-                ret.Values.SetTo(items.Select(i => new FormKeyItemViewModel(i.FormKey)));
-            }
-            return ret;
+            return new EnumerableFormLinkSettingsVM(
+                param.LinkCache,
+                type,
+                memberName,
+                defaultVal as IEnumerable<IFormLink> ?? Enumerable.Empty<IFormLink>());
         }
 
         public override void Import(JsonElement property, ILogger logger)
@@ -82,7 +88,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override SettingsNodeVM Duplicate()
         {
-            return new EnumerableFormLinkSettingsVM(_linkCacheObs, ScopedTypes.First(), string.Empty);
+            return new EnumerableFormLinkSettingsVM(_linkCacheObs, ScopedTypes.First(), string.Empty, _defaultVal);
         }
     }
 }

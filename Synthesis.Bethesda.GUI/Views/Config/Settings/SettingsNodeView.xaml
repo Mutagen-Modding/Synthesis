@@ -120,9 +120,23 @@
                 <local:UnknownSettingsNodeView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:ModKeySettingsVM}">
-                <local:BasicSettingsNodeView>
-                    <mutagenWpf:ModKeyBox ModKey="{Binding Value}" />
-                </local:BasicSettingsNodeView>
+                <Border Style="{StaticResource ReflectionSettingBorder}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0"
+                            Margin="0,4,6,0"
+                            VerticalAlignment="Top"
+                            Style="{StaticResource ReflectionSettingName}"
+                            Text="{Binding MemberName}" />
+                        <mutagenWpf:ModKeyPicker Grid.Column="1"
+                            ModKey="{Binding Value}"
+                            SearchBoxHeight="200"
+                            SearchableMods="{Binding DetectedLoadOrder}" />
+                    </Grid>
+                </Border>
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:FormKeySettingsVM}">
                 <local:BasicSettingsNodeView>
@@ -170,7 +184,9 @@
                             VerticalAlignment="Center"
                             FormKeys="{Binding Values, Mode=OneWay}"
                             LinkCache="{Binding LinkCache}"
-                            ScopedTypes="{Binding ScopedTypes, Mode=OneWay}" />
+                            ScopedTypes="{Binding ScopedTypes, Mode=OneWay}"
+                            SelectedBackgroundBrush="{StaticResource PurpleBrush}"
+                            SelectedForegroundBrush="{StaticResource PaleYellowBrush}" />
                     </Grid>
                 </Border>
             </DataTemplate>
