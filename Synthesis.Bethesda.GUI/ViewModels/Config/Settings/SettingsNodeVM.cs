@@ -1,4 +1,5 @@
 using DynamicData;
+using Loqui;
 using Newtonsoft.Json.Linq;
 using Noggog.WPF;
 using Serilog;
@@ -75,7 +76,8 @@ namespace Synthesis.Bethesda.GUI
                 case "Array`1":
                 case "List`1":
                 case "IEnumerable`1":
-                    switch (targetType.GenericTypeArguments[0].Name)
+                    var firstGen = targetType.GenericTypeArguments[0];
+                    switch (firstGen.Name)
                     {
                         case "SByte":
                             return EnumerableNumericSettingsVM.Factory<sbyte, Int8SettingsVM>(memberName, defaultVal, new Int8SettingsVM());
@@ -105,7 +107,18 @@ namespace Synthesis.Bethesda.GUI
                             return EnumerableFormKeySettingsVM.Factory(memberName, defaultVal);
                         default:
                             {
-                                var foundType = param.Assembly.GetType(targetType.GenericTypeArguments[0].FullName!);
+                                if (firstGen.Name.Contains("FormLink")
+                                    && firstGen.IsGenericType
+                                    && firstGen.GenericTypeArguments.Length == 1)
+                                {
+                                    var formLinkGen = firstGen.GenericTypeArguments[0];
+                                    if (!LoquiRegistration.TryGetRegister(formLinkGen, out var regis))
+                                    {
+                                        throw new ArgumentException($"Can't create a formlink control for type: {formLinkGen}");
+                                    }
+                                    return EnumerableFormLinkSettingsVM.Factory(param, memberName, regis.GetterType, defaultVal);
+                                }
+                                var foundType = param.Assembly.GetType(firstGen.FullName!);
                                 if (foundType != null)
                                 {
                                     return new EnumerableObjectSettingsVM(param, memberName, foundType);
@@ -119,7 +132,7 @@ namespace Synthesis.Bethesda.GUI
                             && targetType.IsGenericType
                             && targetType.GenericTypeArguments.Length == 1)
                         {
-                            return new FormLinkSettingsVM(param, memberName, targetType);
+                            return new FormLinkSettingsVM(param.LinkCache, memberName, targetType);
                         }
                         var foundType = param.Assembly.GetType(targetType.FullName!);
                         if (foundType != null)

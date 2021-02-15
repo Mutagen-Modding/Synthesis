@@ -8,13 +8,14 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class FormLinkSettingsVM : SettingsNodeVM
+    public class FormLinkSettingsVM : SettingsNodeVM, IBasicSettingsNodeVM
     {
         private readonly ObservableAsPropertyHelper<ILinkCache?> _LinkCache;
         public ILinkCache? LinkCache => _LinkCache.Value;
@@ -24,10 +25,15 @@ namespace Synthesis.Bethesda.GUI
 
         public IEnumerable<Type> ScopedTypes { get; } = Enumerable.Empty<Type>();
 
-        public FormLinkSettingsVM(SettingsParameters param, string memberName, Type targetType) 
+        object IBasicSettingsNodeVM.Value => Value;
+
+        [Reactive]
+        public bool IsSelected { get; set; }
+
+        public FormLinkSettingsVM(IObservable<ILinkCache> linkCache, string memberName, Type targetType) 
             : base(memberName)
         {
-            _LinkCache = param.LinkCache
+            _LinkCache = linkCache
                 .ToGuiProperty(this, nameof(LinkCache), default);
             ScopedTypes = targetType.GenericTypeArguments[0].AsEnumerable();
         }

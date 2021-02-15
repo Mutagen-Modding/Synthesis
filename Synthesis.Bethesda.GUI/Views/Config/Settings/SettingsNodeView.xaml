@@ -133,12 +133,46 @@
                 <local:EnumerableSimpleSettingsNodeView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:FormLinkSettingsVM}">
-                <local:BasicSettingsNodeView>
-                    <mutagenWpf:FormKeyPicker
-                        FormKey="{Binding Value}"
-                        LinkCache="{Binding LinkCache}"
-                        ScopedTypes="{Binding ScopedTypes, Mode=OneWay}" />
-                </local:BasicSettingsNodeView>
+                <Border Style="{StaticResource ReflectionSettingBorder}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0"
+                            Margin="0,4,6,0"
+                            VerticalAlignment="Top"
+                            Style="{StaticResource ReflectionSettingName}"
+                            Text="{Binding MemberName}" />
+                        <mutagenWpf:FormKeyPicker Grid.Column="1"
+                            VerticalAlignment="Center"
+                            FormKey="{Binding Value}"
+                            LinkCache="{Binding LinkCache}"
+                            ScopedTypes="{Binding ScopedTypes, Mode=OneWay}"
+                            SearchBoxHeight="200" />
+                    </Grid>
+                </Border>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:EnumerableFormLinkSettingsVM}">
+                <Border Style="{StaticResource ReflectionSettingBorder}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0"
+                            Margin="0,4,6,0"
+                            VerticalAlignment="Top"
+                            Style="{StaticResource ReflectionSettingName}"
+                            Text="{Binding MemberName}" />
+                        <mutagenWpf:FormKeyMultiPicker Grid.Column="1"
+                            Height="200"
+                            VerticalAlignment="Center"
+                            FormKeys="{Binding Values, Mode=OneWay}"
+                            LinkCache="{Binding LinkCache}"
+                            ScopedTypes="{Binding ScopedTypes, Mode=OneWay}" />
+                    </Grid>
+                </Border>
             </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>
