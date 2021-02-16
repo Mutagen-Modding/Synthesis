@@ -21,10 +21,17 @@ namespace Synthesis.Bethesda.GUI
         {
             Listing = listing;
             var path = Path.Combine(dataFolder, listing.ModKey.FileName);
-            _Exists = Noggog.ObservableExt.WatchFile(path)
-                .StartWith(Unit.Default)
-                .Select(_ => File.Exists(path))
-                .ToGuiProperty(this, nameof(Exists));
+            var exists = File.Exists(path);
+            Log.Logger.Information($"Watching {path}, current exist check: {exists}");
+            _Exists = Observable.Defer(() => 
+                Noggog.ObservableExt.WatchFile(path)
+                    .Select(_ =>
+                    {
+                        var ret = File.Exists(path);
+                        Log.Logger.Information($"{ret} file exists check for {path}");
+                        return ret;
+                    }))
+                .ToGuiProperty(this, nameof(Exists), initialValue: exists);
         }
     }
 }

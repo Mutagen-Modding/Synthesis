@@ -228,6 +228,7 @@ namespace Synthesis.Bethesda.GUI
                         .ObserveOnGui()
                         .FilterOnObservable(
                             x => x.WhenAnyValue(y => y.Exists)
+                                .DistinctUntilChanged()
                                 .Select(x => !x), 
                             scheduler: RxApp.MainThreadScheduler)
                         .QueryWhenChanged(q => q)
@@ -249,6 +250,7 @@ namespace Synthesis.Bethesda.GUI
                         }
                         return GetResponse<PatcherVM>.Succeed(null!);
                     })
+                .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
                 .Do(x =>
                 {
                     if (x.Failed)
