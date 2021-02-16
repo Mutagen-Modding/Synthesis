@@ -29,14 +29,14 @@
                                 <Condition Binding="{Binding StatusDisplay.Blocking}" Value="False" />
                             </MultiDataTrigger.Conditions>
                             <MultiDataTrigger.Setters>
-                                <Setter Property="Foreground" Value="{StaticResource PurpleForegroundBrush}" />
+                                <Setter Property="Foreground" Value="{StaticResource Noggog.Brushes.Green.Foreground}" />
                             </MultiDataTrigger.Setters>
                         </MultiDataTrigger>
                         <DataTrigger Binding="{Binding StatusDisplay.Blocking}" Value="True">
                             <Setter Property="Foreground" Value="{StaticResource SalmonBrush}" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding StatusDisplay.Processing}" Value="True">
-                            <Setter Property="Foreground" Value="{StaticResource PaleYellowBrush}" />
+                            <Setter Property="Foreground" Value="{StaticResource PurpleForegroundBrush}" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

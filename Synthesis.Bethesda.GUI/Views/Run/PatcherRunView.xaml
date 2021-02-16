@@ -39,7 +39,7 @@
                                 <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray4}" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding State.Value}" Value="{x:Static vm:RunState.Error}">
-                                <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+                                <Setter Property="Foreground" Value="{StaticResource Noggog.Brushes.Error.Foreground}" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding State.Value}" Value="{x:Static vm:RunState.Started}">
                                 <Setter Property="Foreground" Value="{StaticResource PaleYellowBrush}" />
