@@ -934,7 +934,8 @@ namespace Synthesis.Bethesda.GUI
                 TargetTag = this.TargetTag,
                 TargetCommit = this.TargetCommit,
                 LatestTag = this.TagAutoUpdate,
-                FollowDefaultBranch = this.BranchAutoUpdate,
+                FollowDefaultBranch = this.BranchFollowMain,
+                AutoUpdateToBranchTip = this.BranchAutoUpdate,
                 TargetBranch = this.TargetBranchName,
             };
             CopyOverSave(ret);
@@ -959,7 +960,8 @@ namespace Synthesis.Bethesda.GUI
             this.ManualSynthesisVersion = settings.ManualSynthesisVersion;
             this.TargetTag = settings.TargetTag;
             this.TargetCommit = settings.TargetCommit;
-            this.BranchAutoUpdate = settings.FollowDefaultBranch;
+            this.BranchAutoUpdate = settings.AutoUpdateToBranchTip;
+            this.BranchFollowMain = settings.FollowDefaultBranch;
             this.TagAutoUpdate = settings.LatestTag;
             this.TargetBranchName = settings.TargetBranch;
         }

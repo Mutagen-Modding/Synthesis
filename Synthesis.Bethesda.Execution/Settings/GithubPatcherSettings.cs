@@ -15,6 +15,7 @@ namespace Synthesis.Bethesda.Execution.Settings
         public string TargetBranch = string.Empty;
         public bool LatestTag = true;
         public bool FollowDefaultBranch = true;
+        public bool AutoUpdateToBranchTip = false;
         public bool OverrideNugetVersioning = false;
         public PatcherNugetVersioningEnum MutagenVersionType = PatcherNugetVersioningEnum.Profile;
         public string ManualMutagenVersion = string.Empty;
