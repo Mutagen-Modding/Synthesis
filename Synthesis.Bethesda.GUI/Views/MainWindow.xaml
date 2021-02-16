@@ -20,13 +20,24 @@
     UseLayoutRounding="True"
     WindowTitleBrush="#35000000"
     mc:Ignorable="d">
+    <mahapps:MetroWindow.IconTemplate>
+        <DataTemplate>
+            <Grid
+                Margin="6,4,0,4"
+                Background="Transparent"
+                RenderOptions.BitmapScalingMode="HighQuality"
+                RenderOptions.EdgeMode="Aliased">
+                <Image Source="pack://application:,,,/Resources/mushroom.ico" />
+            </Grid>
+        </DataTemplate>
+    </mahapps:MetroWindow.IconTemplate>
     <Grid>
         <Rectangle>
             <Rectangle.Fill>
                 <RadialGradientBrush Center="0.5,1" GradientOrigin="0,1" RadiusX="6.7" RadiusY="6.7">
                     <RadialGradientBrush.GradientStops>
                         <GradientStop Offset="0.1" Color="{StaticResource PaleDarkPurple}" />
-                        <GradientStop Offset="1.0" Color="{StaticResource Red}" />
+                        <GradientStop Offset="1.0" Color="{StaticResource Noggog.Colors.Red.Foreground}" />
                     </RadialGradientBrush.GradientStops>
                 </RadialGradientBrush>
             </Rectangle.Fill>

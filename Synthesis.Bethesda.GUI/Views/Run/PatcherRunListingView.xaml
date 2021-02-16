@@ -101,7 +101,7 @@
                                 <Condition Binding="{Binding State.Value}" Value="{x:Static vm:RunState.Error}" />
                             </MultiDataTrigger.Conditions>
                             <MultiDataTrigger.Setters>
-                                <Setter Property="Background" Value="{StaticResource ErrorBrush}" />
+                                <Setter Property="Background" Value="{StaticResource Noggog.Brushes.Error.Foreground}" />
                             </MultiDataTrigger.Setters>
                         </MultiDataTrigger>
                         <MultiDataTrigger>
@@ -114,7 +114,7 @@
                                     <Setter.Value>
                                         <RadialGradientBrush Center="0,0.5" GradientOrigin="0,0.5" RadiusX="3.5" RadiusY="3.5">
                                             <RadialGradientBrush.GradientStops>
-                                                <GradientStop Offset="0" Color="{StaticResource Error}" />
+                                                <GradientStop Offset="0" Color="{StaticResource Noggog.Colors.Error.Foreground}" />
                                                 <GradientStop Offset="1.0" Color="{StaticResource DarkSalmon}" />
                                             </RadialGradientBrush.GradientStops>
                                         </RadialGradientBrush>

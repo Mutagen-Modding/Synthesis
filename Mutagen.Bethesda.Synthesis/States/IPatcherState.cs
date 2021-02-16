@@ -57,7 +57,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// Convenience Link Cache to use created from the provided Load Order object.<br />
         /// The patch mod is marked as safe for mutation, and will not make the cache invalid.
         /// </summary>
-        ILinkCache<TModSetter> LinkCache { get; }
+        ILinkCache<TModSetter, TModGetter> LinkCache { get; }
 
         /// <summary>
         /// Patch mod object to modify and make changes to.  The state of this object will be used to

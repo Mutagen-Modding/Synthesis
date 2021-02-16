@@ -9,8 +9,10 @@ namespace Mutagen.Bethesda.Synthesis
 {
     public static class Versions
     {
-        public static string MutagenVersion => FileVersionInfo.GetVersionInfo(typeof(FormKey).Assembly.Location)!.ProductVersion!.TrimEnd(".0").TrimEnd(".0");
-        public static string SynthesisVersion => FileVersionInfo.GetVersionInfo(typeof(BaseSynthesis.Constants).Assembly.Location)!.ProductVersion!.TrimEnd(".0").TrimEnd(".0");
+        public static string MutagenVersion => GetVersion(typeof(FormKey).Assembly);
+        public static string SynthesisVersion => GetVersion(typeof(BaseSynthesis.Constants).Assembly);
+        public static string OldMutagenVersion => "0.14.0";
+        public static string OldSynthesisVersion => "0.0.3";
         public static string? MutagenSha => typeof(FormKey).Assembly.GetGitSha();
         public static string? SynthesisSha => typeof(BaseSynthesis.Constants).Assembly.GetGitSha();
 
@@ -21,6 +23,16 @@ namespace Mutagen.Bethesda.Synthesis
             var str = git.GetField("Sha")?.GetValue(null) as string;
             if (str.IsNullOrWhitespace()) return null;
             return str;
+        }
+
+        public static string GetVersion(this Assembly assemb)
+        {
+            var version = assemb.GetName().Version!;
+            if (version.Revision == 1)
+            {
+                return $"{version}-dev";
+            }
+            return version.ToString().TrimEnd(".0").TrimEnd(".0");
         }
     }
 }

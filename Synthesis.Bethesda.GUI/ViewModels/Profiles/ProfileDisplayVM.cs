@@ -47,7 +47,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     var profile = this.Profile;
                     if (profile == null || profile.IsActive) return;
-                    Parent.Config.MainVM.ActiveConfirmation = new ConfirmationActionVM(
+                    Parent.Config.MainVM.TargetConfirmation = new ConfirmationActionVM(
                         "Confirm",
                         $"Are you sure you want to delete {profile.Nickname}?",
                         () =>

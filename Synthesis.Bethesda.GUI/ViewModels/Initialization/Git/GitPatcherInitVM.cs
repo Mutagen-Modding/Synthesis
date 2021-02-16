@@ -60,8 +60,8 @@ namespace Synthesis.Bethesda.GUI
             Patcher = new GitPatcherVM(profile);
             this.CompositeDisposable.Add(Patcher);
 
-            _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.State)
-                .Select(x => x.RunnableState)
+            _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)
+                .Select(x => ErrorResponse.Create(x))
                 .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
 
             PatcherRepos = Observable.Return(Unit.Default)

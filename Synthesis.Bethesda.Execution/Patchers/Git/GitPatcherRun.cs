@@ -54,10 +54,10 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         {
         }
 
-        public async Task Prep(GameRelease release, CancellationToken? cancel = null)
+        public async Task Prep(GameRelease release, CancellationToken cancel)
         {
             _output.OnNext("Cloning repository");
-            var cloneResult = await GitUtility.CheckOrCloneRepo(GetResponse<string>.Succeed(_settings.RemoteRepoPath), _localDir, (x) => _output.OnNext(x), cancel ?? CancellationToken.None);
+            var cloneResult = await GitUtility.CheckOrCloneRepo(GetResponse<string>.Succeed(_settings.RemoteRepoPath), _localDir, (x) => _output.OnNext(x), cancel);
             if (cloneResult.Failed)
             {
                 throw new SynthesisBuildFailure(cloneResult.Reason);
@@ -83,7 +83,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             //await SolutionRun.Prep(release, cancel).ConfigureAwait(false);
         }
 
-        public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
+        public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)
         {
             if (SolutionRun == null)
             {
@@ -336,7 +336,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 // Compile to help prep
                 if (compile)
                 {
-                    var compileResp = await SolutionPatcherRun.CompileWithDotnet(projPath, cancel, logger);
+                    var compileResp = await DotNetCommands.Compile(projPath, cancel, logger);
+                    logger?.Invoke("Finished compiling");
                     if (compileResp.Failed) return compileResp.BubbleResult(runInfo);
                 }
 

@@ -13,7 +13,6 @@ using DynamicData.Binding;
 using DynamicData;
 using static Synthesis.Bethesda.GUI.SolutionPatcherVM;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers;
@@ -23,11 +22,14 @@ using Synthesis.Bethesda.DTO;
 using Newtonsoft.Json;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution;
+using System.Threading;
 
 namespace Synthesis.Bethesda.GUI
 {
     public class GitPatcherVM : PatcherVM
     {
+        public override bool IsNameEditable => false;
+
         [Reactive]
         public string RemoteRepoPath { get; set; } = string.Empty;
 
@@ -122,6 +124,12 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<bool> _AttemptedCheckout;
         public bool AttemptedCheckout => _AttemptedCheckout.Value;
 
+        public PatcherSettingsVM PatcherSettings { get; }
+
+        public record StatusRecord(string Text, bool Processing, bool Blocking, ICommand? Command);
+        private readonly ObservableAsPropertyHelper<StatusRecord> _StatusDisplay;
+        public StatusRecord StatusDisplay => _StatusDisplay.Value;
+
         public GitPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
         {
@@ -196,7 +204,7 @@ namespace Synthesis.Bethesda.GUI
                         // Try to locate a solution to drive from
                         var slnPath = GitPatcherRun.GetPathToSolution(LocalDriverRepoDirectory);
                         if (slnPath == null) return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate solution to run."));
-                        var availableProjs = Utility.AvailableProjectSubpaths(slnPath).ToList();
+                        var availableProjs = SolutionPatcherRun.AvailableProjectSubpaths(slnPath).ToList();
                         return new ConfigurationState<DriverRepoInfo>(
                             new DriverRepoInfo(
                                 slnPath: slnPath,
@@ -504,10 +512,12 @@ namespace Synthesis.Bethesda.GUI
 
                             if (runInfo.RunnableState.Failed)
                             {
+                                Logger.Error($"Checking out runner repository failed: {runInfo.RunnableState.Reason}");
                                 observer.OnNext(runInfo);
                                 return;
                             }
 
+                            Logger.Error($"Checking out runner repository succeeded");
                             observer.OnNext(runInfo);
                         }
                         catch (Exception ex)
@@ -516,6 +526,7 @@ namespace Synthesis.Bethesda.GUI
                             Logger.Error(str);
                             observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
                         }
+                        observer.OnCompleted();
                     });
                 })
                 .Switch()
@@ -605,6 +616,7 @@ namespace Synthesis.Bethesda.GUI
 
                         try
                         {
+                            Logger.Information("Compiling");
                             // Return early with the values, but mark not complete
                             observer.OnNext(new ConfigurationState<RunnerRepoInfo>(state.Item)
                             {
@@ -613,14 +625,16 @@ namespace Synthesis.Bethesda.GUI
                             });
 
                             // Compile to help prep
-                            var compileResp = await SolutionPatcherRun.CompileWithDotnet(state.Item.ProjPath, cancel, Logger.Information);
+                            var compileResp = await DotNetCommands.Compile(state.Item.ProjPath, cancel, Logger.Information);
                             if (compileResp.Failed)
                             {
+                                Logger.Information($"Compiling failed: {compileResp.Reason}");
                                 observer.OnNext(compileResp.BubbleFailure<RunnerRepoInfo>());
                                 return;
                             }
 
                             // Return things again, without error
+                            Logger.Information("Finished compiling");
                             observer.OnNext(state);
                         }
                         catch (Exception ex)
@@ -629,9 +643,11 @@ namespace Synthesis.Bethesda.GUI
                             Logger.Error(str);
                             observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
                         }
+                        observer.OnCompleted();
                     });
                 })
                 .Switch()
+                .StartWith(new ConfigurationState<RunnerRepoInfo>(GetResponse<RunnerRepoInfo>.Fail("Compilation uninitialized")))
                 .Replay(1)
                 .RefCount();
 
@@ -639,7 +655,8 @@ namespace Synthesis.Bethesda.GUI
                     compilation,
                     parent.WhenAnyValue(x => x.DataFolder),
                     parent.LoadOrder.Connect()
-                        .QueryWhenChanged(),
+                        .QueryWhenChanged()
+                        .StartWith(ListExt.Empty<LoadOrderEntryVM>()),
                     (comp, data, loadOrder) => (comp, data, loadOrder))
                 .Select(i =>
                 {
@@ -651,6 +668,7 @@ namespace Synthesis.Bethesda.GUI
                             return;
                         }
 
+                        Logger.Information("Checking runnability");
                         // Return early with the values, but mark not complete
                         observer.OnNext(new ConfigurationState<RunnerRepoInfo>(i.comp.Item)
                         {
@@ -669,11 +687,13 @@ namespace Synthesis.Bethesda.GUI
                                 loadOrder: i.loadOrder.Select(lvm => lvm.Listing));
                             if (runnability.Failed)
                             {
+                                Logger.Information($"Checking runnability failed: {runnability.Reason}");
                                 observer.OnNext(runnability.BubbleFailure<RunnerRepoInfo>());
                                 return;
                             }
 
                             // Return things again, without error
+                            Logger.Information("Checking runnability succeeded");
                             observer.OnNext(i.comp);
                         }
                         catch (Exception ex)
@@ -682,6 +702,7 @@ namespace Synthesis.Bethesda.GUI
                             Logger.Error(str);
                             observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
                         }
+                        observer.OnCompleted();
                     });
                 })
                 .Switch()
@@ -710,6 +731,7 @@ namespace Synthesis.Bethesda.GUI
                         if (runner.IsHaltingError) return runner;
                         if (!dotnet.Item2)
                         {
+                            Logger.Information("Determining DotNet SDK installed");
                             return new ConfigurationState(ErrorResponse.Fail("Determining DotNet SDK installed"))
                             {
                                 IsHaltingError = false
@@ -720,8 +742,18 @@ namespace Synthesis.Bethesda.GUI
                         {
                             return new ConfigurationState(ErrorResponse.Fail($"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));
                         }
-                        if (runnability.RunnableState.Failed) return runnability.BubbleError();
-                        return checkout;
+                        if (runnability.RunnableState.Failed)
+                        {
+                            Logger.Information("State deferred to runnability");
+                            return runnability.BubbleError();
+                        }
+                        if (checkout.RunnableState.Failed)
+                        {
+                            Logger.Information("State deferred to checkout");
+                            return checkout.BubbleError();
+                        }
+                        Logger.Information("State returned success!");
+                        return ConfigurationState.Success;
                     })
                 .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
                 {
@@ -790,6 +822,101 @@ namespace Synthesis.Bethesda.GUI
                 UpdateSynthesisManualToLatestCommand,
                 UpdateToBranchCommand,
                 UpdateToTagCommand);
+
+            PatcherSettings = new PatcherSettingsVM(
+                Logger, 
+                this, 
+                compilation.Select(c =>
+                {
+                    if (c.RunnableState.Failed) return c.RunnableState.BubbleFailure<string>();
+                    return GetResponse<string>.Succeed(c.Item.ProjPath);
+                })
+                .DistinctUntilChanged(x => x.Value));
+            this.CompositeDisposable.Add(PatcherSettings);
+
+            _StatusDisplay = Observable.CombineLatest(
+                driverRepoInfo,
+                runnableState,
+                compilation,
+                runnability,
+                (driver, runnable, comp, runnability) =>
+                {
+                    if (driver.RunnableState.Failed)
+                    {
+                        if (driver.IsHaltingError)
+                        {
+                            return new StatusRecord(
+                                Text: "Blocking Error",
+                                Processing: false,
+                                Blocking: true,
+                                Command: null);
+                        }
+                        return new StatusRecord(
+                            Text: "Analyzing repository",
+                            Processing: true,
+                            Blocking: false,
+                            Command: null);
+                    }
+                    if (runnable.RunnableState.Failed)
+                    {
+                        if (runnable.IsHaltingError)
+                        {
+                            return new StatusRecord(
+                                Text: "Blocking Error",
+                                Processing: false,
+                                Blocking: true,
+                                Command: null);
+                        }
+                        return new StatusRecord(
+                            Text: "Checking out desired state",
+                            Processing: true,
+                            Blocking: false,
+                            Command: null);
+                    }
+                    if (comp.RunnableState.Failed)
+                    {
+                        if (comp.IsHaltingError)
+                        {
+                            return new StatusRecord(
+                                Text: "Blocking Error",
+                                Processing: false,
+                                Blocking: true,
+                                Command: null);
+                        }
+                        return new StatusRecord(
+                            Text: "Compiling",
+                            Processing: true,
+                            Blocking: false,
+                            Command: null);
+                    }
+                    if (runnability.RunnableState.Failed)
+                    {
+                        if (runnability.IsHaltingError)
+                        {
+                            return new StatusRecord(
+                                Text: "Blocking Error",
+                                Processing: false,
+                                Blocking: true,
+                                Command: null);
+                        }
+                        return new StatusRecord(
+                            Text: "Checking runnability",
+                            Processing: true,
+                            Blocking: false,
+                            Command: null);
+                    }
+                    return new StatusRecord(
+                        Text: "Ready",
+                        Processing: false,
+                        Blocking: false,
+                        Command: null);
+                })
+                .ToGuiProperty(this, nameof(StatusDisplay), 
+                    new StatusRecord(
+                        Text: "Initializing",
+                        Processing: false,
+                        Blocking: false,
+                        Command: null));
         }
 
         public override PatcherSettings Save()
@@ -811,6 +938,7 @@ namespace Synthesis.Bethesda.GUI
                 TargetBranch = this.TargetBranchName,
             };
             CopyOverSave(ret);
+            PatcherSettings.Persist(Logger);
             return ret;
         }
 
@@ -842,6 +970,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 throw new ArgumentNullException(nameof(RunnableData));
             }
+            PatcherSettings.Persist(Logger);
             return new PatcherRunVM(
                 parent,
                 this,

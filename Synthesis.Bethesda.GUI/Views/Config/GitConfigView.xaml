@@ -7,117 +7,68 @@
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DataContext=""
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
-            Margin="0,4"
-            FontSize="14"
-            FontWeight="Bold"
-            Text="Repository Path" />
-        <Grid Grid.Row="1" Grid.ColumnSpan="2">
-            <TextBox Name="RepositoryPath" Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
-            <Grid Margin="8,0" HorizontalAlignment="Right">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <mahapps:ProgressRing Grid.Column="0"
-                    x:Name="CloningRing"
-                    Width="14"
-                    Height="14"
-                    Foreground="{StaticResource PaleYellowBrush}"
-                    ToolTip="Cloning repository"
-                    Visibility="Collapsed">
-                    <mahapps:ProgressRing.Effect>
-                        <DropShadowEffect
-                            BlurRadius="10"
-                            ShadowDepth="0"
-                            Color="Red" />
-                    </mahapps:ProgressRing.Effect>
-                </mahapps:ProgressRing>
-                <Button Grid.Column="1"
-                    x:Name="OpenGitButton"
-                    Margin="4,0,0,0"
-                    ToolTip="Go to repository website">
-                    <icon:PackIconMaterial Kind="OpenInApp" />
-                </Button>
-            </Grid>
-        </Grid>
-        <TextBlock Grid.Row="2" Grid.ColumnSpan="2"
-            x:Name="ProjectTitle"
-            Margin="0,8,0,4"
-            FontSize="14"
-            FontWeight="Bold"
-            Text="Project"
-            Visibility="Collapsed" />
-        <Button Grid.Row="2" Grid.ColumnSpan="2"
-            x:Name="OpenPatcherInternalFilesButton"
-            Margin="8,0"
-            HorizontalAlignment="Right"
-            ToolTip="Go to patcher internal files location">
-            <Button.Resources>
-                <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#44FFFFFF" />
-            </Button.Resources>
-            <icon:PackIconModern Kind="FolderEllipsis" />
-        </Button>
-        <ComboBox Grid.Row="3" Grid.ColumnSpan="2"
-            x:Name="ProjectsPickerBox"
-            Visibility="Collapsed">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding}" />
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-            <ComboBox.Style>
-                <Style BasedOn="{StaticResource Noggog.Styles.ComboBox}" TargetType="ComboBox">
+        <TextBlock Grid.Row="0"
+            x:Name="StatusBlock"
+            Margin="0,-3,0,0">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray4}" />
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding SelectedProjectPath.InError}" Value="True">
-                            <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}" />
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding StatusDisplay.Processing}" Value="False" />
+                                <Condition Binding="{Binding StatusDisplay.Blocking}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Foreground" Value="{StaticResource Noggog.Brushes.Green.Foreground}" />
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <DataTrigger Binding="{Binding StatusDisplay.Blocking}" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource SalmonBrush}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding StatusDisplay.Processing}" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource PurpleForegroundBrush}" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </ComboBox.Style>
-        </ComboBox>
-        <ScrollViewer Grid.Row="4" Grid.ColumnSpan="2"
-            x:Name="AdvancedSettingsArea"
-            Margin="0,4,0,0"
-            ScrollViewer.HorizontalScrollBarVisibility="Auto"
-            ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="0"
-                    Margin="0,8,0,5"
-                    FontSize="14"
-                    FontWeight="Bold"
-                    Text="Versioning" />
-                <local:PatcherVersioningView Grid.Row="1"
-                    x:Name="PatcherVersioning"
-                    HorizontalAlignment="Left" />
-                <local:NugetsVersioningView Grid.Row="2"
-                    x:Name="Nugets"
-                    Margin="0,5,0,0" />
-            </Grid>
-        </ScrollViewer>
+            </TextBlock.Style>
+        </TextBlock>
+        <TabControl Grid.Row="1" Margin="-5,5,0,0">
+            <TabItem Header="Settings">
+                <local:PatcherSettingsView x:Name="PatcherSettings" />
+            </TabItem>
+            <TabItem Header="Versioning">
+                <ScrollViewer
+                    x:Name="AdvancedSettingsArea"
+                    Margin="0,5,0,0"
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <local:GitTargetView Grid.Row="0" />
+                        <local:PatcherVersioningView Grid.Row="1"
+                            x:Name="PatcherVersioning"
+                            Margin="0,15,0,0"
+                            HorizontalAlignment="Left" />
+                        <local:NugetsVersioningView Grid.Row="2"
+                            x:Name="Nugets"
+                            Margin="0,5,0,0" />
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
     </Grid>
 </local:GitConfigViewBase>

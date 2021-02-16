@@ -3,7 +3,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <AssemblyName>Synthesis</AssemblyName>
-    <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFramework>net5.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <UseWPF>true</UseWPF>
     <PackageId>Synthesis.Bethesda.GUI</PackageId>
     <Authors>Noggog</Authors>
@@ -14,9 +15,15 @@
     <Company>Mutagen</Company>
     <Platforms>x64</Platforms>
     <ApplicationIcon>mushroom.ico</ApplicationIcon>
-    <IncludeSymbolsInSingleFile>true</IncludeSymbolsInSingleFile>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <StartupObject>Synthesis.Bethesda.GUI.App</StartupObject>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <PublishSingleFile>True</PublishSingleFile>
+    <PublishReadyToRun>True</PublishReadyToRun>
+    <PublishReadyToRunShowWarnings>True</PublishReadyToRunShowWarnings>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\mushroom.ico" />
     <None Remove="Resources\Oblivion.png" />
     <None Remove="Resources\SkyrimLE.png" />
     <None Remove="Resources\SkyrimSSE.png" />
@@ -40,28 +48,29 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Buildalyzer" Version="3.1.1" />
+    <PackageReference Include="Buildalyzer" Version="3.2.0" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
     <PackageReference Include="GitInfo" Version="2.1.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
-    <PackageReference Include="Loqui" Version="2.3.0" />
-    <PackageReference Include="Loqui.Generation" Version="2.3.0" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.3.0" />
-    <PackageReference Include="Noggog.WPF" Version="2.3.0" />
+    <PackageReference Include="Loqui" Version="2.6" />
+    <PackageReference Include="Loqui.Generation" Version="2.6" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.26" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.6" />
+    <PackageReference Include="Noggog.WPF" Version="2.6" />
     <PackageReference Include="NuGetizer" Version="0.6.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="reactiveui" Version="13.0.27" />
-    <PackageReference Include="ReactiveUI.Fody" Version="13.0.27" />
+    <PackageReference Include="reactiveui" Version="13.1.1" />
+    <PackageReference Include="ReactiveUI.Fody" Version="13.1.1" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
     <PackageReference Include="Simple.Wpf.Terminal" Version="2.3.15" />
     <PackageReference Include="System.Linq.Async" Version="5.0.0" />
-    <PackageReference Include="Wabbajack.Common" Version="2.2.1.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -76,12 +85,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\mushroom.ico" />
     <Resource Include="Resources\Oblivion.png" />
     <Resource Include="Resources\SkyrimLE.png" />
     <Resource Include="Resources\SkyrimSSE.png" />
     <Resource Include="Resources\SkyrimVR.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="Views\Config\Settings\FieldViews\EnumerableObjectSettingsNodeView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
   <!-- Replace inherited target -->
   <Target Name="SetVersion" BeforeTargets="GetAssemblyVersion;GetPackageVersion" DependsOnTargets="GitVersion" Returns="$(PackageVersion)">
     <PropertyGroup>

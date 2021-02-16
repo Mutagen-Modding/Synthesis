@@ -1,7 +1,5 @@
 <Project>
   <PropertyGroup>
-    <Nullable>enable</Nullable>
-    <WarningsAsErrors>nullable</WarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GitInfoReportImportance Condition="$(Configuration) == 'Release'">high</GitInfoReportImportance>
   </PropertyGroup>
@@ -10,7 +8,7 @@
   <Target Name="GitVersion" />
 
   <Target Name="SetVersion"
-		  BeforeTargets="GetAssemblyVersion;GetPackageVersion"
+		  BeforeTargets="GetAssemblyVersion;GetPackageVersion;GetProjectVersion"
 		  DependsOnTargets="GitVersion"
 		  Returns="$(PackageVersion)">
     <PropertyGroup>
@@ -18,6 +16,7 @@
       <AssemblyDevLabel Condition="$(GitCommits) != '0'">.1</AssemblyDevLabel>
       <FileVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(AssemblyDevLabel)</FileVersion>
       <PackageVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(DevLabel)</PackageVersion>
+      <Version>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(DevLabel)</Version>
       <InformationalVersion>$(PackageVersion)</InformationalVersion>
     </PropertyGroup>
   </Target>

@@ -37,13 +37,7 @@
         <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
             x:Name="ErrorOutputBox"
             Margin="0,10"
-            Background="#33000000"
-            Style="{StaticResource ErrorBox}"
-            BorderThickness="1"
-            HorizontalScrollBarVisibility="Auto"
-            IsReadOnly="True"
-            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-            TextWrapping="Wrap">
+            Style="{StaticResource ErrorBox}">
             <TextBox.Resources>
                 <SolidColorBrush x:Key="TextBoxFocusBackgroundBrush" Color="#33000000" />
             </TextBox.Resources>

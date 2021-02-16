@@ -74,15 +74,16 @@ namespace Synthesis.Bethesda.GUI
             Action<TObject> execute,
             CompositeDisposable disposable)
         {
-            var ret = ReactiveCommand.Create(
-                canExecute: objectSource.Select(canExecute),
-                execute: ActionExt.Nothing);
-            ret.WithLatestFrom(
-                    objectSource,
-                    (_, s) => s)
-                .Subscribe(execute)
+            TObject latest = default!;
+            objectSource
+                .Subscribe(l => latest = l)
                 .DisposeWith(disposable);
-            return ret;
+            return ReactiveCommand.Create(
+                canExecute: objectSource.Select(canExecute),
+                execute: () =>
+                {
+                    execute(latest);
+                });
         }
 
         public static ReactiveCommand<Unit, Unit> CreateFromObject<TObject>(
@@ -92,18 +93,41 @@ namespace Synthesis.Bethesda.GUI
             Action<TObject> execute,
             CompositeDisposable disposable)
         {
-            var ret = ReactiveCommand.Create(
+            TObject latest = default!;
+            objectSource
+                .Subscribe(l => latest = l)
+                .DisposeWith(disposable);
+            return ReactiveCommand.Create(
                 canExecute: Observable.CombineLatest(
                     objectSource.Select(canExecute),
                     extraCanExecute,
                     (obj, ex) => obj && ex),
-                execute: ActionExt.Nothing);
-            ret.WithLatestFrom(
-                    objectSource,
-                    (_, s) => s)
-                .Subscribe(execute)
+                execute: () =>
+                {
+                    execute(latest);
+                });
+        }
+
+        public static ReactiveCommand<Unit, Unit> CreateFromObject<TObject>(
+            IObservable<TObject> objectSource,
+            Func<TObject, bool> canExecute,
+            IObservable<bool> extraCanExecute,
+            Func<TObject, Task> execute,
+            CompositeDisposable disposable)
+        {
+            TObject latest = default!;
+            objectSource
+                .Subscribe(l => latest = l)
                 .DisposeWith(disposable);
-            return ret;
+            return ReactiveCommand.CreateFromTask(
+                canExecute: Observable.CombineLatest(
+                    objectSource.Select(canExecute),
+                    extraCanExecute,
+                    (obj, ex) => obj && ex),
+                execute: async() => 
+                {
+                    await execute(latest);
+                });
         }
 
         public static ReactiveCommand<Unit, Unit> CreateFromObject<TObject>(
@@ -112,15 +136,16 @@ namespace Synthesis.Bethesda.GUI
             Action<TObject> execute,
             CompositeDisposable disposable)
         {
-            var ret = ReactiveCommand.Create(
-                canExecute: canExecute(objectSource.ObserveOnGui()),
-                execute: ActionExt.Nothing);
-            ret.WithLatestFrom(
-                    objectSource,
-                    (_, s) => s)
-                .Subscribe(execute)
+            TObject latest = default!;
+            objectSource
+                .Subscribe(l => latest = l)
                 .DisposeWith(disposable);
-            return ret;
+            return ReactiveCommand.Create(
+                canExecute: canExecute(objectSource.ObserveOnGui()),
+                execute: () =>
+                {
+                    execute(latest);
+                });
         }
 
         public static ReactiveCommand<Unit, Unit> CreateFromObject<TObject>(
@@ -130,18 +155,19 @@ namespace Synthesis.Bethesda.GUI
             Action<TObject> execute,
             CompositeDisposable disposable)
         {
-            var ret = ReactiveCommand.Create(
+            TObject latest = default!;
+            objectSource
+                .Subscribe(l => latest = l)
+                .DisposeWith(disposable);
+            return ReactiveCommand.Create(
                 canExecute: Observable.CombineLatest(
                     canExecute(objectSource.ObserveOnGui()),
                     extraCanExecute,
                     (obj, extra) => obj && extra),
-                execute: ActionExt.Nothing);
-            ret.WithLatestFrom(
-                    objectSource,
-                    (_, s) => s)
-                .Subscribe(execute)
-                .DisposeWith(disposable);
-            return ret;
+                execute: () =>
+                {
+                    execute(latest);
+                });
         }
     }
 }

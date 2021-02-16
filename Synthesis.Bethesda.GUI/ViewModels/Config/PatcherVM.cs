@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Threading;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Mutagen.Bethesda;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -49,6 +50,8 @@ namespace Synthesis.Bethesda.GUI
 
         public ErrorVM ErrorVM { get; }
 
+        public virtual bool IsNameEditable => true;
+
         public PatcherVM(ProfileVM parent, PatcherSettings? settings)
         {
             DisplayedObject = this;
@@ -69,7 +72,7 @@ namespace Synthesis.Bethesda.GUI
 
             DeleteCommand = ReactiveCommand.Create(() =>
             {
-                parent.Config.MainVM.ActiveConfirmation = new ConfirmationActionVM(
+                parent.Config.MainVM.TargetConfirmation = new ConfirmationActionVM(
                     "Confirm",
                     $"Are you sure you want to delete {DisplayName}?",
                     Delete);

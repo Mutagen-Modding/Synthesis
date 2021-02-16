@@ -1,4 +1,3 @@
-using Alphaleonis.Win32.Filesystem;
 using FluentAssertions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Oblivion;
@@ -7,6 +6,7 @@ using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using Noggog.Utility;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;

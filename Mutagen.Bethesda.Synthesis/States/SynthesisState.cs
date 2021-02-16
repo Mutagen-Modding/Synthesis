@@ -26,7 +26,7 @@ namespace Mutagen.Bethesda.Synthesis
         public IReadOnlyList<LoadOrderListing> RawLoadOrder { get; }
 
         /// <inheritdoc />
-        public ILinkCache<TModSetter> LinkCache { get; }
+        public ILinkCache<TModSetter, TModGetter> LinkCache { get; }
 
         /// <inheritdoc />
         public TModSetter PatchMod { get; }
@@ -42,7 +42,7 @@ namespace Mutagen.Bethesda.Synthesis
             RunSynthesisMutagenPatcher settings,
             IReadOnlyList<LoadOrderListing> rawLoadOrder,
             LoadOrder<IModListing<TModGetter>> loadOrder,
-            ILinkCache<TModSetter> linkCache,
+            ILinkCache<TModSetter, TModGetter> linkCache,
             TModSetter patchMod,
             string extraDataPath,
             CancellationToken cancellation)

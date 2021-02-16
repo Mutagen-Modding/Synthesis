@@ -17,6 +17,9 @@ using Synthesis.Bethesda.Execution;
 using Mutagen.Bethesda.Synthesis;
 using Noggog.Utility;
 using System.Diagnostics;
+using System.Threading;
+using System.Windows;
+using System.Drawing;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -28,12 +31,12 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public ViewModel ActivePanel { get; set; }
 
-        public ICommand ConfirmActionCommand { get; }
-        public ICommand DiscardActionCommand { get; }
+        public ReactiveCommand<Unit, Unit> ConfirmActionCommand { get; }
+        public ReactiveCommand<Unit, Unit> DiscardActionCommand { get; }
         public ICommand OpenProfilesPageCommand { get; }
 
         [Reactive]
-        public ConfirmationActionVM? ActiveConfirmation { get; set; }
+        public ConfirmationActionVM? TargetConfirmation { get; set; }
 
         public ObservableCollectionExtended<IDE> IdeOptions { get; } = new ObservableCollectionExtended<IDE>();
 
@@ -52,15 +55,29 @@ namespace Synthesis.Bethesda.GUI
         public IObservable<string?> NewestMutagenVersion { get; }
         public IObservable<Version?> DotNetSdkInstalled { get; }
 
-        public MainVM()
+        private Window _window;
+        public Rectangle Rectangle => new Rectangle(
+            x: (int)_window.Left,
+            y: (int)_window.Top,
+            width: (int)_window.Width,
+            height: (int)_window.Height);
+
+        private readonly ObservableAsPropertyHelper<ConfirmationActionVM?> _ActiveConfirmation;
+        public ConfirmationActionVM? ActiveConfirmation => _ActiveConfirmation.Value;
+
+        private readonly ObservableAsPropertyHelper<bool> _InModal;
+        public bool InModal => _InModal.Value;
+
+        public MainVM(Window window)
         {
+            _window = window;
             var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), RxApp.TaskpoolScheduler)
                 .StartWith(0)
                 .SelectTask(async i =>
                 {
                     try
                     {
-                        var ret = await DotNetQueries.DotNetSdkVersion();
+                        var ret = await DotNetCommands.DotNetSdkVersion(CancellationToken.None);
                         Log.Logger.Information($"dotnet SDK: {ret}");
                         return ret;
                     }
@@ -80,14 +97,23 @@ namespace Synthesis.Bethesda.GUI
 
             Configuration = new ConfigurationVM(this);
             ActivePanel = Configuration;
-            DiscardActionCommand = ReactiveCommand.Create(() => ActiveConfirmation = null);
-            ConfirmActionCommand = ReactiveCommand.Create(
-                () =>
+            DiscardActionCommand = NoggogCommand.CreateFromObject(
+                objectSource: this.WhenAnyValue(x => x.TargetConfirmation),
+                canExecute: target => target != null,
+                execute: (_) =>
                 {
-                    if (ActiveConfirmation == null) return;
-                    ActiveConfirmation.ToDo();
-                    ActiveConfirmation = null;
-                });
+                    TargetConfirmation = null;
+                },
+                disposable: this.CompositeDisposable);
+            ConfirmActionCommand = NoggogCommand.CreateFromObject(
+                objectSource: this.WhenAnyFallback(x => x.TargetConfirmation!.ToDo),
+                canExecute: toDo => toDo != null,
+                execute: toDo =>
+                {
+                    toDo?.Invoke();
+                    TargetConfirmation = null;
+                },
+                disposable: this.CompositeDisposable);
 
             _Hot = this.WhenAnyValue(x => x.ActivePanel)
                 .Select(x =>
@@ -160,6 +186,31 @@ namespace Synthesis.Bethesda.GUI
                         ActivePanel = new DotNetNotInstalledVM(this, this.ActivePanel, DotNetSdkInstalled);
                     }
                 });
+
+            _ActiveConfirmation = Observable.CombineLatest(
+                    this.WhenAnyFallback(x => x.Configuration.SelectedProfile!.SelectedPatcher)
+                        .Select(x =>
+                        {
+                            if (x is not GitPatcherVM gitPatcher) return Observable.Return(default(GitPatcherVM?));
+                            return gitPatcher.WhenAnyValue(x => x.PatcherSettings.SettingsOpen)
+                                .Select(open => open ? (GitPatcherVM?)gitPatcher : null);
+                        })
+                        .Switch(),
+                    this.WhenAnyValue(x => x.TargetConfirmation),
+                    (openPatcher, target) =>
+                    {
+                        if (target != null) return target;
+                        if (openPatcher == null) return default(ConfirmationActionVM?);
+                        return new ConfirmationActionVM(
+                            "External Patcher Settings Open",
+                            $"{openPatcher.Nickname} is open for settings manipulation.",
+                            toDo: null);
+                    })
+                .ToGuiProperty(this, nameof(ActiveConfirmation), default(ConfirmationActionVM?));
+
+            _InModal = this.WhenAnyValue(x => x.ActiveConfirmation)
+                .Select(x => x != null)
+                .ToGuiProperty(this, nameof(InModal));
         }
 
         public void Load(SynthesisGuiSettings? guiSettings, PipelineSettings? pipeSettings)
@@ -209,9 +260,9 @@ namespace Synthesis.Bethesda.GUI
                 var slnPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.sln");
                 SolutionInitialization.CreateSolutionFile(slnPath);
                 var projPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.csproj");
-                SolutionInitialization.CreateProject(projPath, GameCategory.Skyrim);
+                SolutionInitialization.CreateProject(projPath, GameCategory.Skyrim, insertOldVersion: true);
                 SolutionInitialization.AddProjectToSolution(slnPath, projPath);
-                var ret = await DotNetQueries.QuerySynthesisVersions(projPath, current: false, includePrerelease: includePrerelease);
+                var ret = await DotNetCommands.QuerySynthesisVersions(projPath, current: false, includePrerelease: includePrerelease, CancellationToken.None);
                 Log.Logger.Information("Latest published library versions:");
                 Log.Logger.Information($"  Mutagen: {ret.MutagenVersion}");
                 Log.Logger.Information($"  Synthesis: {ret.SynthesisVersion}");

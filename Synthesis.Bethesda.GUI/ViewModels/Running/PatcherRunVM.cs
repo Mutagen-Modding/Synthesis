@@ -1,5 +1,6 @@
 using DynamicData;
 using DynamicData.Binding;
+using ICSharpCode.AvalonEdit.Document;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -24,7 +25,7 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public GetResponse<RunState> State { get; set; } = GetResponse<RunState>.Succeed(RunState.NotStarted);
 
-        public IObservableCollection<string> OutputLineDisplay { get; }
+        public TextDocument OutputDisplay { get; } = new TextDocument();
 
         private readonly ObservableAsPropertyHelper<TimeSpan> _RunTime;
         public TimeSpan RunTime => _RunTime.Value;
@@ -38,6 +39,9 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<bool> _IsErrored;
         public bool IsErrored => _IsErrored.Value;
 
+        [Reactive]
+        public bool AutoScrolling { get; set; }
+
         public PatcherRunVM(PatchersRunVM parent, PatcherVM config, IPatcherRun run)
         {
             Run = run;
@@ -47,17 +51,25 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsSelected));
 
-            OutputLineDisplay = Observable.Merge(
+            Observable.Merge(
                     run.Output,
                     run.Error,
                     this.WhenAnyValue(x => x.State)
                         .Where(x => x.Value == RunState.Error)
                         .Select(x => x.Reason))
-                .ToObservableChangeSet()
-                .Buffer(TimeSpan.FromMilliseconds(250), RxApp.TaskpoolScheduler)
-                .Where(l => l.Count > 0)
-                .FlattenBufferResult()
-                .ToObservableCollection(this);
+                .Buffer(TimeSpan.FromMilliseconds(250), count: 1000, RxApp.TaskpoolScheduler)
+                .Where(b => b.Count > 0)
+                .ObserveOnGui()
+                .Subscribe(output =>
+                {
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var line in output)
+                    {
+                        sb.AppendLine(line);
+                    }
+                    OutputDisplay.Insert(OutputDisplay.TextLength, sb.ToString());
+                })
+                .DisposeWith(this);
 
             _IsRunning = this.WhenAnyValue(x => x.State)
                 .Select(x => x.Value == RunState.Started)

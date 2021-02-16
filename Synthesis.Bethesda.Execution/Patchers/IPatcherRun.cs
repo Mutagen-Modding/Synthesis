@@ -10,8 +10,8 @@ namespace Synthesis.Bethesda.Execution.Patchers
     public interface IPatcherRun : IDisposable
     {
         string Name { get; }
-        Task Prep(GameRelease release, CancellationToken? cancel = null);
-        Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null);
+        Task Prep(GameRelease release, CancellationToken cancel);
+        Task Run(RunSynthesisPatcher settings, CancellationToken cancel);
         IObservable<string> Output { get; }
         IObservable<string> Error { get; }
     }

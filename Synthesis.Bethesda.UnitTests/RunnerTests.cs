@@ -29,7 +29,8 @@ namespace Synthesis.Bethesda.UnitTests
                 dataFolder: dataFolder.Dir.Path,
                 loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
                 release: GameRelease.Oblivion,
-                patchers: ListExt.Empty<IPatcherRun>());
+                patchers: ListExt.Empty<IPatcherRun>(),
+                cancel: CancellationToken.None);
             Assert.False(File.Exists(output));
         }
 
@@ -49,7 +50,8 @@ namespace Synthesis.Bethesda.UnitTests
                 loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
                 sourcePath: output,
                 reporter: reporter,
-                patchers: patcher.AsEnumerable().ToList());
+                patchers: patcher.AsEnumerable().ToList(),
+                cancel: CancellationToken.None);
             Assert.False(patcher.WasPrepped);
             Assert.IsType<FileNotFoundException>(reporter.Overall);
             Assert.False(reporter.Success);
@@ -68,7 +70,8 @@ namespace Synthesis.Bethesda.UnitTests
                 dataFolder: dataFolder.Dir.Path,
                 loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
                 release: GameRelease.Oblivion,
-                patchers: patcher.AsEnumerable().ToList());
+                patchers: patcher.AsEnumerable().ToList(),
+                cancel: CancellationToken.None);
             Assert.True(patcher.WasRun);
             Assert.True(patcher.WasPrepped);
         }
@@ -91,7 +94,8 @@ namespace Synthesis.Bethesda.UnitTests
                 release: GameRelease.Oblivion,
                 loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
                 reporter: reporter,
-                patchers: patcher.AsEnumerable().ToList());
+                patchers: patcher.AsEnumerable().ToList(),
+                cancel: CancellationToken.None);
             Assert.IsType<ArgumentException>(reporter.RunProblem?.Exception);
             Assert.False(reporter.Success);
         }
@@ -109,7 +113,8 @@ namespace Synthesis.Bethesda.UnitTests
                 dataFolder: dataFolder.Dir.Path,
                 release: GameRelease.Oblivion,
                 loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
-                patchers: patcher.AsEnumerable().ToList());
+                patchers: patcher.AsEnumerable().ToList(),
+                cancel: CancellationToken.None);
             Assert.True(File.Exists(output));
         }
 
@@ -131,7 +136,8 @@ namespace Synthesis.Bethesda.UnitTests
                 release: GameRelease.Oblivion,
                 loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
                 patchers: patcher.AsEnumerable().ToList(),
-                reporter: reporter);
+                reporter: reporter,
+                cancel: CancellationToken.None);
             Assert.False(File.Exists(output));
             Assert.True(patcher.WasPrepped);
             Assert.False(patcher.WasRun);
@@ -158,7 +164,8 @@ namespace Synthesis.Bethesda.UnitTests
                 release: GameRelease.Oblivion,
                 loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
                 patchers: patcher.AsEnumerable().ToList(),
-                reporter: reporter);
+                reporter: reporter,
+                cancel: CancellationToken.None);
             Assert.False(File.Exists(output));
             Assert.True(patcher.WasPrepped);
             Assert.True(patcher.WasRun);
@@ -182,7 +189,8 @@ namespace Synthesis.Bethesda.UnitTests
                 release: GameRelease.Oblivion,
                 loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
                 patchers: patcher.AsEnumerable().ToList(),
-                reporter: reporter);
+                reporter: reporter,
+                cancel: CancellationToken.None);
             Assert.True(File.Exists(output));
             Assert.True(patcher.WasPrepped);
             Assert.True(patcher.WasRun);
@@ -207,7 +215,8 @@ namespace Synthesis.Bethesda.UnitTests
                 loadOrder: Utility.TypicalLoadOrder(GameRelease.SkyrimLE, dataFolder.Dir)
                     .And(new LoadOrderListing(Constants.SynthesisModKey, true))
                     .And(new LoadOrderListing(Utility.RandomModKey, true)),
-                patchers: patcher.AsEnumerable().ToList());
+                patchers: patcher.AsEnumerable().ToList(),
+                cancel: CancellationToken.None);
             Assert.Equal(
                 new string[]
                 {
@@ -233,7 +242,8 @@ namespace Synthesis.Bethesda.UnitTests
                     .And(new LoadOrderListing(Constants.SynthesisModKey, true))
                     .And(new LoadOrderListing(atypicalKey, true))
                     .And(new LoadOrderListing(Utility.RandomModKey, true)),
-                patchers: patcher.AsEnumerable().ToList());
+                patchers: patcher.AsEnumerable().ToList(),
+                cancel: CancellationToken.None);
             Assert.Equal(
                 new string[]
                 {
@@ -263,7 +273,7 @@ namespace Synthesis.Bethesda.UnitTests
                 WasDisposed = true;
             }
 
-            public async Task Prep(GameRelease release, CancellationToken? cancel = null)
+            public async Task Prep(GameRelease release, CancellationToken cancel)
             {
                 WasPrepped = true;
                 if (ThrowInPrep)
@@ -272,7 +282,7 @@ namespace Synthesis.Bethesda.UnitTests
                 }
             }
 
-            public async Task Run(RunSynthesisPatcher settings, CancellationToken? cancel = null)
+            public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)
             {
                 if (DoWork)
                 {

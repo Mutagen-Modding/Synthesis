@@ -1,11 +1,8 @@
 using MahApps.Metro.Controls;
 using Synthesis.Bethesda.Execution.Settings;
 using Newtonsoft.Json;
-using Noggog.WPF;
 using System.IO;
 using System;
-using Newtonsoft.Json.Converters;
-using Noggog;
 using Newtonsoft.Json.Linq;
 
 namespace Synthesis.Bethesda.GUI.Views
@@ -28,7 +25,7 @@ namespace Synthesis.Bethesda.GUI.Views
             Log.Logger.Information("============== Opening Synthesis ==============");
             Log.Logger.Information("===============================================");
             const string GuiSettingsPath = "GuiSettings.json";
-            var mainVM = new MainVM();
+            var mainVM = new MainVM(this);
             SynthesisGuiSettings? guiSettings = null;
             if (File.Exists(GuiSettingsPath))
             {

@@ -21,8 +21,8 @@ namespace Synthesis.Bethesda.Execution
             IEnumerable<LoadOrderListing> loadOrder,
             GameRelease release,
             IEnumerable<IPatcherRun> patchers,
+            CancellationToken cancel,
             ModPath? sourcePath = null,
-            CancellationToken? cancellation = null,
             IRunReporter? reporter = null)
         {
             return await Run<object?>(
@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.Execution
                 patchers: patchers.Select(p => (default(object?), p)),
                 reporter: new WrapReporter(reporter ?? ThrowReporter.Instance),
                 sourcePath: sourcePath,
-                cancellation: cancellation);
+                cancellation: cancel);
         }
 
         public static async Task<bool> Run<TKey>(
@@ -45,12 +45,11 @@ namespace Synthesis.Bethesda.Execution
             GameRelease release,
             IEnumerable<(TKey Key, IPatcherRun Run)> patchers,
             IRunReporter<TKey> reporter,
-            ModPath? sourcePath = null,
-            CancellationToken? cancellation = null)
+            CancellationToken cancellation,
+            ModPath? sourcePath = null)
         {
             try
             {
-                cancellation ??= CancellationToken.None;
                 if (sourcePath != null)
                 {
                     if (!File.Exists(sourcePath))
@@ -64,7 +63,7 @@ namespace Synthesis.Bethesda.Execution
                 dirInfo.Create();
 
                 var patchersList = patchers.ToList();
-                if (patchersList.Count == 0 || cancellation.Value.IsCancellationRequested) return false;
+                if (patchersList.Count == 0 || cancellation.IsCancellationRequested) return false;
 
                 bool problem = false;
 
@@ -130,7 +129,7 @@ namespace Synthesis.Bethesda.Execution
 
                 // Wait for load order, at least
                 await writeLoadOrder;
-                if (problem || cancellation.Value.IsCancellationRequested) return false;
+                if (problem || cancellation.IsCancellationRequested) return false;
 
                 var prevPath = sourcePath;
                 for (int i = 0; i < patchersList.Count; i++)
@@ -181,7 +180,7 @@ namespace Synthesis.Bethesda.Execution
                         reporter.ReportRunProblem(patcher.Key, patcher.Run, ex);
                         return false;
                     }
-                    if (cancellation.Value.IsCancellationRequested) return false;
+                    if (cancellation.IsCancellationRequested) return false;
                     if (!File.Exists(nextPath))
                     {
                         reporter.ReportRunProblem(patcher.Key, patcher.Run, new ArgumentException($"Patcher {patcher.Run.Name} did not produce output file."));

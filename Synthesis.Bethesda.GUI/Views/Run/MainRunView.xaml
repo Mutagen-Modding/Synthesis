@@ -86,8 +86,8 @@
                     ToolTip="Cancel patching">
                     <Button.Resources>
                         <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#22FFFFFF" />
-                        <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource Red}" />
-                        <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource RedBackground}" />
+                        <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource Noggog.Colors.Red.Foreground}" />
+                        <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource Noggog.Colors.Red.Background}" />
                     </Button.Resources>
                     <icon:PackIconMaterial Kind="CloseCircle" />
                 </Button>
@@ -98,9 +98,9 @@
                     VerticalAlignment="Center"
                     Visibility="Collapsed">
                     <Button.Resources>
-                        <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="{StaticResource Error}" />
-                        <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource ErrorPressed}" />
-                        <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource ErrorHover}" />
+                        <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="{StaticResource Noggog.Colors.Error.Foreground}" />
+                        <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource Noggog.Colors.Error.Pressed}" />
+                        <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource Noggog.Colors.Error.Hover}" />
                     </Button.Resources>
                     <icon:PackIconMaterial
                         Width="19"

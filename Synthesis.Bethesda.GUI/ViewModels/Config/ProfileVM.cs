@@ -1,6 +1,5 @@
 using DynamicData;
 using Mutagen.Bethesda;
-using Mutagen.Bethesda.Synthesis;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -11,10 +10,10 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Wabbajack.Common;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -91,6 +90,8 @@ namespace Synthesis.Bethesda.GUI
 
         public ErrorVM OverallErrorVM { get; } = new ErrorVM("Overall Blocking Error");
 
+        public IObservable<ILinkCache> SimpleLinkCache { get; }
+
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
             ID = id ?? Guid.NewGuid().ToString();
@@ -108,19 +109,18 @@ namespace Synthesis.Bethesda.GUI
                 .Select(path =>
                 {
                     if (path != null) return Observable.Return(GetResponse<string>.Succeed(path));
+                    Log.Logger.Information("Starting to locate data folder");
                     return this.WhenAnyValue(x => x.Release)
                         .ObserveOn(RxApp.TaskpoolScheduler)
                         .Select(x =>
                         {
                             try
                             {
-                                var wjMeta = x.ToWjGame().MetaData();
-                                if (wjMeta == null)
+                                if (!GameLocations.TryGetGameFolder(x, out var gameFolder))
                                 {
                                     return GetResponse<string>.Fail("Could not automatically locate Data folder.  Run Steam/GoG/etc once to properly register things.");
                                 }
-                                return GetResponse<string>.Succeed(
-                                    Path.Combine(wjMeta.GameLocation().ToString(), "Data"));
+                                return GetResponse<string>.Succeed(Path.Combine(gameFolder, "Data"));
                             }
                             catch (Exception ex)
                             {
@@ -142,12 +142,27 @@ namespace Synthesis.Bethesda.GUI
                         });
                 })
                 .Switch()
+                .StartWith(GetResponse<string>.Fail("Data folder uninitialized"))
                 .Replay(1)
                 .RefCount();
 
             _DataFolder = dataFolderResult
                 .Select(x => x.Value)
                 .ToGuiProperty<string>(this, nameof(DataFolder), string.Empty);
+
+            dataFolderResult
+                .Subscribe(d =>
+                {
+                    if (d.Failed)
+                    {
+                        Log.Logger.Error($"Could not locate data folder: {d.Reason}");
+                    }
+                    else
+                    {
+                        Log.Logger.Information($"Data Folder: {d.Value}");
+                    }
+                })
+                .DisposeWith(this);
 
             var loadOrderResult = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.Release),
@@ -160,11 +175,13 @@ namespace Synthesis.Bethesda.GUI
                     {
                         return (Results: Observable.Empty<IChangeSet<LoadOrderEntryVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
                     }
+                    Log.Logger.Error($"Getting live load order for {x.release} -> {x.dataFolder.Value}");
                     var liveLo = Mutagen.Bethesda.LoadOrder.GetLiveLoadOrder(x.release, x.dataFolder.Value, out var errors)
                         .Transform(listing => new LoadOrderEntryVM(listing, x.dataFolder.Value))
                         .DisposeMany();
                     return (Results: liveLo, State: errors);
                 })
+                .StartWith((Results: Observable.Empty<IChangeSet<LoadOrderEntryVM>>(), State: Observable.Return(ErrorResponse.Fail("Load order uninitialized"))))
                 .Replay(1)
                 .RefCount();
 
@@ -172,6 +189,21 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x.Results)
                 .Switch()
                 .AsObservableList();
+
+            loadOrderResult.Select(lo => lo.State)
+                .Switch()
+                .Subscribe(loErr =>
+                {
+                    if (loErr.Succeeded)
+                    {
+                        Log.Logger.Information($"Load order location successful");
+                    }
+                    else
+                    {
+                        Log.Logger.Information($"Load order location error: {loErr.Reason}");
+                    }
+                })
+                .DisposeWith(this);
 
             _LargeOverallError = Observable.CombineLatest(
                     dataFolderResult,
@@ -199,6 +231,7 @@ namespace Synthesis.Bethesda.GUI
                                 .Select(x => !x), 
                             scheduler: RxApp.MainThreadScheduler)
                         .QueryWhenChanged(q => q)
+                        .StartWith(Noggog.ListExt.Empty<LoadOrderEntryVM>())
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler),
                     (dataFolder, loadOrder, enabledPatchers, erroredEnabledPatchers, missingMods) =>
                     {
@@ -223,7 +256,7 @@ namespace Synthesis.Bethesda.GUI
                         Log.Logger.Warning($"Encountered blocking overall error: {x.Reason}");
                     }
                 })
-                .ToGuiProperty(this, nameof(LargeOverallError), GetResponse<PatcherVM>.Fail("Uninitialized"));
+                .ToGuiProperty(this, nameof(LargeOverallError), GetResponse<PatcherVM>.Fail("Uninitialized overall error"));
 
             _BlockingError = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.LargeOverallError),
@@ -244,7 +277,7 @@ namespace Synthesis.Bethesda.GUI
                     if (!overall.Succeeded) return overall;
                     return patchers;
                 })
-                .ToGuiProperty<ErrorResponse>(this, nameof(BlockingError), ErrorResponse.Fail("Uninitialized"));
+                .ToGuiProperty<ErrorResponse>(this, nameof(BlockingError), ErrorResponse.Fail("Uninitialized blocking error"));
 
             _IsActive = this.WhenAnyValue(x => x.Config.SelectedProfile)
                 .Select(x => x == this)
@@ -428,8 +461,34 @@ namespace Synthesis.Bethesda.GUI
                             }
                         }));
                 });
-        }
 
+            SimpleLinkCache = Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.DataFolder),
+                    this.WhenAnyValue(x => x.Release),
+                    this.LoadOrder.Connect()
+                        .QueryWhenChanged()
+                        .Select(q => q.Where(x => x.Listing.Enabled).Select(x => x.Listing.ModKey).ToArray())
+                        .StartWithEmpty(),
+                    (dataFolder, rel, loadOrder) => (dataFolder, rel, loadOrder))
+                .Throttle(TimeSpan.FromMilliseconds(100), RxApp.TaskpoolScheduler)
+                .Select(x =>
+                {
+                    return Observable.Create<ILinkCache>(obs =>
+                    {
+                        var loadOrder = Mutagen.Bethesda.LoadOrder.Import(
+                            x.dataFolder,
+                            x.loadOrder,
+                            factory: (modPath) => ModInstantiator.Importer(modPath, x.rel));
+                        obs.OnNext(loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()));
+                        obs.OnCompleted();
+                        return Disposable.Empty;
+                    });
+                })
+                .Switch()
+                .Replay(1)
+                .RefCount();
+        }
+           
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)
             : this(parent, settings.TargetRelease, id: settings.ID)
         {
@@ -439,6 +498,7 @@ namespace Synthesis.Bethesda.GUI
             SynthesisVersioning = settings.SynthesisVersioning;
             ManualSynthesisVersion = settings.SynthesisManualVersion;
             DataPathOverride = settings.DataPathOverride;
+            ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
             Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
             {
                 return p switch
@@ -464,7 +524,8 @@ namespace Synthesis.Bethesda.GUI
                 SynthesisManualVersion = ManualSynthesisVersion,
                 MutagenVersioning = MutagenVersioning,
                 SynthesisVersioning = SynthesisVersioning,
-                DataPathOverride = DataPathOverride
+                DataPathOverride = DataPathOverride,
+                ConsiderPrereleaseNugets = ConsiderPrereleaseNugets,
             };
         }
 

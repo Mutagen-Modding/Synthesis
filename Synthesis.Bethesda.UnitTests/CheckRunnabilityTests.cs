@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.UnitTests
                     throw new ArithmeticException();
                 })
                 .Run($"check-runnability -g SkyrimSE -d {dataFolder.Dir.Path}".Split(' ')))
-                .Should().Be(ErrorCodes.NotRunnable);
+                .Should().Be((int)Codes.NotRunnable);
         }
 
         [Fact]
