@@ -37,21 +37,6 @@ namespace Synthesis.Bethesda.GUI.Views
                 pipeSettings = JsonConvert.DeserializeObject<PipelineSettings>(File.ReadAllText(Execution.Constants.SettingsFileName), Execution.Constants.JsonSettings)!;
             }
 
-            // Backwards compatibility
-            const string OldGuiSettingsPath = "Settings.json";
-            if (guiSettings == null && pipeSettings == null
-                && File.Exists(OldGuiSettingsPath))
-            {
-                var rawText = File.ReadAllText(OldGuiSettingsPath);
-                guiSettings = JsonConvert.DeserializeObject<SynthesisGuiSettings>(rawText, Execution.Constants.JsonSettings)!;
-                JObject rawObj = JObject.Parse(rawText);
-                var execSettings = rawObj["ExecutableSettings"];
-                if (execSettings != null)
-                {
-                    guiSettings.SelectedProfile = execSettings["SelectedProfile"]?.ToString() ?? string.Empty;
-                    pipeSettings = JsonConvert.DeserializeObject<PipelineSettings>(execSettings.ToString(), Execution.Constants.JsonSettings)!;
-                }
-            }
             mainVM.Load(guiSettings, pipeSettings);
             Closed += (a, b) =>
             {
