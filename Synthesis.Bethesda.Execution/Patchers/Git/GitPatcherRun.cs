@@ -273,7 +273,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     case PatcherVersioningEnum.Branch:
                         if (string.IsNullOrWhiteSpace(patcherVersioning.Target)) return GetResponse<RunnerRepoInfo>.Fail($"Target branch had no name.");
                         repo.Fetch();
-                        var targetBranch = repo.Branches[$"origin/{patcherVersioning.Target}"];
+                        var targetBranch = repo.Branches[patcherVersioning.Target];
                         if (targetBranch == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {patcherVersioning.Target}");
                         targetSha = targetBranch.Tip.Sha;
                         target = patcherVersioning.Target;

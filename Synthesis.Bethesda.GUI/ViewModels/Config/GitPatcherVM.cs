@@ -84,6 +84,9 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string TargetBranchName { get; set; } = string.Empty;
 
+        private readonly ObservableAsPropertyHelper<string> _TargetOriginBranchName;
+        public string TargetOriginBranchName => _TargetOriginBranchName.Value;
+
         private readonly ObservableAsPropertyHelper<RunnerRepoInfo?> _RunnableData;
         public RunnerRepoInfo? RunnableData => _RunnableData.Value;
 
@@ -202,7 +205,7 @@ namespace Synthesis.Bethesda.GUI
                                 .Select(x => (x.Index, x.Item.FriendlyName, x.Item.Sha))
                                 .ToList();
                             branchShas = repo.Branches
-                                .ToDictionary(x => x.FriendlyName, x => x.Tip.Sha);
+                                .ToDictionary(x => x.FriendlyName, x => x.Tip.Sha, StringComparer.OrdinalIgnoreCase);
                         }
                         catch (Exception ex)
                         {
@@ -220,11 +223,11 @@ namespace Synthesis.Bethesda.GUI
                         var availableProjs = SolutionPatcherRun.AvailableProjectSubpaths(slnPath).ToList();
                         return new ConfigurationState<DriverRepoInfo>(
                             new DriverRepoInfo(
-                                slnPath: slnPath,
-                                masterBranchName: masterBranch,
-                                branchShas: branchShas,
-                                tags: tags,
-                                availableProjects: availableProjs));
+                                SolutionPath: slnPath,
+                                MasterBranchName: masterBranch,
+                                BranchShas: branchShas,
+                                Tags: tags,
+                                AvailableProjects: availableProjs));
                     })
                 .Replay(1)
                 .RefCount();
@@ -289,6 +292,10 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(p => SelectedProjectPath.TargetPath = p)
                 .DisposeWith(this);
 
+            _TargetOriginBranchName = this.WhenAnyValue(x => x.TargetBranchName)
+                .Select(x => $"origin/{x}")
+                .ToGuiProperty(this, nameof(TargetOriginBranchName), string.Empty);
+
             // Set latest checkboxes to drive user input
             driverRepoInfo
                 .FilterSwitch(this.WhenAnyValue(x => x.BranchFollowMain))
@@ -303,7 +310,7 @@ namespace Synthesis.Bethesda.GUI
                 .DisposeWith(this);
             Observable.CombineLatest(
                     driverRepoInfo,
-                    this.WhenAnyValue(x => x.TargetBranchName),
+                    this.WhenAnyValue(x => x.TargetOriginBranchName),
                     (Driver, TargetBranch) => (Driver, TargetBranch))
                 .FilterSwitch(
                     Observable.CombineLatest(
@@ -314,9 +321,9 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(x =>
                 {
                     if (x.Driver.RunnableState.Succeeded
-                        && x.Driver.Item.BranchShas.TryGetValue(x.TargetBranch, out var masterSha))
+                        && x.Driver.Item.BranchShas.TryGetValue(x.TargetBranch, out var sha))
                     {
-                        this.TargetCommit = masterSha;
+                        this.TargetCommit = sha;
                     }
                 })
                 .DisposeWith(this);
@@ -336,7 +343,7 @@ namespace Synthesis.Bethesda.GUI
 
             var targetBranchSha = Observable.CombineLatest(
                     driverRepoInfo.Select(x => x.RunnableState.Failed ? default : x.Item.BranchShas),
-                    this.WhenAnyValue(x => x.TargetBranchName),
+                    this.WhenAnyValue(x => x.TargetOriginBranchName),
                     (dict, branch) => dict?.GetOrDefault(branch))
                 .Replay(1)
                 .RefCount();
@@ -412,7 +419,7 @@ namespace Synthesis.Bethesda.GUI
                 this.WhenAnyValue(x => x.PatcherVersioning),
                 this.WhenAnyValue(x => x.TargetTag),
                 this.WhenAnyValue(x => x.TargetCommit),
-                this.WhenAnyValue(x => x.TargetBranchName),
+                this.WhenAnyValue(x => x.TargetOriginBranchName),
                 this.WhenAnyValue(x => x.TagAutoUpdate),
                 this.WhenAnyValue(x => x.BranchAutoUpdate),
                 (versioning, tag, commit, branch, tagAuto, branchAuto) =>
