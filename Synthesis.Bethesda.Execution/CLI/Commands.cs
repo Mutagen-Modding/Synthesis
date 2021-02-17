@@ -81,7 +81,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                             SolutionPatcherSettings sln => new SolutionPatcherRun(
                                 name: sln.Nickname,
                                 pathToSln: sln.SolutionPath,
-                                pathToExtraDataBaseFolder: run.ExtraDataFolder ?? Constants.TypicalExtraData,
+                                pathToExtraDataBaseFolder: run.ExtraDataFolder ?? Paths.TypicalExtraData,
                                 pathToProj: Path.Combine(Path.GetDirectoryName(sln.SolutionPath)!, sln.ProjectSubpath)),
                             GithubPatcherSettings git => new GitPatcherRun(
                                 settings: git,
@@ -92,7 +92,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                     .ToList();
 
                 await Runner.Run(
-                    workingDirectory: Constants.ProfileWorkingDirectory(profile.ID),
+                    workingDirectory: Paths.ProfileWorkingDirectory(profile.ID),
                     outputPath: run.OutputPath,
                     dataFolder: run.DataFolderPath,
                     loadOrder: LoadOrder.GetListings(run.GameRelease, dataPath: run.DataFolderPath),
@@ -167,7 +167,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             CancellationToken cancel)
         {
             using var loadOrderFile = new TempFile(
-                Path.Combine(Synthesis.Bethesda.Execution.Constants.WorkingDirectory, "RunnabilityChecks", Path.GetRandomFileName()));
+                Path.Combine(Synthesis.Bethesda.Execution.Paths.WorkingDirectory, "RunnabilityChecks", Path.GetRandomFileName()));
 
             LoadOrder.Write(
                 loadOrderFile.File.Path,

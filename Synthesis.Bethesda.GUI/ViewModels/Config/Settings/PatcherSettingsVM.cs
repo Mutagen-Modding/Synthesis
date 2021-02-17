@@ -128,7 +128,7 @@ namespace Synthesis.Bethesda.GUI
                                                 new SettingsParameters(assemb, parent.Profile.LoadOrder.Connect(), parent.Profile.SimpleLinkCache),
                                                 t,
                                                 nickname: i.settingsTarget.Targets[index].Nickname,
-                                                settingsFolder: Path.Combine(Execution.Constants.TypicalExtraData, parent.DisplayName),
+                                                settingsFolder: Path.Combine(Execution.Paths.TypicalExtraData, parent.DisplayName),
                                                 settingsSubPath: i.settingsTarget.Targets[index].Path);
                                         })
                                         .NotNull()

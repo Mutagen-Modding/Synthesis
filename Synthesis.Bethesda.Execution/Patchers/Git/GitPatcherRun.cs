@@ -101,7 +101,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
         public static string RunnerRepoDirectory(string profileID, string githubID)
         {
-            return Path.Combine(Execution.Constants.WorkingDirectory, profileID, "Git", githubID, "Runner");
+            return Path.Combine(Execution.Paths.WorkingDirectory, profileID, "Git", githubID, "Runner");
         }
 
         public static void SwapInDesiredVersionsForSolution(

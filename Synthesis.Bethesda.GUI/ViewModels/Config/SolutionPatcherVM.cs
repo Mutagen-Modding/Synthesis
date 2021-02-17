@@ -291,7 +291,7 @@ namespace Synthesis.Bethesda.GUI
                 new SolutionPatcherRun(
                     name: DisplayName,
                     pathToSln: SolutionPath.TargetPath,
-                    pathToExtraDataBaseFolder: Execution.Constants.TypicalExtraData,
+                    pathToExtraDataBaseFolder: Execution.Paths.TypicalExtraData,
                     pathToProj: SelectedProjectPath.TargetPath));
         }
 

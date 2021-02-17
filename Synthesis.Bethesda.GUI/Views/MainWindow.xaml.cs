@@ -4,6 +4,8 @@ using Newtonsoft.Json;
 using System.IO;
 using System;
 using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
+using Noggog;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -24,25 +26,46 @@ namespace Synthesis.Bethesda.GUI.Views
             Log.Logger.Information("===============================================");
             Log.Logger.Information("============== Opening Synthesis ==============");
             Log.Logger.Information("===============================================");
-            const string GuiSettingsPath = "GuiSettings.json";
-            var mainVM = new MainVM(this);
             SynthesisGuiSettings? guiSettings = null;
-            if (File.Exists(GuiSettingsPath))
-            {
-                guiSettings = JsonConvert.DeserializeObject<SynthesisGuiSettings>(File.ReadAllText(GuiSettingsPath), Execution.Constants.JsonSettings)!;
-            }
             PipelineSettings? pipeSettings = null;
-            if (File.Exists(Execution.Constants.SettingsFileName))
-            {
-                pipeSettings = JsonConvert.DeserializeObject<PipelineSettings>(File.ReadAllText(Execution.Constants.SettingsFileName), Execution.Constants.JsonSettings)!;
-            }
+            Task.WhenAll(
+                Task.Run(async () =>
+                {
+                    if (File.Exists(Paths.GuiSettingsPath))
+                    {
+                        guiSettings = JsonConvert.DeserializeObject<SynthesisGuiSettings>(await File.ReadAllTextAsync(Paths.GuiSettingsPath), Execution.Constants.JsonSettings)!;
+                    }
+                }),
+                Task.Run(async () =>
+                {
+                    if (File.Exists(Execution.Paths.SettingsFileName))
+                    {
+                        pipeSettings = JsonConvert.DeserializeObject<PipelineSettings>(await File.ReadAllTextAsync(Execution.Paths.SettingsFileName), Execution.Constants.JsonSettings)!;
+                    }
+                }),
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        var loadingDir = new DirectoryInfo(Paths.LoadingFolder);
+                        if (!loadingDir.Exists) return;
+                        Log.Logger.Information("Clearing Loading folder");
+                        loadingDir.DeleteEntireFolder(deleteFolderItself: false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Logger.Error(ex, "Error clearing Loading folder");
+                    }
+                })
+            ).Wait();
 
+            var mainVM = new MainVM(this);
             mainVM.Load(guiSettings, pipeSettings);
             Closed += (a, b) =>
             {
                 mainVM.Save(out var gui, out var pipe);
-                File.WriteAllText(Execution.Constants.SettingsFileName, JsonConvert.SerializeObject(pipe, Formatting.Indented, Execution.Constants.JsonSettings));
-                File.WriteAllText(GuiSettingsPath, JsonConvert.SerializeObject(gui, Formatting.Indented, Execution.Constants.JsonSettings));
+                File.WriteAllText(Execution.Paths.SettingsFileName, JsonConvert.SerializeObject(pipe, Formatting.Indented, Execution.Constants.JsonSettings));
+                File.WriteAllText(Paths.GuiSettingsPath, JsonConvert.SerializeObject(gui, Formatting.Indented, Execution.Constants.JsonSettings));
                 mainVM.Dispose();
             };
 

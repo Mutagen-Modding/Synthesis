@@ -980,7 +980,7 @@ namespace Synthesis.Bethesda.GUI
                 new SolutionPatcherRun(
                     name: DisplayName,
                     pathToSln: RunnableData.SolutionPath,
-                    pathToExtraDataBaseFolder: Execution.Constants.TypicalExtraData,
+                    pathToExtraDataBaseFolder: Execution.Paths.TypicalExtraData,
                     pathToProj: RunnableData.ProjPath));
         }
 
