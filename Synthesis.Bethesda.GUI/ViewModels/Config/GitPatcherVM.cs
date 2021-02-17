@@ -824,15 +824,16 @@ namespace Synthesis.Bethesda.GUI
                 UpdateToTagCommand);
 
             PatcherSettings = new PatcherSettingsVM(
-                Logger, 
-                this, 
+                Logger,
+                this,
                 compilation.Select(c =>
                 {
                     if (c.RunnableState.Failed) return c.RunnableState.BubbleFailure<string>();
                     return GetResponse<string>.Succeed(c.Item.ProjPath);
                 })
-                .DistinctUntilChanged(x => x.Value));
-            this.CompositeDisposable.Add(PatcherSettings);
+                .DistinctUntilChanged(x => x.Value),
+                needBuild: false)
+                .DisposeWith(this);
 
             _StatusDisplay = Observable.CombineLatest(
                 driverRepoInfo,

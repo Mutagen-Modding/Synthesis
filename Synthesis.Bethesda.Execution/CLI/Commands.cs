@@ -112,10 +112,11 @@ namespace Synthesis.Bethesda.Execution.CLI
         public static async Task<SettingsConfiguration> GetSettingsStyle(
             string path,
             bool directExe,
-            CancellationToken cancel)
+            CancellationToken cancel,
+            bool build)
         {
             using var proc = ProcessWrapper.Create(
-                GetStart(path, directExe, new Synthesis.Bethesda.SettingsQuery()),
+                GetStart(path, directExe, new Synthesis.Bethesda.SettingsQuery(), build: build),
                 cancel: cancel,
                 hookOntoOutput: true);
 
@@ -225,7 +226,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             return ErrorResponse.Success;
         }
 
-        private static ProcessStartInfo GetStart(string path, bool directExe, object args)
+        private static ProcessStartInfo GetStart(string path, bool directExe, object args, bool build = false)
         {
             if (directExe)
             {
@@ -233,7 +234,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             }
             else
             {
-                return new ProcessStartInfo("dotnet", $"run --project \"{path}\" --runtime win-x64 --no-build {Parser.Default.FormatCommandLine(args)}");
+                return new ProcessStartInfo("dotnet", $"run --project \"{path}\" --runtime win-x64{(build ? string.Empty : " --no-build")} {Parser.Default.FormatCommandLine(args)}");
             }
         }
     }

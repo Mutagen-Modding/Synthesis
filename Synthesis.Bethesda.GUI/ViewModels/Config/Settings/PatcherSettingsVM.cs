@@ -43,7 +43,8 @@ namespace Synthesis.Bethesda.GUI
         public PatcherSettingsVM(
             ILogger logger,
             PatcherVM parent,
-            IObservable<GetResponse<string>> projPath)
+            IObservable<GetResponse<string>> projPath,
+            bool needBuild)
         {
             Logger = logger;
             _SettingsConfiguration = projPath
@@ -60,7 +61,8 @@ namespace Synthesis.Bethesda.GUI
                             var result = await Synthesis.Bethesda.Execution.CLI.Commands.GetSettingsStyle(
                                 i.Value,
                                 directExe: false,
-                                cancel: cancel);
+                                cancel: cancel,
+                                build: needBuild);
                             observer.OnNext(result);
                         }
                         catch (Exception ex)
