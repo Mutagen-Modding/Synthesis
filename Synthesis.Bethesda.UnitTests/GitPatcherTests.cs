@@ -464,7 +464,7 @@ namespace Synthesis.Bethesda.UnitTests
             var clonePath = Path.Combine(repoPath.Dir.Path, "Clone");
             using var clone = new Repository(Repository.Clone(remote, clonePath));
 
-            var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, jbName);
+            var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, $"origin/{jbName}");
             var resp = await GitPatcherRun.CheckoutRunnerRepository(
                 proj: ProjPath,
                 localRepoDir: clonePath,
@@ -490,7 +490,6 @@ namespace Synthesis.Bethesda.UnitTests
 
             var clonePath = Path.Combine(repoPath.Dir.Path, "Clone");
             using var clone = new Repository(Repository.Clone(remote, clonePath));
-
             {
                 using var repo = new Repository(local);
                 tipSha = repo.Head.Tip.Sha;
@@ -499,7 +498,7 @@ namespace Synthesis.Bethesda.UnitTests
                 repo.Network.Push(repo.Branches[DefaultBranch]);
             }
 
-            var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, DefaultBranch);
+            var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, $"origin/{DefaultBranch}");
             var resp = await GitPatcherRun.CheckoutRunnerRepository(
                 proj: ProjPath,
                 localRepoDir: clonePath,
