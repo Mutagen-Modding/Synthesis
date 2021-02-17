@@ -172,7 +172,11 @@ namespace Synthesis.Bethesda.GUI
                         using var timing = Logger.Time("Cloning driver repository");
                         // Clone and/or double check the clone is correct
                         var state = await GitUtility.CheckOrCloneRepo(path.ToGetResponse(), LocalDriverRepoDirectory, (x) => Logger.Information(x), cancel);
-                        if (state.Failed) return new ConfigurationState<DriverRepoInfo>(default!, (ErrorResponse)state);
+                        if (state.Failed)
+                        {
+                            Logger.Error($"Failed to check out driver repository: {state.Reason}");
+                            return new ConfigurationState<DriverRepoInfo>(default!, (ErrorResponse)state);
+                        }
                         cancel.ThrowIfCancellationRequested();
 
                         // Grab all the interesting metadata
@@ -183,7 +187,11 @@ namespace Synthesis.Bethesda.GUI
                         {
                             using var repo = new Repository(LocalDriverRepoDirectory);
                             var master = repo.Branches.Where(b => b.IsCurrentRepositoryHead).FirstOrDefault();
-                            if (master == null) return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate master branch."));
+                            if (master == null)
+                            {
+                                Logger.Error($"Failed to check out driver repository: Could not locate master branch");
+                                return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate master branch."));
+                            }
                             masterBranch = master.FriendlyName;
                             repo.Reset(ResetMode.Hard);
                             Commands.Checkout(repo, master);
@@ -198,12 +206,17 @@ namespace Synthesis.Bethesda.GUI
                         }
                         catch (Exception ex)
                         {
+                            Logger.Error(ex, $"Failed to check out driver repository");
                             return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail(ex));
                         }
 
                         // Try to locate a solution to drive from
                         var slnPath = GitPatcherRun.GetPathToSolution(LocalDriverRepoDirectory);
-                        if (slnPath == null) return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate solution to run."));
+                        if (slnPath == null)
+                        {
+                            Logger.Error($"Failed to check out driver repository: Could not locate solution to run.");
+                            return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate solution to run."));
+                        }
                         var availableProjs = SolutionPatcherRun.AvailableProjectSubpaths(slnPath).ToList();
                         return new ConfigurationState<DriverRepoInfo>(
                             new DriverRepoInfo(
