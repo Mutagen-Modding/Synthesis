@@ -223,11 +223,11 @@ namespace Synthesis.Bethesda.GUI
                         var availableProjs = SolutionPatcherRun.AvailableProjectSubpaths(slnPath).ToList();
                         return new ConfigurationState<DriverRepoInfo>(
                             new DriverRepoInfo(
-                                SolutionPath: slnPath,
-                                MasterBranchName: masterBranch,
-                                BranchShas: branchShas,
-                                Tags: tags,
-                                AvailableProjects: availableProjs));
+                                slnPath: slnPath,
+                                masterBranchName: masterBranch,
+                                branchShas: branchShas,
+                                tags: tags,
+                                availableProjects: availableProjs));
                     })
                 .Replay(1)
                 .RefCount();
