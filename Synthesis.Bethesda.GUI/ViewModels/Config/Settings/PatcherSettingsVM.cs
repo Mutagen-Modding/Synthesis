@@ -122,14 +122,22 @@ namespace Synthesis.Bethesda.GUI
                                     return i.settingsTarget.Targets
                                         .Select((s, index) =>
                                         {
-                                            var t = assemb.GetType(s.TypeName);
-                                            if (t == null) return null;
-                                            return new ReflectionSettingsVM(
-                                                new SettingsParameters(assemb, parent.Profile.LoadOrder.Connect(), parent.Profile.SimpleLinkCache),
-                                                t,
-                                                nickname: i.settingsTarget.Targets[index].Nickname,
-                                                settingsFolder: Path.Combine(Execution.Paths.TypicalExtraData, parent.DisplayName),
-                                                settingsSubPath: i.settingsTarget.Targets[index].Path);
+                                            try
+                                            {
+                                                var t = assemb.GetType(s.TypeName);
+                                                if (t == null) return null;
+                                                return new ReflectionSettingsVM(
+                                                    new SettingsParameters(assemb, parent.Profile.LoadOrder.Connect(), parent.Profile.SimpleLinkCache),
+                                                    t,
+                                                    nickname: i.settingsTarget.Targets[index].Nickname,
+                                                    settingsFolder: Path.Combine(Execution.Paths.TypicalExtraData, parent.DisplayName),
+                                                    settingsSubPath: i.settingsTarget.Targets[index].Path);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                Logger.Error(ex.ToString());
+                                                throw new ArgumentException($"Error creating reflected settings: {ex.Message}");
+                                            }
                                         })
                                         .NotNull()
                                         .ToArray();
