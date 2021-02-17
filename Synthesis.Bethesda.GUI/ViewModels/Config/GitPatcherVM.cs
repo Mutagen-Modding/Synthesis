@@ -84,6 +84,9 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string TargetBranchName { get; set; } = string.Empty;
 
+        private readonly ObservableAsPropertyHelper<string> _TargetOriginBranchName;
+        public string TargetOriginBranchName => _TargetOriginBranchName.Value;
+
         private readonly ObservableAsPropertyHelper<RunnerRepoInfo?> _RunnableData;
         public RunnerRepoInfo? RunnableData => _RunnableData.Value;
 
@@ -172,7 +175,11 @@ namespace Synthesis.Bethesda.GUI
                         using var timing = Logger.Time("Cloning driver repository");
                         // Clone and/or double check the clone is correct
                         var state = await GitUtility.CheckOrCloneRepo(path.ToGetResponse(), LocalDriverRepoDirectory, (x) => Logger.Information(x), cancel);
-                        if (state.Failed) return new ConfigurationState<DriverRepoInfo>(default!, (ErrorResponse)state);
+                        if (state.Failed)
+                        {
+                            Logger.Error($"Failed to check out driver repository: {state.Reason}");
+                            return new ConfigurationState<DriverRepoInfo>(default!, (ErrorResponse)state);
+                        }
                         cancel.ThrowIfCancellationRequested();
 
                         // Grab all the interesting metadata
@@ -183,7 +190,11 @@ namespace Synthesis.Bethesda.GUI
                         {
                             using var repo = new Repository(LocalDriverRepoDirectory);
                             var master = repo.Branches.Where(b => b.IsCurrentRepositoryHead).FirstOrDefault();
-                            if (master == null) return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate master branch."));
+                            if (master == null)
+                            {
+                                Logger.Error($"Failed to check out driver repository: Could not locate master branch");
+                                return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate master branch."));
+                            }
                             masterBranch = master.FriendlyName;
                             repo.Reset(ResetMode.Hard);
                             Commands.Checkout(repo, master);
@@ -194,16 +205,21 @@ namespace Synthesis.Bethesda.GUI
                                 .Select(x => (x.Index, x.Item.FriendlyName, x.Item.Sha))
                                 .ToList();
                             branchShas = repo.Branches
-                                .ToDictionary(x => x.FriendlyName, x => x.Tip.Sha);
+                                .ToDictionary(x => x.FriendlyName, x => x.Tip.Sha, StringComparer.OrdinalIgnoreCase);
                         }
                         catch (Exception ex)
                         {
+                            Logger.Error(ex, $"Failed to check out driver repository");
                             return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail(ex));
                         }
 
                         // Try to locate a solution to drive from
                         var slnPath = GitPatcherRun.GetPathToSolution(LocalDriverRepoDirectory);
-                        if (slnPath == null) return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate solution to run."));
+                        if (slnPath == null)
+                        {
+                            Logger.Error($"Failed to check out driver repository: Could not locate solution to run.");
+                            return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate solution to run."));
+                        }
                         var availableProjs = SolutionPatcherRun.AvailableProjectSubpaths(slnPath).ToList();
                         return new ConfigurationState<DriverRepoInfo>(
                             new DriverRepoInfo(
@@ -273,8 +289,16 @@ namespace Synthesis.Bethesda.GUI
                 this.WhenAnyValue(x => x.ProjectSubpath));
 
             projPath
-                .Subscribe(p => SelectedProjectPath.TargetPath = p)
+                .Subscribe(p =>
+                {
+                    Logger.Information($"Setting target project path to: {p}");
+                    SelectedProjectPath.TargetPath = p;
+                })
                 .DisposeWith(this);
+
+            _TargetOriginBranchName = this.WhenAnyValue(x => x.TargetBranchName)
+                .Select(x => $"origin/{x}")
+                .ToGuiProperty(this, nameof(TargetOriginBranchName), string.Empty);
 
             // Set latest checkboxes to drive user input
             driverRepoInfo
@@ -290,7 +314,7 @@ namespace Synthesis.Bethesda.GUI
                 .DisposeWith(this);
             Observable.CombineLatest(
                     driverRepoInfo,
-                    this.WhenAnyValue(x => x.TargetBranchName),
+                    this.WhenAnyValue(x => x.TargetOriginBranchName),
                     (Driver, TargetBranch) => (Driver, TargetBranch))
                 .FilterSwitch(
                     Observable.CombineLatest(
@@ -301,9 +325,9 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(x =>
                 {
                     if (x.Driver.RunnableState.Succeeded
-                        && x.Driver.Item.BranchShas.TryGetValue(x.TargetBranch, out var masterSha))
+                        && x.Driver.Item.BranchShas.TryGetValue(x.TargetBranch, out var sha))
                     {
-                        this.TargetCommit = masterSha;
+                        this.TargetCommit = sha;
                     }
                 })
                 .DisposeWith(this);
@@ -323,7 +347,7 @@ namespace Synthesis.Bethesda.GUI
 
             var targetBranchSha = Observable.CombineLatest(
                     driverRepoInfo.Select(x => x.RunnableState.Failed ? default : x.Item.BranchShas),
-                    this.WhenAnyValue(x => x.TargetBranchName),
+                    this.WhenAnyValue(x => x.TargetOriginBranchName),
                     (dict, branch) => dict?.GetOrDefault(branch))
                 .Replay(1)
                 .RefCount();
@@ -399,7 +423,7 @@ namespace Synthesis.Bethesda.GUI
                 this.WhenAnyValue(x => x.PatcherVersioning),
                 this.WhenAnyValue(x => x.TargetTag),
                 this.WhenAnyValue(x => x.TargetCommit),
-                this.WhenAnyValue(x => x.TargetBranchName),
+                this.WhenAnyValue(x => x.TargetOriginBranchName),
                 this.WhenAnyValue(x => x.TagAutoUpdate),
                 this.WhenAnyValue(x => x.BranchAutoUpdate),
                 (versioning, tag, commit, branch, tagAuto, branchAuto) =>
@@ -824,15 +848,16 @@ namespace Synthesis.Bethesda.GUI
                 UpdateToTagCommand);
 
             PatcherSettings = new PatcherSettingsVM(
-                Logger, 
-                this, 
+                Logger,
+                this,
                 compilation.Select(c =>
                 {
                     if (c.RunnableState.Failed) return c.RunnableState.BubbleFailure<string>();
                     return GetResponse<string>.Succeed(c.Item.ProjPath);
                 })
-                .DistinctUntilChanged(x => x.Value));
-            this.CompositeDisposable.Add(PatcherSettings);
+                .DistinctUntilChanged(x => x.Value),
+                needBuild: false)
+                .DisposeWith(this);
 
             _StatusDisplay = Observable.CombineLatest(
                 driverRepoInfo,
@@ -934,7 +959,8 @@ namespace Synthesis.Bethesda.GUI
                 TargetTag = this.TargetTag,
                 TargetCommit = this.TargetCommit,
                 LatestTag = this.TagAutoUpdate,
-                FollowDefaultBranch = this.BranchAutoUpdate,
+                FollowDefaultBranch = this.BranchFollowMain,
+                AutoUpdateToBranchTip = this.BranchAutoUpdate,
                 TargetBranch = this.TargetBranchName,
             };
             CopyOverSave(ret);
@@ -959,7 +985,8 @@ namespace Synthesis.Bethesda.GUI
             this.ManualSynthesisVersion = settings.ManualSynthesisVersion;
             this.TargetTag = settings.TargetTag;
             this.TargetCommit = settings.TargetCommit;
-            this.BranchAutoUpdate = settings.FollowDefaultBranch;
+            this.BranchAutoUpdate = settings.AutoUpdateToBranchTip;
+            this.BranchFollowMain = settings.FollowDefaultBranch;
             this.TagAutoUpdate = settings.LatestTag;
             this.TargetBranchName = settings.TargetBranch;
         }
@@ -977,7 +1004,7 @@ namespace Synthesis.Bethesda.GUI
                 new SolutionPatcherRun(
                     name: DisplayName,
                     pathToSln: RunnableData.SolutionPath,
-                    pathToExtraDataBaseFolder: Execution.Constants.TypicalExtraData,
+                    pathToExtraDataBaseFolder: Execution.Paths.TypicalExtraData,
                     pathToProj: RunnableData.ProjPath));
         }
 

@@ -102,8 +102,8 @@ namespace Synthesis.Bethesda.GUI
             AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(this)));
             AddSnippetPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new CodeSnippetPatcherVM(this)));
 
-            ProfileDirectory = Path.Combine(Execution.Constants.WorkingDirectory, ID);
-            WorkingDirectory = Execution.Constants.ProfileWorkingDirectory(ID);
+            ProfileDirectory = Path.Combine(Execution.Paths.WorkingDirectory, ID);
+            WorkingDirectory = Execution.Paths.ProfileWorkingDirectory(ID);
 
             var dataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
                 .Select(path =>
@@ -228,6 +228,7 @@ namespace Synthesis.Bethesda.GUI
                         .ObserveOnGui()
                         .FilterOnObservable(
                             x => x.WhenAnyValue(y => y.Exists)
+                                .DistinctUntilChanged()
                                 .Select(x => !x), 
                             scheduler: RxApp.MainThreadScheduler)
                         .QueryWhenChanged(q => q)
@@ -249,6 +250,7 @@ namespace Synthesis.Bethesda.GUI
                         }
                         return GetResponse<PatcherVM>.Succeed(null!);
                     })
+                .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
                 .Do(x =>
                 {
                     if (x.Failed)

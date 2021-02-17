@@ -254,7 +254,7 @@ namespace Synthesis.Bethesda.GUI
                     return (null, null);
                 }
                 Log.Logger.Information("Querying for latest published library versions");
-                var bootstrapProjectDir = new DirectoryPath(Path.Combine(Execution.Constants.WorkingDirectory, "VersionQuery"));
+                var bootstrapProjectDir = new DirectoryPath(Path.Combine(Execution.Paths.WorkingDirectory, "VersionQuery"));
                 bootstrapProjectDir.DeleteEntireFolder();
                 bootstrapProjectDir.Create();
                 var slnPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.sln");

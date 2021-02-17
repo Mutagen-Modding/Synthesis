@@ -101,7 +101,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
         public static string RunnerRepoDirectory(string profileID, string githubID)
         {
-            return Path.Combine(Execution.Constants.WorkingDirectory, profileID, "Git", githubID, "Runner");
+            return Path.Combine(Execution.Paths.WorkingDirectory, profileID, "Git", githubID, "Runner");
         }
 
         public static void SwapInDesiredVersionsForSolution(
@@ -273,7 +273,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     case PatcherVersioningEnum.Branch:
                         if (string.IsNullOrWhiteSpace(patcherVersioning.Target)) return GetResponse<RunnerRepoInfo>.Fail($"Target branch had no name.");
                         repo.Fetch();
-                        var targetBranch = repo.Branches[$"origin/{patcherVersioning.Target}"];
+                        var targetBranch = repo.Branches[patcherVersioning.Target];
                         if (targetBranch == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {patcherVersioning.Target}");
                         targetSha = targetBranch.Tip.Sha;
                         target = patcherVersioning.Target;

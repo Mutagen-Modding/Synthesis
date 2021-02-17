@@ -74,7 +74,7 @@ namespace Synthesis.Bethesda.GUI
             // it still seems to lock the dll files.  For whatever reason, though, deleting the folder
             // containing all those files seems to work out? This is definitely a hack.  Unload should
             // ideally just work out of the box.
-            using var tempFolder = new TempFolder(Path.Combine(Synthesis.Bethesda.Execution.Constants.WorkingDirectory, "Loading", Path.GetRandomFileName()));
+            using var tempFolder = new TempFolder(Path.Combine(Paths.LoadingFolder, Path.GetRandomFileName()));
             if (cancel.IsCancellationRequested) return GetResponse<TRet>.Fail("Cancelled");
             CopyDirectory(Path.GetDirectoryName(projPath)!, tempFolder.Dir.Path, cancel);
             projPath = Path.Combine(tempFolder.Dir.Path, Path.GetFileName(projPath));
