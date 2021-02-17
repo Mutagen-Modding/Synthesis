@@ -289,7 +289,11 @@ namespace Synthesis.Bethesda.GUI
                 this.WhenAnyValue(x => x.ProjectSubpath));
 
             projPath
-                .Subscribe(p => SelectedProjectPath.TargetPath = p)
+                .Subscribe(p =>
+                {
+                    Logger.Information($"Setting target project path to: {p}");
+                    SelectedProjectPath.TargetPath = p;
+                })
                 .DisposeWith(this);
 
             _TargetOriginBranchName = this.WhenAnyValue(x => x.TargetBranchName)
