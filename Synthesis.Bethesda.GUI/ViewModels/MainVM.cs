@@ -278,6 +278,7 @@ namespace Synthesis.Bethesda.GUI
         public override void Dispose()
         {
             base.Dispose();
+#if !DEBUG
             Task.Run(async () =>
             {
                 using var process = ProcessWrapper.Create(
@@ -287,6 +288,7 @@ namespace Synthesis.Bethesda.GUI
                 var ret = await process.Run();
                 return ret;
             }).Wait();
+#endif
         }
     }
 }
