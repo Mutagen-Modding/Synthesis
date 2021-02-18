@@ -79,6 +79,11 @@
                         </Style.Triggers>
                     </Style>
                 </ListBox.Style>
+                <ListBox.Resources>
+                    <Style x:Name="NumericSelectionWrapper" TargetType="local:SelectionWrapper">
+                        <Setter Property="Margin" Value="0,-3,-3,-3" />
+                    </Style>
+                </ListBox.Resources>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid
@@ -126,7 +131,7 @@
                                 Content="{Binding Value}">
                                 <ContentPresenter.Resources>
                                     <DataTemplate DataType="{x:Type vm:Int8SettingsVM}">
-                                        <local:SelectionWrapper>
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
                                             <xwpf:SByteUpDown
                                                 ShowButtonSpinner="False"
                                                 Style="{StaticResource ReflectionIntSpinner}"
@@ -134,7 +139,7 @@
                                         </local:SelectionWrapper>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vm:Int16SettingsVM}">
-                                        <local:SelectionWrapper>
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
                                             <xwpf:ShortUpDown
                                                 ShowButtonSpinner="False"
                                                 Style="{StaticResource ReflectionIntSpinner}"
@@ -142,7 +147,7 @@
                                         </local:SelectionWrapper>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vm:Int32SettingsVM}">
-                                        <local:SelectionWrapper>
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
                                             <xwpf:IntegerUpDown
                                                 ShowButtonSpinner="False"
                                                 Style="{StaticResource ReflectionIntSpinner}"
@@ -150,7 +155,7 @@
                                         </local:SelectionWrapper>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vm:Int64SettingsVM}">
-                                        <local:SelectionWrapper>
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
                                             <xwpf:LongUpDown
                                                 ShowButtonSpinner="False"
                                                 Style="{StaticResource ReflectionIntSpinner}"
@@ -158,7 +163,7 @@
                                         </local:SelectionWrapper>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vm:UInt8SettingsVM}">
-                                        <local:SelectionWrapper>
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
                                             <xwpf:ByteUpDown
                                                 ShowButtonSpinner="False"
                                                 Style="{StaticResource ReflectionIntSpinner}"
@@ -166,7 +171,7 @@
                                         </local:SelectionWrapper>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vm:UInt16SettingsVM}">
-                                        <local:SelectionWrapper>
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
                                             <xwpf:UShortUpDown
                                                 ShowButtonSpinner="False"
                                                 Style="{StaticResource ReflectionIntSpinner}"
@@ -174,7 +179,7 @@
                                         </local:SelectionWrapper>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vm:UInt32SettingsVM}">
-                                        <local:SelectionWrapper>
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
                                             <xwpf:UIntegerUpDown
                                                 ShowButtonSpinner="False"
                                                 Style="{StaticResource ReflectionIntSpinner}"
@@ -182,7 +187,7 @@
                                         </local:SelectionWrapper>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vm:UInt64SettingsVM}">
-                                        <local:SelectionWrapper>
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
                                             <xwpf:ULongUpDown
                                                 ShowButtonSpinner="False"
                                                 Style="{StaticResource ReflectionIntSpinner}"
@@ -190,7 +195,7 @@
                                         </local:SelectionWrapper>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vm:DoubleSettingsVM}">
-                                        <local:SelectionWrapper>
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
                                             <xwpf:DoubleUpDown
                                                 ShowButtonSpinner="False"
                                                 Style="{StaticResource ReflectionIntSpinner}"
@@ -198,7 +203,7 @@
                                         </local:SelectionWrapper>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vm:DecimalSettingsVM}">
-                                        <local:SelectionWrapper>
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
                                             <xwpf:DecimalUpDown
                                                 ShowButtonSpinner="False"
                                                 Style="{StaticResource ReflectionIntSpinner}"
@@ -206,7 +211,7 @@
                                         </local:SelectionWrapper>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vm:FloatSettingsVM}">
-                                        <local:SelectionWrapper>
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
                                             <xwpf:SingleUpDown
                                                 ShowButtonSpinner="False"
                                                 Style="{StaticResource ReflectionIntSpinner}"
@@ -216,6 +221,11 @@
                                     <DataTemplate DataType="{x:Type vm:FormKeySettingsVM}">
                                         <local:SelectionWrapper>
                                             <mutagenWpf:FormKeyBox Margin="0,5,5,5" FormKey="{Binding Value}" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:EnumSettingsVM}">
+                                        <local:SelectionWrapper>
+                                            <local:EnumSettingsNodeView Margin="0,4,4,4" />
                                         </local:SelectionWrapper>
                                     </DataTemplate>
                                 </ContentPresenter.Resources>

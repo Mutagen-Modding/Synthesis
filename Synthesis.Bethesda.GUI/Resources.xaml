@@ -149,8 +149,8 @@
     </Style>
 
     <Style x:Key="ReflectionSettingName" TargetType="TextBlock">
-        <Setter Property="MinWidth" Value="100" />
         <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="MinWidth" Value="100" />
     </Style>
 
     <Style x:Key="ReflectionSettingBorder" TargetType="Border">

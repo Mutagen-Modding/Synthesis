@@ -4,7 +4,7 @@ using ReactiveUI.Fody.Helpers;
 namespace Synthesis.Bethesda.GUI
 {
     public class ListElementWrapperVM<TItem, TWrapper> : ViewModel, IBasicSettingsNodeVM
-        where TWrapper : BasicSettingsVM<TItem>
+        where TWrapper : IBasicSettingsNodeVM
     {
         public TWrapper Value { get; }
 

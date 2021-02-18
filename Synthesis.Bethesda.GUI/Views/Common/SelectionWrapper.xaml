@@ -10,10 +10,7 @@
     mc:Ignorable="d">
     <UserControl.Template>
         <ControlTemplate TargetType="UserControl">
-            <Border
-                Width="{Binding Width, ElementName=ValueContent, Mode=OneWay}"
-                Margin="0,-3,-3,-3"
-                BorderThickness="0,0,2,0">
+            <Border Width="{Binding Width, ElementName=ValueContent, Mode=OneWay}" BorderThickness="0,0,2,0">
                 <Border.Style>
                     <Style TargetType="Border">
                         <Style.Triggers>

@@ -26,10 +26,11 @@ namespace Synthesis.Bethesda.GUI
             IEnumerable<FormKey> defaultVal)
             : base(
                   memberName,
-                  get: e => new ListElementWrapperVM<FormKey, FormKeySettingsVM>(new FormKeySettingsVM()
-                  {
-                      Value = FormKeySettingsVM.Import(e)
-                  }),
+                  get: e => TryGet<IBasicSettingsNodeVM>.Succeed(
+                      new ListElementWrapperVM<FormKey, FormKeySettingsVM>(new FormKeySettingsVM()
+                      {
+                          Value = FormKeySettingsVM.Import(e)
+                      })),
                   add: coll => coll.Add(new ListElementWrapperVM<FormKey, FormKeySettingsVM>(new FormKeySettingsVM()
                   {
                       Value = FormKey.Null

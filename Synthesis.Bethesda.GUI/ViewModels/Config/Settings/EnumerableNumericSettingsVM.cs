@@ -19,7 +19,7 @@ namespace Synthesis.Bethesda.GUI
     {
         public EnumerableNumericSettingsVM(
             string memberName,
-            Func<JsonElement, IBasicSettingsNodeVM> get,
+            Func<JsonElement, TryGet<IBasicSettingsNodeVM>> get,
             Action<ObservableCollection<IBasicSettingsNodeVM>> add)
             : base(memberName, get, add)
         {
@@ -29,13 +29,14 @@ namespace Synthesis.Bethesda.GUI
             where TWrapper : BasicSettingsVM<TItem>, new()
         {
             EnumerableNumericSettingsVM ret = null!;
-            Func<JsonElement, IBasicSettingsNodeVM> import = new Func<JsonElement, IBasicSettingsNodeVM>((elem) =>
+            Func<JsonElement, TryGet<IBasicSettingsNodeVM>> import = new Func<JsonElement, TryGet<IBasicSettingsNodeVM>>((elem) =>
             {
-                return new ListElementWrapperVM<TItem, TWrapper>(
-                    new TWrapper()
-                    {
-                        Value = prototype.Get(elem)
-                    });
+                return TryGet<IBasicSettingsNodeVM>.Succeed(
+                    new ListElementWrapperVM<TItem, TWrapper>(
+                        new TWrapper()
+                        {
+                            Value = prototype.Get(elem)
+                        }));
             });
             ret = new EnumerableNumericSettingsVM(
                 memberName,
@@ -61,6 +62,11 @@ namespace Synthesis.Bethesda.GUI
                 }));
             }
             return ret;
+        }
+
+        public override SettingsNodeVM Duplicate()
+        {
+            return new EnumerableNumericSettingsVM(string.Empty, _import, _add);
         }
     }
 }
