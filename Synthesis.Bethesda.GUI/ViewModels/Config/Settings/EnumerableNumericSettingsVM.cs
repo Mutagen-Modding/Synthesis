@@ -32,14 +32,20 @@ namespace Synthesis.Bethesda.GUI
             Func<JsonElement, IBasicSettingsNodeVM> import = new Func<JsonElement, IBasicSettingsNodeVM>((elem) =>
             {
                 return new ListElementWrapperVM<TItem, TWrapper>(
-                    prototype.Get(elem));
+                    new TWrapper()
+                    {
+                        Value = prototype.Get(elem)
+                    });
             });
             ret = new EnumerableNumericSettingsVM(
                 memberName,
                 import,
                 (list) =>
                 {
-                    list.Add(new ListElementWrapperVM<TItem, TWrapper>(prototype.GetDefault())
+                    list.Add(new ListElementWrapperVM<TItem, TWrapper>(new TWrapper()
+                    {
+                        Value = prototype.GetDefault()
+                    })
                     {
                         IsSelected = true
                     });
@@ -48,7 +54,10 @@ namespace Synthesis.Bethesda.GUI
             {
                 ret.Values.SetTo(items.Select(x =>
                 {
-                    return new ListElementWrapperVM<TItem, TWrapper>(x);
+                    return new ListElementWrapperVM<TItem, TWrapper>(new TWrapper()
+                    {
+                        Value = x
+                    });
                 }));
             }
             return ret;
