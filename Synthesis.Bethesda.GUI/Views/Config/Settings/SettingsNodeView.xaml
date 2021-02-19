@@ -96,6 +96,11 @@
                         Value="{Binding Value}" />
                 </local:BasicSettingsNodeView>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:StringSettingsVM}">
+                <local:BasicSettingsNodeView>
+                    <TextBox Text="{Binding Value}" />
+                </local:BasicSettingsNodeView>
+            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:FloatSettingsVM}">
                 <local:BasicSettingsNodeView>
                     <xwpf:SingleUpDown

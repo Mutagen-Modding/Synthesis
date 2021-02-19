@@ -73,6 +73,8 @@ namespace Synthesis.Bethesda.GUI
                     return new FloatSettingsVM(memberName, defaultVal);
                 case "Decimal":
                     return new DecimalSettingsVM(memberName, defaultVal);
+                case "String":
+                    return new StringSettingsVM(memberName, defaultVal);
                 case "ModKey":
                     return new ModKeySettingsVM(param.DetectedLoadOrder.Transform(x => x.Listing.ModKey), memberName, defaultVal);
                 case "FormKey":
