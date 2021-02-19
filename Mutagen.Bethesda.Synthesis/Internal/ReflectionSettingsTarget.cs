@@ -1,9 +1,9 @@
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Mutagen.Bethesda.Synthesis.Internal
@@ -44,7 +44,16 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             System.Console.WriteLine($"Reading settings file: {path}");
             if (File.Exists(path))
             {
-                return JsonConvert.DeserializeObject<TSetting>(File.ReadAllText(path));
+                var settings = JsonSerializer.Deserialize<TSetting>(File.ReadAllText(path));
+                if (settings == null)
+                {
+                    if (ThrowIfMissing)
+                    {
+                        throw new FileNotFoundException("Cannot find required setting", path);
+                    }
+                    settings = new TSetting();
+                }
+                return settings;
             }
             else
             {
