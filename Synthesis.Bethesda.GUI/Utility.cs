@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -80,7 +81,39 @@ namespace Synthesis.Bethesda.GUI
             projPath = Path.Combine(tempFolder.Dir.Path, Path.GetFileName(projPath));
             var exec = await DotNetCommands.GetExecutablePath(projPath, cancel);
             if (exec.Failed) return exec.BubbleFailure<TRet>();
-            return AssemblyLoading.ExecuteAndForceUnload(exec.Value, getter);
+            return AssemblyLoading.ExecuteAndForceUnload(exec.Value, getter, () => new FormKeyAssemblyLoadContext(exec.Value));
+        }
+
+        class FormKeyAssemblyLoadContext : AssemblyLoadContext
+        {
+            // Resolver of the locations of the assemblies that are dependencies of the
+            // main plugin assembly.
+            private AssemblyDependencyResolver _resolver;
+
+            public FormKeyAssemblyLoadContext(string pluginPath) : base(isCollectible: true)
+            {
+                _resolver = new AssemblyDependencyResolver(pluginPath);
+            }
+
+            // The Load method override causes all the dependencies present in the plugin's binary directory to get loaded
+            // into the HostAssemblyLoadContext together with the plugin assembly itself.
+            // NOTE: The Interface assembly must not be present in the plugin's binary directory, otherwise we would
+            // end up with the assembly being loaded twice. Once in the default context and once in the HostAssemblyLoadContext.
+            // The types present on the host and plugin side would then not match even though they would have the same names.
+            protected override Assembly? Load(AssemblyName name)
+            {
+                string? assemblyPath = _resolver.ResolveAssemblyToPath(name);
+
+                // Only load formkey libs, for now
+                if (!name.Name?.StartsWith("Mutagen.Bethesda.FormKeys") ?? true) return null;
+
+                if (assemblyPath != null)
+                {
+                    return LoadFromAssemblyPath(assemblyPath);
+                }
+
+                return null;
+            }
         }
     }
 }

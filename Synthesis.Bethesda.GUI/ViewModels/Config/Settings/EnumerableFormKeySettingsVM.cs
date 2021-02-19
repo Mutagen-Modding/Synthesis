@@ -19,7 +19,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public class EnumerableFormKeySettingsVM : EnumerableSettingsVM
     {
-        private readonly FormKey[] _defaultVal;
+        private FormKey[] _defaultVal;
 
         public EnumerableFormKeySettingsVM(
             string memberName,
@@ -57,6 +57,18 @@ namespace Synthesis.Bethesda.GUI
         public override SettingsNodeVM Duplicate()
         {
             return new EnumerableFormKeySettingsVM(MemberName, _defaultVal);
+        }
+
+        public override void WrapUp()
+        {
+            _defaultVal = _defaultVal.Select(x => FormKeySettingsVM.StripOrigin(x)).ToArray();
+            Values.SetTo(_defaultVal.Select(x =>
+            {
+                return new ListElementWrapperVM<FormKey, FormKeySettingsVM>(new FormKeySettingsVM()
+                {
+                    Value = x
+                });
+            }));
         }
     }
 }

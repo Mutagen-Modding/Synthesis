@@ -30,7 +30,10 @@ namespace Synthesis.Bethesda.GUI
             _import = ImportSingle;
             _defaultVal = defaultVal;
             _enumNames = enumNames;
-            Values.SetTo(defaultVal.Select(i => new EnumSettingsVM(string.Empty, i, enumNames)));
+            Values.SetTo(defaultVal.Select(i =>
+            {
+                return new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(string.Empty, i, enumNames));
+            }));
         }
 
         public static EnumerableEnumSettingsVM Factory(string memberName, object? defaultVal, Type enumType)

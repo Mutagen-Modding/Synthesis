@@ -17,5 +17,7 @@ namespace Synthesis.Bethesda.GUI
         {
             Value = value;
         }
+
+        public void WrapUp() => Value.WrapUp();
     }
 }

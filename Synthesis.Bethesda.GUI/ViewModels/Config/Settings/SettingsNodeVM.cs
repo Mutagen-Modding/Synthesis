@@ -41,25 +41,12 @@ namespace Synthesis.Bethesda.GUI
                 .ToArray();
         }
 
+        public virtual void WrapUp()
+        {
+        }
+
         public static SettingsNodeVM MemberFactory(SettingsParameters param, string memberName, Type targetType, object? defaultVal)
         {
-            SettingsNodeVM GetFallbackNode(Type targetType)
-            {
-                var foundType = param.Assembly.GetType(targetType.FullName!);
-                if (foundType != null)
-                {
-                    if (foundType.IsEnum)
-                    {
-                        return EnumSettingsVM.Factory(memberName, defaultVal, foundType);
-                    }
-                    else
-                    {
-                        return new ObjectSettingsVM(param, memberName, foundType);
-                    }
-                }
-                return new UnknownSettingsVM(memberName);
-            }
-
             switch (targetType.Name)
             {
                 case "Boolean":

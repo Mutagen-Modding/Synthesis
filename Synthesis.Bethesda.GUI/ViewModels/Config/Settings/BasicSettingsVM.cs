@@ -10,6 +10,7 @@ namespace Synthesis.Bethesda.GUI
         object Value { get; }
 
         bool IsSelected { get; set; }
+        void WrapUp();
     }
 
     public abstract class BasicSettingsVM<T> : SettingsNodeVM, IBasicSettingsNodeVM

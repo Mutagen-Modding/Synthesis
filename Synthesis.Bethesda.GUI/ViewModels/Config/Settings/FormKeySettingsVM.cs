@@ -13,7 +13,7 @@ namespace Synthesis.Bethesda.GUI
     public class FormKeySettingsVM : BasicSettingsVM<FormKey>
     {
         public FormKeySettingsVM(string memberName, object? defaultVal)
-            : base(memberName, defaultVal)
+            : base(memberName, defaultVal is FormKey form ? StripOrigin(form) : null)
         {
         }
 
@@ -70,6 +70,16 @@ namespace Synthesis.Bethesda.GUI
             {
                 return formKey.ToString();
             }
+        }
+
+        public static FormKey StripOrigin(FormKey formKey)
+        {
+            return FormKey.Factory(formKey.ToString());
+        }
+
+        public override void WrapUp()
+        {
+            Value = StripOrigin(Value);
         }
     }
 }
