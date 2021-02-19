@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <AssemblyName>Synthesis</AssemblyName>
     <TargetFramework>net5.0</TargetFramework>
+    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <UseWPF>true</UseWPF>
     <PackageId>Synthesis.Bethesda.GUI</PackageId>
