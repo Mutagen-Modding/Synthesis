@@ -67,11 +67,12 @@ namespace Synthesis.Bethesda.GUI
             AddCommand = ReactiveCommand.Create(
                 execute: () =>
                 {
-                    ;
+                    var vm = (ObjectSettingsVM)_prototype.Duplicate();
+                    vm.WrapUp();
                     Values.Add(new SelectionWrapper()
                     {
                         IsSelected = true,
-                        Value = (ObjectSettingsVM)_prototype.Duplicate()
+                        Value = vm
                     });
                 });
         }
@@ -83,6 +84,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 var dup = (ObjectSettingsVM)_prototype.Duplicate();
                 dup.Import(elem, logger);
+                dup.WrapUp();
                 Values.Add(new SelectionWrapper()
                 {
                     Value = dup

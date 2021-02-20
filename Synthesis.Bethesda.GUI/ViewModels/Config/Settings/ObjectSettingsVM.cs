@@ -85,7 +85,12 @@ namespace Synthesis.Bethesda.GUI
             return new ObjectSettingsVM(
                 MemberName,
                 this._nodes.Values
-                    .Select(f => f.Duplicate())
+                    .Select(f =>
+                    {
+                        var ret = f.Duplicate();
+                        ret.WrapUp();
+                        return ret;
+                    })
                     .ToDictionary(f => f.MemberName));
         }
     }

@@ -114,15 +114,11 @@ namespace Synthesis.Bethesda.GUI
                             default:
                                 {
                                     if (firstGen.Name.Contains("FormLink")
-                                    && firstGen.IsGenericType
-                                    && firstGen.GenericTypeArguments.Length == 1)
+                                        && firstGen.IsGenericType
+                                        && firstGen.GenericTypeArguments.Length == 1)
                                     {
                                         var formLinkGen = firstGen.GenericTypeArguments[0];
-                                        if (!LoquiRegistration.TryGetRegister(formLinkGen, out var regis))
-                                        {
-                                            throw new ArgumentException($"Can't create a formlink control for type: {formLinkGen}");
-                                        }
-                                        return EnumerableFormLinkSettingsVM.Factory(param, memberName, regis.GetterType, defaultVal);
+                                        return EnumerableFormLinkSettingsVM.Factory(param, memberName, formLinkGen.FullName ?? string.Empty, defaultVal);
                                     }
                                     var foundType = param.Assembly.GetType(firstGen.FullName!);
                                     if (foundType != null)

@@ -1,5 +1,7 @@
 using DynamicData;
+using Loqui;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Core;
 using Mutagen.Bethesda.WPF;
 using Newtonsoft.Json.Linq;
 using Noggog;
@@ -26,25 +28,26 @@ namespace Synthesis.Bethesda.GUI
         private FormKey[] _defaultVal;
         private readonly IObservable<ILinkCache> _linkCacheObs;
         private readonly ObservableAsPropertyHelper<ILinkCache?> _LinkCache;
+        private readonly string _typeName;
         public ILinkCache? LinkCache => _LinkCache.Value;
 
-        public IEnumerable<Type> ScopedTypes { get; }
+        public IEnumerable<Type> ScopedTypes { get; private set; } = Enumerable.Empty<Type>();
 
         public EnumerableFormLinkSettingsVM(
-            IObservable<ILinkCache> linkCache, 
-            Type type,
+            IObservable<ILinkCache> linkCache,
             string memberName,
+            string typeName,
             IEnumerable<FormKey> defaultVal)
             : base(memberName)
         {
-            ScopedTypes = type.AsEnumerable();
             _defaultVal = defaultVal.ToArray();
             _linkCacheObs = linkCache;
+            _typeName = typeName;
             _LinkCache = linkCache
                 .ToGuiProperty(this, nameof(LinkCache), default(ILinkCache?));
         }
 
-        public static SettingsNodeVM Factory(SettingsParameters param, string memberName, Type type, object? defaultVal)
+        public static SettingsNodeVM Factory(SettingsParameters param, string memberName, string typeName, object? defaultVal)
         {
             var defaultKeys = new List<FormKey>();
             if (defaultVal is IEnumerable e)
@@ -59,8 +62,8 @@ namespace Synthesis.Bethesda.GUI
             }
             return new EnumerableFormLinkSettingsVM(
                 param.LinkCache,
-                type,
-                memberName,
+                memberName: memberName,
+                typeName: typeName,
                 defaultKeys);
         }
 
@@ -98,7 +101,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override SettingsNodeVM Duplicate()
         {
-            return new EnumerableFormLinkSettingsVM(_linkCacheObs, ScopedTypes.First(), string.Empty, _defaultVal);
+            return new EnumerableFormLinkSettingsVM(_linkCacheObs, _typeName, string.Empty, _defaultVal);
         }
 
         public override void WrapUp()
@@ -108,6 +111,19 @@ namespace Synthesis.Bethesda.GUI
             {
                 return new FormKeyItemViewModel(x);
             }));
+
+            if (LoquiRegistration.TryGetRegisterByFullName(_typeName, out var regis))
+            {
+                ScopedTypes = regis.GetterType.AsEnumerable();
+            }
+            else if (LinkInterfaceMapping.TryGetByFullName(_typeName, out var interfType))
+            {
+                ScopedTypes = interfType.AsEnumerable();
+            }
+            else
+            {
+                throw new ArgumentException($"Can't create a formlink control for type: {_typeName}");
+            }
         }
     }
 }
