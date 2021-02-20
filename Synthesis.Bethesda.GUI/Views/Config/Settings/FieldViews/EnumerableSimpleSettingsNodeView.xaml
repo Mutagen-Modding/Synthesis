@@ -228,6 +228,11 @@
                                             <local:EnumSettingsNodeView Margin="0,4,4,4" />
                                         </local:SelectionWrapper>
                                     </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:StringSettingsVM}">
+                                        <local:SelectionWrapper>
+                                            <TextBox Text="{Binding Value}" Margin="0,4,4,4" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
                                 </ContentPresenter.Resources>
                             </ContentPresenter>
                         </Grid>

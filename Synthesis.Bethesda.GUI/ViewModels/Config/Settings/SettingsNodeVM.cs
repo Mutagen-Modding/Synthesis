@@ -113,6 +113,8 @@ namespace Synthesis.Bethesda.GUI
                                 return EnumerableModKeySettingsVM.Factory(param, memberName, defaultVal);
                             case "FormKey":
                                 return EnumerableFormKeySettingsVM.Factory(memberName, defaultVal);
+                            case "String":
+                                return EnumerableStringSettingsVM.Factory(memberName, defaultVal);
                             default:
                                 {
                                     if (firstGen.Name.Contains("FormLink")
