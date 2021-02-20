@@ -18,6 +18,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
     public class GitPatcherRun : IPatcherRun
     {
         public const string RunnerBranch = "SynthesisRunner";
+        public readonly static System.Version NewtonSoftAddMutaVersion = new System.Version(0, 26);
+        public readonly static System.Version NewtonSoftAddSynthVersion = new System.Version(0, 14, 1);
         public string Name { get; }
         private readonly string _localDir;
         private GithubPatcherSettings _settings;
@@ -126,6 +128,14 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     listedSynthesisVersion: out var curListedSynthesisVersion);
                 TurnOffNullability(projXml);
                 RemoveGitInfo(projXml);
+                SwapOffNetCore(projXml);
+                if ((System.Version.TryParse(curListedMutagenVersion, out var mutaVersion)
+                    && mutaVersion <= NewtonSoftAddMutaVersion)
+                    || (System.Version.TryParse(curListedSynthesisVersion, out var synthVersion)
+                        && synthVersion <= NewtonSoftAddSynthVersion))
+                {
+                    AddNewtonsoftToOldSetups(projXml);
+                }
                 File.WriteAllText(proj, projXml.ToString());
                 if (drivingProjSubPath.Equals(subProj))
                 {
@@ -212,6 +222,39 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 }
                 propGroup = group;
             }
+        }
+
+        public static void SwapOffNetCore(XElement proj)
+        {
+            foreach (var group in proj.Elements("PropertyGroup"))
+            {
+                foreach (var elem in group.Elements())
+                {
+                    if (elem.Name.LocalName.Equals("TargetFramework")
+                        && elem.Value.Equals("netcoreapp3.1"))
+                    {
+                        elem.Value = "net5.0";
+                    }
+                }
+            }
+        }
+
+        public static void AddNewtonsoftToOldSetups(XElement proj)
+        {
+            foreach (var group in proj.Elements("ItemGroup"))
+            {
+                foreach (var elem in group.Elements())
+                {
+                    if (!elem.Name.LocalName.Equals("PackageReference")) continue;
+                    if (!elem.TryGetAttribute("Include", out var include)) continue;
+                    if (include.Equals("Newtonsoft.Json")) return;
+                }
+            }
+
+            proj.Add(new XElement("ItemGroup",
+                new XElement("PackageReference",
+                    new XAttribute("Include", "Newtonsoft.Json"),
+                    new XAttribute("Version", "12.0.3"))));
         }
 
         public static void RemoveGitInfo(XElement proj)
