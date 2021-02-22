@@ -174,7 +174,7 @@ namespace Synthesis.Bethesda.GUI
                                         }
                                         else
                                         {
-                                            return new UnknownSettingsVM(memberName);
+                                            return EnumerableObjectSettingsVM.Factory(param, memberName, defaultVal, foundType);
                                         }
                                     }
                                     return new UnknownSettingsVM(memberName);
