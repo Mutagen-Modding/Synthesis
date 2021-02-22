@@ -42,6 +42,11 @@ namespace Synthesis.Bethesda.GUI
             return type.GetMembers()
                 .Where(m => m.MemberType == MemberTypes.Property
                     || m.MemberType == MemberTypes.Field)
+                .Where(m =>
+                {
+                    if (m is not PropertyInfo prop) return true;
+                    return prop.GetSetMethod() != null;
+                })
                 .Where(m => m.GetCustomAttribute<SynthesisIgnoreSetting>() == null)
                 .OrderBy(m =>
                 {
