@@ -12,10 +12,7 @@ namespace Synthesis.Bethesda.UnitTests
     public static class Utility
     {
         public static readonly string OverallTempFolderPath = "SynthesisUnitTests";
-        public static TempFolder GetTempFolder() => new TempFolder(Path.Combine(OverallTempFolderPath, Path.GetRandomFileName()))
-        {
-             ThrowIfUnsuccessfulDisposal = false
-        };
+        public static TempFolder GetTempFolder() => TempFolder.FactoryByAddedPath(Path.Combine(OverallTempFolderPath, Path.GetRandomFileName()), throwIfUnsuccessfulDisposal: false);
         public static readonly ModKey SynthesisModKey = new ModKey("Synthesis", ModType.Plugin);
         public static readonly ModKey TestModKey = new ModKey("test", ModType.Plugin);
         public static readonly ModKey OverrideModKey = new ModKey("override", ModType.Plugin);
@@ -35,7 +32,7 @@ namespace Synthesis.Bethesda.UnitTests
 
         public static TempFolder SetupDataFolder(TempFolder tempFolder, GameRelease release, string? loadOrderPath = null)
         {
-            var dataFolder = new TempFolder(Path.Combine(tempFolder.Dir.Path, "Data"));
+            var dataFolder = TempFolder.FactoryByPath(Path.Combine(tempFolder.Dir.Path, "Data"));
             dataFolder.Dir.DeleteEntireFolder();
             dataFolder.Dir.Create();
             loadOrderPath ??= PathToLoadOrderFile;

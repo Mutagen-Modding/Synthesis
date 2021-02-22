@@ -75,13 +75,18 @@ namespace Synthesis.Bethesda.GUI
             // it still seems to lock the dll files.  For whatever reason, though, deleting the folder
             // containing all those files seems to work out? This is definitely a hack.  Unload should
             // ideally just work out of the box.
-            using var tempFolder = new TempFolder(Path.Combine(Paths.LoadingFolder, Path.GetRandomFileName()));
+            await using var tempFolder = TempFolder.FactoryByPath(Path.Combine(Paths.LoadingFolder, Path.GetRandomFileName()), 3, TimeSpan.FromMilliseconds(500));
             if (cancel.IsCancellationRequested) return GetResponse<TRet>.Fail("Cancelled");
             CopyDirectory(Path.GetDirectoryName(projPath)!, tempFolder.Dir.Path, cancel);
             projPath = Path.Combine(tempFolder.Dir.Path, Path.GetFileName(projPath));
             var exec = await DotNetCommands.GetExecutablePath(projPath, cancel);
             if (exec.Failed) return exec.BubbleFailure<TRet>();
-            return AssemblyLoading.ExecuteAndForceUnload(exec.Value, getter, () => new FormKeyAssemblyLoadContext(exec.Value));
+            return ExecuteAndUnload(exec.Value, getter);
+        }
+
+        private static GetResponse<TRet> ExecuteAndUnload<TRet>(string exec, Func<Assembly, GetResponse<TRet>> getter)
+        {
+            return AssemblyLoading.ExecuteAndForceUnload(exec, getter, () => new FormKeyAssemblyLoadContext(exec));
         }
 
         class FormKeyAssemblyLoadContext : AssemblyLoadContext

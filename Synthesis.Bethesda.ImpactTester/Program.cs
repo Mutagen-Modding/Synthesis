@@ -37,7 +37,7 @@ namespace Synthesis.Bethesda.ImpactTester
 
         static async Task DoWork(CancellationToken cancel)
         {
-            using var temp = new TempFolder();
+            using var temp = TempFolder.Factory();
             var failedDeps = new List<Dependent>();
             var projResults = new List<(Dependent, string, ErrorResponse)>();
 
