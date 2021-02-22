@@ -9,13 +9,7 @@ namespace Mutagen.Bethesda.Synthesis.Settings
     [AttributeUsage(
       AttributeTargets.Field | AttributeTargets.Property,
       AllowMultiple = false)]
-    public class SynthesisSettingName : Attribute
+    public class SynthesisStaticEnumDictionary : Attribute
     {
-        public string Name;
-
-        public SynthesisSettingName(string name)
-        {
-            Name = name;
-        }
     }
 }

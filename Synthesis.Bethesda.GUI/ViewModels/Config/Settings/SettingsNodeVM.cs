@@ -1,6 +1,7 @@
 using DynamicData;
 using Loqui;
 using Mutagen.Bethesda.Synthesis;
+using Mutagen.Bethesda.Synthesis.Settings;
 using Newtonsoft.Json.Linq;
 using Noggog;
 using Noggog.WPF;
@@ -20,20 +21,6 @@ namespace Synthesis.Bethesda.GUI
         public SettingsNodeVM(string memberName)
         {
             MemberName = memberName;
-        }
-
-        private static SettingsNodeVM GetSettingsNode(SettingsParameters param, MemberInfo memb, Type type, object? defaultVal)
-        {
-            string name;
-            if (memb.TryGetCustomAttribute<SynthesisSettingName>(out var nameAttr))
-            {
-                name = nameAttr.Name;
-            }
-            else
-            {
-                name = memb.Name;
-            }
-            return MemberFactory(param, name, type, defaultVal);
         }
 
         public static SettingsNodeVM[] Factory(SettingsParameters param, Type type, object? defaultObj)
@@ -64,8 +51,8 @@ namespace Synthesis.Bethesda.GUI
                     {
                         return m switch
                         {
-                            PropertyInfo prop => GetSettingsNode(param, prop, prop.PropertyType, defaultObj == null ? null : prop.GetValue(defaultObj)),
-                            FieldInfo field => GetSettingsNode(param, field, field.FieldType, defaultObj == null ? null : field.GetValue(defaultObj)),
+                            PropertyInfo prop => MemberFactory(param, prop, prop.PropertyType, defaultObj == null ? null : prop.GetValue(defaultObj)),
+                            FieldInfo field => MemberFactory(param, field, field.FieldType, defaultObj == null ? null : field.GetValue(defaultObj)),
                             _ => throw new ArgumentException(),
                         };
                     }
@@ -86,8 +73,22 @@ namespace Synthesis.Bethesda.GUI
         {
         }
 
-        public static SettingsNodeVM MemberFactory(SettingsParameters param, string memberName, Type targetType, object? defaultVal)
+        public static SettingsNodeVM MemberFactory(SettingsParameters param, MemberInfo? member, Type targetType, object? defaultVal)
         {
+            string memberName;
+            if (member == null)
+            {
+                memberName = string.Empty;
+            }
+            else if (member.TryGetCustomAttribute<SynthesisSettingName>(out var nameAttr))
+            {
+                memberName = nameAttr.Name;
+            }
+            else
+            {
+                memberName = member.Name;
+            }
+
             switch (targetType.Name)
             {
                 case "Boolean":
@@ -179,6 +180,20 @@ namespace Synthesis.Bethesda.GUI
                                     }
                                     return new UnknownSettingsVM(memberName);
                                 }
+                        }
+                    }
+                case "Dictionary`2":
+                    {
+                        var firstGen = targetType.GenericTypeArguments[0];
+                        if (member != null
+                            && firstGen.IsEnum
+                            && member.TryGetCustomAttribute<SynthesisStaticEnumDictionary>(out var _))
+                        {
+                            return EnumDictionarySettingsVM.Factory(param, memberName, firstGen, targetType.GenericTypeArguments[1], defaultVal);
+                        }
+                        else
+                        {
+                            return new UnknownSettingsVM(memberName);
                         }
                     }
                 default:
