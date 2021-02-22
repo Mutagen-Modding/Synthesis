@@ -21,10 +21,10 @@ namespace Synthesis.Bethesda.GUI
             Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
         }
 
-        public ObjectSettingsVM(SettingsParameters param, string memberName, Type t)
+        public ObjectSettingsVM(SettingsParameters param, string memberName, Type t, object? defaultVal)
             : base(memberName)
         {
-            _nodes = Factory(param, t)
+            _nodes = Factory(param, t, defaultVal)
                 .ToDictionary(x => x.MemberName);
             Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
         }

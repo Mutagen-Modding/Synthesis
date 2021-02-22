@@ -45,7 +45,7 @@ namespace Synthesis.Bethesda.GUI
         public EnumerableObjectSettingsVM(SettingsParameters param, string memberName, Type t)
             : base(memberName)
         {
-            _prototype = new ObjectSettingsVM(param, string.Empty, t);
+            _prototype = new ObjectSettingsVM(param, string.Empty, t, null);
             Init();
         }
 

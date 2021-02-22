@@ -36,9 +36,8 @@ namespace Synthesis.Bethesda.GUI
             return MemberFactory(param, name, type, defaultVal);
         }
 
-        public static SettingsNodeVM[] Factory(SettingsParameters param, Type type)
+        public static SettingsNodeVM[] Factory(SettingsParameters param, Type type, object? defaultObj)
         {
-            var defaultObj = Activator.CreateInstance(type);
             return type.GetMembers()
                 .Where(m => m.MemberType == MemberTypes.Property
                     || m.MemberType == MemberTypes.Field)
@@ -69,6 +68,11 @@ namespace Synthesis.Bethesda.GUI
                     };
                 })
                 .ToArray();
+        }
+
+        public static SettingsNodeVM[] Factory(SettingsParameters param, Type type)
+        {
+            return Factory(param, type, Activator.CreateInstance(type));
         }
 
         public virtual void WrapUp()
@@ -163,7 +167,7 @@ namespace Synthesis.Bethesda.GUI
                                         }
                                         else
                                         {
-                                            return new ObjectSettingsVM(param, memberName, foundType);
+                                            return new UnknownSettingsVM(memberName);
                                         }
                                     }
                                     return new UnknownSettingsVM(memberName);
@@ -187,7 +191,7 @@ namespace Synthesis.Bethesda.GUI
                             }
                             else
                             {
-                                return new ObjectSettingsVM(param, memberName, foundType);
+                                return new ObjectSettingsVM(param, memberName, foundType, defaultVal);
                             }
                         }
                         return new UnknownSettingsVM(memberName);
