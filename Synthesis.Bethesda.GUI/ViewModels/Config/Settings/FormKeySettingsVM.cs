@@ -50,14 +50,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            if (Value.IsNull)
-            {
-                obj[MemberName] = JToken.FromObject(string.Empty);
-            }
-            else
-            {
-                obj[MemberName] = JToken.FromObject(Value.ToString());
-            }
+            obj[MemberName] = JToken.FromObject(Persist(Value));
         }
 
         public static string Persist(FormKey formKey)
