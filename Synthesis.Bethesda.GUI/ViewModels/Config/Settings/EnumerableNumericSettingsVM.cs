@@ -76,7 +76,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override SettingsNodeVM Duplicate()
         {
-            return new EnumerableNumericSettingsVM(string.Empty, _import, _add, _setToDefault, _defaultVal);
+            return new EnumerableNumericSettingsVM(MemberName, _import, _add, _setToDefault, _defaultVal);
         }
     }
 }

@@ -94,7 +94,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override SettingsNodeVM Duplicate()
         {
-            return new EnumerableEnumSettingsVM(string.Empty, _defaultVal, _enumNames);
+            return new EnumerableEnumSettingsVM(MemberName, _defaultVal, _enumNames);
         }
     }
 }

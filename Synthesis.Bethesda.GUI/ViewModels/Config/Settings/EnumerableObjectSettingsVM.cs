@@ -117,7 +117,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override SettingsNodeVM Duplicate()
         {
-            return new EnumerableObjectSettingsVM(MemberName, this._prototype);
+            return new EnumerableObjectSettingsVM(MemberName, _prototype, _defaultValues);
         }
     }
 }

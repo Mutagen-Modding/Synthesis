@@ -60,12 +60,19 @@ namespace Synthesis.Bethesda.GUI
                 })
                 .Select(m =>
                 {
-                    return m switch
+                    try
                     {
-                        PropertyInfo prop => GetSettingsNode(param, prop, prop.PropertyType, prop.GetValue(defaultObj)),
-                        FieldInfo field => GetSettingsNode(param, field, field.FieldType, field.GetValue(defaultObj)),
-                        _ => throw new ArgumentException(),
-                    };
+                        return m switch
+                        {
+                            PropertyInfo prop => GetSettingsNode(param, prop, prop.PropertyType, defaultObj == null ? null : prop.GetValue(defaultObj)),
+                            FieldInfo field => GetSettingsNode(param, field, field.FieldType, defaultObj == null ? null : field.GetValue(defaultObj)),
+                            _ => throw new ArgumentException(),
+                        };
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception($"{type} failed to retrieve property {m}", ex);
+                    }
                 })
                 .ToArray();
         }

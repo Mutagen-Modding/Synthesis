@@ -44,7 +44,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override SettingsNodeVM Duplicate()
         {
-            return new EnumSettingsVM(string.Empty, _defaultVal, EnumNames);
+            return new EnumSettingsVM(MemberName, _defaultVal, EnumNames);
         }
 
         public static EnumSettingsVM Factory(string memberName, object? defaultVal, Type enumType)

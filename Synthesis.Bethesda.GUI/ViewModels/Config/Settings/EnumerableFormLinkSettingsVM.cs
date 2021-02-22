@@ -101,7 +101,11 @@ namespace Synthesis.Bethesda.GUI
 
         public override SettingsNodeVM Duplicate()
         {
-            return new EnumerableFormLinkSettingsVM(_linkCacheObs, _typeName, string.Empty, _defaultVal);
+            return new EnumerableFormLinkSettingsVM(
+                linkCache: _linkCacheObs,
+                typeName: _typeName, 
+                memberName: MemberName, 
+                defaultVal: _defaultVal);
         }
 
         public override void WrapUp()
