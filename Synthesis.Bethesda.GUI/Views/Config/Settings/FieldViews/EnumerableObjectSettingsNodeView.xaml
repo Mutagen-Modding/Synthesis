@@ -32,10 +32,10 @@
             <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
                 x:Name="SettingsListBox"
                 MaxHeight="250"
-                HorizontalAlignment="Left"
                 AllowDrop="True"
                 Background="Transparent"
                 BorderThickness="0"
+                ScrollViewer.CanContentScroll="False"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 SelectionMode="Extended"
                 VirtualizingPanel.IsVirtualizing="False">
@@ -58,7 +58,6 @@
                         <Grid
                             x:Name="ItemGrid"
                             Margin="0,0,5,0"
-                            HorizontalAlignment="Left"
                             Background="Transparent">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
