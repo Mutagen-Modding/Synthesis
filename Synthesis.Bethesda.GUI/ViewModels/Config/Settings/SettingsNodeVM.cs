@@ -22,6 +22,21 @@ namespace Synthesis.Bethesda.GUI
             MemberName = memberName;
         }
 
+        private static SettingsNodeVM? GetSettingsNode(SettingsParameters param, MemberInfo memb, Type type, object? defaultVal)
+        {
+            if (memb.GetCustomAttribute<SynthesisIgnoreSetting>() != null) return null;
+            string name;
+            if (memb.TryGetCustomAttribute<SynthesisSettingName>(out var nameAttr))
+            {
+                name = nameAttr.Name;
+            }
+            else
+            {
+                name = memb.Name;
+            }
+            return MemberFactory(param, name, type, defaultVal);
+        }
+
         public static SettingsNodeVM[] Factory(SettingsParameters param, Type type)
         {
             var defaultObj = Activator.CreateInstance(type);
@@ -34,10 +49,10 @@ namespace Synthesis.Bethesda.GUI
                     {
                         case PropertyInfo prop:
                             if (prop.GetCustomAttribute<SynthesisIgnoreSetting>() != null) return null;
-                            return MemberFactory(param, m.Name, prop.PropertyType, prop.GetValue(defaultObj));
+                            return GetSettingsNode(param, prop, prop.PropertyType, prop.GetValue(defaultObj));
                         case FieldInfo field:
                             if (field.GetCustomAttribute<SynthesisIgnoreSetting>() != null) return null;
-                            return MemberFactory(param, m.Name, field.FieldType, field.GetValue(defaultObj));
+                            return GetSettingsNode(param, field, field.FieldType, field.GetValue(defaultObj));
                         default:
                             throw new ArgumentException();
                     }
