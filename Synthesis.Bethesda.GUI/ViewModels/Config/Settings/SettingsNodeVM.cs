@@ -22,9 +22,8 @@ namespace Synthesis.Bethesda.GUI
             MemberName = memberName;
         }
 
-        private static SettingsNodeVM? GetSettingsNode(SettingsParameters param, MemberInfo memb, Type type, object? defaultVal)
+        private static SettingsNodeVM GetSettingsNode(SettingsParameters param, MemberInfo memb, Type type, object? defaultVal)
         {
-            if (memb.GetCustomAttribute<SynthesisIgnoreSetting>() != null) return null;
             string name;
             if (memb.TryGetCustomAttribute<SynthesisSettingName>(out var nameAttr))
             {
@@ -43,21 +42,27 @@ namespace Synthesis.Bethesda.GUI
             return type.GetMembers()
                 .Where(m => m.MemberType == MemberTypes.Property
                     || m.MemberType == MemberTypes.Field)
-                .Select(m =>
+                .Where(m => m.GetCustomAttribute<SynthesisIgnoreSetting>() == null)
+                .OrderBy(m =>
                 {
-                    switch (m)
+                    if (m.TryGetCustomAttribute<SynthesisOrder>(out var order))
                     {
-                        case PropertyInfo prop:
-                            if (prop.GetCustomAttribute<SynthesisIgnoreSetting>() != null) return null;
-                            return GetSettingsNode(param, prop, prop.PropertyType, prop.GetValue(defaultObj));
-                        case FieldInfo field:
-                            if (field.GetCustomAttribute<SynthesisIgnoreSetting>() != null) return null;
-                            return GetSettingsNode(param, field, field.FieldType, field.GetValue(defaultObj));
-                        default:
-                            throw new ArgumentException();
+                        return order.Order;
+                    }
+                    else
+                    {
+                        return int.MaxValue;
                     }
                 })
-                .NotNull()
+                .Select(m =>
+                {
+                    return m switch
+                    {
+                        PropertyInfo prop => GetSettingsNode(param, prop, prop.PropertyType, prop.GetValue(defaultObj)),
+                        FieldInfo field => GetSettingsNode(param, field, field.FieldType, field.GetValue(defaultObj)),
+                        _ => throw new ArgumentException(),
+                    };
+                })
                 .ToArray();
         }
 
