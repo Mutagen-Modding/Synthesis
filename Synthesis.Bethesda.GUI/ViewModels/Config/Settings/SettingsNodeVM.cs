@@ -1,6 +1,8 @@
 using DynamicData;
 using Loqui;
+using Mutagen.Bethesda.Synthesis;
 using Newtonsoft.Json.Linq;
+using Noggog;
 using Noggog.WPF;
 using Serilog;
 using System;
@@ -31,13 +33,16 @@ namespace Synthesis.Bethesda.GUI
                     switch (m)
                     {
                         case PropertyInfo prop:
+                            if (prop.GetCustomAttribute<SynthesisIgnoreSetting>() != null) return null;
                             return MemberFactory(param, m.Name, prop.PropertyType, prop.GetValue(defaultObj));
                         case FieldInfo field:
+                            if (field.GetCustomAttribute<SynthesisIgnoreSetting>() != null) return null;
                             return MemberFactory(param, m.Name, field.FieldType, field.GetValue(defaultObj));
                         default:
                             throw new ArgumentException();
                     }
                 })
+                .NotNull()
                 .ToArray();
         }
 

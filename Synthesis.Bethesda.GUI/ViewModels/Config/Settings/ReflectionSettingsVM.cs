@@ -10,7 +10,6 @@ using System.IO;
 using System.Collections.ObjectModel;
 using Serilog;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using LibGit2Sharp;
 using Noggog;
 
