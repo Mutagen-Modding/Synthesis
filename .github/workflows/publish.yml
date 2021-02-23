@@ -3,7 +3,7 @@ name: Publish
 on:
   release:
     types: [published]
-    
+
 jobs:
   release:
     runs-on: windows-latest
@@ -28,12 +28,5 @@ jobs:
         file: Synthesis.zip
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.release.tag_name }}
-    - name: Publish Nugets to Github
-      uses: svenstaro/upload-release-action@v2
-      with:
-        file: "**/*.nupkg"
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ github.event.release.tag_name }}
-        file_glob: "true"
     - name: Publish Nugets to Nuget.org
       run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --no-symbols true
