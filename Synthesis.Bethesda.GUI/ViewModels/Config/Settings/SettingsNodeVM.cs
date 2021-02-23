@@ -188,7 +188,8 @@ namespace Synthesis.Bethesda.GUI
                         var secondGen = targetType.GenericTypeArguments[1];
                         if (member != null
                             && firstGen.IsEnum
-                            && member.TryGetCustomAttribute<SynthesisStaticEnumDictionary>(out var _))
+                            && member.TryGetCustomAttribute<SynthesisStaticEnumDictionary>(out var staticEnumAttr)
+                            && staticEnumAttr.Enabled)
                         {
                             return EnumDictionarySettingsVM.Factory(param, memberName, firstGen, secondGen, defaultVal);
                         }
