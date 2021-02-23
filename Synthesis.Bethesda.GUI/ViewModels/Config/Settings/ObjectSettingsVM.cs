@@ -27,6 +27,7 @@ namespace Synthesis.Bethesda.GUI
             var nodes = Factory(param, t, defaultVal);
             _nodes = nodes
                 .ToDictionary(x => x.MemberName);
+            _nodes.ForEach(n => n.Value.WrapUp());
             Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
         }
 

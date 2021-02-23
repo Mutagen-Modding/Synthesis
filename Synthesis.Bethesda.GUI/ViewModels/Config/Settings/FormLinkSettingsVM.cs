@@ -19,6 +19,7 @@ namespace Synthesis.Bethesda.GUI
     {
         private readonly Type _targetType;
         private readonly IObservable<ILinkCache> _linkCache;
+        private FormKey _defaultVal;
 
         private readonly ObservableAsPropertyHelper<ILinkCache?> _LinkCache;
         public ILinkCache? LinkCache => _LinkCache.Value;
@@ -33,10 +34,12 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool IsSelected { get; set; }
 
-        public FormLinkSettingsVM(IObservable<ILinkCache> linkCache, string memberName, Type targetType) 
+        public FormLinkSettingsVM(IObservable<ILinkCache> linkCache, string memberName, Type targetType, FormKey defaultVal) 
             : base(memberName)
         {
             _targetType = targetType;
+            _defaultVal = defaultVal;
+            Value = defaultVal;
             _linkCache = linkCache;
             _LinkCache = linkCache
                 .ToGuiProperty(this, nameof(LinkCache), default);
@@ -45,7 +48,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override SettingsNodeVM Duplicate()
         {
-            return new FormLinkSettingsVM(_linkCache, MemberName, _targetType);
+            return new FormLinkSettingsVM(_linkCache, MemberName, _targetType, _defaultVal);
         }
 
         public override void Import(JsonElement property, ILogger logger)
@@ -56,6 +59,19 @@ namespace Synthesis.Bethesda.GUI
         public override void Persist(JObject obj, ILogger logger)
         {
             obj[MemberName] = JToken.FromObject(FormKeySettingsVM.Persist(Value));
+        }
+
+        public override void WrapUp()
+        {
+            _defaultVal = FormKeySettingsVM.StripOrigin(_defaultVal);
+            Value = FormKeySettingsVM.StripOrigin(Value);
+            base.WrapUp();
+        }
+
+        public static FormLinkSettingsVM Factory(IObservable<ILinkCache> linkCache, string memberName, Type targetType, object? defaultVal)
+        {
+            var formLink = defaultVal as IFormLink;
+            return new FormLinkSettingsVM(linkCache, memberName, targetType, formLink?.FormKey ?? FormKey.Null);
         }
     }
 }

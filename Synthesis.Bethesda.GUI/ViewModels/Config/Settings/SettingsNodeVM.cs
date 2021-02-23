@@ -204,7 +204,7 @@ namespace Synthesis.Bethesda.GUI
                             && targetType.IsGenericType
                             && targetType.GenericTypeArguments.Length == 1)
                         {
-                            return new FormLinkSettingsVM(param.LinkCache, memberName, targetType);
+                            return FormLinkSettingsVM.Factory(param.LinkCache, memberName, targetType, defaultVal);
                         }
                         var foundType = param.Assembly.GetType(targetType.FullName!);
                         if (foundType != null)
