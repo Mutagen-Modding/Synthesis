@@ -172,6 +172,9 @@
             <DataTemplate DataType="{x:Type vm:EnumDictionarySettingsVM}">
                 <local:StaticEnumDictionaryView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:DictionarySettingsVM}">
+                <local:DictionarySettingsNodeView />
+            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:FormLinkSettingsVM}">
                 <Border Style="{StaticResource ReflectionSettingBorder}">
                     <Grid>

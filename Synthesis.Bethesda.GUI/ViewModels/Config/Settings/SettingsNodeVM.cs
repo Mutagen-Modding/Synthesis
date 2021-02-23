@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public abstract class SettingsNodeVM : ViewModel
     {
-        public string MemberName { get; }
+        public string MemberName { get; set; }
 
         public SettingsNodeVM(string memberName)
         {
@@ -185,16 +185,18 @@ namespace Synthesis.Bethesda.GUI
                 case "Dictionary`2":
                     {
                         var firstGen = targetType.GenericTypeArguments[0];
+                        var secondGen = targetType.GenericTypeArguments[1];
                         if (member != null
                             && firstGen.IsEnum
                             && member.TryGetCustomAttribute<SynthesisStaticEnumDictionary>(out var _))
                         {
-                            return EnumDictionarySettingsVM.Factory(param, memberName, firstGen, targetType.GenericTypeArguments[1], defaultVal);
+                            return EnumDictionarySettingsVM.Factory(param, memberName, firstGen, secondGen, defaultVal);
                         }
-                        else
+                        else if (firstGen == typeof(string))
                         {
-                            return new UnknownSettingsVM(memberName);
+                            return DictionarySettingsVM.Factory(param, memberName, valType: secondGen, defaultVal: defaultVal);
                         }
+                        return new UnknownSettingsVM(memberName);
                     }
                 default:
                     {

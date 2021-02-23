@@ -144,7 +144,7 @@
                 VerticalAlignment="Top"
                 HorizontalContentAlignment="Left"
                 VerticalContentAlignment="Top"
-                Style="{StaticResource ErrorButton}"
+                Style="{StaticResource CloseButton}"
                 ToolTip="Delete selected items">
                 <icon:PackIconMaterial
                     Width="10"

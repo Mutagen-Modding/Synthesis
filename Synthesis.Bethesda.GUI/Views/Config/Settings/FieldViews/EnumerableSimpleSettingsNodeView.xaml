@@ -46,7 +46,7 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     VerticalContentAlignment="Top"
-                    Style="{StaticResource ErrorButton}"
+                    Style="{StaticResource CloseButton}"
                     ToolTip="Delete selected items">
                     <icon:PackIconMaterial
                         Width="10"
@@ -230,7 +230,7 @@
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vm:StringSettingsVM}">
                                         <local:SelectionWrapper>
-                                            <TextBox Text="{Binding Value}" Margin="0,4,4,4" />
+                                            <TextBox Margin="0,4,4,4" Text="{Binding Value}" />
                                         </local:SelectionWrapper>
                                     </DataTemplate>
                                 </ContentPresenter.Resources>
