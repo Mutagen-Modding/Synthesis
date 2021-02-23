@@ -113,7 +113,7 @@
                 <Border Style="{StaticResource ReflectionSettingBorder}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock
-                            Margin="0,0,6,0"
+                            Margin="4,0,6,0"
                             VerticalAlignment="Center"
                             Style="{StaticResource ReflectionSettingName}"
                             Text="{Binding MemberName}" />
@@ -144,7 +144,7 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0"
-                            Margin="0,4,6,0"
+                            Margin="4,4,6,0"
                             VerticalAlignment="Top"
                             Style="{StaticResource ReflectionSettingName}"
                             Text="{Binding MemberName}" />
@@ -183,7 +183,7 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0"
-                            Margin="0,4,6,0"
+                            Margin="4,4,6,0"
                             VerticalAlignment="Top"
                             Style="{StaticResource ReflectionSettingName}"
                             Text="{Binding MemberName}" />
@@ -204,7 +204,7 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0"
-                            Margin="0,4,6,0"
+                            Margin="4,4,6,0"
                             VerticalAlignment="Top"
                             Style="{StaticResource ReflectionSettingName}"
                             Text="{Binding MemberName}"

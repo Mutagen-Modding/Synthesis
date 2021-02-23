@@ -16,7 +16,7 @@
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0"
                 x:Name="SettingsNameBlock"
-                Margin="0,4,6,0"
+                Margin="4,4,6,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Style="{StaticResource ReflectionSettingName}" />

@@ -16,7 +16,7 @@
             </Grid.RowDefinitions>
             <TextBlock
                 x:Name="SettingNameBlock"
-                Margin="0,0,6,4"
+                Margin="4,0,6,4"
                 Style="{StaticResource ReflectionSettingName}" />
             <local:ReflectionSettingNodeView Grid.Row="1" />
         </Grid>
