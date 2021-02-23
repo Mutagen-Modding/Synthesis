@@ -96,6 +96,11 @@
                         Value="{Binding Value}" />
                 </local:BasicSettingsNodeView>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:StringSettingsVM}">
+                <local:BasicSettingsNodeView>
+                    <TextBox Text="{Binding Value}" />
+                </local:BasicSettingsNodeView>
+            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:FloatSettingsVM}">
                 <local:BasicSettingsNodeView>
                     <xwpf:SingleUpDown
@@ -103,6 +108,18 @@
                         Style="{StaticResource ReflectionIntSpinner}"
                         Value="{Binding Value}" />
                 </local:BasicSettingsNodeView>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:EnumSettingsVM}">
+                <Border Style="{StaticResource ReflectionSettingBorder}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,0,6,0"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource ReflectionSettingName}"
+                            Text="{Binding MemberName}" />
+                        <local:EnumSettingsNodeView />
+                    </StackPanel>
+                </Border>
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:EnumerableNumericSettingsVM}">
                 <local:EnumerableSimpleSettingsNodeView />
@@ -146,6 +163,18 @@
             <DataTemplate DataType="{x:Type vm:EnumerableFormKeySettingsVM}">
                 <local:EnumerableSimpleSettingsNodeView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:EnumerableEnumSettingsVM}">
+                <local:EnumerableSimpleSettingsNodeView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:EnumerableStringSettingsVM}">
+                <local:EnumerableSimpleSettingsNodeView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:EnumDictionarySettingsVM}">
+                <local:StaticEnumDictionaryView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:DictionarySettingsVM}">
+                <local:DictionarySettingsNodeView />
+            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:FormLinkSettingsVM}">
                 <Border Style="{StaticResource ReflectionSettingBorder}">
                     <Grid>
@@ -178,7 +207,8 @@
                             Margin="0,4,6,0"
                             VerticalAlignment="Top"
                             Style="{StaticResource ReflectionSettingName}"
-                            Text="{Binding MemberName}" />
+                            Text="{Binding MemberName}"
+                            Visibility="{Binding MemberName, Converter={StaticResource StringToVisibilityConverter}}" />
                         <mutagenWpf:FormKeyMultiPicker Grid.Row="1"
                             Height="200"
                             Margin="0,5,0,0"

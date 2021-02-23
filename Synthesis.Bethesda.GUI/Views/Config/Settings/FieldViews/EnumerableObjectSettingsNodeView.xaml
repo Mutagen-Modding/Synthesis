@@ -6,8 +6,6 @@
     xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
-    xmlns:xwpf="http://schemas.xceed.com/wpf/xaml/toolkit"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -32,10 +30,10 @@
             <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
                 x:Name="SettingsListBox"
                 MaxHeight="250"
-                HorizontalAlignment="Left"
                 AllowDrop="True"
                 Background="Transparent"
                 BorderThickness="0"
+                ScrollViewer.CanContentScroll="False"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 SelectionMode="Extended"
                 VirtualizingPanel.IsVirtualizing="False">
@@ -58,7 +56,6 @@
                         <Grid
                             x:Name="ItemGrid"
                             Margin="0,0,5,0"
-                            HorizontalAlignment="Left"
                             Background="Transparent">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -147,7 +144,7 @@
                 VerticalAlignment="Top"
                 HorizontalContentAlignment="Left"
                 VerticalContentAlignment="Top"
-                Style="{StaticResource ErrorButton}"
+                Style="{StaticResource CloseButton}"
                 ToolTip="Delete selected items">
                 <icon:PackIconMaterial
                     Width="10"

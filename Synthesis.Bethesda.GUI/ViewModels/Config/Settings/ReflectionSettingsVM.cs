@@ -10,7 +10,6 @@ using System.IO;
 using System.Collections.ObjectModel;
 using Serilog;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using LibGit2Sharp;
 using Noggog;
 
@@ -42,6 +41,7 @@ namespace Synthesis.Bethesda.GUI
             SettingsSubPath = settingsSubPath;
             _nodes = SettingsNodeVM.Factory(param, type)
                 .ToDictionary(x => x.MemberName);
+            _nodes.ForEach(n => n.Value.WrapUp());
             Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
             CompositeDisposable.Add(_nodes.Values);
         }

@@ -16,10 +16,10 @@ using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class EnumerableSettingsVM : SettingsNodeVM
+    public abstract class EnumerableSettingsVM : SettingsNodeVM
     {
-        private Func<JsonElement, IBasicSettingsNodeVM> _import;
-        private Action<ObservableCollection<IBasicSettingsNodeVM>> _add;
+        protected Func<JsonElement, TryGet<IBasicSettingsNodeVM>> _import;
+        protected Action<ObservableCollection<IBasicSettingsNodeVM>> _add;
         public ObservableCollection<IBasicSettingsNodeVM> Values { get; } = new ObservableCollection<IBasicSettingsNodeVM>();
         public ReactiveCommand<Unit, Unit> AddCommand { get; private set; } = null!;
         public ReactiveCommand<Unit, Unit> DeleteCommand { get; private set; }
@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.GUI
 
         public EnumerableSettingsVM(
             string memberName,
-            Func<JsonElement, IBasicSettingsNodeVM> get,
+            Func<JsonElement, TryGet<IBasicSettingsNodeVM>> get,
             Action<ObservableCollection<IBasicSettingsNodeVM>> add)
             : base(memberName)
         {
@@ -60,18 +60,15 @@ namespace Synthesis.Bethesda.GUI
             Values.Clear();
             foreach (var elem in property.EnumerateArray())
             {
-                Values.Add(_import(elem));
+                var item = _import(elem);
+                if (item.Failed) continue;
+                Values.Add(item.Value);
             }
         }
 
         public override void Persist(JObject obj, ILogger logger)
         {
             obj[MemberName] = new JArray(Values.Select(x => ((IBasicSettingsNodeVM)x.Value).Value).ToArray());
-        }
-
-        public override SettingsNodeVM Duplicate()
-        {
-            return new EnumerableNumericSettingsVM(string.Empty, _import, _add);
         }
     }
 }

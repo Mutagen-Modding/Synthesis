@@ -1,6 +1,9 @@
 using DynamicData;
 using Loqui;
+using Mutagen.Bethesda.Synthesis;
+using Mutagen.Bethesda.Synthesis.Settings;
 using Newtonsoft.Json.Linq;
+using Noggog;
 using Noggog.WPF;
 using Serilog;
 using System;
@@ -13,36 +16,79 @@ namespace Synthesis.Bethesda.GUI
 {
     public abstract class SettingsNodeVM : ViewModel
     {
-        public string MemberName { get; }
+        public string MemberName { get; set; }
 
         public SettingsNodeVM(string memberName)
         {
             MemberName = memberName;
         }
 
-        public static SettingsNodeVM[] Factory(SettingsParameters param, Type type)
+        public static SettingsNodeVM[] Factory(SettingsParameters param, Type type, object? defaultObj)
         {
-            var defaultObj = Activator.CreateInstance(type);
             return type.GetMembers()
                 .Where(m => m.MemberType == MemberTypes.Property
                     || m.MemberType == MemberTypes.Field)
+                .Where(m =>
+                {
+                    if (m is not PropertyInfo prop) return true;
+                    return prop.GetSetMethod() != null;
+                })
+                .Where(m => m.GetCustomAttribute<SynthesisIgnoreSetting>() == null)
+                .OrderBy(m =>
+                {
+                    if (m.TryGetCustomAttribute<SynthesisOrder>(out var order))
+                    {
+                        return order.Order;
+                    }
+                    else
+                    {
+                        return int.MaxValue;
+                    }
+                })
                 .Select(m =>
                 {
-                    switch (m)
+                    try
                     {
-                        case PropertyInfo prop:
-                            return MemberFactory(param, m.Name, prop.PropertyType, prop.GetValue(defaultObj));
-                        case FieldInfo field:
-                            return MemberFactory(param, m.Name, field.FieldType, field.GetValue(defaultObj));
-                        default:
-                            throw new ArgumentException();
+                        return m switch
+                        {
+                            PropertyInfo prop => MemberFactory(param, prop, prop.PropertyType, defaultObj == null ? null : prop.GetValue(defaultObj)),
+                            FieldInfo field => MemberFactory(param, field, field.FieldType, defaultObj == null ? null : field.GetValue(defaultObj)),
+                            _ => throw new ArgumentException(),
+                        };
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception($"{type} failed to retrieve property {m}", ex);
                     }
                 })
                 .ToArray();
         }
 
-        public static SettingsNodeVM MemberFactory(SettingsParameters param, string memberName, Type targetType, object? defaultVal)
+        public static SettingsNodeVM[] Factory(SettingsParameters param, Type type)
         {
+            return Factory(param, type, Activator.CreateInstance(type));
+        }
+
+        public virtual void WrapUp()
+        {
+        }
+
+        public static SettingsNodeVM MemberFactory(SettingsParameters param, MemberInfo? member, Type targetType, object? defaultVal)
+        {
+            string memberName;
+            if (member == null)
+            {
+                memberName = string.Empty;
+            }
+            else if (member.TryGetCustomAttribute<SynthesisSettingName>(out var nameAttr))
+            {
+                memberName = nameAttr.Name;
+            }
+            else
+            {
+                memberName = member.Name;
+            }
+
             switch (targetType.Name)
             {
                 case "Boolean":
@@ -69,6 +115,8 @@ namespace Synthesis.Bethesda.GUI
                     return new FloatSettingsVM(memberName, defaultVal);
                 case "Decimal":
                     return new DecimalSettingsVM(memberName, defaultVal);
+                case "String":
+                    return new StringSettingsVM(memberName, defaultVal);
                 case "ModKey":
                     return new ModKeySettingsVM(param.DetectedLoadOrder.Transform(x => x.Listing.ModKey), memberName, defaultVal);
                 case "FormKey":
@@ -76,6 +124,7 @@ namespace Synthesis.Bethesda.GUI
                 case "Array`1":
                 case "List`1":
                 case "IEnumerable`1":
+                case "HashSet`1":
                     {
                         var firstGen = targetType.GenericTypeArguments[0];
                         switch (firstGen.Name)
@@ -106,6 +155,8 @@ namespace Synthesis.Bethesda.GUI
                                 return EnumerableModKeySettingsVM.Factory(param, memberName, defaultVal);
                             case "FormKey":
                                 return EnumerableFormKeySettingsVM.Factory(memberName, defaultVal);
+                            case "String":
+                                return EnumerableStringSettingsVM.Factory(memberName, defaultVal);
                             default:
                                 {
                                     if (firstGen.Name.Contains("FormLink")
@@ -113,51 +164,39 @@ namespace Synthesis.Bethesda.GUI
                                         && firstGen.GenericTypeArguments.Length == 1)
                                     {
                                         var formLinkGen = firstGen.GenericTypeArguments[0];
-                                        if (!LoquiRegistration.TryGetRegister(formLinkGen, out var regis))
-                                        {
-                                            throw new ArgumentException($"Can't create a formlink control for type: {formLinkGen}");
-                                        }
-                                        return EnumerableFormLinkSettingsVM.Factory(param, memberName, regis.GetterType, defaultVal);
+                                        return EnumerableFormLinkSettingsVM.Factory(param, memberName, formLinkGen.FullName ?? string.Empty, defaultVal);
                                     }
                                     var foundType = param.Assembly.GetType(firstGen.FullName!);
                                     if (foundType != null)
                                     {
-                                        return new EnumerableObjectSettingsVM(param, memberName, foundType);
+                                        if (foundType.IsEnum)
+                                        {
+                                            return EnumerableEnumSettingsVM.Factory(memberName, defaultVal, foundType);
+                                        }
+                                        else
+                                        {
+                                            return EnumerableObjectSettingsVM.Factory(param, memberName, defaultVal, foundType);
+                                        }
                                     }
+                                    return new UnknownSettingsVM(memberName);
                                 }
-                                return new UnknownSettingsVM(memberName);
                         }
                     }
-                case "HashSet`1":
+                case "Dictionary`2":
                     {
                         var firstGen = targetType.GenericTypeArguments[0];
-                        switch (firstGen.Name)
+                        var secondGen = targetType.GenericTypeArguments[1];
+                        if (member != null
+                            && firstGen.IsEnum
+                            && member.TryGetCustomAttribute<SynthesisStaticEnumDictionary>(out var _))
                         {
-                            case "ModKey":
-                                return EnumerableModKeySettingsVM.Factory(param, memberName, defaultVal);
-                            case "FormKey":
-                                return EnumerableFormKeySettingsVM.Factory(memberName, defaultVal);
-                            default:
-                                {
-                                    if (firstGen.Name.Contains("FormLink")
-                                        && firstGen.IsGenericType
-                                        && firstGen.GenericTypeArguments.Length == 1)
-                                    {
-                                        var formLinkGen = firstGen.GenericTypeArguments[0];
-                                        if (!LoquiRegistration.TryGetRegister(formLinkGen, out var regis))
-                                        {
-                                            throw new ArgumentException($"Can't create a formlink control for type: {formLinkGen}");
-                                        }
-                                        return EnumerableFormLinkSettingsVM.Factory(param, memberName, regis.GetterType, defaultVal);
-                                    }
-                                    var foundType = param.Assembly.GetType(firstGen.FullName!);
-                                    if (foundType != null)
-                                    {
-                                        return new EnumerableObjectSettingsVM(param, memberName, foundType);
-                                    }
-                                }
-                                return new UnknownSettingsVM(memberName);
+                            return EnumDictionarySettingsVM.Factory(param, memberName, firstGen, secondGen, defaultVal);
                         }
+                        else if (firstGen == typeof(string))
+                        {
+                            return DictionarySettingsVM.Factory(param, memberName, valType: secondGen, defaultVal: defaultVal);
+                        }
+                        return new UnknownSettingsVM(memberName);
                     }
                 default:
                     {
@@ -170,10 +209,17 @@ namespace Synthesis.Bethesda.GUI
                         var foundType = param.Assembly.GetType(targetType.FullName!);
                         if (foundType != null)
                         {
-                            return new ObjectSettingsVM(param, memberName, foundType);
+                            if (foundType.IsEnum)
+                            {
+                                return EnumSettingsVM.Factory(memberName, defaultVal, foundType);
+                            }
+                            else
+                            {
+                                return new ObjectSettingsVM(param, memberName, foundType, defaultVal);
+                            }
                         }
+                        return new UnknownSettingsVM(memberName);
                     }
-                    return new UnknownSettingsVM(memberName);
             }
         }
 

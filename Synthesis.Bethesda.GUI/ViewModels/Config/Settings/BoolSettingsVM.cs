@@ -2,8 +2,7 @@ using System.Text.Json;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class BoolSettingsVM
-        : BasicSettingsVM<bool>
+    public class BoolSettingsVM : BasicSettingsVM<bool>
     {
         public BoolSettingsVM(string memberName, object? defaultVal)
             : base(memberName, defaultVal)

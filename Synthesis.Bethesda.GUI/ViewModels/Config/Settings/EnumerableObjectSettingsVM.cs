@@ -27,6 +27,7 @@ namespace Synthesis.Bethesda.GUI
         }
 
         private ObjectSettingsVM _prototype;
+        internal ObjectSettingsVM[] _defaultValues = Array.Empty<ObjectSettingsVM>();
 
         public ObservableCollection<SelectionWrapper> Values { get; } = new ObservableCollection<SelectionWrapper>();
         public ReactiveCommand<Unit, Unit> AddCommand { get; private set; } = null!;
@@ -35,22 +36,11 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public IList? SelectedValues { get; set; }
 
-        private EnumerableObjectSettingsVM(string memberName, ObjectSettingsVM prototype)
+        private EnumerableObjectSettingsVM(string memberName, ObjectSettingsVM prototype, ObjectSettingsVM[] defaultValues)
             : base(memberName)
         {
             _prototype = prototype;
-            Init();
-        }
-
-        public EnumerableObjectSettingsVM(SettingsParameters param, string memberName, Type t)
-            : base(memberName)
-        {
-            _prototype = new ObjectSettingsVM(param, string.Empty, t);
-            Init();
-        }
-
-        private void Init()
-        {
+            _defaultValues = defaultValues;
             DeleteCommand = ReactiveCommand.Create(
                 execute: () =>
                 {
@@ -67,13 +57,18 @@ namespace Synthesis.Bethesda.GUI
             AddCommand = ReactiveCommand.Create(
                 execute: () =>
                 {
-                    ;
+                    var vm = (ObjectSettingsVM)_prototype.Duplicate();
+                    vm.WrapUp();
                     Values.Add(new SelectionWrapper()
                     {
                         IsSelected = true,
-                        Value = (ObjectSettingsVM)_prototype.Duplicate()
+                        Value = vm
                     });
                 });
+            Values.SetTo(defaultValues.Select(o => new SelectionWrapper()
+            {
+                Value = (ObjectSettingsVM)o.Duplicate()
+            }));
         }
 
         public override void Import(JsonElement property, ILogger logger)
@@ -83,6 +78,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 var dup = (ObjectSettingsVM)_prototype.Duplicate();
                 dup.Import(elem, logger);
+                dup.WrapUp();
                 Values.Add(new SelectionWrapper()
                 {
                     Value = dup
@@ -102,20 +98,23 @@ namespace Synthesis.Bethesda.GUI
                 .ToArray());
         }
 
-        public static EnumerableObjectSettingsVM Factory<TItem, TWrapper>(SettingsParameters param, string memberName, object? defaultVal, Type t)
-            where TWrapper : BasicSettingsVM<TItem>, new()
+        public static EnumerableObjectSettingsVM Factory(SettingsParameters param, string memberName, object? defaultVal, Type t)
         {
-            var ret = new EnumerableObjectSettingsVM(param, memberName, t);
-            if (defaultVal != null)
+            var proto = new ObjectSettingsVM(param, string.Empty, t, null);
+            List<ObjectSettingsVM> defaultValues = new List<ObjectSettingsVM>();
+            if (defaultVal is IEnumerable e)
             {
-                throw new NotImplementedException();
+                foreach (var o in e)
+                {
+                    defaultValues.Add(new ObjectSettingsVM(param, string.Empty, t, o));
+                }
             }
-            return ret;
+            return new EnumerableObjectSettingsVM(memberName, proto, defaultValues.ToArray());
         }
 
         public override SettingsNodeVM Duplicate()
         {
-            return new EnumerableObjectSettingsVM(MemberName, this._prototype);
+            return new EnumerableObjectSettingsVM(MemberName, _prototype, _defaultValues);
         }
     }
 }

@@ -1,5 +1,7 @@
 using DynamicData;
+using Loqui;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Core;
 using Mutagen.Bethesda.WPF;
 using Newtonsoft.Json.Linq;
 using Noggog;
@@ -23,35 +25,46 @@ namespace Synthesis.Bethesda.GUI
     {
         public ObservableCollection<FormKeyItemViewModel> Values { get; } = new ObservableCollection<FormKeyItemViewModel>();
 
-        private readonly IFormLink[] _defaultVal;
+        private FormKey[] _defaultVal;
         private readonly IObservable<ILinkCache> _linkCacheObs;
         private readonly ObservableAsPropertyHelper<ILinkCache?> _LinkCache;
+        private readonly string _typeName;
         public ILinkCache? LinkCache => _LinkCache.Value;
 
-        public IEnumerable<Type> ScopedTypes { get; }
+        public IEnumerable<Type> ScopedTypes { get; private set; } = Enumerable.Empty<Type>();
 
         public EnumerableFormLinkSettingsVM(
-            IObservable<ILinkCache> linkCache, 
-            Type type,
+            IObservable<ILinkCache> linkCache,
             string memberName,
-            IEnumerable<IFormLink> defaultVal)
+            string typeName,
+            IEnumerable<FormKey> defaultVal)
             : base(memberName)
         {
-            ScopedTypes = type.AsEnumerable();
             _defaultVal = defaultVal.ToArray();
             _linkCacheObs = linkCache;
+            _typeName = typeName;
             _LinkCache = linkCache
                 .ToGuiProperty(this, nameof(LinkCache), default(ILinkCache?));
-            Values.SetTo(defaultVal.Select(i => new FormKeyItemViewModel(i.FormKey)));
         }
 
-        public static SettingsNodeVM Factory(SettingsParameters param, string memberName, Type type, object? defaultVal)
+        public static SettingsNodeVM Factory(SettingsParameters param, string memberName, string typeName, object? defaultVal)
         {
+            var defaultKeys = new List<FormKey>();
+            if (defaultVal is IEnumerable e)
+            {
+                foreach (var item in e)
+                {
+                    if (item is IFormLink link)
+                    {
+                        defaultKeys.Add(link.FormKey);
+                    }
+                }
+            }
             return new EnumerableFormLinkSettingsVM(
                 param.LinkCache,
-                type,
-                memberName,
-                defaultVal as IEnumerable<IFormLink> ?? Enumerable.Empty<IFormLink>());
+                memberName: memberName,
+                typeName: typeName,
+                defaultKeys);
         }
 
         public override void Import(JsonElement property, ILogger logger)
@@ -88,7 +101,33 @@ namespace Synthesis.Bethesda.GUI
 
         public override SettingsNodeVM Duplicate()
         {
-            return new EnumerableFormLinkSettingsVM(_linkCacheObs, ScopedTypes.First(), string.Empty, _defaultVal);
+            return new EnumerableFormLinkSettingsVM(
+                linkCache: _linkCacheObs,
+                typeName: _typeName, 
+                memberName: MemberName, 
+                defaultVal: _defaultVal);
+        }
+
+        public override void WrapUp()
+        {
+            _defaultVal = _defaultVal.Select(x => FormKeySettingsVM.StripOrigin(x)).ToArray();
+            Values.SetTo(_defaultVal.Select(x =>
+            {
+                return new FormKeyItemViewModel(x);
+            }));
+
+            if (LoquiRegistration.TryGetRegisterByFullName(_typeName, out var regis))
+            {
+                ScopedTypes = regis.GetterType.AsEnumerable();
+            }
+            else if (LinkInterfaceMapping.TryGetByFullName(_typeName, out var interfType))
+            {
+                ScopedTypes = interfType.AsEnumerable();
+            }
+            else
+            {
+                throw new ArgumentException($"Can't create a formlink control for type: {_typeName}");
+            }
         }
     }
 }

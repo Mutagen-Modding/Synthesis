@@ -13,7 +13,7 @@ namespace Synthesis.Bethesda.GUI
     public class FormKeySettingsVM : BasicSettingsVM<FormKey>
     {
         public FormKeySettingsVM(string memberName, object? defaultVal)
-            : base(memberName, defaultVal)
+            : base(memberName, defaultVal is FormKey form ? StripOrigin(form) : null)
         {
         }
 
@@ -50,14 +50,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            if (Value.IsNull)
-            {
-                obj[MemberName] = JToken.FromObject(string.Empty);
-            }
-            else
-            {
-                obj[MemberName] = JToken.FromObject(Value.ToString());
-            }
+            obj[MemberName] = JToken.FromObject(Persist(Value));
         }
 
         public static string Persist(FormKey formKey)
@@ -70,6 +63,16 @@ namespace Synthesis.Bethesda.GUI
             {
                 return formKey.ToString();
             }
+        }
+
+        public static FormKey StripOrigin(FormKey formKey)
+        {
+            return FormKey.Factory(formKey.ToString());
+        }
+
+        public override void WrapUp()
+        {
+            Value = StripOrigin(Value);
         }
     }
 }

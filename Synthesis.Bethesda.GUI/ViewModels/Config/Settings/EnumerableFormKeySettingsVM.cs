@@ -19,15 +19,22 @@ namespace Synthesis.Bethesda.GUI
 {
     public class EnumerableFormKeySettingsVM : EnumerableSettingsVM
     {
-        private readonly FormKey[] _defaultVal;
+        private FormKey[] _defaultVal;
 
         public EnumerableFormKeySettingsVM(
             string memberName,
             IEnumerable<FormKey> defaultVal)
             : base(
                   memberName,
-                  get: e => new ListElementWrapperVM<FormKey, FormKeySettingsVM>(FormKeySettingsVM.Import(e)),
-                  add: coll => coll.Add(new ListElementWrapperVM<FormKey, FormKeySettingsVM>(FormKey.Null)
+                  get: e => TryGet<IBasicSettingsNodeVM>.Succeed(
+                      new ListElementWrapperVM<FormKey, FormKeySettingsVM>(new FormKeySettingsVM()
+                      {
+                          Value = FormKeySettingsVM.Import(e)
+                      })),
+                  add: coll => coll.Add(new ListElementWrapperVM<FormKey, FormKeySettingsVM>(new FormKeySettingsVM()
+                  {
+                      Value = FormKey.Null
+                  })
                   {
                       IsSelected = true
                   }))
@@ -50,6 +57,18 @@ namespace Synthesis.Bethesda.GUI
         public override SettingsNodeVM Duplicate()
         {
             return new EnumerableFormKeySettingsVM(MemberName, _defaultVal);
+        }
+
+        public override void WrapUp()
+        {
+            _defaultVal = _defaultVal.Select(x => FormKeySettingsVM.StripOrigin(x)).ToArray();
+            Values.SetTo(_defaultVal.Select(x =>
+            {
+                return new ListElementWrapperVM<FormKey, FormKeySettingsVM>(new FormKeySettingsVM()
+                {
+                    Value = x
+                });
+            }));
         }
     }
 }

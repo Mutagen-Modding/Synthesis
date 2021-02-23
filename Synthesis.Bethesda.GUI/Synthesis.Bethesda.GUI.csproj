@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <AssemblyName>Synthesis</AssemblyName>
     <TargetFramework>net5.0</TargetFramework>
+    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <UseWPF>true</UseWPF>
     <PackageId>Synthesis.Bethesda.GUI</PackageId>
@@ -48,18 +49,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Buildalyzer" Version="3.2.0" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
     <PackageReference Include="GitInfo" Version="2.1.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
-    <PackageReference Include="Loqui" Version="2.6" />
-    <PackageReference Include="Loqui.Generation" Version="2.6" />
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.26" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.6" />
-    <PackageReference Include="Noggog.WPF" Version="2.6" />
+    <PackageReference Include="Loqui" Version="2.7" />
+    <PackageReference Include="Loqui.Generation" Version="2.7" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.26.1" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.7" />
+    <PackageReference Include="Noggog.WPF" Version="2.7" />
     <PackageReference Include="NuGetizer" Version="0.6.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -69,7 +69,6 @@
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
-    <PackageReference Include="Simple.Wpf.Terminal" Version="2.3.15" />
     <PackageReference Include="System.Linq.Async" Version="5.0.0" />
   </ItemGroup>
 

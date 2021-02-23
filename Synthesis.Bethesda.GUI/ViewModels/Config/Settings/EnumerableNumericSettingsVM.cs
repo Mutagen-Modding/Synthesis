@@ -17,41 +17,66 @@ namespace Synthesis.Bethesda.GUI
 {
     public class EnumerableNumericSettingsVM : EnumerableSettingsVM
     {
+        private Action<ObservableCollection<IBasicSettingsNodeVM>, object?> _setToDefault;
+        private object? _defaultVal;
+
         public EnumerableNumericSettingsVM(
             string memberName,
-            Func<JsonElement, IBasicSettingsNodeVM> get,
-            Action<ObservableCollection<IBasicSettingsNodeVM>> add)
+            Func<JsonElement, TryGet<IBasicSettingsNodeVM>> get,
+            Action<ObservableCollection<IBasicSettingsNodeVM>> add,
+            Action<ObservableCollection<IBasicSettingsNodeVM>, object?> setToDefault,
+            object? defaultVal)
             : base(memberName, get, add)
         {
+            _setToDefault = setToDefault;
+            _defaultVal = defaultVal;
         }
 
         public static EnumerableNumericSettingsVM Factory<TItem, TWrapper>(string memberName, object? defaultVal, TWrapper prototype)
             where TWrapper : BasicSettingsVM<TItem>, new()
         {
             EnumerableNumericSettingsVM ret = null!;
-            Func<JsonElement, IBasicSettingsNodeVM> import = new Func<JsonElement, IBasicSettingsNodeVM>((elem) =>
+            Func<JsonElement, TryGet<IBasicSettingsNodeVM>> import = new Func<JsonElement, TryGet<IBasicSettingsNodeVM>>((elem) =>
             {
-                return new ListElementWrapperVM<TItem, TWrapper>(
-                    prototype.Get(elem));
+                return TryGet<IBasicSettingsNodeVM>.Succeed(
+                    new ListElementWrapperVM<TItem, TWrapper>(
+                        new TWrapper()
+                        {
+                            Value = prototype.Get(elem)
+                        }));
             });
-            ret = new EnumerableNumericSettingsVM(
+            return new EnumerableNumericSettingsVM(
                 memberName,
                 import,
                 (list) =>
                 {
-                    list.Add(new ListElementWrapperVM<TItem, TWrapper>(prototype.GetDefault())
+                    list.Add(new ListElementWrapperVM<TItem, TWrapper>(new TWrapper()
+                    {
+                        Value = prototype.GetDefault()
+                    })
                     {
                         IsSelected = true
                     });
-                });
-            if (defaultVal is IEnumerable<TItem> items)
-            {
-                ret.Values.SetTo(items.Select(x =>
+                },
+                (list, def) =>
                 {
-                    return new ListElementWrapperVM<TItem, TWrapper>(x);
-                }));
-            }
-            return ret;
+                    if (def is IEnumerable<TItem> items)
+                    {
+                        list.SetTo(items.Select(x =>
+                        {
+                            return new ListElementWrapperVM<TItem, TWrapper>(new TWrapper()
+                            {
+                                Value = x
+                            });
+                        }));
+                    }
+                },
+                defaultVal);
+        }
+
+        public override SettingsNodeVM Duplicate()
+        {
+            return new EnumerableNumericSettingsVM(MemberName, _import, _add, _setToDefault, _defaultVal);
         }
     }
 }

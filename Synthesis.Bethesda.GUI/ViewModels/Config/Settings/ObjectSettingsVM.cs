@@ -21,10 +21,11 @@ namespace Synthesis.Bethesda.GUI
             Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
         }
 
-        public ObjectSettingsVM(SettingsParameters param, string memberName, Type t)
+        public ObjectSettingsVM(SettingsParameters param, string memberName, Type t, object? defaultVal)
             : base(memberName)
         {
-            _nodes = Factory(param, t)
+            var nodes = Factory(param, t, defaultVal);
+            _nodes = nodes
                 .ToDictionary(x => x.MemberName);
             Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
         }
@@ -85,7 +86,12 @@ namespace Synthesis.Bethesda.GUI
             return new ObjectSettingsVM(
                 MemberName,
                 this._nodes.Values
-                    .Select(f => f.Duplicate())
+                    .Select(f =>
+                    {
+                        var ret = f.Duplicate();
+                        ret.WrapUp();
+                        return ret;
+                    })
                     .ToDictionary(f => f.MemberName));
         }
     }

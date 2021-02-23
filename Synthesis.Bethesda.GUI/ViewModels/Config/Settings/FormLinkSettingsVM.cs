@@ -17,6 +17,9 @@ namespace Synthesis.Bethesda.GUI
 {
     public class FormLinkSettingsVM : SettingsNodeVM, IBasicSettingsNodeVM
     {
+        private readonly Type _targetType;
+        private readonly IObservable<ILinkCache> _linkCache;
+
         private readonly ObservableAsPropertyHelper<ILinkCache?> _LinkCache;
         public ILinkCache? LinkCache => _LinkCache.Value;
 
@@ -33,6 +36,8 @@ namespace Synthesis.Bethesda.GUI
         public FormLinkSettingsVM(IObservable<ILinkCache> linkCache, string memberName, Type targetType) 
             : base(memberName)
         {
+            _targetType = targetType;
+            _linkCache = linkCache;
             _LinkCache = linkCache
                 .ToGuiProperty(this, nameof(LinkCache), default);
             ScopedTypes = targetType.GenericTypeArguments[0].AsEnumerable();
@@ -40,15 +45,17 @@ namespace Synthesis.Bethesda.GUI
 
         public override SettingsNodeVM Duplicate()
         {
-            throw new NotImplementedException();
+            return new FormLinkSettingsVM(_linkCache, MemberName, _targetType);
         }
 
         public override void Import(JsonElement property, ILogger logger)
         {
+            Value = FormKeySettingsVM.Import(property);
         }
 
         public override void Persist(JObject obj, ILogger logger)
         {
+            obj[MemberName] = JToken.FromObject(FormKeySettingsVM.Persist(Value));
         }
     }
 }
