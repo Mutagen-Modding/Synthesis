@@ -4,13 +4,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class UInt16SettingsVM : BasicSettingsVM<ushort>
     {
-        public UInt16SettingsVM(string memberName, object? defaultVal)
+        public UInt16SettingsVM(MemberName memberName, object? defaultVal)
             : base(memberName, defaultVal)
         {
         }
 
         public UInt16SettingsVM()
-            : base(string.Empty, default)
+            : base(MemberName.Empty, default)
         {
         }
 

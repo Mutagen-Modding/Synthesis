@@ -7,7 +7,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public class UnknownSettingsVM : SettingsNodeVM
     {
-        public UnknownSettingsVM(string memberName)
+        public UnknownSettingsVM(MemberName memberName)
             : base(memberName)
         {
         }

@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool IsSelected { get; set; }
 
-        public EnumSettingsVM(string memberName, string? defaultVal, IEnumerable<string> enumNames)
+        public EnumSettingsVM(MemberName memberName, string? defaultVal, IEnumerable<string> enumNames)
             : base(memberName)
         {
             EnumNames = enumNames;
@@ -39,7 +39,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[MemberName] = JToken.FromObject(Value);
+            obj[MemberName.DiskName] = JToken.FromObject(Value);
         }
 
         public override SettingsNodeVM Duplicate()
@@ -47,7 +47,7 @@ namespace Synthesis.Bethesda.GUI
             return new EnumSettingsVM(MemberName, _defaultVal, EnumNames);
         }
 
-        public static EnumSettingsVM Factory(string memberName, object? defaultVal, Type enumType)
+        public static EnumSettingsVM Factory(MemberName memberName, object? defaultVal, Type enumType)
         {
             var names = Enum.GetNames(enumType).ToArray();
             return new EnumSettingsVM(memberName, defaultVal?.ToString(), names);

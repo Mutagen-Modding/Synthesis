@@ -28,7 +28,7 @@ namespace Synthesis.Bethesda.GUI
         public IList? SelectedValues { get; set; }
 
         public EnumerableSettingsVM(
-            string memberName,
+            MemberName memberName,
             Func<JsonElement, TryGet<IBasicSettingsNodeVM>> get,
             Action<ObservableCollection<IBasicSettingsNodeVM>> add)
             : base(memberName)
@@ -68,7 +68,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[MemberName] = new JArray(Values.Select(x => ((IBasicSettingsNodeVM)x.Value).Value).ToArray());
+            obj[MemberName.DiskName] = new JArray(Values.Select(x => ((IBasicSettingsNodeVM)x.Value).Value).ToArray());
         }
     }
 }

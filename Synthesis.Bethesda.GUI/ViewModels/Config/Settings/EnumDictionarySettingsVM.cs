@@ -7,12 +7,12 @@ namespace Synthesis.Bethesda.GUI
 {
     public class EnumDictionarySettingsVM : ADictionarySettingsVM
     {
-        public EnumDictionarySettingsVM(string memberName, KeyValuePair<string, SettingsNodeVM>[] values, SettingsNodeVM prototype)
+        public EnumDictionarySettingsVM(MemberName memberName, KeyValuePair<string, SettingsNodeVM>[] values, SettingsNodeVM prototype)
             : base(memberName, values, prototype)
         {
         }
 
-        public static EnumDictionarySettingsVM Factory(SettingsParameters param, string memberName, Type enumType, Type valType, object? defaultVals)
+        public static EnumDictionarySettingsVM Factory(SettingsParameters param, MemberName memberName, Type enumType, Type valType, object? defaultVals)
         {
             var vals = GetDefaultValDictionary(defaultVals);
             var proto = SettingsNodeVM.MemberFactory(param, member: null, targetType: valType, defaultVal: null);

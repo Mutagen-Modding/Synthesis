@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel!.MemberName)
+                this.WhenAnyValue(x => x.ViewModel!.MemberName.DisplayName)
                     .BindToStrict(this, x => x.SettingsNameBlock.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.Values)

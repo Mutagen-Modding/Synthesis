@@ -36,7 +36,7 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public IList? SelectedValues { get; set; }
 
-        private EnumerableObjectSettingsVM(string memberName, ObjectSettingsVM prototype, ObjectSettingsVM[] defaultValues)
+        private EnumerableObjectSettingsVM(MemberName memberName, ObjectSettingsVM prototype, ObjectSettingsVM[] defaultValues)
             : base(memberName)
         {
             _prototype = prototype;
@@ -88,7 +88,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[MemberName] = new JArray(Values
+            obj[MemberName.DiskName] = new JArray(Values
                 .Select(x =>
                 {
                     var obj = new JObject();
@@ -98,15 +98,15 @@ namespace Synthesis.Bethesda.GUI
                 .ToArray());
         }
 
-        public static EnumerableObjectSettingsVM Factory(SettingsParameters param, string memberName, object? defaultVal, Type t)
+        public static EnumerableObjectSettingsVM Factory(SettingsParameters param, MemberName memberName, object? defaultVal, Type t)
         {
-            var proto = new ObjectSettingsVM(param, string.Empty, t, null);
+            var proto = new ObjectSettingsVM(param, MemberName.Empty, t, null);
             List<ObjectSettingsVM> defaultValues = new List<ObjectSettingsVM>();
             if (defaultVal is IEnumerable e)
             {
                 foreach (var o in e)
                 {
-                    defaultValues.Add(new ObjectSettingsVM(param, string.Empty, t, o));
+                    defaultValues.Add(new ObjectSettingsVM(param, MemberName.Empty, t, o));
                 }
             }
             return new EnumerableObjectSettingsVM(memberName, proto, defaultValues.ToArray());

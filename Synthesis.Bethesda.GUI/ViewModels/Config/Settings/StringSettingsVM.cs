@@ -9,13 +9,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class StringSettingsVM : BasicSettingsVM<string>
     {
-        public StringSettingsVM(string memberName, object? defaultVal)
+        public StringSettingsVM(MemberName memberName, object? defaultVal)
             : base(memberName, defaultVal)
         {
         }
 
         public StringSettingsVM()
-            : base(string.Empty, default)
+            : base(MemberName.Empty, default)
         {
         }
 

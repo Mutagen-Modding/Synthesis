@@ -4,13 +4,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class DecimalSettingsVM : BasicSettingsVM<decimal>
     {
-        public DecimalSettingsVM(string memberName, object? defaultVal)
+        public DecimalSettingsVM(MemberName memberName, object? defaultVal)
             : base(memberName, defaultVal)
         {
         }
 
         public DecimalSettingsVM()
-            : base(string.Empty, default)
+            : base(MemberName.Empty, default)
         {
         }
 

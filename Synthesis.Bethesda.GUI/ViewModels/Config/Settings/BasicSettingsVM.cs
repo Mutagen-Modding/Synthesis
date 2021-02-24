@@ -25,7 +25,7 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool IsSelected { get; set; }
 
-        public BasicSettingsVM(string memberName, object? defaultVal)
+        public BasicSettingsVM(MemberName memberName, object? defaultVal)
             : base(memberName)
         {
             if (defaultVal is T item)
@@ -47,7 +47,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[MemberName] = JToken.FromObject(Value!);
+            obj[MemberName.DiskName] = JToken.FromObject(Value!);
         }
 
         public abstract T Get(JsonElement property);

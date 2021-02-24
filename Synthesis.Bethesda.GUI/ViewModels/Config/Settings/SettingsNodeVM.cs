@@ -1,6 +1,4 @@
 using DynamicData;
-using Loqui;
-using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.Settings;
 using Newtonsoft.Json.Linq;
 using Noggog;
@@ -10,15 +8,14 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using System.Threading;
 
 namespace Synthesis.Bethesda.GUI
 {
     public abstract class SettingsNodeVM : ViewModel
     {
-        public string MemberName { get; set; }
+        public MemberName MemberName { get; set; }
 
-        public SettingsNodeVM(string memberName)
+        public SettingsNodeVM(MemberName memberName)
         {
             MemberName = memberName;
         }
@@ -75,20 +72,33 @@ namespace Synthesis.Bethesda.GUI
 
         public static SettingsNodeVM MemberFactory(SettingsParameters param, MemberInfo? member, Type targetType, object? defaultVal)
         {
-            string memberName;
+            string displayName, diskName;
             if (member == null)
             {
-                memberName = string.Empty;
+                displayName = string.Empty;
             }
             else if (member.TryGetCustomAttribute<SynthesisSettingName>(out var nameAttr))
             {
-                memberName = nameAttr.Name;
+                displayName = nameAttr.Name;
             }
             else
             {
-                memberName = member.Name;
+                displayName = member.Name;
+            }
+            if (member == null)
+            {
+                diskName = string.Empty;
+            }
+            else if (member.TryGetCustomAttribute<SynthesisDiskName>(out var diskAttr))
+            {
+                diskName = diskAttr.Name;
+            }
+            else
+            {
+                diskName = member.Name;
             }
 
+            var memberName = new MemberName(displayName, diskName);
             switch (targetType.Name)
             {
                 case "Boolean":

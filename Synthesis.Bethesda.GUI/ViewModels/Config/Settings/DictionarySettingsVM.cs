@@ -25,7 +25,7 @@ namespace Synthesis.Bethesda.GUI
 
         private Dictionary<string, DictionarySettingItemVM> _dictionary;
 
-        public DictionarySettingsVM(string memberName, KeyValuePair<string, SettingsNodeVM>[] values, SettingsNodeVM prototype)
+        public DictionarySettingsVM(MemberName memberName, KeyValuePair<string, SettingsNodeVM>[] values, SettingsNodeVM prototype)
             : base(memberName, values, prototype)
         {
             _dictionary = this.Items.ToDictionary(x => x.Key, x => x);
@@ -70,7 +70,7 @@ namespace Synthesis.Bethesda.GUI
             _dictionary = this.Items.ToDictionary(x => x.Key, x => x);
         }
 
-        public static DictionarySettingsVM Factory(SettingsParameters param, string memberName, Type valType, object? defaultVal)
+        public static DictionarySettingsVM Factory(SettingsParameters param, MemberName memberName, Type valType, object? defaultVal)
         {
             var vals = GetDefaultValDictionary(defaultVal);
             var proto = SettingsNodeVM.MemberFactory(param, member: null, targetType: valType, defaultVal: null);

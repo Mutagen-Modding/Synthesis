@@ -26,7 +26,7 @@ namespace Synthesis.Bethesda.GUI
 
         public EnumerableModKeySettingsVM(
             IObservable<IChangeSet<ModKey>> detectedLoadOrder,
-            string memberName,
+            MemberName memberName,
             IEnumerable<ModKey> defaultVal)
             : base(memberName)
         {
@@ -35,7 +35,7 @@ namespace Synthesis.Bethesda.GUI
             Values.SetTo(defaultVal.Select(i => new ModKeyItemViewModel(i)));
         }
 
-        public static EnumerableModKeySettingsVM Factory(SettingsParameters param, string memberName, object? defaultVal)
+        public static EnumerableModKeySettingsVM Factory(SettingsParameters param, MemberName memberName, object? defaultVal)
         {
             return new EnumerableModKeySettingsVM(
                 param.DetectedLoadOrder.Transform(x => x.Listing.ModKey),
@@ -61,7 +61,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[MemberName] = new JArray(Values
+            obj[MemberName.DiskName] = new JArray(Values
                 .Select(x =>
                 {
                     if (x.ModKey.IsNull)

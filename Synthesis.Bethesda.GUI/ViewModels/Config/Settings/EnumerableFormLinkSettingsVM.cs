@@ -35,7 +35,7 @@ namespace Synthesis.Bethesda.GUI
 
         public EnumerableFormLinkSettingsVM(
             IObservable<ILinkCache> linkCache,
-            string memberName,
+            MemberName memberName,
             string typeName,
             IEnumerable<FormKey> defaultVal)
             : base(memberName)
@@ -47,7 +47,7 @@ namespace Synthesis.Bethesda.GUI
                 .ToGuiProperty(this, nameof(LinkCache), default(ILinkCache?));
         }
 
-        public static SettingsNodeVM Factory(SettingsParameters param, string memberName, string typeName, object? defaultVal)
+        public static SettingsNodeVM Factory(SettingsParameters param, MemberName memberName, string typeName, object? defaultVal)
         {
             var defaultKeys = new List<FormKey>();
             if (defaultVal is IEnumerable e)
@@ -85,7 +85,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[MemberName] = new JArray(Values
+            obj[MemberName.DiskName] = new JArray(Values
                 .Select(x =>
                 {
                     if (x.FormKey.IsNull)

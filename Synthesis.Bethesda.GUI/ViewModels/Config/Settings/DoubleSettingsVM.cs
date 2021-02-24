@@ -4,13 +4,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class DoubleSettingsVM : BasicSettingsVM<double>
     {
-        public DoubleSettingsVM(string memberName, object? defaultVal)
+        public DoubleSettingsVM(MemberName memberName, object? defaultVal)
             : base(memberName, defaultVal)
         {
         }
 
         public DoubleSettingsVM()
-            : base(string.Empty, default)
+            : base(MemberName.Empty, default)
         {
         }
 

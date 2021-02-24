@@ -7,9 +7,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using Xceed.Wpf.Toolkit;
-using Xceed.Wpf.Toolkit.Primitives;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -25,7 +23,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel!.MemberName)
+                this.WhenAnyValue(x => x.ViewModel!.MemberName.DisplayName)
                     .BindToStrict(this, x => x.SettingsNameBlock.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.Values.Count)

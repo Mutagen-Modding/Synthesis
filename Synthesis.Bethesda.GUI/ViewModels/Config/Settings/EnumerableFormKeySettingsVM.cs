@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.GUI
         private FormKey[] _defaultVal;
 
         public EnumerableFormKeySettingsVM(
-            string memberName,
+            MemberName memberName,
             IEnumerable<FormKey> defaultVal)
             : base(
                   memberName,
@@ -42,7 +42,7 @@ namespace Synthesis.Bethesda.GUI
             _defaultVal = defaultVal.ToArray();
         }
 
-        public static EnumerableFormKeySettingsVM Factory(string memberName, object? defaultVal)
+        public static EnumerableFormKeySettingsVM Factory(MemberName memberName, object? defaultVal)
         {
             return new EnumerableFormKeySettingsVM(
                 memberName,
@@ -51,7 +51,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[MemberName] = new JArray(Values.Select(x => FormKeySettingsVM.Persist(((FormKeySettingsVM)x.Value).Value)).ToArray());
+            obj[MemberName.DiskName] = new JArray(Values.Select(x => FormKeySettingsVM.Persist(((FormKeySettingsVM)x.Value).Value)).ToArray());
         }
 
         public override SettingsNodeVM Duplicate()

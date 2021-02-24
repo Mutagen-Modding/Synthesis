@@ -12,13 +12,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class FormKeySettingsVM : BasicSettingsVM<FormKey>
     {
-        public FormKeySettingsVM(string memberName, object? defaultVal)
+        public FormKeySettingsVM(MemberName memberName, object? defaultVal)
             : base(memberName, defaultVal is FormKey form ? StripOrigin(form) : null)
         {
         }
 
         public FormKeySettingsVM()
-            : base(string.Empty, default)
+            : base(MemberName.Empty, default)
         {
         }
 
@@ -50,7 +50,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[MemberName] = JToken.FromObject(Persist(Value));
+            obj[MemberName.DiskName] = JToken.FromObject(Persist(Value));
         }
 
         public static string Persist(FormKey formKey)

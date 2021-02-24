@@ -4,13 +4,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class FloatSettingsVM : BasicSettingsVM<float>
     {
-        public FloatSettingsVM(string memberName, object? defaultVal)
+        public FloatSettingsVM(MemberName memberName, object? defaultVal)
             : base(memberName, defaultVal)
         {
         }
 
         public FloatSettingsVM()
-            : base(string.Empty, default)
+            : base(MemberName.Empty, default)
         {
         }
 

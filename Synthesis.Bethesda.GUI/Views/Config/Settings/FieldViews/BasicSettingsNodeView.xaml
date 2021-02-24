@@ -20,7 +20,7 @@
                         Margin="4,0,6,0"
                         VerticalAlignment="Center"
                         Style="{StaticResource ReflectionSettingName}"
-                        Text="{Binding MemberName}" />
+                        Text="{Binding MemberName.DisplayName}" />
                     <ContentPresenter Grid.Column="1" VerticalAlignment="Center" />
                 </Grid>
             </Border>

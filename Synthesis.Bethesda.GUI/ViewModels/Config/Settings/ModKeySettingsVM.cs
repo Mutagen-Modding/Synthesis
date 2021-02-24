@@ -16,8 +16,8 @@ namespace Synthesis.Bethesda.GUI
         public IObservable<IChangeSet<ModKey>> DetectedLoadOrder { get; }
 
         public ModKeySettingsVM(
-            IObservable<IChangeSet<ModKey>> detectedLoadOrder, 
-            string memberName, 
+            IObservable<IChangeSet<ModKey>> detectedLoadOrder,
+            MemberName memberName, 
             object? defaultVal)
             : base(memberName, defaultVal)
         {
@@ -54,11 +54,11 @@ namespace Synthesis.Bethesda.GUI
         {
             if (Value.IsNull)
             {
-                obj[MemberName] = JToken.FromObject(string.Empty);
+                obj[MemberName.DiskName] = JToken.FromObject(string.Empty);
             }
             else
             {
-                obj[MemberName] = JToken.FromObject(Value.ToString());
+                obj[MemberName.DiskName] = JToken.FromObject(Value.ToString());
             }
         }
 
