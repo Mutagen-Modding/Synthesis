@@ -62,12 +62,7 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.OneWayBindStrict(this.ViewModel, vm => vm.AvailableProjects, view => view.ProjectsPickerBox.ItemsSource)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid)
-                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, view => view.ProjectsPickerBox.Visibility)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid)
-                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, view => view.ProjectTitle.Visibility)
+                    .BindToStrict(this, view => view.ProjectsPickerBox.IsEnabled)
                     .DisposeWith(disposable);
 
                 // Bind git open commands

@@ -61,8 +61,7 @@
             Margin="0,8,0,4"
             FontSize="14"
             FontWeight="Bold"
-            Text="Project"
-            Visibility="Collapsed" />
+            Text="Project" />
         <Button Grid.Row="2" Grid.ColumnSpan="2"
             x:Name="OpenPatcherInternalFilesButton"
             Margin="8,0"
@@ -74,8 +73,7 @@
             <icon:PackIconModern Kind="FolderEllipsis" />
         </Button>
         <ComboBox Grid.Row="3" Grid.ColumnSpan="2"
-            x:Name="ProjectsPickerBox"
-            Visibility="Collapsed">
+            x:Name="ProjectsPickerBox">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding}" />
