@@ -542,6 +542,9 @@ namespace Synthesis.Bethesda.GUI
                             }
 
                             Logger.Error($"Checking out runner repository succeeded");
+
+                            await SolutionPatcherRun.CopyOverExtraData(runInfo.Item.ProjPath, Execution.Paths.TypicalExtraData, DisplayName, Logger.Information);
+
                             observer.OnNext(runInfo);
                         }
                         catch (Exception ex)
