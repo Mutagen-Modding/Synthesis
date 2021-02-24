@@ -243,7 +243,7 @@ namespace Synthesis.Bethesda.GUI
                     },
                     async (path, cancel) =>
                     {
-                        if (path.RunnableState.Failed) return new ConfigurationState(path.RunnableState);
+                        if (path.RunnableState.Failed) return path.ToUnit();
                         using var timing = Logger.Time($"runner repo: {path.Item}");
                         return (ErrorResponse)await GitUtility.CheckOrCloneRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, x => Logger.Information(x), cancel);
                     })
@@ -771,12 +771,10 @@ namespace Synthesis.Bethesda.GUI
                         }
                         if (runnability.RunnableState.Failed)
                         {
-                            Logger.Information("State deferred to runnability");
                             return runnability.BubbleError();
                         }
                         if (checkout.RunnableState.Failed)
                         {
-                            Logger.Information("State deferred to checkout");
                             return checkout.BubbleError();
                         }
                         Logger.Information("State returned success!");
