@@ -19,13 +19,13 @@ namespace Synthesis.Bethesda.Execution
         {
             if (!Directory.Exists(localDir))
             {
-                logger("No local repository exists.  No cleaning to do.");
+                logger($"No local repository exists at {localDir}.  No cleaning to do.");
                 return false;
             }
             var dirInfo = new DirectoryPath(localDir);
             if (remoteUrl.Failed)
             {
-                logger("No remote repository.  Deleting local.");
+                logger($"No remote repository.  Deleting local at {localDir}.");
                 dirInfo.DeleteEntireFolder();
                 return false;
             }
@@ -41,12 +41,12 @@ namespace Synthesis.Bethesda.Execution
             }
             catch (RepositoryNotFoundException)
             {
-                logger("Repository corrupted.  Deleting local.");
+                logger($"Repository corrupted.  Deleting local at {localDir}");
                 dirInfo.DeleteEntireFolder();
                 return false;
             }
 
-            logger("Remote address targeted a different repository.  Deleting local.");
+            logger($"Remote address targeted a different repository.  Deleting local at {localDir}");
             dirInfo.DeleteEntireFolder();
             return false;
         }

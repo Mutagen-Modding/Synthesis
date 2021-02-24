@@ -4,13 +4,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class DecimalSettingsVM : BasicSettingsVM<decimal>
     {
-        public DecimalSettingsVM(string memberName, object? defaultVal)
-            : base(memberName, defaultVal)
+        public DecimalSettingsVM(SettingsMeta meta, object? defaultVal)
+            : base(meta, defaultVal)
         {
         }
 
         public DecimalSettingsVM()
-            : base(string.Empty, default)
+            : base(SettingsMeta.Empty, default)
         {
         }
 
@@ -18,6 +18,6 @@ namespace Synthesis.Bethesda.GUI
 
         public override decimal GetDefault() => default(decimal);
 
-        public override SettingsNodeVM Duplicate() => new DecimalSettingsVM(MemberName, DefaultValue);
+        public override SettingsNodeVM Duplicate() => new DecimalSettingsVM(Meta, DefaultValue);
     }
 }

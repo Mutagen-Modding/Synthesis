@@ -14,7 +14,7 @@ namespace Synthesis.Bethesda.GUI
         private IEnumerable<string> _defaultVal;
 
         public EnumerableStringSettingsVM(
-            string memberName,
+            SettingsMeta memberName,
             Func<JsonElement, TryGet<IBasicSettingsNodeVM>> get,
             Action<ObservableCollection<IBasicSettingsNodeVM>> add,
             IEnumerable<string> defaultVal)
@@ -30,7 +30,7 @@ namespace Synthesis.Bethesda.GUI
             }));
         }
 
-        public static EnumerableStringSettingsVM Factory(string memberName, object? defaultVal)
+        public static EnumerableStringSettingsVM Factory(SettingsMeta memberName, object? defaultVal)
         {
             Func<JsonElement, TryGet<IBasicSettingsNodeVM>> import = new Func<JsonElement, TryGet<IBasicSettingsNodeVM>>((elem) =>
             {
@@ -59,7 +59,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override SettingsNodeVM Duplicate()
         {
-            return new EnumerableStringSettingsVM(MemberName, _import, _add, _defaultVal);
+            return new EnumerableStringSettingsVM(Meta, _import, _add, _defaultVal);
         }
     }
 }

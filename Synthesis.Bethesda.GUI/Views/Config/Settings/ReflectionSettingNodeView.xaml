@@ -16,7 +16,7 @@
         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
         <ListBox.ItemTemplate>
             <DataTemplate>
-                <local:SettingsNodeView x:Name="TopNodeView" Margin="5,3" />
+                <local:SettingsNodeView x:Name="TopNodeView" Margin="0,3,4,3" />
             </DataTemplate>
         </ListBox.ItemTemplate>
     </ListBox>

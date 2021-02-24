@@ -243,7 +243,7 @@ namespace Synthesis.Bethesda.GUI
                     },
                     async (path, cancel) =>
                     {
-                        if (path.RunnableState.Failed) return new ConfigurationState(path.RunnableState);
+                        if (path.RunnableState.Failed) return path.ToUnit();
                         using var timing = Logger.Time($"runner repo: {path.Item}");
                         return (ErrorResponse)await GitUtility.CheckOrCloneRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, x => Logger.Information(x), cancel);
                     })
@@ -335,8 +335,9 @@ namespace Synthesis.Bethesda.GUI
                 .FilterSwitch(
                     Observable.CombineLatest(
                         this.WhenAnyValue(x => x.TagAutoUpdate),
+                        this.WhenAnyValue(x => x.Profile.LockUpgrades),
                         this.WhenAnyValue(x => x.PatcherVersioning),
-                        (autoTag, versioning) => autoTag && versioning == PatcherVersioningEnum.Tag))
+                        (autoTag, locked, versioning) => !locked && autoTag && versioning == PatcherVersioningEnum.Tag))
                 .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                 .Subscribe(x =>
                 {
@@ -424,8 +425,14 @@ namespace Synthesis.Bethesda.GUI
                 this.WhenAnyValue(x => x.TargetTag),
                 this.WhenAnyValue(x => x.TargetCommit),
                 this.WhenAnyValue(x => x.TargetOriginBranchName),
-                this.WhenAnyValue(x => x.TagAutoUpdate),
-                this.WhenAnyValue(x => x.BranchAutoUpdate),
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.TagAutoUpdate),
+                        this.WhenAnyValue(x => x.Profile.LockUpgrades),
+                        (auto, locked) => !locked && auto),
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.BranchAutoUpdate),
+                        this.WhenAnyValue(x => x.Profile.LockUpgrades),
+                        (auto, locked) => !locked && auto),
                 (versioning, tag, commit, branch, tagAuto, branchAuto) =>
                 {
                     return GitPatcherVersioning.Factory(
@@ -542,6 +549,9 @@ namespace Synthesis.Bethesda.GUI
                             }
 
                             Logger.Error($"Checking out runner repository succeeded");
+
+                            await SolutionPatcherRun.CopyOverExtraData(runInfo.Item.ProjPath, Execution.Paths.TypicalExtraData, DisplayName, Logger.Information);
+
                             observer.OnNext(runInfo);
                         }
                         catch (Exception ex)
@@ -768,12 +778,10 @@ namespace Synthesis.Bethesda.GUI
                         }
                         if (runnability.RunnableState.Failed)
                         {
-                            Logger.Information("State deferred to runnability");
                             return runnability.BubbleError();
                         }
                         if (checkout.RunnableState.Failed)
                         {
-                            Logger.Information("State deferred to checkout");
                             return checkout.BubbleError();
                         }
                         Logger.Information("State returned success!");

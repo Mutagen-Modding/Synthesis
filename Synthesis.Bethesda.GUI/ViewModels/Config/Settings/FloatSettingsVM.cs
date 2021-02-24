@@ -4,13 +4,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class FloatSettingsVM : BasicSettingsVM<float>
     {
-        public FloatSettingsVM(string memberName, object? defaultVal)
+        public FloatSettingsVM(SettingsMeta memberName, object? defaultVal)
             : base(memberName, defaultVal)
         {
         }
 
         public FloatSettingsVM()
-            : base(string.Empty, default)
+            : base(SettingsMeta.Empty, default)
         {
         }
 
@@ -18,6 +18,6 @@ namespace Synthesis.Bethesda.GUI
 
         public override float GetDefault() => default(float);
 
-        public override SettingsNodeVM Duplicate() => new FloatSettingsVM(MemberName, DefaultValue);
+        public override SettingsNodeVM Duplicate() => new FloatSettingsVM(Meta, DefaultValue);
     }
 }

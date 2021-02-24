@@ -92,6 +92,9 @@ namespace Synthesis.Bethesda.GUI
 
         public IObservable<ILinkCache> SimpleLinkCache { get; }
 
+        [Reactive]
+        public bool LockUpgrades { get; set; }
+
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
             ID = id ?? Guid.NewGuid().ToString();
@@ -501,6 +504,7 @@ namespace Synthesis.Bethesda.GUI
             ManualSynthesisVersion = settings.SynthesisManualVersion;
             DataPathOverride = settings.DataPathOverride;
             ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
+            LockUpgrades = settings.LockToCurrentVersioning;
             Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
             {
                 return p switch
@@ -528,6 +532,7 @@ namespace Synthesis.Bethesda.GUI
                 SynthesisVersioning = SynthesisVersioning,
                 DataPathOverride = DataPathOverride,
                 ConsiderPrereleaseNugets = ConsiderPrereleaseNugets,
+                LockToCurrentVersioning = LockUpgrades,
             };
         }
 

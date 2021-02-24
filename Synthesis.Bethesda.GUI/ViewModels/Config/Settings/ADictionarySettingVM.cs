@@ -36,7 +36,7 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public DictionarySettingItemVM? Selected { get; set; }
 
-        public ADictionarySettingsVM(string memberName, KeyValuePair<string, SettingsNodeVM>[] values, SettingsNodeVM prototype)
+        public ADictionarySettingsVM(SettingsMeta memberName, KeyValuePair<string, SettingsNodeVM>[] values, SettingsNodeVM prototype)
             : base(memberName)
         {
             _values = values;
@@ -60,10 +60,10 @@ namespace Synthesis.Bethesda.GUI
         public override void Persist(JObject obj, ILogger logger)
         {
             var dictObj = new JObject();
-            obj[MemberName] = dictObj;
+            obj[Meta.DiskName] = dictObj;
             foreach (var item in Items)
             {
-                item.Value.MemberName = item.Key;
+                item.Value.Meta = SettingsMeta.Empty with { DisplayName = item.Key };
                 item.Value.Persist(dictObj, logger);
             }
         }

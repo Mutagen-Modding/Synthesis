@@ -26,6 +26,14 @@ namespace Synthesis.Bethesda.GUI.Views
     /// </summary>
     public partial class GitTargetView : GitTargetViewBase
     {
+        public bool RespectLocking
+        {
+            get => (bool)GetValue(RespectLockingProperty);
+            set => SetValue(RespectLockingProperty, value);
+        }
+        public static readonly DependencyProperty RespectLockingProperty = DependencyProperty.Register(nameof(RespectLocking), typeof(bool), typeof(GitTargetView),
+             new FrameworkPropertyMetadata(default(bool)));
+
         public GitTargetView()
         {
             InitializeComponent();
@@ -70,6 +78,21 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.NavigateToInternalFilesCommand)
                     .BindToStrict(this, x => x.OpenPatcherInternalFilesButton.Command)
                     .DisposeWith(disposable);
+
+                #region Versioning Lock
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.Profile.LockUpgrades),
+                        this.WhenAnyValue(x => x.RespectLocking),
+                        (locked, respect) => !locked || !respect)
+                    .BindToStrict(this, x => x.RepositoryPath.IsEnabled)
+                    .DisposeWith(disposable);
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.Profile.LockUpgrades),
+                        this.WhenAnyValue(x => x.RespectLocking),
+                        (locked, respect) => !locked || !respect)
+                    .BindToStrict(this, x => x.ProjectsPickerBox.IsEnabled)
+                    .DisposeWith(disposable);
+                #endregion
             });
         }
     }

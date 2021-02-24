@@ -174,25 +174,30 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 .FirstOrDefault();
         }
 
-        private async Task CopyOverExtraData()
+        private Task CopyOverExtraData()
         {
-            var inputExtraData = new DirectoryInfo(Path.Combine(Path.GetDirectoryName(PathToProject)!, "Data"));
+            return CopyOverExtraData(PathToProject, PathToExtraDataBaseFolder, Name, _output.OnNext);
+        }
+
+        public static async Task CopyOverExtraData(string pathToProject, string pathToExtraDataBaseFolder, string name, Action<string> log)
+        {
+            var inputExtraData = new DirectoryInfo(Path.Combine(Path.GetDirectoryName(pathToProject)!, "Data"));
             if (!inputExtraData.Exists)
             {
-                _output.OnNext("No extra data to consider.");
+                log("No extra data to consider.");
                 return;
             }
 
-            var outputExtraData = new DirectoryInfo(Path.Combine(PathToExtraDataBaseFolder, Name));
+            var outputExtraData = new DirectoryInfo(Path.Combine(pathToExtraDataBaseFolder, name));
             if (outputExtraData.Exists)
             {
-                _output.OnNext($"Extra data folder already exists. Leaving as is: {outputExtraData}");
+                log($"Extra data folder already exists. Leaving as is: {outputExtraData}");
                 return;
             }
 
-            _output.OnNext("Copying extra data folder");
-            _output.OnNext($"  From: {inputExtraData}");
-            _output.OnNext($"  To: {outputExtraData}");
+            log("Copying extra data folder");
+            log($"  From: {inputExtraData}");
+            log($"  To: {outputExtraData}");
             inputExtraData.DeepCopy(outputExtraData);
         }
 

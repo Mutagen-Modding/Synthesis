@@ -16,15 +16,15 @@ namespace Synthesis.Bethesda.GUI
         public IObservable<IChangeSet<ModKey>> DetectedLoadOrder { get; }
 
         public ModKeySettingsVM(
-            IObservable<IChangeSet<ModKey>> detectedLoadOrder, 
-            string memberName, 
+            IObservable<IChangeSet<ModKey>> detectedLoadOrder,
+            SettingsMeta memberName, 
             object? defaultVal)
             : base(memberName, defaultVal)
         {
             DetectedLoadOrder = detectedLoadOrder;
         }
 
-        public override SettingsNodeVM Duplicate() => new ModKeySettingsVM(DetectedLoadOrder, MemberName, DefaultValue);
+        public override SettingsNodeVM Duplicate() => new ModKeySettingsVM(DetectedLoadOrder, Meta, DefaultValue);
 
         public override ModKey Get(JsonElement property)
         {
@@ -54,11 +54,11 @@ namespace Synthesis.Bethesda.GUI
         {
             if (Value.IsNull)
             {
-                obj[MemberName] = JToken.FromObject(string.Empty);
+                obj[Meta.DiskName] = JToken.FromObject(string.Empty);
             }
             else
             {
-                obj[MemberName] = JToken.FromObject(Value.ToString());
+                obj[Meta.DiskName] = JToken.FromObject(Value.ToString());
             }
         }
 

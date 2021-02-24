@@ -7,14 +7,14 @@ namespace Synthesis.Bethesda.GUI
 {
     public class UnknownSettingsVM : SettingsNodeVM
     {
-        public UnknownSettingsVM(string memberName)
+        public UnknownSettingsVM(SettingsMeta memberName)
             : base(memberName)
         {
         }
 
         public override void Import(JsonElement property, ILogger logger)
         {
-            logger.Error($"Tried to import for unknown setting: {this.MemberName}");
+            logger.Error($"Tried to import for unknown setting: {this.Meta}");
         }
 
         public override void Persist(JObject obj, ILogger logger)

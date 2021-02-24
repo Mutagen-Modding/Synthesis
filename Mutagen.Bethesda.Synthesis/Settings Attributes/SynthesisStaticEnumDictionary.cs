@@ -11,5 +11,11 @@ namespace Mutagen.Bethesda.Synthesis.Settings
       AllowMultiple = false)]
     public class SynthesisStaticEnumDictionary : Attribute
     {
+        public bool Enabled { get; }
+
+        public SynthesisStaticEnumDictionary(bool enable = true)
+        {
+            Enabled = true;
+        }
     }
 }

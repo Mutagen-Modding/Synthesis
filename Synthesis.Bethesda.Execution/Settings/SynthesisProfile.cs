@@ -15,5 +15,6 @@ namespace Synthesis.Bethesda.Execution.Settings
         public string? SynthesisManualVersion;
         public string? DataPathOverride;
         public bool ConsiderPrereleaseNugets;
+        public bool LockToCurrentVersioning;
     }
 }

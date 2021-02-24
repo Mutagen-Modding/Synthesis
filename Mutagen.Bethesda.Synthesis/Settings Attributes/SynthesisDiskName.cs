@@ -9,11 +9,11 @@ namespace Mutagen.Bethesda.Synthesis.Settings
     [AttributeUsage(
       AttributeTargets.Field | AttributeTargets.Property,
       AllowMultiple = false)]
-    public class SynthesisSettingName : Attribute
+    public class SynthesisDiskName : Attribute
     {
         public string Name { get; }
 
-        public SynthesisSettingName(string name)
+        public SynthesisDiskName(string name)
         {
             Name = name;
         }

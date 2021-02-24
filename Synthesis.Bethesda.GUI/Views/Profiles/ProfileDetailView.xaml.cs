@@ -129,9 +129,10 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.WhenAnyValue(x => x.ViewModel!.Profile!.UpdateMutagenManualToLatestCommand)
                             .Select(x => x.CanExecute)
                             .Switch(),
-                        (versioning, can) =>
+                        this.WhenAnyValue(x => x.ViewModel!.Profile!.LockUpgrades),
+                        (versioning, can, locked) =>
                         {
-                            return versioning == NugetVersioningEnum.Manual && can;
+                            return !locked && versioning == NugetVersioningEnum.Manual && can;
                         })
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.Nugets.Mutagen.UpdateButton.Visibility)
@@ -141,9 +142,10 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.WhenAnyValue(x => x.ViewModel!.Profile!.UpdateSynthesisManualToLatestCommand)
                             .Select(x => x.CanExecute)
                             .Switch(),
-                        (versioning, can) =>
+                        this.WhenAnyValue(x => x.ViewModel!.Profile!.LockUpgrades),
+                        (versioning, can, locked) =>
                         {
-                            return versioning == NugetVersioningEnum.Manual && can;
+                            return !locked && versioning == NugetVersioningEnum.Manual && can;
                         })
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.Nugets.Synthesis.UpdateButton.Visibility)
@@ -157,6 +159,20 @@ namespace Synthesis.Bethesda.GUI.Views
                         vmToViewConverter: vm => vm ?? string.Empty,
                         viewToVmConverter: view => view.IsNullOrWhitespace() ? null : view)
                     .DisposeWith(disposable);
+
+                this.BindStrict(this.ViewModel, x => x.Profile!.LockUpgrades, x => x.LockToCurrentVersioning.IsChecked)
+                    .DisposeWith(disposable);
+
+                #region Version Locking
+                this.WhenAnyValue(x => x.ViewModel!.Profile!.LockUpgrades)
+                    .Select(x => !x)
+                    .BindToStrict(this, x => x.Nugets.IsEnabled)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.Profile!.LockUpgrades)
+                    .Select(x => !x)
+                    .BindToStrict(this, x => x.ResetVersioningGrid.IsEnabled)
+                    .DisposeWith(disposable);
+                #endregion
             });
         }
     }

@@ -4,13 +4,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class UInt16SettingsVM : BasicSettingsVM<ushort>
     {
-        public UInt16SettingsVM(string memberName, object? defaultVal)
+        public UInt16SettingsVM(SettingsMeta memberName, object? defaultVal)
             : base(memberName, defaultVal)
         {
         }
 
         public UInt16SettingsVM()
-            : base(string.Empty, default)
+            : base(SettingsMeta.Empty, default)
         {
         }
 
@@ -18,6 +18,6 @@ namespace Synthesis.Bethesda.GUI
 
         public override ushort GetDefault() => default(ushort);
 
-        public override SettingsNodeVM Duplicate() => new UInt16SettingsVM(MemberName, DefaultValue);
+        public override SettingsNodeVM Duplicate() => new UInt16SettingsVM(Meta, DefaultValue);
     }
 }

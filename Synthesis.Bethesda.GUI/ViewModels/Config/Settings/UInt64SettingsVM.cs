@@ -4,13 +4,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class UInt64SettingsVM : BasicSettingsVM<ulong>
     {
-        public UInt64SettingsVM(string memberName, object? defaultVal)
+        public UInt64SettingsVM(SettingsMeta memberName, object? defaultVal)
             : base(memberName, defaultVal)
         {
         }
 
         public UInt64SettingsVM()
-            : base(string.Empty, default)
+            : base(SettingsMeta.Empty, default)
         {
         }
 
@@ -18,6 +18,6 @@ namespace Synthesis.Bethesda.GUI
 
         public override ulong GetDefault() => default(ulong);
 
-        public override SettingsNodeVM Duplicate() => new UInt64SettingsVM(MemberName, DefaultValue);
+        public override SettingsNodeVM Duplicate() => new UInt64SettingsVM(Meta, DefaultValue);
     }
 }
