@@ -44,7 +44,7 @@ namespace Synthesis.Bethesda.GUI
             DeleteCommand = ReactiveCommand.Create(
                 canExecute: Observable.CombineLatest(
                     this.WhenAnyValue(x => x.Selected).Select(x => x != null),
-                    this.WhenAnyValue(x => x.MidDelete),
+                    this.WhenAnyValue(x => x.MidDelete), 
                     (hasSelected, midDelete) => hasSelected || midDelete),
                 execute: () =>
                 {

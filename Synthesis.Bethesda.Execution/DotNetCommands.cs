@@ -143,7 +143,7 @@ namespace Synthesis.Bethesda.Execution
             return v;
         }
 
-        public static async Task<GetResponse<string>> GetExecutablePath(string projectPath, CancellationToken cancel)
+        public static async Task<GetResponse<string>> GetExecutablePath(string projectPath, CancellationToken cancel, Action<string>? log)
         {
             // Hacky way to locate executable, but running a build and extracting the path its logs spit out
             // Tried using Buildalyzer, but it has a lot of bad side effects like clearing build outputs when
@@ -151,6 +151,7 @@ namespace Synthesis.Bethesda.Execution
             using var proc = ProcessWrapper.Create(
                 new System.Diagnostics.ProcessStartInfo("dotnet", GetBuildString($"\"{projectPath}\"")),
                 cancel: cancel);
+            log?.Invoke($"({proc.StartInfo.WorkingDirectory}): {proc.StartInfo.FileName} {proc.StartInfo.Arguments}");
             List<string> outs = new List<string>();
             using var outp = proc.Output.Subscribe(o => outs.Add(o));
             List<string> errs = new List<string>();
@@ -163,6 +164,7 @@ namespace Synthesis.Bethesda.Execution
             int index = outs.IndexOf("Build succeeded.");
             if (index == -1 || index < 2)
             {
+                log?.Invoke($"Could not locate target executable: {string.Join(Environment.NewLine, outs)}");
                 return GetResponse<string>.Fail("Could not locate target executable.");
             }
             var line = outs[index - 2];
@@ -170,7 +172,7 @@ namespace Synthesis.Bethesda.Execution
             index = line.IndexOf(delimiter);
             if (index == -1)
             {
-                return GetResponse<string>.Fail("Could not locate target executable.");
+                return GetResponse<string>.Fail($"Could not locate target executable line to find exe: {line}");
             }
             return GetResponse<string>.Succeed(line.Substring(index + delimiter.Length).Trim());
         }

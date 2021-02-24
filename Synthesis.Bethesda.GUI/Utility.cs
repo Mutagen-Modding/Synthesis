@@ -67,7 +67,7 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public static async Task<GetResponse<TRet>> ExtractInfoFromProject<TRet>(string projPath, CancellationToken cancel, Func<Assembly, GetResponse<TRet>> getter)
+        public static async Task<GetResponse<TRet>> ExtractInfoFromProject<TRet>(string projPath, CancellationToken cancel, Func<Assembly, GetResponse<TRet>> getter, Action<string> log)
         {
             if (cancel.IsCancellationRequested) return GetResponse<TRet>.Fail("Cancelled");
 
@@ -77,10 +77,14 @@ namespace Synthesis.Bethesda.GUI
             // ideally just work out of the box.
             await using var tempFolder = TempFolder.FactoryByPath(Path.Combine(Paths.LoadingFolder, Path.GetRandomFileName()), 3, TimeSpan.FromMilliseconds(500));
             if (cancel.IsCancellationRequested) return GetResponse<TRet>.Fail("Cancelled");
-            CopyDirectory(Path.GetDirectoryName(projPath)!, tempFolder.Dir.Path, cancel);
+            var projDir = Path.GetDirectoryName(projPath)!;
+            log($"Starting project assembly info extraction.  Copying project from {projDir} to {tempFolder.Dir.Path}");
+            CopyDirectory(projDir, tempFolder.Dir.Path, cancel);
             projPath = Path.Combine(tempFolder.Dir.Path, Path.GetFileName(projPath));
-            var exec = await DotNetCommands.GetExecutablePath(projPath, cancel);
+            log($"Retrieving executable path from {projPath}");
+            var exec = await DotNetCommands.GetExecutablePath(projPath, cancel, log);
             if (exec.Failed) return exec.BubbleFailure<TRet>();
+            log($"Located executable path for {projPath}: {exec.Value}");
             return ExecuteAndUnload(exec.Value, getter);
         }
 

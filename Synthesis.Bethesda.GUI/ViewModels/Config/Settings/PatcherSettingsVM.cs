@@ -141,7 +141,8 @@ namespace Synthesis.Bethesda.GUI
                                         })
                                         .NotNull()
                                         .ToArray();
-                                });
+                                },
+                                Logger.Information);
                             if (vms.Failed)
                             {
                                 Logger.Error($"Error creating reflection GUI: {vms.Reason}");
