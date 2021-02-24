@@ -58,7 +58,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <local:GitTargetView Grid.Row="0" />
+                        <local:GitTargetView Grid.Row="0" RespectLocking="True" />
                         <local:PatcherVersioningView Grid.Row="1"
                             x:Name="PatcherVersioning"
                             Margin="0,15,0,0"

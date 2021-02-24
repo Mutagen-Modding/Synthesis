@@ -335,8 +335,9 @@ namespace Synthesis.Bethesda.GUI
                 .FilterSwitch(
                     Observable.CombineLatest(
                         this.WhenAnyValue(x => x.TagAutoUpdate),
+                        this.WhenAnyValue(x => x.Profile.LockUpgrades),
                         this.WhenAnyValue(x => x.PatcherVersioning),
-                        (autoTag, versioning) => autoTag && versioning == PatcherVersioningEnum.Tag))
+                        (autoTag, locked, versioning) => !locked && autoTag && versioning == PatcherVersioningEnum.Tag))
                 .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                 .Subscribe(x =>
                 {
@@ -424,8 +425,14 @@ namespace Synthesis.Bethesda.GUI
                 this.WhenAnyValue(x => x.TargetTag),
                 this.WhenAnyValue(x => x.TargetCommit),
                 this.WhenAnyValue(x => x.TargetOriginBranchName),
-                this.WhenAnyValue(x => x.TagAutoUpdate),
-                this.WhenAnyValue(x => x.BranchAutoUpdate),
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.TagAutoUpdate),
+                        this.WhenAnyValue(x => x.Profile.LockUpgrades),
+                        (auto, locked) => !locked && auto),
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.BranchAutoUpdate),
+                        this.WhenAnyValue(x => x.Profile.LockUpgrades),
+                        (auto, locked) => !locked && auto),
                 (versioning, tag, commit, branch, tagAuto, branchAuto) =>
                 {
                     return GitPatcherVersioning.Factory(

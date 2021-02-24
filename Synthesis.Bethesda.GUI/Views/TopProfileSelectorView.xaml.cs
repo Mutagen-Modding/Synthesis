@@ -52,9 +52,12 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x as ICommand)
                     .BindToStrict(this, x => x.UpdateButton.Command)
                     .DisposeWith(dispose);
-                this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.UpdateProfileNugetVersionCommand)
-                    .Select(x => x?.CanExecute ?? Observable.Return(false))
-                    .Switch()
+                Observable.CombineLatest(
+                        this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.UpdateProfileNugetVersionCommand)
+                            .Select(x => x?.CanExecute ?? Observable.Return(false))
+                            .Switch(),
+                        this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.LockUpgrades),
+                        (hasUpdate, locked) => hasUpdate && !locked)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.UpdateButton.Visibility)
                     .DisposeWith(dispose);

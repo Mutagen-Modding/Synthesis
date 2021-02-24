@@ -107,6 +107,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"
                     Margin="0,8,0,0"
@@ -116,7 +117,9 @@
                 <local:NugetsVersioningView Grid.Row="1"
                     x:Name="Nugets"
                     Margin="0,8,0,0" />
-                <StackPanel Grid.Row="2" Orientation="Horizontal">
+                <StackPanel Grid.Row="2"
+                    x:Name="ResetVersioningGrid"
+                    Orientation="Horizontal">
                     <Button
                         x:Name="ResetPatchersToProfile"
                         Padding="5"
@@ -128,6 +131,12 @@
                         Prereleases
                     </CheckBox>
                 </StackPanel>
+                <CheckBox Grid.Row="3"
+                    x:Name="LockToCurrentVersioning"
+                    Margin="0,15,0,0"
+                    ToolTip="Will disable all interaction with versioning systems, to help keep everything in its current state">
+                    Lock To Current Versioning
+                </CheckBox>
             </Grid>
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>

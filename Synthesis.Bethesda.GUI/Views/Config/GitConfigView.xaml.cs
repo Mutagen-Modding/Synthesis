@@ -283,6 +283,21 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.StatusBlock.Text)
                     .DisposeWith(disposable);
                 #endregion
+
+                #region Versioning
+                this.WhenAnyValue(x => x.ViewModel!.Profile.LockUpgrades)
+                    .Select(x => !x)
+                    .BindToStrict(this, x => x.PatcherVersioning.IsEnabled)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.Profile.LockUpgrades)
+                    .Select(x => !x)
+                    .BindToStrict(this, x => x.Nugets.IsEnabled)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.Profile.LockUpgrades)
+                    .Select(x => !x)
+                    .BindToStrict(this, x => x.Nugets.IsEnabled)
+                    .DisposeWith(disposable);
+                #endregion
             });
         }
     }
