@@ -21,12 +21,18 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                Observable.CombineLatest(
+                var isRepoValid = Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid),
                         this.WhenAnyValue(x => x.ViewModel!.SelectedProjectPath.ErrorState),
                         (driver, proj) => driver && proj.Succeeded)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, view => view.AdvancedSettingsArea.Visibility)
+                    .Replay(1)
+                    .RefCount();
+                isRepoValid
+                    .BindToStrict(this, view => view.PatcherVersioning.Visibility)
+                    .DisposeWith(disposable);
+                isRepoValid
+                    .BindToStrict(this, view => view.Nugets.Visibility)
                     .DisposeWith(disposable);
 
                 #region Patcher Versioning
