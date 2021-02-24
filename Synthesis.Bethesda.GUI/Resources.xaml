@@ -177,7 +177,7 @@
 
     <Style BasedOn="{StaticResource Noggog.Styles.Checkbox}" TargetType="{x:Type CheckBox}">
         <Setter Property="mahapps:CheckBoxHelper.CheckGlyphForegroundChecked" Value="{StaticResource LightBlueBrush}" />
-        <Setter Property="mahapps:CheckBoxHelper.CheckGlyphForegroundCheckedDisabled" Value="{DynamicResource LightBlueBrush}" />
+        <Setter Property="mahapps:CheckBoxHelper.CheckGlyphForegroundCheckedDisabled" Value="LightGray" />
         <Setter Property="mahapps:CheckBoxHelper.CheckGlyphForegroundCheckedMouseOver" Value="{DynamicResource LightBlueBrush}" />
         <Setter Property="mahapps:CheckBoxHelper.CheckGlyphForegroundCheckedPressed" Value="{DynamicResource LightBlueBrush}" />
     </Style>
@@ -338,9 +338,19 @@
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition SourceName="Border" Property="IsMouseOver" Value="True" />
+                                <Condition SourceName="Border" Property="IsEnabled" Value="True" />
                                 <Condition Property="IsSelected" Value="True" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="ContentSite" Property="TextElement.Foreground" Value="{DynamicResource LightBlueBrush}" />
+                            <Setter TargetName="Underline" Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(mahapps:TabControlHelper.UnderlineMouseOverSelectedBrush), Mode=OneWay}" />
+                        </MultiTrigger>
+
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition SourceName="Border" Property="IsEnabled" Value="False" />
+                                <Condition Property="IsSelected" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ContentSite" Property="TextElement.Foreground" Value="LightGray" />
                             <Setter TargetName="Underline" Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(mahapps:TabControlHelper.UnderlineMouseOverSelectedBrush), Mode=OneWay}" />
                         </MultiTrigger>
 
