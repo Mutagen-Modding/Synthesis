@@ -7,12 +7,12 @@ namespace Synthesis.Bethesda.GUI
 {
     public class EnumDictionarySettingsVM : ADictionarySettingsVM
     {
-        public EnumDictionarySettingsVM(MemberName memberName, KeyValuePair<string, SettingsNodeVM>[] values, SettingsNodeVM prototype)
+        public EnumDictionarySettingsVM(SettingsMeta memberName, KeyValuePair<string, SettingsNodeVM>[] values, SettingsNodeVM prototype)
             : base(memberName, values, prototype)
         {
         }
 
-        public static EnumDictionarySettingsVM Factory(SettingsParameters param, MemberName memberName, Type enumType, Type valType, object? defaultVals)
+        public static EnumDictionarySettingsVM Factory(SettingsParameters param, SettingsMeta memberName, Type enumType, Type valType, object? defaultVals)
         {
             var vals = GetDefaultValDictionary(defaultVals);
             var proto = SettingsNodeVM.MemberFactory(param, member: null, targetType: valType, defaultVal: null);
@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override SettingsNodeVM Duplicate()
         {
-            return new EnumDictionarySettingsVM(MemberName, _values, _prototype);
+            return new EnumDictionarySettingsVM(Meta, _values, _prototype);
         }
     }
 }

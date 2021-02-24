@@ -16,12 +16,12 @@ namespace Synthesis.Bethesda.GUI
         private readonly string[] _enumNames;
 
         public EnumerableEnumSettingsVM(
-            MemberName memberName,
+            SettingsMeta memberName,
             string[] defaultVal,
             string[] enumNames)
             : base(memberName,
                   get: null!,
-                  add: coll => coll.Add(new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(MemberName.Empty, enumNames[0], enumNames))
+                  add: coll => coll.Add(new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(SettingsMeta.Empty, enumNames[0], enumNames))
                   {
                       IsSelected = true
                   }))
@@ -31,11 +31,11 @@ namespace Synthesis.Bethesda.GUI
             _enumNames = enumNames;
             Values.SetTo(defaultVal.Select(i =>
             {
-                return new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(MemberName.Empty, i, enumNames));
+                return new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(SettingsMeta.Empty, i, enumNames));
             }));
         }
 
-        public static EnumerableEnumSettingsVM Factory(MemberName memberName, object? defaultVal, Type enumType)
+        public static EnumerableEnumSettingsVM Factory(SettingsMeta memberName, object? defaultVal, Type enumType)
         {
             var names = Enum.GetNames(enumType).ToArray();
             var nameSet = names.ToHashSet();
@@ -66,7 +66,7 @@ namespace Synthesis.Bethesda.GUI
             if (str != null && _enumNames.Contains(str))
             {
                 return TryGet<IBasicSettingsNodeVM>.Succeed(
-                    new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(MemberName.Empty, str, _enumNames)));
+                    new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(SettingsMeta.Empty, str, _enumNames)));
             }
             return TryGet<IBasicSettingsNodeVM>.Failure;
         }
@@ -79,21 +79,21 @@ namespace Synthesis.Bethesda.GUI
                 var str = elem.ToString();
                 if (str != null && _enumNames.Contains(str))
                 {
-                    Values.Add(new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(MemberName.Empty, str, _enumNames)));
+                    Values.Add(new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(SettingsMeta.Empty, str, _enumNames)));
                 }
             }
         }
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[MemberName.DiskName] = new JArray(Values
+            obj[Meta.DiskName] = new JArray(Values
                 .Select(x => ((IBasicSettingsNodeVM)x.Value).Value)
                 .ToArray());
         }
 
         public override SettingsNodeVM Duplicate()
         {
-            return new EnumerableEnumSettingsVM(MemberName, _defaultVal, _enumNames);
+            return new EnumerableEnumSettingsVM(Meta, _defaultVal, _enumNames);
         }
     }
 }

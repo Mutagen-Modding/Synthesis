@@ -11,7 +11,7 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <ContentControl Content="{Binding}">
+    <ContentControl Content="{Binding}" ToolTip="{Binding Meta.Tooltip}">
         <ContentControl.Resources>
             <DataTemplate DataType="{x:Type vm:BoolSettingsVM}">
                 <local:BoolSettingsNodeView />
@@ -116,7 +116,7 @@
                             Margin="4,0,6,0"
                             VerticalAlignment="Center"
                             Style="{StaticResource ReflectionSettingName}"
-                            Text="{Binding MemberName.DisplayName}" />
+                            Text="{Binding Meta.DisplayName}" />
                         <local:EnumSettingsNodeView />
                     </StackPanel>
                 </Border>
@@ -147,7 +147,7 @@
                             Margin="4,4,6,0"
                             VerticalAlignment="Top"
                             Style="{StaticResource ReflectionSettingName}"
-                            Text="{Binding MemberName.DisplayName}" />
+                            Text="{Binding Meta.DisplayName}" />
                         <mutagenWpf:ModKeyPicker Grid.Column="1"
                             ModKey="{Binding Value}"
                             SearchBoxHeight="200"
@@ -186,7 +186,7 @@
                             Margin="4,4,6,0"
                             VerticalAlignment="Top"
                             Style="{StaticResource ReflectionSettingName}"
-                            Text="{Binding MemberName.DisplayName}" />
+                            Text="{Binding Meta.DisplayName}" />
                         <mutagenWpf:FormKeyPicker Grid.Column="1"
                             VerticalAlignment="Center"
                             FormKey="{Binding Value}"
@@ -207,8 +207,8 @@
                             Margin="4,4,6,0"
                             VerticalAlignment="Top"
                             Style="{StaticResource ReflectionSettingName}"
-                            Text="{Binding MemberName.DisplayName}"
-                            Visibility="{Binding MemberName.DisplayName, Converter={StaticResource StringToVisibilityConverter}}" />
+                            Text="{Binding Meta.DisplayName}"
+                            Visibility="{Binding Meta.DisplayName, Converter={StaticResource StringToVisibilityConverter}}" />
                         <mutagenWpf:FormKeyMultiPicker Grid.Row="1"
                             Height="200"
                             Margin="0,5,0,0"

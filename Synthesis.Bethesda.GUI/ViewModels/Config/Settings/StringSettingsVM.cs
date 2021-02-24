@@ -9,13 +9,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class StringSettingsVM : BasicSettingsVM<string>
     {
-        public StringSettingsVM(MemberName memberName, object? defaultVal)
+        public StringSettingsVM(SettingsMeta memberName, object? defaultVal)
             : base(memberName, defaultVal)
         {
         }
 
         public StringSettingsVM()
-            : base(MemberName.Empty, default)
+            : base(SettingsMeta.Empty, default)
         {
         }
 
@@ -23,6 +23,6 @@ namespace Synthesis.Bethesda.GUI
 
         public override string GetDefault() => string.Empty;
 
-        public override SettingsNodeVM Duplicate() => new StringSettingsVM(MemberName, DefaultValue);
+        public override SettingsNodeVM Duplicate() => new StringSettingsVM(Meta, DefaultValue);
     }
 }

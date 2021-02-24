@@ -4,13 +4,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class UInt32SettingsVM : BasicSettingsVM<uint>
     {
-        public UInt32SettingsVM(MemberName memberName, object? defaultVal)
+        public UInt32SettingsVM(SettingsMeta memberName, object? defaultVal)
             : base(memberName, defaultVal)
         {
         }
 
         public UInt32SettingsVM()
-            : base(MemberName.Empty, default)
+            : base(SettingsMeta.Empty, default)
         {
         }
 
@@ -18,6 +18,6 @@ namespace Synthesis.Bethesda.GUI
 
         public override uint GetDefault() => default(uint);
 
-        public override SettingsNodeVM Duplicate() => new UInt32SettingsVM(MemberName, DefaultValue);
+        public override SettingsNodeVM Duplicate() => new UInt32SettingsVM(Meta, DefaultValue);
     }
 }

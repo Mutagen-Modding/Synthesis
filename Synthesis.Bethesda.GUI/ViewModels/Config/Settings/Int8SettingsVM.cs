@@ -4,13 +4,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class Int8SettingsVM : BasicSettingsVM<sbyte>
     {
-        public Int8SettingsVM(MemberName memberName, object? defaultVal)
+        public Int8SettingsVM(SettingsMeta memberName, object? defaultVal)
             : base(memberName, defaultVal)
         {
         }
 
         public Int8SettingsVM()
-            : base(MemberName.Empty, default)
+            : base(SettingsMeta.Empty, default)
         {
         }
 
@@ -18,6 +18,6 @@ namespace Synthesis.Bethesda.GUI
 
         public override sbyte GetDefault() => default(sbyte);
 
-        public override SettingsNodeVM Duplicate() => new Int8SettingsVM(MemberName, DefaultValue);
+        public override SettingsNodeVM Duplicate() => new Int8SettingsVM(Meta, DefaultValue);
     }
 }

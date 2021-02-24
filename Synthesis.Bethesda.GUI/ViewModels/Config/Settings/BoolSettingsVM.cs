@@ -4,13 +4,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class BoolSettingsVM : BasicSettingsVM<bool>
     {
-        public BoolSettingsVM(MemberName memberName, object? defaultVal)
+        public BoolSettingsVM(SettingsMeta memberName, object? defaultVal)
             : base(memberName, defaultVal)
         {
         }
 
         public BoolSettingsVM()
-            : base(MemberName.Empty, default)
+            : base(SettingsMeta.Empty, default)
         {
         }
 
@@ -18,6 +18,6 @@ namespace Synthesis.Bethesda.GUI
 
         public override bool GetDefault() => default(bool);
 
-        public override SettingsNodeVM Duplicate() => new BoolSettingsVM(MemberName, DefaultValue);
+        public override SettingsNodeVM Duplicate() => new BoolSettingsVM(Meta, DefaultValue);
     }
 }

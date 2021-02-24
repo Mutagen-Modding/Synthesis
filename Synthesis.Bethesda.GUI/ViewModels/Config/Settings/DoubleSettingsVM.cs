@@ -4,13 +4,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class DoubleSettingsVM : BasicSettingsVM<double>
     {
-        public DoubleSettingsVM(MemberName memberName, object? defaultVal)
-            : base(memberName, defaultVal)
+        public DoubleSettingsVM(SettingsMeta meta, object? defaultVal)
+            : base(meta, defaultVal)
         {
         }
 
         public DoubleSettingsVM()
-            : base(MemberName.Empty, default)
+            : base(SettingsMeta.Empty, default)
         {
         }
 
@@ -18,6 +18,6 @@ namespace Synthesis.Bethesda.GUI
 
         public override double GetDefault() => default(double);
 
-        public override SettingsNodeVM Duplicate() => new DoubleSettingsVM(MemberName, DefaultValue);
+        public override SettingsNodeVM Duplicate() => new DoubleSettingsVM(Meta, DefaultValue);
     }
 }

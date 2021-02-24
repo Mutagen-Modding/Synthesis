@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool IsSelected { get; set; }
 
-        public FormLinkSettingsVM(IObservable<ILinkCache> linkCache, MemberName memberName, Type targetType, FormKey defaultVal) 
+        public FormLinkSettingsVM(IObservable<ILinkCache> linkCache, SettingsMeta memberName, Type targetType, FormKey defaultVal) 
             : base(memberName)
         {
             _targetType = targetType;
@@ -48,7 +48,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override SettingsNodeVM Duplicate()
         {
-            return new FormLinkSettingsVM(_linkCache, MemberName, _targetType, _defaultVal);
+            return new FormLinkSettingsVM(_linkCache, Meta, _targetType, _defaultVal);
         }
 
         public override void Import(JsonElement property, ILogger logger)
@@ -58,7 +58,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[MemberName.DiskName] = JToken.FromObject(FormKeySettingsVM.Persist(Value));
+            obj[Meta.DiskName] = JToken.FromObject(FormKeySettingsVM.Persist(Value));
         }
 
         public override void WrapUp()
@@ -68,7 +68,7 @@ namespace Synthesis.Bethesda.GUI
             base.WrapUp();
         }
 
-        public static FormLinkSettingsVM Factory(IObservable<ILinkCache> linkCache, MemberName memberName, Type targetType, object? defaultVal)
+        public static FormLinkSettingsVM Factory(IObservable<ILinkCache> linkCache, SettingsMeta memberName, Type targetType, object? defaultVal)
         {
             var formLink = defaultVal as IFormLink;
             return new FormLinkSettingsVM(linkCache, memberName, targetType, formLink?.FormKey ?? FormKey.Null);

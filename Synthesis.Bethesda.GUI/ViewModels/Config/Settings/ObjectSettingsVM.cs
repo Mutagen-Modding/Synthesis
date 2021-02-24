@@ -14,19 +14,19 @@ namespace Synthesis.Bethesda.GUI
         private readonly Dictionary<string, SettingsNodeVM> _nodes;
         public ObservableCollection<SettingsNodeVM> Nodes { get; }
 
-        public ObjectSettingsVM(MemberName memberName, Dictionary<string, SettingsNodeVM> nodes)
+        public ObjectSettingsVM(SettingsMeta memberName, Dictionary<string, SettingsNodeVM> nodes)
             : base(memberName)
         {
             _nodes = nodes;
             Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
         }
 
-        public ObjectSettingsVM(SettingsParameters param, MemberName memberName, Type t, object? defaultVal)
+        public ObjectSettingsVM(SettingsParameters param, SettingsMeta memberName, Type t, object? defaultVal)
             : base(memberName)
         {
             var nodes = Factory(param, t, defaultVal);
             _nodes = nodes
-                .ToDictionary(x => x.MemberName.DiskName);
+                .ToDictionary(x => x.Meta.DiskName);
             _nodes.ForEach(n => n.Value.WrapUp());
             Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
         }
@@ -38,7 +38,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            PersistStatic(_nodes, MemberName.DiskName, obj, logger);
+            PersistStatic(_nodes, Meta.DiskName, obj, logger);
         }
 
         public static void ImportStatic(
@@ -85,7 +85,7 @@ namespace Synthesis.Bethesda.GUI
         public override SettingsNodeVM Duplicate()
         {
             return new ObjectSettingsVM(
-                MemberName,
+                Meta,
                 this._nodes.Values
                     .Select(f =>
                     {
@@ -93,7 +93,7 @@ namespace Synthesis.Bethesda.GUI
                         ret.WrapUp();
                         return ret;
                     })
-                    .ToDictionary(f => f.MemberName.DiskName));
+                    .ToDictionary(f => f.Meta.DiskName));
         }
     }
 }

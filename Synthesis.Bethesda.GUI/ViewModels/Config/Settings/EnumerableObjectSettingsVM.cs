@@ -36,7 +36,7 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public IList? SelectedValues { get; set; }
 
-        private EnumerableObjectSettingsVM(MemberName memberName, ObjectSettingsVM prototype, ObjectSettingsVM[] defaultValues)
+        private EnumerableObjectSettingsVM(SettingsMeta memberName, ObjectSettingsVM prototype, ObjectSettingsVM[] defaultValues)
             : base(memberName)
         {
             _prototype = prototype;
@@ -88,7 +88,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[MemberName.DiskName] = new JArray(Values
+            obj[Meta.DiskName] = new JArray(Values
                 .Select(x =>
                 {
                     var obj = new JObject();
@@ -98,15 +98,15 @@ namespace Synthesis.Bethesda.GUI
                 .ToArray());
         }
 
-        public static EnumerableObjectSettingsVM Factory(SettingsParameters param, MemberName memberName, object? defaultVal, Type t)
+        public static EnumerableObjectSettingsVM Factory(SettingsParameters param, SettingsMeta memberName, object? defaultVal, Type t)
         {
-            var proto = new ObjectSettingsVM(param, MemberName.Empty, t, null);
+            var proto = new ObjectSettingsVM(param, SettingsMeta.Empty, t, null);
             List<ObjectSettingsVM> defaultValues = new List<ObjectSettingsVM>();
             if (defaultVal is IEnumerable e)
             {
                 foreach (var o in e)
                 {
-                    defaultValues.Add(new ObjectSettingsVM(param, MemberName.Empty, t, o));
+                    defaultValues.Add(new ObjectSettingsVM(param, SettingsMeta.Empty, t, o));
                 }
             }
             return new EnumerableObjectSettingsVM(memberName, proto, defaultValues.ToArray());
@@ -114,7 +114,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override SettingsNodeVM Duplicate()
         {
-            return new EnumerableObjectSettingsVM(MemberName, _prototype, _defaultValues);
+            return new EnumerableObjectSettingsVM(Meta, _prototype, _defaultValues);
         }
     }
 }

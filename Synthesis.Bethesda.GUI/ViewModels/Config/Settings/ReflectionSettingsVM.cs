@@ -40,7 +40,7 @@ namespace Synthesis.Bethesda.GUI
             SettingsFolder = settingsFolder;
             SettingsSubPath = settingsSubPath;
             _nodes = SettingsNodeVM.Factory(param, type)
-                .ToDictionary(x => x.MemberName.DiskName);
+                .ToDictionary(x => x.Meta.DiskName);
             _nodes.ForEach(n => n.Value.WrapUp());
             Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
             CompositeDisposable.Add(_nodes.Values);
