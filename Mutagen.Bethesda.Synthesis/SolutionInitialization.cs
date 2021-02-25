@@ -49,7 +49,8 @@ namespace Mutagen.Bethesda.Synthesis
             fg.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk\">");
             fg.AppendLine($"  <PropertyGroup>");
             fg.AppendLine($"    <OutputType>Exe</OutputType>");
-            fg.AppendLine($"    <TargetFramework>netcoreapp3.1</TargetFramework>");
+            fg.AppendLine($"    <TargetFramework>net5.0</TargetFramework>");
+            fg.AppendLine($"    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>");
             fg.AppendLine($"  </PropertyGroup>");
             fg.AppendLine();
             fg.AppendLine($"  <ItemGroup>");
