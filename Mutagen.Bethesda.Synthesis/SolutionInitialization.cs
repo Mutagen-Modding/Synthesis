@@ -47,26 +47,15 @@ namespace Mutagen.Bethesda.Synthesis
             // Generate Project File
             FileGeneration fg = new FileGeneration();
             fg.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk\">");
-            using (new DepthWrapper(fg))
-            {
-                fg.AppendLine($"<PropertyGroup>");
-                using (new DepthWrapper(fg))
-                {
-                    fg.AppendLine($"<OutputType>Exe</OutputType>");
-                    fg.AppendLine($"<TargetFramework>netcoreapp3.1</TargetFramework>");
-                }
-                fg.AppendLine($"</PropertyGroup>");
-                fg.AppendLine();
-
-                fg.AppendLine($"<ItemGroup>");
-                using (new DepthWrapper(fg))
-                {
-                    fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda\" Version=\"{(insertOldVersion ? Versions.OldMutagenVersion : Versions.MutagenVersion)}\" />");
-                    fg.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{(insertOldVersion ? Versions.OldSynthesisVersion : Versions.SynthesisVersion)}\" />");
-                }
-                fg.AppendLine($"</ItemGroup>");
-                fg.AppendLine();
-            }
+            fg.AppendLine($"  <PropertyGroup>");
+            fg.AppendLine($"    <OutputType>Exe</OutputType>");
+            fg.AppendLine($"    <TargetFramework>netcoreapp3.1</TargetFramework>");
+            fg.AppendLine($"  </PropertyGroup>");
+            fg.AppendLine();
+            fg.AppendLine($"  <ItemGroup>");
+            fg.AppendLine($"    <PackageReference Include=\"Mutagen.Bethesda\" Version=\"{(insertOldVersion ? Versions.OldMutagenVersion : Versions.MutagenVersion)}\" />");
+            fg.AppendLine($"    <PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{(insertOldVersion ? Versions.OldSynthesisVersion : Versions.SynthesisVersion)}\" />");
+            fg.AppendLine($"  </ItemGroup>");
             fg.AppendLine("</Project>");
             fg.Generate(projPath);
 
