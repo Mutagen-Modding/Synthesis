@@ -14,11 +14,11 @@ namespace Synthesis.Bethesda.GUI
         private IEnumerable<string> _defaultVal;
 
         public EnumerableStringSettingsVM(
-            SettingsMeta memberName,
+            FieldMeta fieldMeta,
             Func<JsonElement, TryGet<IBasicSettingsNodeVM>> get,
             Action<ObservableCollection<IBasicSettingsNodeVM>> add,
             IEnumerable<string> defaultVal)
-            : base(memberName, get, add)
+            : base(fieldMeta, get, add)
         {
             _defaultVal = defaultVal;
             Values.SetTo(_defaultVal.Select(x =>
@@ -30,7 +30,7 @@ namespace Synthesis.Bethesda.GUI
             }));
         }
 
-        public static EnumerableStringSettingsVM Factory(SettingsMeta memberName, object? defaultVal)
+        public static EnumerableStringSettingsVM Factory(FieldMeta fieldMeta, object? defaultVal)
         {
             Func<JsonElement, TryGet<IBasicSettingsNodeVM>> import = new Func<JsonElement, TryGet<IBasicSettingsNodeVM>>((elem) =>
             {
@@ -42,7 +42,7 @@ namespace Synthesis.Bethesda.GUI
                         }));
             });
             return new EnumerableStringSettingsVM(
-                memberName,
+                fieldMeta,
                 import,
                 (list) =>
                 {

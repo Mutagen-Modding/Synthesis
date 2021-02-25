@@ -35,10 +35,10 @@ namespace Synthesis.Bethesda.GUI
 
         public EnumerableFormLinkSettingsVM(
             IObservable<ILinkCache> linkCache,
-            SettingsMeta memberName,
+            FieldMeta fieldMeta,
             string typeName,
             IEnumerable<FormKey> defaultVal)
-            : base(memberName)
+            : base(fieldMeta)
         {
             _defaultVal = defaultVal.ToArray();
             _linkCacheObs = linkCache;
@@ -47,7 +47,7 @@ namespace Synthesis.Bethesda.GUI
                 .ToGuiProperty(this, nameof(LinkCache), default(ILinkCache?));
         }
 
-        public static SettingsNodeVM Factory(SettingsParameters param, SettingsMeta memberName, string typeName, object? defaultVal)
+        public static SettingsNodeVM Factory(SettingsParameters param, FieldMeta fieldMeta, string typeName, object? defaultVal)
         {
             var defaultKeys = new List<FormKey>();
             if (defaultVal is IEnumerable e)
@@ -62,7 +62,7 @@ namespace Synthesis.Bethesda.GUI
             }
             return new EnumerableFormLinkSettingsVM(
                 param.LinkCache,
-                memberName: memberName,
+                fieldMeta: fieldMeta,
                 typeName: typeName,
                 defaultKeys);
         }
@@ -104,7 +104,7 @@ namespace Synthesis.Bethesda.GUI
             return new EnumerableFormLinkSettingsVM(
                 linkCache: _linkCacheObs,
                 typeName: _typeName, 
-                memberName: Meta, 
+                fieldMeta: Meta, 
                 defaultVal: _defaultVal);
         }
 

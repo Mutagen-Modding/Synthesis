@@ -4,13 +4,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class BoolSettingsVM : BasicSettingsVM<bool>
     {
-        public BoolSettingsVM(SettingsMeta memberName, object? defaultVal)
-            : base(memberName, defaultVal)
+        public BoolSettingsVM(FieldMeta fieldMeta, object? defaultVal)
+            : base(fieldMeta, defaultVal)
         {
         }
 
         public BoolSettingsVM()
-            : base(SettingsMeta.Empty, default)
+            : base(FieldMeta.Empty, default)
         {
         }
 

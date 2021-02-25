@@ -7,8 +7,8 @@ namespace Synthesis.Bethesda.GUI
 {
     public class UnknownSettingsVM : SettingsNodeVM
     {
-        public UnknownSettingsVM(SettingsMeta memberName)
-            : base(memberName)
+        public UnknownSettingsVM(FieldMeta fieldMeta)
+            : base(fieldMeta)
         {
         }
 

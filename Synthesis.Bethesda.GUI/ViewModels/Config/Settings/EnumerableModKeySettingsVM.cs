@@ -26,20 +26,20 @@ namespace Synthesis.Bethesda.GUI
 
         public EnumerableModKeySettingsVM(
             IObservable<IChangeSet<ModKey>> detectedLoadOrder,
-            SettingsMeta memberName,
+            FieldMeta fieldMeta,
             IEnumerable<ModKey> defaultVal)
-            : base(memberName)
+            : base(fieldMeta)
         {
             _defaultVal = defaultVal.ToArray();
             DetectedLoadOrder = detectedLoadOrder;
             Values.SetTo(defaultVal.Select(i => new ModKeyItemViewModel(i)));
         }
 
-        public static EnumerableModKeySettingsVM Factory(SettingsParameters param, SettingsMeta memberName, object? defaultVal)
+        public static EnumerableModKeySettingsVM Factory(SettingsParameters param, FieldMeta fieldMeta, object? defaultVal)
         {
             return new EnumerableModKeySettingsVM(
                 param.DetectedLoadOrder.Transform(x => x.Listing.ModKey),
-                memberName,
+                fieldMeta,
                 defaultVal as IEnumerable<ModKey> ?? Enumerable.Empty<ModKey>());
         }
 

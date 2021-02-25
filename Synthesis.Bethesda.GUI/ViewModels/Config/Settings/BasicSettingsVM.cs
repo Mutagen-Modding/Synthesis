@@ -25,8 +25,8 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool IsSelected { get; set; }
 
-        public BasicSettingsVM(SettingsMeta memberName, object? defaultVal)
-            : base(memberName)
+        public BasicSettingsVM(FieldMeta fieldMeta, object? defaultVal)
+            : base(fieldMeta)
         {
             if (defaultVal is T item)
             {

@@ -14,15 +14,15 @@ namespace Synthesis.Bethesda.GUI
         private readonly Dictionary<string, SettingsNodeVM> _nodes;
         public ObservableCollection<SettingsNodeVM> Nodes { get; }
 
-        public ObjectSettingsVM(SettingsMeta memberName, Dictionary<string, SettingsNodeVM> nodes)
-            : base(memberName)
+        public ObjectSettingsVM(FieldMeta fieldMeta, Dictionary<string, SettingsNodeVM> nodes)
+            : base(fieldMeta)
         {
             _nodes = nodes;
             Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
         }
 
-        public ObjectSettingsVM(SettingsParameters param, SettingsMeta memberName, Type t, object? defaultVal)
-            : base(memberName)
+        public ObjectSettingsVM(SettingsParameters param, FieldMeta fieldMeta, Type t, object? defaultVal)
+            : base(fieldMeta)
         {
             var nodes = Factory(param, t, defaultVal);
             _nodes = nodes

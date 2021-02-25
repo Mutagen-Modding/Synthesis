@@ -13,11 +13,11 @@ namespace Synthesis.Bethesda.GUI
 {
     public abstract class SettingsNodeVM : ViewModel
     {
-        public SettingsMeta Meta { get; set; }
+        public FieldMeta Meta { get; set; }
 
-        public SettingsNodeVM(SettingsMeta memberName)
+        public SettingsNodeVM(FieldMeta fieldMeta)
         {
-            Meta = memberName;
+            Meta = fieldMeta;
         }
 
         public static SettingsNodeVM[] Factory(SettingsParameters param, Type type, object? defaultObj)
@@ -104,7 +104,7 @@ namespace Synthesis.Bethesda.GUI
                 tooltip = toolTipAttr.Text;
             }
 
-            var meta = new SettingsMeta(
+            var meta = new FieldMeta(
                 DisplayName: displayName, 
                 DiskName: diskName,
                 Tooltip: tooltip);

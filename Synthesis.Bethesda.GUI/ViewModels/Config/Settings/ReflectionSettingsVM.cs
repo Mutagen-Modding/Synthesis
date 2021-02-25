@@ -33,7 +33,7 @@ namespace Synthesis.Bethesda.GUI
             Nickname = nickname;
             SettingsFolder = settingsFolder;
             SettingsSubPath = settingsSubPath;
-            ObjVM = new ObjectSettingsVM(param, SettingsMeta.Empty, type, Activator.CreateInstance(type));
+            ObjVM = new ObjectSettingsVM(param, FieldMeta.Empty, type, Activator.CreateInstance(type));
             CompositeDisposable.Add(ObjVM);
         }
 

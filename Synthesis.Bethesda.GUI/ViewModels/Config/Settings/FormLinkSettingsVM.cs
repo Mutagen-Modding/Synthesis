@@ -34,8 +34,8 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool IsSelected { get; set; }
 
-        public FormLinkSettingsVM(IObservable<ILinkCache> linkCache, SettingsMeta memberName, Type targetType, FormKey defaultVal) 
-            : base(memberName)
+        public FormLinkSettingsVM(IObservable<ILinkCache> linkCache, FieldMeta fieldMeta, Type targetType, FormKey defaultVal) 
+            : base(fieldMeta)
         {
             _targetType = targetType;
             _defaultVal = defaultVal;
@@ -68,10 +68,10 @@ namespace Synthesis.Bethesda.GUI
             base.WrapUp();
         }
 
-        public static FormLinkSettingsVM Factory(IObservable<ILinkCache> linkCache, SettingsMeta memberName, Type targetType, object? defaultVal)
+        public static FormLinkSettingsVM Factory(IObservable<ILinkCache> linkCache, FieldMeta fieldMeta, Type targetType, object? defaultVal)
         {
             var formLink = defaultVal as IFormLink;
-            return new FormLinkSettingsVM(linkCache, memberName, targetType, formLink?.FormKey ?? FormKey.Null);
+            return new FormLinkSettingsVM(linkCache, fieldMeta, targetType, formLink?.FormKey ?? FormKey.Null);
         }
     }
 }

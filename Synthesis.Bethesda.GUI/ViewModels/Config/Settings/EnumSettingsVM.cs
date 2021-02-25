@@ -24,8 +24,8 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool IsSelected { get; set; }
 
-        public EnumSettingsVM(SettingsMeta memberName, string? defaultVal, IEnumerable<string> enumNames)
-            : base(memberName)
+        public EnumSettingsVM(FieldMeta fieldMeta, string? defaultVal, IEnumerable<string> enumNames)
+            : base(fieldMeta)
         {
             EnumNames = enumNames;
             _defaultVal = defaultVal;
@@ -47,10 +47,10 @@ namespace Synthesis.Bethesda.GUI
             return new EnumSettingsVM(Meta, _defaultVal, EnumNames);
         }
 
-        public static EnumSettingsVM Factory(SettingsMeta memberName, object? defaultVal, Type enumType)
+        public static EnumSettingsVM Factory(FieldMeta fieldMeta, object? defaultVal, Type enumType)
         {
             var names = Enum.GetNames(enumType).ToArray();
-            return new EnumSettingsVM(memberName, defaultVal?.ToString(), names);
+            return new EnumSettingsVM(fieldMeta, defaultVal?.ToString(), names);
         }
     }
 }
