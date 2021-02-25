@@ -14,11 +14,22 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock
+            <TextBlock Grid.Row="0"
                 x:Name="SettingNameBlock"
                 Margin="4,0,6,4"
                 Style="{StaticResource ReflectionSettingName}" />
-            <local:ReflectionSettingNodeView Grid.Row="1" />
+            <ListBox Grid.Row="1"
+                x:Name="Nodes"
+                Background="Transparent"
+                ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
+                ScrollViewer.CanContentScroll="False"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <local:SettingsNodeView x:Name="TopNodeView" Margin="0,3,4,3" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </Grid>
     </Border>
 </local:ObjectSettingsNodeViewBase>

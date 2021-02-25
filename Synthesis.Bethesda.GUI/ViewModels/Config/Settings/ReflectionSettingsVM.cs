@@ -15,19 +15,13 @@ using Noggog;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public interface IReflectionObjectSettingsVM
+    public class ReflectionSettingsVM : ViewModel
     {
-        ObservableCollection<SettingsNodeVM> Nodes { get; }
-    }
-
-    public class ReflectionSettingsVM : ViewModel, IReflectionObjectSettingsVM
-    {
-        private readonly Dictionary<string, SettingsNodeVM> _nodes;
         public string SettingsFolder { get; }
         public string SettingsSubPath { get; }
         public string SettingsPath => Path.Combine(SettingsFolder, SettingsSubPath);
         public string Nickname { get; }
-        public ObservableCollection<SettingsNodeVM> Nodes { get; }
+        public ObjectSettingsVM ObjVM { get; }
 
         public ReflectionSettingsVM(
             SettingsParameters param,
@@ -39,11 +33,8 @@ namespace Synthesis.Bethesda.GUI
             Nickname = nickname;
             SettingsFolder = settingsFolder;
             SettingsSubPath = settingsSubPath;
-            _nodes = SettingsNodeVM.Factory(param, type)
-                .ToDictionary(x => x.Meta.DiskName);
-            _nodes.ForEach(n => n.Value.WrapUp());
-            Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
-            CompositeDisposable.Add(_nodes.Values);
+            ObjVM = new ObjectSettingsVM(param, SettingsMeta.Empty, type, Activator.CreateInstance(type));
+            CompositeDisposable.Add(ObjVM);
         }
 
         public async Task Import(
@@ -53,13 +44,13 @@ namespace Synthesis.Bethesda.GUI
             if (!File.Exists(SettingsPath)) return;
             var txt = await File.ReadAllTextAsync(SettingsPath, cancel);
             var json = JsonDocument.Parse(txt);
-            ObjectSettingsVM.ImportStatic(_nodes, json.RootElement, logger);
+            ObjVM.Import(json.RootElement, logger);
         }
 
         public void Persist(ILogger logger)
         {
             var doc = new JObject();
-            ObjectSettingsVM.PersistStatic(_nodes, null, doc, logger);
+            ObjVM.Persist(doc, logger);
             Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
             File.WriteAllText(SettingsPath, doc.ToString());
             if (!Repository.IsValid(SettingsFolder))

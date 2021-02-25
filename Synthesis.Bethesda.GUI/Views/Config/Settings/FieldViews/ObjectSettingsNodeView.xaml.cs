@@ -26,6 +26,9 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x.IsNullOrWhitespace() ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.SettingNameBlock.Visibility)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.Nodes)
+                    .BindToStrict(this, x => x.Nodes.ItemsSource)
+                    .DisposeWith(disposable);
             });
         }
     }

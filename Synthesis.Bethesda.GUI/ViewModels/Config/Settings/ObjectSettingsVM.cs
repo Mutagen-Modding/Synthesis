@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class ObjectSettingsVM : SettingsNodeVM, IReflectionObjectSettingsVM
+    public class ObjectSettingsVM : SettingsNodeVM
     {
         private readonly Dictionary<string, SettingsNodeVM> _nodes;
         public ObservableCollection<SettingsNodeVM> Nodes { get; }
