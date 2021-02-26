@@ -62,7 +62,9 @@ namespace Synthesis.Bethesda.GUI
                                 i.Value,
                                 directExe: false,
                                 cancel: cancel,
-                                build: needBuild);
+                                build: needBuild,
+                                logger.Information);
+                            logger.Information($"Settings type: {result}");
                             observer.OnNext(result);
                         }
                         catch (Exception ex)
