@@ -47,7 +47,8 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[Meta.DiskName] = JToken.FromObject(Value!);
+            if (Value == null) return;
+            obj[Meta.DiskName] = JToken.FromObject(Value);
         }
 
         public abstract T Get(JsonElement property);

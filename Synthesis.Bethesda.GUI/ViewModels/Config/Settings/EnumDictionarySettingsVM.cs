@@ -12,10 +12,10 @@ namespace Synthesis.Bethesda.GUI
         {
         }
 
-        public static EnumDictionarySettingsVM Factory(SettingsParameters param, FieldMeta fieldMeta, Type enumType, Type valType, object? defaultVals)
+        public static EnumDictionarySettingsVM Factory(SettingsParameters param, FieldMeta fieldMeta, Type enumType)
         {
-            var vals = GetDefaultValDictionary(defaultVals);
-            var proto = SettingsNodeVM.MemberFactory(param, member: null, targetType: valType, defaultVal: null);
+            var vals = GetDefaultValDictionary(param.DefaultVal);
+            var proto = SettingsNodeVM.MemberFactory(param with { DefaultVal = null }, member: null);
             proto.WrapUp();
             return new EnumDictionarySettingsVM(
                 fieldMeta,
@@ -27,7 +27,7 @@ namespace Synthesis.Bethesda.GUI
                     }
                     return new KeyValuePair<string, SettingsNodeVM>(
                         e,
-                        SettingsNodeVM.MemberFactory(param, member: null, targetType: valType, defaultVal: defVal));
+                        SettingsNodeVM.MemberFactory(param with { DefaultVal = defVal }, member: null));
                 }).ToArray(),
                 proto);
         }

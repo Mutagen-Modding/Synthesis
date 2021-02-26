@@ -25,7 +25,6 @@ namespace Synthesis.Bethesda.GUI
 
         public ReflectionSettingsVM(
             SettingsParameters param,
-            Type type, 
             string nickname, 
             string settingsFolder,
             string settingsSubPath)
@@ -33,7 +32,7 @@ namespace Synthesis.Bethesda.GUI
             Nickname = nickname;
             SettingsFolder = settingsFolder;
             SettingsSubPath = settingsSubPath;
-            ObjVM = new ObjectSettingsVM(param, FieldMeta.Empty, type, Activator.CreateInstance(type));
+            ObjVM = new ObjectSettingsVM(param, FieldMeta.Empty);
             CompositeDisposable.Add(ObjVM);
         }
 

@@ -20,9 +20,9 @@ namespace Synthesis.Bethesda.GUI
             Meta = fieldMeta;
         }
 
-        public static SettingsNodeVM[] Factory(SettingsParameters param, Type type, object? defaultObj)
+        public static SettingsNodeVM[] Factory(SettingsParameters param)
         {
-            return type.GetMembers()
+            return param.TargetType.GetMembers()
                 .Where(m => m.MemberType == MemberTypes.Property
                     || m.MemberType == MemberTypes.Field)
                 .Where(m =>
@@ -48,29 +48,32 @@ namespace Synthesis.Bethesda.GUI
                     {
                         return m switch
                         {
-                            PropertyInfo prop => MemberFactory(param, prop, prop.PropertyType, defaultObj == null ? null : prop.GetValue(defaultObj)),
-                            FieldInfo field => MemberFactory(param, field, field.FieldType, defaultObj == null ? null : field.GetValue(defaultObj)),
+                            PropertyInfo prop => MemberFactory(param with
+                            {
+                                TargetType = prop.PropertyType,
+                                DefaultVal = param.DefaultVal == null ? null : prop.GetValue(param.DefaultVal)
+                            }, prop),
+                            FieldInfo field => MemberFactory(param with
+                            {
+                                TargetType = field.FieldType,
+                                DefaultVal = param.DefaultVal == null ? null : field.GetValue(param.DefaultVal)
+                            }, field),
                             _ => throw new ArgumentException(),
                         };
                     }
                     catch (Exception ex)
                     {
-                        throw new Exception($"{type} failed to retrieve property {m}", ex);
+                        throw new Exception($"{param.TargetType} failed to retrieve property {m}", ex);
                     }
                 })
                 .ToArray();
-        }
-
-        public static SettingsNodeVM[] Factory(SettingsParameters param, Type type)
-        {
-            return Factory(param, type, Activator.CreateInstance(type));
         }
 
         public virtual void WrapUp()
         {
         }
 
-        public static SettingsNodeVM MemberFactory(SettingsParameters param, MemberInfo? member, Type targetType, object? defaultVal)
+        public static SettingsNodeVM MemberFactory(SettingsParameters param, MemberInfo? member)
         {
             string displayName, diskName;
             if (member == null)
@@ -109,74 +112,74 @@ namespace Synthesis.Bethesda.GUI
                 DiskName: diskName,
                 Tooltip: tooltip);
 
-            switch (targetType.Name)
+            switch (param.TargetType.Name)
             {
                 case "Boolean":
-                    return new BoolSettingsVM(meta, defaultVal);
+                    return new BoolSettingsVM(meta, param.DefaultVal);
                 case "SByte":
-                    return new Int8SettingsVM(meta, defaultVal);
+                    return new Int8SettingsVM(meta, param.DefaultVal);
                 case "Int16":
-                    return new Int16SettingsVM(meta, defaultVal);
+                    return new Int16SettingsVM(meta, param.DefaultVal);
                 case "Int32":
-                    return new Int32SettingsVM(meta, defaultVal);
+                    return new Int32SettingsVM(meta, param.DefaultVal);
                 case "Int64":
-                    return new Int64SettingsVM(meta, defaultVal);
+                    return new Int64SettingsVM(meta, param.DefaultVal);
                 case "Byte":
-                    return new UInt8SettingsVM(meta, defaultVal);
+                    return new UInt8SettingsVM(meta, param.DefaultVal);
                 case "UInt16":
-                    return new UInt16SettingsVM(meta, defaultVal);
+                    return new UInt16SettingsVM(meta, param.DefaultVal);
                 case "UInt32":
-                    return new UInt32SettingsVM(meta, defaultVal);
+                    return new UInt32SettingsVM(meta, param.DefaultVal);
                 case "UInt64":
-                    return new UInt64SettingsVM(meta, defaultVal);
+                    return new UInt64SettingsVM(meta, param.DefaultVal);
                 case "Double":
-                    return new DoubleSettingsVM(meta, defaultVal);
+                    return new DoubleSettingsVM(meta, param.DefaultVal);
                 case "Single":
-                    return new FloatSettingsVM(meta, defaultVal);
+                    return new FloatSettingsVM(meta, param.DefaultVal);
                 case "Decimal":
-                    return new DecimalSettingsVM(meta, defaultVal);
+                    return new DecimalSettingsVM(meta, param.DefaultVal);
                 case "String":
-                    return new StringSettingsVM(meta, defaultVal);
+                    return new StringSettingsVM(meta, param.DefaultVal);
                 case "ModKey":
-                    return new ModKeySettingsVM(param.DetectedLoadOrder.Transform(x => x.Listing.ModKey), meta, defaultVal);
+                    return new ModKeySettingsVM(param.DetectedLoadOrder.Transform(x => x.Listing.ModKey), meta, param.DefaultVal);
                 case "FormKey":
-                    return new FormKeySettingsVM(meta, defaultVal);
+                    return new FormKeySettingsVM(meta, param.DefaultVal);
                 case "Array`1":
                 case "List`1":
                 case "IEnumerable`1":
                 case "HashSet`1":
                     {
-                        var firstGen = targetType.GenericTypeArguments[0];
+                        var firstGen = param.TargetType.GenericTypeArguments[0];
                         switch (firstGen.Name)
                         {
                             case "SByte":
-                                return EnumerableNumericSettingsVM.Factory<sbyte, Int8SettingsVM>(meta, defaultVal, new Int8SettingsVM());
+                                return EnumerableNumericSettingsVM.Factory<sbyte, Int8SettingsVM>(meta, param.DefaultVal, new Int8SettingsVM());
                             case "Int16":
-                                return EnumerableNumericSettingsVM.Factory<short, Int16SettingsVM>(meta, defaultVal, new Int16SettingsVM());
+                                return EnumerableNumericSettingsVM.Factory<short, Int16SettingsVM>(meta, param.DefaultVal, new Int16SettingsVM());
                             case "Int32":
-                                return EnumerableNumericSettingsVM.Factory<int, Int32SettingsVM>(meta, defaultVal, new Int32SettingsVM());
+                                return EnumerableNumericSettingsVM.Factory<int, Int32SettingsVM>(meta, param.DefaultVal, new Int32SettingsVM());
                             case "Int64":
-                                return EnumerableNumericSettingsVM.Factory<long, Int64SettingsVM>(meta, defaultVal, new Int64SettingsVM());
+                                return EnumerableNumericSettingsVM.Factory<long, Int64SettingsVM>(meta, param.DefaultVal, new Int64SettingsVM());
                             case "Byte":
-                                return EnumerableNumericSettingsVM.Factory<byte, UInt8SettingsVM>(meta, defaultVal, new UInt8SettingsVM());
+                                return EnumerableNumericSettingsVM.Factory<byte, UInt8SettingsVM>(meta, param.DefaultVal, new UInt8SettingsVM());
                             case "UInt16":
-                                return EnumerableNumericSettingsVM.Factory<ushort, UInt16SettingsVM>(meta, defaultVal, new UInt16SettingsVM());
+                                return EnumerableNumericSettingsVM.Factory<ushort, UInt16SettingsVM>(meta, param.DefaultVal, new UInt16SettingsVM());
                             case "UInt32":
-                                return EnumerableNumericSettingsVM.Factory<uint, UInt32SettingsVM>(meta, defaultVal, new UInt32SettingsVM());
+                                return EnumerableNumericSettingsVM.Factory<uint, UInt32SettingsVM>(meta, param.DefaultVal, new UInt32SettingsVM());
                             case "UInt64":
-                                return EnumerableNumericSettingsVM.Factory<ulong, UInt64SettingsVM>(meta, defaultVal, new UInt64SettingsVM());
+                                return EnumerableNumericSettingsVM.Factory<ulong, UInt64SettingsVM>(meta, param.DefaultVal, new UInt64SettingsVM());
                             case "Double":
-                                return EnumerableNumericSettingsVM.Factory<double, DoubleSettingsVM>(meta, defaultVal, new DoubleSettingsVM());
+                                return EnumerableNumericSettingsVM.Factory<double, DoubleSettingsVM>(meta, param.DefaultVal, new DoubleSettingsVM());
                             case "Single":
-                                return EnumerableNumericSettingsVM.Factory<float, FloatSettingsVM>(meta, defaultVal, new FloatSettingsVM());
+                                return EnumerableNumericSettingsVM.Factory<float, FloatSettingsVM>(meta, param.DefaultVal, new FloatSettingsVM());
                             case "Decimal":
-                                return EnumerableNumericSettingsVM.Factory<decimal, DecimalSettingsVM>(meta, defaultVal, new DecimalSettingsVM());
+                                return EnumerableNumericSettingsVM.Factory<decimal, DecimalSettingsVM>(meta, param.DefaultVal, new DecimalSettingsVM());
                             case "ModKey":
-                                return EnumerableModKeySettingsVM.Factory(param, meta, defaultVal);
+                                return EnumerableModKeySettingsVM.Factory(param, meta, param.DefaultVal);
                             case "FormKey":
-                                return EnumerableFormKeySettingsVM.Factory(meta, defaultVal);
+                                return EnumerableFormKeySettingsVM.Factory(meta, param.DefaultVal);
                             case "String":
-                                return EnumerableStringSettingsVM.Factory(meta, defaultVal);
+                                return EnumerableStringSettingsVM.Factory(meta, param.DefaultVal);
                             default:
                                 {
                                     if (firstGen.Name.Contains("FormLink")
@@ -184,18 +187,18 @@ namespace Synthesis.Bethesda.GUI
                                         && firstGen.GenericTypeArguments.Length == 1)
                                     {
                                         var formLinkGen = firstGen.GenericTypeArguments[0];
-                                        return EnumerableFormLinkSettingsVM.Factory(param, meta, formLinkGen.FullName ?? string.Empty, defaultVal);
+                                        return EnumerableFormLinkSettingsVM.Factory(param, meta, formLinkGen.FullName ?? string.Empty, param.DefaultVal);
                                     }
                                     var foundType = param.Assembly.GetType(firstGen.FullName!);
                                     if (foundType != null)
                                     {
                                         if (foundType.IsEnum)
                                         {
-                                            return EnumerableEnumSettingsVM.Factory(meta, defaultVal, foundType);
+                                            return EnumerableEnumSettingsVM.Factory(meta, param.DefaultVal, foundType);
                                         }
                                         else
                                         {
-                                            return EnumerableObjectSettingsVM.Factory(param, meta, defaultVal, foundType);
+                                            return EnumerableObjectSettingsVM.Factory(param with { TargetType = foundType }, meta);
                                         }
                                     }
                                     return new UnknownSettingsVM(meta);
@@ -204,39 +207,42 @@ namespace Synthesis.Bethesda.GUI
                     }
                 case "Dictionary`2":
                     {
-                        var firstGen = targetType.GenericTypeArguments[0];
-                        var secondGen = targetType.GenericTypeArguments[1];
+                        var firstGen = param.TargetType.GenericTypeArguments[0];
+                        var secondGen = param.TargetType.GenericTypeArguments[1];
                         if (member != null
                             && firstGen.IsEnum
                             && (!member.TryGetCustomAttribute<SynthesisStaticEnumDictionary>(out var staticEnumAttr)
                             || staticEnumAttr.Enabled))
                         {
-                            return EnumDictionarySettingsVM.Factory(param, meta, firstGen, secondGen, defaultVal);
+                            return EnumDictionarySettingsVM.Factory(param with { TargetType = secondGen }, meta, firstGen);
                         }
                         else if (firstGen == typeof(string))
                         {
-                            return DictionarySettingsVM.Factory(param, meta, valType: secondGen, defaultVal: defaultVal);
+                            return DictionarySettingsVM.Factory(param with
+                            {
+                                TargetType = secondGen
+                            }, meta);
                         }
                         return new UnknownSettingsVM(meta);
                     }
                 default:
                     {
-                        if (targetType.Name.Contains("FormLink")
-                            && targetType.IsGenericType
-                            && targetType.GenericTypeArguments.Length == 1)
+                        if (param.TargetType.Name.Contains("FormLink")
+                            && param.TargetType.IsGenericType
+                            && param.TargetType.GenericTypeArguments.Length == 1)
                         {
-                            return FormLinkSettingsVM.Factory(param.LinkCache, meta, targetType, defaultVal);
+                            return FormLinkSettingsVM.Factory(param.LinkCache, meta, param.TargetType, param.DefaultVal);
                         }
-                        var foundType = param.Assembly.GetType(targetType.FullName!);
+                        var foundType = param.Assembly.GetType(param.TargetType.FullName!);
                         if (foundType != null)
                         {
                             if (foundType.IsEnum)
                             {
-                                return EnumSettingsVM.Factory(meta, defaultVal, foundType);
+                                return EnumSettingsVM.Factory(meta, param.DefaultVal, foundType);
                             }
                             else
                             {
-                                return new ObjectSettingsVM(param, meta, foundType, defaultVal);
+                                return new ObjectSettingsVM(param with { TargetType = foundType }, meta);
                             }
                         }
                         return new UnknownSettingsVM(meta);

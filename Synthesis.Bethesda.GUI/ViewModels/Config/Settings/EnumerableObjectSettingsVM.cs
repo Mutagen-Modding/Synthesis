@@ -98,15 +98,15 @@ namespace Synthesis.Bethesda.GUI
                 .ToArray());
         }
 
-        public static EnumerableObjectSettingsVM Factory(SettingsParameters param, FieldMeta fieldMeta, object? defaultVal, Type t)
+        public static EnumerableObjectSettingsVM Factory(SettingsParameters param, FieldMeta fieldMeta)
         {
-            var proto = new ObjectSettingsVM(param, FieldMeta.Empty, t, null);
+            var proto = new ObjectSettingsVM(param with { DefaultVal = null }, FieldMeta.Empty);;
             List<ObjectSettingsVM> defaultValues = new List<ObjectSettingsVM>();
-            if (defaultVal is IEnumerable e)
+            if (param.DefaultVal is IEnumerable e)
             {
                 foreach (var o in e)
                 {
-                    defaultValues.Add(new ObjectSettingsVM(param, FieldMeta.Empty, t, o));
+                    defaultValues.Add(new ObjectSettingsVM(param with { DefaultVal = o }, FieldMeta.Empty));
                 }
             }
             return new EnumerableObjectSettingsVM(fieldMeta, proto, defaultValues.ToArray());

@@ -70,10 +70,10 @@ namespace Synthesis.Bethesda.GUI
             _dictionary = this.Items.ToDictionary(x => x.Key, x => x);
         }
 
-        public static DictionarySettingsVM Factory(SettingsParameters param, FieldMeta fieldMeta, Type valType, object? defaultVal)
+        public static DictionarySettingsVM Factory(SettingsParameters param, FieldMeta fieldMeta)
         {
-            var vals = GetDefaultValDictionary(defaultVal);
-            var proto = SettingsNodeVM.MemberFactory(param, member: null, targetType: valType, defaultVal: null);
+            var vals = GetDefaultValDictionary(param.DefaultVal);
+            var proto = SettingsNodeVM.MemberFactory(param with { DefaultVal = null }, member: null);
             proto.WrapUp();
             return new DictionarySettingsVM(
                 fieldMeta,
@@ -81,7 +81,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     return new KeyValuePair<string, SettingsNodeVM>(
                         defVal.Key.ToString()!,
-                        SettingsNodeVM.MemberFactory(param, member: null, targetType: valType, defaultVal: defVal.Value));
+                        SettingsNodeVM.MemberFactory(param with { DefaultVal = defVal.Value }, member: null));
                 }).ToArray(),
                 prototype: proto);
         }

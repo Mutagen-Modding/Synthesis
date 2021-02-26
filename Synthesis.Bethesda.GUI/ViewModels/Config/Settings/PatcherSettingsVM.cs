@@ -127,8 +127,12 @@ namespace Synthesis.Bethesda.GUI
                                                 var t = assemb.GetType(s.TypeName);
                                                 if (t == null) return null;
                                                 return new ReflectionSettingsVM(
-                                                    new SettingsParameters(assemb, parent.Profile.LoadOrder.Connect(), parent.Profile.SimpleLinkCache),
-                                                    t,
+                                                    new SettingsParameters(
+                                                        assemb, 
+                                                        parent.Profile.LoadOrder.Connect(),
+                                                        parent.Profile.SimpleLinkCache,
+                                                        t,
+                                                        Activator.CreateInstance(t)),
                                                     nickname: i.settingsTarget.Targets[index].Nickname,
                                                     settingsFolder: Path.Combine(Execution.Paths.TypicalExtraData, parent.DisplayName),
                                                     settingsSubPath: i.settingsTarget.Targets[index].Path);
