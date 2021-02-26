@@ -20,6 +20,10 @@ using System.Diagnostics;
 using System.Threading;
 using System.Windows;
 using System.Drawing;
+#if !DEBUG
+using Noggog.Utility;
+using System.Diagnostics;
+#endif
 
 namespace Synthesis.Bethesda.GUI
 {
