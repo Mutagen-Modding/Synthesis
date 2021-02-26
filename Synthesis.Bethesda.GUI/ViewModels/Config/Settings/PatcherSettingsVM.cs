@@ -132,7 +132,9 @@ namespace Synthesis.Bethesda.GUI
                                                         parent.Profile.LoadOrder.Connect(),
                                                         parent.Profile.SimpleLinkCache,
                                                         t,
-                                                        Activator.CreateInstance(t)),
+                                                        Activator.CreateInstance(t),
+                                                        MainVM: null!,
+                                                        Parent: null),
                                                     nickname: i.settingsTarget.Targets[index].Nickname,
                                                     settingsFolder: Path.Combine(Execution.Paths.TypicalExtraData, parent.DisplayName),
                                                     settingsSubPath: i.settingsTarget.Targets[index].Path);

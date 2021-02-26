@@ -20,12 +20,13 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Grid.Column="0"
                 Orientation="Horizontal">
-                <TextBlock
-                    x:Name="SettingsNameBlock"
+                <Button Grid.Row="0"
+                    x:Name="SettingNameButton"
                     Margin="4,4,6,0"
                     HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Style="{StaticResource ReflectionSettingName}" />
+                    Style="{StaticResource ReflectionSettingButton}">
+                    <TextBlock x:Name="SettingNameBlock" Style="{StaticResource ReflectionSettingName}" />
+                </Button>
                 <Button
                     x:Name="AddButton"
                     Width="40"

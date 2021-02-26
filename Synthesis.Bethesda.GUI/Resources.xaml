@@ -148,6 +148,18 @@
         <Setter Property="mahapps:ControlsHelper.MouseOverBorderBrush" Value="{StaticResource DarkSalmonBrush}" />
     </Style>
 
+    <Style
+        x:Key="ReflectionSettingButton"
+        BasedOn="{StaticResource Noggog.Styles.Button}"
+        TargetType="Button">
+        <Style.Resources>
+            <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource Salmon}" />
+            <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource LightSalmon}" />
+        </Style.Resources>
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource PaleYellowBrush}" />
+    </Style>
+
     <Style x:Key="ReflectionSettingName" TargetType="TextBlock">
         <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="MinWidth" Value="100" />

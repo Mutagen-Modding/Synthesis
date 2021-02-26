@@ -6,8 +6,13 @@ using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public record FieldMeta(string DisplayName, string DiskName, string? Tooltip)
+    public record FieldMeta(
+        string DisplayName,
+        string DiskName,
+        string? Tooltip,
+        ReflectionSettingsVM MainVM,
+        SettingsNodeVM? Parent)
     {
-        public static readonly FieldMeta Empty = new FieldMeta(string.Empty, string.Empty, null);
+        public static readonly FieldMeta Empty = new FieldMeta(string.Empty, string.Empty, null, null!, null);
     }
 }

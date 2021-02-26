@@ -3,21 +3,30 @@ using Mutagen.Bethesda.Synthesis.Settings;
 using Newtonsoft.Json.Linq;
 using Noggog;
 using Noggog.WPF;
+using ReactiveUI;
 using Serilog;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+using System.Windows.Input;
 
 namespace Synthesis.Bethesda.GUI
 {
     public abstract class SettingsNodeVM : ViewModel
     {
         public FieldMeta Meta { get; set; }
+        public Lazy<IEnumerable<SettingsNodeVM>> Parents { get; }
+
+        public ICommand FocusSettingCommand { get; }
 
         public SettingsNodeVM(FieldMeta fieldMeta)
         {
             Meta = fieldMeta;
+            Parents = new Lazy<IEnumerable<SettingsNodeVM>>(() => GetParents().Reverse());
+            FocusSettingCommand = ReactiveCommand.Create(() => Meta.MainVM.SelectedSettings = this);
         }
 
         public static SettingsNodeVM[] Factory(SettingsParameters param)
@@ -46,7 +55,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     try
                     {
-                        return m switch
+                        var node = m switch
                         {
                             PropertyInfo prop => MemberFactory(param with
                             {
@@ -60,6 +69,7 @@ namespace Synthesis.Bethesda.GUI
                             }, field),
                             _ => throw new ArgumentException(),
                         };
+                        return node;
                     }
                     catch (Exception ex)
                     {
@@ -108,9 +118,11 @@ namespace Synthesis.Bethesda.GUI
             }
 
             var meta = new FieldMeta(
-                DisplayName: displayName, 
+                DisplayName: displayName,
                 DiskName: diskName,
-                Tooltip: tooltip);
+                Tooltip: tooltip,
+                MainVM: param.MainVM,
+                Parent: param.Parent);
 
             switch (param.TargetType.Name)
             {
@@ -255,5 +267,15 @@ namespace Synthesis.Bethesda.GUI
         public abstract void Persist(JObject obj, ILogger logger);
 
         public abstract SettingsNodeVM Duplicate();
+
+        private IEnumerable<SettingsNodeVM> GetParents()
+        {
+            SettingsNodeVM? vm = this;
+            while (vm.Meta.Parent != null)
+            {
+                yield return vm.Meta.Parent;
+                vm = vm.Meta.Parent;
+            }
+        }
     }
 }

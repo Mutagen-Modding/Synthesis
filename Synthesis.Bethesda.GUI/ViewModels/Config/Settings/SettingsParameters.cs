@@ -14,5 +14,7 @@ namespace Synthesis.Bethesda.GUI
         IObservable<IChangeSet<LoadOrderEntryVM>> DetectedLoadOrder,
         IObservable<ILinkCache> LinkCache,
         Type TargetType,
-        object? DefaultVal);
+        object? DefaultVal,
+        ReflectionSettingsVM MainVM,
+        SettingsNodeVM? Parent);
 }

@@ -29,6 +29,9 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.Nodes)
                     .BindToStrict(this, x => x.Nodes.ItemsSource)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.FocusSettingCommand)
+                    .BindToStrict(this, x => x.SettingNameButton.Command)
+                    .DisposeWith(disposable);
             });
         }
     }

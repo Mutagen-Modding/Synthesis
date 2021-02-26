@@ -41,6 +41,11 @@ namespace Synthesis.Bethesda.GUI
         {
             _prototype = prototype;
             _defaultValues = defaultValues;
+            var subMeta = FieldMeta.Empty with
+            {
+                Parent = this,
+                MainVM = this.Meta.MainVM
+            };
             DeleteCommand = ReactiveCommand.Create(
                 execute: () =>
                 {
@@ -59,15 +64,21 @@ namespace Synthesis.Bethesda.GUI
                 {
                     var vm = (ObjectSettingsVM)_prototype.Duplicate();
                     vm.WrapUp();
+                    vm.Meta = subMeta;
                     Values.Add(new SelectionWrapper()
                     {
                         IsSelected = true,
                         Value = vm
                     });
                 });
-            Values.SetTo(defaultValues.Select(o => new SelectionWrapper()
+            Values.SetTo(defaultValues.Select(o =>
             {
-                Value = (ObjectSettingsVM)o.Duplicate()
+                var dup = (ObjectSettingsVM)o.Duplicate();
+                dup.Meta = subMeta;
+                return new SelectionWrapper()
+                {
+                    Value = dup
+                };
             }));
         }
 
@@ -100,7 +111,7 @@ namespace Synthesis.Bethesda.GUI
 
         public static EnumerableObjectSettingsVM Factory(SettingsParameters param, FieldMeta fieldMeta)
         {
-            var proto = new ObjectSettingsVM(param with { DefaultVal = null }, FieldMeta.Empty);;
+            var proto = new ObjectSettingsVM(param with { DefaultVal = null }, FieldMeta.Empty);
             List<ObjectSettingsVM> defaultValues = new List<ObjectSettingsVM>();
             if (param.DefaultVal is IEnumerable e)
             {

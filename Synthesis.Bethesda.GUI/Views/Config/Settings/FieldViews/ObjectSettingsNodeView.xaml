@@ -14,10 +14,13 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0"
-                x:Name="SettingNameBlock"
+            <Button Grid.Row="0"
+                x:Name="SettingNameButton"
                 Margin="4,0,6,4"
-                Style="{StaticResource ReflectionSettingName}" />
+                HorizontalAlignment="Left"
+                Style="{StaticResource ReflectionSettingButton}">
+                <TextBlock x:Name="SettingNameBlock" Style="{StaticResource ReflectionSettingName}" />
+            </Button>
             <ListBox Grid.Row="1"
                 x:Name="Nodes"
                 Background="Transparent"

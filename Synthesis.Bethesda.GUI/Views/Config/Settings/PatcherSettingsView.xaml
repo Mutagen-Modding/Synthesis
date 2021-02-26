@@ -110,7 +110,14 @@
             </TabControl.ItemTemplate>
             <TabControl.ContentTemplate>
                 <DataTemplate>
-                    <local:SettingsNodeView DataContext="{Binding ObjVM}" />
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <local:SettingDepthView Grid.Row="0" DataContext="{Binding SelectedSettings}" Margin="0,0,0,3" />
+                        <local:SettingsNodeView Grid.Row="1" DataContext="{Binding SelectedSettings}" />
+                    </Grid>
                 </DataTemplate>
             </TabControl.ContentTemplate>
         </TabControl>

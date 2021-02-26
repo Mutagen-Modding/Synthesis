@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.GUI
         public ObjectSettingsVM(SettingsParameters param, FieldMeta fieldMeta)
             : base(fieldMeta)
         {
-            var nodes = Factory(param);
+            var nodes = Factory(param with { Parent = this });
             _nodes = nodes
                 .ToDictionary(x => x.Meta.DiskName);
             _nodes.ForEach(n => n.Value.WrapUp());

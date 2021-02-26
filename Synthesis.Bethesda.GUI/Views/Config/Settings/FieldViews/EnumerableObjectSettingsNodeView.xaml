@@ -20,12 +20,14 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0"
-                x:Name="SettingsNameBlock"
+            <Button Grid.Row="0" Grid.Column="0"
+                x:Name="SettingNameButton"
                 Margin="4,4,6,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Style="{StaticResource ReflectionSettingName}" />
+                Style="{StaticResource ReflectionSettingButton}">
+                <TextBlock x:Name="SettingNameBlock" Style="{StaticResource ReflectionSettingName}" />
+            </Button>
             <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
                 x:Name="SettingsListBox"
                 MaxHeight="250"
@@ -34,7 +36,8 @@
                 BorderThickness="0"
                 ScrollViewer.CanContentScroll="False"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                SelectionMode="Extended">
+                SelectionMode="Extended"
+                Visibility="Collapsed">
                 <ListBox.ItemContainerStyle>
                     <Style BasedOn="{StaticResource Noggog.Styles.ListBoxItem.Plain}" TargetType="{x:Type ListBoxItem}">
                         <Setter Property="IsSelected" Value="{Binding IsSelected}" />
@@ -64,9 +67,7 @@
                                 BorderBrush="{StaticResource SalmonBrush}"
                                 BorderThickness="0,0,2,0"
                                 Visibility="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                            <local:ObjectSettingsNodeView
-                                Margin="0,3"
-                                DataContext="{Binding Value}" />
+                            <local:ObjectSettingsNodeView Margin="0,3" DataContext="{Binding Value}" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

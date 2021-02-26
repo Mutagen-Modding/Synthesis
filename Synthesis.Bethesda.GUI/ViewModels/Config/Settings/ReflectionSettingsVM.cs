@@ -11,7 +11,7 @@ using System.Collections.ObjectModel;
 using Serilog;
 using Newtonsoft.Json.Linq;
 using LibGit2Sharp;
-using Noggog;
+using ReactiveUI.Fody.Helpers;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -23,6 +23,9 @@ namespace Synthesis.Bethesda.GUI
         public string Nickname { get; }
         public ObjectSettingsVM ObjVM { get; }
 
+        [Reactive]
+        public SettingsNodeVM SelectedSettings { get; set; }
+
         public ReflectionSettingsVM(
             SettingsParameters param,
             string nickname, 
@@ -32,8 +35,18 @@ namespace Synthesis.Bethesda.GUI
             Nickname = nickname;
             SettingsFolder = settingsFolder;
             SettingsSubPath = settingsSubPath;
-            ObjVM = new ObjectSettingsVM(param, FieldMeta.Empty);
+            ObjVM = new ObjectSettingsVM(
+                param with 
+                {
+                    MainVM = this
+                },
+                FieldMeta.Empty with 
+                { 
+                    DisplayName = "Top Level",
+                    MainVM = this
+                });
             CompositeDisposable.Add(ObjVM);
+            SelectedSettings = ObjVM;
         }
 
         public async Task Import(

@@ -25,8 +25,11 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
+                this.WhenAnyValue(x => x.ViewModel!.FocusSettingCommand)
+                    .BindToStrict(this, x => x.SettingNameButton.Command)
+                    .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.Meta.DisplayName)
-                    .BindToStrict(this, x => x.SettingsNameBlock.Text)
+                    .BindToStrict(this, x => x.SettingNameBlock.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.Values.Count)
                     .BindToStrict(this, x => x.SettingsListBox.AlternationCount)
@@ -67,6 +70,12 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 Noggog.WPF.Drag.ListBoxDragDrop(this.SettingsListBox, () => this.ViewModel?.Values)
+                    .DisposeWith(disposable);
+                Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.ViewModel!.Meta.MainVM.SelectedSettings),
+                    this.WhenAnyValue(x => x.ViewModel),
+                    (sel, vm) => sel == vm ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.SettingsListBox.Visibility)
                     .DisposeWith(disposable);
             });
         }
