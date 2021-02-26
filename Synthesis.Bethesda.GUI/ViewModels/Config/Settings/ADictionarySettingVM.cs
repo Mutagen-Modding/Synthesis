@@ -63,7 +63,7 @@ namespace Synthesis.Bethesda.GUI
             obj[Meta.DiskName] = dictObj;
             foreach (var item in Items)
             {
-                item.Value.Meta = FieldMeta.Empty with { DisplayName = item.Key };
+                item.Value.Meta = FieldMeta.Empty with { DiskName = item.Key };
                 item.Value.Persist(dictObj, logger);
             }
         }
