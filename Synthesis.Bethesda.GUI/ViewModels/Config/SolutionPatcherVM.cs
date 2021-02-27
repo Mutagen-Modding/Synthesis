@@ -124,7 +124,7 @@ namespace Synthesis.Bethesda.GUI
                     (sln, proj, dotnet) =>
                     {
                         if (sln.Failed) return new ConfigurationState(sln);
-                        if (dotnet == null) return new ConfigurationState(ErrorResponse.Fail("No dotnet SDK installed"));
+                        if (!dotnet.Acceptable) return new ConfigurationState(ErrorResponse.Fail("No dotnet SDK installed"));
                         return new ConfigurationState(proj);
                     })
                 .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))

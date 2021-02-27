@@ -1,26 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Noggog.WPF;
+using ReactiveUI;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
+    public class NoDotNetSdkInstalledViewBase : NoggogUserControl<DotNetNotInstalledVM> { }
+
     /// <summary>
     /// Interaction logic for NoDotNetSdkInstalledView.xaml
     /// </summary>
-    public partial class NoDotNetSdkInstalledView : UserControl
+    public partial class NoDotNetSdkInstalledView : NoDotNetSdkInstalledViewBase
     {
         public NoDotNetSdkInstalledView()
         {
             InitializeComponent();
+            this.WhenActivated(dispose =>
+            {
+                this.WhenAnyValue(x => x.ViewModel!.DownloadCommand)
+                    .BindToStrict(this, x => x.DownloadButton.Command)
+                    .DisposeWith(dispose);
+                this.WhenAnyValue(x => x.ViewModel!.CustomDisplayString)
+                    .BindToStrict(this, x => x.CustomTextBlock.Text)
+                    .DisposeWith(dispose);
+            });
         }
     }
 }

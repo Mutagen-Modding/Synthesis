@@ -759,7 +759,7 @@ namespace Synthesis.Bethesda.GUI
                         .Select(x => x.DotNetSdkInstalled)
                         .Switch()
                         .Select(x => (x, true))
-                        .StartWith((default(System.Version?), false)),
+                        .StartWith((new DotNetVersion(string.Empty, false), false)),
                     missingReqMods
                         .QueryWhenChanged()
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
@@ -776,7 +776,7 @@ namespace Synthesis.Bethesda.GUI
                                 IsHaltingError = false
                             };
                         }
-                        if (dotnet.Item1 == null) return new ConfigurationState(ErrorResponse.Fail("No DotNet SDK installed"));
+                        if (!dotnet.Item1.Acceptable) return new ConfigurationState(ErrorResponse.Fail("No DotNet SDK installed"));
                         if (reqModsMissing.Count > 0)
                         {
                             return new ConfigurationState(ErrorResponse.Fail($"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));

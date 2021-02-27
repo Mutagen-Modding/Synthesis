@@ -15,8 +15,6 @@ using System.Reactive;
 using System.IO;
 using Synthesis.Bethesda.Execution;
 using Mutagen.Bethesda.Synthesis;
-using Noggog.Utility;
-using System.Diagnostics;
 using System.Threading;
 using System.Windows;
 using System.Drawing;
@@ -57,7 +55,7 @@ namespace Synthesis.Bethesda.GUI
 
         public IObservable<string?> NewestSynthesisVersion { get; }
         public IObservable<string?> NewestMutagenVersion { get; }
-        public IObservable<Version?> DotNetSdkInstalled { get; }
+        public IObservable<DotNetVersion> DotNetSdkInstalled { get; }
 
         private Window _window;
         public Rectangle Rectangle => new Rectangle(
@@ -81,14 +79,12 @@ namespace Synthesis.Bethesda.GUI
                 {
                     try
                     {
-                        var ret = await DotNetCommands.DotNetSdkVersion(CancellationToken.None);
-                        Log.Logger.Information($"dotnet SDK: {ret}");
-                        return ret;
+                        return await DotNetCommands.DotNetSdkVersion(CancellationToken.None);
                     }
                     catch (Exception ex)
                     {
                         Log.Logger.Error(ex, $"Error retrieving dotnet SDK version");
-                        return default(Version?);
+                        return new DotNetVersion(string.Empty, false);
                     }
                 });
             DotNetSdkInstalled = dotNet
@@ -96,6 +92,7 @@ namespace Synthesis.Bethesda.GUI
                 .Merge(dotNet
                     .FirstAsync(v => v != null))
                 .DistinctUntilChanged()
+                .Do(x => Log.Logger.Information($"dotnet SDK: {x}"))
                 .Replay(1)
                 .RefCount();
 
@@ -185,7 +182,7 @@ namespace Synthesis.Bethesda.GUI
             DotNetSdkInstalled
                 .Subscribe(v =>
                 {
-                    if (v == null)
+                    if (!v.Acceptable)
                     {
                         ActivePanel = new DotNetNotInstalledVM(this, this.ActivePanel, DotNetSdkInstalled);
                     }
@@ -248,13 +245,13 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public async Task<(string? MutagenVersion, string? SynthesisVersion)> GetLatestVersions(Version? dotNetVersion, bool includePrerelease)
+        public async Task<(string? MutagenVersion, string? SynthesisVersion)> GetLatestVersions(DotNetVersion dotNetVersion, bool includePrerelease)
         {
             try
             {
-                if (dotNetVersion == null)
+                if (!dotNetVersion.Acceptable)
                 {
-                    Log.Logger.Error("Can not query for latest nuget versions as there is not dotnet SDK installed.");
+                    Log.Logger.Error("Can not query for latest nuget versions as there is no acceptable dotnet SDK installed.");
                     return (null, null);
                 }
                 Log.Logger.Information("Querying for latest published library versions");
