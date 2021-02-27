@@ -8,13 +8,16 @@ using Serilog;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Windows.Input;
 
 namespace Synthesis.Bethesda.GUI
 {
+    [DebuggerDisplay("{Meta.DisplayName}")]
     public abstract class SettingsNodeVM : ViewModel
     {
         public FieldMeta Meta { get; set; }
@@ -22,11 +25,20 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand FocusSettingCommand { get; }
 
+        private readonly ObservableAsPropertyHelper<bool>? _IsFocused;
+        public bool IsFocused => _IsFocused?.Value ?? false;
+
         public SettingsNodeVM(FieldMeta fieldMeta)
         {
             Meta = fieldMeta;
             Parents = new Lazy<IEnumerable<SettingsNodeVM>>(() => GetParents().Reverse());
             FocusSettingCommand = ReactiveCommand.Create(() => Meta.MainVM.SelectedSettings = this);
+            if (this.Meta.MainVM != null && !this.Meta.IsPassthrough)
+            {
+                _IsFocused = this.Meta.MainVM.WhenAnyValue(x => x.SelectedSettings)
+                    .Select(x => IsFocusedCheck(x))
+                    .ToGuiProperty(this, nameof(IsFocused), deferSubscription: true);
+            }
         }
 
         public static SettingsNodeVM[] Factory(SettingsParameters param)
@@ -122,7 +134,8 @@ namespace Synthesis.Bethesda.GUI
                 DiskName: diskName,
                 Tooltip: tooltip,
                 MainVM: param.MainVM,
-                Parent: param.Parent);
+                Parent: param.Parent,
+                IsPassthrough: false);
 
             switch (param.TargetType.Name)
             {
@@ -273,9 +286,25 @@ namespace Synthesis.Bethesda.GUI
             SettingsNodeVM? vm = this;
             while (vm.Meta.Parent != null)
             {
-                yield return vm.Meta.Parent;
+                if (!vm.Meta.Parent.Meta.IsPassthrough)
+                {
+                    yield return vm.Meta.Parent;
+                }
                 vm = vm.Meta.Parent;
             }
+        }
+
+        private bool IsFocusedCheck(SettingsNodeVM target)
+        {
+            SettingsNodeVM? vm = this;
+            do
+            {
+                if (target == vm) return true;
+                if (!vm.Meta.Parent?.Meta.IsPassthrough ?? true) return false;
+                vm = vm.Meta.Parent;
+            }
+            while (vm != null);
+            return false;
         }
     }
 }

@@ -45,6 +45,8 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.DeleteCommand.CanExecute)
                     .Switch()
+                    .CombineLatest(this.WhenAnyValue(x => x.ViewModel!.IsFocused),
+                        (canExecute, focused) => canExecute && focused)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.DeleteButton.Visibility)
                     .DisposeWith(disposable);
@@ -71,11 +73,21 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 Noggog.WPF.Drag.ListBoxDragDrop(this.SettingsListBox, () => this.ViewModel?.Values)
                     .DisposeWith(disposable);
-                Observable.CombineLatest(
-                    this.WhenAnyValue(x => x.ViewModel!.Meta.MainVM.SelectedSettings),
-                    this.WhenAnyValue(x => x.ViewModel),
-                    (sel, vm) => sel == vm ? Visibility.Visible : Visibility.Collapsed)
+                this.WhenAnyValue(x => x.ViewModel!.IsFocused)
+                    .Select((sel) => sel ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.SettingsListBox.Visibility)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.IsFocused)
+                    .Select((sel) => sel ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.AddButton.Visibility)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.Values.Count)
+                    .Select(x =>
+                    {
+                        if (x == 0) return "No Items";
+                        return $"{x} Items";
+                    })
+                    .BindToStrict(this, x => x.NumItemsBlock.Text)
                     .DisposeWith(disposable);
             });
         }

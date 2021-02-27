@@ -19,12 +19,17 @@ namespace Synthesis.Bethesda.GUI
         {
             _nodes = nodes;
             Nodes = new ObservableCollection<SettingsNodeVM>(_nodes.Values);
+            Nodes.ForEach(n => n.Meta = n.Meta with
+            {
+                Parent = this,
+                MainVM = this.Meta.MainVM
+            });
         }
 
         public ObjectSettingsVM(SettingsParameters param, FieldMeta fieldMeta)
             : base(fieldMeta)
         {
-            var nodes = Factory(param with { Parent = this });
+            var nodes = Factory(param with { Parent = this, MainVM = this.Meta.MainVM });
             _nodes = nodes
                 .ToDictionary(x => x.Meta.DiskName);
             _nodes.ForEach(n => n.Value.WrapUp());

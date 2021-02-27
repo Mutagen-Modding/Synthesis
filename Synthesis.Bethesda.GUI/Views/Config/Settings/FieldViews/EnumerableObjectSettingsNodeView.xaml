@@ -18,7 +18,7 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Button Grid.Row="0" Grid.Column="0"
                 x:Name="SettingNameButton"
@@ -30,14 +30,12 @@
             </Button>
             <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
                 x:Name="SettingsListBox"
-                MaxHeight="250"
                 AllowDrop="True"
                 Background="Transparent"
                 BorderThickness="0"
                 ScrollViewer.CanContentScroll="False"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                SelectionMode="Extended"
-                Visibility="Collapsed">
+                SelectionMode="Extended">
                 <ListBox.ItemContainerStyle>
                     <Style BasedOn="{StaticResource Noggog.Styles.ListBoxItem.Plain}" TargetType="{x:Type ListBoxItem}">
                         <Setter Property="IsSelected" Value="{Binding IsSelected}" />
@@ -73,18 +71,15 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <TextBlock Grid.Column="0" Grid.ColumnSpan="2"
-                x:Name="NoItemsBlock"
+                x:Name="NumItemsBlock"
                 Width="80"
                 Margin="123,4,0,0"
-                HorizontalAlignment="Left"
-                Foreground="{StaticResource MahApps.Brushes.Gray8}"
-                Text="No items">
+                HorizontalAlignment="Left">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
-                        <Setter Property="Visibility" Value="Collapsed" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Values.Count}" Value="0">
-                                <Setter Property="Visibility" Value="Visible" />
+                                <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray8}" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

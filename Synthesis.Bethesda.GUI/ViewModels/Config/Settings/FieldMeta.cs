@@ -11,8 +11,9 @@ namespace Synthesis.Bethesda.GUI
         string DiskName,
         string? Tooltip,
         ReflectionSettingsVM MainVM,
-        SettingsNodeVM? Parent)
+        SettingsNodeVM? Parent,
+        bool IsPassthrough)
     {
-        public static readonly FieldMeta Empty = new FieldMeta(string.Empty, string.Empty, null, null!, null);
+        public static readonly FieldMeta Empty = new FieldMeta(string.Empty, string.Empty, null, null!, null, false);
     }
 }

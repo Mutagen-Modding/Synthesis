@@ -44,8 +44,10 @@ namespace Synthesis.Bethesda.GUI
             var subMeta = FieldMeta.Empty with
             {
                 Parent = this,
-                MainVM = this.Meta.MainVM
+                MainVM = this.Meta.MainVM,
+                IsPassthrough = true,
             };
+            _prototype.Meta = subMeta;
             DeleteCommand = ReactiveCommand.Create(
                 execute: () =>
                 {
@@ -111,13 +113,23 @@ namespace Synthesis.Bethesda.GUI
 
         public static EnumerableObjectSettingsVM Factory(SettingsParameters param, FieldMeta fieldMeta)
         {
-            var proto = new ObjectSettingsVM(param with { DefaultVal = null }, FieldMeta.Empty);
+            var proto = new ObjectSettingsVM(param with { DefaultVal = null }, FieldMeta.Empty with 
+            { 
+                Parent = fieldMeta.Parent, 
+                MainVM = fieldMeta.MainVM,
+                IsPassthrough = true,
+            });
             List<ObjectSettingsVM> defaultValues = new List<ObjectSettingsVM>();
             if (param.DefaultVal is IEnumerable e)
             {
                 foreach (var o in e)
                 {
-                    defaultValues.Add(new ObjectSettingsVM(param with { DefaultVal = o }, FieldMeta.Empty));
+                    defaultValues.Add(new ObjectSettingsVM(param with { DefaultVal = o }, FieldMeta.Empty with
+                    {
+                        Parent = fieldMeta.Parent,
+                        MainVM = fieldMeta.MainVM,
+                        IsPassthrough = true,
+                    }));
                 }
             }
             return new EnumerableObjectSettingsVM(fieldMeta, proto, defaultValues.ToArray());
