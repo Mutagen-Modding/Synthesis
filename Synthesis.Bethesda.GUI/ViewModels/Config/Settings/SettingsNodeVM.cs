@@ -1,4 +1,5 @@
 using DynamicData;
+using Humanizer;
 using Mutagen.Bethesda.Synthesis.Settings;
 using Newtonsoft.Json.Linq;
 using Noggog;
@@ -123,7 +124,7 @@ namespace Synthesis.Bethesda.GUI
             return diskName;
         }
 
-        public static SettingsNodeVM MemberFactory(SettingsParameters param, MemberInfo? member)
+        public static string GetDisplayName(MemberInfo? member)
         {
             string displayName;
             if (member == null)
@@ -136,8 +137,14 @@ namespace Synthesis.Bethesda.GUI
             }
             else
             {
-                displayName = member.Name;
+                displayName = member.Name.Humanize(LetterCasing.Title);
             }
+            return displayName;
+        }
+
+        public static SettingsNodeVM MemberFactory(SettingsParameters param, MemberInfo? member)
+        {
+            string displayName = GetDisplayName(member);
             string diskName = GetDiskName(member);
 
             string? tooltip = null;
