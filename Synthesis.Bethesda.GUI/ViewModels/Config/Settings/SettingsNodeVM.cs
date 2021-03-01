@@ -54,8 +54,12 @@ namespace Synthesis.Bethesda.GUI
                     || m.MemberType == MemberTypes.Field)
                 .Where(m =>
                 {
-                    if (m is not PropertyInfo prop) return true;
-                    return prop.GetSetMethod() != null;
+                    return m switch
+                    {
+                        PropertyInfo prop => !prop.IsStatic() && prop.GetSetMethod() != null,
+                        FieldInfo field => !field.IsStatic && !field.IsInitOnly,
+                        _ => true,
+                    };
                 })
                 .Where(m => m.GetCustomAttribute<SynthesisIgnoreSetting>() == null)
                 .OrderBy(m =>
