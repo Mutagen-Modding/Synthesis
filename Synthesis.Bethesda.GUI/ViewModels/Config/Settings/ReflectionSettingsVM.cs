@@ -12,6 +12,7 @@ using Serilog;
 using Newtonsoft.Json.Linq;
 using LibGit2Sharp;
 using ReactiveUI.Fody.Helpers;
+using System.Reactive.Subjects;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -25,6 +26,9 @@ namespace Synthesis.Bethesda.GUI
 
         [Reactive]
         public SettingsNodeVM SelectedSettings { get; set; }
+
+        [Reactive]
+        public SettingsNodeVM? ScrolledToSettings { get; set; }
 
         public ReflectionSettingsVM(
             SettingsParameters param,

@@ -32,7 +32,12 @@ namespace Synthesis.Bethesda.GUI
         {
             Meta = fieldMeta;
             Parents = new Lazy<IEnumerable<SettingsNodeVM>>(() => GetParents().Reverse());
-            FocusSettingCommand = ReactiveCommand.Create(() => Meta.MainVM.SelectedSettings = this);
+            FocusSettingCommand = ReactiveCommand.Create(() =>
+            {
+                var oldSetting = Meta.MainVM.SelectedSettings;
+                Meta.MainVM.SelectedSettings = this;
+                Meta.MainVM.ScrolledToSettings = oldSetting;
+            });
             if (this.Meta.MainVM != null && !this.Meta.IsPassthrough)
             {
                 _IsFocused = this.Meta.MainVM.WhenAnyValue(x => x.SelectedSettings)

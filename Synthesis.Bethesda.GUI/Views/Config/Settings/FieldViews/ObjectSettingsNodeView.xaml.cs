@@ -4,6 +4,7 @@ using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
+using System;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -31,6 +32,25 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.FocusSettingCommand)
                     .BindToStrict(this, x => x.SettingNameButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.Meta.MainVM.ScrolledToSettings)
+                    .WithLatestFrom(this.WhenAnyValue(x => x.ViewModel!.Meta.MainVM.SelectedSettings),
+                        (Scrolled, Selected) => (Scrolled, Selected))
+                    .Where(x => x.Selected == this.ViewModel)
+                    .Delay(TimeSpan.FromMilliseconds(300), RxApp.MainThreadScheduler)
+                    .Subscribe(setting =>
+                    {
+                        if (this.ViewModel == null || this.Nodes.Items == null || this.Nodes.Items.Count == 0) return;
+                        var target = setting.Scrolled;
+                        while (target != null)
+                        {
+                            if (this.ViewModel.Nodes.Contains(target))
+                            {
+                                this.Nodes.ScrollIntoView(target);
+                            }
+                            target = target.Meta.Parent;
+                        }
+                    })
                     .DisposeWith(disposable);
             });
         }
