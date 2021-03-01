@@ -4,6 +4,13 @@ using System;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
+    public record GithubPatcherLastRunState(
+        string TargetRepo,
+        string ProjectSubpath,
+        string Commit, 
+        string MutagenVersion,
+        string SynthesisVersion);
+
     public class GithubPatcherSettings : PatcherSettings
     {
         public string ID = string.Empty;
@@ -21,6 +28,7 @@ namespace Synthesis.Bethesda.Execution.Settings
         public string ManualMutagenVersion = string.Empty;
         public PatcherNugetVersioningEnum SynthesisVersionType = PatcherNugetVersioningEnum.Profile;
         public string ManualSynthesisVersion = string.Empty;
+        public GithubPatcherLastRunState? LastSuccessfulRun;
 
         public override void Print(IRunReporter logger)
         {

@@ -28,10 +28,10 @@ namespace Synthesis.Bethesda.GUI
         public IList? SelectedValues { get; set; }
 
         public EnumerableSettingsVM(
-            SettingsMeta memberName,
+            FieldMeta fieldMeta,
             Func<JsonElement, TryGet<IBasicSettingsNodeVM>> get,
             Action<ObservableCollection<IBasicSettingsNodeVM>> add)
-            : base(memberName)
+            : base(fieldMeta)
         {
             _import = get;
             _add = add;

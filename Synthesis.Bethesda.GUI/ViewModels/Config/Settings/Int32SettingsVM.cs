@@ -4,13 +4,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class Int32SettingsVM : BasicSettingsVM<int>
     {
-        public Int32SettingsVM(SettingsMeta memberName, object? defaultVal)
-            : base(memberName, defaultVal)
+        public Int32SettingsVM(FieldMeta fieldMeta, object? defaultVal)
+            : base(fieldMeta, defaultVal)
         {
         }
 
         public Int32SettingsVM()
-            : base(SettingsMeta.Empty, default)
+            : base(FieldMeta.Empty, default)
         {
         }
 

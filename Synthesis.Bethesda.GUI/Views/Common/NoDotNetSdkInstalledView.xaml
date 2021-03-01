@@ -1,4 +1,4 @@
-<UserControl
+<local:NoDotNetSdkInstalledViewBase
     x:Class="Synthesis.Bethesda.GUI.Views.NoDotNetSdkInstalledView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -22,12 +22,13 @@
             Foreground="{StaticResource SalmonBrush}"
             Text="Install DotNet SDK" />
         <TextBlock Grid.Row="1"
+            x:Name="CustomTextBlock"
             Margin="20,0"
             Text="While the app can open with the DotNet Runtime, it also needs the SDK to be able to function." />
         <Button Grid.Row="2"
+            x:Name="DownloadButton"
             Margin="20,20"
             HorizontalAlignment="Left"
-            Command="{Binding DownloadCommand}"
             FontSize="24">
             Download
         </Button>
@@ -35,4 +36,4 @@
             Margin="20,20"
             Text="If you have already installed the SDK, try restarting Synthesis and/or your computer." />
     </Grid>
-</UserControl>
+</local:NoDotNetSdkInstalledViewBase>

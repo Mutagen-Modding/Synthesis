@@ -23,8 +23,11 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
+                this.WhenAnyValue(x => x.ViewModel!.FocusSettingCommand)
+                    .BindToStrict(this, x => x.SettingNameButton.Command)
+                    .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.Meta.DisplayName)
-                    .BindToStrict(this, x => x.SettingsNameBlock.Text)
+                    .BindToStrict(this, x => x.SettingNameBlock.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.Values.Count)
                     .BindToStrict(this, x => x.SettingsListBox.AlternationCount)

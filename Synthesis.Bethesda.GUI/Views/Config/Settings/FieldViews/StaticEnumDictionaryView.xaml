@@ -12,17 +12,17 @@
         <Grid MinHeight="25">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0"
-                x:Name="SettingsNameBlock"
+            <Button Grid.Row="0"
+                x:Name="SettingNameButton"
                 Margin="4,4,6,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Style="{StaticResource ReflectionSettingName}" />
-            <TabControl Grid.Row="1"
-                x:Name="TabControl"
-                MinHeight="200">
+                Style="{StaticResource ReflectionSettingButton}">
+                <TextBlock x:Name="SettingNameBlock" Style="{StaticResource ReflectionSettingName}" />
+            </Button>
+            <TabControl x:Name="TabControl" Grid.Row="1">
                 <TabControl.Resources>
                     <Style BasedOn="{StaticResource MahApps.Styles.TabItem}" TargetType="TabItem" />
                 </TabControl.Resources>

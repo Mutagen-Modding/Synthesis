@@ -16,12 +16,12 @@ namespace Synthesis.Bethesda.GUI
         private readonly string[] _enumNames;
 
         public EnumerableEnumSettingsVM(
-            SettingsMeta memberName,
+            FieldMeta fieldMeta,
             string[] defaultVal,
             string[] enumNames)
-            : base(memberName,
+            : base(fieldMeta,
                   get: null!,
-                  add: coll => coll.Add(new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(SettingsMeta.Empty, enumNames[0], enumNames))
+                  add: coll => coll.Add(new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(FieldMeta.Empty, enumNames[0], enumNames))
                   {
                       IsSelected = true
                   }))
@@ -31,11 +31,11 @@ namespace Synthesis.Bethesda.GUI
             _enumNames = enumNames;
             Values.SetTo(defaultVal.Select(i =>
             {
-                return new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(SettingsMeta.Empty, i, enumNames));
+                return new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(FieldMeta.Empty, i, enumNames));
             }));
         }
 
-        public static EnumerableEnumSettingsVM Factory(SettingsMeta memberName, object? defaultVal, Type enumType)
+        public static EnumerableEnumSettingsVM Factory(FieldMeta fieldMeta, object? defaultVal, Type enumType)
         {
             var names = Enum.GetNames(enumType).ToArray();
             var nameSet = names.ToHashSet();
@@ -57,7 +57,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 defaults = Array.Empty<string>();
             }
-            return new EnumerableEnumSettingsVM(memberName, defaults, names);
+            return new EnumerableEnumSettingsVM(fieldMeta, defaults, names);
         }
 
         private TryGet<IBasicSettingsNodeVM> ImportSingle(JsonElement elem)
@@ -66,7 +66,7 @@ namespace Synthesis.Bethesda.GUI
             if (str != null && _enumNames.Contains(str))
             {
                 return TryGet<IBasicSettingsNodeVM>.Succeed(
-                    new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(SettingsMeta.Empty, str, _enumNames)));
+                    new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(FieldMeta.Empty, str, _enumNames)));
             }
             return TryGet<IBasicSettingsNodeVM>.Failure;
         }
@@ -79,7 +79,7 @@ namespace Synthesis.Bethesda.GUI
                 var str = elem.ToString();
                 if (str != null && _enumNames.Contains(str))
                 {
-                    Values.Add(new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(SettingsMeta.Empty, str, _enumNames)));
+                    Values.Add(new ListElementWrapperVM<string, EnumSettingsVM>(new EnumSettingsVM(FieldMeta.Empty, str, _enumNames)));
                 }
             }
         }

@@ -25,8 +25,8 @@ namespace Synthesis.Bethesda.GUI
 
         private Dictionary<string, DictionarySettingItemVM> _dictionary;
 
-        public DictionarySettingsVM(SettingsMeta memberName, KeyValuePair<string, SettingsNodeVM>[] values, SettingsNodeVM prototype)
-            : base(memberName, values, prototype)
+        public DictionarySettingsVM(FieldMeta fieldMeta, KeyValuePair<string, SettingsNodeVM>[] values, SettingsNodeVM prototype)
+            : base(fieldMeta, values, prototype)
         {
             _dictionary = this.Items.ToDictionary(x => x.Key, x => x);
             AddCommand = ReactiveCommand.Create(
@@ -70,18 +70,18 @@ namespace Synthesis.Bethesda.GUI
             _dictionary = this.Items.ToDictionary(x => x.Key, x => x);
         }
 
-        public static DictionarySettingsVM Factory(SettingsParameters param, SettingsMeta memberName, Type valType, object? defaultVal)
+        public static DictionarySettingsVM Factory(SettingsParameters param, FieldMeta fieldMeta)
         {
-            var vals = GetDefaultValDictionary(defaultVal);
-            var proto = SettingsNodeVM.MemberFactory(param, member: null, targetType: valType, defaultVal: null);
+            var vals = GetDefaultValDictionary(param.DefaultVal);
+            var proto = SettingsNodeVM.MemberFactory(param with { DefaultVal = null }, member: null);
             proto.WrapUp();
             return new DictionarySettingsVM(
-                memberName,
+                fieldMeta,
                 vals.Select(defVal =>
                 {
                     return new KeyValuePair<string, SettingsNodeVM>(
                         defVal.Key.ToString()!,
-                        SettingsNodeVM.MemberFactory(param, member: null, targetType: valType, defaultVal: defVal.Value));
+                        SettingsNodeVM.MemberFactory(param with { DefaultVal = defVal.Value }, member: null));
                 }).ToArray(),
                 prototype: proto);
         }

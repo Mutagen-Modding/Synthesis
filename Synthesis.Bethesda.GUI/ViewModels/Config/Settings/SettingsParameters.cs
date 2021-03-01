@@ -12,5 +12,9 @@ namespace Synthesis.Bethesda.GUI
     public record SettingsParameters(
         Assembly Assembly,
         IObservable<IChangeSet<LoadOrderEntryVM>> DetectedLoadOrder,
-        IObservable<ILinkCache> LinkCache);
+        IObservable<ILinkCache> LinkCache,
+        Type TargetType,
+        object? DefaultVal,
+        ReflectionSettingsVM MainVM,
+        SettingsNodeVM? Parent);
 }

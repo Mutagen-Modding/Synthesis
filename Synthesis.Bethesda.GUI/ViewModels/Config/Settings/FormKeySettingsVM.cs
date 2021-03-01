@@ -12,13 +12,13 @@ namespace Synthesis.Bethesda.GUI
 {
     public class FormKeySettingsVM : BasicSettingsVM<FormKey>
     {
-        public FormKeySettingsVM(SettingsMeta memberName, object? defaultVal)
-            : base(memberName, defaultVal is FormKey form ? StripOrigin(form) : null)
+        public FormKeySettingsVM(FieldMeta fieldMeta, object? defaultVal)
+            : base(fieldMeta, defaultVal is FormKey form ? StripOrigin(form) : null)
         {
         }
 
         public FormKeySettingsVM()
-            : base(SettingsMeta.Empty, default)
+            : base(FieldMeta.Empty, default)
         {
         }
 

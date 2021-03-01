@@ -105,6 +105,11 @@ namespace Synthesis.Bethesda.GUI
                     return $"{time.TotalSeconds:n1}s";
                 })
                 .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty);
+
+            this.WhenAnyValue(x => x.State)
+                .Where(x => x.Succeeded && x.Value == RunState.Finished)
+                .Subscribe(_ => config.SuccessfulRunCompleted())
+                .DisposeWith(this);
         }
     }
 

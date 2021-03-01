@@ -36,11 +36,13 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public DictionarySettingItemVM? Selected { get; set; }
 
-        public ADictionarySettingsVM(SettingsMeta memberName, KeyValuePair<string, SettingsNodeVM>[] values, SettingsNodeVM prototype)
-            : base(memberName)
+        public ADictionarySettingsVM(FieldMeta fieldMeta, KeyValuePair<string, SettingsNodeVM>[] values, SettingsNodeVM prototype)
+            : base(fieldMeta with { IsPassthrough = true })
         {
             _values = values;
             _prototype = prototype;
+            _values.ForEach(v => v.Value.Meta = v.Value.Meta with { Parent = this, MainVM = this.Meta.MainVM });
+            _prototype.Meta = prototype.Meta with { Parent = this, MainVM = this.Meta.MainVM };
             Items.SetTo(values.Select(e => new DictionarySettingItemVM(e.Key, e.Value.Duplicate())));
             Selected = Items.FirstOrDefault();
         }
@@ -63,7 +65,7 @@ namespace Synthesis.Bethesda.GUI
             obj[Meta.DiskName] = dictObj;
             foreach (var item in Items)
             {
-                item.Value.Meta = SettingsMeta.Empty with { DisplayName = item.Key };
+                item.Value.Meta = FieldMeta.Empty with { DiskName = item.Key };
                 item.Value.Persist(dictObj, logger);
             }
         }

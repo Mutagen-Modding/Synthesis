@@ -7,18 +7,18 @@ namespace Synthesis.Bethesda.GUI
 {
     public class EnumDictionarySettingsVM : ADictionarySettingsVM
     {
-        public EnumDictionarySettingsVM(SettingsMeta memberName, KeyValuePair<string, SettingsNodeVM>[] values, SettingsNodeVM prototype)
-            : base(memberName, values, prototype)
+        public EnumDictionarySettingsVM(FieldMeta fieldMeta, KeyValuePair<string, SettingsNodeVM>[] values, SettingsNodeVM prototype)
+            : base(fieldMeta, values, prototype)
         {
         }
 
-        public static EnumDictionarySettingsVM Factory(SettingsParameters param, SettingsMeta memberName, Type enumType, Type valType, object? defaultVals)
+        public static EnumDictionarySettingsVM Factory(SettingsParameters param, FieldMeta fieldMeta, Type enumType)
         {
-            var vals = GetDefaultValDictionary(defaultVals);
-            var proto = SettingsNodeVM.MemberFactory(param, member: null, targetType: valType, defaultVal: null);
+            var vals = GetDefaultValDictionary(param.DefaultVal);
+            var proto = SettingsNodeVM.MemberFactory(param with { DefaultVal = null }, member: null);
             proto.WrapUp();
             return new EnumDictionarySettingsVM(
-                memberName,
+                fieldMeta,
                 Enum.GetNames(enumType).Select(e =>
                 {
                     if (!vals.TryGetValue(e, out var defVal))
@@ -27,7 +27,7 @@ namespace Synthesis.Bethesda.GUI
                     }
                     return new KeyValuePair<string, SettingsNodeVM>(
                         e,
-                        SettingsNodeVM.MemberFactory(param, member: null, targetType: valType, defaultVal: defVal));
+                        SettingsNodeVM.MemberFactory(param with { DefaultVal = defVal }, member: null));
                 }).ToArray(),
                 proto);
         }

@@ -113,8 +113,10 @@ namespace Synthesis.Bethesda.Execution.CLI
             string path,
             bool directExe,
             CancellationToken cancel,
-            bool build)
+            bool build,
+            Action<string> log)
         {
+            log($"Checking {path} for settings.  Direct exe? {directExe}.  Build? {build}");
             using var proc = ProcessWrapper.Create(
                 GetStart(path, directExe, new Synthesis.Bethesda.SettingsQuery(), build: build),
                 cancel: cancel,

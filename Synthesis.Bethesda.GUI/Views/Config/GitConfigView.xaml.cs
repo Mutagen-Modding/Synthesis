@@ -303,6 +303,9 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => !x)
                     .BindToStrict(this, x => x.Nugets.IsEnabled)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.SetToLastSuccessfulRunCommand)
+                    .BindToStrict(this, x => x.SetToLastRunButton.Command)
+                    .DisposeWith(disposable);
                 #endregion
             });
         }

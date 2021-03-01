@@ -57,6 +57,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <local:GitTargetView Grid.Row="0" RespectLocking="True" />
                         <local:PatcherVersioningView Grid.Row="1"
@@ -66,6 +67,14 @@
                         <local:NugetsVersioningView Grid.Row="2"
                             x:Name="Nugets"
                             Margin="0,5,0,0" />
+                        <Button Grid.Row="3"
+                            x:Name="SetToLastRunButton"
+                            Height="25"
+                            Margin="5,5,0,0"
+                            HorizontalAlignment="Left"
+                            ToolTip="Sets the versioning to match the explict settings that the last successful run used">
+                            Set to last successful run
+                        </Button>
                     </Grid>
                 </ScrollViewer>
             </TabItem>

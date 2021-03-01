@@ -14,19 +14,21 @@
         <Grid MinHeight="25">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0"
-                x:Name="SettingsNameBlock"
+            <Button Grid.Row="0"
+                x:Name="SettingNameButton"
                 Margin="4,4,6,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Style="{StaticResource ReflectionSettingName}" />
+                Style="{StaticResource ReflectionSettingButton}">
+                <TextBlock x:Name="SettingsNameBlock" Style="{StaticResource ReflectionSettingName}" />
+            </Button>
             <TabControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
                 x:Name="TabControl"
                 MinHeight="200">

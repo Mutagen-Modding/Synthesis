@@ -20,12 +20,13 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Grid.Column="0"
                 Orientation="Horizontal">
-                <TextBlock
-                    x:Name="SettingsNameBlock"
+                <Button Grid.Row="0"
+                    x:Name="SettingNameButton"
                     Margin="4,4,6,0"
                     HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Style="{StaticResource ReflectionSettingName}" />
+                    Style="{StaticResource ReflectionSettingButton}">
+                    <TextBlock x:Name="SettingNameBlock" Style="{StaticResource ReflectionSettingName}" />
+                </Button>
                 <Button
                     x:Name="AddButton"
                     Width="40"
@@ -54,16 +55,13 @@
                         Kind="Close" />
                 </Button>
             </StackPanel>
-            <!--  Disable virtualization to power numbering via Alternate Index systems  -->
             <ListBox Grid.Row="1"
                 x:Name="SettingsListBox"
-                MaxHeight="250"
                 AllowDrop="True"
                 Background="Transparent"
                 BorderThickness="0"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                SelectionMode="Extended"
-                VirtualizingPanel.IsVirtualizing="False">
+                SelectionMode="Extended">
                 <ListBox.ItemContainerStyle>
                     <Style BasedOn="{StaticResource Noggog.Styles.ListBoxItem.Plain}" TargetType="{x:Type ListBoxItem}">
                         <Setter Property="IsSelected" Value="{Binding IsSelected}" />
@@ -95,36 +93,6 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <Grid Grid.Column="0"
-                                x:Name="NumberGrid"
-                                HorizontalAlignment="Right"
-                                Background="Transparent">
-                                <TextBlock
-                                    Margin="0,0,4,0"
-                                    VerticalAlignment="Center"
-                                    Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplatedParent.(ItemsControl.AlternationIndex)}"
-                                    ToolTip="Index of item on the list">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray8}" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
-                                                    <Setter Property="Foreground" Value="{StaticResource PaleYellowBrush}" />
-                                                </DataTrigger>
-                                                <MultiDataTrigger>
-                                                    <MultiDataTrigger.Conditions>
-                                                        <Condition Binding="{Binding IsMouseOver, ElementName=NumberGrid}" Value="True" />
-                                                        <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="False" />
-                                                    </MultiDataTrigger.Conditions>
-                                                    <MultiDataTrigger.Setters>
-                                                        <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray4}" />
-                                                    </MultiDataTrigger.Setters>
-                                                </MultiDataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                            </Grid>
                             <ContentPresenter Grid.Column="1"
                                 x:Name="ValueContent"
                                 Margin="0,0,10,0"

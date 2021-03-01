@@ -133,6 +133,11 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<StatusRecord> _StatusDisplay;
         public StatusRecord StatusDisplay => _StatusDisplay.Value;
 
+        [Reactive]
+        public GithubPatcherLastRunState? LastSuccessfulRun { get; set; }
+
+        public ICommand SetToLastSuccessfulRunCommand { get; }
+
         public GitPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
         {
@@ -754,7 +759,7 @@ namespace Synthesis.Bethesda.GUI
                         .Select(x => x.DotNetSdkInstalled)
                         .Switch()
                         .Select(x => (x, true))
-                        .StartWith((default(System.Version?), false)),
+                        .StartWith((new DotNetVersion(string.Empty, false), false)),
                     missingReqMods
                         .QueryWhenChanged()
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
@@ -771,7 +776,7 @@ namespace Synthesis.Bethesda.GUI
                                 IsHaltingError = false
                             };
                         }
-                        if (dotnet.Item1 == null) return new ConfigurationState(ErrorResponse.Fail("No DotNet SDK installed"));
+                        if (!dotnet.Item1.Acceptable) return new ConfigurationState(ErrorResponse.Fail("No DotNet SDK installed"));
                         if (reqModsMissing.Count > 0)
                         {
                             return new ConfigurationState(ErrorResponse.Fail($"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));
@@ -950,6 +955,30 @@ namespace Synthesis.Bethesda.GUI
                         Processing: false,
                         Blocking: false,
                         Command: null));
+
+            SetToLastSuccessfulRunCommand = ReactiveCommand.Create(
+                canExecute: this.WhenAnyValue(x => x.LastSuccessfulRun)
+                    .Select(x =>
+                    {
+                        return x != null
+                            && !x.TargetRepo.IsNullOrWhitespace()
+                            && !x.ProjectSubpath.IsNullOrWhitespace()
+                            && !x.Commit.IsNullOrWhitespace()
+                            && !x.MutagenVersion.IsNullOrWhitespace()
+                            && !x.SynthesisVersion.IsNullOrWhitespace();
+                    }),
+                execute: () =>
+                {
+                    if (LastSuccessfulRun == null) return;
+                    this.RemoteRepoPath = LastSuccessfulRun.TargetRepo;
+                    this.ProjectSubpath = LastSuccessfulRun.ProjectSubpath;
+                    this.TargetCommit = LastSuccessfulRun.Commit;
+                    this.ManualMutagenVersion = LastSuccessfulRun.MutagenVersion;
+                    this.ManualSynthesisVersion = LastSuccessfulRun.SynthesisVersion;
+                    this.PatcherVersioning = PatcherVersioningEnum.Commit;
+                    this.SynthesisVersioning = PatcherNugetVersioningEnum.Manual;
+                    this.MutagenVersioning = PatcherNugetVersioningEnum.Manual;
+                });
         }
 
         public override PatcherSettings Save()
@@ -970,6 +999,7 @@ namespace Synthesis.Bethesda.GUI
                 FollowDefaultBranch = this.BranchFollowMain,
                 AutoUpdateToBranchTip = this.BranchAutoUpdate,
                 TargetBranch = this.TargetBranchName,
+                LastSuccessfulRun = this.LastSuccessfulRun,
             };
             CopyOverSave(ret);
             PatcherSettings.Persist(Logger);
@@ -997,6 +1027,7 @@ namespace Synthesis.Bethesda.GUI
             this.BranchFollowMain = settings.FollowDefaultBranch;
             this.TagAutoUpdate = settings.LatestTag;
             this.TargetBranchName = settings.TargetBranch;
+            this.LastSuccessfulRun = settings.LastSuccessfulRun;
         }
 
         public override PatcherRunVM ToRunner(PatchersRunVM parent)
@@ -1084,6 +1115,18 @@ namespace Synthesis.Bethesda.GUI
             {
                 return "Mutagen Git Patcher";
             }
+        }
+
+        public override void SuccessfulRunCompleted()
+        {
+            if (MutagenVersionDiff.SelectedVersion == null) return;
+            if (SynthesisVersionDiff.SelectedVersion == null) return;
+            LastSuccessfulRun = new GithubPatcherLastRunState(
+                TargetRepo: this.RemoteRepoPath,
+                ProjectSubpath: this.ProjectSubpath,
+                Commit: this.TargetCommit,
+                MutagenVersion: MutagenVersionDiff.SelectedVersion,
+                SynthesisVersion: SynthesisVersionDiff.SelectedVersion);
         }
     }
 }

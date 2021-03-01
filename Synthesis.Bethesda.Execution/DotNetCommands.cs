@@ -12,8 +12,12 @@ using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.Execution
 {
+    public record DotNetVersion(string Version, bool Acceptable);
+
     public static class DotNetCommands
     {
+        public const int MinVersion = 5;
+
         public static string GetBuildString(string args)
         {
             return $"build --runtime win-x64 {args}";
@@ -118,7 +122,7 @@ namespace Synthesis.Bethesda.Execution
             return (mutagenVersion, synthesisVersion);
         }
 
-        public static async Task<Version> DotNetSdkVersion(CancellationToken cancel)
+        public static async Task<DotNetVersion> DotNetSdkVersion(CancellationToken cancel)
         {
             using var proc = ProcessWrapper.Create(
                 new System.Diagnostics.ProcessStartInfo("dotnet", "--version"),
@@ -136,11 +140,23 @@ namespace Synthesis.Bethesda.Execution
             {
                 throw new ArgumentException($"Unexpected messages:\n{string.Join("\n", outs)}");
             }
-            if (!Version.TryParse(outs[0], out var v))
+            return GetDotNetVersion(outs[0]);
+        }
+
+        public static DotNetVersion GetDotNetVersion(ReadOnlySpan<char> str)
+        {
+            var orig = str;
+            var indexOf = str.IndexOf('-');
+            if (indexOf != -1)
             {
-                throw new ArgumentException($"Could not parse dotnet SDK version: {outs[0]}");
+                str = str.Slice(0, indexOf);
             }
-            return v;
+            if (Version.TryParse(str, out var vers)
+                && vers.Major >= MinVersion)
+            {
+                return new DotNetVersion(orig.ToString(), true);
+            }
+            return new DotNetVersion(orig.ToString(), false);
         }
 
         public static async Task<GetResponse<string>> GetExecutablePath(string projectPath, CancellationToken cancel, Action<string>? log)

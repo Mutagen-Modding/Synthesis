@@ -118,5 +118,9 @@ namespace Synthesis.Bethesda.GUI
         }
 
         protected ILogger Logger => Log.Logger.ForContext(nameof(DisplayName), DisplayName);
+
+        public virtual void SuccessfulRunCompleted()
+        {
+        }
     }
 }

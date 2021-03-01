@@ -21,18 +21,18 @@ namespace Synthesis.Bethesda.GUI
         private object? _defaultVal;
 
         public EnumerableNumericSettingsVM(
-            SettingsMeta memberName,
+            FieldMeta fieldMeta,
             Func<JsonElement, TryGet<IBasicSettingsNodeVM>> get,
             Action<ObservableCollection<IBasicSettingsNodeVM>> add,
             Action<ObservableCollection<IBasicSettingsNodeVM>, object?> setToDefault,
             object? defaultVal)
-            : base(memberName, get, add)
+            : base(fieldMeta, get, add)
         {
             _setToDefault = setToDefault;
             _defaultVal = defaultVal;
         }
 
-        public static EnumerableNumericSettingsVM Factory<TItem, TWrapper>(SettingsMeta memberName, object? defaultVal, TWrapper prototype)
+        public static EnumerableNumericSettingsVM Factory<TItem, TWrapper>(FieldMeta fieldMeta, object? defaultVal, TWrapper prototype)
             where TWrapper : BasicSettingsVM<TItem>, new()
         {
             Func<JsonElement, TryGet<IBasicSettingsNodeVM>> import = new Func<JsonElement, TryGet<IBasicSettingsNodeVM>>((elem) =>
@@ -45,7 +45,7 @@ namespace Synthesis.Bethesda.GUI
                         }));
             });
             return new EnumerableNumericSettingsVM(
-                memberName,
+                fieldMeta,
                 import,
                 (list) =>
                 {

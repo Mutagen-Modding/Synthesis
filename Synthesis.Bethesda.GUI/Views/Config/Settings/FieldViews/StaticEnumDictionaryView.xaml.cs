@@ -17,12 +17,15 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated(disposable =>
             {
                 this.WhenAnyValue(x => x.ViewModel!.Meta.DisplayName)
-                    .BindToStrict(this, x => x.SettingsNameBlock.Text)
+                    .BindToStrict(this, x => x.SettingNameBlock.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.Items)
                     .BindToStrict(this, x => x.TabControl.ItemsSource)
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.Selected, v => v.TabControl.SelectedItem)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.FocusSettingCommand)
+                    .BindToStrict(this, x => x.SettingNameButton.Command)
                     .DisposeWith(disposable);
             });
         }

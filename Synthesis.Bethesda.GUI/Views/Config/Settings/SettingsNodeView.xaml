@@ -150,7 +150,6 @@
                             Text="{Binding Meta.DisplayName}" />
                         <mutagenWpf:ModKeyPicker Grid.Column="1"
                             ModKey="{Binding Value}"
-                            SearchBoxHeight="200"
                             SearchableMods="{Binding DetectedLoadOrder}" />
                     </Grid>
                 </Border>
@@ -191,35 +190,12 @@
                             VerticalAlignment="Center"
                             FormKey="{Binding Value}"
                             LinkCache="{Binding LinkCache}"
-                            ScopedTypes="{Binding ScopedTypes, Mode=OneWay}"
-                            SearchBoxHeight="200" />
+                            ScopedTypes="{Binding ScopedTypes, Mode=OneWay}" />
                     </Grid>
                 </Border>
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:EnumerableFormLinkSettingsVM}">
-                <Border Style="{StaticResource ReflectionSettingBorder}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0"
-                            Margin="4,4,6,0"
-                            VerticalAlignment="Top"
-                            Style="{StaticResource ReflectionSettingName}"
-                            Text="{Binding Meta.DisplayName}"
-                            Visibility="{Binding Meta.DisplayName, Converter={StaticResource StringToVisibilityConverter}}" />
-                        <mutagenWpf:FormKeyMultiPicker Grid.Row="1"
-                            Height="200"
-                            Margin="0,5,0,0"
-                            VerticalAlignment="Center"
-                            FormKeys="{Binding Values, Mode=OneWay}"
-                            LinkCache="{Binding LinkCache}"
-                            ScopedTypes="{Binding ScopedTypes, Mode=OneWay}"
-                            SelectedBackgroundBrush="{StaticResource PurpleBrush}"
-                            SelectedForegroundBrush="{StaticResource PaleYellowBrush}" />
-                    </Grid>
-                </Border>
+                <local:EnumerableFormLinkSettingsNodeView />
             </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>

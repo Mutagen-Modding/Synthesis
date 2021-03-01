@@ -36,11 +36,16 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public IList? SelectedValues { get; set; }
 
-        private EnumerableObjectSettingsVM(SettingsMeta memberName, ObjectSettingsVM prototype, ObjectSettingsVM[] defaultValues)
-            : base(memberName)
+        private EnumerableObjectSettingsVM(FieldMeta fieldMeta, ObjectSettingsVM prototype, ObjectSettingsVM[] defaultValues)
+            : base(fieldMeta)
         {
             _prototype = prototype;
             _defaultValues = defaultValues;
+            _prototype.Meta = _prototype.Meta with
+            {
+                Parent = this,
+                MainVM = this.Meta.MainVM,
+            };
             DeleteCommand = ReactiveCommand.Create(
                 execute: () =>
                 {
@@ -58,6 +63,11 @@ namespace Synthesis.Bethesda.GUI
                 execute: () =>
                 {
                     var vm = (ObjectSettingsVM)_prototype.Duplicate();
+                    vm.Meta = vm.Meta with
+                    {
+                        Parent = this,
+                        MainVM = this.Meta.MainVM,
+                    };
                     vm.WrapUp();
                     Values.Add(new SelectionWrapper()
                     {
@@ -65,9 +75,19 @@ namespace Synthesis.Bethesda.GUI
                         Value = vm
                     });
                 });
-            Values.SetTo(defaultValues.Select(o => new SelectionWrapper()
+            Values.SetTo(defaultValues.Select(o =>
             {
-                Value = (ObjectSettingsVM)o.Duplicate()
+                var dup = (ObjectSettingsVM)o.Duplicate();
+                dup.Meta = dup.Meta with
+                {
+                    Parent = this,
+                    MainVM = this.Meta.MainVM,
+                };
+                dup.WrapUp();
+                return new SelectionWrapper()
+                {
+                    Value = dup
+                };
             }));
         }
 
@@ -98,18 +118,28 @@ namespace Synthesis.Bethesda.GUI
                 .ToArray());
         }
 
-        public static EnumerableObjectSettingsVM Factory(SettingsParameters param, SettingsMeta memberName, object? defaultVal, Type t)
+        public static EnumerableObjectSettingsVM Factory(SettingsParameters param, FieldMeta fieldMeta)
         {
-            var proto = new ObjectSettingsVM(param, SettingsMeta.Empty, t, null);
+            var proto = new ObjectSettingsVM(param with { DefaultVal = null }, FieldMeta.Empty with 
+            { 
+                Parent = fieldMeta.Parent, 
+                MainVM = fieldMeta.MainVM,
+                IsPassthrough = true,
+            });
             List<ObjectSettingsVM> defaultValues = new List<ObjectSettingsVM>();
-            if (defaultVal is IEnumerable e)
+            if (param.DefaultVal is IEnumerable e)
             {
                 foreach (var o in e)
                 {
-                    defaultValues.Add(new ObjectSettingsVM(param, SettingsMeta.Empty, t, o));
+                    defaultValues.Add(new ObjectSettingsVM(param with { DefaultVal = o }, FieldMeta.Empty with
+                    {
+                        Parent = fieldMeta.Parent,
+                        MainVM = fieldMeta.MainVM,
+                        IsPassthrough = true,
+                    }));
                 }
             }
-            return new EnumerableObjectSettingsVM(memberName, proto, defaultValues.ToArray());
+            return new EnumerableObjectSettingsVM(fieldMeta, proto, defaultValues.ToArray());
         }
 
         public override SettingsNodeVM Duplicate()

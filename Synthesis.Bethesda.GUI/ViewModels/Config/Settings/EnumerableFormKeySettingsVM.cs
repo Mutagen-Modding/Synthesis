@@ -22,10 +22,10 @@ namespace Synthesis.Bethesda.GUI
         private FormKey[] _defaultVal;
 
         public EnumerableFormKeySettingsVM(
-            SettingsMeta memberName,
+            FieldMeta fieldMeta,
             IEnumerable<FormKey> defaultVal)
             : base(
-                  memberName,
+                  fieldMeta,
                   get: e => TryGet<IBasicSettingsNodeVM>.Succeed(
                       new ListElementWrapperVM<FormKey, FormKeySettingsVM>(new FormKeySettingsVM()
                       {
@@ -42,10 +42,10 @@ namespace Synthesis.Bethesda.GUI
             _defaultVal = defaultVal.ToArray();
         }
 
-        public static EnumerableFormKeySettingsVM Factory(SettingsMeta memberName, object? defaultVal)
+        public static EnumerableFormKeySettingsVM Factory(FieldMeta fieldMeta, object? defaultVal)
         {
             return new EnumerableFormKeySettingsVM(
-                memberName,
+                fieldMeta,
                 defaultVal as IEnumerable<FormKey> ?? Enumerable.Empty<FormKey>());
         }
 

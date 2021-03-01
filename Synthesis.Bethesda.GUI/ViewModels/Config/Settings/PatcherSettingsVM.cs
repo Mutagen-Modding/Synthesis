@@ -62,7 +62,9 @@ namespace Synthesis.Bethesda.GUI
                                 i.Value,
                                 directExe: false,
                                 cancel: cancel,
-                                build: needBuild);
+                                build: needBuild,
+                                logger.Information);
+                            logger.Information($"Settings type: {result}");
                             observer.OnNext(result);
                         }
                         catch (Exception ex)
@@ -127,8 +129,14 @@ namespace Synthesis.Bethesda.GUI
                                                 var t = assemb.GetType(s.TypeName);
                                                 if (t == null) return null;
                                                 return new ReflectionSettingsVM(
-                                                    new SettingsParameters(assemb, parent.Profile.LoadOrder.Connect(), parent.Profile.SimpleLinkCache),
-                                                    t,
+                                                    new SettingsParameters(
+                                                        assemb, 
+                                                        parent.Profile.LoadOrder.Connect(),
+                                                        parent.Profile.SimpleLinkCache,
+                                                        t,
+                                                        Activator.CreateInstance(t),
+                                                        MainVM: null!,
+                                                        Parent: null),
                                                     nickname: i.settingsTarget.Targets[index].Nickname,
                                                     settingsFolder: Path.Combine(Execution.Paths.TypicalExtraData, parent.DisplayName),
                                                     settingsSubPath: i.settingsTarget.Targets[index].Path);

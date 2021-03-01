@@ -11,13 +11,16 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Grid>
-        <TextBlock
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0"
             x:Name="NoSettingsText"
             Margin="10,10,0,0"
             FontWeight="Bold"
             Text="No Settings"
             Visibility="Collapsed" />
-        <Button
+        <Button Grid.Row="0"
             x:Name="OpenSettingsButton"
             Margin="10,10,0,0"
             HorizontalAlignment="Left"
@@ -33,7 +36,7 @@
                     Text="OPEN SETTINGS" />
             </StackPanel>
         </Button>
-        <StackPanel
+        <StackPanel Grid.Row="0"
             x:Name="ProcessingRing"
             Margin="10,10,0,0"
             HorizontalAlignment="Left"
@@ -58,7 +61,7 @@
                 Foreground="{StaticResource PaleYellowBrush}"
                 Text="Loading settings" />
         </StackPanel>
-        <Grid
+        <Grid Grid.Row="0"
             x:Name="ErrorPanel"
             Margin="10,10,0,0"
             HorizontalAlignment="Left"
@@ -87,7 +90,7 @@
                 Margin="0,5,0,0"
                 Style="{StaticResource ErrorBox}" />
         </Grid>
-        <TabControl
+        <TabControl Grid.Row="0"
             x:Name="ReflectionSettingTabs"
             Margin="-8,0,0,0"
             Visibility="Collapsed">
@@ -107,7 +110,14 @@
             </TabControl.ItemTemplate>
             <TabControl.ContentTemplate>
                 <DataTemplate>
-                    <local:ReflectionSettingNodeView />
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <local:SettingDepthView Grid.Row="0" DataContext="{Binding SelectedSettings}" Margin="0,0,0,3" />
+                        <local:SettingsNodeView Grid.Row="1" DataContext="{Binding SelectedSettings}" />
+                    </Grid>
                 </DataTemplate>
             </TabControl.ContentTemplate>
         </TabControl>

@@ -1,9 +1,12 @@
 using Newtonsoft.Json.Linq;
+using Noggog.WPF;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -24,12 +27,18 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool IsSelected { get; set; }
 
-        public EnumSettingsVM(SettingsMeta memberName, string? defaultVal, IEnumerable<string> enumNames)
-            : base(memberName)
+        private readonly ObservableAsPropertyHelper<string> _DisplayName;
+        public string DisplayName => _DisplayName.Value;
+
+        public EnumSettingsVM(FieldMeta fieldMeta, string? defaultVal, IEnumerable<string> enumNames)
+            : base(fieldMeta)
         {
             EnumNames = enumNames;
             _defaultVal = defaultVal;
             Value = defaultVal ?? string.Empty;
+            _DisplayName = this.WhenAnyValue(x => x.Value)
+                .Select(x => x.ToString())
+                .ToGuiProperty(this, nameof(DisplayName), string.Empty, deferSubscription: true);
         }
 
         public override void Import(JsonElement property, ILogger logger)
@@ -47,10 +56,10 @@ namespace Synthesis.Bethesda.GUI
             return new EnumSettingsVM(Meta, _defaultVal, EnumNames);
         }
 
-        public static EnumSettingsVM Factory(SettingsMeta memberName, object? defaultVal, Type enumType)
+        public static EnumSettingsVM Factory(FieldMeta fieldMeta, object? defaultVal, Type enumType)
         {
             var names = Enum.GetNames(enumType).ToArray();
-            return new EnumSettingsVM(memberName, defaultVal?.ToString(), names);
+            return new EnumSettingsVM(fieldMeta, defaultVal?.ToString(), names);
         }
     }
 }

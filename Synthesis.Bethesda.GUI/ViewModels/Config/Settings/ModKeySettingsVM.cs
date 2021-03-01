@@ -17,9 +17,9 @@ namespace Synthesis.Bethesda.GUI
 
         public ModKeySettingsVM(
             IObservable<IChangeSet<ModKey>> detectedLoadOrder,
-            SettingsMeta memberName, 
+            FieldMeta fieldMeta, 
             object? defaultVal)
-            : base(memberName, defaultVal)
+            : base(fieldMeta, defaultVal)
         {
             DetectedLoadOrder = detectedLoadOrder;
         }

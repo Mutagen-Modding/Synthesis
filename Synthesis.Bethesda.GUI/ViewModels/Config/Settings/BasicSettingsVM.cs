@@ -1,15 +1,20 @@
 using Newtonsoft.Json.Linq;
+using Noggog.WPF;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
+using System.ComponentModel;
 using System.Text.Json;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public interface IBasicSettingsNodeVM
+    public interface IBasicSettingsNodeVM : INotifyPropertyChanged
     {
+        string DisplayName { get; }
+
         object Value { get; }
 
         bool IsSelected { get; set; }
+
         void WrapUp();
     }
 
@@ -25,8 +30,10 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool IsSelected { get; set; }
 
-        public BasicSettingsVM(SettingsMeta memberName, object? defaultVal)
-            : base(memberName)
+        public virtual string DisplayName => Value?.ToString() ?? "Name";
+
+        public BasicSettingsVM(FieldMeta fieldMeta, object? defaultVal)
+            : base(fieldMeta)
         {
             if (defaultVal is T item)
             {
@@ -47,11 +54,28 @@ namespace Synthesis.Bethesda.GUI
 
         public override void Persist(JObject obj, ILogger logger)
         {
-            obj[Meta.DiskName] = JToken.FromObject(Value!);
+            if (Value == null) return;
+            obj[Meta.DiskName] = JToken.FromObject(Value);
         }
 
         public abstract T Get(JsonElement property);
 
         public abstract T GetDefault();
+    }
+
+    public class UnknownBasicSettingsVM : ViewModel, IBasicSettingsNodeVM
+    {
+        public static readonly UnknownBasicSettingsVM Empty = new UnknownBasicSettingsVM();
+
+        public object Value => "Unknown";
+
+        public bool IsSelected { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
+        public string DisplayName => "Unknown";
+
+        public void WrapUp()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
