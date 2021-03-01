@@ -41,13 +41,11 @@ namespace Synthesis.Bethesda.GUI
         {
             _prototype = prototype;
             _defaultValues = defaultValues;
-            var subMeta = FieldMeta.Empty with
+            _prototype.Meta = _prototype.Meta with
             {
                 Parent = this,
                 MainVM = this.Meta.MainVM,
-                IsPassthrough = true,
             };
-            _prototype.Meta = subMeta;
             DeleteCommand = ReactiveCommand.Create(
                 execute: () =>
                 {
@@ -65,8 +63,12 @@ namespace Synthesis.Bethesda.GUI
                 execute: () =>
                 {
                     var vm = (ObjectSettingsVM)_prototype.Duplicate();
+                    vm.Meta = vm.Meta with
+                    {
+                        Parent = this,
+                        MainVM = this.Meta.MainVM,
+                    };
                     vm.WrapUp();
-                    vm.Meta = subMeta;
                     Values.Add(new SelectionWrapper()
                     {
                         IsSelected = true,
@@ -76,7 +78,12 @@ namespace Synthesis.Bethesda.GUI
             Values.SetTo(defaultValues.Select(o =>
             {
                 var dup = (ObjectSettingsVM)o.Duplicate();
-                dup.Meta = subMeta;
+                dup.Meta = dup.Meta with
+                {
+                    Parent = this,
+                    MainVM = this.Meta.MainVM,
+                };
+                dup.WrapUp();
                 return new SelectionWrapper()
                 {
                     Value = dup

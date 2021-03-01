@@ -1,4 +1,5 @@
 using Noggog.WPF;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace Synthesis.Bethesda.GUI
@@ -13,9 +14,14 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool IsSelected { get; set; }
 
+        private readonly ObservableAsPropertyHelper<string> _DisplayName;
+        public string DisplayName => _DisplayName.Value;
+
         public ListElementWrapperVM(TWrapper value)
         {
             Value = value;
+            _DisplayName = value.WhenAnyValue(x => x.DisplayName)
+                .ToGuiProperty(this, nameof(DisplayName), string.Empty, deferSubscription: true);
         }
 
         public void WrapUp() => Value.WrapUp();

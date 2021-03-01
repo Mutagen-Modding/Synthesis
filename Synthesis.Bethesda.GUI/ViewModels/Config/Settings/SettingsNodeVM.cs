@@ -41,7 +41,7 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public static SettingsNodeVM[] Factory(SettingsParameters param)
+        public static IEnumerable<MemberInfo> GetMemberInfos(SettingsParameters param)
         {
             return param.TargetType.GetMembers()
                 .Where(m => m.MemberType == MemberTypes.Property
@@ -62,7 +62,12 @@ namespace Synthesis.Bethesda.GUI
                     {
                         return int.MaxValue;
                     }
-                })
+                });
+        }
+
+        public static SettingsNodeVM[] Factory(SettingsParameters param)
+        {
+            return GetMemberInfos(param)
                 .Select(m =>
                 {
                     try
@@ -95,21 +100,9 @@ namespace Synthesis.Bethesda.GUI
         {
         }
 
-        public static SettingsNodeVM MemberFactory(SettingsParameters param, MemberInfo? member)
+        public static string GetDiskName(MemberInfo? member)
         {
-            string displayName, diskName;
-            if (member == null)
-            {
-                displayName = string.Empty;
-            }
-            else if (member.TryGetCustomAttribute<SynthesisSettingName>(out var nameAttr))
-            {
-                displayName = nameAttr.Name;
-            }
-            else
-            {
-                displayName = member.Name;
-            }
+            string diskName;
             if (member == null)
             {
                 diskName = string.Empty;
@@ -122,6 +115,25 @@ namespace Synthesis.Bethesda.GUI
             {
                 diskName = member.Name;
             }
+            return diskName;
+        }
+
+        public static SettingsNodeVM MemberFactory(SettingsParameters param, MemberInfo? member)
+        {
+            string displayName;
+            if (member == null)
+            {
+                displayName = string.Empty;
+            }
+            else if (member.TryGetCustomAttribute<SynthesisSettingName>(out var nameAttr))
+            {
+                displayName = nameAttr.Name;
+            }
+            else
+            {
+                displayName = member.Name;
+            }
+            string diskName = GetDiskName(member);
 
             string? tooltip = null;
             if (member != null && member.TryGetCustomAttribute<SynthesisTooltip>(out var toolTipAttr))

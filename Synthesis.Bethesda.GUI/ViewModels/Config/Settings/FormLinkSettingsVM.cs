@@ -34,6 +34,9 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool IsSelected { get; set; }
 
+        private readonly ObservableAsPropertyHelper<string> _DisplayName;
+        public string DisplayName => _DisplayName.Value;
+
         public FormLinkSettingsVM(IObservable<ILinkCache> linkCache, FieldMeta fieldMeta, Type targetType, FormKey defaultVal) 
             : base(fieldMeta)
         {
@@ -44,6 +47,19 @@ namespace Synthesis.Bethesda.GUI
             _LinkCache = linkCache
                 .ToGuiProperty(this, nameof(LinkCache), default);
             ScopedTypes = targetType.GenericTypeArguments[0].AsEnumerable();
+            _DisplayName = this.WhenAnyValue(x => x.Value)
+                .CombineLatest(this.WhenAnyValue(x => x.LinkCache),
+                    (key, cache) =>
+                    {
+                        if (cache != null
+                            && cache.TryResolveIdentifier(key, ScopedTypes, out var edid)
+                            && edid != null)
+                        {
+                            return edid;
+                        }
+                        return key.ToString();
+                    })
+                .ToGuiProperty(this, nameof(DisplayName), string.Empty, deferSubscription: true);
         }
 
         public override SettingsNodeVM Duplicate()

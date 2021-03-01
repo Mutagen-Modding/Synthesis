@@ -12,18 +12,48 @@
     <ItemsControl x:Name="ParentSettingList">
         <ItemsControl.ItemTemplate>
             <DataTemplate>
-                <StackPanel Margin="0,0,0,3" Orientation="Horizontal">
-                    <Button
-                        HorizontalAlignment="Left"
-                        Command="{Binding FocusSettingCommand}"
-                        Style="{StaticResource ReflectionSettingButton}">
-                        <TextBlock FontWeight="Bold" Text="{Binding Meta.DisplayName}" />
-                    </Button>
-                    <icon:PackIconForkAwesome
-                        Height="10"
-                        VerticalAlignment="Center"
-                        Kind="AngleRight" />
-                </StackPanel>
+                <Button
+                    Margin="0,0,0,3"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Command="{Binding FocusSettingCommand}"
+                    Style="{StaticResource ReflectionSettingButton}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0"
+                            HorizontalAlignment="Left"
+                            FontWeight="Bold"
+                            Text="{Binding Meta.DisplayName}"
+                            Visibility="{Binding Meta.DisplayName, Converter={StaticResource StringToVisibilityConverter}}" />
+                        <icon:PackIconForkAwesome Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                            Height="10"
+                            Margin="0,4,0,0"
+                            VerticalAlignment="Top"
+                            Kind="AngleRight" />
+                        <ItemsControl Grid.Row="1" Grid.Column="0"
+                            ItemsSource="{Binding Names}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock FontWeight="Normal" Text="{Binding}">
+                                        <TextBlock.Style>
+                                            <Style BasedOn="{StaticResource MahApps.Styles.TextBlock}" TargetType="TextBlock">
+                                                <Setter Property="FontSize" Value="12" />
+                                                <Setter Property="Foreground" Value="White" />
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Button>
             </DataTemplate>
         </ItemsControl.ItemTemplate>
         <ItemsControl.ItemsPanel>
