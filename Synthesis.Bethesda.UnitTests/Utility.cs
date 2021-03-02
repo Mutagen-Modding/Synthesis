@@ -25,6 +25,9 @@ namespace Synthesis.Bethesda.UnitTests
         public static readonly string LePathToTestFile = "le_test.esp";
         public static readonly string LePathToOverrideFile = "le_override.esp";
         public static readonly string PathToLoadOrderFile = "Plugins.txt";
+        public static readonly string BuildFailureFile = "BuildFailure.txt";
+        public static readonly string BuildSuccessFile = "BuildSuccess.txt";
+        public static readonly string BuildSuccessNonEnglishFile = "BuildSuccessNonEnglish.txt";
         public static readonly ModKey RandomModKey = new ModKey("Random", ModType.Plugin);
 
         public static ModPath TypicalOutputFile(TempFolder tempFolder) => Path.Combine(tempFolder.Dir.Path, SynthesisModKey.FileName);

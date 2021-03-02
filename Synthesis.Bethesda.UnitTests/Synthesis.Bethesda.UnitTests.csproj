@@ -39,6 +39,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="BuildFailure.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="BuildSuccess.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="BuildSuccessNonEnglish.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="le_override.esp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

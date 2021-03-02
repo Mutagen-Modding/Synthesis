@@ -72,7 +72,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         var localRepoPath = await GitUtility.CheckOrCloneRepo(
                             GetResponse<string>.Succeed("https://github.com/Mutagen-Modding/Synthesis.Registry"),
-                            Path.Combine(profile.WorkingDirectory, "Registry"),
+                            Paths.RegistryFolder,
                             Log.Logger.Error,
                             CancellationToken.None);
                         if (localRepoPath.Failed)
