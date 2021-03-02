@@ -1,0 +1,12 @@
+Microsoft (R) Build Engine version 16.8.3+39993bd9d for .NET
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Determining projects to restore...
+  Restored C:\Repos\Patchers\khajiitearsshow\KhajiitEarsShow\KhajiitEarsShow.csproj (in 185 ms).
+  KhajiitEarsShow -> C:\Repos\Patchers\khajiitearsshow\KhajiitEarsShow\bin\Debug\net5.0\KhajiitEarsShow.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.59

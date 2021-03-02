@@ -158,7 +158,7 @@ namespace Synthesis.Bethesda.Execution
             }
             return new DotNetVersion(orig.ToString(), false);
         }
-
+        
         public static async Task<GetResponse<string>> GetExecutablePath(string projectPath, CancellationToken cancel, Action<string>? log)
         {
             // Hacky way to locate executable, but running a build and extracting the path its logs spit out
@@ -177,20 +177,28 @@ namespace Synthesis.Bethesda.Execution
             {
                 throw new ArgumentException($"{string.Join("\n", errs)}");
             }
-            int index = outs.IndexOf("Build succeeded.");
-            if (index == -1 || index < 2)
+            if (!TryGetExecutablePathFromOutput(outs, out var path))
             {
                 log?.Invoke($"Could not locate target executable: {string.Join(Environment.NewLine, outs)}");
                 return GetResponse<string>.Fail("Could not locate target executable.");
             }
-            var line = outs[index - 2];
-            const string delimiter = " -> ";
-            index = line.IndexOf(delimiter);
-            if (index == -1)
+            return GetResponse<string>.Succeed(path);
+        }
+
+        public static bool TryGetExecutablePathFromOutput(IEnumerable<string> lines, [MaybeNullWhen(false)] out string output)
+        {
+            foreach (var line in lines)
             {
-                return GetResponse<string>.Fail($"Could not locate target executable line to find exe: {line}");
+                var trimmed = line.Trim();
+                if (!trimmed.EndsWith(".dll")) continue;
+                const string delimiter = " -> ";
+                var index = trimmed.IndexOf(delimiter);
+                if (index == -1) continue;
+                output = trimmed.Substring(index + delimiter.Length).Trim();
+                return true;
             }
-            return GetResponse<string>.Succeed(line.Substring(index + delimiter.Length).Trim());
+            output = null;
+            return false;
         }
 
         public static async Task<ErrorResponse> Compile(string targetPath, CancellationToken cancel, Action<string>? log)
@@ -208,6 +216,8 @@ namespace Synthesis.Bethesda.Execution
             int totalLen = 0;
             process.Output.Subscribe(o =>
             {
+                // ToDo
+                // Refactor off looking for a string
                 if (o.StartsWith("Build FAILED"))
                 {
                     buildFailed = true;
