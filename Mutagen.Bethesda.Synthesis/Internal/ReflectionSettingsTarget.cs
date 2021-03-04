@@ -1,9 +1,10 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Mutagen.Bethesda.Synthesis.Internal
@@ -16,10 +17,18 @@ namespace Mutagen.Bethesda.Synthesis.Internal
     public class ReflectionSettingsTarget<TSetting> : IReflectionSettingsTarget
         where TSetting : class, new()
     {
+        private static readonly JsonSerializerSettings JsonSettings;
+
         public readonly Lazy<TSetting> Value;
         public string? AnchorPath { get; set; }
         public string SettingsPath { get; }
         public bool ThrowIfMissing { get; }
+
+        static ReflectionSettingsTarget()
+        {
+            JsonSettings = new JsonSerializerSettings();
+            JsonSettings.Converters.Add(new StringEnumConverter());
+        }
 
         public ReflectionSettingsTarget(
             string settingsPath,
@@ -41,22 +50,20 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 return new TSetting();
             }
             var path = Path.Combine(AnchorPath, SettingsPath);
-            System.Console.WriteLine($"Reading settings file: {path}");
             if (File.Exists(path))
             {
-                var settings = JsonSerializer.Deserialize<TSetting>(File.ReadAllText(path));
+                System.Console.WriteLine($"Reading settings: {path}");
+                var text = File.ReadAllText(path);
+                var settings = JsonConvert.DeserializeObject<TSetting>(text, JsonSettings);
                 if (settings == null)
                 {
-                    if (ThrowIfMissing)
-                    {
-                        throw new FileNotFoundException("Cannot find required setting", path);
-                    }
-                    settings = new TSetting();
+                    throw new FileNotFoundException("Could not import the settings file to be an object", path);
                 }
                 return settings;
             }
             else
             {
+                System.Console.WriteLine($"No settings file found.  Using defaults.  Path: {path}");
                 if (ThrowIfMissing)
                 {
                     throw new FileNotFoundException("Cannot find required setting", path);
