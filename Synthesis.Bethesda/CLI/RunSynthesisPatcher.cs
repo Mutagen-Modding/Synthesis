@@ -24,6 +24,12 @@ namespace Synthesis.Bethesda
         [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
         public string LoadOrderFilePath { get; set; } = string.Empty;
 
+        [Option('s', "StatePath", Required = false, HelpText = "Path to the shared FormKey allocation state")]
+        public string? StatePath { get; set; }
+
+        [Option('p', "PatcherName", Required = false, HelpText = "Name of the patcher to be recorded in the shared FormKey allocation state")]
+        public string? PatcherName { get; set; }
+
         public override string ToString()
         {
             return $"{nameof(RunSynthesisPatcher)} => \n"
@@ -31,7 +37,9 @@ namespace Synthesis.Bethesda
                 + $"  {nameof(OutputPath)} => {this.OutputPath} \n"
                 + $"  {nameof(GameRelease)} => {this.GameRelease} \n"
                 + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
-                + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}";
+                + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath} \n"
+                + $"  {nameof(StatePath)} => {this.StatePath} \n"
+                + $"  {nameof(PatcherName)} => {this.PatcherName}";
         }
     }
 }

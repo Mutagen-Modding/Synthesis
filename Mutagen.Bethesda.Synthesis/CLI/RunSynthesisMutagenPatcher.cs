@@ -1,4 +1,5 @@
 using CommandLine;
+using Noggog.Utility;
 using Synthesis.Bethesda;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,12 @@ namespace Mutagen.Bethesda.Synthesis.CLI
         [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to the extra data folder dedicated for a patcher")]
         public string? ExtraDataFolder { get; set; }
 
+        [Option('s', "StatePath", Required = false, HelpText = "Path to the shared FormKey allocation state")]
+        public string? StatePath { get; set; }
+
+        [Option('p', "PatcherName", Required = false, HelpText = "Name of the patcher to be recorded in the shared FormKey allocation state")]
+        public string? PatcherName { get; set; }
+
         public override string ToString()
         {
             return $"{nameof(RunSynthesisMutagenPatcher)} => \n"
@@ -35,7 +42,9 @@ namespace Mutagen.Bethesda.Synthesis.CLI
                 + $"  {nameof(GameRelease)} => {this.GameRelease} \n"
                 + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
                 + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
-                + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}";
+                + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}\n"
+                + $"  {nameof(StatePath)} => {this.StatePath}\n"
+                + $"  {nameof(PatcherName)} => {this.PatcherName}";
         }
 
         public static RunSynthesisMutagenPatcher Factory(RunSynthesisPatcher settings)
@@ -46,7 +55,9 @@ namespace Mutagen.Bethesda.Synthesis.CLI
                 GameRelease = settings.GameRelease,
                 LoadOrderFilePath = settings.LoadOrderFilePath,
                 OutputPath = settings.OutputPath,
-                SourcePath = settings.SourcePath
+                SourcePath = settings.SourcePath,
+                StatePath = settings.StatePath,
+                PatcherName = settings.PatcherName
             };
         }
     }

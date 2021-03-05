@@ -38,6 +38,11 @@ namespace Mutagen.Bethesda.Synthesis
         /// <inheritdoc />
         public string ExtraSettingsDataPath { get; } = string.Empty;
 
+        // <inheritdoc />
+        IFormKeyAllocator? IPatcherState.FormKeyAllocator => FormKeyAllocator;
+
+        private readonly IFormKeyAllocator? FormKeyAllocator;
+
         public SynthesisState(
             RunSynthesisMutagenPatcher settings,
             IReadOnlyList<LoadOrderListing> rawLoadOrder,
@@ -45,7 +50,8 @@ namespace Mutagen.Bethesda.Synthesis
             ILinkCache<TModSetter, TModGetter> linkCache,
             TModSetter patchMod,
             string extraDataPath,
-            CancellationToken cancellation)
+            CancellationToken cancellation,
+            IFormKeyAllocator? formKeyAllocator = null)
         {
             Settings = settings;
             LinkCache = linkCache;
@@ -54,11 +60,14 @@ namespace Mutagen.Bethesda.Synthesis
             PatchMod = patchMod;
             ExtraSettingsDataPath = extraDataPath;
             Cancel = cancellation;
+            FormKeyAllocator = formKeyAllocator;
         }
 
         public void Dispose()
         {
             LoadOrder.Dispose();
+            if (FormKeyAllocator is IDisposable PersistentFormKeyAllocator)
+                PersistentFormKeyAllocator.Dispose();
         }
     }
 }

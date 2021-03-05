@@ -1,4 +1,5 @@
 using Mutagen.Bethesda.Internals;
+using Mutagen.Bethesda.Sqlite;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using System;
@@ -72,6 +73,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             // Create or import patch mod
             TModSetter patchMod;
             ILinkCache<TModSetter, TModGetter> cache;
+            IFormKeyAllocator? formKeyAllocator = null;
             if (userPrefs.NoPatch)
             {
                 // Pass null, even though it isn't normally
@@ -100,6 +102,19 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 {
                     patchMod = ModInstantiator<TModSetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease);
                 }
+                if (settings.StatePath is not null && settings.PatcherName is not null)
+                {
+                    if (patchMod is AMod aMod)
+                    {
+                        // TODO pass userPrefs.Cancel to SQLiteFormKeyAllocator to handle abort?
+                        aMod.SetAllocator(formKeyAllocator = new SQLiteFormKeyAllocator(patchMod, settings.StatePath, settings.PatcherName));
+                    }
+                    else
+                    { 
+                        // TODO shouldn't happen?
+                        throw new InvalidOperationException($"Unable to attach persistent FormKey allocator to {patchMod}");
+                    }
+                }
                 cache = loadOrder.ToMutableLinkCache(patchMod);
                 loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));
                 rawLoadOrder.Add(new LoadOrderListing(patchMod.ModKey, enabled: true));
@@ -112,7 +127,8 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 linkCache: cache,
                 patchMod: patchMod,
                 extraDataPath: settings.ExtraDataFolder == null ? string.Empty : Path.GetFullPath(settings.ExtraDataFolder),
-                cancellation: userPrefs.Cancel);
+                cancellation: userPrefs.Cancel,
+                formKeyAllocator: formKeyAllocator);
         }
 
         public static IPatcherState ToState(GameCategory category, RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)

@@ -1,4 +1,5 @@
 using CommandLine;
+using Mutagen.Bethesda.Sqlite;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Mutagen.Bethesda.Synthesis.Internal;
 using Noggog;
@@ -365,6 +366,8 @@ namespace Mutagen.Bethesda.Synthesis
                 {
                     System.Console.WriteLine($"Writing to output: {args.OutputPath}");
                     state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)));
+                    if (state.FormKeyAllocator is SQLiteFormKeyAllocator formKeyAllocator)
+                        formKeyAllocator.Commit();
                 }
             }
             catch (Exception ex)

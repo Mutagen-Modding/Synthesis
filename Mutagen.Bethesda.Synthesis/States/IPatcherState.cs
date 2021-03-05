@@ -40,6 +40,11 @@ namespace Mutagen.Bethesda.Synthesis
         /// Path to the supplimental data folder dedicated to storing patcher specific settings/files
         /// </summary>
         string ExtraSettingsDataPath { get; }
+
+        /// <summary>
+        /// A reference to the FormKey allocator assigned to PatchMod
+        /// </summary>
+        internal IFormKeyAllocator? FormKeyAllocator { get; }
     }
 
     public interface IPatcherState<TModSetter, TModGetter> : IPatcherState
