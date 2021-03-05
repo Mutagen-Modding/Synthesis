@@ -51,7 +51,7 @@ namespace Synthesis.Bethesda.UnitTests
 
         private async Task AddAnotherNPC(IPatcherState<IOblivionMod, IOblivionModGetter> state)
         {
-            // Add a new awesome NPC
+            // Add another new NPC
             state.PatchMod.Npcs.AddNew(AnotherNPCEdid);
             AddItemToAllNPCs(state);
         }
