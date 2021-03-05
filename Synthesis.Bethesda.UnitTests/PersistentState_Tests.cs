@@ -273,7 +273,6 @@ namespace Synthesis.Bethesda.UnitTests
             using var tmpFolder = Utility.GetTempFolder();
             var statePath = GetStatePath(tmpFolder);
 
-            for (int i = 0; i < 2; i++)
             {
                 using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
                 var modPath = PatchModPath(dataFolder);
