@@ -1,3 +1,4 @@
+using Mutagen.Bethesda.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -28,6 +29,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
         {
             JsonSettings = new JsonSerializerSettings();
             JsonSettings.Converters.Add(new StringEnumConverter());
+            JsonSettings.AddMutagenConverters();
         }
 
         public ReflectionSettingsTarget(
