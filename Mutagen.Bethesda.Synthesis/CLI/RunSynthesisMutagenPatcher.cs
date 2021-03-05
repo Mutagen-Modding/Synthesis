@@ -1,5 +1,4 @@
 using CommandLine;
-using Noggog.Utility;
 using Synthesis.Bethesda;
 using System;
 using System.Collections.Generic;
