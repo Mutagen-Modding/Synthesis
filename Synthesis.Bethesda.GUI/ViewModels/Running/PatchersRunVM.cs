@@ -178,7 +178,7 @@ namespace Synthesis.Bethesda.GUI
                             cancellation: _cancel.Token,
                             reporter: _reporter,
                             patchers: Patchers.Items.Select(vm => (vm.Config.InternalID, vm.Run)),
-                            statePath: null /* TODO derive/set statePath somehow, someway */);
+                            statePath: Path.Combine(RunningProfile.ProfileDirectory, "SQLiteFormKeyAllocator.sqlite"));
                         if (!madePatch) return;
                         var dataFolderPath = Path.Combine(RunningProfile.DataFolder, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
                         File.Copy(output, dataFolderPath, overwrite: true);
