@@ -1,13 +1,9 @@
-using FluentAssertions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Oblivion;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.CLI;
-using Noggog;
 using Noggog.Utility;
-using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -171,18 +167,18 @@ namespace Synthesis.Bethesda.UnitTests
             var statePath = GetStatePath(tmpFolder);
             var modPath = PatchModPath(dataFolder);
 
-                await new SynthesisPipeline()
-                .AddPatch<IOblivionMod, IOblivionModGetter>(AddAnotherNPC)
-                .Run(new RunSynthesisMutagenPatcher()
-                {
-                    DataFolderPath = dataFolder.Dir.Path,
-                    GameRelease = GameRelease.Oblivion,
-                    OutputPath = modPath,
-                    SourcePath = null,
-                    LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                    StatePath = statePath,
-                    PatcherName = AddAnotherNPCName
-                });
+            await new SynthesisPipeline()
+            .AddPatch<IOblivionMod, IOblivionModGetter>(AddAnotherNPC)
+            .Run(new RunSynthesisMutagenPatcher()
+            {
+                DataFolderPath = dataFolder.Dir.Path,
+                GameRelease = GameRelease.Oblivion,
+                OutputPath = modPath,
+                SourcePath = null,
+                LoadOrderFilePath = Utility.PathToLoadOrderFile,
+                StatePath = statePath,
+                PatcherName = AddAnotherNPCName
+            });
 
             await new SynthesisPipeline()
                 .AddPatch<IOblivionMod, IOblivionModGetter>(AddAwesomeNPC)
