@@ -171,7 +171,7 @@ namespace Synthesis.Bethesda.UnitTests
             var statePath = GetStatePath(tmpFolder);
             var modPath = PatchModPath(dataFolder);
 
-            await new SynthesisPipeline()
+                await new SynthesisPipeline()
                 .AddPatch<IOblivionMod, IOblivionModGetter>(AddAnotherNPC)
                 .Run(new RunSynthesisMutagenPatcher()
                 {
@@ -212,6 +212,7 @@ namespace Synthesis.Bethesda.UnitTests
 
         #endregion FreshStart
 
+        #region SecondRun
         [Fact]
         public async Task SecondRun_AwesomeNPCAndAnotherNPC()
         {
@@ -352,5 +353,8 @@ namespace Synthesis.Bethesda.UnitTests
                 Assert.Equal(AnotherNPCEdid, anotherNPC.EditorID);
             }
         }
+        #endregion
+
+
     }
 }
