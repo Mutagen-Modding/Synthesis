@@ -46,7 +46,8 @@ namespace Synthesis.Bethesda.Execution.CLI
                 + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
                 + $"  {nameof(ProfileDefinitionPath)} => {this.ProfileDefinitionPath} \n"
                 + $"  {nameof(ProfileName)} => {this.ProfileName} \n"
-                + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}";
+                + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}\n"
+                + $"  {nameof(StatePath)} => {this.StatePath}";
         }
     }
 }
