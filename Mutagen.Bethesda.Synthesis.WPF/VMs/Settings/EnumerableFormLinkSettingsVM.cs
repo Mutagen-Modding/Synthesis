@@ -50,7 +50,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             {
                 foreach (var item in e)
                 {
-                    if (item is IFormLink link)
+                    if (item is IFormLinkGetter link)
                     {
                         defaultKeys.Add(link.FormKey);
                     }
