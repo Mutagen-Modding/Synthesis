@@ -104,16 +104,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 }
                 if (settings.StatePath is not null && settings.PatcherName is not null)
                 {
-                    if (patchMod is AMod aMod)
-                    {
-                        // TODO pass userPrefs.Cancel to SQLiteFormKeyAllocator to handle abort?
-                        aMod.SetAllocator(formKeyAllocator = new SQLiteFormKeyAllocator(patchMod, settings.StatePath, settings.PatcherName));
-                    }
-                    else
-                    { 
-                        // TODO shouldn't happen?
-                        throw new InvalidOperationException($"Unable to attach persistent FormKey allocator to {patchMod}");
-                    }
+                    patchMod.SetAllocator(formKeyAllocator = new SQLiteFormKeyAllocator(patchMod, settings.StatePath, settings.PatcherName));
                 }
                 cache = loadOrder.ToMutableLinkCache(patchMod);
                 loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));
