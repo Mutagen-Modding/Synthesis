@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -54,11 +55,12 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool ShowAll { get; set; }
 
+        private bool _wasAdded = false;
+
         public GitPatcherInitVM(ProfileVM profile)
             : base(profile)
         {
             Patcher = new GitPatcherVM(profile);
-            this.CompositeDisposable.Add(Patcher);
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)
                 .Select(x => ErrorResponse.Create(x))
@@ -160,6 +162,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override async IAsyncEnumerable<PatcherVM> Construct()
         {
+            _wasAdded = true;
             yield return Patcher;
         }
 
@@ -177,6 +180,15 @@ namespace Synthesis.Bethesda.GUI
                 ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')
             };
             Profile.Config.AddNewPatchers(patcher.AsEnumerable().ToList());
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            if (!_wasAdded)
+            {
+                Patcher.Dispose();
+            }
         }
     }
 }
