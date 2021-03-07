@@ -45,7 +45,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="3.8.0" />
-    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.26.3" />
+    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.26.4" />
     <PackageReference Include="NuGetizer" Version="0.6.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

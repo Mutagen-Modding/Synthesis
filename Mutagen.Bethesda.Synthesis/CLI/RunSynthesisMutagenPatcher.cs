@@ -27,6 +27,9 @@ namespace Mutagen.Bethesda.Synthesis.CLI
         [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to the extra data folder dedicated for a patcher")]
         public string? ExtraDataFolder { get; set; }
 
+        [Option('f', "DefaultDataFolderPath", Required = false, HelpText = "Path to the data folder as the patcher source code defines it.")]
+        public string? DefaultDataFolderPath { get; set; }
+
         public override string ToString()
         {
             return $"{nameof(RunSynthesisMutagenPatcher)} => \n"
@@ -34,6 +37,7 @@ namespace Mutagen.Bethesda.Synthesis.CLI
                 + $"  {nameof(OutputPath)} => {this.OutputPath} \n"
                 + $"  {nameof(GameRelease)} => {this.GameRelease} \n"
                 + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
+                + $"  {nameof(DefaultDataFolderPath)} => {this.DefaultDataFolderPath} \n"
                 + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
                 + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}";
         }
