@@ -91,8 +91,7 @@ namespace Synthesis.Bethesda.GUI
                             Log.Logger.Error(Error.Reason);
                             return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
                         }
-                        repo.Reset(ResetMode.Hard);
-                        Commands.Checkout(repo, master);
+                        repo.Reset(ResetMode.Hard, repo.Branches[$"{master.RemoteName}/{master.FriendlyName}"].Tip);
 
                         var listingPath = Path.Combine(repo.Info.WorkingDirectory, Constants.AutomaticListingFileName);
                         if (!File.Exists(listingPath))
