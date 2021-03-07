@@ -1,6 +1,8 @@
 using Mutagen.Bethesda.Synthesis.CLI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Text;
 using System.Threading;
 
@@ -73,5 +75,57 @@ namespace Mutagen.Bethesda.Synthesis
         /// upon that content as appropriate, and mesh any changes to produce the final patch file.
         /// </summary>
         new TModSetter PatchMod { get; }
+    }
+
+    public static class IPatcherStateExt
+    {
+        /// <summary>
+        /// Attempts to locate and confirm the existence of a config file from either the user data folder
+        /// or the default data folder as it exists in the source repository.
+        /// </summary>
+        /// <param name="state">Patcher state to refer to</param>
+        /// <param name="relativePath">Path to the config file, relative to the data folder.</param>
+        /// <param name="resolvedPath">Located config file that exists</param>
+        /// <returns>True if config file was located that exists</returns>
+        public static bool TryRetrieveConfigFile(this IPatcherState state, string relativePath, [MaybeNullWhen(false)] out string resolvedPath)
+        {
+            var userPath = Path.Combine(state.ExtraSettingsDataPath, relativePath);
+            if (File.Exists(userPath))
+            {
+                resolvedPath = userPath;
+                return true;
+            }
+
+            if (state.DefaultSettingsDataPath != null)
+            {
+                var defPath = Path.Combine(state.DefaultSettingsDataPath, relativePath);
+                if (File.Exists(defPath))
+                {
+                    resolvedPath = defPath;
+                    return true;
+                }
+            }
+
+            resolvedPath = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Locate and confirm the existence of a config file from either the user data folder
+        /// or the default data folder as it exists in the source repository.
+        /// </summary>
+        /// <param name="state">Patcher state to refer to</param>
+        /// <param name="relativePath">Path to the config file, relative to the data folder.</param>
+        /// <exception cref="FileNotFoundException">If a config file could not be located that exists in either location.</exception>
+        /// <returns>Located config file that exists</returns>
+        public static string RetrieveConfigFile(this IPatcherState state, string relativePath)
+        {
+            if (TryRetrieveConfigFile(state, relativePath, out var resolved))
+            {
+                return resolved;
+            }
+
+            throw new FileNotFoundException($"Could not locate config file: {relativePath}");
+        }
     }
 }
