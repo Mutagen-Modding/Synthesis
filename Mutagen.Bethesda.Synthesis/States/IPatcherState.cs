@@ -37,9 +37,14 @@ namespace Mutagen.Bethesda.Synthesis
         CancellationToken Cancel { get; }
 
         /// <summary>
-        /// Path to the supplimental data folder dedicated to storing patcher specific settings/files
+        /// Path to the supplimental data folder dedicated to storing patcher specific user settings/files
         /// </summary>
         string ExtraSettingsDataPath { get; }
+
+        /// <summary>
+        /// Path to the default data folder as defined by the patcher's source code
+        /// </summary>
+        string? DefaultSettingsDataPath { get; }
     }
 
     public interface IPatcherState<TModSetter, TModGetter> : IPatcherState

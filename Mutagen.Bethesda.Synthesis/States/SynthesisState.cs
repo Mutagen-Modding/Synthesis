@@ -38,6 +38,9 @@ namespace Mutagen.Bethesda.Synthesis
         /// <inheritdoc />
         public string ExtraSettingsDataPath { get; } = string.Empty;
 
+        /// <inheritdoc />
+        public string? DefaultSettingsDataPath { get; }
+
         public SynthesisState(
             RunSynthesisMutagenPatcher settings,
             IReadOnlyList<LoadOrderListing> rawLoadOrder,
@@ -45,6 +48,7 @@ namespace Mutagen.Bethesda.Synthesis
             ILinkCache<TModSetter, TModGetter> linkCache,
             TModSetter patchMod,
             string extraDataPath,
+            string? defaultDataPath,
             CancellationToken cancellation)
         {
             Settings = settings;
@@ -53,6 +57,7 @@ namespace Mutagen.Bethesda.Synthesis
             LoadOrder = loadOrder;
             PatchMod = patchMod;
             ExtraSettingsDataPath = extraDataPath;
+            DefaultSettingsDataPath = defaultDataPath;
             Cancel = cancellation;
         }
 
