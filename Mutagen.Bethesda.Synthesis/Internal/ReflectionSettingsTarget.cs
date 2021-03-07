@@ -30,6 +30,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             JsonSettings = new JsonSerializerSettings();
             JsonSettings.Converters.Add(new StringEnumConverter());
             JsonSettings.AddMutagenConverters();
+            JsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
         }
 
         public ReflectionSettingsTarget(

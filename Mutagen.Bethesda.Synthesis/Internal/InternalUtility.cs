@@ -127,6 +127,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 linkCache: cache,
                 patchMod: patchMod,
                 extraDataPath: settings.ExtraDataFolder == null ? string.Empty : Path.GetFullPath(settings.ExtraDataFolder),
+                defaultDataPath: settings.DefaultDataFolderPath,
                 cancellation: userPrefs.Cancel,
                 formKeyAllocator: formKeyAllocator);
         }

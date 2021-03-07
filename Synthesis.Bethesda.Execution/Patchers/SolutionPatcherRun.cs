@@ -86,10 +86,13 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 throw new CliUnsuccessfulRunException((int)Codes.NotRunnable, runnability.Reason);
             }
 
+            var defaultDataFolderPath = GetDefaultDataPathFromProj(PathToProject);
+
             var internalSettings = new RunSynthesisMutagenPatcher()
             {
                 DataFolderPath = settings.DataFolderPath,
                 ExtraDataFolder = Path.Combine(PathToExtraDataBaseFolder, Name),
+                DefaultDataFolderPath = Directory.Exists(defaultDataFolderPath) ? defaultDataFolderPath : null,
                 GameRelease = settings.GameRelease,
                 LoadOrderFilePath = settings.LoadOrderFilePath,
                 OutputPath = settings.OutputPath,
@@ -181,9 +184,14 @@ namespace Synthesis.Bethesda.Execution.Patchers
             return CopyOverExtraData(PathToProject, PathToExtraDataBaseFolder, Name, _output.OnNext);
         }
 
+        public static string GetDefaultDataPathFromProj(string pathToProject)
+        {
+            return Path.Combine(Path.GetDirectoryName(pathToProject)!, "Data");
+        }
+
         public static async Task CopyOverExtraData(string pathToProject, string pathToExtraDataBaseFolder, string name, Action<string> log)
         {
-            var inputExtraData = new DirectoryInfo(Path.Combine(Path.GetDirectoryName(pathToProject)!, "Data"));
+            var inputExtraData = new DirectoryInfo(GetDefaultDataPathFromProj(pathToProject));
             if (!inputExtraData.Exists)
             {
                 log("No extra data to consider.");

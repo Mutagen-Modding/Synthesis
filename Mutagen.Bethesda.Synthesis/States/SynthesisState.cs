@@ -38,6 +38,9 @@ namespace Mutagen.Bethesda.Synthesis
         /// <inheritdoc />
         public string ExtraSettingsDataPath { get; } = string.Empty;
 
+        /// <inheritdoc />
+        public string? DefaultSettingsDataPath { get; }
+
         // <inheritdoc />
         IFormKeyAllocator? IPatcherState.FormKeyAllocator => FormKeyAllocator;
 
@@ -50,6 +53,7 @@ namespace Mutagen.Bethesda.Synthesis
             ILinkCache<TModSetter, TModGetter> linkCache,
             TModSetter patchMod,
             string extraDataPath,
+            string? defaultDataPath,
             CancellationToken cancellation,
             IFormKeyAllocator? formKeyAllocator = null)
         {
@@ -59,6 +63,7 @@ namespace Mutagen.Bethesda.Synthesis
             LoadOrder = loadOrder;
             PatchMod = patchMod;
             ExtraSettingsDataPath = extraDataPath;
+            DefaultSettingsDataPath = defaultDataPath;
             Cancel = cancellation;
             FormKeyAllocator = formKeyAllocator;
         }

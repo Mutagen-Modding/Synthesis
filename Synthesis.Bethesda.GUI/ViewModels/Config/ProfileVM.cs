@@ -108,6 +108,11 @@ namespace Synthesis.Bethesda.GUI
             ProfileDirectory = Path.Combine(Execution.Paths.WorkingDirectory, ID);
             WorkingDirectory = Execution.Paths.ProfileWorkingDirectory(ID);
 
+            Patchers.Connect()
+                .OnItemRemoved(p => p.Dispose())
+                .Subscribe()
+                .DisposeWith(this);
+
             var dataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
                 .Select(path =>
                 {
@@ -545,6 +550,15 @@ namespace Synthesis.Bethesda.GUI
         private void SetInitializer(PatcherInitVM initializer)
         {
             Config.NewPatcher = initializer;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            foreach (var patcher in Patchers.Items)
+            {
+                patcher.Dispose();
+            }
         }
     }
 }
