@@ -12,7 +12,7 @@ namespace Synthesis.Bethesda.UnitTests
 {
     public class VersionSwapInTests
     {
-        public void CreateProj(out XElement root, out XElement refs)
+        public static void CreateProj(out XElement root, out XElement refs)
         {
             refs = new XElement("ItemGroup");
             root = new XElement("Project",
@@ -25,7 +25,7 @@ namespace Synthesis.Bethesda.UnitTests
                 refs);
         }
 
-        public string CreateProj(params (string Library, string Version)[] nugets)
+        public static string CreateProj(params (string Library, string Version)[] nugets)
         {
             CreateProj(out var root, out var refs);
             foreach (var nuget in nugets)
