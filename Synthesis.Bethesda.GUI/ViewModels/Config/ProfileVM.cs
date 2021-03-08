@@ -111,7 +111,11 @@ namespace Synthesis.Bethesda.GUI
             WorkingDirectory = Execution.Paths.ProfileWorkingDirectory(ID);
 
             Patchers.Connect()
-                .OnItemRemoved(p => p.Dispose())
+                .OnItemRemoved(p =>
+                {
+                    Log.Logger.Information($"Disposing of {p.DisplayName} because it was removed.");
+                    p.Dispose();
+                })
                 .Subscribe()
                 .DisposeWith(this);
 

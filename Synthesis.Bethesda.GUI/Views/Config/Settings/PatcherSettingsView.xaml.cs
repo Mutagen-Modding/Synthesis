@@ -36,10 +36,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.ProcessingRing.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.ReflectionSettings)
+                this.WhenAnyFallback(x => x.ViewModel!.ReflectionSettings!.Settings)
                     .BindToStrict(this, x => x.ReflectionSettingTabs.ItemsSource)
                     .DisposeWith(disposable);
-                this.WhenAnyFallback(x => x.ViewModel!.ReflectionSettings.Count)
+                this.WhenAnyFallback(x => x.ViewModel!.ReflectionSettings!.Settings!.Count)
                     .Select(x => x > 0 ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.ReflectionSettingTabs.Visibility)
                     .DisposeWith(disposable);
