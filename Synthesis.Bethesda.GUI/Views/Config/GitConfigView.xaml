@@ -43,9 +43,6 @@
             </TextBlock.Style>
         </TextBlock>
         <TabControl Grid.Row="1" Margin="-5,5,0,0">
-            <TabItem Header="Settings">
-                <local:PatcherSettingsView x:Name="PatcherSettings" />
-            </TabItem>
             <TabItem Header="Versioning">
                 <ScrollViewer
                     x:Name="AdvancedSettingsArea"
@@ -77,6 +74,9 @@
                         </Button>
                     </Grid>
                 </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Settings">
+                <local:PatcherSettingsView x:Name="PatcherSettings" />
             </TabItem>
         </TabControl>
     </Grid>
