@@ -173,6 +173,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.ResetVersioningGrid.IsEnabled)
                     .DisposeWith(disposable);
                 #endregion
+
+                this.WhenAnyValue(x => x.ViewModel!.Profile!.ExportCommand)
+                    .BindToStrict(this, x => x.ExportButton.Command)
+                    .DisposeWith(disposable);
             });
         }
     }

@@ -1,5 +1,6 @@
 using DynamicData;
 using Mutagen.Bethesda;
+using Newtonsoft.Json;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -32,6 +33,7 @@ namespace Synthesis.Bethesda.GUI
         public IReactiveCommand UpdateProfileNugetVersionCommand { get; }
         public ICommand EnableAllPatchersCommand { get; }
         public ICommand DisableAllPatchersCommand { get; }
+        public ICommand ExportCommand { get; }
         public ReactiveCommand<Unit, Unit> UpdateAllPatchersCommand { get; }
 
         public string ID { get; private set; }
@@ -497,6 +499,8 @@ namespace Synthesis.Bethesda.GUI
                 .Switch()
                 .Replay(1)
                 .RefCount();
+
+            ExportCommand = ReactiveCommand.Create(Export);
         }
            
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)
@@ -558,6 +562,40 @@ namespace Synthesis.Bethesda.GUI
             foreach (var patcher in Patchers.Items)
             {
                 patcher.Dispose();
+            }
+        }
+
+        public void Export()
+        {
+            try
+            {
+                Config.MainVM.Save(out var guiSettings, out var pipeSettings);
+                pipeSettings.Profiles.RemoveWhere(p => p.ID != this.ID);
+                guiSettings.SelectedProfile = this.ID;
+                if (pipeSettings.Profiles.Count != 1)
+                {
+                    throw new ArgumentException("Unexpected number of profiles for export");
+                }
+                var profile = pipeSettings.Profiles[0];
+                profile.LockToCurrentVersioning = true;
+                foreach (var gitPatcher in profile.Patchers.WhereCastable<PatcherSettings, GithubPatcherSettings>())
+                {
+                    gitPatcher.AutoUpdateToBranchTip = false;
+                    gitPatcher.LatestTag = false;
+                }
+                var subDir = "Export";
+                Directory.CreateDirectory(subDir);
+                File.WriteAllText(
+                    Path.Combine(subDir, Execution.Paths.SettingsFileName),
+                    JsonConvert.SerializeObject(pipeSettings, Formatting.Indented, Execution.Constants.JsonSettings));
+                File.WriteAllText(
+                    Path.Combine(subDir, Paths.GuiSettingsPath),
+                    JsonConvert.SerializeObject(guiSettings, Formatting.Indented, Execution.Constants.JsonSettings));
+                Utility.NavigateToPath(subDir);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(ex, "Error while exporting settings");
             }
         }
     }
