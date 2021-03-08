@@ -19,10 +19,10 @@ namespace Synthesis.Bethesda.Execution.Patchers
     {
         public string Name { get; }
 
-        private readonly Subject<string> _output = new Subject<string>();
+        private readonly Subject<string> _output = new();
         public IObservable<string> Output => _output;
 
-        private readonly Subject<string> _error = new Subject<string>();
+        private readonly Subject<string> _error = new();
         public IObservable<string> Error => _error;
 
         public string PathToExecutable;

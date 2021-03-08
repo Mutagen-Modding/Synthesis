@@ -8,13 +8,13 @@ namespace Synthesis.Bethesda.Execution.Reporters
 {
     public class RxReporter<TKey> : IRunReporter<TKey>
     {
-        private readonly Subject<Exception> _overall = new Subject<Exception>();
-        private readonly Subject<(TKey, IPatcherRun, Exception)> _prepProblem = new Subject<(TKey, IPatcherRun, Exception)>();
-        private readonly Subject<(TKey, IPatcherRun, Exception)> _runProblem = new Subject<(TKey, IPatcherRun, Exception)>();
-        private readonly Subject<(TKey, IPatcherRun, string)> _runSuccessful = new Subject<(TKey, IPatcherRun, string)>();
-        private readonly Subject<(TKey, IPatcherRun)> _starting = new Subject<(TKey, IPatcherRun)>();
-        private readonly Subject<(TKey Key, IPatcherRun? Run, string String)> _output = new Subject<(TKey Key, IPatcherRun? Run, string String)>();
-        private readonly Subject<(TKey Key, IPatcherRun? Run, string String)> _error = new Subject<(TKey Key, IPatcherRun? Run, string String)>();
+        private readonly Subject<Exception> _overall = new();
+        private readonly Subject<(TKey, IPatcherRun, Exception)> _prepProblem = new();
+        private readonly Subject<(TKey, IPatcherRun, Exception)> _runProblem = new();
+        private readonly Subject<(TKey, IPatcherRun, string)> _runSuccessful = new();
+        private readonly Subject<(TKey, IPatcherRun)> _starting = new();
+        private readonly Subject<(TKey Key, IPatcherRun? Run, string String)> _output = new();
+        private readonly Subject<(TKey Key, IPatcherRun? Run, string String)> _error = new();
 
         public IObservable<Exception> Overall => _overall;
         public IObservable<(TKey Key, IPatcherRun Run, Exception Error)> PrepProblem => _prepProblem;

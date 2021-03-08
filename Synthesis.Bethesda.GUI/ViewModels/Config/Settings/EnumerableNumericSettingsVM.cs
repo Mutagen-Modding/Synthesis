@@ -35,7 +35,7 @@ namespace Synthesis.Bethesda.GUI
         public static EnumerableNumericSettingsVM Factory<TItem, TWrapper>(FieldMeta fieldMeta, object? defaultVal, TWrapper prototype)
             where TWrapper : BasicSettingsVM<TItem>, new()
         {
-            Func<JsonElement, TryGet<IBasicSettingsNodeVM>> import = new Func<JsonElement, TryGet<IBasicSettingsNodeVM>>((elem) =>
+            Func<JsonElement, TryGet<IBasicSettingsNodeVM>> import = new((elem) =>
             {
                 return TryGet<IBasicSettingsNodeVM>.Succeed(
                     new ListElementWrapperVM<TItem, TWrapper>(

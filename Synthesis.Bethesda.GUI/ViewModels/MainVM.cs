@@ -58,7 +58,7 @@ namespace Synthesis.Bethesda.GUI
         public IObservable<DotNetVersion> DotNetSdkInstalled { get; }
 
         private Window _window;
-        public Rectangle Rectangle => new Rectangle(
+        public Rectangle Rectangle => new(
             x: (int)_window.Left,
             y: (int)_window.Top,
             width: (int)_window.Width,

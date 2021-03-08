@@ -65,7 +65,7 @@ namespace Synthesis.Bethesda.GUI
 
     public class UnknownBasicSettingsVM : ViewModel, IBasicSettingsNodeVM
     {
-        public static readonly UnknownBasicSettingsVM Empty = new UnknownBasicSettingsVM();
+        public static readonly UnknownBasicSettingsVM Empty = new();
 
         public object Value => "Unknown";
 

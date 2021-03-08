@@ -33,8 +33,8 @@ namespace Synthesis.Bethesda.UnitTests
             }
         }
 
-        protected ModKey PatchModKey => new ModKey("Patch", ModType.Plugin);
-        protected ModPath PatchModPath(TempFolder dataFolder) => new ModPath(PatchModKey, Path.Combine(dataFolder.Dir.Path, PatchModKey.ToString()));
+        protected ModKey PatchModKey => new("Patch", ModType.Plugin);
+        protected ModPath PatchModPath(TempFolder dataFolder) => new(PatchModKey, Path.Combine(dataFolder.Dir.Path, PatchModKey.ToString()));
 
         [Fact]
         public async Task TypicalPatcher_FreshStart()

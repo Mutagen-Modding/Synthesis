@@ -77,17 +77,17 @@ namespace Synthesis.Bethesda.UnitTests
         public string AFile => "Somefile.txt";
         public string SlnPath => "Solution.sln";
         public string ProjPath => "MyProj/MyProj.csproj";
-        public Signature Signature => new Signature("noggog", "someEmail@gmail.com", DateTimeOffset.Now);
+        public Signature Signature => new("noggog", "someEmail@gmail.com", DateTimeOffset.Now);
 
         [DebuggerStepThrough]
         public GitPatcherVersioning TypicalPatcherVersioning() =>
-            new GitPatcherVersioning(
+            new(
                 PatcherVersioningEnum.Branch,
                 target: DefaultBranch);
 
         [DebuggerStepThrough]
         public NugetVersioningTarget TypicalNugetVersioning() =>
-            new NugetVersioningTarget(
+            new(
                 mutagenVersion: null,
                 mutagenVersioning: NugetVersioningEnum.Match,
                 synthesisVersion: null,
@@ -97,7 +97,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task ThrowsIfCancelled()
         {
-            CancellationTokenSource cancel = new CancellationTokenSource();
+            CancellationTokenSource cancel = new();
             cancel.Cancel();
             await Assert.ThrowsAsync<OperationCanceledException>(() =>
             {

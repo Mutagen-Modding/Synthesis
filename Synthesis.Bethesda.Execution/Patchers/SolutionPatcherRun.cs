@@ -28,10 +28,10 @@ namespace Synthesis.Bethesda.Execution.Patchers
         public string PathToProject { get; }
         public string PathToExtraDataBaseFolder { get; }
 
-        private Subject<string> _output = new Subject<string>();
+        private Subject<string> _output = new();
         public IObservable<string> Output => _output;
 
-        private Subject<string> _error = new Subject<string>();
+        private Subject<string> _error = new();
         public IObservable<string> Error => _error;
 
         public SolutionPatcherRun(

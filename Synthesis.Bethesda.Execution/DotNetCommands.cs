@@ -34,8 +34,8 @@ namespace Synthesis.Bethesda.Execution
             }
 
             bool on = false;
-            List<string> lines = new List<string>();
-            List<string> errors = new List<string>();
+            List<string> lines = new();
+            List<string> errors = new();
             using var process = ProcessWrapper.Create(
                 new ProcessStartInfo("dotnet", $"list \"{projectPath}\" package{(outdated ? " --outdated" : null)}{(includePrerelease ? " --include-prerelease" : null)}"),
                 cancel: cancel);
@@ -127,9 +127,9 @@ namespace Synthesis.Bethesda.Execution
             using var proc = ProcessWrapper.Create(
                 new System.Diagnostics.ProcessStartInfo("dotnet", "--version"),
                 cancel: cancel);
-            List<string> outs = new List<string>();
+            List<string> outs = new();
             using var outp = proc.Output.Subscribe(o => outs.Add(o));
-            List<string> errs = new List<string>();
+            List<string> errs = new();
             using var errp = proc.Error.Subscribe(o => errs.Add(o));
             var result = await proc.Run();
             if (errs.Count > 0)
@@ -168,9 +168,9 @@ namespace Synthesis.Bethesda.Execution
                 new System.Diagnostics.ProcessStartInfo("dotnet", GetBuildString($"\"{projectPath}\"")),
                 cancel: cancel);
             log?.Invoke($"({proc.StartInfo.WorkingDirectory}): {proc.StartInfo.FileName} {proc.StartInfo.Arguments}");
-            List<string> outs = new List<string>();
+            List<string> outs = new();
             using var outp = proc.Output.Subscribe(o => outs.Add(o));
-            List<string> errs = new List<string>();
+            List<string> errs = new();
             using var errp = proc.Error.Subscribe(o => errs.Add(o));
             var result = await proc.Run();
             if (errs.Count > 0)
@@ -212,7 +212,7 @@ namespace Synthesis.Bethesda.Execution
             log?.Invoke($"({process.StartInfo.WorkingDirectory}): {process.StartInfo.FileName} {process.StartInfo.Arguments}");
             string? firstError = null;
             bool buildFailed = false;
-            List<string> output = new List<string>();
+            List<string> output = new();
             int totalLen = 0;
             process.Output.Subscribe(o =>
             {

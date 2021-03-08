@@ -122,7 +122,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                 cancel: cancel,
                 hookOntoOutput: true);
 
-            List<string> output = new List<string>();
+            List<string> output = new();
             using var outputSub = proc.Output
                 .Subscribe(s => output.Add(s));
 

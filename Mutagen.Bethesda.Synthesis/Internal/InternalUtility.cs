@@ -134,7 +134,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
 
         public static void AddImplicitMasters(RunSynthesisMutagenPatcher settings, ExtendedList<LoadOrderListing> loadOrderListing)
         {
-            HashSet<ModKey> referencedMasters = new HashSet<ModKey>();
+            HashSet<ModKey> referencedMasters = new();
             foreach (var item in loadOrderListing.OnlyEnabled())
             {
                 MasterReferenceReader reader = MasterReferenceReader.FromPath(Path.Combine(settings.DataFolderPath, item.ModKey.FileName), settings.GameRelease);

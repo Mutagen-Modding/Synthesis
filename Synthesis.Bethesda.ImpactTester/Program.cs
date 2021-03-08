@@ -20,7 +20,7 @@ namespace Synthesis.Bethesda.ImpactTester
     {
         static async Task Main(string[] args)
         {
-            CancellationTokenSource cancel = new CancellationTokenSource();
+            CancellationTokenSource cancel = new();
             await Task.WhenAny(
                 Task.Run(async () =>
                 {

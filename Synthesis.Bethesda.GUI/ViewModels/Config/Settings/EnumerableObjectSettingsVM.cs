@@ -126,7 +126,7 @@ namespace Synthesis.Bethesda.GUI
                 MainVM = fieldMeta.MainVM,
                 IsPassthrough = true,
             });
-            List<ObjectSettingsVM> defaultValues = new List<ObjectSettingsVM>();
+            List<ObjectSettingsVM> defaultValues = new();
             if (param.DefaultVal is IEnumerable e)
             {
                 foreach (var o in e)
