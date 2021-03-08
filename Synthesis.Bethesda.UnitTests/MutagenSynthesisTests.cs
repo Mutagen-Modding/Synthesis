@@ -240,7 +240,7 @@ namespace Synthesis.Bethesda.UnitTests
         {
 #pragma warning disable CS0618 // Type or member is obsolete
             await new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(
-                new string[0],
+                Array.Empty<string>(),
                 PatchFunction);
 #pragma warning restore CS0618 // Type or member is obsolete
         }
