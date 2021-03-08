@@ -28,10 +28,10 @@ namespace Synthesis.Bethesda.Execution.Patchers
         public string PathToProject { get; }
         public string PathToExtraDataBaseFolder { get; }
 
-        private Subject<string> _output = new Subject<string>();
+        private readonly Subject<string> _output = new();
         public IObservable<string> Output => _output;
 
-        private Subject<string> _error = new Subject<string>();
+        private readonly Subject<string> _error = new();
         public IObservable<string> Error => _error;
 
         public SolutionPatcherRun(
@@ -120,7 +120,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
         }
 
         // Almost there, I think, but not currently working.
-        public static async Task<(bool OverallSuccess, EmitResult? TriggeringFailure)> CompileWithRosyln(string solutionUrl, CancellationToken cancel, string outputDir)
+        public static async Task<(bool OverallSuccess, EmitResult? TriggeringFailure)> CompileWithRosyln(string solutionUrl, string outputDir, CancellationToken cancel)
         {
             MSBuildWorkspace workspace = MSBuildWorkspace.Create();
             Solution solution = workspace.OpenSolutionAsync(solutionUrl).Result;

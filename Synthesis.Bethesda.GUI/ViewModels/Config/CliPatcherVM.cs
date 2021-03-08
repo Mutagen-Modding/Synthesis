@@ -15,7 +15,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string> _DisplayName;
         public override string DisplayName => _DisplayName.Value;
 
-        public readonly PathPickerVM PathToExecutable = new PathPickerVM()
+        public readonly PathPickerVM PathToExecutable = new()
         {
              PathType = PathPickerVM.PathTypeOptions.File,
              ExistCheckOption = PathPickerVM.CheckOptions.On,

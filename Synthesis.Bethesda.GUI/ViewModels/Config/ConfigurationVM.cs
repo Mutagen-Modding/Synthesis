@@ -162,5 +162,11 @@ namespace Synthesis.Bethesda.GUI
             SelectedProfile.Patchers.AddRange(patchersToAdd);
             SelectedProfile.DisplayedObject = patchersToAdd.First();
         }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            Profiles.Items.ForEach(p => p.Dispose());
+        }
     }
 }

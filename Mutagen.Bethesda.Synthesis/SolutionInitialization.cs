@@ -45,7 +45,7 @@ namespace Mutagen.Bethesda.Synthesis
             var projName = Path.GetFileNameWithoutExtension(projPath);
 
             // Generate Project File
-            FileGeneration fg = new FileGeneration();
+            FileGeneration fg = new();
             fg.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk\">");
             fg.AppendLine($"  <PropertyGroup>");
             fg.AppendLine($"    <OutputType>Exe</OutputType>");
@@ -119,7 +119,7 @@ namespace Mutagen.Bethesda.Synthesis
             Directory.CreateDirectory(slnDir);
 
             // Create solution
-            FileGeneration fg = new FileGeneration();
+            FileGeneration fg = new();
             fg.AppendLine($"Microsoft Visual Studio Solution File, Format Version 12.00");
             fg.AppendLine($"# Visual Studio Version 16");
             fg.AppendLine($"VisualStudioVersion = 16.0.30330.147");

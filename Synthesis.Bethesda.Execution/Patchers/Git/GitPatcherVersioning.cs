@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
         public override int GetHashCode()
         {
-            HashCode code = new HashCode();
+            HashCode code = new();
             code.Add(Versioning);
             code.Add(Target);
             return code.ToHashCode();

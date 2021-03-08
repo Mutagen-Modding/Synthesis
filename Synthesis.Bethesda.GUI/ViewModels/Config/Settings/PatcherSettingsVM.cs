@@ -31,8 +31,16 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<bool> _SettingsLoading;
         public bool SettingsLoading => _SettingsLoading.Value;
 
-        private Lazy<IObservableCollection<ReflectionSettingsVM>> _reflectionSettings;
-        public IObservableCollection<ReflectionSettingsVM> ReflectionSettings => _reflectionSettings.Value;
+        private bool _hasBeenRetrieved = false;
+        private readonly ObservableAsPropertyHelper<ReflectionSettingsBundleVM?> _ReflectionSettings;
+        public ReflectionSettingsBundleVM? ReflectionSettings
+        {
+            get
+            {
+                _hasBeenRetrieved = true;
+                return _ReflectionSettings.Value;
+            }
+        }
 
         private readonly ObservableAsPropertyHelper<ErrorResponse> _Error;
         public ErrorResponse Error => _Error.Value;
@@ -102,17 +110,17 @@ namespace Synthesis.Bethesda.GUI
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .Select(i =>
                 {
-                    return Observable.Create<(bool Processing, GetResponse<ReflectionSettingsVM[]> SettingsVM)>(async (observer, cancel) =>
+                    return Observable.Create<(bool Processing, GetResponse<ReflectionSettingsBundleVM> SettingsVM)>(async (observer, cancel) =>
                     {
                         if (i.projPath.Failed
                             || i.settingsTarget.Style != SettingsStyle.SpecifiedClass
                             || i.settingsTarget.Targets.Length == 0)
                         {
-                            observer.OnNext((false, GetResponse<ReflectionSettingsVM[]>.Succeed(Array.Empty<ReflectionSettingsVM>())));
+                            observer.OnNext((false, GetResponse<ReflectionSettingsBundleVM>.Succeed(new ReflectionSettingsBundleVM())));
                             return;
                         }
 
-                        observer.OnNext((true, Array.Empty<ReflectionSettingsVM>()));
+                        observer.OnNext((true, new ReflectionSettingsBundleVM()));
 
                         try
                         {
@@ -154,21 +162,22 @@ namespace Synthesis.Bethesda.GUI
                             if (vms.Failed)
                             {
                                 Logger.Error($"Error creating reflection GUI: {vms.Reason}");
-                                observer.OnNext((false, vms.BubbleFailure<ReflectionSettingsVM[]>()));
+                                observer.OnNext((false, vms.BubbleFailure<ReflectionSettingsBundleVM>()));
                                 return;
                             }
-                            await Task.WhenAll(vms.Value.Select(vm => vm.Import(logger, cancel)));
-                            observer.OnNext((false, vms.Value));
+                            await Task.WhenAll(vms.Value.Item.Select(vm => vm.Import(logger, cancel)));
+                            observer.OnNext((false, new ReflectionSettingsBundleVM(vms.Value.Item, vms.Value.Temp)));
                         }
                         catch (Exception ex)
                         {
                             Logger.Error($"Error creating reflection GUI: {ex}");
-                            observer.OnNext((false, GetResponse<ReflectionSettingsVM[]>.Fail(ex)));
+                            observer.OnNext((false, GetResponse<ReflectionSettingsBundleVM>.Fail(ex)));
                         }
                         observer.OnCompleted();
                     });
                 })
                 .Switch()
+                .DisposePrevious()
                 .Replay(1)
                 .RefCount();
 
@@ -176,27 +185,23 @@ namespace Synthesis.Bethesda.GUI
                 .Select(t => t.Processing)
                 .ToGuiProperty(this, nameof(SettingsLoading), deferSubscription: true);
 
-            _reflectionSettings = new Lazy<IObservableCollection<ReflectionSettingsVM>>(() =>
-            {
-                return targetSettingsVM
-                   .Select(x =>
-                   {
-                       if (x.Processing || x.SettingsVM.Failed)
-                       {
-                           return Enumerable.Empty<ReflectionSettingsVM>();
-                       }
-                       return x.SettingsVM.Value;
-                   })
-                   .ObserveOnGui()
-                   .Select(x =>
-                   {
-                       SelectedSettings = x.FirstOrDefault();
-                       return x.AsObservableChangeSet(x => (StringCaseAgnostic)x.SettingsSubPath);
-                   })
-                   .Switch()
-                   .ToObservableCollection(this.CompositeDisposable);
-            },
-            isThreadSafe: true);
+            _ReflectionSettings = targetSettingsVM
+                .Select(x =>
+                {
+                    if (x.Processing || x.SettingsVM.Failed)
+                    {
+                        return new ReflectionSettingsBundleVM();
+                    }
+                    return x.SettingsVM.Value;
+                })
+                .ObserveOnGui()
+                .Select(x =>
+                {
+                    SelectedSettings = x.Settings?.FirstOrDefault();
+                    return x;
+                })
+                .DisposePrevious()
+                .ToGuiProperty<ReflectionSettingsBundleVM?>(this, nameof(ReflectionSettings), initialValue: null, deferSubscription: true);
 
             _Error = targetSettingsVM
                 .Select(x => (ErrorResponse)x.SettingsVM)
@@ -205,8 +210,17 @@ namespace Synthesis.Bethesda.GUI
 
         public void Persist(ILogger logger)
         {
-            if (!_reflectionSettings.IsValueCreated) return;
-            ReflectionSettings.ForEach(vm => vm.Persist(logger));
+            if (!_hasBeenRetrieved) return;
+            ReflectionSettings?.Settings?.ForEach(vm => vm.Persist(logger));
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            if (_hasBeenRetrieved)
+            {
+                ReflectionSettings?.Dispose();
+            }
         }
     }
 }

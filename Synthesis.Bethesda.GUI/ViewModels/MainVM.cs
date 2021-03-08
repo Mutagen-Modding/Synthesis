@@ -57,8 +57,8 @@ namespace Synthesis.Bethesda.GUI
         public IObservable<string?> NewestMutagenVersion { get; }
         public IObservable<DotNetVersion> DotNetSdkInstalled { get; }
 
-        private Window _window;
-        public Rectangle Rectangle => new Rectangle(
+        private readonly Window _window;
+        public Rectangle Rectangle => new(
             x: (int)_window.Left,
             y: (int)_window.Top,
             width: (int)_window.Width,
@@ -96,7 +96,8 @@ namespace Synthesis.Bethesda.GUI
                 .Replay(1)
                 .RefCount();
 
-            Configuration = new ConfigurationVM(this);
+            Configuration = new ConfigurationVM(this)
+                .DisposeWith(this);
             ActivePanel = Configuration;
             DiscardActionCommand = NoggogCommand.CreateFromObject(
                 objectSource: this.WhenAnyValue(x => x.TargetConfirmation),

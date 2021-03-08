@@ -166,6 +166,13 @@
                     <TextBlock VerticalAlignment="Center" Text="Profile Internal Files" />
                 </StackPanel>
             </Button>
+            <Button Grid.Row="4"
+                x:Name="ExportButton"
+                Margin="0,0,0,10"
+                HorizontalAlignment="Right"
+                ToolTip="Exports to hardcoded settings with no autoupdated features selected">
+                Export
+            </Button>
         </Grid>
     </Grid>
 </local:ProfileDetailViewBase>

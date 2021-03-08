@@ -8,7 +8,7 @@ namespace Synthesis.Bethesda.Execution
 {
     public static class Constants
     {
-        public static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings()
+        public static readonly JsonSerializerSettings JsonSettings = new()
         {
             TypeNameHandling = TypeNameHandling.Auto,
             Error = ErrorHandler

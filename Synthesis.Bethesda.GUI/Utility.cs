@@ -67,25 +67,24 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public static async Task<GetResponse<TRet>> ExtractInfoFromProject<TRet>(string projPath, CancellationToken cancel, Func<Assembly, GetResponse<TRet>> getter, Action<string> log)
+        public static async Task<GetResponse<(TRet Item, TempFolder Temp)>> ExtractInfoFromProject<TRet>(string projPath, CancellationToken cancel, Func<Assembly, GetResponse<TRet>> getter, Action<string> log)
         {
-            if (cancel.IsCancellationRequested) return GetResponse<TRet>.Fail("Cancelled");
+            if (cancel.IsCancellationRequested) return GetResponse<(TRet Item, TempFolder Temp)>.Fail("Cancelled");
 
-            // We copy to a temp folder, as despite all the hoops jumped through to unload the assembly,
-            // it still seems to lock the dll files.  For whatever reason, though, deleting the folder
-            // containing all those files seems to work out? This is definitely a hack.  Unload should
-            // ideally just work out of the box.
-            await using var tempFolder = TempFolder.FactoryByPath(Path.Combine(Paths.LoadingFolder, Path.GetRandomFileName()), 3, TimeSpan.FromMilliseconds(500));
-            if (cancel.IsCancellationRequested) return GetResponse<TRet>.Fail("Cancelled");
+            // Copy to a temp folder for build + loading, just to keep the main one free to be swapped/modified as needed
+            var tempFolder = TempFolder.FactoryByPath(Path.Combine(Paths.LoadingFolder, Path.GetRandomFileName()));
+            if (cancel.IsCancellationRequested) return GetResponse<(TRet Item, TempFolder Temp)>.Fail("Cancelled");
             var projDir = Path.GetDirectoryName(projPath)!;
             log($"Starting project assembly info extraction.  Copying project from {projDir} to {tempFolder.Dir.Path}");
             CopyDirectory(projDir, tempFolder.Dir.Path, cancel);
             projPath = Path.Combine(tempFolder.Dir.Path, Path.GetFileName(projPath));
             log($"Retrieving executable path from {projPath}");
             var exec = await DotNetCommands.GetExecutablePath(projPath, cancel, log);
-            if (exec.Failed) return exec.BubbleFailure<TRet>();
+            if (exec.Failed) return exec.BubbleFailure<(TRet Item, TempFolder Temp)>();
             log($"Located executable path for {projPath}: {exec.Value}");
-            return ExecuteAndUnload(exec.Value, getter);
+            var ret = ExecuteAndUnload(exec.Value, getter);
+            if (ret.Failed) return ret.BubbleFailure<(TRet Item, TempFolder Temp)>();
+            return (ret.Value, tempFolder);
         }
 
         private static GetResponse<TRet> ExecuteAndUnload<TRet>(string exec, Func<Assembly, GetResponse<TRet>> getter)
@@ -97,7 +96,7 @@ namespace Synthesis.Bethesda.GUI
         {
             // Resolver of the locations of the assemblies that are dependencies of the
             // main plugin assembly.
-            private AssemblyDependencyResolver _resolver;
+            private readonly AssemblyDependencyResolver _resolver;
 
             public FormKeyAssemblyLoadContext(string pluginPath) : base(isCollectible: true)
             {

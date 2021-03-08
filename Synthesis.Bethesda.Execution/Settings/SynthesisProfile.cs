@@ -8,7 +8,7 @@ namespace Synthesis.Bethesda.Execution.Settings
         public string Nickname = string.Empty;
         public string ID = string.Empty;
         public GameRelease TargetRelease;
-        public List<PatcherSettings> Patchers = new List<PatcherSettings>();
+        public List<PatcherSettings> Patchers = new();
         public NugetVersioningEnum MutagenVersioning = NugetVersioningEnum.Manual;
         public string? MutagenManualVersion;
         public NugetVersioningEnum SynthesisVersioning = NugetVersioningEnum.Manual;

@@ -14,6 +14,6 @@ namespace Synthesis.Bethesda.GUI
         SettingsNodeVM? Parent,
         bool IsPassthrough)
     {
-        public static readonly FieldMeta Empty = new FieldMeta(string.Empty, string.Empty, null, null!, null, false);
+        public static readonly FieldMeta Empty = new(string.Empty, string.Empty, null, null!, null, false);
     }
 }
