@@ -118,7 +118,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
         }
 
         // Almost there, I think, but not currently working.
-        public static async Task<(bool OverallSuccess, EmitResult? TriggeringFailure)> CompileWithRosyln(string solutionUrl, CancellationToken cancel, string outputDir)
+        public static async Task<(bool OverallSuccess, EmitResult? TriggeringFailure)> CompileWithRosyln(string solutionUrl, string outputDir, CancellationToken cancel)
         {
             MSBuildWorkspace workspace = MSBuildWorkspace.Create();
             Solution solution = workspace.OpenSolutionAsync(solutionUrl).Result;
