@@ -137,22 +137,7 @@
                 <local:UnknownSettingsNodeView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:ModKeySettingsVM}">
-                <Border Style="{StaticResource ReflectionSettingBorder}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0"
-                            Margin="4,4,6,0"
-                            VerticalAlignment="Top"
-                            Style="{StaticResource ReflectionSettingName}"
-                            Text="{Binding Meta.DisplayName}" />
-                        <mutagenWpf:ModKeyPicker Grid.Column="1"
-                            ModKey="{Binding Value}"
-                            SearchableMods="{Binding DetectedLoadOrder}" />
-                    </Grid>
-                </Border>
+                <local:ModKeySettingsView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:FormKeySettingsVM}">
                 <local:BasicSettingsNodeView>
@@ -175,24 +160,7 @@
                 <local:DictionarySettingsNodeView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:FormLinkSettingsVM}">
-                <Border Style="{StaticResource ReflectionSettingBorder}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0"
-                            Margin="4,4,6,0"
-                            VerticalAlignment="Top"
-                            Style="{StaticResource ReflectionSettingName}"
-                            Text="{Binding Meta.DisplayName}" />
-                        <mutagenWpf:FormKeyPicker Grid.Column="1"
-                            VerticalAlignment="Center"
-                            FormKey="{Binding Value}"
-                            LinkCache="{Binding LinkCache}"
-                            ScopedTypes="{Binding ScopedTypes, Mode=OneWay}" />
-                    </Grid>
-                </Border>
+                <local:FormLinkSettingsView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:EnumerableFormLinkSettingsVM}">
                 <local:EnumerableFormLinkSettingsNodeView />
