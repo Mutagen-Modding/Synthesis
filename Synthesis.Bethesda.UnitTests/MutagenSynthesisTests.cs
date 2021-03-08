@@ -144,7 +144,7 @@ namespace Synthesis.Bethesda.UnitTests
                 },
                 new PatcherPreferences(),
                 Synthesis.Bethesda.Constants.SynthesisModKey);
-            Assert.Equal(state.PatchMod.ModKey, state.LoadOrder.Last().Key);
+            Assert.Equal(state.PatchMod.ModKey, state.LoadOrder[^1].ModKey);
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace Synthesis.Bethesda.UnitTests
                 },
                 new PatcherPreferences(),
                 Synthesis.Bethesda.Constants.SynthesisModKey);
-            Assert.Equal(state.PatchMod.ModKey, state.LoadOrder.Last().Key);
+            Assert.Equal(state.PatchMod.ModKey, state.LoadOrder[^1].ModKey);
         }
 
         [Fact]
