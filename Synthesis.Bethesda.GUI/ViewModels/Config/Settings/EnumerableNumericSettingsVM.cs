@@ -17,8 +17,8 @@ namespace Synthesis.Bethesda.GUI
 {
     public class EnumerableNumericSettingsVM : EnumerableSettingsVM
     {
-        private Action<ObservableCollection<IBasicSettingsNodeVM>, object?> _setToDefault;
-        private object? _defaultVal;
+        private readonly Action<ObservableCollection<IBasicSettingsNodeVM>, object?> _setToDefault;
+        private readonly object? _defaultVal;
 
         public EnumerableNumericSettingsVM(
             FieldMeta fieldMeta,

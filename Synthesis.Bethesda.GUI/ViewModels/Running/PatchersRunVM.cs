@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ProfileVM RunningProfile { get; }
 
-        private CancellationTokenSource _cancel = new();
+        private readonly CancellationTokenSource _cancel = new();
 
         [Reactive]
         public Exception? ResultError { get; private set; }

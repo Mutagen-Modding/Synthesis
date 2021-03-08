@@ -57,7 +57,7 @@ namespace Synthesis.Bethesda.GUI
         public IObservable<string?> NewestMutagenVersion { get; }
         public IObservable<DotNetVersion> DotNetSdkInstalled { get; }
 
-        private Window _window;
+        private readonly Window _window;
         public Rectangle Rectangle => new(
             x: (int)_window.Left,
             y: (int)_window.Top,

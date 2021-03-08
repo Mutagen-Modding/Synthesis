@@ -31,7 +31,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<bool> _SettingsLoading;
         public bool SettingsLoading => _SettingsLoading.Value;
 
-        private Lazy<IObservableCollection<ReflectionSettingsVM>> _reflectionSettings;
+        private readonly Lazy<IObservableCollection<ReflectionSettingsVM>> _reflectionSettings;
         public IObservableCollection<ReflectionSettingsVM> ReflectionSettings => _reflectionSettings.Value;
 
         private readonly ObservableAsPropertyHelper<ErrorResponse> _Error;

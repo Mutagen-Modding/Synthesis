@@ -15,7 +15,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public class EnumSettingsVM : SettingsNodeVM, IBasicSettingsNodeVM
     {
-        private string? _defaultVal;
+        private readonly string? _defaultVal;
 
         public IEnumerable<string> EnumNames { get; }
 

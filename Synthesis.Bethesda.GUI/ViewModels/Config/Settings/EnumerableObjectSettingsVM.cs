@@ -26,7 +26,7 @@ namespace Synthesis.Bethesda.GUI
             public ObjectSettingsVM Value { get; set; } = null!;
         }
 
-        private ObjectSettingsVM _prototype;
+        private readonly ObjectSettingsVM _prototype;
         internal ObjectSettingsVM[] _defaultValues = Array.Empty<ObjectSettingsVM>();
 
         public ObservableCollection<SelectionWrapper> Values { get; } = new ObservableCollection<SelectionWrapper>();

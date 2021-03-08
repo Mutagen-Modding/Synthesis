@@ -15,7 +15,7 @@ namespace Synthesis.Bethesda.GUI
     public class ProfilesDisplayVM : ViewModel
     {
         public ConfigurationVM Config { get; }
-        private ViewModel _previous;
+        private readonly ViewModel _previous;
 
         public ICommand GoBackCommand { get; }
         public ICommand AddCommand { get; }

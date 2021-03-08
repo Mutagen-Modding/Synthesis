@@ -97,7 +97,7 @@ namespace Synthesis.Bethesda.GUI
         {
             // Resolver of the locations of the assemblies that are dependencies of the
             // main plugin assembly.
-            private AssemblyDependencyResolver _resolver;
+            private readonly AssemblyDependencyResolver _resolver;
 
             public FormKeyAssemblyLoadContext(string pluginPath) : base(isCollectible: true)
             {

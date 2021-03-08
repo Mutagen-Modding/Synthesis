@@ -11,7 +11,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public class EnumerableStringSettingsVM : EnumerableSettingsVM
     {
-        private IEnumerable<string> _defaultVal;
+        private readonly IEnumerable<string> _defaultVal;
 
         public EnumerableStringSettingsVM(
             FieldMeta fieldMeta,
