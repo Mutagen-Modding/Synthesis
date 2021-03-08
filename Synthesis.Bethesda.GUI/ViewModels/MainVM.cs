@@ -96,7 +96,8 @@ namespace Synthesis.Bethesda.GUI
                 .Replay(1)
                 .RefCount();
 
-            Configuration = new ConfigurationVM(this);
+            Configuration = new ConfigurationVM(this)
+                .DisposeWith(this);
             ActivePanel = Configuration;
             DiscardActionCommand = NoggogCommand.CreateFromObject(
                 objectSource: this.WhenAnyValue(x => x.TargetConfirmation),
