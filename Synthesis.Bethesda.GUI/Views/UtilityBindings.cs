@@ -18,7 +18,7 @@ namespace Synthesis.Bethesda.GUI
         #region Help Sections
         public static IDisposable HelpWiring(ConfigurationVM config, Button button, TextBlock helpBlock, IObservable<bool>? show = null)
         {
-            CompositeDisposable ret = new CompositeDisposable();
+            CompositeDisposable ret = new();
 
             show ??= Observable.Return(true);
 

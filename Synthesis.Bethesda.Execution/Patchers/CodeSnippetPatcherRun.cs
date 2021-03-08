@@ -128,7 +128,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
         {
             var gameCategory = release.ToCategory();
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.AppendLine($"using System;");
             sb.AppendLine($"using Noggog;");
             sb.AppendLine($"using System.Threading;");

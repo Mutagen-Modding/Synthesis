@@ -14,14 +14,14 @@ namespace Synthesis.Bethesda.Execution.Reporters
 
         public Exception? Overall { get; private set; }
 
-        private readonly List<(IPatcherRun Patcher, Exception Exception)> _prepProblems = new List<(IPatcherRun Patcher, Exception Exception)>();
+        private readonly List<(IPatcherRun Patcher, Exception Exception)> _prepProblems = new();
         public IReadOnlyList<(IPatcherRun Patcher, Exception Exception)> PrepProblems => _prepProblems;
 
         public IPatcherRun? StartingRun { get; private set; }
 
         public (IPatcherRun Patcher, Exception Exception)? RunProblem { get; private set; }
 
-        private readonly List<(IPatcherRun Patcher, string OutputPath)> _patcherComplete = new List<(IPatcherRun Patcher, string OutputPath)>();
+        private readonly List<(IPatcherRun Patcher, string OutputPath)> _patcherComplete = new();
         public IReadOnlyList<(IPatcherRun Patcher, string OutputPath)> PatcherComplete => _patcherComplete;
 
         public void ReportOverallProblem(Exception ex)

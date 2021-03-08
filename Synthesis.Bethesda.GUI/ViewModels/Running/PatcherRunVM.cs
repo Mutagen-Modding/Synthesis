@@ -62,7 +62,7 @@ namespace Synthesis.Bethesda.GUI
                 .ObserveOnGui()
                 .Subscribe(output =>
                 {
-                    StringBuilder sb = new StringBuilder();
+                    StringBuilder sb = new();
                     foreach (var line in output)
                     {
                         sb.AppendLine(line);

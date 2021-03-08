@@ -69,7 +69,7 @@ namespace Synthesis.Bethesda.GUI
                         .ObserveOn(RxApp.TaskpoolScheduler)
                         .Select(code =>
                         {
-                            CancellationTokenSource cancel = new CancellationTokenSource();
+                            CancellationTokenSource cancel = new();
                             try
                             {
                                 var emit = CodeSnippetPatcherRun.Compile(

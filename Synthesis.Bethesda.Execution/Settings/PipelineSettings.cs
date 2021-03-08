@@ -7,6 +7,6 @@ namespace Synthesis.Bethesda.Execution.Settings
 {
     public class PipelineSettings
     {
-        public List<SynthesisProfile> Profiles = new List<SynthesisProfile>();
+        public List<SynthesisProfile> Profiles = new();
     }
 }

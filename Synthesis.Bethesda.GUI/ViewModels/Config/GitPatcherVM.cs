@@ -203,7 +203,7 @@ namespace Synthesis.Bethesda.GUI
                             masterBranch = master.FriendlyName;
                             repo.Reset(ResetMode.Hard);
                             Commands.Checkout(repo, master);
-                            Signature author = new Signature("please", "whymustidothis@gmail.com", DateTimeOffset.Now);
+                            Signature author = new("please", "whymustidothis@gmail.com", DateTimeOffset.Now);
                             Commands.Pull(repo, author, null);
                             tags = repo.Tags.Select(tag => (tag.FriendlyName, tag.Target.Sha))
                                 .WithIndex()

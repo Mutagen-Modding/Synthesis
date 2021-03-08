@@ -11,7 +11,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public class EnumerableStringSettingsVM : EnumerableSettingsVM
     {
-        private IEnumerable<string> _defaultVal;
+        private readonly IEnumerable<string> _defaultVal;
 
         public EnumerableStringSettingsVM(
             FieldMeta fieldMeta,
@@ -32,7 +32,7 @@ namespace Synthesis.Bethesda.GUI
 
         public static EnumerableStringSettingsVM Factory(FieldMeta fieldMeta, object? defaultVal)
         {
-            Func<JsonElement, TryGet<IBasicSettingsNodeVM>> import = new Func<JsonElement, TryGet<IBasicSettingsNodeVM>>((elem) =>
+            Func<JsonElement, TryGet<IBasicSettingsNodeVM>> import = new((elem) =>
             {
                 return TryGet<IBasicSettingsNodeVM>.Succeed(
                     new ListElementWrapperVM<string, StringSettingsVM>(

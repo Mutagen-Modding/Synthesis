@@ -26,7 +26,7 @@ namespace Synthesis.Bethesda.GUI
             public ObjectSettingsVM Value { get; set; } = null!;
         }
 
-        private ObjectSettingsVM _prototype;
+        private readonly ObjectSettingsVM _prototype;
         internal ObjectSettingsVM[] _defaultValues = Array.Empty<ObjectSettingsVM>();
 
         public ObservableCollection<SelectionWrapper> Values { get; } = new ObservableCollection<SelectionWrapper>();
@@ -126,7 +126,7 @@ namespace Synthesis.Bethesda.GUI
                 MainVM = fieldMeta.MainVM,
                 IsPassthrough = true,
             });
-            List<ObjectSettingsVM> defaultValues = new List<ObjectSettingsVM>();
+            List<ObjectSettingsVM> defaultValues = new();
             if (param.DefaultVal is IEnumerable e)
             {
                 foreach (var o in e)

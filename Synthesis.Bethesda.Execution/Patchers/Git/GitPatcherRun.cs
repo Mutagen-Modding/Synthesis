@@ -18,17 +18,17 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
     public class GitPatcherRun : IPatcherRun
     {
         public const string RunnerBranch = "SynthesisRunner";
-        public readonly static System.Version NewtonSoftAddMutaVersion = new System.Version(0, 26);
-        public readonly static System.Version NewtonSoftAddSynthVersion = new System.Version(0, 14, 1);
+        public readonly static System.Version NewtonSoftAddMutaVersion = new(0, 26);
+        public readonly static System.Version NewtonSoftAddSynthVersion = new(0, 14, 1);
         public string Name { get; }
         private readonly string _localDir;
-        private GithubPatcherSettings _settings;
+        private readonly GithubPatcherSettings _settings;
         public SolutionPatcherRun? SolutionRun { get; private set; }
 
-        private Subject<string> _output = new Subject<string>();
+        private readonly Subject<string> _output = new();
         public IObservable<string> Output => _output;
 
-        private Subject<string> _error = new Subject<string>();
+        private readonly Subject<string> _error = new();
         public IObservable<string> Error => _error;
 
         internal static readonly HashSet<string> MutagenLibraries;

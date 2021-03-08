@@ -76,7 +76,7 @@ namespace Synthesis.Bethesda.DTO
 
         public override int GetHashCode()
         {
-            HashCode hash = new HashCode();
+            HashCode hash = new();
             hash.Add(Visibility);
             hash.Add(OneLineDescription);
             hash.Add(LongDescription);
