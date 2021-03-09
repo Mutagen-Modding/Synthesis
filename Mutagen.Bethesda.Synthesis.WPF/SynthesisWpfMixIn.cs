@@ -11,7 +11,7 @@ namespace Mutagen.Bethesda.Synthesis
     {
         public static SynthesisPipeline SetForWpf(
             this SynthesisPipeline pipe,
-            SynthesisPipeline.OpenForSettingsFunction? openForSettings,
+            SynthesisPipeline.OpenFunction? openForSettings,
             bool adjustArguments = true)
         {
             bool shutdown = true;

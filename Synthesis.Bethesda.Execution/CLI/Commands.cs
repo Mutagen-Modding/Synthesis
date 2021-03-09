@@ -149,21 +149,43 @@ namespace Synthesis.Bethesda.Execution.CLI
         public static async Task<int> OpenForSettings(
             string path,
             bool directExe,
+            GameRelease release,
+            string dataFolderPath,
+            IEnumerable<LoadOrderListing> loadOrder,
             Rectangle rect,
             CancellationToken cancel)
         {
+            using var loadOrderFile = GetTemporaryLoadOrder(release, loadOrder);
+
             using var proc = ProcessWrapper.Create(
                 GetStart(path, directExe, new Synthesis.Bethesda.OpenForSettings()
                 {
                     Left = rect.Left,
                     Top = rect.Top,
                     Height = rect.Height,
-                    Width = rect.Width
+                    Width = rect.Width,
+                    LoadOrderFilePath = loadOrderFile.File.Path,
+                    DataFolderPath = dataFolderPath,
+                    GameRelease = release,
                 }),
                 cancel: cancel,
                 hookOntoOutput: false);
 
             return await proc.Run();
+        }
+
+        public static TempFile GetTemporaryLoadOrder(GameRelease release, IEnumerable<LoadOrderListing> loadOrder)
+        {
+            var loadOrderFile = new TempFile(
+                Path.Combine(Synthesis.Bethesda.Execution.Paths.WorkingDirectory, "RunnabilityChecks", Path.GetRandomFileName()));
+
+            LoadOrder.Write(
+                loadOrderFile.File.Path,
+                release,
+                loadOrder,
+                removeImplicitMods: true);
+
+            return loadOrderFile;
         }
 
         public static async Task<ErrorResponse> CheckRunnability(
@@ -174,14 +196,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             IEnumerable<LoadOrderListing> loadOrder,
             CancellationToken cancel)
         {
-            using var loadOrderFile = new TempFile(
-                Path.Combine(Synthesis.Bethesda.Execution.Paths.WorkingDirectory, "RunnabilityChecks", Path.GetRandomFileName()));
-
-            LoadOrder.Write(
-                loadOrderFile.File.Path,
-                release,
-                loadOrder,
-                removeImplicitMods: true);
+            using var loadOrderFile = GetTemporaryLoadOrder(release, loadOrder);
 
             return await CheckRunnability(
                 path,

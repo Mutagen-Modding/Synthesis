@@ -97,7 +97,10 @@ namespace Synthesis.Bethesda.GUI
                         o.Value,
                         directExe: false,
                         rect: parent.Profile.Config.MainVM.Rectangle,
-                        cancel: CancellationToken.None);
+                        cancel: CancellationToken.None,
+                        release: parent.Profile.Release,
+                        dataFolderPath: parent.Profile.DataFolder,
+                        loadOrder: parent.Profile.LoadOrder.Items.Select(lvm => lvm.Listing));
                 },
                 disposable: this.CompositeDisposable);
 
