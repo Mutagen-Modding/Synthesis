@@ -5,7 +5,6 @@ using Newtonsoft.Json.Linq;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
-using Serilog;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -303,9 +302,9 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public abstract void Import(JsonElement property, ILogger logger);
+        public abstract void Import(JsonElement property, Action<string> logger);
 
-        public abstract void Persist(JObject obj, ILogger logger);
+        public abstract void Persist(JObject obj, Action<string> logger);
 
         public abstract SettingsNodeVM Duplicate();
 

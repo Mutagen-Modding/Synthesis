@@ -1,4 +1,3 @@
-using DynamicData;
 using Loqui;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Core;
@@ -7,14 +6,11 @@ using Newtonsoft.Json.Linq;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-using Serilog;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Text.Json;
 using System.Windows.Input;
@@ -67,7 +63,7 @@ namespace Synthesis.Bethesda.GUI
                 defaultKeys);
         }
 
-        public override void Import(JsonElement property, ILogger logger)
+        public override void Import(JsonElement property, Action<string> logger)
         {
             Values.Clear();
             foreach (var elem in property.EnumerateArray())
@@ -83,7 +79,7 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public override void Persist(JObject obj, ILogger logger)
+        public override void Persist(JObject obj, Action<string> logger)
         {
             obj[Meta.DiskName] = new JArray(Values
                 .Select(x =>

@@ -1,7 +1,6 @@
 using Newtonsoft.Json.Linq;
 using Noggog;
 using ReactiveUI.Fody.Helpers;
-using Serilog;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -47,7 +46,7 @@ namespace Synthesis.Bethesda.GUI
             Selected = Items.FirstOrDefault();
         }
 
-        public override void Import(JsonElement property, ILogger logger)
+        public override void Import(JsonElement property, Action<string> logger)
         {
             Items.SetTo(property.EnumerateObject().Select(obj =>
             {
@@ -59,7 +58,7 @@ namespace Synthesis.Bethesda.GUI
             Selected = Items.FirstOrDefault();
         }
 
-        public override void Persist(JObject obj, ILogger logger)
+        public override void Persist(JObject obj, Action<string> logger)
         {
             var dictObj = new JObject();
             obj[Meta.DiskName] = dictObj;

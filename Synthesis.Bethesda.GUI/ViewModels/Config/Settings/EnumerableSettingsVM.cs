@@ -2,7 +2,6 @@ using Newtonsoft.Json.Linq;
 using Noggog;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Serilog;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -55,7 +54,7 @@ namespace Synthesis.Bethesda.GUI
                 });
         }
 
-        public override void Import(JsonElement property, ILogger logger)
+        public override void Import(JsonElement property, Action<string> logger)
         {
             Values.Clear();
             foreach (var elem in property.EnumerateArray())
@@ -66,7 +65,7 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public override void Persist(JObject obj, ILogger logger)
+        public override void Persist(JObject obj, Action<string> logger)
         {
             obj[Meta.DiskName] = new JArray(Values.Select(x => ((IBasicSettingsNodeVM)x.Value).Value).ToArray());
         }

@@ -1,6 +1,5 @@
 using Newtonsoft.Json.Linq;
 using Noggog;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -94,12 +93,12 @@ namespace Synthesis.Bethesda.GUI
                 .ToArray();
         }
 
-        public override void Import(JsonElement property, ILogger logger)
+        public override void Import(JsonElement property, Action<string> logger)
         {
             ImportStatic(_nodes, property, logger);
         }
 
-        public override void Persist(JObject obj, ILogger logger)
+        public override void Persist(JObject obj, Action<string> logger)
         {
             PersistStatic(_nodes, Meta.DiskName, obj, logger);
         }
@@ -107,13 +106,13 @@ namespace Synthesis.Bethesda.GUI
         public static void ImportStatic(
             Dictionary<string, SettingsNodeVM> nodes,
             JsonElement root,
-            ILogger logger)
+            Action<string> logger)
         {
             foreach (var elem in root.EnumerateObject())
             {
                 if (!nodes.TryGetValue(elem.Name, out var node))
                 {
-                    logger.Error($"Could not locate proper node for setting with name: {elem.Name}");
+                    logger($"Could not locate proper node for setting with name: {elem.Name}");
                     continue;
                 }
                 try
@@ -122,7 +121,7 @@ namespace Synthesis.Bethesda.GUI
                 }
                 catch (InvalidOperationException ex)
                 {
-                    logger.Error(ex, $"Error parsing {elem.Name}");
+                    logger($"Error parsing {elem.Name}: {ex}");
                 }
             }
         }
@@ -131,7 +130,7 @@ namespace Synthesis.Bethesda.GUI
             Dictionary<string, SettingsNodeVM> nodes,
             string? name,
             JObject obj,
-            ILogger logger)
+            Action<string> logger)
         {
             if (!name.IsNullOrWhitespace())
             {

@@ -2,17 +2,13 @@ using Noggog.WPF;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.IO;
-using System.Collections.ObjectModel;
-using Serilog;
 using Newtonsoft.Json.Linq;
 using LibGit2Sharp;
 using ReactiveUI.Fody.Helpers;
-using System.Reactive.Subjects;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -54,7 +50,7 @@ namespace Synthesis.Bethesda.GUI
         }
 
         public async Task Import(
-            ILogger logger,
+            Action<string> logger,
             CancellationToken cancel)
         {
             if (!File.Exists(SettingsPath)) return;
@@ -63,7 +59,7 @@ namespace Synthesis.Bethesda.GUI
             ObjVM.Import(json.RootElement, logger);
         }
 
-        public void Persist(ILogger logger)
+        public void Persist(Action<string> logger)
         {
             var doc = new JObject();
             ObjVM.Persist(doc, logger);

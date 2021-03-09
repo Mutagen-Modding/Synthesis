@@ -1002,7 +1002,7 @@ namespace Synthesis.Bethesda.GUI
                 LastSuccessfulRun = this.LastSuccessfulRun,
             };
             CopyOverSave(ret);
-            PatcherSettings.Persist(Logger);
+            PatcherSettings.Persist(Logger.Information);
             return ret;
         }
 
@@ -1036,7 +1036,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 throw new ArgumentNullException(nameof(RunnableData));
             }
-            PatcherSettings.Persist(Logger);
+            PatcherSettings.Persist(Logger.Information);
             return new PatcherRunVM(
                 parent,
                 this,

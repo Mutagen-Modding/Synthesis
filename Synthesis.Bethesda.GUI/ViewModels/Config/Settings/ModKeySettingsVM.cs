@@ -1,7 +1,6 @@
 using DynamicData;
 using Mutagen.Bethesda;
 using Newtonsoft.Json.Linq;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +32,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override ModKey GetDefault() => ModKey.Null;
 
-        public override void Import(JsonElement property, ILogger logger)
+        public override void Import(JsonElement property, Action<string> logger)
         {
             Value = Import(property);
         }
@@ -50,7 +49,7 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public override void Persist(JObject obj, ILogger logger)
+        public override void Persist(JObject obj, Action<string> logger)
         {
             if (Value.IsNull)
             {

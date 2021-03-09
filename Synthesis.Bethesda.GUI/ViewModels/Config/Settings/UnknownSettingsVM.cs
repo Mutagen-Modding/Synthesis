@@ -12,12 +12,12 @@ namespace Synthesis.Bethesda.GUI
         {
         }
 
-        public override void Import(JsonElement property, ILogger logger)
+        public override void Import(JsonElement property, Action<string> logger)
         {
-            logger.Error($"Tried to import for unknown setting: {this.Meta}");
+            logger($"Tried to import for unknown setting: {this.Meta}");
         }
 
-        public override void Persist(JObject obj, ILogger logger)
+        public override void Persist(JObject obj, Action<string> logger)
         {
         }
 

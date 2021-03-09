@@ -2,7 +2,6 @@ using Newtonsoft.Json.Linq;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,12 +40,12 @@ namespace Synthesis.Bethesda.GUI
                 .ToGuiProperty(this, nameof(DisplayName), string.Empty, deferSubscription: true);
         }
 
-        public override void Import(JsonElement property, ILogger logger)
+        public override void Import(JsonElement property, Action<string> logger)
         {
             Value = property.GetString() ?? string.Empty;
         }
 
-        public override void Persist(JObject obj, ILogger logger)
+        public override void Persist(JObject obj, Action<string> logger)
         {
             obj[Meta.DiskName] = JToken.FromObject(Value);
         }

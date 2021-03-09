@@ -4,7 +4,6 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,12 +66,12 @@ namespace Synthesis.Bethesda.GUI
             return new FormLinkSettingsVM(_linkCache, Meta, _targetType, _defaultVal);
         }
 
-        public override void Import(JsonElement property, ILogger logger)
+        public override void Import(JsonElement property, Action<string> logger)
         {
             Value = FormKeySettingsVM.Import(property);
         }
 
-        public override void Persist(JObject obj, ILogger logger)
+        public override void Persist(JObject obj, Action<string> logger)
         {
             obj[Meta.DiskName] = JToken.FromObject(FormKeySettingsVM.Persist(Value));
         }

@@ -1,7 +1,6 @@
 using Noggog;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,7 +63,7 @@ namespace Synthesis.Bethesda.GUI
                 });
         }
 
-        public override void Import(JsonElement property, ILogger logger)
+        public override void Import(JsonElement property, Action<string> logger)
         {
             base.Import(property, logger);
             _dictionary = this.Items.ToDictionary(x => x.Key, x => x);

@@ -1,18 +1,11 @@
-using DynamicData;
 using Mutagen.Bethesda;
 using Newtonsoft.Json.Linq;
 using Noggog;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-using Serilog;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Text.Json;
 using System.Windows.Input;
 
 namespace Synthesis.Bethesda.GUI
@@ -49,7 +42,7 @@ namespace Synthesis.Bethesda.GUI
                 defaultVal as IEnumerable<FormKey> ?? Enumerable.Empty<FormKey>());
         }
 
-        public override void Persist(JObject obj, ILogger logger)
+        public override void Persist(JObject obj, Action<string> logger)
         {
             obj[Meta.DiskName] = new JArray(Values.Select(x => FormKeySettingsVM.Persist(((FormKeySettingsVM)x.Value).Value)).ToArray());
         }

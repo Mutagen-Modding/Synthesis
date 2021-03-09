@@ -165,7 +165,7 @@ namespace Synthesis.Bethesda.GUI
                                 observer.OnNext((false, vms.BubbleFailure<ReflectionSettingsBundleVM>()));
                                 return;
                             }
-                            await Task.WhenAll(vms.Value.Item.Select(vm => vm.Import(logger, cancel)));
+                            await Task.WhenAll(vms.Value.Item.Select(vm => vm.Import(logger.Information, cancel)));
                             observer.OnNext((false, new ReflectionSettingsBundleVM(vms.Value.Item, vms.Value.Temp)));
                         }
                         catch (Exception ex)
@@ -208,7 +208,7 @@ namespace Synthesis.Bethesda.GUI
                 .ToGuiProperty(this, nameof(Error), deferSubscription: true);
         }
 
-        public void Persist(ILogger logger)
+        public void Persist(Action<string> logger)
         {
             if (!_hasBeenRetrieved) return;
             ReflectionSettings?.Settings?.ForEach(vm => vm.Persist(logger));
