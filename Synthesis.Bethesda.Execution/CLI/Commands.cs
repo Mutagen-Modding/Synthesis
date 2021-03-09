@@ -95,7 +95,13 @@ namespace Synthesis.Bethesda.Execution.CLI
                     workingDirectory: Paths.ProfileWorkingDirectory(profile.ID),
                     outputPath: run.OutputPath,
                     dataFolder: run.DataFolderPath,
-                    loadOrder: LoadOrder.GetListings(run.GameRelease, dataPath: run.DataFolderPath),
+                    loadOrder: LoadOrder.GetListings(
+                        run.GameRelease, 
+                        dataPath: run.DataFolderPath,
+                        pluginsFilePath: run.LoadOrderFilePath,
+                        creationClubFilePath: CreationClubListings.GetListingsPath(
+                            run.GameRelease.ToCategory(),
+                            run.DataFolderPath)),
                     release: run.GameRelease,
                     patchers: patchers,
                     sourcePath: run.SourcePath == null ? default : ModPath.FromPath(run.SourcePath),
