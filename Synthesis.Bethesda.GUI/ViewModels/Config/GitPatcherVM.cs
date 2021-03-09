@@ -23,6 +23,7 @@ using Newtonsoft.Json;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution;
 using System.Threading;
+using Mutagen.Bethesda.Synthesis.WPF;
 
 namespace Synthesis.Bethesda.GUI
 {

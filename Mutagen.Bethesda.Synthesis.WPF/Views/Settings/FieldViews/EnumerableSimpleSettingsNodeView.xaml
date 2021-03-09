@@ -1,0 +1,211 @@
+<local:EnumerableSimpleSettingsNodeViewBase
+    x:Class="Mutagen.Bethesda.Synthesis.WPF.EnumerableSimpleSettingsNodeView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:local="clr-namespace:Mutagen.Bethesda.Synthesis.WPF"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mutagenWpf="clr-namespace:Mutagen.Bethesda.WPF;assembly=Mutagen.Bethesda.WPF"
+    xmlns:xwpf="http://schemas.xceed.com/wpf/xaml/toolkit"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <Border Style="{StaticResource ReflectionSettingBorder}">
+        <Grid MinHeight="25">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Grid.Column="0"
+                Orientation="Horizontal">
+                <Button Grid.Row="0"
+                    x:Name="SettingNameButton"
+                    Margin="4,4,6,0"
+                    HorizontalAlignment="Left"
+                    Style="{StaticResource ReflectionSettingButton}">
+                    <TextBlock x:Name="SettingNameBlock" Style="{StaticResource ReflectionSettingName}" />
+                </Button>
+                <Button
+                    x:Name="AddButton"
+                    Width="40"
+                    Margin="0,6"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    VerticalContentAlignment="Top"
+                    ToolTip="Add new item">
+                    <icon:PackIconMaterial
+                        Width="10"
+                        Height="10"
+                        Kind="Plus" />
+                </Button>
+                <Button
+                    x:Name="DeleteButton"
+                    Width="40"
+                    Margin="0,6"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    VerticalContentAlignment="Top"
+                    Style="{StaticResource CloseButton}"
+                    ToolTip="Delete selected items">
+                    <icon:PackIconMaterial
+                        Width="10"
+                        Height="10"
+                        Kind="Close" />
+                </Button>
+            </StackPanel>
+            <ListBox Grid.Row="1"
+                x:Name="SettingsListBox"
+                AllowDrop="True"
+                Background="Transparent"
+                BorderThickness="0"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                SelectionMode="Extended">
+                <ListBox.ItemContainerStyle>
+                    <Style BasedOn="{StaticResource Noggog.Styles.ListBoxItem.Plain}" TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.Style>
+                    <Style TargetType="ListBox">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Values.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.Style>
+                <ListBox.Resources>
+                    <Style x:Name="NumericSelectionWrapper" TargetType="local:SelectionWrapper">
+                        <Setter Property="Margin" Value="0,-3,-3,-3" />
+                    </Style>
+                </ListBox.Resources>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid
+                            x:Name="ItemGrid"
+                            Margin="0,0,5,0"
+                            Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="106" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ContentPresenter Grid.Column="1"
+                                x:Name="ValueContent"
+                                Margin="0,0,10,0"
+                                Content="{Binding Value}">
+                                <ContentPresenter.Resources>
+                                    <DataTemplate DataType="{x:Type local:Int8SettingsVM}">
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
+                                            <xwpf:SByteUpDown
+                                                ShowButtonSpinner="False"
+                                                Style="{StaticResource ReflectionIntSpinner}"
+                                                Value="{Binding Value}" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type local:Int16SettingsVM}">
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
+                                            <xwpf:ShortUpDown
+                                                ShowButtonSpinner="False"
+                                                Style="{StaticResource ReflectionIntSpinner}"
+                                                Value="{Binding Value}" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type local:Int32SettingsVM}">
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
+                                            <xwpf:IntegerUpDown
+                                                ShowButtonSpinner="False"
+                                                Style="{StaticResource ReflectionIntSpinner}"
+                                                Value="{Binding Value}" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type local:Int64SettingsVM}">
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
+                                            <xwpf:LongUpDown
+                                                ShowButtonSpinner="False"
+                                                Style="{StaticResource ReflectionIntSpinner}"
+                                                Value="{Binding Value}" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type local:UInt8SettingsVM}">
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
+                                            <xwpf:ByteUpDown
+                                                ShowButtonSpinner="False"
+                                                Style="{StaticResource ReflectionIntSpinner}"
+                                                Value="{Binding Value}" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type local:UInt16SettingsVM}">
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
+                                            <xwpf:UShortUpDown
+                                                ShowButtonSpinner="False"
+                                                Style="{StaticResource ReflectionIntSpinner}"
+                                                Value="{Binding Value}" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type local:UInt32SettingsVM}">
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
+                                            <xwpf:UIntegerUpDown
+                                                ShowButtonSpinner="False"
+                                                Style="{StaticResource ReflectionIntSpinner}"
+                                                Value="{Binding Value}" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type local:UInt64SettingsVM}">
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
+                                            <xwpf:ULongUpDown
+                                                ShowButtonSpinner="False"
+                                                Style="{StaticResource ReflectionIntSpinner}"
+                                                Value="{Binding Value}" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type local:DoubleSettingsVM}">
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
+                                            <xwpf:DoubleUpDown
+                                                ShowButtonSpinner="False"
+                                                Style="{StaticResource ReflectionIntSpinner}"
+                                                Value="{Binding Value}" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type local:DecimalSettingsVM}">
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
+                                            <xwpf:DecimalUpDown
+                                                ShowButtonSpinner="False"
+                                                Style="{StaticResource ReflectionIntSpinner}"
+                                                Value="{Binding Value}" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type local:FloatSettingsVM}">
+                                        <local:SelectionWrapper Style="{DynamicResource NumericSelectionWrapper}">
+                                            <xwpf:SingleUpDown
+                                                ShowButtonSpinner="False"
+                                                Style="{StaticResource ReflectionIntSpinner}"
+                                                Value="{Binding Value}" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type local:FormKeySettingsVM}">
+                                        <local:SelectionWrapper>
+                                            <mutagenWpf:FormKeyBox Margin="0,5,5,5" FormKey="{Binding Value}" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type local:EnumSettingsVM}">
+                                        <local:SelectionWrapper>
+                                            <local:EnumSettingsNodeView Margin="0,4,4,4" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type local:StringSettingsVM}">
+                                        <local:SelectionWrapper>
+                                            <TextBox Margin="0,4,4,4" Text="{Binding Value}" />
+                                        </local:SelectionWrapper>
+                                    </DataTemplate>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Border>
+</local:EnumerableSimpleSettingsNodeViewBase>

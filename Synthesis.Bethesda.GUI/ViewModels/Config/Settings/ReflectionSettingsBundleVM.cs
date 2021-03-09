@@ -1,3 +1,4 @@
+using Mutagen.Bethesda.Synthesis.WPF;
 using Noggog.Utility;
 using Noggog.WPF;
 using System;
