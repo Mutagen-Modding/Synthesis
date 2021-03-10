@@ -128,49 +128,21 @@ namespace Synthesis.Bethesda.GUI
 
                         try
                         {
-                            var vms = await Utility.ExtractInfoFromProject<ReflectionSettingsVM[]>(
-                                projPath: i.projPath.Value,
-                                cancel: cancel,
-                                getter: (assemb) =>
-                                {
-                                    return i.settingsTarget.Targets
-                                        .Select((s, index) =>
-                                        {
-                                            try
-                                            {
-                                                var t = assemb.GetType(s.TypeName);
-                                                if (t == null) return null;
-                                                return new ReflectionSettingsVM(
-                                                    new SettingsParameters(
-                                                        assemb, 
-                                                        parent.Profile.LoadOrder.Connect(),
-                                                        parent.Profile.SimpleLinkCache,
-                                                        t,
-                                                        Activator.CreateInstance(t),
-                                                        MainVM: null!,
-                                                        Parent: null),
-                                                    nickname: i.settingsTarget.Targets[index].Nickname,
-                                                    settingsFolder: Path.Combine(Execution.Paths.TypicalExtraData, parent.DisplayName),
-                                                    settingsSubPath: i.settingsTarget.Targets[index].Path);
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                Logger.Error(ex.ToString());
-                                                throw new ArgumentException($"Error creating reflected settings: {ex.Message}");
-                                            }
-                                        })
-                                        .NotNull()
-                                        .ToArray();
-                                },
-                                Logger.Information);
-                            if (vms.Failed)
+                            var reflectionBundle = await ReflectionSettingsBundleVM.ExtractBundle(
+                                i.projPath.Value,
+                                targets: i.settingsTarget.Targets,
+                                detectedLoadOrder: parent.Profile.LoadOrder.Connect(),
+                                linkCache: parent.Profile.SimpleLinkCache,
+                                displayName: parent.DisplayName,
+                                log: Log.Logger.Information,
+                                cancel: cancel);
+                            if (reflectionBundle.Failed)
                             {
-                                Logger.Error($"Error creating reflection GUI: {vms.Reason}");
-                                observer.OnNext((false, vms.BubbleFailure<ReflectionSettingsBundleVM>()));
+                                Logger.Error($"Error creating reflection GUI: {reflectionBundle.Reason}");
+                                observer.OnNext((false, reflectionBundle));
                                 return;
                             }
-                            await Task.WhenAll(vms.Value.Item.Select(vm => vm.Import(logger.Information, cancel)));
-                            observer.OnNext((false, new ReflectionSettingsBundleVM(vms.Value.Item, vms.Value.Temp)));
+                            observer.OnNext((false, reflectionBundle.Value));
                         }
                         catch (Exception ex)
                         {

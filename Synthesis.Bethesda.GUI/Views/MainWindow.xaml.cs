@@ -47,7 +47,7 @@ namespace Synthesis.Bethesda.GUI.Views
                 {
                     try
                     {
-                        var loadingDir = new DirectoryInfo(Paths.LoadingFolder);
+                        var loadingDir = new DirectoryInfo(Execution.Paths.LoadingFolder);
                         if (!loadingDir.Exists) return;
                         Log.Logger.Information("Clearing Loading folder");
                         loadingDir.DeleteEntireFolder(deleteFolderItself: false);
