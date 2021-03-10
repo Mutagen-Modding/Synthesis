@@ -269,8 +269,7 @@ namespace Mutagen.Bethesda.Synthesis
                 {
                     await Run(
                         GetDefaultRun(preferences.ActionsForEmptyArgs.TargetRelease, preferences.ActionsForEmptyArgs.IdentifyingModKey),
-                        preferences.ActionsForEmptyArgs.IdentifyingModKey,
-                        preferences);
+                        preferences.ActionsForEmptyArgs.IdentifyingModKey);
                 }
                 catch (Exception ex)
                 {
@@ -304,11 +303,16 @@ namespace Mutagen.Bethesda.Synthesis
                     {
                         try
                         {
-                            await Run(settings, preferences);
+                            await Run(settings);
                         }
                         catch (Exception ex)
                         {
                             System.Console.Error.WriteLine(ex);
+                            if (preferences?.ActionsForEmptyArgs?.BlockAutomaticExit ?? false)
+                            {
+                                System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
+                                System.Console.ReadLine();
+                            }
                             return -1;
                         }
                         return 0;
@@ -322,52 +326,13 @@ namespace Mutagen.Bethesda.Synthesis
                     });
         }
 
-        public Task Run(
+        public async Task Run(
             RunSynthesisMutagenPatcher args,
             RunPreferences? preferences = null)
         {
-            return Run(args, SynthesisBase.Constants.SynthesisModKey, preferences);
-        }
-
-        private async Task Run(
-            RunSynthesisMutagenPatcher args,
-            ModKey exportKey,
-            RunPreferences? preferences)
-        {
             try
             {
-                Console.WriteLine($"Mutagen version: {Versions.MutagenVersion}");
-                Console.WriteLine($"Mutagen sha: {Versions.MutagenSha}");
-                Console.WriteLine($"Synthesis version: {Versions.SynthesisVersion}");
-                Console.WriteLine($"Synthesis sha: {Versions.SynthesisSha}");
-                System.Console.WriteLine(Parser.Default.FormatCommandLine(args));
-                SetReflectionSettingsAnchorPaths(args.ExtraDataFolder);
-                var cat = args.GameRelease.ToCategory();
-                if (!_patchers.TryGetValue(cat, out var patcher))
-                {
-                    throw new ArgumentException($"No applicable patchers for {cat}");
-                }
-                if (_runnabilityChecks.Count > 0)
-                {
-                    System.Console.WriteLine("Checking runnability");
-                    await CheckRunnability(new CheckRunnability()
-                    {
-                        DataFolderPath = args.DataFolderPath,
-                        GameRelease = args.GameRelease,
-                        LoadOrderFilePath = args.LoadOrderFilePath
-                    });
-                }
-                WarmupAll.Init();
-                System.Console.WriteLine("Prepping state.");
-                var prefs = patcher.Prefs ?? new PatcherPreferences();
-                using var state = Utility.ToState(cat, args, prefs, exportKey);
-                await patcher.Patcher(state).ConfigureAwait(false);
-                System.Console.WriteLine("Running patch.");
-                if (!prefs.NoPatch)
-                {
-                    System.Console.WriteLine($"Writing to output: {args.OutputPath}");
-                    state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)));
-                }
+                await Run(args, SynthesisBase.Constants.SynthesisModKey);
             }
             catch (Exception ex)
             when (Environment.GetCommandLineArgs().Length == 0
@@ -376,6 +341,44 @@ namespace Mutagen.Bethesda.Synthesis
                 System.Console.Error.WriteLine(ex);
                 System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
                 System.Console.ReadLine();
+            }
+        }
+
+        private async Task Run(
+            RunSynthesisMutagenPatcher args,
+            ModKey exportKey)
+        {
+            Console.WriteLine($"Mutagen version: {Versions.MutagenVersion}");
+            Console.WriteLine($"Mutagen sha: {Versions.MutagenSha}");
+            Console.WriteLine($"Synthesis version: {Versions.SynthesisVersion}");
+            Console.WriteLine($"Synthesis sha: {Versions.SynthesisSha}");
+            System.Console.WriteLine(Parser.Default.FormatCommandLine(args));
+            SetReflectionSettingsAnchorPaths(args.ExtraDataFolder);
+            var cat = args.GameRelease.ToCategory();
+            if (!_patchers.TryGetValue(cat, out var patcher))
+            {
+                throw new ArgumentException($"No applicable patchers for {cat}");
+            }
+            if (_runnabilityChecks.Count > 0)
+            {
+                System.Console.WriteLine("Checking runnability");
+                await CheckRunnability(new CheckRunnability()
+                {
+                    DataFolderPath = args.DataFolderPath,
+                    GameRelease = args.GameRelease,
+                    LoadOrderFilePath = args.LoadOrderFilePath
+                });
+            }
+            WarmupAll.Init();
+            System.Console.WriteLine("Prepping state.");
+            var prefs = patcher.Prefs ?? new PatcherPreferences();
+            using var state = Utility.ToState(cat, args, prefs, exportKey);
+            await patcher.Patcher(state).ConfigureAwait(false);
+            System.Console.WriteLine("Running patch.");
+            if (!prefs.NoPatch)
+            {
+                System.Console.WriteLine($"Writing to output: {args.OutputPath}");
+                state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)));
             }
         }
         #endregion
@@ -458,8 +461,19 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
             where TModGetter : class, IContextGetterMod<TMod, TModGetter>
         {
-            await AddPatch<TMod, TModGetter>(state => patcher(ToDepreciatedState(state)), userPreferences?.ToPatcherPrefs())
-                .Run(settings, userPreferences?.ToRunPrefs());
+            try
+            {
+                await AddPatch<TMod, TModGetter>(state => patcher(ToDepreciatedState(state)), userPreferences?.ToPatcherPrefs())
+                    .Run(settings);
+            }
+            catch (Exception ex)
+            when (Environment.GetCommandLineArgs().Length == 0
+                && (userPreferences?.ToRunPrefs().ActionsForEmptyArgs?.BlockAutomaticExit ?? false))
+            {
+                System.Console.Error.WriteLine(ex);
+                System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
+                System.Console.ReadLine();
+            }
         }
 
         /// <summary>
@@ -478,8 +492,19 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
             where TModGetter : class, IContextGetterMod<TMod, TModGetter>
         {
-            AddPatch<TMod, TModGetter>(state => patcher(ToDepreciatedState(state)), userPreferences?.ToPatcherPrefs())
-                .Run(settings, userPreferences?.ToRunPrefs()).Wait();
+            try
+            {
+                AddPatch<TMod, TModGetter>(state => patcher(ToDepreciatedState(state)), userPreferences?.ToPatcherPrefs())
+                    .Run(settings).Wait();
+            }
+            catch (Exception ex)
+            when (Environment.GetCommandLineArgs().Length == 0
+                && (userPreferences?.ToRunPrefs().ActionsForEmptyArgs?.BlockAutomaticExit ?? false))
+            {
+                System.Console.Error.WriteLine(ex);
+                System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
+                System.Console.ReadLine();
+            }
         }
         #endregion
 
