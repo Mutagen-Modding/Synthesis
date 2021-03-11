@@ -53,6 +53,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Resources.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="Views\Settings\FieldViews\BasicSettingsNodeView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
