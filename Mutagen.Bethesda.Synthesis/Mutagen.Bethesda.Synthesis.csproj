@@ -42,11 +42,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Mutagen.Bethesda" Version="0.26.4" />
-    <PackageReference Include="Mutagen.Bethesda.Core.Windows" Version="0.26.4" />
-    <PackageReference Include="Mutagen.Bethesda.Json" Version="0.26.4" />
-    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.26.4" />
-    <PackageReference Include="Mutagen.Bethesda.Sqlite" Version="0.26.4" />
+    <PackageReference Include="Mutagen.Bethesda" Version="0.26.6" />
+    <PackageReference Include="Mutagen.Bethesda.Core.Windows" Version="0.26.6" />
+    <PackageReference Include="Mutagen.Bethesda.Json" Version="0.26.6" />
+    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.26.6" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Noggog.CSharpExt" Version="2.7" />
     <PackageReference Include="NuGetizer" Version="0.6.0">
@@ -60,8 +59,8 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Condition="'$(IsWindows)'=='true'"  Command="RD /S /Q &quot;%25USERPROFILE%25\.nuget\packages\mutagen.bethesda.synthesis&quot;" />
-    <Exec Condition="'$(IsLinux)'=='true'"  Command="rm -rf &quot;%25USERPROFILE%25\.nuget\packages\mutagen.bethesda.synthesis&quot;" />
+    <Exec Condition="'$(IsWindows)'=='true'" Command="RD /S /Q &quot;%25USERPROFILE%25\.nuget\packages\mutagen.bethesda.synthesis&quot;" />
+    <Exec Condition="'$(IsLinux)'=='true'" Command="rm -rf &quot;%25USERPROFILE%25\.nuget\packages\mutagen.bethesda.synthesis&quot;" />
   </Target>
 
 </Project>
