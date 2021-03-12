@@ -97,9 +97,6 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             {
                 string? assemblyPath = _resolver.ResolveAssemblyToPath(name);
 
-                // Only load formkey libs, for now
-                if (!name.Name?.StartsWith("Mutagen.Bethesda.FormKeys") ?? true) return null;
-
                 if (assemblyPath != null)
                 {
                     return LoadFromAssemblyPath(assemblyPath);
