@@ -382,7 +382,7 @@ namespace Mutagen.Bethesda.Synthesis
             await Run(args, SynthesisBase.Constants.SynthesisModKey);
         }
 
-        [Obsolete("Using SetTypicalRun is the new preferred API for supplying RunPreferences")]
+        [Obsolete("Using SetTypicalOpen is the new preferred API for supplying RunDefaultPatcher preferences")]
         public async Task Run(
             RunSynthesisMutagenPatcher args,
             RunPreferences? preferences)
