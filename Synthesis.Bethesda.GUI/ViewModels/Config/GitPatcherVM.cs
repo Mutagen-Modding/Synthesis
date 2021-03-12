@@ -23,6 +23,7 @@ using Newtonsoft.Json;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution;
 using System.Threading;
+using Mutagen.Bethesda.Synthesis.WPF;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -1002,7 +1003,7 @@ namespace Synthesis.Bethesda.GUI
                 LastSuccessfulRun = this.LastSuccessfulRun,
             };
             CopyOverSave(ret);
-            PatcherSettings.Persist(Logger);
+            PatcherSettings.Persist(Logger.Information);
             return ret;
         }
 
@@ -1036,7 +1037,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 throw new ArgumentNullException(nameof(RunnableData));
             }
-            PatcherSettings.Persist(Logger);
+            PatcherSettings.Persist(Logger.Information);
             return new PatcherRunVM(
                 parent,
                 this,

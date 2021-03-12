@@ -1,6 +1,7 @@
 using DynamicData;
 using Mutagen.Bethesda;
 using Newtonsoft.Json;
+using Mutagen.Bethesda.Synthesis.WPF;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
