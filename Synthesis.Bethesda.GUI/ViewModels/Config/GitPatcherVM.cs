@@ -23,6 +23,7 @@ using Newtonsoft.Json;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution;
 using System.Threading;
+using Mutagen.Bethesda.Synthesis.WPF;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -203,7 +204,7 @@ namespace Synthesis.Bethesda.GUI
                             masterBranch = master.FriendlyName;
                             repo.Reset(ResetMode.Hard);
                             Commands.Checkout(repo, master);
-                            Signature author = new Signature("please", "whymustidothis@gmail.com", DateTimeOffset.Now);
+                            Signature author = new("please", "whymustidothis@gmail.com", DateTimeOffset.Now);
                             Commands.Pull(repo, author, null);
                             tags = repo.Tags.Select(tag => (tag.FriendlyName, tag.Target.Sha))
                                 .WithIndex()
@@ -1002,7 +1003,7 @@ namespace Synthesis.Bethesda.GUI
                 LastSuccessfulRun = this.LastSuccessfulRun,
             };
             CopyOverSave(ret);
-            PatcherSettings.Persist(Logger);
+            PatcherSettings.Persist(Logger.Information);
             return ret;
         }
 
@@ -1036,7 +1037,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 throw new ArgumentNullException(nameof(RunnableData));
             }
-            PatcherSettings.Persist(Logger);
+            PatcherSettings.Persist(Logger.Information);
             return new PatcherRunVM(
                 parent,
                 this,

@@ -8,7 +8,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
     public class ConfigurationState : ConfigurationState<Unit>
     {
-        public static readonly ConfigurationState Success = new ConfigurationState();
+        public static readonly ConfigurationState Success = new();
 
         public ConfigurationState() 
             : base(Unit.Default)

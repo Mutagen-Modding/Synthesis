@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ProfileVM RunningProfile { get; }
 
-        private CancellationTokenSource _cancel = new CancellationTokenSource();
+        private readonly CancellationTokenSource _cancel = new();
 
         [Reactive]
         public Exception? ResultError { get; private set; }
@@ -42,7 +42,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ReactiveCommand<Unit, Unit> ShowOverallErrorCommand { get; } = ReactiveCommand.Create(ActionExt.Nothing);
 
-        private readonly RxReporter<int> _reporter = new RxReporter<int>();
+        private readonly RxReporter<int> _reporter = new();
 
         private readonly ObservableAsPropertyHelper<object?> _DetailDisplay;
         public object? DetailDisplay => _DetailDisplay.Value;

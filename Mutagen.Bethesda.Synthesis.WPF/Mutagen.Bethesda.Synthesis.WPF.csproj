@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Mutagen.Bethesda.Synthesis\Mutagen.Bethesda.Synthesis.csproj" />
+    <ProjectReference Include="..\Synthesis.Bethesda.Execution\Synthesis.Bethesda.Execution.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,14 +40,85 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.26.6" />
     <PackageReference Include="NuGetizer" Version="0.6.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="reactiveui" Version="13.1.1" />
+    <PackageReference Include="ReactiveUI.Fody" Version="13.1.1" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
+    <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
+    <PackageReference Include="Humanizer.Core" Version="2.8.26" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Resources.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\FieldViews\BasicSettingsNodeView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\FieldViews\BoolSettingsNodeView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\FieldViews\DictionarySettingsNodeView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\FieldViews\EnumerableFormLinkSettingsNodeView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\FieldViews\EnumerableModKeySettingsNodeView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\FieldViews\EnumerableObjectSettingsNodeView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\FieldViews\EnumerableSimpleSettingsNodeView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\FieldViews\EnumSettingsNodeView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\FieldViews\FormLinkSettingsView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\FieldViews\ModKeySettingsView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\FieldViews\ObjectSettingsNodeView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\FieldViews\StaticEnumDictionaryView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\FieldViews\UnknownSettingsNodeView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\SelectionWrapper.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\SettingDepthView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\Settings\SettingsNodeView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="RD /S /Q &quot;%25USERPROFILE%25\.nuget\packages\mutagen.bethesda.synthesis.wpf&quot;" />
+  </Target>
+
+  <!-- Replace inherited target -->
+  <Target Name="SetVersion" BeforeTargets="GetAssemblyVersion;GetPackageVersion" DependsOnTargets="GitVersion" Returns="$(PackageVersion)">
+    <PropertyGroup>
+      <DevLabel Condition="'$(GitCommits)' != '0' or $(GitIsDirty) != ''">.1-dev</DevLabel>
+      <AssemblyDevLabel Condition="'$(GitCommits)' != '0' or $(GitIsDirty) != ''">.1</AssemblyDevLabel>
+      <FileVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(AssemblyDevLabel)</FileVersion>
+      <PackageVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(DevLabel)</PackageVersion>
+      <InformationalVersion>$(PackageVersion)</InformationalVersion>
+    </PropertyGroup>
   </Target>
 
 </Project>

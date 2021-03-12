@@ -1,6 +1,7 @@
 using DynamicData;
 using Mutagen.Bethesda;
 using Newtonsoft.Json;
+using Mutagen.Bethesda.Synthesis.WPF;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -595,6 +596,11 @@ namespace Synthesis.Bethesda.GUI
                 File.WriteAllText(
                     Path.Combine(subDir, Paths.GuiSettingsPath),
                     JsonConvert.SerializeObject(guiSettings, Formatting.Indented, Execution.Constants.JsonSettings));
+                var dataDir = new DirectoryInfo("Data");
+                if (dataDir.Exists)
+                {
+                    dataDir.DeepCopy(new DirectoryInfo(Path.Combine(subDir, "Data")));
+                }
                 Utility.NavigateToPath(subDir);
             }
             catch (Exception ex)

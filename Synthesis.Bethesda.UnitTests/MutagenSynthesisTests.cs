@@ -33,8 +33,8 @@ namespace Synthesis.Bethesda.UnitTests
             }
         }
 
-        protected ModKey PatchModKey => new ModKey("Patch", ModType.Plugin);
-        protected ModPath PatchModPath(TempFolder dataFolder) => new ModPath(PatchModKey, Path.Combine(dataFolder.Dir.Path, PatchModKey.ToString()));
+        protected static ModKey PatchModKey => new("Patch", ModType.Plugin);
+        protected static ModPath PatchModPath(TempFolder dataFolder) => new(PatchModKey, Path.Combine(dataFolder.Dir.Path, PatchModKey.ToString()));
 
         [Fact]
         public async Task TypicalPatcher_FreshStart()
@@ -42,6 +42,7 @@ namespace Synthesis.Bethesda.UnitTests
             using var tmpFolder = Utility.GetTempFolder();
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
+#pragma warning disable CS0618 // Type or member is obsolete
             await new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(
                 new RunSynthesisMutagenPatcher()
                 {
@@ -52,6 +53,7 @@ namespace Synthesis.Bethesda.UnitTests
                     LoadOrderFilePath = Utility.PathToLoadOrderFile
                 },
                 PatchFunction);
+#pragma warning restore CS0618 // Type or member is obsolete
             Assert.True(File.Exists(modPath.Path));
             using var patch = OblivionMod.CreateFromBinaryOverlay(modPath);
             Assert.Equal(3, patch.Npcs.Count);
@@ -74,7 +76,9 @@ namespace Synthesis.Bethesda.UnitTests
                 SourcePath = null,
                 LoadOrderFilePath = Utility.PathToLoadOrderFile
             };
+#pragma warning disable CS0618 // Type or member is obsolete
             await new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(settings, PatchFunction);
+#pragma warning restore CS0618 // Type or member is obsolete
             Assert.True(File.Exists(modPath.Path));
             using (var patch = OblivionMod.CreateFromBinaryOverlay(modPath))
             {
@@ -86,7 +90,9 @@ namespace Synthesis.Bethesda.UnitTests
 
             // Run a second time, with sourcepath set containing previous patch
             settings.SourcePath = modPath;
+#pragma warning disable CS0618 // Type or member is obsolete
             await new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(settings, PatchFunction);
+#pragma warning restore CS0618 // Type or member is obsolete
             Assert.True(File.Exists(modPath.Path));
             using (var patch = OblivionMod.CreateFromBinaryOverlay(modPath))
             {
@@ -106,6 +112,7 @@ namespace Synthesis.Bethesda.UnitTests
             var modPath = PatchModPath(dataFolder);
             await Assert.ThrowsAsync<ArgumentException>(() =>
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 return new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(
                    new RunSynthesisMutagenPatcher()
                    {
@@ -116,6 +123,7 @@ namespace Synthesis.Bethesda.UnitTests
                        LoadOrderFilePath = Utility.PathToLoadOrderFile
                    },
                    PatchFunction);
+#pragma warning restore CS0618 // Type or member is obsolete
             });
         }
 
@@ -136,7 +144,7 @@ namespace Synthesis.Bethesda.UnitTests
                 },
                 new PatcherPreferences(),
                 Synthesis.Bethesda.Constants.SynthesisModKey);
-            Assert.Equal(state.PatchMod.ModKey, state.LoadOrder.Last().Key);
+            Assert.Equal(state.PatchMod.ModKey, state.LoadOrder[^1].ModKey);
         }
 
         [Fact]
@@ -157,7 +165,7 @@ namespace Synthesis.Bethesda.UnitTests
                 },
                 new PatcherPreferences(),
                 Synthesis.Bethesda.Constants.SynthesisModKey);
-            Assert.Equal(state.PatchMod.ModKey, state.LoadOrder.Last().Key);
+            Assert.Equal(state.PatchMod.ModKey, state.LoadOrder[^1].ModKey);
         }
 
         [Fact]
@@ -230,9 +238,11 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task EmptyArgs_NoRun()
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             await new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(
-                new string[0],
+                Array.Empty<string>(),
                 PatchFunction);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         [Fact]
@@ -287,6 +297,7 @@ namespace Synthesis.Bethesda.UnitTests
                 SourcePath = null,
                 LoadOrderFilePath = Utility.PathToLoadOrderFile
             };
+#pragma warning disable CS0618 // Type or member is obsolete
             new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(
                 settings,
                 (state) => { },
@@ -294,6 +305,7 @@ namespace Synthesis.Bethesda.UnitTests
                 {
                     NoPatch = true
                 });
+#pragma warning restore CS0618 // Type or member is obsolete
             File.Exists(modPath.Path).Should().BeFalse();
         }
     }

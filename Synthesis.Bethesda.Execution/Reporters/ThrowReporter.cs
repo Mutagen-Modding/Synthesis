@@ -7,7 +7,7 @@ namespace Synthesis.Bethesda.Execution.Reporters
 {
     public class ThrowReporter : IRunReporter
     {
-        public static ThrowReporter Instance = new ThrowReporter();
+        public static ThrowReporter Instance = new();
 
         private ThrowReporter()
         {
