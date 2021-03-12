@@ -219,7 +219,7 @@ namespace Synthesis.Bethesda.UnitTests
             {
                 if (i == 1)
                 {
-                    Assert.True(File.Exists(statePath));
+                    Assert.True(Directory.Exists(statePath));
                 }
                 using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
                 var modPath = PatchModPath(dataFolder);
@@ -305,7 +305,7 @@ namespace Synthesis.Bethesda.UnitTests
             }
 
             {
-                Assert.True(File.Exists(statePath));
+                Assert.True(Directory.Exists(statePath));
                 using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
                 var modPath = PatchModPath(dataFolder);
 

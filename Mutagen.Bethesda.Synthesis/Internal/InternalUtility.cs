@@ -104,6 +104,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 }
                 if (settings.StatePath is not null && settings.PatcherName is not null)
                 {
+                    Directory.CreateDirectory(settings.StatePath);
                     patchMod.SetAllocator(formKeyAllocator = new TextFileSharedFormKeyAllocator(patchMod, settings.StatePath, settings.PatcherName));
                 }
                 cache = loadOrder.ToMutableLinkCache(patchMod);
