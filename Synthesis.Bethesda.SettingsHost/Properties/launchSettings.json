@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "Synthesis.Bethesda.SettingsHost": {
-      "commandName": "Project",
-      "commandLineArgs": "host-settings --DataFolderPath \\\"D:\\\\Games\\\\steamapps\\\\Common\\\\Skyrim Special Edition\\\\Data\\\" --GameRelease SkyrimSE --Height 975 --LoadOrderFilePath C:\\\\Users\\\\Levia\\\\AppData\\\\Local\\\\Temp\\\\Synthesis\\\\RunnabilityChecks\\\\mtd5lmxm.dop\\\\y5t31p5v.va2 --PatcherName Under-There- --PatcherPath C:\\\\Users\\\\Levia\\\\AppData\\\\Local\\\\Temp\\\\Synthesis\\\\7ac7c4a2-7a76-4e1f-bb6f-d727809e5396\\\\Git\\\\23db1910-610b-4a11-b023-cc359a2a866d\\\\Runner\\\\UnderThere\\\\UnderThere.csproj --Width 1096 --Left 2759 --Top 562",
-      "workingDirectory": "C:\\Users\\Levia\\Desktop\\Synthesis"
-    }
-  }
-}
