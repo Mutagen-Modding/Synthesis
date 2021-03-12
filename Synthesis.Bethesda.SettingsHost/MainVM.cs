@@ -27,6 +27,7 @@ namespace Synthesis.Bethesda.SettingsHost
         public MainVM(HostSettings host)
         {
             WindowName = $"{host.PatcherName} Settings";
+            WarmupAll.Init();
 
             var loadOrderResult = Observable.Return(Unit.Default)
                 .ObserveOn(RxApp.TaskpoolScheduler)

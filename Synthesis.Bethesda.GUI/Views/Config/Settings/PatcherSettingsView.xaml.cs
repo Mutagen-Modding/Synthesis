@@ -20,7 +20,7 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated((disposable) =>
             {
                 this.WhenAnyValue(x => x.ViewModel!.SettingsConfiguration)
-                    .Select(x => x.Style == SettingsStyle.Open ? Visibility.Visible : Visibility.Collapsed)
+                    .Select(x => x.Style == SettingsStyle.Open || x.Style == SettingsStyle.Host ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.OpenSettingsButton.Visibility)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(

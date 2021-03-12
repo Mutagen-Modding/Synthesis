@@ -1,4 +1,5 @@
 using CommandLine;
+using CommandLine.Text;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -18,14 +19,18 @@ namespace Synthesis.Bethesda.SettingsHost
         {
             base.OnStartup(e);
 
-            var result = Parser.Default.ParseArguments(e.Args, typeof(HostSettings))
+            var parse = Parser.Default.ParseArguments(e.Args, typeof(HostSettings));
+            var result = parse
                 .MapResult<HostSettings, int>(
                     (host) =>
                     {
                         DoHostSettings(host);
                         return 0;
                     },
-                    _ => { return -1; });
+                    _ => 
+                    {
+                        return -1;
+                    });
 
             if (result == -1)
             {

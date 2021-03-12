@@ -43,27 +43,34 @@ namespace Synthesis.Bethesda.GUI
         public PatcherSettingsVM(
             ILogger logger,
             PatcherVM parent,
-            IObservable<GetResponse<string>> projPath,
+            IObservable<(GetResponse<string> ProjPath, string? SynthVersion)> source,
             bool needBuild)
         {
             Logger = logger;
-            _SettingsConfiguration = projPath
+            _SettingsConfiguration = source
                 .Select(i =>
                 {
                     return Observable.Create<SettingsConfiguration>(async (observer, cancel) =>
                     {
                         observer.OnNext(new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig
                             >()));
-                        if (i.Failed) return;
+                        if (i.ProjPath.Failed) return;
 
                         try
                         {
                             var result = await Synthesis.Bethesda.Execution.CLI.Commands.GetSettingsStyle(
-                                i.Value,
+                                i.ProjPath.Value,
                                 directExe: false,
                                 cancel: cancel,
                                 build: needBuild,
                                 logger.Information);
+                            if (result.Style == SettingsStyle.SpecifiedClass
+                                && parent is GitPatcherVM gitPatcher
+                                && Version.TryParse(i.SynthVersion, out var vers)
+                                && vers <= new Version(0, 16, 9))
+                            {
+                                result = new SettingsConfiguration(SettingsStyle.Host, result.Targets);
+                            }
                             logger.Information($"Settings type: {result}");
                             observer.OnNext(result);
                         }
@@ -78,20 +85,36 @@ namespace Synthesis.Bethesda.GUI
                 .ToGuiProperty(this, nameof(SettingsConfiguration), new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()));
 
             OpenSettingsCommand = NoggogCommand.CreateFromObject(
-                objectSource: projPath,
-                canExecute: x => x.Succeeded,
-                extraCanExecute: this.WhenAnyValue(x => x.SettingsConfiguration)
-                    .Select(x => x.Style == SettingsStyle.Open),
+                objectSource: Observable.CombineLatest(
+                        source.Select(x => x.ProjPath),
+                        this.WhenAnyValue(x => x.SettingsConfiguration),
+                        (Proj, Conf) => (Proj, Conf)),
+                canExecute: x => x.Proj.Succeeded 
+                    && (x.Conf.Style == SettingsStyle.Open || x.Conf.Style == SettingsStyle.Host),
                 execute: async (o) =>
                 {
-                    var result = await Synthesis.Bethesda.Execution.CLI.Commands.OpenForSettings(
-                        o.Value,
-                        directExe: false,
-                        rect: parent.Profile.Config.MainVM.Rectangle,
-                        cancel: CancellationToken.None,
-                        release: parent.Profile.Release,
-                        dataFolderPath: parent.Profile.DataFolder,
-                        loadOrder: parent.Profile.LoadOrder.Items.Select(lvm => lvm.Listing));
+                    if (o.Conf.Style == SettingsStyle.Open)
+                    {
+                        await Synthesis.Bethesda.Execution.CLI.Commands.OpenForSettings(
+                            o.Proj.Value,
+                            directExe: false,
+                            rect: parent.Profile.Config.MainVM.Rectangle,
+                            cancel: CancellationToken.None,
+                            release: parent.Profile.Release,
+                            dataFolderPath: parent.Profile.DataFolder,
+                            loadOrder: parent.Profile.LoadOrder.Items.Select(lvm => lvm.Listing));
+                    }
+                    else
+                    {
+                        await Synthesis.Bethesda.Execution.CLI.Commands.OpenSettingHost(
+                            patcherName: parent.DisplayName,
+                            path: o.Proj.Value,
+                            rect: parent.Profile.Config.MainVM.Rectangle,
+                            cancel: CancellationToken.None,
+                            release: parent.Profile.Release,
+                            dataFolderPath: parent.Profile.DataFolder,
+                            loadOrder: parent.Profile.LoadOrder.Items.Select(lvm => lvm.Listing));
+                    }
                 },
                 disposable: this.CompositeDisposable);
 
@@ -100,7 +123,7 @@ namespace Synthesis.Bethesda.GUI
 
             _ReflectionSettings = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.SettingsConfiguration),
-                    projPath,
+                    source.Select(x => x.ProjPath),
                     (SettingsConfig, ProjPath) => (SettingsConfig, ProjPath))
                 .Select(x =>
                 {
