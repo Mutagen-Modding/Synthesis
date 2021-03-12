@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Synthesis.Bethesda.SettingsHost": {
+      "commandName": "Project",
+      "commandLineArgs": "host-settings -p \"C:\\Users\\Levia\\AppData\\Local\\Temp\\Synthesis\\3125821a-381c-4398-9192-fa47667b752b\\Git\\8f77f76a-adf1-40c1-aefa-70d29b44fcfd\\Runner\\UnderThere\\UnderThere.csproj\" -n \"Under-There-\" -g SkyrimSE -d \"D:\\Games\\steamapps\\common\\Skyrim Special Edition\\Data\" -l \"C:\\Users\\Levia\\AppData\\Local\\Skyrim Special Edition\\plugins.txt\"",
+      "workingDirectory": "C:\\Users\\Levia\\Desktop\\Synthesis"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+<Application
+    x:Class="Synthesis.Bethesda.SettingsHost.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Synthesis.Bethesda.SettingsHost">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+
+                <!--  MahApps.Metro resource dictionaries.  -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Buttons.xaml" />
+
+                <!--  Accent and AppTheme setting  -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Purple.xaml" />
+
+                <!--  Noggog Theming  -->
+                <ResourceDictionary Source="pack://application:,,,/Noggog.WPF;component/Everything.xaml" />
+
+                <!--  Mutagen Theming  -->
+                <ResourceDictionary Source="pack://application:,,,/Mutagen.Bethesda.WPF;component/Everything.xaml" />
+
+                <!--  Synthesis Theming  -->
+                <ResourceDictionary Source="pack://application:,,,/Mutagen.Bethesda.Synthesis.WPF;component/Resources.xaml" />
+
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
