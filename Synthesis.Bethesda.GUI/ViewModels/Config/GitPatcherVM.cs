@@ -867,9 +867,9 @@ namespace Synthesis.Bethesda.GUI
                 compilation.Select(c =>
                 {
                     if (c.RunnableState.Failed) return (c.RunnableState.BubbleFailure<string>(), null);
-                    return (GetResponse<string>.Succeed(c.Item.ProjPath), c.Item.ListedSynthesisVersion);
+                    return (GetResponse<string>.Succeed(c.Item.ProjPath), c.Item.TargetSynthesisVersion);
                 })
-                .DistinctUntilChanged(x => (x.Item1.Value, x.ListedSynthesisVersion)),
+                .DistinctUntilChanged(x => (x.Item1.Value, x.TargetSynthesisVersion)),
                 needBuild: false)
                 .DisposeWith(this);
 
