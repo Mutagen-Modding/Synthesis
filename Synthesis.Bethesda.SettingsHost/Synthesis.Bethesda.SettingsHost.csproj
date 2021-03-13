@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>mushroom.ico</ApplicationIcon>
@@ -9,7 +9,10 @@
     <WarningsAsErrors>nullable</WarningsAsErrors>
     <DisableWinExeOutputInference>True</DisableWinExeOutputInference>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <Platforms>x64</Platforms>
+    <PublishReadyToRun>True</PublishReadyToRun>
+    <PublishReadyToRunShowWarnings>True</PublishReadyToRunShowWarnings>
   </PropertyGroup>
 
   <ItemGroup>
