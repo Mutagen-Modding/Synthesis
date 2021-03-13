@@ -9,6 +9,7 @@
     <WarningsAsErrors>nullable</WarningsAsErrors>
     <DisableWinExeOutputInference>True</DisableWinExeOutputInference>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
