@@ -48,12 +48,11 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             var defaultKeys = new List<FormKey>();
             if (defaultVal is IEnumerable e)
             {
+                var targetType = e.GetType().GenericTypeArguments[0];
+                var getter = targetType.GetProperty("FormKey")!;
                 foreach (var item in e)
                 {
-                    if (item is IFormLink link)
-                    {
-                        defaultKeys.Add(link.FormKey);
-                    }
+                    defaultKeys.Add(FormKey.Factory(getter.GetValue(item)!.ToString()));
                 }
             }
             return new EnumerableFormLinkSettingsVM(
