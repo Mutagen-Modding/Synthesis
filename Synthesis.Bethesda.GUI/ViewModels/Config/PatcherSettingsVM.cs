@@ -64,13 +64,14 @@ namespace Synthesis.Bethesda.GUI
                                 cancel: cancel,
                                 build: needBuild,
                                 logger.Information);
-                            if (result.Style == SettingsStyle.SpecifiedClass
-                                && parent is GitPatcherVM gitPatcher
-                                && Version.TryParse(i.SynthVersion, out var vers)
-                                && vers <= new Version(0, 16, 9))
-                            {
-                                result = new SettingsConfiguration(SettingsStyle.Host, result.Targets);
-                            }
+                            // Turn on if Host systems needed
+                            //if (result.Style == SettingsStyle.SpecifiedClass
+                            //    && parent is GitPatcherVM gitPatcher
+                            //    && Version.TryParse(i.SynthVersion, out var vers)
+                            //    && vers <= new Version(0, 16, 9))
+                            //{
+                            //    result = new SettingsConfiguration(SettingsStyle.Host, result.Targets);
+                            //}
                             logger.Information($"Settings type: {result}");
                             observer.OnNext(result);
                         }

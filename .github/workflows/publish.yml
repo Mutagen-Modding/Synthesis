@@ -15,10 +15,10 @@ jobs:
       run: dotnet restore Synthesis.Bethesda.sln
     - name: Build Synthesis
       run: dotnet build Synthesis.Bethesda.sln -c Release --no-restore /p:Version=${{ github.event.release.tag_name }} -p:PackageReleaseNotes="See https://github.com/Mutagen-Modding/Synthesis/releases/tag/${{ github.event.release.tag_name }}"
-    - name: Install dependencies SettingsHost
-      run: dotnet restore Synthesis.Bethesda.SettingsHost.sln
-    - name: Build Synthesis
-      run: dotnet build Synthesis.Bethesda.SettingsHost.sln -c Release --no-restore /p:Version=${{ github.event.release.tag_name }} -p:PackageReleaseNotes="See https://github.com/Mutagen-Modding/Synthesis/releases/tag/${{ github.event.release.tag_name }}"
+    #- name: Install dependencies SettingsHost
+    #  run: dotnet restore Synthesis.Bethesda.SettingsHost.sln
+    #- name: Build SettingsHost
+    #  run: dotnet build Synthesis.Bethesda.SettingsHost.sln -c Release --no-restore /p:Version=${{ github.event.release.tag_name }} -p:PackageReleaseNotes="See https://github.com/Mutagen-Modding/Synthesis/releases/tag/${{ github.event.release.tag_name }}"
     - name: Test
       run: dotnet test Synthesis.Bethesda.sln --no-build -c Release
     - name: Publish Nugets to Nuget.org
@@ -32,11 +32,11 @@ jobs:
         file_glob: "true"
     - name: Pack GUI
       run: dotnet publish "Synthesis.Bethesda.GUI/Synthesis.Bethesda.GUI.csproj" --configuration Release --no-self-contained
-    - name: Pack Settings Host
-      run: dotnet publish "Synthesis.Bethesda.SettingsHost/Synthesis.Bethesda.SettingsHost.csproj" --configuration Release --no-self-contained
-    - name: Copy Host
-      run: |
-        powershell Move-Item -Path Synthesis.Bethesda.SettingsHost/bin/Release/net5.0/win-x64/publish -Destination Synthesis.Bethesda.GUI/bin/Release/net5.0/win-x64/publish/SettingsHost
+    #- name: Pack Settings Host
+    #  run: dotnet publish "Synthesis.Bethesda.SettingsHost/Synthesis.Bethesda.SettingsHost.csproj" --configuration Release --no-self-contained
+    #- name: Copy Host
+    #  run: |
+    #    powershell Move-Item -Path Synthesis.Bethesda.SettingsHost/bin/Release/net5.0/win-x64/publish -Destination Synthesis.Bethesda.GUI/bin/Release/net5.0/win-x64/publish/SettingsHost
     - name: Archive Release
       run: |
         powershell Compress-Archive Synthesis.Bethesda.GUI/bin/Release/net5.0/win-x64/publish/* Synthesis.zip
