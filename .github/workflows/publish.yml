@@ -20,7 +20,7 @@ jobs:
     - name: Build Synthesis
       run: dotnet build Synthesis.Bethesda.SettingsHost.sln -c Release --no-restore /p:Version=${{ github.event.release.tag_name }} -p:PackageReleaseNotes="See https://github.com/Mutagen-Modding/Synthesis/releases/tag/${{ github.event.release.tag_name }}"
     - name: Test
-      run: dotnet test --no-build -c Release
+      run: dotnet test Synthesis.Bethesda.sln --no-build -c Release
     - name: Publish Nugets to Nuget.org
       run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --no-symbols true
     - name: Publish Nugets to Github
