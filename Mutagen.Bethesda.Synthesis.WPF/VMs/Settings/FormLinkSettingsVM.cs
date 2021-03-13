@@ -85,8 +85,13 @@ namespace Mutagen.Bethesda.Synthesis.WPF
 
         public static FormLinkSettingsVM Factory(IObservable<ILinkCache> linkCache, FieldMeta fieldMeta, Type targetType, object? defaultVal)
         {
-            var formLink = defaultVal as IFormLinkGetter;
-            return new FormLinkSettingsVM(linkCache, fieldMeta, targetType, formLink?.FormKey ?? FormKey.Null);
+            FormKey formKey = FormKey.Null;
+            if (defaultVal != null)
+            {
+                formKey = FormKey.Factory(
+                    defaultVal.GetType().GetProperty("FormKey")!.GetValue(defaultVal)!.ToString());
+            }
+            return new FormLinkSettingsVM(linkCache, fieldMeta, targetType, formKey);
         }
     }
 }
