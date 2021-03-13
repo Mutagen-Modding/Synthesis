@@ -33,6 +33,10 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             {
                 this.WhenAnyFallback(x => x.ViewModel!.SettingsLoading)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindToStrict(this, x => x.ProcessingRingGrid.Visibility)
+                    .DisposeWith(disposable);
+                this.WhenAnyFallback(x => x.ViewModel!.SettingsLoading)
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.ProcessingRing.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.Bundle!.Settings)
