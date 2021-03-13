@@ -2,12 +2,13 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>mushroom.ico</ApplicationIcon>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable</WarningsAsErrors>
     <DisableWinExeOutputInference>True</DisableWinExeOutputInference>
+    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
