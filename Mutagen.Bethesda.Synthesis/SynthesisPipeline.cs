@@ -228,34 +228,18 @@ namespace Mutagen.Bethesda.Synthesis
             return this;
         }
 
-        public SynthesisPipeline SetTypicalOpen(RunDefaultPatcher defaultRun)
+        public SynthesisPipeline SetTypicalOpen(
+            GameRelease targetRelease,
+            ModKey identifyingModKey)
         {
             SetTypicalOpen(async (r) =>
             {
-                var category = defaultRun.TargetRelease.ToCategory();
+                var category = targetRelease.ToCategory();
                 if (!_patchers.TryGetValue(category, out var patchers)) return -1;
 
-                try
-                {
-                    await Run(
-                        GetDefaultRun(defaultRun.TargetRelease, defaultRun.IdentifyingModKey),
-                        defaultRun.IdentifyingModKey);
-                }
-                catch (Exception ex)
-                {
-                    System.Console.Error.WriteLine(ex);
-                    if (defaultRun.BlockAutomaticExit)
-                    {
-                        System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
-                        System.Console.ReadLine();
-                    }
-                    return -1;
-                }
-                if (defaultRun.BlockAutomaticExit)
-                {
-                    System.Console.Error.WriteLine("Press enter to exit");
-                    System.Console.ReadLine();
-                }
+                await Run(
+                    GetDefaultRun(targetRelease, identifyingModKey),
+                    identifyingModKey);
                 return 0;
             });
             return this;
@@ -326,7 +310,23 @@ namespace Mutagen.Bethesda.Synthesis
             {
                 if (preferences?.ActionsForEmptyArgs != null)
                 {
-                    SetTypicalOpen(preferences.ActionsForEmptyArgs);
+                    try
+                    {
+                        SetTypicalOpen(
+                            preferences.ActionsForEmptyArgs.TargetRelease,
+                            preferences.ActionsForEmptyArgs.IdentifyingModKey);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Console.Error.WriteLine(ex);
+                        if (preferences.ActionsForEmptyArgs.BlockAutomaticExit)
+                        {
+                            System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
+                            System.Console.ReadLine();
+                        }
+                        return -1;
+                    }
+                    return 0;
                 }
                 var openSettings = new OpenForSettings()
                 {
@@ -335,13 +335,21 @@ namespace Mutagen.Bethesda.Synthesis
                     Left = 15,
                     Top = 15
                 };
-                if (_openTypical != null)
+                try
                 {
-                    return await OpenTypical(openSettings);
+                    if (_openTypical != null)
+                    {
+                        return await OpenTypical(openSettings);
+                    }
+                    else if (_openForSettings != null)
+                    {
+                        return await OpenForSettings(openSettings);
+                    }
                 }
-                else if (_openForSettings != null)
+                catch (Exception ex)
                 {
-                    return await OpenForSettings(openSettings);
+                    System.Console.Error.WriteLine(ex);
+                    throw;
                 }
                 return -1;
             }
