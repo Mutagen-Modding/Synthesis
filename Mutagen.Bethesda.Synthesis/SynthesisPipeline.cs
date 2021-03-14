@@ -300,11 +300,17 @@ namespace Mutagen.Bethesda.Synthesis
             where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
             where TModGetter : class, IContextGetterMod<TMod, TModGetter>;
 
+        [Obsolete("Using SetTypicalOpen is the new preferred API for supplying RunDefaultPatcher preferences")]
         public async Task<int> Run(
             string[] args,
-            RunPreferences? preferences = null)
+            RunPreferences? preferences)
         {
             return HandleOnShutdown(await InternalRun(args, preferences));
+        }
+
+        public async Task<int> Run(string[] args)
+        {
+            return HandleOnShutdown(await InternalRun(args, null));
         }
 
         private async Task<int> InternalRun(
