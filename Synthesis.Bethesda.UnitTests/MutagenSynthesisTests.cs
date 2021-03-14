@@ -28,7 +28,7 @@ namespace Synthesis.Bethesda.UnitTests
                     new ItemEntry()
                     {
                         Count = 1,
-                        Item = FormKey.Null.AsLink<IAItemGetter>()
+                        Item = FormKey.Null.AsLink<IItemGetter>()
                     });
             }
         }
