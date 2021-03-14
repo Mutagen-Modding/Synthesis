@@ -359,3 +359,5 @@ Synthesis.Bethesda.Execution/Synthesis.Execution.xml
 Synthesis.Bethesda.Execution/Synthesis.Bethesda.Execution.xml
 
 Synthesis.Bethesda.SettingsHost/Properties/launchSettings.json
+
+*.json

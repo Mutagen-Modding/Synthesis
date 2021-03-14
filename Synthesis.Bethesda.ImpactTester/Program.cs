@@ -24,7 +24,14 @@ namespace Synthesis.Bethesda.ImpactTester
             await Task.WhenAny(
                 Task.Run(async () =>
                 {
-                    await DoWork(cancel.Token);
+                    if (args.Length == 2)
+                    {
+                        await DoWork(args[0], args[1], cancel.Token);
+                    }
+                    else
+                    {
+                        await DoWork(null, null, cancel.Token);
+                    }
                     System.Console.WriteLine("Press enter to exit.");
                     System.Console.ReadLine();
                 }),
@@ -35,14 +42,20 @@ namespace Synthesis.Bethesda.ImpactTester
                 }));
         }
 
-        static async Task DoWork(CancellationToken cancel)
+        static async Task DoWork(
+            string? mutagenVersion,
+            string? synthesisVersion,
+            CancellationToken cancel)
         {
             using var temp = TempFolder.Factory();
             var failedDeps = new List<Dependent>();
             var projResults = new List<(Dependent, string, ErrorResponse)>();
 
-            System.Console.WriteLine($"Mutagen: {Versions.MutagenVersion}");
-            System.Console.WriteLine($"Synthesis: {Versions.SynthesisVersion}");
+            mutagenVersion ??= Versions.MutagenVersion;
+            synthesisVersion ??= Versions.SynthesisVersion;
+
+            System.Console.WriteLine($"Mutagen: {mutagenVersion}");
+            System.Console.WriteLine($"Synthesis: {synthesisVersion}");
 
             var deps = await GitHubDependents.GitHubDependents.GetDependents(
                     user: RegistryConstants.GithubUser,
@@ -89,9 +102,9 @@ namespace Synthesis.Bethesda.ImpactTester
                         GitPatcherRun.SwapInDesiredVersionsForSolution(
                             solutionPath: slnPath,
                             drivingProjSubPath: string.Empty,
-                            mutagenVersion: Versions.MutagenVersion,
+                            mutagenVersion: mutagenVersion,
                             out var _,
-                            synthesisVersion: Versions.SynthesisVersion,
+                            synthesisVersion: synthesisVersion,
                             out var _);
 
                         foreach (var proj in SolutionPatcherRun.AvailableProjectSubpaths(slnPath))

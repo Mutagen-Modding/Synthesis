@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Synthesis.Bethesda.CLI": {
-      "commandName": "Project",
-      "commandLineArgs": "run-patcher -g SkyrimSE -p \"C:/Repos/Synthesis/Synthesis.Bethesda.GUI/bin/x64/Debug/netcoreapp3.1/PipelineSettings.json\" -n \"Skyrim Special Edition\" -o Synthesis.esp"
-    }
-  }
-}
