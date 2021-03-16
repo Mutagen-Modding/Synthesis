@@ -60,17 +60,10 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                         _ => true,
                     };
                 })
-                .Where(m => m.GetCustomAttribute<SynthesisIgnoreSetting>() == null)
+                .Where(m => !m.TryGetCustomAttributeByName(nameof(SynthesisIgnoreSetting), out var _))
                 .OrderBy(m =>
                 {
-                    if (m.TryGetCustomAttribute<SynthesisOrder>(out var order))
-                    {
-                        return order.Order;
-                    }
-                    else
-                    {
-                        return int.MaxValue;
-                    }
+                    return m.GetCustomAttributeValueByName(nameof(SynthesisOrder), nameof(SynthesisOrder.Order), int.MaxValue);
                 });
         }
 
@@ -111,38 +104,22 @@ namespace Mutagen.Bethesda.Synthesis.WPF
 
         public static string GetDiskName(MemberInfo? member)
         {
-            string diskName;
             if (member == null)
             {
-                diskName = string.Empty;
+                return string.Empty;
             }
-            else if (member.TryGetCustomAttribute<SynthesisDiskName>(out var diskAttr))
-            {
-                diskName = diskAttr.Name;
-            }
-            else
-            {
-                diskName = member.Name;
-            }
-            return diskName;
+
+            return member.GetCustomAttributeValueByName(nameof(SynthesisDiskName), nameof(SynthesisDiskName.Name), member.Name);
         }
 
         public static string GetDisplayName(MemberInfo? member)
         {
-            string displayName;
             if (member == null)
             {
-                displayName = string.Empty;
+                return string.Empty;
             }
-            else if (member.TryGetCustomAttribute<SynthesisSettingName>(out var nameAttr))
-            {
-                displayName = nameAttr.Name;
-            }
-            else
-            {
-                displayName = member.Name.Humanize(LetterCasing.Title);
-            }
-            return displayName;
+
+            return member.GetCustomAttributeValueByName(nameof(SynthesisSettingName), nameof(SynthesisSettingName.Name), member.Name.Humanize(LetterCasing.Title));
         }
 
         public static SettingsNodeVM MemberFactory(SettingsParameters param, MemberInfo? member)
@@ -150,11 +127,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             string displayName = GetDisplayName(member);
             string diskName = GetDiskName(member);
 
-            string? tooltip = null;
-            if (member != null && member.TryGetCustomAttribute<SynthesisTooltip>(out var toolTipAttr))
-            {
-                tooltip = toolTipAttr.Text;
-            }
+            string? tooltip = member?.GetCustomAttributeValueByName<string?>(nameof(SynthesisTooltip), nameof(SynthesisTooltip.Text), null);
 
             var meta = new FieldMeta(
                 DisplayName: displayName,
@@ -263,8 +236,9 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                         var secondGen = param.TargetType.GenericTypeArguments[1];
                         if (member != null
                             && firstGen.IsEnum
-                            && (!member.TryGetCustomAttribute<SynthesisStaticEnumDictionary>(out var staticEnumAttr)
-                            || staticEnumAttr.Enabled))
+                            && (!member.TryGetCustomAttributeByName(nameof(SynthesisStaticEnumDictionary), out var staticEnumAttr)
+                            || (staticEnumAttr.GetType().GetProperty(nameof(SynthesisStaticEnumDictionary.Enabled)) is PropertyInfo staticEnumProp
+                                && (bool)staticEnumProp.GetValue(staticEnumAttr)!)))
                         {
                             return EnumDictionarySettingsVM.Factory(param with { TargetType = secondGen }, meta, firstGen);
                         }
