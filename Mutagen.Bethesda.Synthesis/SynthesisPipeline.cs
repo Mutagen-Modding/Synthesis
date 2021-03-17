@@ -326,7 +326,6 @@ namespace Mutagen.Bethesda.Synthesis
                         }
                         return -1;
                     }
-                    return 0;
                 }
                 var openSettings = new OpenForSettings()
                 {
