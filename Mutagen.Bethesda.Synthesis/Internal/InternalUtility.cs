@@ -159,7 +159,8 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             // This call will impliticly get Creation Club entries, too, as the Synthesis systems should be merging
             // things into a singular load order file for consumption here
             var loadOrderListing =
-                ImplicitListings.GetListings(release, dataFolderPath)
+                Implicits.Get(release).Listings
+                    .Where(x => File.Exists(Path.Combine(dataFolderPath, x.FileName)))
                     .Select(x => new LoadOrderListing(x, enabled: true));
             if (!loadOrderFilePath.IsNullOrWhitespace())
             {
