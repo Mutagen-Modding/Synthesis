@@ -56,7 +56,7 @@
     <PackageReference Include="Humanizer.Core" Version="2.8.26" />
     <PackageReference Include="Loqui" Version="2.8.2" />
     <PackageReference Include="Loqui.Generation" Version="2.8.2" />
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.27.1-prerelease9" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.27.1-prerelease10" />
     <PackageReference Include="Noggog.CSharpExt" Version="2.8.0" />
     <PackageReference Include="Noggog.WPF" Version="2.8.0" />
     <PackageReference Include="NuGetizer" Version="0.6.0">
