@@ -154,7 +154,6 @@ namespace Synthesis.Bethesda.ImpactTester
                 foreach (var f in failed)
                 {
                     System.Console.WriteLine($"{f.Item1}: {f.Item2}");
-                    System.Console.WriteLine(f.Item3.Reason);
                     System.Console.WriteLine();
                 }
             }
