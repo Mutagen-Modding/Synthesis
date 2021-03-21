@@ -141,7 +141,9 @@ namespace Synthesis.Bethesda.ImpactTester
             if (failedDeps.Count > 0)
             {
                 System.Console.WriteLine("Failed repos:");
-                foreach (var f in failedDeps)
+                foreach (var f in failedDeps
+                    .OrderBy(d => d.User)
+                    .CreateOrderedEnumerable(d => d.Repository, null, true))
                 {
                     System.Console.WriteLine($"   {f}");
                 }
@@ -151,7 +153,9 @@ namespace Synthesis.Bethesda.ImpactTester
             if (failed.Count > 0)
             {
                 System.Console.WriteLine("Failed projects:");
-                foreach (var f in failed)
+                foreach (var f in failed.OrderBy(f => f.Item1.User)
+                    .CreateOrderedEnumerable(d => d.Item1.Repository, null, true)
+                    .CreateOrderedEnumerable(d => d.Item2, null, true))
                 {
                     System.Console.WriteLine($"{f.Item1}: {f.Item2}");
                     System.Console.WriteLine();
