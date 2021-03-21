@@ -16,7 +16,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// <summary>
         /// Instructions given to the patcher from the Synthesis pipeline
         /// </summary>
-        RunSynthesisMutagenPatcher Settings { get; }
+        RunSynthesisMutagenPatcher RunArguments { get; }
 
         /// <summary>
         /// Patch mod object to modify and make changes to.  The state of this object will be used to

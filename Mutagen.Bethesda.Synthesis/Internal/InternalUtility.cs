@@ -106,7 +106,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             }
 
             return new SynthesisState<TModSetter, TModGetter>(
-                settings: settings,
+                runArguments: settings,
                 loadOrder: loadOrder,
                 rawLoadOrder: rawLoadOrder,
                 linkCache: cache,

@@ -17,7 +17,7 @@ namespace Mutagen.Bethesda.Synthesis
         where TModGetter : class, IModGetter
     {
         /// <inheritdoc />
-        public RunSynthesisMutagenPatcher Settings { get; }
+        public RunSynthesisMutagenPatcher RunArguments { get; }
 
         /// <inheritdoc />
         public LoadOrder<IModListing<TModGetter>> LoadOrder { get; }
@@ -42,7 +42,7 @@ namespace Mutagen.Bethesda.Synthesis
         public string? DefaultSettingsDataPath { get; }
 
         public SynthesisState(
-            RunSynthesisMutagenPatcher settings,
+            RunSynthesisMutagenPatcher runArguments,
             IReadOnlyList<LoadOrderListing> rawLoadOrder,
             LoadOrder<IModListing<TModGetter>> loadOrder,
             ILinkCache<TModSetter, TModGetter> linkCache,
@@ -51,7 +51,7 @@ namespace Mutagen.Bethesda.Synthesis
             string? defaultDataPath,
             CancellationToken cancellation)
         {
-            Settings = settings;
+            RunArguments = runArguments;
             LinkCache = linkCache;
             RawLoadOrder = rawLoadOrder;
             LoadOrder = loadOrder;
