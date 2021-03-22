@@ -17,13 +17,9 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.*
-    - name: Setup .NET Core SDK 3.1.x
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.x
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore Synthesis.Bethesda.sln
     - name: Build
-      run: dotnet build -c Release --no-restore
+      run: dotnet build Synthesis.Bethesda.sln -c Release --no-restore
     - name: Test
-      run: dotnet test -c Release --no-build
+      run: dotnet test Synthesis.Bethesda.sln -c Release --no-build
