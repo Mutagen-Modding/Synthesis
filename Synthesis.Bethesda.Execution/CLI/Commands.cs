@@ -174,6 +174,36 @@ namespace Synthesis.Bethesda.Execution.CLI
             return await proc.Run();
         }
 
+        public static async Task<int> OpenSettingHost(
+            string patcherName,
+            string path,
+            GameRelease release,
+            string dataFolderPath,
+            IEnumerable<LoadOrderListing> loadOrder,
+            Rectangle rect,
+            CancellationToken cancel)
+        {
+            using var loadOrderFile = GetTemporaryLoadOrder(release, loadOrder);
+
+            using var proc = ProcessWrapper.Create(
+                GetStart("SettingsHost/Synthesis.Bethesda.SettingsHost.exe", directExe: true, new Synthesis.Bethesda.HostSettings()
+                {
+                    PatcherName = patcherName,
+                    PatcherPath = path,
+                    Left = rect.Left,
+                    Top = rect.Top,
+                    Height = rect.Height,
+                    Width = rect.Width,
+                    LoadOrderFilePath = loadOrderFile.File.Path,
+                    DataFolderPath = dataFolderPath,
+                    GameRelease = release,
+                }),
+                cancel: cancel,
+                hookOntoOutput: false);
+
+            return await proc.Run();
+        }
+
         public static TempFile GetTemporaryLoadOrder(GameRelease release, IEnumerable<LoadOrderListing> loadOrder)
         {
             var loadOrderFile = new TempFile(

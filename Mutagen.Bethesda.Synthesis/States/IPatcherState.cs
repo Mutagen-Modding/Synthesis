@@ -14,11 +14,6 @@ namespace Mutagen.Bethesda.Synthesis
     public interface IPatcherState : IDisposable
     {
         /// <summary>
-        /// Instructions given to the patcher from the Synthesis pipeline
-        /// </summary>
-        RunSynthesisMutagenPatcher Settings { get; }
-
-        /// <summary>
         /// Patch mod object to modify and make changes to.  The state of this object will be used to
         /// export the resulting patch for the next patcher in the pipeline. <br/>
         /// <br/>
@@ -47,6 +42,31 @@ namespace Mutagen.Bethesda.Synthesis
         /// Path to the default data folder as defined by the patcher's source code
         /// </summary>
         string? DefaultSettingsDataPath { get; }
+
+        /// <summary>
+        /// Path to the plugins.txt used
+        /// </summary>
+        string LoadOrderFilePath { get; }
+
+        /// <summary>
+        /// Path to the game data folder
+        /// </summary>
+        string DataFolderPath { get; }
+
+        /// <summary>
+        /// GameRelease targeted for patching
+        /// </summary>
+        GameRelease GameRelease { get; }
+
+        /// <summary>
+        /// Where Synthesis will eventually output the patch file.
+        /// </summary>
+        string OutputPath { get; }
+
+        /// <summary>
+        /// Where the patch output file from the previous patcher is located
+        /// </summary>
+        string? SourcePath { get; }
     }
 
     public interface IPatcherState<TModSetter, TModGetter> : IPatcherState

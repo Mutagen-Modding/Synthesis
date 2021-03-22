@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Windows.Input;
 
@@ -49,7 +50,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             if (defaultVal is IEnumerable e)
             {
                 var targetType = e.GetType().GenericTypeArguments[0];
-                var getter = targetType.GetProperty("FormKey")!;
+                var getter = targetType.GetPublicProperties().FirstOrDefault(m => m.Name == "FormKey")!;
                 foreach (var item in e)
                 {
                     defaultKeys.Add(FormKey.Factory(getter.GetValue(item)!.ToString()));
