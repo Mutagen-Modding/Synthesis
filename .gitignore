@@ -357,3 +357,7 @@ Synthesis.Bethesda.Execution/Synthesis.Execution.xml
 # Rider
 .idea
 Synthesis.Bethesda.Execution/Synthesis.Bethesda.Execution.xml
+
+Synthesis.Bethesda.SettingsHost/Properties/launchSettings.json
+
+*.json

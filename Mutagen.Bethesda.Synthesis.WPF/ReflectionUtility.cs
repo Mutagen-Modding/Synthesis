@@ -125,5 +125,18 @@ namespace Mutagen.Bethesda.Synthesis.WPF
         {
             return Attribute.GetCustomAttributes(info).Where(a => a.GetType().Name == name);
         }
+
+        /// <summary>
+        /// Helps to get properties in inherited interfaces
+        /// </summary>
+        public static IEnumerable<PropertyInfo> GetPublicProperties(this Type type)
+        {
+            if (!type.IsInterface)
+                return type.GetProperties();
+
+            return (new Type[] { type })
+                   .Concat(type.GetInterfaces())
+                   .SelectMany(i => i.GetProperties());
+        }
     }
 }

@@ -14,14 +14,18 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0"
-            x:Name="ProcessingRing"
+        <Grid Grid.Row="0"
+            x:Name="ProcessingRingGrid"
             Margin="10,10,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Orientation="Horizontal"
             Visibility="Collapsed">
-            <mahapps:ProgressRing
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <mahapps:ProgressRing Grid.Column="0"
+                x:Name="ProcessingRing"
                 Width="14"
                 Height="14"
                 FontWeight="Bold"
@@ -33,12 +37,12 @@
                         Color="Red" />
                 </mahapps:ProgressRing.Effect>
             </mahapps:ProgressRing>
-            <TextBlock
+            <TextBlock Grid.Column="1"
                 Margin="5,0,0,0"
                 VerticalAlignment="Center"
                 Foreground="{StaticResource PaleYellowBrush}"
                 Text="Loading settings" />
-        </StackPanel>
+        </Grid>
         <Grid Grid.Row="0"
             x:Name="ErrorPanel"
             Margin="10,10,0,0"

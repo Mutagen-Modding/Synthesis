@@ -55,7 +55,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                 {
                     return m switch
                     {
-                        PropertyInfo prop => !prop.IsStatic() && prop.GetSetMethod() != null,
+                        PropertyInfo prop => !Noggog.MemberInfoExt.IsStatic(prop) && prop.GetSetMethod() != null,
                         FieldInfo field => !field.IsStatic && !field.IsInitOnly,
                         _ => true,
                     };

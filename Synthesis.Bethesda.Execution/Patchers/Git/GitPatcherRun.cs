@@ -368,13 +368,15 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     listedSynthesisVersion: out var listedSynthesisVersion);
 
                 var runInfo = new RunnerRepoInfo(
-                    slnPath: slnPath,
-                    projPath: projPath,
-                    target: target,
-                    commitMsg: commit.Message,
-                    commitDate: commit.Author.When.LocalDateTime,
-                    listedSynthesis: listedSynthesisVersion,
-                    listedMutagen: listedMutagenVersion);
+                    SolutionPath: slnPath,
+                    ProjPath: projPath,
+                    Target: target,
+                    CommitMessage: commit.Message,
+                    CommitDate: commit.Author.When.LocalDateTime,
+                    ListedSynthesisVersion: listedSynthesisVersion,
+                    ListedMutagenVersion: listedMutagenVersion,
+                    TargetSynthesisVersion: nugetVersioning.SynthesisVersioning == NugetVersioningEnum.Match ? listedSynthesisVersion : nugetVersioning.SynthesisVersion,
+                    TargetMutagenVersion: nugetVersioning.MutagenVersioning == NugetVersioningEnum.Match ? listedMutagenVersion : nugetVersioning.MutagenVersion);
 
                 // Compile to help prep
                 if (compile)
