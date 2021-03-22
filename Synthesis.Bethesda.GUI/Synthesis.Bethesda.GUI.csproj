@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -56,7 +56,7 @@
     <PackageReference Include="Humanizer.Core" Version="2.8.26" />
     <PackageReference Include="Loqui" Version="2.10.0" />
     <PackageReference Include="Loqui.Generation" Version="2.10.0" />
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.27.2.1-dev-prerelease1" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.27.2" />
     <PackageReference Include="Noggog.CSharpExt" Version="2.10.0" />
     <PackageReference Include="Noggog.WPF" Version="2.10.0" />
     <PackageReference Include="NuGetizer" Version="0.6.0">
