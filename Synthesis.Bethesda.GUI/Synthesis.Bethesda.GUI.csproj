@@ -87,7 +87,6 @@
     <Resource Include="Resources\mushroom.ico" />
     <Resource Include="Resources\Oblivion.png" />
     <Resource Include="Resources\SkyrimLE.png" />
-    <Resource Include="Resources\SkyrimSSE.png" />
     <Resource Include="Resources\SkyrimVR.png" />
   </ItemGroup>
   
