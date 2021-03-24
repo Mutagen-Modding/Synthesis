@@ -1,3 +1,4 @@
+using Loqui;
 using Mutagen.Bethesda;
 using Newtonsoft.Json.Linq;
 using Noggog;
@@ -46,7 +47,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             _linkCache = linkCache;
             _LinkCache = linkCache
                 .ToGuiProperty(this, nameof(LinkCache), default);
-            ScopedTypes = targetType.GenericTypeArguments[0].AsEnumerable();
+            ScopedTypes = targetType.AsEnumerable();
             _DisplayName = this.WhenAnyValue(x => x.Value)
                 .CombineLatest(this.WhenAnyValue(x => x.LinkCache),
                     (key, cache) =>
@@ -92,7 +93,11 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                 formKey = FormKey.Factory(
                     defaultVal.GetType().GetPublicProperties().FirstOrDefault(m => m.Name == "FormKey")!.GetValue(defaultVal)!.ToString());
             }
-            return new FormLinkSettingsVM(linkCache, fieldMeta, targetType, formKey);
+            if (!LoquiRegistration.TryGetRegisterByFullName(targetType.GenericTypeArguments[0].FullName!, out var regis))
+            {
+                throw new ArgumentException($"Can't create a formlink control for type: {targetType}");
+            }
+            return new FormLinkSettingsVM(linkCache, fieldMeta, regis.GetterType, formKey);
         }
     }
 }
