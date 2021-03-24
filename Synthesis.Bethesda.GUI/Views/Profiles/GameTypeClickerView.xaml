@@ -49,7 +49,7 @@
                             <Setter Property="Source" Value="../../Resources/SkyrimLE.png" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.SkyrimSE}">
-                            <Setter Property="Source" Value="../../Resources/SkyrimSSE.png" />
+                            <Setter Property="Source" Value="../../Resources/SkyrimSE.png" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.SkyrimVR}">
                             <Setter Property="Source" Value="../../Resources/SkyrimVR.png" />
