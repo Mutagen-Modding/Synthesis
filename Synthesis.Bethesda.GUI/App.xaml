@@ -23,7 +23,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Mutagen.Bethesda.WPF;component/Everything.xaml" />
 
                 <!--  Synthesis Theming  -->
-                <ResourceDictionary Source="pack://application:,,,/Synthesis;component/Resources.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Mutagen.Bethesda.Synthesis.WPF;component/Resources.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

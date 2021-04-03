@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>mushroom.ico</ApplicationIcon>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <DisableWinExeOutputInference>True</DisableWinExeOutputInference>
+    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Platforms>x64</Platforms>
+    <PublishReadyToRun>True</PublishReadyToRun>
+    <PublishReadyToRunShowWarnings>True</PublishReadyToRunShowWarnings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\mushroom.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GitInfo" Version="2.1.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Mutagen.Bethesda.Synthesis.WPF" Version="0.16.11" />
+    <PackageReference Include="Noggog.WPF" Version="2.7.0" />
+    <PackageReference Include="NuGetizer" Version="0.6.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\mushroom.ico" />
+  </ItemGroup>
+
+  <!-- Replace inherited target -->
+  <Target Name="SetVersion" BeforeTargets="GetAssemblyVersion;GetPackageVersion" DependsOnTargets="GitVersion" Returns="$(PackageVersion)">
+    <PropertyGroup>
+      <DevLabel Condition="'$(GitCommits)' != '0' or $(GitIsDirty) != ''">.1-dev</DevLabel>
+      <AssemblyDevLabel Condition="'$(GitCommits)' != '0' or $(GitIsDirty) != ''">.1</AssemblyDevLabel>
+      <FileVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(AssemblyDevLabel)</FileVersion>
+      <PackageVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(DevLabel)</PackageVersion>
+      <InformationalVersion>$(PackageVersion)</InformationalVersion>
+    </PropertyGroup>
+  </Target>
+  
+</Project>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -49,23 +49,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
     <PackageReference Include="GitInfo" Version="2.1.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Humanizer.Core" Version="2.8.26" />
-    <PackageReference Include="Loqui" Version="2.7" />
-    <PackageReference Include="Loqui.Generation" Version="2.7" />
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.26.4" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.7" />
-    <PackageReference Include="Noggog.WPF" Version="2.7" />
+    <PackageReference Include="Loqui" Version="2.12.0" />
+    <PackageReference Include="Loqui.Generation" Version="2.12.0" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.28.0" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.12.0" />
+    <PackageReference Include="Noggog.WPF" Version="2.12.0" />
     <PackageReference Include="NuGetizer" Version="0.6.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="reactiveui" Version="13.1.1" />
-    <PackageReference Include="ReactiveUI.Fody" Version="13.1.1" />
+    <PackageReference Include="reactiveui" Version="13.2.2" />
+    <PackageReference Include="ReactiveUI.Fody" Version="13.2.2" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
@@ -79,6 +78,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Mutagen.Bethesda.Synthesis.WPF\Mutagen.Bethesda.Synthesis.WPF.csproj" />
     <ProjectReference Include="..\Mutagen.Bethesda.Synthesis\Mutagen.Bethesda.Synthesis.csproj" />
     <ProjectReference Include="..\Synthesis.Bethesda.Execution\Synthesis.Bethesda.Execution.csproj" />
   </ItemGroup>
@@ -90,17 +90,12 @@
     <Resource Include="Resources\SkyrimSSE.png" />
     <Resource Include="Resources\SkyrimVR.png" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Views\Config\Settings\FieldViews\EnumerableObjectSettingsNodeView.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-  </ItemGroup>
+  
   <!-- Replace inherited target -->
   <Target Name="SetVersion" BeforeTargets="GetAssemblyVersion;GetPackageVersion" DependsOnTargets="GitVersion" Returns="$(PackageVersion)">
     <PropertyGroup>
-      <DevLabel Condition="'$(GitCommits)' != '0' or $(GitIsDirty) != ''">.1-dev</DevLabel>
-      <AssemblyDevLabel Condition="'$(GitCommits)' != '0' or $(GitIsDirty) != ''">.1</AssemblyDevLabel>
+      <DevLabel Condition="'$(GitCommits)' != '0'">.1-dev</DevLabel>
+      <AssemblyDevLabel Condition="'$(GitCommits)' != '0'">.1</AssemblyDevLabel>
       <FileVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(AssemblyDevLabel)</FileVersion>
       <PackageVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(DevLabel)</PackageVersion>
       <InformationalVersion>$(PackageVersion)</InformationalVersion>

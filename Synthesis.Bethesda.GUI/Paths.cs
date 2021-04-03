@@ -10,7 +10,6 @@ namespace Synthesis.Bethesda.GUI
     public static class Paths
     {
         public const string GuiSettingsPath = "GuiSettings.json";
-        public readonly static string LoadingFolder = Path.Combine(Synthesis.Bethesda.Execution.Paths.WorkingDirectory, "Loading");
         public readonly static string RegistryFolder = Path.Combine(Synthesis.Bethesda.Execution.Paths.WorkingDirectory, "Registry");
     }
 }
