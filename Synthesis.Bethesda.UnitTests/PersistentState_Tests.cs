@@ -2,8 +2,10 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Oblivion;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.CLI;
+using Noggog;
 using Noggog.Utility;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -30,16 +32,14 @@ namespace Synthesis.Bethesda.UnitTests
 
         private static void AddItemToAllNPCs(IPatcherState<IOblivionMod, IOblivionModGetter> state)
         {
-            foreach (var npc in state.LoadOrder.PriorityOrder.WinningOverrides<INpcGetter>())
+            var item = new ItemEntry()
             {
-                var patchNpc = state.PatchMod.Npcs.GetOrAddAsOverride(npc);
-                patchNpc.Items.Add(
-                    new ItemEntry()
-                    {
-                        Count = 1,
-                        Item = FormKey.Null
-                    });
-            }
+                Count = 1,
+            };
+            item.Item.SetTo(FormLink<IItemGetter>.Null);
+
+            foreach (var npc in state.LoadOrder.PriorityOrder.WinningOverrides<INpcGetter>())
+                state.PatchMod.Npcs.GetOrAddAsOverride(npc).Items.Add(item);
         }
 
         private async Task AddAwesomeNPC(IPatcherState<IOblivionMod, IOblivionModGetter> state)
