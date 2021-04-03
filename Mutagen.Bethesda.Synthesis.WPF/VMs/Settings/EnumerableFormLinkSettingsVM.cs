@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Windows.Input;
 
@@ -48,12 +49,11 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             var defaultKeys = new List<FormKey>();
             if (defaultVal is IEnumerable e)
             {
+                var targetType = e.GetType().GenericTypeArguments[0];
+                var getter = targetType.GetPublicProperties().FirstOrDefault(m => m.Name == "FormKey")!;
                 foreach (var item in e)
                 {
-                    if (item is IFormLink link)
-                    {
-                        defaultKeys.Add(link.FormKey);
-                    }
+                    defaultKeys.Add(FormKey.Factory(getter.GetValue(item)!.ToString()));
                 }
             }
             return new EnumerableFormLinkSettingsVM(

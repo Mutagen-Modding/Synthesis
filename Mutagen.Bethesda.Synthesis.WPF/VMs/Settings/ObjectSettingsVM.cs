@@ -72,9 +72,13 @@ namespace Mutagen.Bethesda.Synthesis.WPF
 
         private static string[] GetNamesToUse(SettingsParameters param)
         {
-            var attrs = param.TargetType.GetCustomAttributes(typeof(SynthesisObjectNameMember), inherit: false)
-                .Select(x => (SynthesisObjectNameMember)x)
-                .Select(x => x.Name)
+            var attrs = param.TargetType.GetCustomAttributesByName(nameof(SynthesisObjectNameMember))
+                .SelectWhere(x =>
+                {
+                    var nameMember = x.GetType().GetProperty(nameof(SynthesisObjectNameMember.Name));
+                    if (nameMember == null) return TryGet<string>.Failure;
+                    return TryGet<string>.Succeed((string)nameMember.GetValue(x)!);
+                })
                 .ToArray();
             if (attrs.Length == 0) return Array.Empty<string>();
             var members = GetMemberInfos(param).ToArray();

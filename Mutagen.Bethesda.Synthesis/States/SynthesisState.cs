@@ -17,9 +17,6 @@ namespace Mutagen.Bethesda.Synthesis
         where TModGetter : class, IModGetter
     {
         /// <inheritdoc />
-        public RunSynthesisMutagenPatcher Settings { get; }
-
-        /// <inheritdoc />
         public LoadOrder<IModListing<TModGetter>> LoadOrder { get; }
 
         /// <inheritdoc />
@@ -41,13 +38,28 @@ namespace Mutagen.Bethesda.Synthesis
         /// <inheritdoc />
         public string? DefaultSettingsDataPath { get; }
 
+        /// <inheritdoc />
+        public string LoadOrderFilePath { get; }
+
+        /// <inheritdoc />
+        public string DataFolderPath { get; }
+
+        /// <inheritdoc />
+        public GameRelease GameRelease { get; }
+
+        /// <inheritdoc />
+        public string OutputPath { get; }
+
+        /// <inheritdoc />
+        public string? SourcePath { get; }
+
         // <inheritdoc />
         IFormKeyAllocator? IPatcherState.FormKeyAllocator => FormKeyAllocator;
 
         private readonly IFormKeyAllocator? FormKeyAllocator;
 
         public SynthesisState(
-            RunSynthesisMutagenPatcher settings,
+            RunSynthesisMutagenPatcher runArguments,
             IReadOnlyList<LoadOrderListing> rawLoadOrder,
             LoadOrder<IModListing<TModGetter>> loadOrder,
             ILinkCache<TModSetter, TModGetter> linkCache,
@@ -57,7 +69,6 @@ namespace Mutagen.Bethesda.Synthesis
             CancellationToken cancellation,
             IFormKeyAllocator? formKeyAllocator = null)
         {
-            Settings = settings;
             LinkCache = linkCache;
             RawLoadOrder = rawLoadOrder;
             LoadOrder = loadOrder;
@@ -65,6 +76,11 @@ namespace Mutagen.Bethesda.Synthesis
             ExtraSettingsDataPath = extraDataPath;
             DefaultSettingsDataPath = defaultDataPath;
             Cancel = cancellation;
+            LoadOrderFilePath = runArguments.LoadOrderFilePath;
+            DataFolderPath = runArguments.DataFolderPath;
+            GameRelease = runArguments.GameRelease;
+            OutputPath = runArguments.OutputPath;
+            SourcePath = runArguments.SourcePath;
             FormKeyAllocator = formKeyAllocator;
         }
 

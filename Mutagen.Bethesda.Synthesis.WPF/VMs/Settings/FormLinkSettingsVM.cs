@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -85,8 +86,13 @@ namespace Mutagen.Bethesda.Synthesis.WPF
 
         public static FormLinkSettingsVM Factory(IObservable<ILinkCache> linkCache, FieldMeta fieldMeta, Type targetType, object? defaultVal)
         {
-            var formLink = defaultVal as IFormLink;
-            return new FormLinkSettingsVM(linkCache, fieldMeta, targetType, formLink?.FormKey ?? FormKey.Null);
+            FormKey formKey = FormKey.Null;
+            if (defaultVal != null)
+            {
+                formKey = FormKey.Factory(
+                    defaultVal.GetType().GetPublicProperties().FirstOrDefault(m => m.Name == "FormKey")!.GetValue(defaultVal)!.ToString());
+            }
+            return new FormLinkSettingsVM(linkCache, fieldMeta, targetType, formKey);
         }
     }
 }
