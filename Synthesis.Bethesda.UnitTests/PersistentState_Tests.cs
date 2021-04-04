@@ -37,7 +37,7 @@ namespace Synthesis.Bethesda.UnitTests
                     new ItemEntry()
                     {
                         Count = 1,
-                        Item = FormKey.Null
+                        Item = FormLink<IItemGetter>.Null.AsSetter()
                     });
             }
         }
@@ -168,17 +168,17 @@ namespace Synthesis.Bethesda.UnitTests
             var modPath = PatchModPath(dataFolder);
 
             await new SynthesisPipeline()
-            .AddPatch<IOblivionMod, IOblivionModGetter>(AddAnotherNPC)
-            .Run(new RunSynthesisMutagenPatcher()
-            {
-                DataFolderPath = dataFolder.Dir.Path,
-                GameRelease = GameRelease.Oblivion,
-                OutputPath = modPath,
-                SourcePath = null,
-                LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                StatePath = statePath,
-                PatcherName = AddAnotherNPCName
-            });
+                .AddPatch<IOblivionMod, IOblivionModGetter>(AddAnotherNPC)
+                .Run(new RunSynthesisMutagenPatcher()
+                {
+                    DataFolderPath = dataFolder.Dir.Path,
+                    GameRelease = GameRelease.Oblivion,
+                    OutputPath = modPath,
+                    SourcePath = null,
+                    LoadOrderFilePath = Utility.PathToLoadOrderFile,
+                    StatePath = statePath,
+                    PatcherName = AddAnotherNPCName
+                });
 
             await new SynthesisPipeline()
                 .AddPatch<IOblivionMod, IOblivionModGetter>(AddAwesomeNPC)
