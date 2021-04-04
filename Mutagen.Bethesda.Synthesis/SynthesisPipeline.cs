@@ -450,6 +450,8 @@ namespace Mutagen.Bethesda.Synthesis
             {
                 System.Console.WriteLine($"Writing to output: {args.OutputPath}");
                 state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)));
+                if (state.FormKeyAllocator is SQLiteFormKeyAllocator allocator)
+                    allocator.Commit();
             }
         }
         #endregion
