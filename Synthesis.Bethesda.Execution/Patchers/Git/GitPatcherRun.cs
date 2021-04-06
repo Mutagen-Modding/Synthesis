@@ -1,6 +1,7 @@
 using LibGit2Sharp;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Oblivion;
+using Mutagen.Bethesda.Synthesis;
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
@@ -136,6 +137,10 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 {
                     AddNewtonsoftToOldSetups(projXml);
                 }
+                else
+                {
+                    SwapInDesiredVersion(projXml, "Newtonsoft.Json", Versions.NewtonsoftVersion);
+                }
                 File.WriteAllText(proj, projXml.ToString());
                 if (drivingProjSubPath.Equals(subProj))
                 {
@@ -148,6 +153,23 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 var projXml = XElement.Parse(File.ReadAllText(item));
                 TurnOffNullability(projXml);
                 File.WriteAllText(item, projXml.ToString());
+            }
+        }
+
+        public static void SwapInDesiredVersion(
+            XElement proj,
+            string packageName,
+            string desiredVersion)
+        {
+            foreach (var group in proj.Elements("ItemGroup"))
+            {
+                foreach (var elem in group.Elements().ToArray())
+                {
+                    if (!elem.Name.LocalName.Equals("PackageReference")) continue;
+                    if (!elem.TryGetAttribute("Include", out var libAttr)) continue;
+                    if (!libAttr.Value.Equals(packageName)) continue;
+                    elem.SetAttributeValue("Version", desiredVersion);
+                }
             }
         }
 
@@ -254,7 +276,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             proj.Add(new XElement("ItemGroup",
                 new XElement("PackageReference",
                     new XAttribute("Include", "Newtonsoft.Json"),
-                    new XAttribute("Version", "12.0.3"))));
+                    new XAttribute("Version", Versions.NewtonsoftVersion))));
         }
 
         public static void RemoveGitInfo(XElement proj)
