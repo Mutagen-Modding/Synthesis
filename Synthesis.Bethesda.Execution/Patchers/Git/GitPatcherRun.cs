@@ -21,6 +21,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         public const string RunnerBranch = "SynthesisRunner";
         public readonly static System.Version NewtonSoftAddMutaVersion = new(0, 26);
         public readonly static System.Version NewtonSoftAddSynthVersion = new(0, 14, 1);
+        public readonly static System.Version NewtonSoftRemoveMutaVersion = new(0, 28);
+        public readonly static System.Version NewtonSoftRemoveSynthVersion = new(0, 17, 5);
         public string Name { get; }
         private readonly string _localDir;
         private readonly GithubPatcherSettings _settings;
@@ -137,9 +139,12 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 {
                     AddNewtonsoftToOldSetups(projXml);
                 }
-                else
+                if ((System.Version.TryParse(mutagenVersion, out var targetMutaVersion)
+                    && targetMutaVersion >= NewtonSoftRemoveMutaVersion)
+                    || (System.Version.TryParse(synthesisVersion, out var targetSynthesisVersion)
+                        && targetSynthesisVersion >= NewtonSoftRemoveSynthVersion))
                 {
-                    SwapInDesiredVersion(projXml, "Newtonsoft.Json", Versions.NewtonsoftVersion);
+                    RemovePackage(projXml, "Newtonsoft.Json");
                 }
                 File.WriteAllText(proj, projXml.ToString());
                 if (drivingProjSubPath.Equals(subProj))
@@ -155,11 +160,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 File.WriteAllText(item, projXml.ToString());
             }
         }
-
-        public static void SwapInDesiredVersion(
+        public static void RemovePackage(
             XElement proj,
-            string packageName,
-            string desiredVersion)
+            string packageName)
         {
             foreach (var group in proj.Elements("ItemGroup"))
             {
@@ -168,7 +171,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     if (!elem.Name.LocalName.Equals("PackageReference")) continue;
                     if (!elem.TryGetAttribute("Include", out var libAttr)) continue;
                     if (!libAttr.Value.Equals(packageName)) continue;
-                    elem.SetAttributeValue("Version", desiredVersion);
+                    elem.Remove();
                 }
             }
         }
