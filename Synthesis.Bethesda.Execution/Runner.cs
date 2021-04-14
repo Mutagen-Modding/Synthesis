@@ -23,7 +23,8 @@ namespace Synthesis.Bethesda.Execution
             IEnumerable<IPatcherRun> patchers,
             CancellationToken cancel,
             ModPath? sourcePath = null,
-            IRunReporter? reporter = null)
+            IRunReporter? reporter = null,
+            string? statePath = null)
         {
             return await Run<object?>(
                 workingDirectory: workingDirectory,
@@ -34,7 +35,8 @@ namespace Synthesis.Bethesda.Execution
                 patchers: patchers.Select(p => (default(object?), p)),
                 reporter: new WrapReporter(reporter ?? ThrowReporter.Instance),
                 sourcePath: sourcePath,
-                cancellation: cancel);
+                cancellation: cancel,
+                statePath: statePath);
         }
 
         public static async Task<bool> Run<TKey>(
@@ -46,7 +48,8 @@ namespace Synthesis.Bethesda.Execution
             IEnumerable<(TKey Key, IPatcherRun Run)> patchers,
             IRunReporter<TKey> reporter,
             CancellationToken cancellation,
-            ModPath? sourcePath = null)
+            ModPath? sourcePath = null,
+            string? statePath = null)
         {
             try
             {
@@ -159,6 +162,8 @@ namespace Synthesis.Bethesda.Execution
                                 DataFolderPath = dataFolder,
                                 GameRelease = release,
                                 LoadOrderFilePath = loadOrderPath,
+                                StatePath = statePath,
+                                PatcherName = fileName
                             },
                             cancel: cancellation);
                         }

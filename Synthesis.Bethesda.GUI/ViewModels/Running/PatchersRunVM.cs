@@ -177,7 +177,8 @@ namespace Synthesis.Bethesda.GUI
                             loadOrder: RunningProfile.LoadOrder.Items.Select(x => x.Listing),
                             cancellation: _cancel.Token,
                             reporter: _reporter,
-                            patchers: Patchers.Items.Select(vm => (vm.Config.InternalID, vm.Run)));
+                            patchers: Patchers.Items.Select(vm => (vm.Config.InternalID, vm.Run)),
+                            statePath: Path.Combine(RunningProfile.ProfileDirectory, "FormKeyAllocator"));
                         if (!madePatch) return;
                         var dataFolderPath = Path.Combine(RunningProfile.DataFolder, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
                         File.Copy(output, dataFolderPath, overwrite: true);

@@ -33,6 +33,9 @@ namespace Synthesis.Bethesda.Execution.CLI
         [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to where top level extra patcher data should be stored/read from.  Default is next to the exe")]
         public string? ExtraDataFolder { get; set; }
 
+        [Option('s', "StatePath", Required = false, HelpText = "Path to the shared FormKey allocation state")]
+        public string? StatePath { get; internal set; }
+
         public override string ToString()
         {
             return $"\n{nameof(RunSynthesisPatcher)} => \n"
@@ -43,7 +46,8 @@ namespace Synthesis.Bethesda.Execution.CLI
                 + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
                 + $"  {nameof(ProfileDefinitionPath)} => {this.ProfileDefinitionPath} \n"
                 + $"  {nameof(ProfileName)} => {this.ProfileName} \n"
-                + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}";
+                + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}\n"
+                + $"  {nameof(StatePath)} => {this.StatePath}";
         }
     }
 }

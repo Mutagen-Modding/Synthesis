@@ -106,7 +106,8 @@ namespace Synthesis.Bethesda.Execution.CLI
                     patchers: patchers,
                     sourcePath: run.SourcePath == null ? default : ModPath.FromPath(run.SourcePath),
                     reporter: reporter,
-                    cancel: cancel);
+                    cancel: cancel,
+                    statePath: run.StatePath);
             }
             catch (Exception ex)
             when (reporter != null)
