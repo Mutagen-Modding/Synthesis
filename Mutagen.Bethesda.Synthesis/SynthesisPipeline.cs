@@ -301,6 +301,7 @@ namespace Mutagen.Bethesda.Synthesis
             string[] args,
             RunPreferences? preferences = null)
         {
+            await using var throttler = new ConsoleThrottler();
             if (_argumentAdjustment != null)
             {
                 args = _argumentAdjustment(args);
