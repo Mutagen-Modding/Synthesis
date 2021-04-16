@@ -610,7 +610,9 @@ namespace Mutagen.Bethesda.Synthesis
                 GameRelease = release,
                 LoadOrderFilePath = path.Path,
                 ExtraDataFolder = Path.GetFullPath("./Data"),
-                DefaultDataFolderPath = null
+                DefaultDataFolderPath = null,
+                PatcherName = targetModKey.Name,
+                StatePath = "Persistence"
             };
         }
 
