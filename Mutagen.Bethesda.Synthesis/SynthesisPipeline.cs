@@ -1,5 +1,5 @@
 using CommandLine;
-using Mutagen.Bethesda.Core.Persistance;
+using Mutagen.Bethesda.Persistence;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Mutagen.Bethesda.Synthesis.Internal;
 using Noggog;

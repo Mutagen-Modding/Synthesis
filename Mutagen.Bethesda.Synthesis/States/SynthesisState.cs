@@ -1,3 +1,4 @@
+using Mutagen.Bethesda.Persistence;
 using Mutagen.Bethesda.Synthesis.CLI;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-using Mutagen.Bethesda.Synthesis.CLI;
+using Mutagen.Bethesda.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
