@@ -119,6 +119,17 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         {
             listedMutagenVersion = null;
             listedSynthesisVersion = null;
+
+            string? TrimVersion(string? version)
+            {
+                if (version == null) return null;
+                var index = version.IndexOf('-');
+                if (index == -1) return version;
+                return version.Substring(0, index);
+            }
+
+            var trimmedMutagenVersion = TrimVersion(mutagenVersion);
+            var trimmedsynthesisVersion = TrimVersion(synthesisVersion);
             foreach (var subProj in SolutionPatcherRun.AvailableProjects(solutionPath))
             {
                 var proj = Path.Combine(Path.GetDirectoryName(solutionPath)!, subProj);
@@ -139,9 +150,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 {
                     AddNewtonsoftToOldSetups(projXml);
                 }
-                if ((System.Version.TryParse(mutagenVersion, out var targetMutaVersion)
+                if ((System.Version.TryParse(trimmedMutagenVersion, out var targetMutaVersion)
                     && targetMutaVersion >= NewtonSoftRemoveMutaVersion)
-                    || (System.Version.TryParse(synthesisVersion, out var targetSynthesisVersion)
+                    || (System.Version.TryParse(trimmedsynthesisVersion, out var targetSynthesisVersion)
                         && targetSynthesisVersion >= NewtonSoftRemoveSynthVersion))
                 {
                     RemovePackage(projXml, "Newtonsoft.Json");
