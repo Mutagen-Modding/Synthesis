@@ -99,7 +99,7 @@ namespace Synthesis.Bethesda.ImpactTester
                             return;
                         }
 
-                        GitPatcherRun.SwapInDesiredVersionsForSolution(
+                        GitPatcherRun.ModifyProject(
                             solutionPath: slnPath,
                             drivingProjSubPath: string.Empty,
                             mutagenVersion: mutagenVersion,
