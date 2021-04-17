@@ -6,6 +6,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Reporters;
+using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.IO;
 using System.Linq;
@@ -178,7 +179,8 @@ namespace Synthesis.Bethesda.GUI
                             cancellation: _cancel.Token,
                             reporter: _reporter,
                             patchers: Patchers.Items.Select(vm => (vm.Config.InternalID, vm.Run)),
-                            statePath: Path.Combine(RunningProfile.ProfileDirectory, "FormKeyAllocator"));
+                            persistenceMode: RunningProfile.SelectedPersistenceMode,
+                            persistencePath: Path.Combine(RunningProfile.ProfileDirectory, "Persistence"));
                         if (!madePatch) return;
                         var dataFolderPath = Path.Combine(RunningProfile.DataFolder, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
                         File.Copy(output, dataFolderPath, overwrite: true);

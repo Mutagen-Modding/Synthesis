@@ -4,19 +4,9 @@ using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
-using System.Collections.Generic;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -176,6 +166,12 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 this.WhenAnyValue(x => x.ViewModel!.Profile!.ExportCommand)
                     .BindToStrict(this, x => x.ExportButton.Command)
+                    .DisposeWith(disposable);
+
+                //this.WhenAnyValue(x => x.ViewModel!.PersistenceModes)
+                //    .BindToStrict(this, x => x.PersistenceStyleSelector.ItemsSource)
+                //    .DisposeWith(disposable);
+                this.BindStrict(this.ViewModel, vm => vm.Profile!.SelectedPersistenceMode, v => v.PersistenceStyleSelector.SelectedItem)
                     .DisposeWith(disposable);
             });
         }

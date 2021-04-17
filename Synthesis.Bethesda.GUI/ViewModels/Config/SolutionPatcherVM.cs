@@ -27,7 +27,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public class SolutionPatcherVM : PatcherVM
     {
-        public PathPickerVM SolutionPath { get; } = new PathPickerVM()
+        public PathPickerVM SolutionPath { get; } = new()
         {
             ExistCheckOption = PathPickerVM.CheckOptions.On,
             PathType = PathPickerVM.PathTypeOptions.File,
@@ -38,7 +38,7 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string ProjectSubpath { get; set; } = string.Empty;
 
-        public PathPickerVM SelectedProjectPath { get; } = new PathPickerVM()
+        public PathPickerVM SelectedProjectPath { get; } = new()
         {
             ExistCheckOption = PathPickerVM.CheckOptions.On,
             PathType = PathPickerVM.PathTypeOptions.File,
@@ -64,11 +64,11 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public PreferredAutoVersioning Versioning { get; set; }
 
-        public ObservableCollectionExtended<PreferredAutoVersioning> VersioningOptions { get; } = new ObservableCollectionExtended<PreferredAutoVersioning>(EnumExt.GetValues<PreferredAutoVersioning>());
+        public ObservableCollectionExtended<PreferredAutoVersioning> VersioningOptions { get; } = new(EnumExt.GetValues<PreferredAutoVersioning>());
 
-        public ObservableCollectionExtended<VisibilityOptions> VisibilityOptions { get; } = new ObservableCollectionExtended<VisibilityOptions>(EnumExt.GetValues<VisibilityOptions>());
+        public ObservableCollectionExtended<VisibilityOptions> VisibilityOptions { get; } = new(EnumExt.GetValues<VisibilityOptions>());
 
-        public ObservableCollection<ModKeyItemViewModel> RequiredMods { get; } = new ObservableCollection<ModKeyItemViewModel>();
+        public ObservableCollection<ModKeyItemViewModel> RequiredMods { get; } = new();
          
         public IObservable<IChangeSet<ModKey>> DetectedMods => this.Profile.LoadOrder.Connect().Transform(l => l.Listing.ModKey);
 

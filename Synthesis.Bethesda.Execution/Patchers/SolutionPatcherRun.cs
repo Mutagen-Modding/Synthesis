@@ -98,7 +98,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 OutputPath = settings.OutputPath,
                 SourcePath = settings.SourcePath,
                 PatcherName = settings.PatcherName,
-                StatePath = settings.StatePath
+                StatePath = settings.PersistencePath
             };
             var args = Parser.Default.FormatCommandLine(internalSettings);
             using var process = ProcessWrapper.Create(

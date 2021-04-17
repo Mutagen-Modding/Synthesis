@@ -59,7 +59,7 @@ namespace Mutagen.Bethesda.Synthesis.CLI
                 LoadOrderFilePath = settings.LoadOrderFilePath,
                 OutputPath = settings.OutputPath,
                 SourcePath = settings.SourcePath,
-                StatePath = settings.StatePath,
+                StatePath = settings.PersistencePath,
                 PatcherName = settings.PatcherName
             };
         }

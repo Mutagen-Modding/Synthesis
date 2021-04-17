@@ -104,7 +104,20 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 }
                 if (settings.StatePath is not null && settings.PatcherName is not null)
                 {
-                    patchMod.SetAllocator(formKeyAllocator = new TextFileSharedFormKeyAllocator(patchMod, settings.StatePath, settings.PatcherName));
+                    if (TextFileSharedFormKeyAllocator.IsPathOfAllocatorType(settings.StatePath))
+                    {
+                        System.Console.WriteLine($"Using {nameof(TextFileSharedFormKeyAllocator)} allocator");
+                        patchMod.SetAllocator(formKeyAllocator = new TextFileSharedFormKeyAllocator(patchMod, settings.StatePath, settings.PatcherName));
+                    }
+                    else if (SQLiteFormKeyAllocator.IsPathOfAllocatorType(settings.StatePath))
+                    {
+                        System.Console.WriteLine($"Using {nameof(SQLiteFormKeyAllocator)} allocator");
+                        patchMod.SetAllocator(formKeyAllocator = new SQLiteFormKeyAllocator(patchMod, settings.StatePath, settings.PatcherName));
+                    }
+                    else
+                    {
+                        System.Console.WriteLine($"Allocation systems were marked to be on, but could not identify allocation system to be used");
+                    }
                 }
                 cache = loadOrder.ToMutableLinkCache(patchMod);
                 loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));

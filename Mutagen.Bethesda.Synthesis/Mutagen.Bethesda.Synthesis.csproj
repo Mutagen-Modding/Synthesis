@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -46,6 +46,7 @@
     <PackageReference Include="Mutagen.Bethesda.Core.Windows" Version="2.8.1.1-dev" />
     <PackageReference Include="Mutagen.Bethesda.Json" Version="2.8.1.1-dev" />
     <PackageReference Include="Mutagen.Bethesda.Kernel" Version="2.8.1.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.Sqlite" Version="2.8.1.1-dev" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Noggog.CSharpExt" Version="2.13.0" />
     <PackageReference Include="NuGetizer" Version="0.6.0">

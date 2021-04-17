@@ -68,7 +68,7 @@ namespace Mutagen.Bethesda.Synthesis
             string extraDataPath,
             string? defaultDataPath,
             CancellationToken cancellation,
-            IFormKeyAllocator? formKeyAllocator = null)
+            IFormKeyAllocator? formKeyAllocator)
         {
             LinkCache = linkCache;
             RawLoadOrder = rawLoadOrder;

@@ -1,8 +1,11 @@
 using DynamicData;
+using DynamicData.Binding;
 using Mutagen.Bethesda;
+using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
@@ -27,6 +30,8 @@ namespace Synthesis.Bethesda.GUI
         public ICommand DeleteCommand { get; }
         public ICommand SwitchToCommand { get; }
         public ICommand OpenInternalProfileFolderCommand { get; }
+
+        public ObservableCollectionExtended<PersistenceMode> PersistenceModes { get; } = new(EnumExt.GetValues<PersistenceMode>());
 
         public ProfileDisplayVM(ProfilesDisplayVM parent, ProfileVM? profile = null)
         {

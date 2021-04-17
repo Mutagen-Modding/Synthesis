@@ -21,7 +21,10 @@ namespace Synthesis.Bethesda.Execution.CLI
 {
     public static class Commands
     {
-        public static async Task Run(RunPatcherPipelineInstructions run, CancellationToken cancel, IRunReporter? reporter = null)
+        public static async Task Run(
+            RunPatcherPipelineInstructions run, 
+            CancellationToken cancel, 
+            IRunReporter? reporter = null)
         {
             try
             {
@@ -107,7 +110,8 @@ namespace Synthesis.Bethesda.Execution.CLI
                     sourcePath: run.SourcePath == null ? default : ModPath.FromPath(run.SourcePath),
                     reporter: reporter,
                     cancel: cancel,
-                    statePath: run.StatePath);
+                    persistenceMode: run.PersistenceMode ?? PersistenceMode.Text,
+                    persistencePath: run.PersistencePath);
             }
             catch (Exception ex)
             when (reporter != null)

@@ -24,8 +24,8 @@ namespace Synthesis.Bethesda
         [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.  This is typically plugins.txt.  This should be the file that the game will use to read in its load order.")]
         public string LoadOrderFilePath { get; set; } = string.Empty;
 
-        [Option('s', "StatePath", Required = false, HelpText = "Path to the shared FormKey allocation state")]
-        public string? StatePath { get; set; }
+        [Option('f', "PersistencePath", Required = false, HelpText = "Path to the shared FormKey allocation state")]
+        public string? PersistencePath { get; set; }
 
         [Option('p', "PatcherName", Required = false, HelpText = "Name of the patcher to be recorded in the shared FormKey allocation state")]
         public string? PatcherName { get; set; }
@@ -38,7 +38,7 @@ namespace Synthesis.Bethesda
                 + $"  {nameof(GameRelease)} => {this.GameRelease} \n"
                 + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
                 + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath} \n"
-                + $"  {nameof(StatePath)} => {this.StatePath} \n"
+                + $"  {nameof(PersistencePath)} => {this.PersistencePath} \n"
                 + $"  {nameof(PatcherName)} => {this.PatcherName}";
         }
     }
