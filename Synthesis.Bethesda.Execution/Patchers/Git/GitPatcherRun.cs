@@ -165,7 +165,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     listedSynthesisVersion = curListedSynthesisVersion;
                 }
             }
-            foreach (var item in Directory.EnumerateFiles(Path.GetDirectoryName(solutionPath)!, "Directory.Build.props"))
+            foreach (var item in Directory.EnumerateFiles(Path.GetDirectoryName(solutionPath)!, "Directory.Build.*"))
             {
                 var projXml = XElement.Parse(File.ReadAllText(item));
                 TurnOffNullability(projXml);
