@@ -27,8 +27,8 @@ namespace Mutagen.Bethesda.Synthesis.CLI
         [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to the extra data folder dedicated for a patcher")]
         public string? ExtraDataFolder { get; set; }
 
-        [Option('s', "StatePath", Required = false, HelpText = "Path to the shared FormKey allocation state")]
-        public string? StatePath { get; set; }
+        [Option('r', "PersistencePath", Required = false, HelpText = "Path to the shared FormKey allocation state")]
+        public string? PersistencePath { get; set; }
 
         [Option('p', "PatcherName", Required = false, HelpText = "Name of the patcher to be recorded in the shared FormKey allocation state")]
         public string? PatcherName { get; set; }
@@ -46,7 +46,7 @@ namespace Mutagen.Bethesda.Synthesis.CLI
                 + $"  {nameof(DefaultDataFolderPath)} => {this.DefaultDataFolderPath} \n"
                 + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
                 + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}\n"
-                + $"  {nameof(StatePath)} => {this.StatePath}\n"
+                + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
                 + $"  {nameof(PatcherName)} => {this.PatcherName}";
         }
 
@@ -59,7 +59,7 @@ namespace Mutagen.Bethesda.Synthesis.CLI
                 LoadOrderFilePath = settings.LoadOrderFilePath,
                 OutputPath = settings.OutputPath,
                 SourcePath = settings.SourcePath,
-                StatePath = settings.PersistencePath,
+                PersistencePath = settings.PersistencePath,
                 PatcherName = settings.PatcherName
             };
         }

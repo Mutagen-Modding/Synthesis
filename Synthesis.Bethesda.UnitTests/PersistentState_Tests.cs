@@ -129,7 +129,7 @@ namespace Synthesis.Bethesda.UnitTests
                     OutputPath = modPath,
                     SourcePath = null,
                     LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                    StatePath = statePath,
+                    PersistencePath = statePath,
                     PatcherName = AddAwesomeNPCName
                 });
 
@@ -142,7 +142,7 @@ namespace Synthesis.Bethesda.UnitTests
                     OutputPath = modPath,
                     SourcePath = modPath,
                     LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                    StatePath = statePath,
+                    PersistencePath = statePath,
                     PatcherName = AddAnotherNPCName
                 });
 
@@ -176,7 +176,7 @@ namespace Synthesis.Bethesda.UnitTests
                 OutputPath = modPath,
                 SourcePath = null,
                 LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                StatePath = statePath,
+                PersistencePath = statePath,
                 PatcherName = AddAnotherNPCName
             });
 
@@ -189,7 +189,7 @@ namespace Synthesis.Bethesda.UnitTests
                     OutputPath = modPath,
                     SourcePath = modPath,
                     LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                    StatePath = statePath,
+                    PersistencePath = statePath,
                     PatcherName = AddAwesomeNPCName
                 });
 
@@ -233,7 +233,7 @@ namespace Synthesis.Bethesda.UnitTests
                         OutputPath = modPath,
                         SourcePath = null,
                         LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        StatePath = statePath,
+                        PersistencePath = statePath,
                         PatcherName = AddAwesomeNPCName
                     });
 
@@ -246,7 +246,7 @@ namespace Synthesis.Bethesda.UnitTests
                         OutputPath = modPath,
                         SourcePath = modPath,
                         LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        StatePath = statePath,
+                        PersistencePath = statePath,
                         PatcherName = AddAnotherNPCName
                     });
 
@@ -286,7 +286,7 @@ namespace Synthesis.Bethesda.UnitTests
                         OutputPath = modPath,
                         SourcePath = null,
                         LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        StatePath = statePath,
+                        PersistencePath = statePath,
                         PatcherName = AddAwesomeNPCName
                     });
 
@@ -299,7 +299,7 @@ namespace Synthesis.Bethesda.UnitTests
                         OutputPath = modPath,
                         SourcePath = modPath,
                         LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        StatePath = statePath,
+                        PersistencePath = statePath,
                         PatcherName = AddAnotherNPCName
                     });
             }
@@ -318,7 +318,7 @@ namespace Synthesis.Bethesda.UnitTests
                         OutputPath = modPath,
                         SourcePath = null,
                         LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        StatePath = statePath,
+                        PersistencePath = statePath,
                         PatcherName = AddAnotherNPCName
                     });
 
@@ -331,7 +331,7 @@ namespace Synthesis.Bethesda.UnitTests
                         OutputPath = modPath,
                         SourcePath = modPath,
                         LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        StatePath = statePath,
+                        PersistencePath = statePath,
                         PatcherName = AddAwesomeNPCName
                     });
 

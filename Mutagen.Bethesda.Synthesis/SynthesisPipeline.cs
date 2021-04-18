@@ -612,7 +612,7 @@ namespace Mutagen.Bethesda.Synthesis
                 ExtraDataFolder = Path.GetFullPath("./Data"),
                 DefaultDataFolderPath = null,
                 PatcherName = targetModKey.Name,
-                StatePath = "Persistence"
+                PersistencePath = "Persistence"
             };
         }
 
