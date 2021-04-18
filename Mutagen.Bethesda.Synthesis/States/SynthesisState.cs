@@ -1,3 +1,4 @@
+using Mutagen.Bethesda.Persistence;
 using Mutagen.Bethesda.Synthesis.CLI;
 using System;
 using System.Collections.Generic;
@@ -53,6 +54,11 @@ namespace Mutagen.Bethesda.Synthesis
         /// <inheritdoc />
         public string? SourcePath { get; }
 
+        // <inheritdoc />
+        IFormKeyAllocator? IPatcherState.FormKeyAllocator => FormKeyAllocator;
+
+        private readonly IFormKeyAllocator? FormKeyAllocator;
+
         public SynthesisState(
             RunSynthesisMutagenPatcher runArguments,
             IReadOnlyList<LoadOrderListing> rawLoadOrder,
@@ -61,7 +67,8 @@ namespace Mutagen.Bethesda.Synthesis
             TModSetter patchMod,
             string extraDataPath,
             string? defaultDataPath,
-            CancellationToken cancellation)
+            CancellationToken cancellation,
+            IFormKeyAllocator? formKeyAllocator)
         {
             LinkCache = linkCache;
             RawLoadOrder = rawLoadOrder;
@@ -75,11 +82,14 @@ namespace Mutagen.Bethesda.Synthesis
             GameRelease = runArguments.GameRelease;
             OutputPath = runArguments.OutputPath;
             SourcePath = runArguments.SourcePath;
+            FormKeyAllocator = formKeyAllocator;
         }
 
         public void Dispose()
         {
             LoadOrder.Dispose();
+            if (FormKeyAllocator is IDisposable PersistentFormKeyAllocator)
+                PersistentFormKeyAllocator.Dispose();
         }
     }
 }

@@ -37,6 +37,14 @@ namespace Mutagen.Bethesda.Synthesis.WPF
 
         public static EnumerableFormKeySettingsVM Factory(FieldMeta fieldMeta, object? defaultVal)
         {
+            var defaultKeys = new List<FormKey>();
+            if (defaultVal is IEnumerable e)
+            {
+                foreach (var item in e)
+                {
+                    defaultKeys.Add(FormKey.Factory(item.ToString()));
+                }
+            }
             return new EnumerableFormKeySettingsVM(
                 fieldMeta,
                 defaultVal as IEnumerable<FormKey> ?? Enumerable.Empty<FormKey>());

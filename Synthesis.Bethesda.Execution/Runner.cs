@@ -9,6 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution.Reporters;
+using Synthesis.Bethesda.Execution.Settings;
+using Mutagen.Bethesda.Persistence;
 
 namespace Synthesis.Bethesda.Execution
 {
@@ -23,7 +25,9 @@ namespace Synthesis.Bethesda.Execution
             IEnumerable<IPatcherRun> patchers,
             CancellationToken cancel,
             ModPath? sourcePath = null,
-            IRunReporter? reporter = null)
+            IRunReporter? reporter = null,
+            PersistenceMode persistenceMode = PersistenceMode.None,
+            string? persistencePath = null)
         {
             return await Run<object?>(
                 workingDirectory: workingDirectory,
@@ -34,7 +38,9 @@ namespace Synthesis.Bethesda.Execution
                 patchers: patchers.Select(p => (default(object?), p)),
                 reporter: new WrapReporter(reporter ?? ThrowReporter.Instance),
                 sourcePath: sourcePath,
-                cancellation: cancel);
+                cancellation: cancel,
+                persistenceMode: persistenceMode,
+                persistencePath: persistencePath);
         }
 
         public static async Task<bool> Run<TKey>(
@@ -46,7 +52,9 @@ namespace Synthesis.Bethesda.Execution
             IEnumerable<(TKey Key, IPatcherRun Run)> patchers,
             IRunReporter<TKey> reporter,
             CancellationToken cancellation,
-            ModPath? sourcePath = null)
+            ModPath? sourcePath = null,
+            PersistenceMode persistenceMode = PersistenceMode.None,
+            string? persistencePath = null)
         {
             try
             {
@@ -94,6 +102,30 @@ namespace Synthesis.Bethesda.Execution
                     }
                 });
 
+                // Prep up persistence systems
+                var persistenceSetup = Task.Run(() =>
+                {
+                    try
+                    {
+                        switch (persistenceMode)
+                        {
+                            case PersistenceMode.None:
+                                persistencePath = null;
+                                break;
+                            case PersistenceMode.Text:
+                                TextFileSharedFormKeyAllocator.Initialize(persistencePath ?? throw new ArgumentNullException("Persistence mode specified, but no path provided"));
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        reporter.ReportOverallProblem(ex);
+                        problem = true;
+                    }
+                });
+
                 // Start up prep for all patchers in background
                 var patcherPreps = patchersList.Select(patcher => Task.Run(async () =>
                 {
@@ -127,8 +159,8 @@ namespace Synthesis.Bethesda.Execution
                     return default(Exception?);
                 })).ToList();
 
-                // Wait for load order, at least
-                await writeLoadOrder;
+                // Wait for load order and persistence, at least
+                await Task.WhenAll(writeLoadOrder, persistenceSetup);
                 if (problem || cancellation.IsCancellationRequested) return false;
 
                 var prevPath = sourcePath;
@@ -159,6 +191,8 @@ namespace Synthesis.Bethesda.Execution
                                 DataFolderPath = dataFolder,
                                 GameRelease = release,
                                 LoadOrderFilePath = loadOrderPath,
+                                PersistencePath = persistencePath,
+                                PatcherName = fileName
                             },
                             cancel: cancellation);
                         }

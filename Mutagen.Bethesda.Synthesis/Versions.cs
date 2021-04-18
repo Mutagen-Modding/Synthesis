@@ -11,6 +11,7 @@ namespace Mutagen.Bethesda.Synthesis
     {
         public static string MutagenVersion => GetVersion(typeof(FormKey).Assembly);
         public static string SynthesisVersion => GetVersion(typeof(BaseSynthesis.Constants).Assembly);
+        public static string NewtonsoftVersion => GetVersion(typeof(Newtonsoft.Json.JsonConvert).Assembly);
         public static string OldMutagenVersion => "0.14.0";
         public static string OldSynthesisVersion => "0.0.3";
         public static string? MutagenSha => typeof(FormKey).Assembly.GetGitSha();

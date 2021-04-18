@@ -1,6 +1,7 @@
 using LibGit2Sharp;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Oblivion;
+using Mutagen.Bethesda.Synthesis;
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
@@ -20,6 +21,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         public const string RunnerBranch = "SynthesisRunner";
         public readonly static System.Version NewtonSoftAddMutaVersion = new(0, 26);
         public readonly static System.Version NewtonSoftAddSynthVersion = new(0, 14, 1);
+        public readonly static System.Version NewtonSoftRemoveMutaVersion = new(0, 28);
+        public readonly static System.Version NewtonSoftRemoveSynthVersion = new(0, 17, 5);
         public string Name { get; }
         private readonly string _localDir;
         private readonly GithubPatcherSettings _settings;
@@ -106,7 +109,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             return Path.Combine(Execution.Paths.WorkingDirectory, profileID, "Git", githubID, "Runner");
         }
 
-        public static void SwapInDesiredVersionsForSolution(
+        public static void ModifyProject(
             string solutionPath,
             string drivingProjSubPath,
             string? mutagenVersion,
@@ -116,6 +119,17 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         {
             listedMutagenVersion = null;
             listedSynthesisVersion = null;
+
+            string? TrimVersion(string? version)
+            {
+                if (version == null) return null;
+                var index = version.IndexOf('-');
+                if (index == -1) return version;
+                return version.Substring(0, index);
+            }
+
+            var trimmedMutagenVersion = TrimVersion(mutagenVersion);
+            var trimmedsynthesisVersion = TrimVersion(synthesisVersion);
             foreach (var subProj in SolutionPatcherRun.AvailableProjects(solutionPath))
             {
                 var proj = Path.Combine(Path.GetDirectoryName(solutionPath)!, subProj);
@@ -129,12 +143,20 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 TurnOffNullability(projXml);
                 RemoveGitInfo(projXml);
                 SwapOffNetCore(projXml);
+                TurnOffWindowsSpecificationInTargetFramework(projXml);
                 if ((System.Version.TryParse(curListedMutagenVersion, out var mutaVersion)
                     && mutaVersion <= NewtonSoftAddMutaVersion)
                     || (System.Version.TryParse(curListedSynthesisVersion, out var synthVersion)
                         && synthVersion <= NewtonSoftAddSynthVersion))
                 {
                     AddNewtonsoftToOldSetups(projXml);
+                }
+                if ((System.Version.TryParse(trimmedMutagenVersion, out var targetMutaVersion)
+                    && targetMutaVersion >= NewtonSoftRemoveMutaVersion)
+                    || (System.Version.TryParse(trimmedsynthesisVersion, out var targetSynthesisVersion)
+                        && targetSynthesisVersion >= NewtonSoftRemoveSynthVersion))
+                {
+                    RemovePackage(projXml, "Newtonsoft.Json");
                 }
                 File.WriteAllText(proj, projXml.ToString());
                 if (drivingProjSubPath.Equals(subProj))
@@ -143,11 +165,26 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     listedSynthesisVersion = curListedSynthesisVersion;
                 }
             }
-            foreach (var item in Directory.EnumerateFiles(Path.GetDirectoryName(solutionPath)!, "Directory.Build.props"))
+            foreach (var item in Directory.EnumerateFiles(Path.GetDirectoryName(solutionPath)!, "Directory.Build.*"))
             {
                 var projXml = XElement.Parse(File.ReadAllText(item));
                 TurnOffNullability(projXml);
                 File.WriteAllText(item, projXml.ToString());
+            }
+        }
+        public static void RemovePackage(
+            XElement proj,
+            string packageName)
+        {
+            foreach (var group in proj.Elements("ItemGroup"))
+            {
+                foreach (var elem in group.Elements().ToArray())
+                {
+                    if (!elem.Name.LocalName.Equals("PackageReference")) continue;
+                    if (!elem.TryGetAttribute("Include", out var libAttr)) continue;
+                    if (!libAttr.Value.Equals(packageName)) continue;
+                    elem.Remove();
+                }
             }
         }
 
@@ -239,6 +276,21 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             }
         }
 
+        public static void TurnOffWindowsSpecificationInTargetFramework(XElement proj)
+        {
+            foreach (var group in proj.Elements("PropertyGroup"))
+            {
+                foreach (var elem in group.Elements())
+                {
+                    if (elem.Name.LocalName.Equals("TargetFramework")
+                        && elem.Value.EndsWith("-windows7.0"))
+                    {
+                        elem.Value = elem.Value.TrimEnd("-windows7.0");
+                    }
+                }
+            }
+        }
+
         public static void AddNewtonsoftToOldSetups(XElement proj)
         {
             foreach (var group in proj.Elements("ItemGroup"))
@@ -254,7 +306,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             proj.Add(new XElement("ItemGroup",
                 new XElement("PackageReference",
                     new XAttribute("Include", "Newtonsoft.Json"),
-                    new XAttribute("Version", "12.0.3"))));
+                    new XAttribute("Version", Versions.NewtonsoftVersion))));
         }
 
         public static void RemoveGitInfo(XElement proj)
@@ -359,7 +411,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 cancel.ThrowIfCancellationRequested();
                 logger?.Invoke($"Mutagen Nuget: {nugetVersioning.MutagenVersioning} {nugetVersioning.MutagenVersion}");
                 logger?.Invoke($"Synthesis Nuget: {nugetVersioning.SynthesisVersioning} {nugetVersioning.SynthesisVersion}");
-                GitPatcherRun.SwapInDesiredVersionsForSolution(
+                GitPatcherRun.ModifyProject(
                     slnPath,
                     drivingProjSubPath: foundProjSubPath,
                     mutagenVersion: nugetVersioning.MutagenVersioning == NugetVersioningEnum.Match ? null : nugetVersioning.MutagenVersion,

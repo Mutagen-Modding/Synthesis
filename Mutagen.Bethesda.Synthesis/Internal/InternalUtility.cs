@@ -1,4 +1,5 @@
 using Mutagen.Bethesda.Internals;
+using Mutagen.Bethesda.Persistence;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using System;
@@ -72,6 +73,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             // Create or import patch mod
             TModSetter patchMod;
             ILinkCache<TModSetter, TModGetter> cache;
+            IFormKeyAllocator? formKeyAllocator = null;
             if (userPrefs.NoPatch)
             {
                 // Pass null, even though it isn't normally
@@ -100,6 +102,23 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 {
                     patchMod = ModInstantiator<TModSetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease);
                 }
+                if (settings.StatePath is not null && settings.PatcherName is not null)
+                {
+                    if (TextFileSharedFormKeyAllocator.IsPathOfAllocatorType(settings.StatePath))
+                    {
+                        System.Console.WriteLine($"Using {nameof(TextFileSharedFormKeyAllocator)} allocator");
+                        patchMod.SetAllocator(formKeyAllocator = new TextFileSharedFormKeyAllocator(patchMod, settings.StatePath, settings.PatcherName));
+                    }
+                    else if (SQLiteFormKeyAllocator.IsPathOfAllocatorType(settings.StatePath))
+                    {
+                        System.Console.WriteLine($"Using {nameof(SQLiteFormKeyAllocator)} allocator");
+                        patchMod.SetAllocator(formKeyAllocator = new SQLiteFormKeyAllocator(patchMod, settings.StatePath, settings.PatcherName));
+                    }
+                    else
+                    {
+                        System.Console.WriteLine($"Allocation systems were marked to be on, but could not identify allocation system to be used");
+                    }
+                }
                 cache = loadOrder.ToMutableLinkCache(patchMod);
                 loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));
                 rawLoadOrder.Add(new LoadOrderListing(patchMod.ModKey, enabled: true));
@@ -113,7 +132,8 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 patchMod: patchMod,
                 extraDataPath: settings.ExtraDataFolder == null ? string.Empty : Path.GetFullPath(settings.ExtraDataFolder),
                 defaultDataPath: settings.DefaultDataFolderPath,
-                cancellation: userPrefs.Cancel);
+                cancellation: userPrefs.Cancel,
+                formKeyAllocator: formKeyAllocator);
         }
 
         public static IPatcherState ToState(GameCategory category, RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)

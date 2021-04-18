@@ -1,4 +1,5 @@
 using CommandLine;
+using Mutagen.Bethesda.Persistence;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Mutagen.Bethesda.Synthesis.Internal;
 using Noggog;
@@ -301,6 +302,7 @@ namespace Mutagen.Bethesda.Synthesis
             string[] args,
             RunPreferences? preferences = null)
         {
+            await using var throttler = new ConsoleThrottler();
             if (_argumentAdjustment != null)
             {
                 args = _argumentAdjustment(args);
@@ -608,7 +610,9 @@ namespace Mutagen.Bethesda.Synthesis
                 GameRelease = release,
                 LoadOrderFilePath = path.Path,
                 ExtraDataFolder = Path.GetFullPath("./Data"),
-                DefaultDataFolderPath = null
+                DefaultDataFolderPath = null,
+                PatcherName = targetModKey.Name,
+                StatePath = "Persistence"
             };
         }
 

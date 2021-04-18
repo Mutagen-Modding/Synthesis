@@ -16,6 +16,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using DynamicData.Binding;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -97,6 +98,9 @@ namespace Synthesis.Bethesda.GUI
 
         [Reactive]
         public bool LockUpgrades { get; set; }
+
+        [Reactive]
+        public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
 
         public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
         {
@@ -519,6 +523,7 @@ namespace Synthesis.Bethesda.GUI
             DataPathOverride = settings.DataPathOverride;
             ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
             LockUpgrades = settings.LockToCurrentVersioning;
+            SelectedPersistenceMode = settings.Persistence;
             Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
             {
                 return p switch
@@ -547,6 +552,7 @@ namespace Synthesis.Bethesda.GUI
                 DataPathOverride = DataPathOverride,
                 ConsiderPrereleaseNugets = ConsiderPrereleaseNugets,
                 LockToCurrentVersioning = LockUpgrades,
+                Persistence = SelectedPersistenceMode,
             };
         }
 

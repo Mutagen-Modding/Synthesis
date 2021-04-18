@@ -1,4 +1,4 @@
-using Mutagen.Bethesda.Synthesis.CLI;
+using Mutagen.Bethesda.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -67,6 +67,11 @@ namespace Mutagen.Bethesda.Synthesis
         /// Where the patch output file from the previous patcher is located
         /// </summary>
         string? SourcePath { get; }
+
+        /// <summary>
+        /// A reference to the FormKey allocator assigned to PatchMod
+        /// </summary>
+        internal IFormKeyAllocator? FormKeyAllocator { get; }
     }
 
     public interface IPatcherState<TModSetter, TModGetter> : IPatcherState

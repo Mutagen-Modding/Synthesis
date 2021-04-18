@@ -45,6 +45,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -145,16 +146,34 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"
-                    Margin="0,8,0,0"
+                    Margin="0,16,0,0"
                     FontSize="14"
                     FontWeight="Bold"
                     Text="Data Folder Location" />
                 <TextBox Grid.Row="1"
                     x:Name="DataFolderOverrideBox"
+                    Margin="0,4,0,0"
                     mahapps:TextBoxHelper.Watermark="Automatic detection"
                     ToolTip="Location of your data folder.  Default setting is to locate it automatically." />
             </Grid>
-            <Button Grid.Row="4"
+            <Grid Grid.Row="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0"
+                    Margin="0,16,0,0"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    Text="FormID Persistence" />
+                <ComboBox Grid.Row="1"
+                    x:Name="PersistenceStyleSelector"
+                    Margin="0,4,0,0"
+                    ItemsSource="{Binding PersistenceModes}"
+                    ToolTip="What type of persistence system to use for keeping FormIDs in sync" />
+            </Grid>
+            <Button Grid.Row="5"
                 x:Name="ProfileInternalFilesButton"
                 Margin="0,0,0,10"
                 HorizontalAlignment="Left">
