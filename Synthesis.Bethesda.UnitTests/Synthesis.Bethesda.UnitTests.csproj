@@ -20,7 +20,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Mutagen.Bethesda" Version="0.28.1-prerelease002" />
+    <PackageReference Include="Mutagen.Bethesda" Version="0.29.0" />
     <PackageReference Include="Noggog.CSharpExt" Version="2.13.0" />
     <PackageReference Include="NuGetizer" Version="0.6.0">
       <PrivateAssets>all</PrivateAssets>
