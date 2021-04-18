@@ -25,7 +25,18 @@ namespace Synthesis.Bethesda.GUI
         public NewProfileVM(ConfigurationVM config, Action<ProfileVM> postRun)
         {
             ReleaseOptions.AddRange(EnumExt.GetValues<GameRelease>()
-                .Where(x => x != GameRelease.Fallout4));
+                .Where(x =>
+                {
+                    switch (x)
+                    {
+                        case GameRelease.EnderalLE:
+                        case GameRelease.EnderalSE:
+                        case GameRelease.Fallout4:
+                            return false;
+                        default:
+                            return true;
+                    }
+                }));
 
             this.WhenAnyValue(x => x.SelectedGame)
                 .Subscribe(game =>
