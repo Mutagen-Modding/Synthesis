@@ -59,7 +59,7 @@ namespace Synthesis.Bethesda.GUI
         public string LongDescription { get; set; } = string.Empty;
 
         [Reactive]
-        public VisibilityOptions Visibility { get; set; }
+        public VisibilityOptions Visibility { get; set; } = DTO.VisibilityOptions.Visible;
 
         [Reactive]
         public PreferredAutoVersioning Versioning { get; set; }
@@ -170,8 +170,8 @@ namespace Synthesis.Bethesda.GUI
                 .Select(path =>
                 {
                     return Noggog.ObservableExt.WatchFile(path)
-                        .StartWith(Unit.Default)
                         .Throttle(TimeSpan.FromMilliseconds(500), RxApp.MainThreadScheduler)
+                        .StartWith(Unit.Default)
                         .Select(_ =>
                         {
                             if (!File.Exists(path)) return default;
