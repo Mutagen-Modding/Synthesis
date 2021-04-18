@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows;
 using System.Reactive.Disposables;
 using System.Windows.Controls;
+using System.Linq;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -39,6 +40,11 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.BlockingIssueDisplayCircle.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.State.RunnableState.Reason)
+                    .Select(s =>
+                    {
+                        if (s.IsNullOrWhitespace()) return s;
+                        return s.Split(Environment.NewLine).FirstOrDefault();
+                    })
                     .BindToStrict(this, x => x.TooltipErrorText.Text)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(

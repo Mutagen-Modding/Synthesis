@@ -42,6 +42,12 @@ namespace Synthesis.Bethesda.ImpactTester
                 }));
         }
 
+        record ProjectResult(
+            Dependent Dependent,
+            string SolutionFolderPath,
+            string ProjSubPath,
+            ErrorResponse Compile);
+
         static async Task DoWork(
             string? mutagenVersion,
             string? synthesisVersion,
@@ -49,7 +55,7 @@ namespace Synthesis.Bethesda.ImpactTester
         {
             using var temp = TempFolder.Factory();
             var failedDeps = new List<Dependent>();
-            var projResults = new List<(Dependent, string, ErrorResponse)>();
+            var projResults = new List<ProjectResult>();
 
             mutagenVersion ??= Versions.MutagenVersion;
             synthesisVersion ??= Versions.SynthesisVersion;
@@ -64,12 +70,14 @@ namespace Synthesis.Bethesda.ImpactTester
                     pages: byte.MaxValue)
                 .ToArrayAsync();
 
-            await Task.WhenAll(deps.GroupBy(x => x.User).Select(group => Task.Run(async () =>
+            bool doThreading = true;
+
+            await Task.WhenAll(deps.GroupBy(x => x.User).Select(group => TaskExt.Run(doThreading, async() =>
             {
                 cancel.ThrowIfCancellationRequested();
                 if (group.Key == null) return;
 
-                await Task.WhenAll(group.Select(dependency => Task.Run(async () =>
+                await Task.WhenAll(group.Select(dependency => TaskExt.Run(doThreading, async () =>
                 {
                     cancel.ThrowIfCancellationRequested();
                     try
@@ -117,7 +125,11 @@ namespace Synthesis.Bethesda.ImpactTester
                             {
                                 System.Console.WriteLine("Failed compilation");
                             }
-                            projResults.Add((dependency, proj, compile));
+                            projResults.Add(new ProjectResult(
+                                dependency,
+                                $"{Path.GetDirectoryName(slnPath)}\\{group.Key}\\",
+                                proj, 
+                                compile));
                         }
                     }
                     catch (Exception ex)
@@ -149,15 +161,19 @@ namespace Synthesis.Bethesda.ImpactTester
                 }
             }
 
-            var failed = projResults.Where(p => p.Item3.Failed).ToList();
+            var failed = projResults.Where(p => p.Compile.Failed).ToList();
             if (failed.Count > 0)
             {
                 System.Console.WriteLine("Failed projects:");
-                foreach (var f in failed.OrderBy(f => f.Item1.User)
-                    .CreateOrderedEnumerable(d => d.Item1.Repository, null, true)
-                    .CreateOrderedEnumerable(d => d.Item2, null, true))
+                foreach (var f in failed.OrderBy(f => f.Dependent.User)
+                    .CreateOrderedEnumerable(d => d.Dependent.Repository, null, true)
+                    .CreateOrderedEnumerable(d => d.ProjSubPath, null, true))
                 {
-                    System.Console.WriteLine($"{f.Item1}: {f.Item2}");
+                    System.Console.WriteLine($"{f.Dependent}: {f.ProjSubPath}");
+                    DotNetCommands.PrintErrorMessage(f.Compile.Reason, f.SolutionFolderPath, (s, _) =>
+                    {
+                        Console.WriteLine(s.ToString());
+                    });
                     System.Console.WriteLine();
                 }
             }

@@ -669,7 +669,12 @@ namespace Synthesis.Bethesda.GUI
                             if (compileResp.Failed)
                             {
                                 Logger.Information($"Compiling failed: {compileResp.Reason}");
-                                observer.OnNext(compileResp.BubbleFailure<RunnerRepoInfo>());
+                                List<string> errs = new List<string>();
+                                DotNetCommands.PrintErrorMessage(compileResp.Reason, $"{Path.GetDirectoryName(state.Item.ProjPath)}\\", (s, _) =>
+                                {
+                                    errs.Add(s.ToString());
+                                });
+                                observer.OnNext(GetResponse<RunnerRepoInfo>.Fail(string.Join(Environment.NewLine, errs)));
                                 return;
                             }
 
@@ -950,7 +955,7 @@ namespace Synthesis.Bethesda.GUI
                         Blocking: false,
                         Command: null);
                 })
-                .ToGuiProperty(this, nameof(StatusDisplay), 
+                .ToGuiProperty(this, nameof(StatusDisplay),
                     new StatusRecord(
                         Text: "Initializing",
                         Processing: false,
