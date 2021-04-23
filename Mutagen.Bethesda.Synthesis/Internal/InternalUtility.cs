@@ -102,17 +102,17 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 {
                     patchMod = ModInstantiator<TModSetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease);
                 }
-                if (settings.StatePath is not null && settings.PatcherName is not null)
+                if (settings.PersistencePath is not null && settings.PatcherName is not null)
                 {
-                    if (TextFileSharedFormKeyAllocator.IsPathOfAllocatorType(settings.StatePath))
+                    if (TextFileSharedFormKeyAllocator.IsPathOfAllocatorType(settings.PersistencePath))
                     {
                         System.Console.WriteLine($"Using {nameof(TextFileSharedFormKeyAllocator)} allocator");
-                        patchMod.SetAllocator(formKeyAllocator = new TextFileSharedFormKeyAllocator(patchMod, settings.StatePath, settings.PatcherName));
+                        patchMod.SetAllocator(formKeyAllocator = new TextFileSharedFormKeyAllocator(patchMod, settings.PersistencePath, settings.PatcherName));
                     }
-                    else if (SQLiteFormKeyAllocator.IsPathOfAllocatorType(settings.StatePath))
+                    else if (SQLiteFormKeyAllocator.IsPathOfAllocatorType(settings.PersistencePath))
                     {
                         System.Console.WriteLine($"Using {nameof(SQLiteFormKeyAllocator)} allocator");
-                        patchMod.SetAllocator(formKeyAllocator = new SQLiteFormKeyAllocator(patchMod, settings.StatePath, settings.PatcherName));
+                        patchMod.SetAllocator(formKeyAllocator = new SQLiteFormKeyAllocator(patchMod, settings.PersistencePath, settings.PatcherName));
                     }
                     else
                     {

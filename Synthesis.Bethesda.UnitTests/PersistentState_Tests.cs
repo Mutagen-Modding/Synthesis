@@ -1,5 +1,6 @@
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Oblivion;
+using Mutagen.Bethesda.Persistence;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
@@ -129,7 +130,7 @@ namespace Synthesis.Bethesda.UnitTests
                     OutputPath = modPath,
                     SourcePath = null,
                     LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                    StatePath = statePath,
+                    PersistencePath = statePath,
                     PatcherName = AddAwesomeNPCName
                 });
 
@@ -142,7 +143,7 @@ namespace Synthesis.Bethesda.UnitTests
                     OutputPath = modPath,
                     SourcePath = modPath,
                     LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                    StatePath = statePath,
+                    PersistencePath = statePath,
                     PatcherName = AddAnotherNPCName
                 });
 
@@ -176,7 +177,7 @@ namespace Synthesis.Bethesda.UnitTests
                 OutputPath = modPath,
                 SourcePath = null,
                 LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                StatePath = statePath,
+                PersistencePath = statePath,
                 PatcherName = AddAnotherNPCName
             });
 
@@ -189,7 +190,7 @@ namespace Synthesis.Bethesda.UnitTests
                     OutputPath = modPath,
                     SourcePath = modPath,
                     LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                    StatePath = statePath,
+                    PersistencePath = statePath,
                     PatcherName = AddAwesomeNPCName
                 });
 
@@ -214,13 +215,10 @@ namespace Synthesis.Bethesda.UnitTests
         {
             using var tmpFolder = Utility.GetTempFolder();
             var statePath = GetStatePath(tmpFolder);
+            TextFileSharedFormKeyAllocator.Initialize(statePath);
 
             for (int i = 0; i < 2; i++)
             {
-                if (i == 1)
-                {
-                    Assert.True(Directory.Exists(statePath));
-                }
                 using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
                 var modPath = PatchModPath(dataFolder);
 
@@ -233,7 +231,7 @@ namespace Synthesis.Bethesda.UnitTests
                         OutputPath = modPath,
                         SourcePath = null,
                         LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        StatePath = statePath,
+                        PersistencePath = statePath,
                         PatcherName = AddAwesomeNPCName
                     });
 
@@ -246,7 +244,7 @@ namespace Synthesis.Bethesda.UnitTests
                         OutputPath = modPath,
                         SourcePath = modPath,
                         LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        StatePath = statePath,
+                        PersistencePath = statePath,
                         PatcherName = AddAnotherNPCName
                     });
 
@@ -272,6 +270,7 @@ namespace Synthesis.Bethesda.UnitTests
         {
             using var tmpFolder = Utility.GetTempFolder();
             var statePath = GetStatePath(tmpFolder);
+            TextFileSharedFormKeyAllocator.Initialize(statePath);
 
             {
                 using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
@@ -286,7 +285,7 @@ namespace Synthesis.Bethesda.UnitTests
                         OutputPath = modPath,
                         SourcePath = null,
                         LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        StatePath = statePath,
+                        PersistencePath = statePath,
                         PatcherName = AddAwesomeNPCName
                     });
 
@@ -299,7 +298,7 @@ namespace Synthesis.Bethesda.UnitTests
                         OutputPath = modPath,
                         SourcePath = modPath,
                         LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        StatePath = statePath,
+                        PersistencePath = statePath,
                         PatcherName = AddAnotherNPCName
                     });
             }
@@ -318,7 +317,7 @@ namespace Synthesis.Bethesda.UnitTests
                         OutputPath = modPath,
                         SourcePath = null,
                         LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        StatePath = statePath,
+                        PersistencePath = statePath,
                         PatcherName = AddAnotherNPCName
                     });
 
@@ -331,7 +330,7 @@ namespace Synthesis.Bethesda.UnitTests
                         OutputPath = modPath,
                         SourcePath = modPath,
                         LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        StatePath = statePath,
+                        PersistencePath = statePath,
                         PatcherName = AddAwesomeNPCName
                     });
 

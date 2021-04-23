@@ -34,10 +34,10 @@ namespace Synthesis.Bethesda.Execution.CLI
         [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to where top level extra patcher data should be stored/read from.  Default is next to the exe")]
         public string? ExtraDataFolder { get; set; }
 
-        [Option('f', "PersistencePath", Required = false, HelpText = "Path to the shared FormKey allocation state")]
+        [Option('r', "PersistencePath", Required = false, HelpText = "Path to the shared FormKey allocation state")]
         public string? PersistencePath { get; internal set; }
 
-        [Option('r', "PersistenceMode", Required = false, HelpText = "Path to the Persistence state style to use")]
+        [Option('m', "PersistenceMode", Required = false, HelpText = "Path to the Persistence state style to use")]
         public PersistenceMode? PersistenceMode { get; internal set; }
 
         public override string ToString()
