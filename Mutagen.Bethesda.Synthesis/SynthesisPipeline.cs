@@ -6,6 +6,7 @@ using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Mutagen.Bethesda.Synthesis.Internal;
 using Noggog;
+using Noggog.Utility;
 using Synthesis.Bethesda;
 using Synthesis.Bethesda.DTO;
 using System;
