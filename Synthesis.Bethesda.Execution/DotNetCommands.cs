@@ -193,7 +193,7 @@ namespace Synthesis.Bethesda.Execution
                 var trimmed = line.Trim();
                 if (!trimmed.EndsWith(".dll")) continue;
                 const string delimiter = " -> ";
-                var index = trimmed.IndexOf(delimiter);
+                var index = trimmed.IndexOf(delimiter, StringComparison.Ordinal);
                 if (index == -1) continue;
                 output = trimmed.Substring(index + delimiter.Length).Trim();
                 return true;
