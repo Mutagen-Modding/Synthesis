@@ -1,10 +1,8 @@
 using Synthesis.Bethesda.Execution.Patchers;
 using Noggog;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -12,6 +10,8 @@ using Mutagen.Bethesda;
 using System.Reactive.Linq;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Reporters;
+using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.Plugins;
 
 namespace Synthesis.Bethesda.UnitTests
 {

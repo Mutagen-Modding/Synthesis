@@ -22,8 +22,8 @@ using Synthesis.Bethesda.DTO;
 using Newtonsoft.Json;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution;
-using System.Threading;
 using Mutagen.Bethesda.Synthesis.WPF;
+using Mutagen.Bethesda.Plugins;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -723,7 +723,7 @@ namespace Synthesis.Bethesda.GUI
 
                         try
                         {
-                            var runnability = await Synthesis.Bethesda.Execution.CLI.Commands.CheckRunnability(
+                            var runnability = await Execution.CLI.Commands.CheckRunnability(
                                 path: i.comp.Item.ProjPath,
                                 directExe: false,
                                 release: parent.Release,

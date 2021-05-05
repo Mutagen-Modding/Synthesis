@@ -1,5 +1,5 @@
 using DynamicData;
-using Mutagen.Bethesda.Synthesis.WPF;
+using Mutagen.Bethesda.Plugins.Cache;
 using Noggog;
 using Noggog.Utility;
 using Noggog.WPF;
@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

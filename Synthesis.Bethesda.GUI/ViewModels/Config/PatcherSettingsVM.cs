@@ -7,12 +7,8 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using DynamicData;
-using DynamicData.Binding;
-using System.IO;
 using Synthesis.Bethesda.DTO;
-using ReactiveUI.Fody.Helpers;
 using Mutagen.Bethesda.Synthesis.WPF;
 
 namespace Synthesis.Bethesda.GUI

@@ -1,7 +1,4 @@
-﻿using Mutagen.Bethesda.Oblivion;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Mutagen.Bethesda.Oblivion;
 using System.Threading.Tasks;
 
 namespace Mutagen.Bethesda.Synthesis

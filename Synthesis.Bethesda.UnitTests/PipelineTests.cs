@@ -1,11 +1,8 @@
 using FluentAssertions;
 using Mutagen.Bethesda;
-using Mutagen.Bethesda.Synthesis;
-using System;
-using System.Collections.Generic;
+using Mutagen.Bethesda.Plugins.Order;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests

@@ -1,11 +1,7 @@
-using Mutagen.Bethesda;
+using Mutagen.Bethesda.Plugins;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {

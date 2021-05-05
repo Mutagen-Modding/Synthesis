@@ -1,10 +1,7 @@
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Settings;
 using Noggog;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -12,6 +9,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Oblivion;
 using Mutagen.Bethesda.Synthesis.CLI;
+using Mutagen.Bethesda.Plugins;
 
 namespace Synthesis.Bethesda.UnitTests
 {

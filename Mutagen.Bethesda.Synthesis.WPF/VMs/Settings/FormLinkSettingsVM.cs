@@ -1,5 +1,6 @@
 using Loqui;
-using Mutagen.Bethesda;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Cache;
 using Newtonsoft.Json.Linq;
 using Noggog;
 using Noggog.WPF;
@@ -9,10 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reflection;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {

@@ -4,11 +4,9 @@ using Microsoft.CodeAnalysis.Emit;
 using Synthesis.Bethesda.Execution.Settings;
 using Noggog;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +15,9 @@ using Mutagen.Bethesda.Synthesis;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
 using Mutagen.Bethesda.Synthesis.CLI;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Binary;
+using Mutagen.Bethesda.Plugins.Records.Internals;
 
 namespace Synthesis.Bethesda.Execution.Patchers
 {

@@ -1,9 +1,7 @@
+using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.Plugins.Records;
 using Synthesis.Bethesda;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 
 namespace Mutagen.Bethesda.Synthesis
 {
@@ -41,7 +39,7 @@ namespace Mutagen.Bethesda.Synthesis
             where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
             where TModGetter : class, IContextGetterMod<TModSetter, TModGetter>
         {
-            var lo = Mutagen.Bethesda.LoadOrder.Import<TModGetter>(DataFolderPath, LoadOrder, GameRelease);
+            var lo = Plugins.Order.LoadOrder.Import<TModGetter>(DataFolderPath, LoadOrder, GameRelease);
             return new GameEnvironmentState<TModSetter, TModGetter>(
                 gameFolderPath: DataFolderPath,
                 loadOrder: lo,

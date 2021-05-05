@@ -6,10 +6,8 @@ using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Linq;
-using System.Text;
 using System.Linq;
 using DynamicData.Binding;
 using System.Windows.Input;
@@ -22,6 +20,7 @@ using Synthesis.Bethesda.Execution.Patchers;
 using Mutagen.Bethesda;
 using System.Collections.ObjectModel;
 using Mutagen.Bethesda.WPF;
+using Mutagen.Bethesda.Plugins;
 
 namespace Synthesis.Bethesda.GUI
 {

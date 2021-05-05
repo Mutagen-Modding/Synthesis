@@ -1,5 +1,10 @@
-using Mutagen.Bethesda.Internals;
-using Mutagen.Bethesda.Persistence;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Allocators;
+using Mutagen.Bethesda.Plugins.Cache;
+using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.Plugins.Records;
+using Mutagen.Bethesda.Plugins.Records.Internals;
+using Mutagen.Bethesda.Plugins.Utility;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using System;

@@ -1,12 +1,8 @@
-using Mutagen.Bethesda;
+using Mutagen.Bethesda.Plugins.Order;
 using Noggog.WPF;
 using ReactiveUI;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {

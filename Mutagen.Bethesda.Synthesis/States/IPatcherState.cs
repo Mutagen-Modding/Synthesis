@@ -1,10 +1,12 @@
-using Mutagen.Bethesda.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Text;
 using System.Threading;
+using Mutagen.Bethesda.Plugins.Allocators;
+using Mutagen.Bethesda.Plugins.Cache;
+using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.Plugins.Records;
 
 namespace Mutagen.Bethesda.Synthesis
 {

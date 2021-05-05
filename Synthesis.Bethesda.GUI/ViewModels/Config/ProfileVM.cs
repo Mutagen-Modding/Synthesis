@@ -16,7 +16,8 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using DynamicData.Binding;
+using Mutagen.Bethesda.Plugins.Cache;
+using Mutagen.Bethesda.Plugins.Records;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -195,7 +196,7 @@ namespace Synthesis.Bethesda.GUI
                         return (Results: Observable.Empty<IChangeSet<LoadOrderEntryVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
                     }
                     Log.Logger.Error($"Getting live load order for {x.release} -> {x.dataFolder.Value}");
-                    var liveLo = Mutagen.Bethesda.LoadOrder.GetLiveLoadOrder(x.release, x.dataFolder.Value, out var errors)
+                    var liveLo = Mutagen.Bethesda.Plugins.Order.LoadOrder.GetLiveLoadOrder(x.release, x.dataFolder.Value, out var errors)
                         .Transform(listing => new LoadOrderEntryVM(listing, x.dataFolder.Value))
                         .DisposeMany();
                     return (Results: liveLo, State: errors);
@@ -496,7 +497,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     return Observable.Create<ILinkCache>(obs =>
                     {
-                        var loadOrder = Mutagen.Bethesda.LoadOrder.Import(
+                        var loadOrder = Mutagen.Bethesda.Plugins.Order.LoadOrder.Import(
                             x.dataFolder,
                             x.loadOrder,
                             factory: (modPath) => ModInstantiator.Importer(modPath, x.rel));

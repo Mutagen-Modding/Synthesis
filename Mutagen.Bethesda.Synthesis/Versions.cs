@@ -1,3 +1,4 @@
+using Mutagen.Bethesda.Plugins;
 using Noggog;
 using System;
 using System.Diagnostics;
