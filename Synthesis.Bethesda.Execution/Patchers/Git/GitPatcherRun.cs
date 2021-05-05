@@ -3,6 +3,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Oblivion;
 using Mutagen.Bethesda.Synthesis;
 using Noggog;
+using NuGet.Versioning;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         public readonly static System.Version NewtonSoftAddSynthVersion = new(0, 14, 1);
         public readonly static System.Version NewtonSoftRemoveMutaVersion = new(0, 28);
         public readonly static System.Version NewtonSoftRemoveSynthVersion = new(0, 17, 5);
+        public readonly static System.Version NamespaceMutaVersion = new(0, 29, 1, 1);
         public string Name { get; }
         private readonly string _localDir;
         private readonly GithubPatcherSettings _settings;
@@ -144,21 +146,34 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 RemoveGitInfo(projXml);
                 SwapOffNetCore(projXml);
                 TurnOffWindowsSpecificationInTargetFramework(projXml);
-                if ((System.Version.TryParse(curListedMutagenVersion, out var mutaVersion)
+                System.Version.TryParse(curListedMutagenVersion, out var mutaVersion);
+                System.Version.TryParse(curListedSynthesisVersion, out var synthVersion);
+                if ((mutaVersion != null
                     && mutaVersion <= NewtonSoftAddMutaVersion)
-                    || (System.Version.TryParse(curListedSynthesisVersion, out var synthVersion)
+                    || (synthVersion != null
                         && synthVersion <= NewtonSoftAddSynthVersion))
                 {
                     AddNewtonsoftToOldSetups(projXml);
                 }
-                if ((System.Version.TryParse(trimmedMutagenVersion, out var targetMutaVersion)
+                System.Version.TryParse(trimmedMutagenVersion, out var targetMutaVersion);
+                System.Version.TryParse(trimmedsynthesisVersion, out var targetSynthesisVersion);
+                if ((targetMutaVersion != null
                     && targetMutaVersion >= NewtonSoftRemoveMutaVersion)
-                    || (System.Version.TryParse(trimmedsynthesisVersion, out var targetSynthesisVersion)
+                    || (targetSynthesisVersion != null
                         && targetSynthesisVersion >= NewtonSoftRemoveSynthVersion))
                 {
                     RemovePackage(projXml, "Newtonsoft.Json");
                 }
+
+                if (targetMutaVersion >= NamespaceMutaVersion
+                    && mutaVersion < NamespaceMutaVersion)
+                {
+                    ProcessProjUsings(proj);
+                    SwapVersioning(projXml, "Mutagen.Bethesda.FormKeys.SkyrimSE", "2.0.0.1-dev", new SemanticVersion(2, 0, 0));
+                }
+
                 File.WriteAllText(proj, projXml.ToString());
+
                 if (drivingProjSubPath.Equals(subProj))
                 {
                     listedMutagenVersion = curListedMutagenVersion;
@@ -321,6 +336,64 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                         elem.Remove();
                         break;
                     }
+                }
+            }
+        }
+
+        public static void ProcessProjUsings(string projPath)
+        {
+            foreach (var cs in Directory.EnumerateFiles(Path.GetDirectoryName(projPath)!, "*.cs", SearchOption.AllDirectories))
+            {
+                var lines = File.ReadAllLines(cs);
+                if (lines.Any(l =>
+                {
+                    if (l.StartsWith("using Mutagen.Bethesda")) return true;
+                    if (l.StartsWith("namespace Mutagen.Bethesda")) return true;
+                    return false;
+                }))
+                {
+                    File.WriteAllLines(
+                        cs,
+                        "using Mutagen.Bethesda.Plugins.Records;".AsEnumerable()
+                            .And("using Mutagen.Bethesda.Plugins;")
+                            .And("using Mutagen.Bethesda.Plugins.Order;")
+                            .And("using Mutagen.Bethesda.Plugins.Aspects;")
+                            .And("using Mutagen.Bethesda.Plugins.Cache;")
+                            .And("using Mutagen.Bethesda.Plugins.Exceptions;")
+                            .And("using Mutagen.Bethesda.Plugins.Binary;")
+                            .And("using Mutagen.Bethesda.Archives;")
+                            .And("using Mutagen.Bethesda.Strings;")
+                            .And(lines));
+                }
+            }
+        }
+
+        public static void SwapVersioning(XElement proj, string package, string version, SemanticVersion curVersion)
+        {
+            foreach (var group in proj.Elements("ItemGroup"))
+            {
+                foreach (var elem in group.Elements().ToArray())
+                {
+                    if (!elem.Name.LocalName.Equals("PackageReference")) continue;
+                    if (!elem.TryGetAttribute("Include", out var libAttr)) continue;
+                    if (!libAttr.Value.Equals(package, StringComparison.OrdinalIgnoreCase)) continue;
+                    if (!elem.TryGetAttribute("Version", out var existingVerStr)) continue;
+                    if (!SemanticVersion.TryParse(existingVerStr.Value, out var semVer))
+                    {
+                        if (System.Version.TryParse(existingVerStr.Value, out var vers))
+                        {
+                            semVer = new SemanticVersion(
+                                vers.Major,
+                                vers.Minor,
+                                vers.Build);
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    if (!semVer.Equals(curVersion)) continue;
+                    elem.SetAttributeValue("Version", version);
                 }
             }
         }

@@ -1,7 +1,6 @@
 using GitHubDependents;
 using LibGit2Sharp;
 using Mutagen.Bethesda.Synthesis;
-using Mutagen.Bethesda.Synthesis.Internal;
 using Noggog;
 using Noggog.Utility;
 using Synthesis.Bethesda.Execution;
@@ -32,8 +31,6 @@ namespace Synthesis.Bethesda.ImpactTester
                     {
                         await DoWork(null, null, cancel.Token);
                     }
-                    System.Console.WriteLine("Press enter to exit.");
-                    System.Console.ReadLine();
                 }),
                 Task.Run(() =>
                 {
@@ -117,9 +114,14 @@ namespace Synthesis.Bethesda.ImpactTester
 
                         foreach (var proj in SolutionPatcherRun.AvailableProjectSubpaths(slnPath))
                         {
-                            System.Console.WriteLine($"Checking {group.Key}/{dependency.Repository}:{proj}");
                             cancel.ThrowIfCancellationRequested();
                             var path = Path.Combine(repoDir.FullName, proj);
+                            if (!ApplicabilityTests.IsMutagenPatcherProject(path))
+                            {
+                                System.Console.WriteLine($"Skipping {group.Key}/{dependency.Repository}:{proj}");
+                                continue;
+                            }
+                            System.Console.WriteLine($"Checking {group.Key}/{dependency.Repository}:{proj}");
                             var compile = await DotNetCommands.Compile(path, cancel, null);
                             if (compile.Failed)
                             {
@@ -177,6 +179,9 @@ namespace Synthesis.Bethesda.ImpactTester
                     System.Console.WriteLine();
                 }
             }
+
+            System.Console.WriteLine("Press enter to exit.");
+            System.Console.ReadLine();
         }
     }
 }
