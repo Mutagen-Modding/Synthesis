@@ -245,6 +245,7 @@ namespace Synthesis.Bethesda.GUI
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
                     LoadOrder.Connect()
+                        .Filter(x => x.Listing.ModKey != Constants.SynthesisModKey)
                         .ObserveOnGui()
                         .FilterOnObservable(
                             x => x.WhenAnyValue(y => y.Exists)
