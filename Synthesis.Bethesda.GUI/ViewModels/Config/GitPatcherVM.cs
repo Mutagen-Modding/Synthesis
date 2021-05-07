@@ -1012,15 +1012,41 @@ namespace Synthesis.Bethesda.GUI
             return ret;
         }
 
+        public string GetNewId()
+        {
+            bool IsValid(string id)
+            {
+                foreach (var patcher in Profile.Patchers.Items.WhereCastable<PatcherVM, GitPatcherVM>())
+                {
+                    if (patcher.ID == id)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            for (int i = 0; i < 15; i++)
+            {
+                var attempt = Path.GetRandomFileName();
+                if (IsValid(attempt))
+                {
+                    return attempt;
+                }
+            }
+
+            throw new ArgumentException("Could not allocate a new profile");
+        }
+
         private void CopyInSettings(GithubPatcherSettings? settings)
         {
             if (settings == null)
             {
-                this.ID = Guid.NewGuid().ToString();
+                this.ID = GetNewId();
                 return;
             }
             this.RemoteRepoPath = settings.RemoteRepoPath;
-            this.ID = string.IsNullOrWhiteSpace(settings.ID) ? Guid.NewGuid().ToString() : settings.ID;
+            this.ID = string.IsNullOrWhiteSpace(settings.ID) ? GetNewId() : settings.ID;
             this.ProjectSubpath = settings.SelectedProjectSubpath;
             this.PatcherVersioning = settings.PatcherVersioning;
             this.MutagenVersioning = settings.MutagenVersionType;

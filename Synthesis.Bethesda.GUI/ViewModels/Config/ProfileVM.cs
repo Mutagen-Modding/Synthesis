@@ -103,11 +103,11 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
 
-        public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
+        public ProfileVM(ConfigurationVM parent, GameRelease release, string id)
         {
-            ID = id ?? Guid.NewGuid().ToString();
+            ID = id;
             Config = parent;
-            Release = release ?? GameRelease.Oblivion;
+            Release = release;
             AddGitPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new GitPatcherInitVM(this)));
             AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(this)));
             AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(this)));

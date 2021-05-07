@@ -7,6 +7,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -14,6 +15,8 @@ namespace Synthesis.Bethesda.GUI
 {
     public class NewProfileVM : ViewModel
     {
+        private ConfigurationVM _config;
+
         public ObservableCollectionExtended<GameRelease> ReleaseOptions { get; } = new ObservableCollectionExtended<GameRelease>();
 
         [Reactive]
@@ -24,6 +27,7 @@ namespace Synthesis.Bethesda.GUI
 
         public NewProfileVM(ConfigurationVM config, Action<ProfileVM> postRun)
         {
+            _config = config;
             ReleaseOptions.AddRange(EnumExt.GetValues<GameRelease>()
                 .Where(x =>
                 {
@@ -42,7 +46,7 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(game =>
                 {
                     if (game == null) return;
-                    var profile = new ProfileVM(config, game.Value)
+                    var profile = new ProfileVM(config, game.Value, GetNewProfileId())
                     {
                         Nickname = Nickname
                     };
@@ -50,6 +54,32 @@ namespace Synthesis.Bethesda.GUI
                     postRun(profile);
                 })
                 .DisposeWith(this);
+        }
+
+        public string GetNewProfileId()
+        {
+            bool IsValid(string id)
+            {
+                foreach (var profile in _config.Profiles.Items)
+                {
+                    if (profile.ID == id)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            for (int i = 0; i < 15; i++)
+            {
+                var attempt = Path.GetRandomFileName();
+                if (IsValid(attempt))
+                {
+                    return attempt;
+                }
+            }
+
+            throw new ArgumentException("Could not allocate a new profile");
         }
     }
 }
