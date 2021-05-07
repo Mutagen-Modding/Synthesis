@@ -102,7 +102,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             };
             var args = Parser.Default.FormatCommandLine(internalSettings);
             using var process = ProcessWrapper.Create(
-                new ProcessStartInfo("dotnet", $"run --project \"{PathToProject}\" --runtime win-x64 --no-build {args}"),
+                new ProcessStartInfo("dotnet", $"run --project \"{PathToProject}\" --runtime win-x64 --no-build -c Release {args}"),
                 cancel: cancel);
             _output.OnNext("Running");
             _output.OnNext($"({process.StartInfo.WorkingDirectory}): {process.StartInfo.FileName} {process.StartInfo.Arguments}");

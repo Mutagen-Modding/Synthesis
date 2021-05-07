@@ -21,7 +21,7 @@ namespace Synthesis.Bethesda.Execution
 
         public static string GetBuildString(string args)
         {
-            return $"build --runtime win-x64 {args}";
+            return $"build --runtime win-x64 {args} -c Release";
         }
 
         public static async Task<IEnumerable<(string Package, string Requested, string Resolved, string Latest)>> NugetListingQuery(string projectPath, bool outdated, bool includePrerelease, CancellationToken cancel)
