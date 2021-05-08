@@ -18,7 +18,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             IObservable<IChangeSet<ModKey>> detectedLoadOrder,
             FieldMeta fieldMeta, 
             object? defaultVal)
-            : base(fieldMeta, defaultVal)
+            : base(fieldMeta, TryStripOrigin(defaultVal))
         {
             DetectedLoadOrder = detectedLoadOrder;
         }
@@ -71,6 +71,16 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             {
                 return modKey.ToString();
             }
+        }
+
+        public static ModKey? TryStripOrigin(object? o)
+        {
+            if (o == null) return null;
+            if (ModKey.TryFromNameAndExtension(o.ToString(), out var modKey))
+            {
+                return modKey;
+            }
+            return null;
         }
     }
 }
