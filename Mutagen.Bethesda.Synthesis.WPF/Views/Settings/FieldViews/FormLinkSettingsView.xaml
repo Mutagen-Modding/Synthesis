@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Mutagen.Bethesda.Synthesis.WPF"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:mutagenWpf="clr-namespace:Mutagen.Bethesda.WPF;assembly=Mutagen.Bethesda.WPF"
+    xmlns:plugins="clr-namespace:Mutagen.Bethesda.WPF.Plugins;assembly=Mutagen.Bethesda.WPF"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -20,7 +20,7 @@
                 Margin="4,4,6,0"
                 VerticalAlignment="Top"
                 Style="{StaticResource ReflectionSettingName}" />
-            <mutagenWpf:FormKeyPicker Grid.Column="1"
+            <plugins:FormKeyPicker Grid.Column="1"
                 x:Name="FormPicker"
                 VerticalAlignment="Center" />
         </Grid>

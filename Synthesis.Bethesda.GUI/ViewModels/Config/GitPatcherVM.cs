@@ -22,8 +22,8 @@ using Synthesis.Bethesda.DTO;
 using Newtonsoft.Json;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution;
-using Mutagen.Bethesda.Synthesis.WPF;
 using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.WPF.Plugins.Order;
 
 namespace Synthesis.Bethesda.GUI
 {

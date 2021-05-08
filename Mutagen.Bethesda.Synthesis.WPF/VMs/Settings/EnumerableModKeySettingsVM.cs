@@ -1,7 +1,7 @@
 using DynamicData;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
-using Mutagen.Bethesda.WPF;
+using Mutagen.Bethesda.WPF.Plugins;
 using Newtonsoft.Json.Linq;
 using Noggog;
 using System;
@@ -11,7 +11,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text.Json;
-using System.Windows.Input;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {

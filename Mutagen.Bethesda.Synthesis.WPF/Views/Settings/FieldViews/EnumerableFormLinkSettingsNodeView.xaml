@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Mutagen.Bethesda.Synthesis.WPF"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:mutagenWpf="clr-namespace:Mutagen.Bethesda.WPF;assembly=Mutagen.Bethesda.WPF"
+    xmlns:plugins="clr-namespace:Mutagen.Bethesda.WPF.Plugins;assembly=Mutagen.Bethesda.WPF"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -25,7 +25,7 @@
                 Visibility="{Binding Meta.DisplayName, Converter={StaticResource StringToVisibilityConverter}}">
                 <TextBlock x:Name="SettingNameBlock" Style="{StaticResource ReflectionSettingName}" />
             </Button>
-            <mutagenWpf:FormKeyMultiPicker Grid.Row="1"
+            <plugins:FormKeyMultiPicker Grid.Row="1"
                 x:Name="FormPicker"
                 Margin="0,5,0,0"
                 SelectedBackgroundBrush="{StaticResource PurpleBrush}"

@@ -1,7 +1,6 @@
 using DynamicData;
 using Mutagen.Bethesda;
 using Newtonsoft.Json;
-using Mutagen.Bethesda.Synthesis.WPF;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -18,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
+using Mutagen.Bethesda.WPF.Plugins.Order;
 
 namespace Synthesis.Bethesda.GUI
 {

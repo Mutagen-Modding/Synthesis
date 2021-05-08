@@ -19,8 +19,8 @@ using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers;
 using Mutagen.Bethesda;
 using System.Collections.ObjectModel;
-using Mutagen.Bethesda.WPF;
 using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.WPF.Plugins;
 
 namespace Synthesis.Bethesda.GUI
 {

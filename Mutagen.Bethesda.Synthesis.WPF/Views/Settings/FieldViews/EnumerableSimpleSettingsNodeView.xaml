@@ -6,7 +6,7 @@
     xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Mutagen.Bethesda.Synthesis.WPF"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:mutagenWpf="clr-namespace:Mutagen.Bethesda.WPF;assembly=Mutagen.Bethesda.WPF"
+    xmlns:plugins="clr-namespace:Mutagen.Bethesda.WPF.Plugins;assembly=Mutagen.Bethesda.WPF"
     xmlns:xwpf="http://schemas.xceed.com/wpf/xaml/toolkit"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -187,7 +187,7 @@
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type local:FormKeySettingsVM}">
                                         <local:SelectionWrapper>
-                                            <mutagenWpf:FormKeyBox Margin="0,5,5,5" FormKey="{Binding Value}" />
+                                            <plugins:FormKeyBox Margin="0,5,5,5" FormKey="{Binding Value}" />
                                         </local:SelectionWrapper>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type local:EnumSettingsVM}">

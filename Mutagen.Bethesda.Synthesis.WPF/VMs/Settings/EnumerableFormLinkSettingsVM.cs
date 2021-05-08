@@ -3,7 +3,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records.Internals;
-using Mutagen.Bethesda.WPF;
+using Mutagen.Bethesda.WPF.Plugins;
 using Newtonsoft.Json.Linq;
 using Noggog;
 using Noggog.WPF;
