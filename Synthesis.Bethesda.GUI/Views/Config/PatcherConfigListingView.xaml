@@ -322,9 +322,6 @@
             VerticalAlignment="Center"
             Content="{Binding}">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type vm:CodeSnippetPatcherVM}">
-                    <icon:PackIconMaterial Height="13" Kind="CodeBraces" />
-                </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:GitPatcherVM}">
                     <icon:PackIconMaterial Height="13" Kind="Git" />
                 </DataTemplate>

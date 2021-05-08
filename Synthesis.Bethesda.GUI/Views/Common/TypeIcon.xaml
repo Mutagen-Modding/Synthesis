@@ -12,13 +12,6 @@
     mc:Ignorable="d">
     <ContentControl x:Name="ContentControl">
         <ContentControl.Resources>
-            <DataTemplate DataType="{x:Type vm:CodeSnippetPatcherVM}">
-                <icon:PackIconMaterial
-                    Width="35"
-                    Height="35"
-                    Kind="CodeBraces"
-                    ToolTip="Mutagen Code Snippet Patcher" />
-            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:GitPatcherVM}">
                 <icon:PackIconMaterial
                     Width="35"

@@ -36,9 +36,6 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.AddCliPatcherCommand, fallback: default(ICommand))
                     .BindToStrict(this, x => x.AddCliButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.AddSnippetPatcherCommand, fallback: default(ICommand))
-                    .BindToStrict(this, x => x.AddSnippetButton.Command)
-                    .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.PatchersDisplay)
                     .BindToStrict(this, x => x.PatchersList.ItemsSource)
                     .DisposeWith(disposable);

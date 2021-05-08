@@ -244,14 +244,6 @@
                             </Setter>
                             <Setter Property="Text" Value="External Program" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddSnippetButton}" Value="True">
-                            <Setter Property="Margin">
-                                <Setter.Value>
-                                    <Thickness>90,0,0,0</Thickness>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="Text" Value="Code Snippet" />
-                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </TextBlock.Style>
@@ -301,7 +293,6 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="8" />
                 </Grid.ColumnDefinitions>
                 <icon:PackIconMaterial Grid.Column="1"
@@ -329,11 +320,6 @@
                     Name="AddCliButton"
                     Padding="4">
                     <icon:PackIconMaterial Margin="0,-5" Kind="ConsoleLine" />
-                </Button>
-                <Button Grid.Column="6"
-                    Name="AddSnippetButton"
-                    Padding="4">
-                    <icon:PackIconMaterial Margin="0,-3" Kind="CodeBraces" />
                 </Button>
             </Grid>
         </Border>

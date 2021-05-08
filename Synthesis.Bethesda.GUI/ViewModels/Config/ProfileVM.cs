@@ -31,7 +31,6 @@ namespace Synthesis.Bethesda.GUI
         public ICommand AddGitPatcherCommand { get; }
         public ICommand AddSolutionPatcherCommand { get; }
         public ICommand AddCliPatcherCommand { get; }
-        public ICommand AddSnippetPatcherCommand { get; }
         public ICommand GoToErrorCommand { get; }
         public IReactiveCommand UpdateProfileNugetVersionCommand { get; }
         public ICommand EnableAllPatchersCommand { get; }
@@ -111,7 +110,6 @@ namespace Synthesis.Bethesda.GUI
             AddGitPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new GitPatcherInitVM(this)));
             AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(this)));
             AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(this)));
-            AddSnippetPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new CodeSnippetPatcherVM(this)));
 
             ProfileDirectory = Path.Combine(Execution.Paths.WorkingDirectory, ID);
             WorkingDirectory = Execution.Paths.ProfileWorkingDirectory(ID);
@@ -531,7 +529,6 @@ namespace Synthesis.Bethesda.GUI
                 return p switch
                 {
                     GithubPatcherSettings git => new GitPatcherVM(this, git),
-                    CodeSnippetPatcherSettings snippet => new CodeSnippetPatcherVM(this, snippet),
                     SolutionPatcherSettings soln => new SolutionPatcherVM(this, soln),
                     CliPatcherSettings cli => new CliPatcherVM(this, cli),
                     _ => throw new NotImplementedException(),

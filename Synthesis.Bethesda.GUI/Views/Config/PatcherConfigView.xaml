@@ -58,9 +58,6 @@
             x:Name="ConfigDetailPane"
             Margin="7,0,7,5">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type vm:CodeSnippetPatcherVM}">
-                    <local:CodeSnippetConfigView />
-                </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:GitPatcherVM}">
                     <local:GitConfigView />
                 </DataTemplate>

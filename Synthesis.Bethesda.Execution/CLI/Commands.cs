@@ -78,7 +78,6 @@ namespace Synthesis.Bethesda.Execution.CLI
                         }
                         return patcherSettings switch
                         {
-                            CodeSnippetPatcherSettings snippet => new CodeSnippetPatcherRun(snippet),
                             CliPatcherSettings cli => new CliPatcherRun(
                                 cli.Nickname,
                                 cli.PathToExecutable,
