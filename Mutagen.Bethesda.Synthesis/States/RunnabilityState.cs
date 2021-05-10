@@ -1,5 +1,6 @@
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
+using Noggog;
 using Synthesis.Bethesda;
 using System.Collections.Generic;
 
@@ -21,9 +22,9 @@ namespace Mutagen.Bethesda.Synthesis
         public IReadOnlyList<IModListingGetter> LoadOrder { get; }
         IEnumerable<IModListingGetter> IRunnabilityState.LoadOrder => this.LoadOrder;
 
-        public string LoadOrderFilePath => Settings.LoadOrderFilePath;
+        public FilePath LoadOrderFilePath => Settings.LoadOrderFilePath;
 
-        public string DataFolderPath => Settings.DataFolderPath;
+        public DirectoryPath DataFolderPath => Settings.DataFolderPath;
 
         public GameRelease GameRelease => Settings.GameRelease;
 
@@ -41,7 +42,9 @@ namespace Mutagen.Bethesda.Synthesis
         {
             var lo = Plugins.Order.LoadOrder.Import<TModGetter>(DataFolderPath, LoadOrder, GameRelease);
             return new GameEnvironmentState<TModSetter, TModGetter>(
-                gameFolderPath: DataFolderPath,
+                dataFolderPath: DataFolderPath,
+                loadOrderFilePath: LoadOrderFilePath,
+                creationKitLoadOrderFilePath: null,
                 loadOrder: lo,
                 linkCache: lo.ToImmutableLinkCache<TModSetter, TModGetter>());
         }

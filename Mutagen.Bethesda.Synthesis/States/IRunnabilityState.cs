@@ -1,5 +1,6 @@
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
+using Noggog;
 using Synthesis.Bethesda;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,12 +23,12 @@ namespace Mutagen.Bethesda.Synthesis
         /// <summary>
         /// Path to the plugins.txt used
         /// </summary>
-        string LoadOrderFilePath { get; }
+        FilePath LoadOrderFilePath { get; }
 
         /// <summary>
         /// Path to the game data folder
         /// </summary>
-        string DataFolderPath { get; }
+        DirectoryPath DataFolderPath { get; }
 
         /// <summary>
         /// GameRelease targeted for patching

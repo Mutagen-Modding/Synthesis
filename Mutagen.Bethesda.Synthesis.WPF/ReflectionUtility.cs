@@ -108,25 +108,6 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             }
         }
 
-        public static bool TryGetCustomAttributeByName(this MemberInfo info, string name, [MaybeNullWhen(false)] out Attribute attr)
-        {
-            attr = Attribute.GetCustomAttributes(info).FirstOrDefault(a => a.GetType().Name == name);
-            return attr != null;
-        }
-
-        public static T GetCustomAttributeValueByName<T>(this MemberInfo info, string attrName, string valName, T fallback)
-        {
-            if (!TryGetCustomAttributeByName(info, attrName, out var attr)) return fallback;
-            var propInfo = attr.GetType().GetProperty(valName);
-            if (propInfo == null) return fallback;
-            return (T)propInfo.GetValue(attr)!;
-        }
-
-        public static IEnumerable<Attribute> GetCustomAttributesByName(this MemberInfo info, string name)
-        {
-            return Attribute.GetCustomAttributes(info).Where(a => a.GetType().Name == name);
-        }
-
         /// <summary>
         /// Helps to get properties in inherited interfaces
         /// </summary>

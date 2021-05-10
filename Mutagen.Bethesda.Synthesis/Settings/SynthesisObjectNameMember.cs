@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Mutagen.Bethesda.WPF.Reflection.Attributes;
 
 namespace Mutagen.Bethesda.Synthesis.Settings
 {
@@ -10,16 +6,11 @@ namespace Mutagen.Bethesda.Synthesis.Settings
     /// Specifies a member to be displayed when the object is part of any summary areas, 
     /// such as when scoping a child setting and this object is being displayed in the drill down summary
     /// </summary>
-    [AttributeUsage(
-      AttributeTargets.Class,
-      AllowMultiple = true)]
-    public class SynthesisObjectNameMember : Attribute
+    public class SynthesisObjectNameMember : ObjectNameMember
     {
-        public string Name { get; }
-
         public SynthesisObjectNameMember(string name)
+            : base(name)
         {
-            Name = name;
         }
     }
 }

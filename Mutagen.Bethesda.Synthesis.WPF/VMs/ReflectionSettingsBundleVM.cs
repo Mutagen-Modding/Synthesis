@@ -1,6 +1,7 @@
 using DynamicData;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.WPF.Plugins.Order;
+using Mutagen.Bethesda.WPF.Reflection;
 using Noggog;
 using Noggog.Utility;
 using Noggog.WPF;
@@ -78,14 +79,11 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                                 var t = assemb.GetType(s.TypeName);
                                 if (t == null) return null;
                                 return new ReflectionSettingsVM(
-                                    new SettingsParameters(
-                                        assemb,
+                                    ReflectionSettingsParameters.FromType(
                                         detectedLoadOrder,
                                         linkCache,
                                         t,
-                                        Activator.CreateInstance(t),
-                                        MainVM: null!,
-                                        Parent: null),
+                                        Activator.CreateInstance(t)),
                                     nickname: targets[index].Nickname,
                                     settingsFolder: Path.Combine(Paths.TypicalExtraData, displayName),
                                     settingsSubPath: targets[index].Path);

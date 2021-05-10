@@ -138,7 +138,8 @@ namespace Synthesis.Bethesda.Execution.CLI
             using var outputSub = proc.Output
                 .Subscribe(s => output.Add(s));
 
-            switch ((Codes)await proc.Run())
+            var code = (Codes)await proc.Run();
+            switch (code)
             {
                 case Codes.OpensForSettings:
                     return new SettingsConfiguration(SettingsStyle.Open, Array.Empty<ReflectionSettingsConfig>());

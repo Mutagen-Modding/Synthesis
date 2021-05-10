@@ -10,6 +10,7 @@ using System.Threading;
 using DynamicData;
 using Synthesis.Bethesda.DTO;
 using Mutagen.Bethesda.Synthesis.WPF;
+using LibGit2Sharp;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -144,7 +145,24 @@ namespace Synthesis.Bethesda.GUI
         public void Persist(Action<string> logger)
         {
             if (!_hasBeenRetrieved) return;
-            ReflectionSettings?.Bundle?.Settings?.ForEach(vm => vm.Persist(logger));
+            ReflectionSettings?.Bundle?.Settings?.ForEach(vm =>
+            {
+                vm.Persist(logger);
+                if (!Repository.IsValid(vm.SettingsFolder))
+                {
+                    Repository.Init(vm.SettingsFolder);
+                }
+                using var repo = new Repository(vm.SettingsFolder);
+                Commands.Stage(repo, vm.SettingsSubPath);
+                var sig = new Signature("Synthesis", "someEmail@gmail.com", DateTimeOffset.Now);
+                try
+                {
+                    repo.Commit("Settings changed", sig, sig);
+                }
+                catch (EmptyCommitException)
+                {
+                }
+            });
         }
 
         public override void Dispose()

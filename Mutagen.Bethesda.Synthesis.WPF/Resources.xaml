@@ -1,7 +1,6 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:Synthesis.Bethesda.GUI"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mahconv="clr-namespace:MahApps.Metro.Converters;assembly=MahApps.Metro"
     xmlns:xwpf="http://schemas.xceed.com/wpf/xaml/toolkit"
