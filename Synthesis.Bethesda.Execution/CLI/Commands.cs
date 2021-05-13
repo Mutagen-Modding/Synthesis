@@ -293,7 +293,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             }
             else
             {
-                return new ProcessStartInfo("dotnet", $"run --project \"{path}\" --runtime win-x64{(build ? string.Empty : " --no-build")} {Parser.Default.FormatCommandLine(args)}");
+                return new ProcessStartInfo("dotnet", $"run --project \"{path}\" -c Release --runtime win-x64{(build ? string.Empty : " --no-build")} {Parser.Default.FormatCommandLine(args)}");
             }
         }
     }
