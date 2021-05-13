@@ -871,8 +871,8 @@ namespace Synthesis.Bethesda.GUI
                 this,
                 compilation.Select(c =>
                 {
-                    if (c.RunnableState.Failed) return (c.RunnableState.BubbleFailure<string>(), null);
-                    return (GetResponse<string>.Succeed(c.Item.ProjPath), c.Item.TargetSynthesisVersion);
+                    if (c.RunnableState.Failed) return (c.RunnableState.BubbleFailure<FilePath>(), null);
+                    return (GetResponse<FilePath>.Succeed(c.Item.ProjPath), c.Item.TargetSynthesisVersion);
                 })
                 .DistinctUntilChanged(x => (x.Item1.Value, x.TargetSynthesisVersion)),
                 needBuild: false)

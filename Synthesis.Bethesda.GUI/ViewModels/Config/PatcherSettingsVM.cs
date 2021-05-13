@@ -39,7 +39,7 @@ namespace Synthesis.Bethesda.GUI
         public PatcherSettingsVM(
             ILogger logger,
             PatcherVM parent,
-            IObservable<(GetResponse<string> ProjPath, string? SynthVersion)> source,
+            IObservable<(GetResponse<FilePath> ProjPath, string? SynthVersion)> source,
             bool needBuild)
         {
             Logger = logger;
