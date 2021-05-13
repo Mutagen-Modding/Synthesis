@@ -231,9 +231,9 @@ namespace Synthesis.Bethesda.UnitTests
                 Synthesis.Bethesda.Constants.SynthesisModKey);
             state.LoadOrder.PriorityOrder.Should().HaveCount(2);
             state.RawLoadOrder.Should().HaveCount(3);
-            state.RawLoadOrder[0].Should().Be(new LoadOrderListing(Utility.TestModKey, true));
-            state.RawLoadOrder[1].Should().Be(new LoadOrderListing(Utility.OverrideModKey, false));
-            state.RawLoadOrder[2].Should().Be(new LoadOrderListing(Utility.SynthesisModKey, true));
+            state.RawLoadOrder[0].Should().Be(new ModListing(Utility.TestModKey, true));
+            state.RawLoadOrder[1].Should().Be(new ModListing(Utility.OverrideModKey, false));
+            state.RawLoadOrder[2].Should().Be(new ModListing(Utility.SynthesisModKey, true));
         }
 
         [Fact]
@@ -266,10 +266,10 @@ namespace Synthesis.Bethesda.UnitTests
             mod2.Npcs.Add(new Npc(mod.GetNextFormKey()));
             mod2.WriteToBinary(Path.Combine(dataFolder.Dir.Path, Utility.OverrideModKey.FileName));
 
-            var list = new ExtendedList<LoadOrderListing>()
+            var list = new ExtendedList<IModListingGetter>()
             {
-                new LoadOrderListing(Utility.TestModKey, false),
-                new LoadOrderListing(Utility.OverrideModKey, true),
+                new ModListing(Utility.TestModKey, false),
+                new ModListing(Utility.OverrideModKey, true),
             };
             Mutagen.Bethesda.Synthesis.Internal.Utility.AddImplicitMasters(
                 new RunSynthesisMutagenPatcher()
@@ -280,8 +280,8 @@ namespace Synthesis.Bethesda.UnitTests
                 list);
 
             list.Should().HaveCount(2);
-            list[0].Should().Be(new LoadOrderListing(Utility.TestModKey, true));
-            list[1].Should().Be(new LoadOrderListing(Utility.OverrideModKey, true));
+            list[0].Should().Be(new ModListing(Utility.TestModKey, true));
+            list[1].Should().Be(new ModListing(Utility.OverrideModKey, true));
         }
 
         [Fact]

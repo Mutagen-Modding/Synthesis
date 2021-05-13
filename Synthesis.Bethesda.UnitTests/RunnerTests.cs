@@ -213,8 +213,8 @@ namespace Synthesis.Bethesda.UnitTests
                 dataFolder: dataFolder.Dir.Path,
                 release: GameRelease.SkyrimLE,
                 loadOrder: Utility.TypicalLoadOrder(GameRelease.SkyrimLE, dataFolder.Dir)
-                    .And(new LoadOrderListing(Constants.SynthesisModKey, true))
-                    .And(new LoadOrderListing(Utility.RandomModKey, true)),
+                    .And(new ModListing(Constants.SynthesisModKey, true))
+                    .And(new ModListing(Utility.RandomModKey, true)),
                 patchers: patcher.AsEnumerable().ToList(),
                 cancel: CancellationToken.None);
             Assert.Equal(
@@ -239,9 +239,9 @@ namespace Synthesis.Bethesda.UnitTests
                 dataFolder: dataFolder.Dir.Path,
                 release: GameRelease.SkyrimLE,
                 loadOrder: Utility.TypicalLoadOrder(GameRelease.SkyrimLE, dataFolder.Dir)
-                    .And(new LoadOrderListing(Constants.SynthesisModKey, true))
-                    .And(new LoadOrderListing(atypicalKey, true))
-                    .And(new LoadOrderListing(Utility.RandomModKey, true)),
+                    .And(new ModListing(Constants.SynthesisModKey, true))
+                    .And(new ModListing(atypicalKey, true))
+                    .And(new ModListing(Utility.RandomModKey, true)),
                 patchers: patcher.AsEnumerable().ToList(),
                 cancel: CancellationToken.None);
             Assert.Equal(

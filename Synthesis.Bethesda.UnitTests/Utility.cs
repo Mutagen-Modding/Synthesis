@@ -32,7 +32,7 @@ namespace Synthesis.Bethesda.UnitTests
         public static readonly ModKey RandomModKey = new("Random", ModType.Plugin);
 
         public static ModPath TypicalOutputFile(TempFolder tempFolder) => Path.Combine(tempFolder.Dir.Path, SynthesisModKey.FileName);
-        public static IEnumerable<LoadOrderListing> TypicalLoadOrder(GameRelease release, DirectoryPath dir) => PluginListings.ListingsFromPath(PathToLoadOrderFile, release, dir);
+        public static IEnumerable<IModListingGetter> TypicalLoadOrder(GameRelease release, DirectoryPath dir) => PluginListings.ListingsFromPath(PathToLoadOrderFile, release, dir);
 
         public static TempFolder SetupDataFolder(TempFolder tempFolder, GameRelease release, string? loadOrderPath = null)
         {

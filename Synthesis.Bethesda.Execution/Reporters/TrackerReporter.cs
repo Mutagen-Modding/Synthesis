@@ -1,3 +1,4 @@
+using Noggog;
 using Synthesis.Bethesda.Execution.Patchers;
 using System;
 using System.Collections.Generic;
@@ -21,8 +22,8 @@ namespace Synthesis.Bethesda.Execution.Reporters
 
         public (IPatcherRun Patcher, Exception Exception)? RunProblem { get; private set; }
 
-        private readonly List<(IPatcherRun Patcher, string OutputPath)> _patcherComplete = new();
-        public IReadOnlyList<(IPatcherRun Patcher, string OutputPath)> PatcherComplete => _patcherComplete;
+        private readonly List<(IPatcherRun Patcher, FilePath OutputPath)> _patcherComplete = new();
+        public IReadOnlyList<(IPatcherRun Patcher, FilePath OutputPath)> PatcherComplete => _patcherComplete;
 
         public void ReportOverallProblem(Exception ex)
         {

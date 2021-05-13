@@ -157,7 +157,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             bool directExe,
             GameRelease release,
             string dataFolderPath,
-            IEnumerable<LoadOrderListing> loadOrder,
+            IEnumerable<IModListingGetter> loadOrder,
             Rectangle rect,
             CancellationToken cancel)
         {
@@ -185,7 +185,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             string path,
             GameRelease release,
             string dataFolderPath,
-            IEnumerable<LoadOrderListing> loadOrder,
+            IEnumerable<IModListingGetter> loadOrder,
             Rectangle rect,
             CancellationToken cancel)
         {
@@ -210,7 +210,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             return await proc.Run();
         }
 
-        public static TempFile GetTemporaryLoadOrder(GameRelease release, IEnumerable<LoadOrderListing> loadOrder)
+        public static TempFile GetTemporaryLoadOrder(GameRelease release, IEnumerable<IModListingGetter> loadOrder)
         {
             var loadOrderFile = new TempFile(
                 Path.Combine(Synthesis.Bethesda.Execution.Paths.WorkingDirectory, "RunnabilityChecks", Path.GetRandomFileName()));
@@ -229,7 +229,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             bool directExe,
             GameRelease release,
             string dataFolder,
-            IEnumerable<LoadOrderListing> loadOrder,
+            IEnumerable<IModListingGetter> loadOrder,
             CancellationToken cancel)
         {
             using var loadOrderFile = GetTemporaryLoadOrder(release, loadOrder);

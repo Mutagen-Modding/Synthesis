@@ -17,7 +17,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// <summary>
         /// A list of ModKeys as they appeared, and whether they were enabled
         /// </summary>
-        IEnumerable<LoadOrderListing> LoadOrder { get; }
+        IEnumerable<IModListingGetter> LoadOrder { get; }
 
         /// <summary>
         /// Path to the plugins.txt used

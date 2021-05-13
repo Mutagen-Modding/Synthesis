@@ -240,7 +240,7 @@ namespace Synthesis.Bethesda.GUI
                                     Visibility = x.visibility,
                                     Nickname = x.nickname,
                                     PreferredAutoVersioning = x.versioning,
-                                    RequiredMods = x.reqMods
+                                    RequiredMods = x.reqMods.Select(x => x.String).ToArray()
                                 },
                                 Formatting.Indented,
                                 Execution.Constants.JsonSettings));

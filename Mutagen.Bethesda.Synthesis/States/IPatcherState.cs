@@ -28,7 +28,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// <summary>
         /// A list of ModKeys as they appeared, and whether they were enabled
         /// </summary>
-        IReadOnlyList<LoadOrderListing> RawLoadOrder { get; }
+        IReadOnlyList<IModListingGetter> RawLoadOrder { get; }
 
         /// <summary>
         /// Cancellation token that signals whether to stop patching and exit early
@@ -85,7 +85,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// This Load Order will contain the patch mod itself.  This reference is the same object
         /// as the PatchMod member, and so any modifications will implicitly be applied to the Load Order.
         /// </summary>
-        LoadOrder<IModListing<TModGetter>> LoadOrder { get; }
+        LoadOrder<IModListingGetter<TModGetter>> LoadOrder { get; }
 
         /// <summary>
         /// Convenience Link Cache to use created from the provided Load Order object.<br />

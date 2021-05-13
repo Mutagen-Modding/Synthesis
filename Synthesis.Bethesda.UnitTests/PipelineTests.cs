@@ -31,11 +31,11 @@ namespace Synthesis.Bethesda.UnitTests
                 loadOrderFilePath: pluginPath,
                 dataFolderPath: dataFolder).ToList();
             listings.Should().HaveCount(3);
-            listings.Should().BeEquivalentTo(new LoadOrderListing[]
+            listings.Should().BeEquivalentTo(new IModListingGetter[]
             {
-                new LoadOrderListing(Mutagen.Bethesda.Skyrim.Constants.Skyrim, true),
-                new LoadOrderListing(Utility.TestModKey, true),
-                new LoadOrderListing(Utility.OverrideModKey, false),
+                new ModListing(Mutagen.Bethesda.Skyrim.Constants.Skyrim, true),
+                new ModListing(Utility.TestModKey, true),
+                new ModListing(Utility.OverrideModKey, false),
             });
         }
 

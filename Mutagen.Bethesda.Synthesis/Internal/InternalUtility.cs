@@ -50,7 +50,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             // Get load order
             var loadOrderListing = GetLoadOrder(settings.GameRelease, settings.LoadOrderFilePath, settings.DataFolderPath, userPrefs)
                 .ToExtendedList();
-            var rawLoadOrder = loadOrderListing.Select(x => new LoadOrderListing(x.ModKey, x.Enabled)).ToExtendedList();
+            var rawLoadOrder = loadOrderListing.Select(x => new ModListing(x.ModKey, x.Enabled)).ToExtendedList();
 
             // Trim past Synthesis.esp
             var synthIndex = loadOrderListing.IndexOf(exportKey, (listing, key) => listing.ModKey == key);
@@ -94,7 +94,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                     readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease);
                 }
                 loadOrder.Add(new ModListing<TModGetter>(readOnlyPatchMod, enabled: true));
-                rawLoadOrder.Add(new LoadOrderListing(readOnlyPatchMod.ModKey, enabled: true));
+                rawLoadOrder.Add(new ModListing(readOnlyPatchMod.ModKey, enabled: true));
                 cache = loadOrder.ToImmutableLinkCache<TModSetter, TModGetter>();
             }
             else
@@ -126,7 +126,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 }
                 cache = loadOrder.ToMutableLinkCache(patchMod);
                 loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));
-                rawLoadOrder.Add(new LoadOrderListing(patchMod.ModKey, enabled: true));
+                rawLoadOrder.Add(new ModListing(patchMod.ModKey, enabled: true));
             }
 
             return new SynthesisState<TModSetter, TModGetter>(
@@ -157,7 +157,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             })!;
         }
 
-        public static void AddImplicitMasters(RunSynthesisMutagenPatcher settings, ExtendedList<LoadOrderListing> loadOrderListing)
+        public static void AddImplicitMasters(RunSynthesisMutagenPatcher settings, IList<IModListingGetter> loadOrderListing)
         {
             HashSet<ModKey> referencedMasters = new();
             foreach (var item in loadOrderListing.OnlyEnabled())
@@ -170,12 +170,12 @@ namespace Mutagen.Bethesda.Synthesis.Internal
                 var listing = loadOrderListing[i];
                 if (!listing.Enabled && referencedMasters.Contains(listing.ModKey))
                 {
-                    loadOrderListing[i] = new LoadOrderListing(listing.ModKey, enabled: true);
+                    loadOrderListing[i] = new ModListing(listing.ModKey, enabled: true);
                 }
             }
         }
 
-        public static IEnumerable<LoadOrderListing> GetLoadOrder(
+        public static IEnumerable<IModListingGetter> GetLoadOrder(
             GameRelease release,
             string loadOrderFilePath,
             string dataFolderPath,
@@ -186,7 +186,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             var loadOrderListing =
                 Implicits.Get(release).Listings
                     .Where(x => File.Exists(Path.Combine(dataFolderPath, x.FileName)))
-                    .Select(x => new LoadOrderListing(x, enabled: true));
+                    .Select<ModKey, IModListingGetter>(x => new ModListing(x, enabled: true));
             if (!loadOrderFilePath.IsNullOrWhitespace())
             {
                 loadOrderListing = loadOrderListing.Concat(PluginListings.RawListingsFromPath(loadOrderFilePath, release));

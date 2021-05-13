@@ -18,8 +18,8 @@ namespace Mutagen.Bethesda.Synthesis
         /// <summary>
         /// A list of ModKeys as they appeared, and whether they were enabled
         /// </summary>
-        public IReadOnlyList<LoadOrderListing> LoadOrder { get; }
-        IEnumerable<LoadOrderListing> IRunnabilityState.LoadOrder => this.LoadOrder;
+        public IReadOnlyList<IModListingGetter> LoadOrder { get; }
+        IEnumerable<IModListingGetter> IRunnabilityState.LoadOrder => this.LoadOrder;
 
         public string LoadOrderFilePath => Settings.LoadOrderFilePath;
 
@@ -29,7 +29,7 @@ namespace Mutagen.Bethesda.Synthesis
 
         public RunnabilityState(
             CheckRunnability settings,
-            IReadOnlyList<LoadOrderListing> rawLoadOrder)
+            IReadOnlyList<IModListingGetter> rawLoadOrder)
         {
             Settings = settings;
             LoadOrder = rawLoadOrder;
