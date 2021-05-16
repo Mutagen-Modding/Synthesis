@@ -1,6 +1,5 @@
 using LibGit2Sharp;
 using Mutagen.Bethesda;
-using Mutagen.Bethesda.Oblivion;
 using Mutagen.Bethesda.Synthesis;
 using Noggog;
 using NuGet.Versioning;
@@ -24,7 +23,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         public readonly static System.Version NewtonSoftAddSynthVersion = new(0, 14, 1);
         public readonly static System.Version NewtonSoftRemoveMutaVersion = new(0, 28);
         public readonly static System.Version NewtonSoftRemoveSynthVersion = new(0, 17, 5);
-        public readonly static System.Version NamespaceMutaVersion = new(0, 29, 1, 1);
+        public readonly static System.Version NamespaceMutaVersion = new(0, 29, 2, 1);
         public string Name { get; }
         private readonly string _localDir;
         private readonly GithubPatcherSettings _settings;
@@ -349,6 +348,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 {
                     if (l.StartsWith("using Mutagen.Bethesda")) return true;
                     if (l.StartsWith("namespace Mutagen.Bethesda")) return true;
+                    if (l.Contains("FormLink")) return true;
+                    if (l.Contains("ModKey")) return true;
                     return false;
                 }))
                 {
@@ -363,7 +364,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                             .And("using Mutagen.Bethesda.Plugins.Binary;")
                             .And("using Mutagen.Bethesda.Archives;")
                             .And("using Mutagen.Bethesda.Strings;")
-                            .And(lines));
+                            .And(lines.Where(x => x != "using Mutagen.Bethesda.Bsa;")));
                 }
             }
         }
