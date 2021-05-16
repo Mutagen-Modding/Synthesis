@@ -2,7 +2,6 @@ using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Noggog;
 using Synthesis.Bethesda;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Mutagen.Bethesda.Synthesis
@@ -18,7 +17,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// <summary>
         /// A list of ModKeys as they appeared, and whether they were enabled
         /// </summary>
-        IEnumerable<IModListingGetter> LoadOrder { get; }
+        ILoadOrderGetter<IModListingGetter> LoadOrder { get; }
 
         /// <summary>
         /// Path to the plugins.txt used

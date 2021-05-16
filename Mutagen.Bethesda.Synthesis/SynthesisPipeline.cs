@@ -119,7 +119,7 @@ namespace Mutagen.Bethesda.Synthesis
                 loadOrderFilePath: args.LoadOrderFilePath,
                 dataFolderPath: args.DataFolderPath,
                 patcher?.Prefs)
-                .ToList();
+                .ToLoadOrder();
             var state = new RunnabilityState(args, loadOrder);
             try
             {

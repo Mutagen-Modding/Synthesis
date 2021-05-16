@@ -17,10 +17,9 @@ namespace Mutagen.Bethesda.Synthesis
         public CheckRunnability Settings { get; }
 
         /// <summary>
-        /// A list of ModKeys as they appeared, and whether they were enabled
+        /// Current Load Order 
         /// </summary>
-        public IReadOnlyList<IModListingGetter> LoadOrder { get; }
-        IEnumerable<IModListingGetter> IRunnabilityState.LoadOrder => this.LoadOrder;
+        public ILoadOrderGetter<IModListingGetter> LoadOrder { get; }
 
         public FilePath LoadOrderFilePath => Settings.LoadOrderFilePath;
 
@@ -30,17 +29,17 @@ namespace Mutagen.Bethesda.Synthesis
 
         public RunnabilityState(
             CheckRunnability settings,
-            IReadOnlyList<IModListingGetter> rawLoadOrder)
+            ILoadOrderGetter<IModListingGetter> loadOrder)
         {
             Settings = settings;
-            LoadOrder = rawLoadOrder;
+            LoadOrder = loadOrder;
         }
 
         public GameEnvironmentState<TModSetter, TModGetter> GetEnvironmentState<TModSetter, TModGetter>()
             where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
             where TModGetter : class, IContextGetterMod<TModSetter, TModGetter>
         {
-            var lo = Plugins.Order.LoadOrder.Import<TModGetter>(DataFolderPath, LoadOrder, GameRelease);
+            var lo = Plugins.Order.LoadOrder.Import<TModGetter>(DataFolderPath, LoadOrder.ListedOrder, GameRelease);
             return new GameEnvironmentState<TModSetter, TModGetter>(
                 dataFolderPath: DataFolderPath,
                 loadOrderFilePath: LoadOrderFilePath,
