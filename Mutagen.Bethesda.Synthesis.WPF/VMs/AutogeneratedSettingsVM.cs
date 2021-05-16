@@ -31,7 +31,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             SettingsConfiguration config,
             string projPath,
             string displayName,
-            IObservable<IChangeSet<LoadOrderEntryVM>> loadOrder,
+            IObservable<IChangeSet<ModListingVM>> loadOrder,
             IObservable<ILinkCache> linkCache,
             Action<string> log)
         {

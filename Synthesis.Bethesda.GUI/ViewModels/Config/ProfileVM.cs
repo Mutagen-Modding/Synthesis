@@ -55,7 +55,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<GetResponse<PatcherVM>> _LargeOverallError;
         public GetResponse<PatcherVM> LargeOverallError => _LargeOverallError.Value;
 
-        public IObservableList<LoadOrderEntryVM> LoadOrder { get; }
+        public IObservableList<ModListingVM> LoadOrder { get; }
 
         private readonly ObservableAsPropertyHelper<bool> _IsActive;
         public bool IsActive => _IsActive.Value;
@@ -191,15 +191,15 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (x.dataFolder.Failed)
                     {
-                        return (Results: Observable.Empty<IChangeSet<LoadOrderEntryVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
+                        return (Results: Observable.Empty<IChangeSet<ModListingVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
                     }
                     Log.Logger.Error($"Getting live load order for {x.release} -> {x.dataFolder.Value}");
                     var liveLo = Mutagen.Bethesda.Plugins.Order.LoadOrder.GetLiveLoadOrder(x.release, x.dataFolder.Value, out var errors)
-                        .Transform(listing => new LoadOrderEntryVM(listing, x.dataFolder.Value))
+                        .Transform(listing => new ModListingVM(listing, x.dataFolder.Value))
                         .DisposeMany();
                     return (Results: liveLo, State: errors);
                 })
-                .StartWith((Results: Observable.Empty<IChangeSet<LoadOrderEntryVM>>(), State: Observable.Return(ErrorResponse.Fail("Load order uninitialized"))))
+                .StartWith((Results: Observable.Empty<IChangeSet<ModListingVM>>(), State: Observable.Return(ErrorResponse.Fail("Load order uninitialized"))))
                 .Replay(1)
                 .RefCount();
 

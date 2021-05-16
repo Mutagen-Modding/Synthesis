@@ -61,7 +61,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             string projPath,
             string displayName,
             ReflectionSettingsConfig[] targets,
-            IObservable<IChangeSet<LoadOrderEntryVM>> detectedLoadOrder,
+            IObservable<IChangeSet<ModListingVM>> detectedLoadOrder,
             IObservable<ILinkCache> linkCache,
             Action<string> log, 
             CancellationToken cancel)
