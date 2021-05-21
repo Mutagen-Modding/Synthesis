@@ -393,6 +393,7 @@ namespace Mutagen.Bethesda.Synthesis
                     (SettingsQuery settingsQuery) => QuerySettings(settingsQuery),
                     async _ =>
                     {
+                        Console.Error.WriteLine($"Could not parse arguments into an executable command: {string.Join(' ', args)}");
                         return -1;
                     });
         }
