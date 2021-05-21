@@ -57,6 +57,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                     {
                         throw new SynthesisBuildFailure(resp.Reason);
                     }
+                    _output.OnNext($"Compiled");
                 }),
                 Task.Run(async () =>
                 {

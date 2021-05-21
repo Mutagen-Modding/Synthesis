@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         public readonly static System.Version NewtonSoftAddSynthVersion = new(0, 14, 1);
         public readonly static System.Version NewtonSoftRemoveMutaVersion = new(0, 28);
         public readonly static System.Version NewtonSoftRemoveSynthVersion = new(0, 17, 5);
-        public readonly static System.Version NamespaceMutaVersion = new(0, 29, 2, 1);
+        public readonly static System.Version NamespaceMutaVersion = new(0, 30, 0);
         public string Name { get; }
         private readonly string _localDir;
         private readonly GithubPatcherSettings _settings;
