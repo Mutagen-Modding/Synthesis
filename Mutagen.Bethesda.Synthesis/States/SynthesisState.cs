@@ -19,7 +19,7 @@ namespace Mutagen.Bethesda.Synthesis
         where TModGetter : class, IModGetter
     {
         /// <inheritdoc />
-        public LoadOrder<IModListingGetter<TModGetter>> LoadOrder { get; }
+        public ILoadOrder<IModListing<TModGetter>> LoadOrder { get; }
 
         /// <inheritdoc />
         public IReadOnlyList<IModListingGetter> RawLoadOrder { get; }
@@ -63,7 +63,7 @@ namespace Mutagen.Bethesda.Synthesis
         public SynthesisState(
             RunSynthesisMutagenPatcher runArguments,
             IReadOnlyList<IModListingGetter> rawLoadOrder,
-            LoadOrder<IModListingGetter<TModGetter>> loadOrder,
+            ILoadOrder<IModListing<TModGetter>> loadOrder,
             ILinkCache<TModSetter, TModGetter> linkCache,
             TModSetter patchMod,
             string extraDataPath,
