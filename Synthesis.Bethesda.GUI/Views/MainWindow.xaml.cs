@@ -29,6 +29,7 @@ namespace Synthesis.Bethesda.GUI.Views
             Log.Logger.Information(bars);
             Log.Logger.Information(versionLine);
             Log.Logger.Information(bars);
+            Log.Logger.Information(DateTime.Now.ToString());
             SynthesisGuiSettings? guiSettings = null;
             PipelineSettings? pipeSettings = null;
             Task.WhenAll(
