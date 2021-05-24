@@ -80,7 +80,8 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 release: settings.GameRelease,
                 dataFolder: settings.DataFolderPath,
                 loadOrderPath: settings.LoadOrderFilePath,
-                cancel: cancel);
+                cancel: cancel,
+                log: (s) => _output.OnNext(s));
 
             if (runnability.Failed)
             {

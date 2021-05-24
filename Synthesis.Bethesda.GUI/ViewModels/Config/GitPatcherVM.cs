@@ -729,7 +729,8 @@ namespace Synthesis.Bethesda.GUI
                                 release: parent.Release,
                                 dataFolder: i.data,
                                 cancel: cancel,
-                                loadOrder: i.loadOrder.Select(lvm => lvm.Listing));
+                                loadOrder: i.loadOrder.Select(lvm => lvm.Listing),
+                                log: (s) => Logger.Information(s));
                             if (runnability.Failed)
                             {
                                 Logger.Information($"Checking runnability failed: {runnability.Reason}");

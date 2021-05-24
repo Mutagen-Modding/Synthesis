@@ -128,7 +128,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             bool build,
             Action<string> log)
         {
-            log($"Checking {path} for settings.  Direct exe? {directExe}.  Build? {build}");
+            log($"Checking for settings.  Direct exe? {directExe}.  Build? {build}");
             using var proc = ProcessWrapper.Create(
                 GetStart(path, directExe, new Synthesis.Bethesda.SettingsQuery(), build: build),
                 cancel: cancel,
@@ -231,7 +231,8 @@ namespace Synthesis.Bethesda.Execution.CLI
             GameRelease release,
             string dataFolder,
             IEnumerable<IModListingGetter> loadOrder,
-            CancellationToken cancel)
+            CancellationToken cancel,
+            Action<string>? log)
         {
             using var loadOrderFile = GetTemporaryLoadOrder(release, loadOrder);
 
@@ -241,7 +242,8 @@ namespace Synthesis.Bethesda.Execution.CLI
                 release: release,
                 dataFolder: dataFolder,
                 loadOrderPath: loadOrderFile.File.Path,
-                cancel: cancel);
+                cancel: cancel,
+                log: log);
         }
 
         public static async Task<ErrorResponse> CheckRunnability(
@@ -250,7 +252,8 @@ namespace Synthesis.Bethesda.Execution.CLI
             GameRelease release,
             string dataFolder,
             string loadOrderPath,
-            CancellationToken cancel)
+            CancellationToken cancel,
+            Action<string>? log)
         {
             var checkState = new Synthesis.Bethesda.CheckRunnability()
             {
@@ -262,6 +265,8 @@ namespace Synthesis.Bethesda.Execution.CLI
             using var proc = ProcessWrapper.Create(
                 GetStart(path, directExe, checkState),
                 cancel: cancel);
+            
+            log?.Invoke($"({proc.StartInfo.WorkingDirectory}): {proc.StartInfo.FileName} {proc.StartInfo.Arguments}");
 
             var results = new List<string>();
             void AddResult(string s)
@@ -282,7 +287,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             }
 
             // Other error codes are likely the target app just not handling runnability checks, so return as runnable unless
-            // explicity told otherwise with the above error code
+            // explicitly told otherwise with the above error code
             return ErrorResponse.Success;
         }
 

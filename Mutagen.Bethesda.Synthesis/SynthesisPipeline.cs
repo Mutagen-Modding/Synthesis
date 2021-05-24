@@ -444,6 +444,7 @@ namespace Mutagen.Bethesda.Synthesis
                     GameRelease = args.GameRelease,
                     LoadOrderFilePath = args.LoadOrderFilePath
                 });
+                System.Console.WriteLine("Checking runnability complete");
             }
             WarmupAll.Init();
             System.Console.WriteLine("Prepping state.");
