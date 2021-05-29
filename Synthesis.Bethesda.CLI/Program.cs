@@ -1,13 +1,11 @@
 using CommandLine;
-using Mutagen.Bethesda;
-using Mutagen.Bethesda.Synthesis;
-using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.Reporters;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Mutagen.Bethesda.Installs;
 
 namespace Synthesis.Bethesda.CLI
 {
