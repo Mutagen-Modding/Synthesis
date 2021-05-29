@@ -12,7 +12,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void AddsImplicitMods()
         {
-            using var tmp = Utility.GetTempFolder();
+            using var tmp = Utility.GetTempFolder(nameof(PipelineTests));
 
             var pluginPath = Path.Combine(tmp.Dir.Path, "Plugins.txt");
             var dataFolder = Path.Combine(tmp.Dir.Path, "Data");
@@ -42,7 +42,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void GetLoadOrder_NoLoadOrderPath()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(PipelineTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimSE);
             var lo = Mutagen.Bethesda.Synthesis.Internal.Utility.GetLoadOrder(
                 GameRelease.SkyrimSE, 

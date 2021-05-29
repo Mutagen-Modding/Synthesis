@@ -7,13 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Synthesis.Bethesda.UnitTests
 {
     public static class Utility
     {
         public static readonly string OverallTempFolderPath = "SynthesisUnitTests";
-        public static TempFolder GetTempFolder() => TempFolder.FactoryByAddedPath(Path.Combine(OverallTempFolderPath, Path.GetRandomFileName()), throwIfUnsuccessfulDisposal: false);
         public static readonly ModKey SynthesisModKey = new("Synthesis", ModType.Plugin);
         public static readonly ModKey TestModKey = new("test", ModType.Plugin);
         public static readonly ModKey OverrideModKey = new("override", ModType.Plugin);
@@ -31,6 +31,11 @@ namespace Synthesis.Bethesda.UnitTests
         public static readonly string BuildSuccessNonEnglishFile = "BuildSuccessNonEnglish.txt";
         public static readonly ModKey RandomModKey = new("Random", ModType.Plugin);
 
+        public static TempFolder GetTempFolder(string folderName, [CallerMemberName] string? testName = null)
+        {
+            return TempFolder.FactoryByAddedPath(Path.Combine(Utility.OverallTempFolderPath, folderName, testName!));
+        }
+        
         public static ModPath TypicalOutputFile(TempFolder tempFolder) => Path.Combine(tempFolder.Dir.Path, SynthesisModKey.FileName);
         public static IEnumerable<IModListingGetter> TypicalLoadOrder(GameRelease release, DirectoryPath dir) => PluginListings.ListingsFromPath(PathToLoadOrderFile, release, dir);
 

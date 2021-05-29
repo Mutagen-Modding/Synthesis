@@ -40,7 +40,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task TypicalPatcher_FreshStart()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(MutagenSynthesisTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -66,7 +66,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task TypicalPatcher_HasSource()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(MutagenSynthesisTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
             var settings = new RunSynthesisMutagenPatcher()
@@ -108,7 +108,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task MisalignedGameTypes()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(MutagenSynthesisTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
             await Assert.ThrowsAsync<ArgumentException>(() =>
@@ -131,7 +131,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void HasSourceModOnLoadOrder()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(MutagenSynthesisTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
             using var state = Mutagen.Bethesda.Synthesis.Internal.Utility.ToState<IOblivionMod, IOblivionModGetter>(
@@ -151,7 +151,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void HasSourceModOnLoadOrder_HasSource()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(MutagenSynthesisTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var prevPath = new ModPath(Utility.OverrideModKey, Path.Combine(dataFolder.Dir.Path, Utility.OverrideModKey.FileName));
             var modPath = PatchModPath(dataFolder);
@@ -172,7 +172,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void TrimsPostSynthesisFromLoadOrder()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(MutagenSynthesisTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimLE);
             var pluginsPath = Path.Combine(dataFolder.Dir.Path, "Plugins.txt");
             File.WriteAllLines(
@@ -206,7 +206,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void DisabledModsInLoadOrder()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(MutagenSynthesisTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimSE);
             var pluginsPath = Path.Combine(dataFolder.Dir.Path, "Plugins.txt");
             File.WriteAllLines(
@@ -249,7 +249,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void AddImplicitMasters()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(MutagenSynthesisTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var pluginsPath = Path.Combine(dataFolder.Dir.Path, "Plugins.txt");
             File.WriteAllLines(
@@ -287,7 +287,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void NoPatch()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(MutagenSynthesisTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
             var settings = new RunSynthesisMutagenPatcher()

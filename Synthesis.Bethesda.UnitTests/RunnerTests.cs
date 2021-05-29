@@ -20,7 +20,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task EmptyRun()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             await Runner.Run(
@@ -37,7 +37,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task ListedNonExistantSourcePath()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var patcher = new DummyPatcher();
             var output = Utility.TypicalOutputFile(tmpFolder);
@@ -60,7 +60,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task BasicPatcherFunctionsCalled()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher();
@@ -79,7 +79,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task ChecksIfPatchersOutput()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher()
@@ -103,7 +103,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task FinalOutputFileCreated()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher();
@@ -121,7 +121,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task PatcherThrowInPrep()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher()
@@ -149,7 +149,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task PatcherThrowInRun()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher()
@@ -177,7 +177,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task PatcherOutputReported()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher();
@@ -203,7 +203,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task TrimsPostSynthesisFromLoadOrder()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimLE);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var patcher = new DummyPatcher();
@@ -228,7 +228,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task TrimsAtypicalOutputFromLoadOrder()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimLE);
             ModKey atypicalKey = ModKey.FromNameAndExtension("Atypical.esp");
             var output = Path.Combine(tmpFolder.Dir.Path, atypicalKey.FileName);

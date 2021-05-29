@@ -63,7 +63,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task FreshStart_AwesomeNPC()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(PersistentState_Tests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
 
@@ -91,7 +91,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task FreshStart_AnotherNPC()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(PersistentState_Tests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var modPath = PatchModPath(dataFolder);
             await new SynthesisPipeline()
@@ -117,7 +117,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task FreshStart_AwesomeNPCAndAnotherNPC()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(PersistentState_Tests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var statePath = GetStatePath(tmpFolder);
             var modPath = PatchModPath(dataFolder);
@@ -164,7 +164,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task FreshStart_AnotherNPCAndAwesomeNPC()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(PersistentState_Tests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
             var statePath = GetStatePath(tmpFolder);
             var modPath = PatchModPath(dataFolder);
@@ -214,7 +214,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task SecondRun_AwesomeNPCAndAnotherNPC()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(PersistentState_Tests));
             var statePath = GetStatePath(tmpFolder);
             TextFileSharedFormKeyAllocator.Initialize(statePath);
 
@@ -269,7 +269,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task SecondRun_AwesomeNPCAndAnotherNPCSwapped()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(PersistentState_Tests));
             var statePath = GetStatePath(tmpFolder);
             TextFileSharedFormKeyAllocator.Initialize(statePath);
 

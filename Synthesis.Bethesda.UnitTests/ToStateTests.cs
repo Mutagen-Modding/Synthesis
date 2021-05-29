@@ -14,7 +14,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void LoadOrderTrim()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(ToStateTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimLE);
             var output = Utility.TypicalOutputFile(tmpFolder);
             var pluginPath = Path.Combine(tmpFolder.Dir.Path, "Plugins.txt");
@@ -51,7 +51,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void NonSynthesisTarget()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(ToStateTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimLE);
             var output = ModPath.FromPath(Path.Combine(dataFolder.Dir.Path, Utility.OtherFileName));
             var pluginPath = Path.Combine(tmpFolder.Dir.Path, "Plugins.txt");

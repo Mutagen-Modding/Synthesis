@@ -25,7 +25,7 @@ namespace Synthesis.Bethesda.UnitTests
             out string local,
             bool createPatcherFiles = true)
         {
-            var folder = Utility.GetTempFolder();
+            var folder = Utility.GetTempFolder(nameof(GitPatcherTests));
 
             local = Path.Combine(folder.Dir.Path, "Local");
             Repository.Init(local);

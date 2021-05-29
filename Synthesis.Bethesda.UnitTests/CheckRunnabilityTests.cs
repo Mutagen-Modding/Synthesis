@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task Failure()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(CheckRunnabilityTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimSE);
             (await new SynthesisPipeline()
                 .AddRunnabilityCheck(state =>
@@ -30,7 +30,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task PassingCheck()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(CheckRunnabilityTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimSE);
             (await new SynthesisPipeline()
                 .AddRunnabilityCheck(state =>
