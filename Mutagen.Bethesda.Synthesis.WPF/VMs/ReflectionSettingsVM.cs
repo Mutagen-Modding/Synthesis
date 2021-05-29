@@ -33,7 +33,10 @@ namespace Mutagen.Bethesda.Synthesis.WPF
         {
             if (!File.Exists(SettingsPath)) return;
             var txt = await File.ReadAllTextAsync(SettingsPath, cancel);
-            var json = JsonDocument.Parse(txt);
+            var json = JsonDocument.Parse(txt, new JsonDocumentOptions()
+            {
+                AllowTrailingCommas = true
+            });
             ObjVM.Import(json.RootElement, logger);
         }
 
