@@ -70,6 +70,8 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<bool> _InModal;
         public bool InModal => _InModal.Value;
 
+        public EnvironmentErrorsVM EnvironmentErrors { get; }
+
         public MainVM(Window window)
         {
             _window = window;
@@ -195,16 +197,6 @@ namespace Synthesis.Bethesda.GUI
                 .Replay(1)
                 .RefCount();
 
-            // Switch to DotNet screen if missing
-            DotNetSdkInstalled
-                .Subscribe(v =>
-                {
-                    if (!v.Acceptable)
-                    {
-                        ActivePanel = new DotNetNotInstalledVM(this, this.ActivePanel, DotNetSdkInstalled);
-                    }
-                });
-
             _ActiveConfirmation = Observable.CombineLatest(
                     this.WhenAnyFallback(x => x.Configuration.SelectedProfile!.SelectedPatcher)
                         .Select(x =>
@@ -229,6 +221,8 @@ namespace Synthesis.Bethesda.GUI
             _InModal = this.WhenAnyValue(x => x.ActiveConfirmation)
                 .Select(x => x != null)
                 .ToGuiProperty(this, nameof(InModal));
+            
+            EnvironmentErrors = new EnvironmentErrorsVM(this);
         }
 
         public void Load(SynthesisGuiSettings? guiSettings, PipelineSettings? pipeSettings)

@@ -21,7 +21,10 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel!.ActivePanel)
+                Observable.CombineLatest(
+                        this.WhenAnyValue(x => x.ViewModel!.ActivePanel),
+                        this.WhenAnyValue(x => x.ViewModel!.EnvironmentErrors.ActiveError),
+                        (active, err) => err ?? active)
                     .BindToStrict(this, x => x.ContentPane.Content)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.ActiveConfirmation)

@@ -2,11 +2,7 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution;
-using System;
-using System.Collections.Generic;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text;
 using System.Windows.Input;
 
 namespace Synthesis.Bethesda.GUI
@@ -18,22 +14,16 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string> _CustomDisplayString;
         public string CustomDisplayString => _CustomDisplayString.Value;
 
-        public DotNetNotInstalledVM(
-            MainVM mvm,
-            ViewModel goBack,
-            IObservable<DotNetVersion> dotNetVersion)
-        {
-            dotNetVersion
-                .Subscribe(v =>
-                {
-                    if (v.Acceptable)
-                    {
-                        mvm.ActivePanel = goBack;
-                    }
-                })
-                .DisposeWith(this);
+        private readonly ObservableAsPropertyHelper<bool> _InError;
+        public bool InError => _InError.Value;
 
-            _CustomDisplayString = dotNetVersion
+        public DotNetNotInstalledVM(MainVM mvm)
+        {
+            _InError = mvm.DotNetSdkInstalled
+                .Select(x => !x.Acceptable)
+                .ToGuiProperty(this, nameof(InError));
+            
+            _CustomDisplayString = mvm.DotNetSdkInstalled
                 .Select(x =>
                 {
                     if (x.Acceptable) return string.Empty;

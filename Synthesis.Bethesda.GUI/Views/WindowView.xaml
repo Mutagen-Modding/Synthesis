@@ -27,6 +27,9 @@
                 <DataTemplate DataType="{x:Type vm:DotNetNotInstalledVM}">
                     <local:NoDotNetSdkInstalledView />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:NugetConfigErrorVM}">
+                    <local:NugetConfigIssueView />
+                </DataTemplate>
             </ContentPresenter.Resources>
         </ContentPresenter>
         <local:OverlayView x:Name="ConfirmationOverlay" Visibility="Collapsed" />

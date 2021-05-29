@@ -23,8 +23,7 @@
             Text="Install DotNet SDK" />
         <TextBlock Grid.Row="1"
             x:Name="CustomTextBlock"
-            Margin="20,0"
-            Text="While the app can open with the DotNet Runtime, it also needs the SDK to be able to function." />
+            Margin="20,0" />
         <Button Grid.Row="2"
             x:Name="DownloadButton"
             Margin="20,20"
