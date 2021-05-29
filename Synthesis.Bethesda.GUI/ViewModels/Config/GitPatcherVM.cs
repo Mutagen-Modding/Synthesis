@@ -23,6 +23,7 @@ using Newtonsoft.Json;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution;
 using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 
 namespace Synthesis.Bethesda.GUI
@@ -640,7 +641,7 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x.AsObservableChangeSet())
                 .Switch()
                 .Except(this.Profile.LoadOrder.Connect()
-                    .Transform(x => x.Listing.ModKey))
+                    .Transform(x => x.ModKey))
                 .RefCount();
 
             var compilation = runnableState
@@ -701,7 +702,7 @@ namespace Synthesis.Bethesda.GUI
                     parent.WhenAnyValue(x => x.DataFolder),
                     parent.LoadOrder.Connect()
                         .QueryWhenChanged()
-                        .StartWith(ListExt.Empty<LoadOrderEntryVM>()),
+                        .StartWith(ListExt.Empty<ReadOnlyModListingVM>()),
                     (comp, data, loadOrder) => (comp, data, loadOrder))
                 .Select(i =>
                 {
@@ -729,7 +730,7 @@ namespace Synthesis.Bethesda.GUI
                                 release: parent.Release,
                                 dataFolder: i.data,
                                 cancel: cancel,
-                                loadOrder: i.loadOrder.Select(lvm => lvm.Listing),
+                                loadOrder: i.loadOrder.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm),
                                 log: (s) => Logger.Information(s));
                             if (runnability.Failed)
                             {

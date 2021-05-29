@@ -69,7 +69,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ObservableCollection<ModKeyItemViewModel> RequiredMods { get; } = new();
          
-        public IObservable<IChangeSet<ModKey>> DetectedMods => this.Profile.LoadOrder.Connect().Transform(l => l.Listing.ModKey);
+        public IObservable<IChangeSet<ModKey>> DetectedMods => this.Profile.LoadOrder.Connect().Transform(l => l.ModKey);
 
         public PatcherSettingsVM PatcherSettings { get; }
 

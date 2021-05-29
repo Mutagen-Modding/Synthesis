@@ -11,6 +11,8 @@ using DynamicData;
 using Synthesis.Bethesda.DTO;
 using Mutagen.Bethesda.Synthesis.WPF;
 using LibGit2Sharp;
+using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.WPF.Plugins.Order;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -100,7 +102,7 @@ namespace Synthesis.Bethesda.GUI
                             cancel: CancellationToken.None,
                             release: parent.Profile.Release,
                             dataFolderPath: parent.Profile.DataFolder,
-                            loadOrder: parent.Profile.LoadOrder.Items.Select(lvm => lvm.Listing));
+                            loadOrder: parent.Profile.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                     }
                     else
                     {
@@ -111,7 +113,7 @@ namespace Synthesis.Bethesda.GUI
                             cancel: CancellationToken.None,
                             release: parent.Profile.Release,
                             dataFolderPath: parent.Profile.DataFolder,
-                            loadOrder: parent.Profile.LoadOrder.Items.Select(lvm => lvm.Listing));
+                            loadOrder: parent.Profile.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                     }
                 },
                 disposable: this.CompositeDisposable);
@@ -135,7 +137,7 @@ namespace Synthesis.Bethesda.GUI
                         x.SettingsConfig,
                         projPath: x.ProjPath.Value,
                         displayName: parent.DisplayName,
-                        loadOrder: parent.Profile.LoadOrder.Connect(),
+                        loadOrder: parent.Profile.LoadOrder.Connect().Transform<ReadOnlyModListingVM, IModListingGetter>(x => x),
                         linkCache: parent.Profile.SimpleLinkCache,
                         log: Log.Logger.Information);
                 })

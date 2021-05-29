@@ -1,6 +1,5 @@
 using DynamicData;
 using Mutagen.Bethesda.Plugins.Cache;
-using Mutagen.Bethesda.WPF.Plugins.Order;
 using Mutagen.Bethesda.WPF.Reflection;
 using Noggog;
 using Noggog.Utility;
@@ -13,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Mutagen.Bethesda.Plugins.Order;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {
@@ -61,7 +61,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             string projPath,
             string displayName,
             ReflectionSettingsConfig[] targets,
-            IObservable<IChangeSet<ModListingVM>> detectedLoadOrder,
+            IObservable<IChangeSet<IModListingGetter>> detectedLoadOrder,
             IObservable<ILinkCache> linkCache,
             Action<string> log, 
             CancellationToken cancel)

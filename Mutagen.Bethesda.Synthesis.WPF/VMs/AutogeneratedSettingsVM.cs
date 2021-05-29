@@ -8,8 +8,8 @@ using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using Mutagen.Bethesda.WPF.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Cache;
+using Mutagen.Bethesda.Plugins.Order;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {
@@ -31,7 +31,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             SettingsConfiguration config,
             string projPath,
             string displayName,
-            IObservable<IChangeSet<ModListingVM>> loadOrder,
+            IObservable<IChangeSet<IModListingGetter>> loadOrder,
             IObservable<ILinkCache> linkCache,
             Action<string> log)
         {
