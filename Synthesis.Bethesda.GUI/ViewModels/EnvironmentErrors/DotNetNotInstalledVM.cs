@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class DotNetNotInstalledVM : ViewModel
+    public class DotNetNotInstalledVM : ViewModel, IEnvironmentErrorVM
     {
         public ICommand DownloadCommand { get; }
 
@@ -17,6 +17,9 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<bool> _InError;
         public bool InError => _InError.Value;
 
+        private readonly ObservableAsPropertyHelper<string?> _ErrorString;
+        public string? ErrorString => _ErrorString.Value;
+        
         public DotNetNotInstalledVM(MainVM mvm)
         {
             _InError = mvm.DotNetSdkInstalled
@@ -43,6 +46,10 @@ namespace Synthesis.Bethesda.GUI
                 {
                     Utility.NavigateToPath("https://dotnet.microsoft.com/download");
                 });
+            
+            _ErrorString = this.WhenAnyValue(x => x.InError)
+                .Select(x => x ? $"DotNet SDK: Desired SDK not found" : null)
+                .ToGuiProperty(this, nameof(ErrorString), default);
         }
     }
 }

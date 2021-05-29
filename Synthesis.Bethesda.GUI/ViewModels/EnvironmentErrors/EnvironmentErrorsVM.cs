@@ -12,8 +12,8 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<bool> _InError;
         public bool InError => _InError.Value;
 
-        private readonly ObservableAsPropertyHelper<ViewModel?> _ActiveError;
-        public ViewModel? ActiveError => _ActiveError.Value;
+        private readonly ObservableAsPropertyHelper<IEnvironmentErrorVM?> _ActiveError;
+        public IEnvironmentErrorVM? ActiveError => _ActiveError.Value;
 
         public EnvironmentErrorsVM(MainVM mvm)
         {
@@ -22,11 +22,11 @@ namespace Synthesis.Bethesda.GUI
 
             _ActiveError = Observable.CombineLatest(
                 _DotNetInstalled.WhenAnyValue(x => x.InError)
-                    .Select(x => x ? _DotNetInstalled : default(ViewModel?)),
+                    .Select(x => x ? _DotNetInstalled : default(IEnvironmentErrorVM?)),
                 _NugetConfig.WhenAnyValue(x => x.InError)
-                    .Select(x => x ? _NugetConfig : default(ViewModel?)),
+                    .Select(x => x ? _NugetConfig : default(IEnvironmentErrorVM?)),
                 (dotNet, nuget) => dotNet ?? nuget)
-                .ToGuiProperty(this, nameof(ActiveError), default(ViewModel?));
+                .ToGuiProperty(this, nameof(ActiveError), default(IEnvironmentErrorVM?));
 
             _InError = this.WhenAnyValue(x => x.ActiveError)
                 .Select(x => x == null)

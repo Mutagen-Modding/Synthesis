@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.GUI.Views
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.ActivePanel),
                         this.WhenAnyValue(x => x.ViewModel!.EnvironmentErrors.ActiveError),
-                        (active, err) => err ?? active)
+                        (active, err) => ((object?)err) ?? active)
                     .BindToStrict(this, x => x.ContentPane.Content)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.ActiveConfirmation)

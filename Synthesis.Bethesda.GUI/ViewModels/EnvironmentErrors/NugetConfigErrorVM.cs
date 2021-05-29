@@ -11,7 +11,7 @@ using Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class NugetConfigErrorVM : ViewModel
+    public class NugetConfigErrorVM : ViewModel, IEnvironmentErrorVM
     {
         private readonly ObservableAsPropertyHelper<bool> _InError;
         public bool InError => _InError.Value;
@@ -20,6 +20,9 @@ namespace Synthesis.Bethesda.GUI
         public ErrorVM? Error => _Error.Value;
         
         public FilePath NugetConfigPath { get; }
+
+        private readonly ObservableAsPropertyHelper<string?> _ErrorString;
+        public string? ErrorString => _ErrorString.Value;
 
         public NugetConfigErrorVM()
         {
@@ -47,6 +50,9 @@ namespace Synthesis.Bethesda.GUI
             _InError = this.WhenAnyValue(x => x.Error)
                 .Select(x => x != null)
                 .ToGuiProperty(this, nameof(InError));
+            _ErrorString = this.WhenAnyValue(x => x.Error)
+                .Select(x => x != null ? $"Nuget Config: {x.ErrorText}" : null)
+                .ToGuiProperty(this, nameof(ErrorString), default);
         }
 
         public class ErrorVM

@@ -763,16 +763,16 @@ namespace Synthesis.Bethesda.GUI
                     runnableState
                         .Select(x => x.ToUnit()),
                     runnability,
-                    this.WhenAnyValue(x => x.Profile.Config.MainVM)
-                        .Select(x => x.DotNetSdkInstalled)
+                    this.WhenAnyValue(x => x.Profile.Config.MainVM.DotNetSdkInstalled)
                         .Switch()
                         .Select(x => (x, true))
                         .StartWith((new DotNetVersion(string.Empty, false), false)),
+                    this.WhenAnyFallback(x => x.Profile.Config.MainVM.EnvironmentErrors.ActiveError!.ErrorString),
                     missingReqMods
                         .QueryWhenChanged()
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
                         .StartWith(ListExt.Empty<ModKey>()),
-                    (driver, runner, checkout, runnability, dotnet, reqModsMissing) =>
+                    (driver, runner, checkout, runnability, dotnet, envError, reqModsMissing) =>
                     {
                         if (driver.IsHaltingError) return driver;
                         if (runner.IsHaltingError) return runner;
@@ -785,6 +785,10 @@ namespace Synthesis.Bethesda.GUI
                             };
                         }
                         if (!dotnet.Item1.Acceptable) return new ConfigurationState(ErrorResponse.Fail("No DotNet SDK installed"));
+                        if (envError != null)
+                        {
+                            return new ConfigurationState(ErrorResponse.Fail(envError));
+                        }
                         if (reqModsMissing.Count > 0)
                         {
                             return new ConfigurationState(ErrorResponse.Fail($"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));
