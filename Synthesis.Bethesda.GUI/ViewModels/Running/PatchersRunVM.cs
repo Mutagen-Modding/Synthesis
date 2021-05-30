@@ -186,6 +186,7 @@ namespace Synthesis.Bethesda.GUI
                         if (!madePatch) return;
                         var dataFolderPath = Path.Combine(RunningProfile.DataFolder, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
                         File.Copy(output, dataFolderPath, overwrite: true);
+                        Log.Logger.Information($"Exported patch to: {dataFolderPath}");
                     }
                     catch (TaskCanceledException)
                     {
