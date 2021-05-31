@@ -62,7 +62,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             string displayName,
             ReflectionSettingsConfig[] targets,
             IObservable<IChangeSet<IModListingGetter>> detectedLoadOrder,
-            IObservable<ILinkCache> linkCache,
+            IObservable<ILinkCache?> linkCache,
             Action<string> log, 
             CancellationToken cancel)
         {

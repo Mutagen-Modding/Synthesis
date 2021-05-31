@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,9 +24,10 @@ namespace Synthesis.Bethesda.UnitTests
         public TempFolder GetRepository(
             out string remote, 
             out string local,
-            bool createPatcherFiles = true)
+            bool createPatcherFiles = true,
+            [CallerMemberName] string? testName = null)
         {
-            var folder = Utility.GetTempFolder(nameof(GitPatcherTests));
+            var folder = Utility.GetTempFolder(nameof(GitPatcherTests), testName: testName);
 
             local = Path.Combine(folder.Dir.Path, "Local");
             Repository.Init(local);

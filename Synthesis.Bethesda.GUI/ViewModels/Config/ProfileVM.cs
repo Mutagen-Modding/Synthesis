@@ -95,7 +95,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ErrorVM OverallErrorVM { get; } = new ErrorVM("Overall Blocking Error");
 
-        public IObservable<ILinkCache> SimpleLinkCache { get; }
+        public IObservable<ILinkCache?> SimpleLinkCache { get; }
 
         [Reactive]
         public bool LockUpgrades { get; set; }
@@ -495,13 +495,21 @@ namespace Synthesis.Bethesda.GUI
                 .Throttle(TimeSpan.FromMilliseconds(100), RxApp.TaskpoolScheduler)
                 .Select(x =>
                 {
-                    return Observable.Create<ILinkCache>(obs =>
+                    return Observable.Create<ILinkCache?>(obs =>
                     {
-                        var loadOrder = Mutagen.Bethesda.Plugins.Order.LoadOrder.Import(
-                            x.dataFolder,
-                            x.loadOrder,
-                            factory: (modPath) => ModInstantiator.Importer(modPath, x.rel));
-                        obs.OnNext(loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()));
+                        try
+                        {
+                            var loadOrder = Mutagen.Bethesda.Plugins.Order.LoadOrder.Import(
+                                x.dataFolder,
+                                x.loadOrder,
+                                factory: (modPath) => ModInstantiator.Importer(modPath, x.rel));
+                            obs.OnNext(loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()));
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Logger.Error("Error creating simple link cache for GUI lookups", ex);
+                            obs.OnNext(null);
+                        }
                         obs.OnCompleted();
                         return Disposable.Empty;
                     });
