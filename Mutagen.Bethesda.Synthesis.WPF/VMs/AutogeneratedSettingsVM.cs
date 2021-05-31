@@ -32,7 +32,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             string projPath,
             string displayName,
             IObservable<IChangeSet<IModListingGetter>> loadOrder,
-            IObservable<ILinkCache> linkCache,
+            IObservable<ILinkCache?> linkCache,
             Action<string> log)
         {
             var targetSettingsVM = Observable.Return(Unit.Default)
