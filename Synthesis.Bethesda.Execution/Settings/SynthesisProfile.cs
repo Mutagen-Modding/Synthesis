@@ -16,6 +16,6 @@ namespace Synthesis.Bethesda.Execution.Settings
         public string? DataPathOverride;
         public bool ConsiderPrereleaseNugets;
         public bool LockToCurrentVersioning;
-        public PersistenceMode Persistence = PersistenceMode.Text;
+        public PersistenceMode Persistence = PersistenceMode.None;
     }
 }

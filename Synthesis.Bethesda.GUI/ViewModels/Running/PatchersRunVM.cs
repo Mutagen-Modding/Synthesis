@@ -15,6 +15,8 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.WPF.Plugins.Order;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -175,7 +177,7 @@ namespace Synthesis.Bethesda.GUI
                             outputPath: output,
                             dataFolder: RunningProfile.DataFolder,
                             release: RunningProfile.Release,
-                            loadOrder: RunningProfile.LoadOrder.Items.Select(x => x.Listing),
+                            loadOrder: RunningProfile.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(x => x),
                             cancellation: _cancel.Token,
                             reporter: _reporter,
                             patchers: Patchers.Items.Select(vm => (vm.Config.InternalID, vm.Run)),
@@ -184,6 +186,7 @@ namespace Synthesis.Bethesda.GUI
                         if (!madePatch) return;
                         var dataFolderPath = Path.Combine(RunningProfile.DataFolder, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
                         File.Copy(output, dataFolderPath, overwrite: true);
+                        Log.Logger.Information($"Exported patch to: {dataFolderPath}");
                     }
                     catch (TaskCanceledException)
                     {

@@ -5,12 +5,11 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Mutagen.Bethesda.Plugins.Cache;
+using Mutagen.Bethesda.Plugins.Order;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {
@@ -32,7 +31,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             SettingsConfiguration config,
             string projPath,
             string displayName,
-            IObservable<IChangeSet<LoadOrderEntryVM>> loadOrder,
+            IObservable<IChangeSet<IModListingGetter>> loadOrder,
             IObservable<ILinkCache> linkCache,
             Action<string> log)
         {

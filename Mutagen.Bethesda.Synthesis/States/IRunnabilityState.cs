@@ -1,8 +1,8 @@
+using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.Plugins.Records;
+using Noggog;
 using Synthesis.Bethesda;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 
 namespace Mutagen.Bethesda.Synthesis
 {
@@ -17,17 +17,17 @@ namespace Mutagen.Bethesda.Synthesis
         /// <summary>
         /// A list of ModKeys as they appeared, and whether they were enabled
         /// </summary>
-        IEnumerable<LoadOrderListing> LoadOrder { get; }
+        ILoadOrderGetter<IModListingGetter> LoadOrder { get; }
 
         /// <summary>
         /// Path to the plugins.txt used
         /// </summary>
-        string LoadOrderFilePath { get; }
+        FilePath LoadOrderFilePath { get; }
 
         /// <summary>
         /// Path to the game data folder
         /// </summary>
-        string DataFolderPath { get; }
+        DirectoryPath DataFolderPath { get; }
 
         /// <summary>
         /// GameRelease targeted for patching

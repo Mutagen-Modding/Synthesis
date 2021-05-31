@@ -5,6 +5,7 @@ using System.IO;
 using System;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
+using Mutagen.Bethesda.Synthesis;
 using Noggog;
 
 namespace Synthesis.Bethesda.GUI.Views
@@ -23,9 +24,12 @@ namespace Synthesis.Bethesda.GUI.Views
                 Log.Logger.Error(e.ExceptionObject as Exception, "Crashing");
             };
 
-            Log.Logger.Information("===============================================");
-            Log.Logger.Information("============== Opening Synthesis ==============");
-            Log.Logger.Information("===============================================");
+            var versionLine = $"============== Opening Synthesis v{Versions.SynthesisVersion} ==============";
+            var bars = new string('=', versionLine.Length);
+            Log.Logger.Information(bars);
+            Log.Logger.Information(versionLine);
+            Log.Logger.Information(bars);
+            Log.Logger.Information(DateTime.Now.ToString());
             SynthesisGuiSettings? guiSettings = null;
             PipelineSettings? pipeSettings = null;
             Task.WhenAll(

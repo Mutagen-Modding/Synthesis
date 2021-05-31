@@ -22,8 +22,9 @@ using Synthesis.Bethesda.DTO;
 using Newtonsoft.Json;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution;
-using System.Threading;
-using Mutagen.Bethesda.Synthesis.WPF;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.WPF.Plugins.Order;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -640,7 +641,7 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x.AsObservableChangeSet())
                 .Switch()
                 .Except(this.Profile.LoadOrder.Connect()
-                    .Transform(x => x.Listing.ModKey))
+                    .Transform(x => x.ModKey))
                 .RefCount();
 
             var compilation = runnableState
@@ -701,7 +702,7 @@ namespace Synthesis.Bethesda.GUI
                     parent.WhenAnyValue(x => x.DataFolder),
                     parent.LoadOrder.Connect()
                         .QueryWhenChanged()
-                        .StartWith(ListExt.Empty<LoadOrderEntryVM>()),
+                        .StartWith(ListExt.Empty<ReadOnlyModListingVM>()),
                     (comp, data, loadOrder) => (comp, data, loadOrder))
                 .Select(i =>
                 {
@@ -723,13 +724,14 @@ namespace Synthesis.Bethesda.GUI
 
                         try
                         {
-                            var runnability = await Synthesis.Bethesda.Execution.CLI.Commands.CheckRunnability(
+                            var runnability = await Execution.CLI.Commands.CheckRunnability(
                                 path: i.comp.Item.ProjPath,
                                 directExe: false,
                                 release: parent.Release,
                                 dataFolder: i.data,
                                 cancel: cancel,
-                                loadOrder: i.loadOrder.Select(lvm => lvm.Listing));
+                                loadOrder: i.loadOrder.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm),
+                                log: (s) => Logger.Information(s));
                             if (runnability.Failed)
                             {
                                 Logger.Information($"Checking runnability failed: {runnability.Reason}");
@@ -761,16 +763,16 @@ namespace Synthesis.Bethesda.GUI
                     runnableState
                         .Select(x => x.ToUnit()),
                     runnability,
-                    this.WhenAnyValue(x => x.Profile.Config.MainVM)
-                        .Select(x => x.DotNetSdkInstalled)
+                    this.WhenAnyValue(x => x.Profile.Config.MainVM.DotNetSdkInstalled)
                         .Switch()
                         .Select(x => (x, true))
                         .StartWith((new DotNetVersion(string.Empty, false), false)),
+                    this.WhenAnyFallback(x => x.Profile.Config.MainVM.EnvironmentErrors.ActiveError!.ErrorString),
                     missingReqMods
                         .QueryWhenChanged()
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
                         .StartWith(ListExt.Empty<ModKey>()),
-                    (driver, runner, checkout, runnability, dotnet, reqModsMissing) =>
+                    (driver, runner, checkout, runnability, dotnet, envError, reqModsMissing) =>
                     {
                         if (driver.IsHaltingError) return driver;
                         if (runner.IsHaltingError) return runner;
@@ -783,6 +785,10 @@ namespace Synthesis.Bethesda.GUI
                             };
                         }
                         if (!dotnet.Item1.Acceptable) return new ConfigurationState(ErrorResponse.Fail("No DotNet SDK installed"));
+                        if (envError != null)
+                        {
+                            return new ConfigurationState(ErrorResponse.Fail(envError));
+                        }
                         if (reqModsMissing.Count > 0)
                         {
                             return new ConfigurationState(ErrorResponse.Fail($"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));
@@ -871,8 +877,8 @@ namespace Synthesis.Bethesda.GUI
                 this,
                 compilation.Select(c =>
                 {
-                    if (c.RunnableState.Failed) return (c.RunnableState.BubbleFailure<string>(), null);
-                    return (GetResponse<string>.Succeed(c.Item.ProjPath), c.Item.TargetSynthesisVersion);
+                    if (c.RunnableState.Failed) return (c.RunnableState.BubbleFailure<FilePath>(), null);
+                    return (GetResponse<FilePath>.Succeed(c.Item.ProjPath), c.Item.TargetSynthesisVersion);
                 })
                 .DistinctUntilChanged(x => (x.Item1.Value, x.TargetSynthesisVersion)),
                 needBuild: false)
@@ -1012,15 +1018,41 @@ namespace Synthesis.Bethesda.GUI
             return ret;
         }
 
+        public string GetNewId()
+        {
+            bool IsValid(string id)
+            {
+                foreach (var patcher in Profile.Patchers.Items.WhereCastable<PatcherVM, GitPatcherVM>())
+                {
+                    if (patcher.ID == id)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            for (int i = 0; i < 15; i++)
+            {
+                var attempt = Path.GetRandomFileName();
+                if (IsValid(attempt))
+                {
+                    return attempt;
+                }
+            }
+
+            throw new ArgumentException("Could not allocate a new profile");
+        }
+
         private void CopyInSettings(GithubPatcherSettings? settings)
         {
             if (settings == null)
             {
-                this.ID = Guid.NewGuid().ToString();
+                this.ID = GetNewId();
                 return;
             }
             this.RemoteRepoPath = settings.RemoteRepoPath;
-            this.ID = string.IsNullOrWhiteSpace(settings.ID) ? Guid.NewGuid().ToString() : settings.ID;
+            this.ID = string.IsNullOrWhiteSpace(settings.ID) ? GetNewId() : settings.ID;
             this.ProjectSubpath = settings.SelectedProjectSubpath;
             this.PatcherVersioning = settings.PatcherVersioning;
             this.MutagenVersioning = settings.MutagenVersionType;

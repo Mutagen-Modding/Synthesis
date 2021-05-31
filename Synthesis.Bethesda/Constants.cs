@@ -1,4 +1,4 @@
-using Mutagen.Bethesda;
+using Mutagen.Bethesda.Plugins;
 
 namespace Synthesis.Bethesda
 {

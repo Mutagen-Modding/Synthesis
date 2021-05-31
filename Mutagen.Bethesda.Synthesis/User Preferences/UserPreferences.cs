@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
+using Mutagen.Bethesda.Plugins;
 
 namespace Mutagen.Bethesda.Synthesis
 {

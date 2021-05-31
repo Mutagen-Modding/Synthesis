@@ -1,5 +1,7 @@
 using CommandLine;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Order;
 using Newtonsoft.Json;
 using Noggog;
 using Noggog.Utility;
@@ -76,7 +78,6 @@ namespace Synthesis.Bethesda.Execution.CLI
                         }
                         return patcherSettings switch
                         {
-                            CodeSnippetPatcherSettings snippet => new CodeSnippetPatcherRun(snippet),
                             CliPatcherSettings cli => new CliPatcherRun(
                                 cli.Nickname,
                                 cli.PathToExecutable,
@@ -127,7 +128,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             bool build,
             Action<string> log)
         {
-            log($"Checking {path} for settings.  Direct exe? {directExe}.  Build? {build}");
+            log($"Checking for settings.  Direct exe? {directExe}.  Build? {build}");
             using var proc = ProcessWrapper.Create(
                 GetStart(path, directExe, new Synthesis.Bethesda.SettingsQuery(), build: build),
                 cancel: cancel,
@@ -137,7 +138,8 @@ namespace Synthesis.Bethesda.Execution.CLI
             using var outputSub = proc.Output
                 .Subscribe(s => output.Add(s));
 
-            switch ((Codes)await proc.Run())
+            var code = (Codes)await proc.Run();
+            switch (code)
             {
                 case Codes.OpensForSettings:
                     return new SettingsConfiguration(SettingsStyle.Open, Array.Empty<ReflectionSettingsConfig>());
@@ -156,7 +158,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             bool directExe,
             GameRelease release,
             string dataFolderPath,
-            IEnumerable<LoadOrderListing> loadOrder,
+            IEnumerable<IModListingGetter> loadOrder,
             Rectangle rect,
             CancellationToken cancel)
         {
@@ -184,7 +186,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             string path,
             GameRelease release,
             string dataFolderPath,
-            IEnumerable<LoadOrderListing> loadOrder,
+            IEnumerable<IModListingGetter> loadOrder,
             Rectangle rect,
             CancellationToken cancel)
         {
@@ -209,7 +211,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             return await proc.Run();
         }
 
-        public static TempFile GetTemporaryLoadOrder(GameRelease release, IEnumerable<LoadOrderListing> loadOrder)
+        public static TempFile GetTemporaryLoadOrder(GameRelease release, IEnumerable<IModListingGetter> loadOrder)
         {
             var loadOrderFile = new TempFile(
                 Path.Combine(Synthesis.Bethesda.Execution.Paths.WorkingDirectory, "RunnabilityChecks", Path.GetRandomFileName()));
@@ -228,8 +230,9 @@ namespace Synthesis.Bethesda.Execution.CLI
             bool directExe,
             GameRelease release,
             string dataFolder,
-            IEnumerable<LoadOrderListing> loadOrder,
-            CancellationToken cancel)
+            IEnumerable<IModListingGetter> loadOrder,
+            CancellationToken cancel,
+            Action<string>? log)
         {
             using var loadOrderFile = GetTemporaryLoadOrder(release, loadOrder);
 
@@ -239,7 +242,8 @@ namespace Synthesis.Bethesda.Execution.CLI
                 release: release,
                 dataFolder: dataFolder,
                 loadOrderPath: loadOrderFile.File.Path,
-                cancel: cancel);
+                cancel: cancel,
+                log: log);
         }
 
         public static async Task<ErrorResponse> CheckRunnability(
@@ -248,7 +252,8 @@ namespace Synthesis.Bethesda.Execution.CLI
             GameRelease release,
             string dataFolder,
             string loadOrderPath,
-            CancellationToken cancel)
+            CancellationToken cancel,
+            Action<string>? log)
         {
             var checkState = new Synthesis.Bethesda.CheckRunnability()
             {
@@ -260,6 +265,8 @@ namespace Synthesis.Bethesda.Execution.CLI
             using var proc = ProcessWrapper.Create(
                 GetStart(path, directExe, checkState),
                 cancel: cancel);
+            
+            log?.Invoke($"({proc.StartInfo.WorkingDirectory}): {proc.StartInfo.FileName} {proc.StartInfo.Arguments}");
 
             var results = new List<string>();
             void AddResult(string s)
@@ -280,7 +287,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             }
 
             // Other error codes are likely the target app just not handling runnability checks, so return as runnable unless
-            // explicity told otherwise with the above error code
+            // explicitly told otherwise with the above error code
             return ErrorResponse.Success;
         }
 
@@ -292,7 +299,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             }
             else
             {
-                return new ProcessStartInfo("dotnet", $"run --project \"{path}\" --runtime win-x64{(build ? string.Empty : " --no-build")} {Parser.Default.FormatCommandLine(args)}");
+                return new ProcessStartInfo("dotnet", $"run --project \"{path}\" -c Release --runtime win-x64{(build ? string.Empty : " --no-build")} {Parser.Default.FormatCommandLine(args)}");
             }
         }
     }

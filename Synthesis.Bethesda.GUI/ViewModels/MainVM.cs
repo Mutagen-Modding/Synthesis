@@ -70,6 +70,8 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<bool> _InModal;
         public bool InModal => _InModal.Value;
 
+        public EnvironmentErrorsVM EnvironmentErrors { get; }
+
         public MainVM(Window window)
         {
             _window = window;
@@ -156,13 +158,29 @@ namespace Synthesis.Bethesda.GUI
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .CombineLatest(
                     DotNetSdkInstalled,
-                    (_, v) => v)
-                .SelectTask(async v =>
+                    (_, DotNetVersions) => DotNetVersions)
+                .SelectTask(async x =>
                 {
-                    var normalUpdateTask = GetLatestVersions(v, includePrerelease: false);
-                    var prereleaseUpdateTask = GetLatestVersions(v, includePrerelease: true);
-                    await Task.WhenAll(normalUpdateTask, prereleaseUpdateTask);
-                    return (Normal: await normalUpdateTask, Prerelease: await prereleaseUpdateTask);
+                    try
+                    {
+                        if (!x.Acceptable)
+                        {
+                            Log.Logger.Error("Can not query for latest nuget versions as there is no acceptable dotnet SDK installed.");
+                            return (Normal: (MutagenVersion: default(string?), SynthesisVersion: default(string?)), Prerelease: (MutagenVersion: default(string?), SynthesisVersion: default(string?)));
+                        }
+
+                        var projPath = PrepLatestVersionProject();
+                    
+                        Log.Logger.Information("Querying for latest published library versions");
+                        var normalUpdate = await GetLatestVersions(includePrerelease: false, projPath);
+                        var prereleaseUpdate = await GetLatestVersions(includePrerelease: true, projPath);
+                        return (Normal: normalUpdate, Prerelease: prereleaseUpdate);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Logger.Error($"Error querying for versions: {e}");
+                        return (Normal: (MutagenVersion: default(string?), SynthesisVersion: default(string?)), Prerelease: (MutagenVersion: default(string?), SynthesisVersion: default(string?)));
+                    }
                 })
                 .Replay(1)
                 .RefCount();
@@ -178,16 +196,6 @@ namespace Synthesis.Bethesda.GUI
                     (vers, prereleases) => prereleases ? vers.Prerelease.SynthesisVersion : vers.Normal.SynthesisVersion)
                 .Replay(1)
                 .RefCount();
-
-            // Switch to DotNet screen if missing
-            DotNetSdkInstalled
-                .Subscribe(v =>
-                {
-                    if (!v.Acceptable)
-                    {
-                        ActivePanel = new DotNetNotInstalledVM(this, this.ActivePanel, DotNetSdkInstalled);
-                    }
-                });
 
             _ActiveConfirmation = Observable.CombineLatest(
                     this.WhenAnyFallback(x => x.Configuration.SelectedProfile!.SelectedPatcher)
@@ -213,6 +221,8 @@ namespace Synthesis.Bethesda.GUI
             _InModal = this.WhenAnyValue(x => x.ActiveConfirmation)
                 .Select(x => x != null)
                 .ToGuiProperty(this, nameof(InModal));
+            
+            EnvironmentErrors = new EnvironmentErrorsVM(this);
         }
 
         public void Load(SynthesisGuiSettings? guiSettings, PipelineSettings? pipeSettings)
@@ -245,27 +255,26 @@ namespace Synthesis.Bethesda.GUI
                 });
             }
         }
+        
+        public string PrepLatestVersionProject()
+        {
+            var bootstrapProjectDir = new DirectoryPath(Path.Combine(Execution.Paths.WorkingDirectory, "VersionQuery"));
+            bootstrapProjectDir.DeleteEntireFolder();
+            bootstrapProjectDir.Create();
+            var slnPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.sln");
+            SolutionInitialization.CreateSolutionFile(slnPath);
+            var projPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.csproj");
+            SolutionInitialization.CreateProject(projPath, GameCategory.Skyrim, insertOldVersion: true);
+            SolutionInitialization.AddProjectToSolution(slnPath, projPath);
+            return projPath;
+        }
 
-        public async Task<(string? MutagenVersion, string? SynthesisVersion)> GetLatestVersions(DotNetVersion dotNetVersion, bool includePrerelease)
+        public async Task<(string? MutagenVersion, string? SynthesisVersion)> GetLatestVersions(bool includePrerelease, string projPath)
         {
             try
             {
-                if (!dotNetVersion.Acceptable)
-                {
-                    Log.Logger.Error("Can not query for latest nuget versions as there is no acceptable dotnet SDK installed.");
-                    return (null, null);
-                }
-                Log.Logger.Information("Querying for latest published library versions");
-                var bootstrapProjectDir = new DirectoryPath(Path.Combine(Execution.Paths.WorkingDirectory, "VersionQuery"));
-                bootstrapProjectDir.DeleteEntireFolder();
-                bootstrapProjectDir.Create();
-                var slnPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.sln");
-                SolutionInitialization.CreateSolutionFile(slnPath);
-                var projPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.csproj");
-                SolutionInitialization.CreateProject(projPath, GameCategory.Skyrim, insertOldVersion: true);
-                SolutionInitialization.AddProjectToSolution(slnPath, projPath);
                 var ret = await DotNetCommands.QuerySynthesisVersions(projPath, current: false, includePrerelease: includePrerelease, CancellationToken.None);
-                Log.Logger.Information("Latest published library versions:");
+                Log.Logger.Information($"Latest published {(includePrerelease ? " prerelease" : null)} library versions:");
                 Log.Logger.Information($"  Mutagen: {ret.MutagenVersion}");
                 Log.Logger.Information($"  Synthesis: {ret.SynthesisVersion}");
                 return (ret.MutagenVersion ?? this.MutagenVersion, ret.SynthesisVersion ?? this.SynthesisVersion);

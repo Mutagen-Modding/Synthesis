@@ -57,6 +57,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                     {
                         throw new SynthesisBuildFailure(resp.Reason);
                     }
+                    _output.OnNext($"Compiled");
                 }),
                 Task.Run(async () =>
                 {
@@ -79,7 +80,8 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 release: settings.GameRelease,
                 dataFolder: settings.DataFolderPath,
                 loadOrderPath: settings.LoadOrderFilePath,
-                cancel: cancel);
+                cancel: cancel,
+                log: (s) => _output.OnNext(s));
 
             if (runnability.Failed)
             {
@@ -102,7 +104,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             };
             var args = Parser.Default.FormatCommandLine(internalSettings);
             using var process = ProcessWrapper.Create(
-                new ProcessStartInfo("dotnet", $"run --project \"{PathToProject}\" --runtime win-x64 --no-build {args}"),
+                new ProcessStartInfo("dotnet", $"run --project \"{PathToProject}\" --runtime win-x64 --no-build -c Release {args}"),
                 cancel: cancel);
             _output.OnNext("Running");
             _output.OnNext($"({process.StartInfo.WorkingDirectory}): {process.StartInfo.FileName} {process.StartInfo.Arguments}");

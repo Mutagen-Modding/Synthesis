@@ -4,13 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
-using Mutagen.Bethesda.Persistence;
+using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Allocators;
 
 namespace Synthesis.Bethesda.Execution
 {
@@ -20,7 +21,7 @@ namespace Synthesis.Bethesda.Execution
             string workingDirectory,
             ModPath outputPath,
             string dataFolder,
-            IEnumerable<LoadOrderListing> loadOrder,
+            IEnumerable<IModListingGetter> loadOrder,
             GameRelease release,
             IEnumerable<IPatcherRun> patchers,
             CancellationToken cancel,
@@ -47,7 +48,7 @@ namespace Synthesis.Bethesda.Execution
             string workingDirectory,
             ModPath outputPath,
             string dataFolder,
-            IEnumerable<LoadOrderListing> loadOrder,
+            IEnumerable<IModListingGetter> loadOrder,
             GameRelease release,
             IEnumerable<(TKey Key, IPatcherRun Run)> patchers,
             IRunReporter<TKey> reporter,

@@ -1,8 +1,12 @@
 using CommandLine;
-using Mutagen.Bethesda.Persistence;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Binary;
+using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Mutagen.Bethesda.Synthesis.Internal;
 using Noggog;
+using Noggog.Utility;
 using Synthesis.Bethesda;
 using Synthesis.Bethesda.DTO;
 using System;
@@ -12,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Mutagen.Bethesda.Installs;
 using SynthesisBase = Synthesis.Bethesda;
 
 namespace Mutagen.Bethesda.Synthesis
@@ -115,7 +120,7 @@ namespace Mutagen.Bethesda.Synthesis
                 loadOrderFilePath: args.LoadOrderFilePath,
                 dataFolderPath: args.DataFolderPath,
                 patcher?.Prefs)
-                .ToList();
+                .ToLoadOrder();
             var state = new RunnabilityState(args, loadOrder);
             try
             {
@@ -388,6 +393,7 @@ namespace Mutagen.Bethesda.Synthesis
                     (SettingsQuery settingsQuery) => QuerySettings(settingsQuery),
                     async _ =>
                     {
+                        Console.Error.WriteLine($"Could not parse arguments into an executable command: {string.Join(' ', args)}");
                         return -1;
                     });
         }
@@ -440,6 +446,7 @@ namespace Mutagen.Bethesda.Synthesis
                     GameRelease = args.GameRelease,
                     LoadOrderFilePath = args.LoadOrderFilePath
                 });
+                System.Console.WriteLine("Checking runnability complete");
             }
             WarmupAll.Init();
             System.Console.WriteLine("Prepping state.");

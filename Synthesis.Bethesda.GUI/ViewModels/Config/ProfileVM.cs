@@ -1,7 +1,6 @@
 using DynamicData;
 using Mutagen.Bethesda;
 using Newtonsoft.Json;
-using Mutagen.Bethesda.Synthesis.WPF;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -16,7 +15,10 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using DynamicData.Binding;
+using Mutagen.Bethesda.Installs;
+using Mutagen.Bethesda.Plugins.Cache;
+using Mutagen.Bethesda.Plugins.Records;
+using Mutagen.Bethesda.WPF.Plugins.Order;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -30,7 +32,6 @@ namespace Synthesis.Bethesda.GUI
         public ICommand AddGitPatcherCommand { get; }
         public ICommand AddSolutionPatcherCommand { get; }
         public ICommand AddCliPatcherCommand { get; }
-        public ICommand AddSnippetPatcherCommand { get; }
         public ICommand GoToErrorCommand { get; }
         public IReactiveCommand UpdateProfileNugetVersionCommand { get; }
         public ICommand EnableAllPatchersCommand { get; }
@@ -55,7 +56,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<GetResponse<PatcherVM>> _LargeOverallError;
         public GetResponse<PatcherVM> LargeOverallError => _LargeOverallError.Value;
 
-        public IObservableList<LoadOrderEntryVM> LoadOrder { get; }
+        public IObservableList<ReadOnlyModListingVM> LoadOrder { get; }
 
         private readonly ObservableAsPropertyHelper<bool> _IsActive;
         public bool IsActive => _IsActive.Value;
@@ -102,15 +103,14 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
 
-        public ProfileVM(ConfigurationVM parent, GameRelease? release = null, string? id = null)
+        public ProfileVM(ConfigurationVM parent, GameRelease release, string id)
         {
-            ID = id ?? Guid.NewGuid().ToString();
+            ID = id;
             Config = parent;
-            Release = release ?? GameRelease.Oblivion;
+            Release = release;
             AddGitPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new GitPatcherInitVM(this)));
             AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(this)));
             AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(this)));
-            AddSnippetPatcherCommand = ReactiveCommand.Create(() => SetPatcherForInitialConfiguration(new CodeSnippetPatcherVM(this)));
 
             ProfileDirectory = Path.Combine(Execution.Paths.WorkingDirectory, ID);
             WorkingDirectory = Execution.Paths.ProfileWorkingDirectory(ID);
@@ -192,15 +192,15 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (x.dataFolder.Failed)
                     {
-                        return (Results: Observable.Empty<IChangeSet<LoadOrderEntryVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
+                        return (Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
                     }
                     Log.Logger.Error($"Getting live load order for {x.release} -> {x.dataFolder.Value}");
-                    var liveLo = Mutagen.Bethesda.LoadOrder.GetLiveLoadOrder(x.release, x.dataFolder.Value, out var errors)
-                        .Transform(listing => new LoadOrderEntryVM(listing, x.dataFolder.Value))
+                    var liveLo = Mutagen.Bethesda.Plugins.Order.LoadOrder.GetLiveLoadOrder(x.release, x.dataFolder.Value, out var errors)
+                        .Transform(listing => new ReadOnlyModListingVM(listing, x.dataFolder.Value))
                         .DisposeMany();
                     return (Results: liveLo, State: errors);
                 })
-                .StartWith((Results: Observable.Empty<IChangeSet<LoadOrderEntryVM>>(), State: Observable.Return(ErrorResponse.Fail("Load order uninitialized"))))
+                .StartWith((Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(), State: Observable.Return(ErrorResponse.Fail("Load order uninitialized"))))
                 .Replay(1)
                 .RefCount();
 
@@ -244,6 +244,7 @@ namespace Synthesis.Bethesda.GUI
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
                     LoadOrder.Connect()
+                        .Filter(x => x.ModKey != Constants.SynthesisModKey)
                         .ObserveOnGui()
                         .FilterOnObservable(
                             x => x.WhenAnyValue(y => y.Exists)
@@ -251,7 +252,7 @@ namespace Synthesis.Bethesda.GUI
                                 .Select(x => !x), 
                             scheduler: RxApp.MainThreadScheduler)
                         .QueryWhenChanged(q => q)
-                        .StartWith(Noggog.ListExt.Empty<LoadOrderEntryVM>())
+                        .StartWith(Noggog.ListExt.Empty<ReadOnlyModListingVM>())
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler),
                     (dataFolder, loadOrder, enabledPatchers, erroredEnabledPatchers, missingMods) =>
                     {
@@ -260,7 +261,7 @@ namespace Synthesis.Bethesda.GUI
                         if (!loadOrder.Succeeded) return loadOrder.BubbleFailure<PatcherVM>();
                         if (missingMods.Count > 0)
                         {
-                            return GetResponse<PatcherVM>.Fail($"Load order had mods that were missing:{Environment.NewLine}{string.Join(Environment.NewLine, missingMods.Select(x => x.Listing.ModKey))}");
+                            return GetResponse<PatcherVM>.Fail($"Load order had mods that were missing:{Environment.NewLine}{string.Join(Environment.NewLine, missingMods.Select(x => x.ModKey))}");
                         }
                         if (erroredEnabledPatchers.Count > 0)
                         {
@@ -456,7 +457,7 @@ namespace Synthesis.Bethesda.GUI
             });
             var allCommands = Patchers.Connect()
                 .Transform(x => x as GitPatcherVM)
-                .NotNull()
+                .ChangeNotNull()
                 .Transform(x => CommandVM.Factory(x.UpdateAllCommand))
                 .AsObservableList();
             UpdateAllPatchersCommand = ReactiveCommand.CreateFromTask(
@@ -488,7 +489,7 @@ namespace Synthesis.Bethesda.GUI
                     this.WhenAnyValue(x => x.Release),
                     this.LoadOrder.Connect()
                         .QueryWhenChanged()
-                        .Select(q => q.Where(x => x.Listing.Enabled).Select(x => x.Listing.ModKey).ToArray())
+                        .Select(q => q.Where(x => x.Enabled).Select(x => x.ModKey).ToArray())
                         .StartWithEmpty(),
                     (dataFolder, rel, loadOrder) => (dataFolder, rel, loadOrder))
                 .Throttle(TimeSpan.FromMilliseconds(100), RxApp.TaskpoolScheduler)
@@ -496,7 +497,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     return Observable.Create<ILinkCache>(obs =>
                     {
-                        var loadOrder = Mutagen.Bethesda.LoadOrder.Import(
+                        var loadOrder = Mutagen.Bethesda.Plugins.Order.LoadOrder.Import(
                             x.dataFolder,
                             x.loadOrder,
                             factory: (modPath) => ModInstantiator.Importer(modPath, x.rel));
@@ -529,7 +530,6 @@ namespace Synthesis.Bethesda.GUI
                 return p switch
                 {
                     GithubPatcherSettings git => new GitPatcherVM(this, git),
-                    CodeSnippetPatcherSettings snippet => new CodeSnippetPatcherVM(this, snippet),
                     SolutionPatcherSettings soln => new SolutionPatcherVM(this, soln),
                     CliPatcherSettings cli => new CliPatcherVM(this, cli),
                     _ => throw new NotImplementedException(),

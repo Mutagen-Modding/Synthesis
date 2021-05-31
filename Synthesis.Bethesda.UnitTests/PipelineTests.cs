@@ -1,11 +1,8 @@
 using FluentAssertions;
 using Mutagen.Bethesda;
-using Mutagen.Bethesda.Synthesis;
-using System;
-using System.Collections.Generic;
+using Mutagen.Bethesda.Plugins.Order;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests
@@ -15,7 +12,7 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void AddsImplicitMods()
         {
-            using var tmp = Utility.GetTempFolder();
+            using var tmp = Utility.GetTempFolder(nameof(PipelineTests));
 
             var pluginPath = Path.Combine(tmp.Dir.Path, "Plugins.txt");
             var dataFolder = Path.Combine(tmp.Dir.Path, "Data");
@@ -34,18 +31,18 @@ namespace Synthesis.Bethesda.UnitTests
                 loadOrderFilePath: pluginPath,
                 dataFolderPath: dataFolder).ToList();
             listings.Should().HaveCount(3);
-            listings.Should().BeEquivalentTo(new LoadOrderListing[]
+            listings.Should().BeEquivalentTo(new IModListingGetter[]
             {
-                new LoadOrderListing(Mutagen.Bethesda.Skyrim.Constants.Skyrim, true),
-                new LoadOrderListing(Utility.TestModKey, true),
-                new LoadOrderListing(Utility.OverrideModKey, false),
+                new ModListing(Mutagen.Bethesda.Skyrim.Constants.Skyrim, true),
+                new ModListing(Utility.TestModKey, true),
+                new ModListing(Utility.OverrideModKey, false),
             });
         }
 
         [Fact]
         public void GetLoadOrder_NoLoadOrderPath()
         {
-            using var tmpFolder = Utility.GetTempFolder();
+            using var tmpFolder = Utility.GetTempFolder(nameof(PipelineTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimSE);
             var lo = Mutagen.Bethesda.Synthesis.Internal.Utility.GetLoadOrder(
                 GameRelease.SkyrimSE, 

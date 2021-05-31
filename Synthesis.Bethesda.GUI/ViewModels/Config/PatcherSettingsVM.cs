@@ -7,13 +7,12 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using DynamicData;
-using DynamicData.Binding;
-using System.IO;
 using Synthesis.Bethesda.DTO;
-using ReactiveUI.Fody.Helpers;
 using Mutagen.Bethesda.Synthesis.WPF;
+using LibGit2Sharp;
+using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.WPF.Plugins.Order;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -43,7 +42,7 @@ namespace Synthesis.Bethesda.GUI
         public PatcherSettingsVM(
             ILogger logger,
             PatcherVM parent,
-            IObservable<(GetResponse<string> ProjPath, string? SynthVersion)> source,
+            IObservable<(GetResponse<FilePath> ProjPath, string? SynthVersion)> source,
             bool needBuild)
         {
             Logger = logger;
@@ -103,7 +102,7 @@ namespace Synthesis.Bethesda.GUI
                             cancel: CancellationToken.None,
                             release: parent.Profile.Release,
                             dataFolderPath: parent.Profile.DataFolder,
-                            loadOrder: parent.Profile.LoadOrder.Items.Select(lvm => lvm.Listing));
+                            loadOrder: parent.Profile.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                     }
                     else
                     {
@@ -114,7 +113,7 @@ namespace Synthesis.Bethesda.GUI
                             cancel: CancellationToken.None,
                             release: parent.Profile.Release,
                             dataFolderPath: parent.Profile.DataFolder,
-                            loadOrder: parent.Profile.LoadOrder.Items.Select(lvm => lvm.Listing));
+                            loadOrder: parent.Profile.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                     }
                 },
                 disposable: this.CompositeDisposable);
@@ -138,7 +137,7 @@ namespace Synthesis.Bethesda.GUI
                         x.SettingsConfig,
                         projPath: x.ProjPath.Value,
                         displayName: parent.DisplayName,
-                        loadOrder: parent.Profile.LoadOrder.Connect(),
+                        loadOrder: parent.Profile.LoadOrder.Connect().Transform<ReadOnlyModListingVM, IModListingGetter>(x => x),
                         linkCache: parent.Profile.SimpleLinkCache,
                         log: Log.Logger.Information);
                 })
@@ -148,7 +147,24 @@ namespace Synthesis.Bethesda.GUI
         public void Persist(Action<string> logger)
         {
             if (!_hasBeenRetrieved) return;
-            ReflectionSettings?.Bundle?.Settings?.ForEach(vm => vm.Persist(logger));
+            ReflectionSettings?.Bundle?.Settings?.ForEach(vm =>
+            {
+                vm.Persist(logger);
+                if (!Repository.IsValid(vm.SettingsFolder))
+                {
+                    Repository.Init(vm.SettingsFolder);
+                }
+                using var repo = new Repository(vm.SettingsFolder);
+                Commands.Stage(repo, vm.SettingsSubPath);
+                var sig = new Signature("Synthesis", "someEmail@gmail.com", DateTimeOffset.Now);
+                try
+                {
+                    repo.Commit("Settings changed", sig, sig);
+                }
+                catch (EmptyCommitException)
+                {
+                }
+            });
         }
 
         public override void Dispose()

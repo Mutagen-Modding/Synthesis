@@ -32,6 +32,39 @@
     <EmbeddedResource Remove="Views\Run\**" />
     <None Remove="Views\Run\**" />
     <Page Remove="Views\Run\**" />
+    <Page Update="Views\Errors\NoDotNetSdkInstalledView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+    <Compile Update="Views\Errors\NoDotNetSdkInstalledView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Page Update="Views\Errors\NugetConfigIssueView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+    <Compile Update="Views\Errors\NugetConfigIssueView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="ViewModels\EnvironmentErrors\EnvironmentErrorsVM.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="ViewModels\EnvironmentErrors\DotNetNotInstalledVM.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="ViewModels\EnvironmentErrors\NugetConfigErrorVM.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -53,18 +86,18 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Humanizer.Core" Version="2.8.26" />
-    <PackageReference Include="Loqui" Version="2.13.0" />
-    <PackageReference Include="Loqui.Generation" Version="2.13.0" />
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.29.2" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.13.0" />
-    <PackageReference Include="Noggog.WPF" Version="2.13.0" />
-    <PackageReference Include="NuGetizer" Version="0.6.0">
+    <PackageReference Include="Humanizer.Core" Version="2.10.1" />
+    <PackageReference Include="Loqui" Version="2.17.0" />
+    <PackageReference Include="Loqui.Generation" Version="2.17.0" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.30" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.17.0" />
+    <PackageReference Include="Noggog.WPF" Version="2.17.0" />
+    <PackageReference Include="NuGetizer" Version="0.7.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="reactiveui" Version="13.2.2" />
-    <PackageReference Include="ReactiveUI.Fody" Version="13.2.2" />
+    <PackageReference Include="reactiveui" Version="13.3.2" />
+    <PackageReference Include="ReactiveUI.Fody" Version="13.3.2" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
