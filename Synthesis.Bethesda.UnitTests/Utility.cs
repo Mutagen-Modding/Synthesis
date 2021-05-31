@@ -33,7 +33,7 @@ namespace Synthesis.Bethesda.UnitTests
 
         public static TempFolder GetTempFolder(string folderName, [CallerMemberName] string? testName = null)
         {
-            return TempFolder.FactoryByAddedPath(Path.Combine(Utility.OverallTempFolderPath, folderName, testName!));
+            return TempFolder.FactoryByAddedPath(Path.Combine(Utility.OverallTempFolderPath, folderName, testName!), throwIfUnsuccessfulDisposal: false);
         }
         
         public static ModPath TypicalOutputFile(TempFolder tempFolder) => Path.Combine(tempFolder.Dir.Path, SynthesisModKey.FileName);
