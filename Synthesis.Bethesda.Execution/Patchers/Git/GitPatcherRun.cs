@@ -168,7 +168,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     && mutaVersion < NamespaceMutaVersion)
                 {
                     ProcessProjUsings(proj);
-                    SwapVersioning(projXml, "Mutagen.Bethesda.FormKeys.SkyrimSE", "2.0.0.1-dev", new SemanticVersion(2, 0, 0));
+                    SwapVersioning(projXml, "Mutagen.Bethesda.FormKeys.SkyrimSE", "2.1", new SemanticVersion(2, 0, 0));
                 }
 
                 File.WriteAllText(proj, projXml.ToString());
