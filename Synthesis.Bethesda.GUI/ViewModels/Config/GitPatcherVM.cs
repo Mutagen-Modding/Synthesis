@@ -165,7 +165,7 @@ namespace Synthesis.Bethesda.GUI
                 .Select(r => r.RunnableState)
                 .ToGuiProperty(this, nameof(RepoValidity));
 
-            // Clone repository to a folder where driving information will be retreived from master.
+            // Clone repository to a folder where driving information will be retrieved from master.
             // This will be where we get available projects + tags, etc.
             var driverRepoInfo = remoteRepoPath
                 .Throttle(TimeSpan.FromMilliseconds(100), RxApp.MainThreadScheduler)
@@ -778,7 +778,6 @@ namespace Synthesis.Bethesda.GUI
                         if (runner.IsHaltingError) return runner;
                         if (!dotnet.Item2)
                         {
-                            Logger.Information("Determining DotNet SDK installed");
                             return new ConfigurationState(ErrorResponse.Fail("Determining DotNet SDK installed"))
                             {
                                 IsHaltingError = false

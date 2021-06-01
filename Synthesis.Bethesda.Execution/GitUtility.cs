@@ -1,10 +1,7 @@
 using LibGit2Sharp;
 using Noggog;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,47 +10,62 @@ namespace Synthesis.Bethesda.Execution
     public static class GitUtility
     {
         private static bool DeleteOldRepo(
-            string localDir,
+            DirectoryPath localDir,
             GetResponse<string> remoteUrl,
             Action<string> logger)
         {
-            if (!Directory.Exists(localDir))
+            if (!localDir.Exists)
             {
                 logger($"No local repository exists at {localDir}.  No cleaning to do.");
                 return false;
             }
-            var dirInfo = new DirectoryPath(localDir);
             if (remoteUrl.Failed)
             {
                 logger($"No remote repository.  Deleting local at {localDir}.");
-                dirInfo.DeleteEntireFolder();
+                localDir.DeleteEntireFolder();
                 return false;
             }
             try
             {
                 using var repo = new Repository(localDir);
+
+                if (IsRepositoryUndesirable(repo, logger)) return true;
+                
                 // If it's the same remote repo, don't delete
                 if (repo.Network.Remotes.FirstOrDefault()?.Url.Equals(remoteUrl.Value) ?? false)
                 {
-                    logger("Remote repository target matched local folder's repo.  Keeping clone.");
+                    logger($"Remote repository target matched local folder's repo at {localDir}.  Keeping clone.");
                     return true;
                 }
             }
             catch (RepositoryNotFoundException)
             {
                 logger($"Repository corrupted.  Deleting local at {localDir}");
-                dirInfo.DeleteEntireFolder();
+                localDir.DeleteEntireFolder();
                 return false;
             }
 
             logger($"Remote address targeted a different repository.  Deleting local at {localDir}");
-            dirInfo.DeleteEntireFolder();
+            localDir.DeleteEntireFolder();
+            return false;
+        }
+
+        public static bool IsRepositoryUndesirable(
+            Repository repo,
+            Action<string> logger)
+        {
+            var master = repo.Branches.Where(b => b.IsCurrentRepositoryHead).FirstOrDefault();
+            if (master == null)
+            {
+                logger($"{repo.Info.Path}: Could not locate master branch");
+                return true;
+            }
             return false;
         }
 
         public static async Task<GetResponse<(string Remote, string Local)>> CheckOrCloneRepo(
             GetResponse<string> remote,
-            string localDir,
+            DirectoryPath localDir,
             Action<string> logger,
             CancellationToken cancel)
         {
