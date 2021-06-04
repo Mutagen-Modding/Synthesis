@@ -18,11 +18,13 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
+using Synthesis.Bethesda.Execution.CLI;
 
 namespace Synthesis.Bethesda.Execution.Patchers
 {
     public class SolutionPatcherRun : IPatcherRun
     {
+        private readonly ICheckRunnability _CheckRunnability;
         public string Name { get; }
         public string PathToSolution { get; }
         public string PathToProject { get; }
@@ -38,8 +40,10 @@ namespace Synthesis.Bethesda.Execution.Patchers
             string name,
             string pathToSln, 
             string pathToProj,
-            string pathToExtraDataBaseFolder)
+            string pathToExtraDataBaseFolder,
+            ICheckRunnability checkRunnability)
         {
+            _CheckRunnability = checkRunnability;
             PathToSolution = pathToSln;
             PathToProject = pathToProj;
             PathToExtraDataBaseFolder = pathToExtraDataBaseFolder;
@@ -74,7 +78,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 _output.OnNext($"Sha {repo.Head.Tip.Sha}");
             }
             
-            var runnability = await Synthesis.Bethesda.Execution.CLI.Commands.CheckRunnability(
+            var runnability = await _CheckRunnability.Check(
                 PathToProject,
                 directExe: false,
                 release: settings.GameRelease,

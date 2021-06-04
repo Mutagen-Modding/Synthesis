@@ -28,7 +28,7 @@ namespace Synthesis.Bethesda.CLI
                                 }
                                 settings.DataFolderPath = Path.Combine(gameFolder, "Data");
                             }
-                            await Commands.Run(settings, CancellationToken.None, new ConsoleReporter());
+                            await Inject.Instance.GetInstance<IRunPatcherPipeline>().Run(settings, CancellationToken.None, new ConsoleReporter());
                         }
                         catch (Exception ex)
                         {

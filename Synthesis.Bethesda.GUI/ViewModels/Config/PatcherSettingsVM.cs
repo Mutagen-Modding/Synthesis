@@ -13,6 +13,7 @@ using Mutagen.Bethesda.Synthesis.WPF;
 using LibGit2Sharp;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
+using Synthesis.Bethesda.Execution.CLI;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -43,7 +44,10 @@ namespace Synthesis.Bethesda.GUI
             ILogger logger,
             PatcherVM parent,
             IObservable<(GetResponse<FilePath> ProjPath, string? SynthVersion)> source,
-            bool needBuild)
+            bool needBuild,
+            IGetSettingsStyle getSettingsStyle,
+            IOpenForSettings openForSettings,
+            IOpenSettingsHost openSettingsHost)
         {
             Logger = logger;
             _SettingsConfiguration = source
@@ -57,7 +61,7 @@ namespace Synthesis.Bethesda.GUI
 
                         try
                         {
-                            var result = await Synthesis.Bethesda.Execution.CLI.Commands.GetSettingsStyle(
+                            var result = await getSettingsStyle.Get(
                                 i.ProjPath.Value,
                                 directExe: false,
                                 cancel: cancel,
@@ -95,7 +99,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (o.Conf.Style == SettingsStyle.Open)
                     {
-                        await Synthesis.Bethesda.Execution.CLI.Commands.OpenForSettings(
+                        await openForSettings.Open(
                             o.Proj.Value,
                             directExe: false,
                             rect: parent.Profile.Config.MainVM.Rectangle,
@@ -106,7 +110,7 @@ namespace Synthesis.Bethesda.GUI
                     }
                     else
                     {
-                        await Synthesis.Bethesda.Execution.CLI.Commands.OpenSettingHost(
+                        await openSettingsHost.Open(
                             patcherName: parent.DisplayName,
                             path: o.Proj.Value,
                             rect: parent.Profile.Config.MainVM.Rectangle,

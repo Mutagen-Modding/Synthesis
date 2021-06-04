@@ -11,7 +11,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
         RepositoryCheckout Get(DirectoryPath path);
     }
 
-    public class ProvideProvideRepositoryCheckouts : IProvideRepositoryCheckouts
+    public class ProvideRepositoryCheckouts : IProvideRepositoryCheckouts
     {
         private readonly TaskCompletionSource _shutdown = new();
         private int _numInFlight;
@@ -20,7 +20,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
         public bool IsShutdownRequested { get; private set; }
         public bool IsShutdown { get; private set; }
 
-        public ProvideProvideRepositoryCheckouts()
+        public ProvideRepositoryCheckouts()
         {
         }
 

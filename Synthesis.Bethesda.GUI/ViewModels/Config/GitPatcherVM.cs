@@ -25,6 +25,7 @@ using Synthesis.Bethesda.Execution;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
+using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services;
@@ -149,6 +150,7 @@ namespace Synthesis.Bethesda.GUI
             INavigateTo navigate, 
             ICheckOrCloneRepo checkOrClone,
             ICheckoutRunnerRepository checkoutRunner,
+            ICheckRunnability checkRunnability,
             GithubPatcherSettings? settings = null)
             : base(parent, settings)
         {
@@ -735,7 +737,7 @@ namespace Synthesis.Bethesda.GUI
 
                         try
                         {
-                            var runnability = await Execution.CLI.Commands.CheckRunnability(
+                            var runnability = await checkRunnability.Check(
                                 path: i.comp.Item.ProjPath,
                                 directExe: false,
                                 release: parent.Release,
@@ -891,7 +893,10 @@ namespace Synthesis.Bethesda.GUI
                     return (GetResponse<FilePath>.Succeed(c.Item.ProjPath), c.Item.TargetSynthesisVersion);
                 })
                 .DistinctUntilChanged(x => (x.Item1.Value, x.TargetSynthesisVersion)),
-                needBuild: false)
+                needBuild: false,
+                openForSettings: Inject.Instance.GetInstance<IOpenForSettings>(),
+                getSettingsStyle: Inject.Instance.GetInstance<IGetSettingsStyle>(),
+                openSettingsHost: Inject.Instance.GetInstance<IOpenSettingsHost>())
                 .DisposeWith(this);
 
             _StatusDisplay = Observable.CombineLatest(
@@ -1092,7 +1097,8 @@ namespace Synthesis.Bethesda.GUI
                     name: DisplayName,
                     pathToSln: RunnableData.SolutionPath,
                     pathToExtraDataBaseFolder: Execution.Paths.TypicalExtraData,
-                    pathToProj: RunnableData.ProjPath));
+                    pathToProj: RunnableData.ProjPath,
+                    checkRunnability: Inject.Instance.GetInstance<ICheckRunnability>()));
         }
 
         public static IObservable<ConfigurationState<string>> GetRepoPathValidity(IObservable<string> repoPath)

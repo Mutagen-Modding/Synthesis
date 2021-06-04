@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using LibGit2Sharp;
 using Noggog;
 using Serilog;
 using SimpleInjector;
-using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.CLI;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services;
 
@@ -32,16 +32,21 @@ namespace Synthesis.Bethesda.GUI
                 typeof(IEnvironmentErrorVM).Assembly.AsEnumerable(), 
                 Lifestyle.Singleton);
 
-            RegisterMatchingInterfaces(
-                from type in typeof(IProvideInstalledSdk).Assembly.GetExportedTypes()
-                where type.Namespace!.StartsWith("Synthesis.Bethesda.GUI.Services")
-                select type,
-                Lifestyle.Singleton);
+            RegisterNamespaceFromType(typeof(IProvideInstalledSdk), Lifestyle.Singleton);
 
             RegisterMatchingInterfaces(
                 from type in typeof(IProvideRepositoryCheckouts).Assembly.GetExportedTypes()
                 select type,
                 Lifestyle.Singleton);
+        }
+
+        private void RegisterNamespaceFromType(Type type, Lifestyle lifestyle)
+        {
+            RegisterMatchingInterfaces(
+                from t in type.Assembly.GetExportedTypes()
+                where t.Namespace!.StartsWith(type.Namespace!)
+                select t,
+                lifestyle);
         }
 
         private void RegisterMatchingInterfaces(IEnumerable<Type> types, Lifestyle lifestyle)
