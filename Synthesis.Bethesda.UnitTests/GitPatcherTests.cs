@@ -15,12 +15,18 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Synthesis.Bethesda.Execution.GitRespository;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests
 {
     public class GitPatcherTests
     {
+        private CheckoutRunnerRepository Get()
+        {
+            return new CheckoutRunnerRepository(new ProvideProvideRepositoryCheckouts());
+        }
+        
         public TempFolder GetRepository(
             out string remote, 
             out string local,
@@ -103,7 +109,7 @@ namespace Synthesis.Bethesda.UnitTests
             cancel.Cancel();
             await Assert.ThrowsAsync<OperationCanceledException>(() =>
             {
-                return GitPatcherRun.CheckoutRunnerRepository(
+                return Get().Checkout(
                     proj: string.Empty,
                     localRepoDir: string.Empty,
                     patcherVersioning: null!,
@@ -118,7 +124,7 @@ namespace Synthesis.Bethesda.UnitTests
         public async Task CreatesRunnerBranch()
         {
             using var repoPath = GetRepository(out var remote, out var local);
-            var resp = await GitPatcherRun.CheckoutRunnerRepository(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: TypicalPatcherVersioning(),
@@ -127,14 +133,14 @@ namespace Synthesis.Bethesda.UnitTests
                 cancel: CancellationToken.None,
                 compile: false);
             using var repo = new Repository(local);
-            repo.Branches.Select(x => x.FriendlyName).Should().Contain(GitPatcherRun.RunnerBranch);
+            repo.Branches.Select(x => x.FriendlyName).Should().Contain(CheckoutRunnerRepository.RunnerBranch);
         }
 
         [Fact]
         public async Task NonExistantProjPath()
         {
             using var repoPath = GetRepository(out var remote, out var local);
-            var resp = await GitPatcherRun.CheckoutRunnerRepository(
+            var resp = await Get().Checkout(
                 proj: string.Empty,
                 localRepoDir: local,
                 patcherVersioning: TypicalPatcherVersioning(),
@@ -152,7 +158,7 @@ namespace Synthesis.Bethesda.UnitTests
         {
             using var repoPath = GetRepository(out var remote, out var local,
                 createPatcherFiles: false);
-            var resp = await GitPatcherRun.CheckoutRunnerRepository(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: TypicalPatcherVersioning(),
@@ -170,7 +176,7 @@ namespace Synthesis.Bethesda.UnitTests
         {
             using var repoPath = GetRepository(out var remote, out var local);
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, "46c207318c1531de7dc2f8e8c2a91aced183bc30");
-            var resp = await GitPatcherRun.CheckoutRunnerRepository(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: versioning,
@@ -188,7 +194,7 @@ namespace Synthesis.Bethesda.UnitTests
         {
             using var repoPath = GetRepository(out var remote, out var local);
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, "derp");
-            var resp = await GitPatcherRun.CheckoutRunnerRepository(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: versioning,
@@ -210,7 +216,7 @@ namespace Synthesis.Bethesda.UnitTests
             var tipSha = repo.Head.Tip.Sha;
             repo.Tags.Add(tagStr, tipSha);
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tagStr);
-            var resp = await GitPatcherRun.CheckoutRunnerRepository(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: versioning,
@@ -221,7 +227,7 @@ namespace Synthesis.Bethesda.UnitTests
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
-            repo.Head.FriendlyName.Should().BeEquivalentTo(GitPatcherRun.RunnerBranch);
+            repo.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
         }
 
         [Fact]
@@ -244,7 +250,7 @@ namespace Synthesis.Bethesda.UnitTests
             using var clone = new Repository(Repository.Clone(remote, clonePath));
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tagStr);
-            var resp = await GitPatcherRun.CheckoutRunnerRepository(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
@@ -255,7 +261,7 @@ namespace Synthesis.Bethesda.UnitTests
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             clone.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
-            clone.Head.FriendlyName.Should().BeEquivalentTo(GitPatcherRun.RunnerBranch);
+            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
         }
 
         [Fact]
@@ -271,7 +277,7 @@ namespace Synthesis.Bethesda.UnitTests
             repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tag);
-            var resp = await GitPatcherRun.CheckoutRunnerRepository(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: versioning,
@@ -282,7 +288,7 @@ namespace Synthesis.Bethesda.UnitTests
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
-            repo.Head.FriendlyName.Should().BeEquivalentTo(GitPatcherRun.RunnerBranch);
+            repo.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
         }
 
         [Fact]
@@ -304,7 +310,7 @@ namespace Synthesis.Bethesda.UnitTests
             }
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tagStr);
-            var resp = await GitPatcherRun.CheckoutRunnerRepository(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
@@ -315,7 +321,7 @@ namespace Synthesis.Bethesda.UnitTests
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             clone.Head.Tip.Sha.Should().BeEquivalentTo(commitSha);
-            clone.Head.FriendlyName.Should().BeEquivalentTo(GitPatcherRun.RunnerBranch);
+            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
         }
 
         [Fact]
@@ -329,7 +335,7 @@ namespace Synthesis.Bethesda.UnitTests
             repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, tipSha);
-            var resp = await GitPatcherRun.CheckoutRunnerRepository(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: versioning,
@@ -340,7 +346,7 @@ namespace Synthesis.Bethesda.UnitTests
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
-            repo.Head.FriendlyName.Should().BeEquivalentTo(GitPatcherRun.RunnerBranch);
+            repo.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
         }
 
         [Fact]
@@ -360,7 +366,7 @@ namespace Synthesis.Bethesda.UnitTests
             using var clone = new Repository(Repository.Clone(remote, clonePath));
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, tipSha);
-            var resp = await GitPatcherRun.CheckoutRunnerRepository(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
@@ -371,7 +377,7 @@ namespace Synthesis.Bethesda.UnitTests
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             clone.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
-            clone.Head.FriendlyName.Should().BeEquivalentTo(GitPatcherRun.RunnerBranch);
+            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
         }
 
         [Fact]
@@ -392,7 +398,7 @@ namespace Synthesis.Bethesda.UnitTests
             }
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, commitSha);
-            var resp = await GitPatcherRun.CheckoutRunnerRepository(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
@@ -403,7 +409,7 @@ namespace Synthesis.Bethesda.UnitTests
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             clone.Head.Tip.Sha.Should().BeEquivalentTo(commitSha);
-            clone.Head.FriendlyName.Should().BeEquivalentTo(GitPatcherRun.RunnerBranch);
+            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
         }
 
         [Fact]
@@ -424,7 +430,7 @@ namespace Synthesis.Bethesda.UnitTests
             repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, jbName);
-            var resp = await GitPatcherRun.CheckoutRunnerRepository(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: versioning,
@@ -435,7 +441,7 @@ namespace Synthesis.Bethesda.UnitTests
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
-            repo.Head.FriendlyName.Should().BeEquivalentTo(GitPatcherRun.RunnerBranch);
+            repo.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
             repo.Branches[jbName].Tip.Sha.Should().BeEquivalentTo(tipSha);
             repo.Branches[DefaultBranch].Tip.Sha.Should().BeEquivalentTo(commit.Sha);
         }
@@ -467,7 +473,7 @@ namespace Synthesis.Bethesda.UnitTests
             using var clone = new Repository(Repository.Clone(remote, clonePath));
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, $"origin/{jbName}");
-            var resp = await GitPatcherRun.CheckoutRunnerRepository(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
@@ -478,7 +484,7 @@ namespace Synthesis.Bethesda.UnitTests
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             clone.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
-            clone.Head.FriendlyName.Should().BeEquivalentTo(GitPatcherRun.RunnerBranch);
+            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
             clone.Branches[jbName].Should().BeNull();
             clone.Branches[DefaultBranch].Tip.Sha.Should().BeEquivalentTo(commitSha);
         }
@@ -501,7 +507,7 @@ namespace Synthesis.Bethesda.UnitTests
             }
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, $"origin/{DefaultBranch}");
-            var resp = await GitPatcherRun.CheckoutRunnerRepository(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
@@ -512,7 +518,7 @@ namespace Synthesis.Bethesda.UnitTests
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             clone.Head.Tip.Sha.Should().BeEquivalentTo(commitSha);
-            clone.Head.FriendlyName.Should().BeEquivalentTo(GitPatcherRun.RunnerBranch);
+            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
             clone.Branches[DefaultBranch].Tip.Sha.Should().BeEquivalentTo(tipSha);
         }
         #endregion

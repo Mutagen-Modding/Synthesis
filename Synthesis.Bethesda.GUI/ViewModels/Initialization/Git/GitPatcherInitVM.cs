@@ -19,6 +19,7 @@ using System.Threading;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
@@ -61,7 +62,8 @@ namespace Synthesis.Bethesda.GUI
         public GitPatcherInitVM(ProfileVM profile, INavigateTo navigateTo, ICheckOrCloneRepo checkOrClone)
             : base(profile)
         {
-            Patcher = new GitPatcherVM(profile, navigateTo, checkOrClone);
+            Patcher = new GitPatcherVM(profile, navigateTo, checkOrClone,
+                Inject.Instance.GetRequiredService<ICheckoutRunnerRepository>());
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)
                 .Select(x => ErrorResponse.Create(x))
@@ -178,7 +180,8 @@ namespace Synthesis.Bethesda.GUI
             PatcherVM patcher = new GitPatcherVM(
                 Profile,
                 Inject.Instance.GetRequiredService<INavigateTo>(),
-                Inject.Instance.GetRequiredService<ICheckOrCloneRepo>())
+                Inject.Instance.GetRequiredService<ICheckOrCloneRepo>(),
+                Inject.Instance.GetRequiredService<ICheckoutRunnerRepository>())
             {
                 RemoteRepoPath = listing.RepoPath,
                 ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')

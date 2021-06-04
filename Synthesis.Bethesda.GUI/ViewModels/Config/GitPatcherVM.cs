@@ -33,6 +33,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public class GitPatcherVM : PatcherVM
     {
+        private readonly ICheckoutRunnerRepository _CheckoutRunner;
         public override bool IsNameEditable => false;
 
         [Reactive]
@@ -147,9 +148,12 @@ namespace Synthesis.Bethesda.GUI
             ProfileVM parent, 
             INavigateTo navigate, 
             ICheckOrCloneRepo checkOrClone,
+            ICheckoutRunnerRepository checkoutRunner,
             GithubPatcherSettings? settings = null)
             : base(parent, settings)
         {
+            _CheckoutRunner = checkoutRunner;
+            
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
 
             CopyInSettings(settings);
@@ -546,7 +550,7 @@ namespace Synthesis.Bethesda.GUI
                                 IsHaltingError = false,
                             });
 
-                            var runInfo = await GitPatcherRun.CheckoutRunnerRepository(
+                            var runInfo = await _CheckoutRunner.Checkout(
                                 proj: item.proj.Value,
                                 localRepoDir: LocalRunnerRepoDirectory,
                                 patcherVersioning: item.patcherVersioning,

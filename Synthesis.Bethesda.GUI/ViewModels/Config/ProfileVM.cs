@@ -552,6 +552,7 @@ namespace Synthesis.Bethesda.GUI
                         this, 
                         Inject.Instance.GetRequiredService<INavigateTo>(),
                         Inject.Instance.GetRequiredService<ICheckOrCloneRepo>(),
+                        Inject.Instance.GetRequiredService<ICheckoutRunnerRepository>(),
                         git),
                     SolutionPatcherSettings soln => new SolutionPatcherVM(this, soln),
                     CliPatcherSettings cli => new CliPatcherVM(this, cli),
