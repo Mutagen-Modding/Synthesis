@@ -19,6 +19,13 @@ namespace Synthesis.Bethesda.Execution.GitRespository
 
     public class DeleteOldRepo : IDeleteOldRepo
     {
+        private readonly IProvideRepositoryCheckouts _RepoCheckouts;
+
+        public DeleteOldRepo(IProvideRepositoryCheckouts repoCheckouts)
+        {
+            _RepoCheckouts = repoCheckouts;
+        }
+        
         public bool Delete(
             DirectoryPath localDir,
             GetResponse<string> remoteUrl,
@@ -37,7 +44,8 @@ namespace Synthesis.Bethesda.Execution.GitRespository
             }
             try
             {
-                using var repo = new Repository(localDir);
+                using var repoCheckout = _RepoCheckouts.Get(localDir);
+                var repo = repoCheckout.Repository;
 
                 if (IsRepositoryUndesirable(repo, logger)) return true;
                 

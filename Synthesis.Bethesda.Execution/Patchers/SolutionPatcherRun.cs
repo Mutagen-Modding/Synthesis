@@ -19,12 +19,14 @@ using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using Synthesis.Bethesda.Execution.CLI;
+using Synthesis.Bethesda.Execution.GitRespository;
 
 namespace Synthesis.Bethesda.Execution.Patchers
 {
     public class SolutionPatcherRun : IPatcherRun
     {
         private readonly ICheckRunnability _CheckRunnability;
+        private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
         public string Name { get; }
         public string PathToSolution { get; }
         public string PathToProject { get; }
@@ -41,9 +43,11 @@ namespace Synthesis.Bethesda.Execution.Patchers
             string pathToSln, 
             string pathToProj,
             string pathToExtraDataBaseFolder,
-            ICheckRunnability checkRunnability)
+            ICheckRunnability checkRunnability,
+            IProvideRepositoryCheckouts repositoryCheckouts)
         {
             _CheckRunnability = checkRunnability;
+            _RepositoryCheckouts = repositoryCheckouts;
             PathToSolution = pathToSln;
             PathToProject = pathToProj;
             PathToExtraDataBaseFolder = pathToExtraDataBaseFolder;
@@ -74,8 +78,8 @@ namespace Synthesis.Bethesda.Execution.Patchers
             var repoPath = Path.GetDirectoryName(PathToSolution);
             if (Repository.IsValid(repoPath))
             {
-                using var repo = new Repository(repoPath);
-                _output.OnNext($"Sha {repo.Head.Tip.Sha}");
+                using var repo = _RepositoryCheckouts.Get(repoPath!);
+                _output.OnNext($"Sha {repo.Repository.Head.Tip.Sha}");
             }
             
             var runnability = await _CheckRunnability.Check(

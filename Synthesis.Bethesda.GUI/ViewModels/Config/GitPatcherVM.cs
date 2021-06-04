@@ -149,6 +149,7 @@ namespace Synthesis.Bethesda.GUI
             ProfileVM parent, 
             INavigateTo navigate, 
             ICheckOrCloneRepo checkOrClone,
+            IProvideRepositoryCheckouts repoCheckouts,
             ICheckoutRunnerRepository checkoutRunner,
             ICheckRunnability checkRunnability,
             GithubPatcherSettings? settings = null)
@@ -208,7 +209,8 @@ namespace Synthesis.Bethesda.GUI
                         string masterBranch;
                         try
                         {
-                            using var repo = new Repository(LocalDriverRepoDirectory);
+                            using var repoCheckout = repoCheckouts.Get(LocalDriverRepoDirectory);
+                            var repo = repoCheckout.Repository;
                             var master = repo.Branches.Where(b => b.IsCurrentRepositoryHead).FirstOrDefault();
                             if (master == null)
                             {
@@ -894,6 +896,7 @@ namespace Synthesis.Bethesda.GUI
                 })
                 .DistinctUntilChanged(x => (x.Item1.Value, x.TargetSynthesisVersion)),
                 needBuild: false,
+                repoCheckouts: Inject.Instance.GetInstance<IProvideRepositoryCheckouts>(),
                 openForSettings: Inject.Instance.GetInstance<IOpenForSettings>(),
                 getSettingsStyle: Inject.Instance.GetInstance<IGetSettingsStyle>(),
                 openSettingsHost: Inject.Instance.GetInstance<IOpenSettingsHost>())
@@ -1098,7 +1101,8 @@ namespace Synthesis.Bethesda.GUI
                     pathToSln: RunnableData.SolutionPath,
                     pathToExtraDataBaseFolder: Execution.Paths.TypicalExtraData,
                     pathToProj: RunnableData.ProjPath,
-                    checkRunnability: Inject.Instance.GetInstance<ICheckRunnability>()));
+                    checkRunnability: Inject.Instance.GetInstance<ICheckRunnability>(),
+                    repositoryCheckouts: Inject.Instance.GetInstance<IProvideRepositoryCheckouts>()));
         }
 
         public static IObservable<ConfigurationState<string>> GetRepoPathValidity(IObservable<string> repoPath)

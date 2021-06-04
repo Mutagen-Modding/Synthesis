@@ -26,10 +26,17 @@ namespace Synthesis.Bethesda.Execution.CLI
 
     public class RunPatcherPipeline : IRunPatcherPipeline
     {
+        private readonly ICheckOrCloneRepo _CheckOrCloneRepo;
+        private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
         private readonly ICheckRunnability _Runnability;
 
-        public RunPatcherPipeline(ICheckRunnability runnability)
+        public RunPatcherPipeline(
+            ICheckOrCloneRepo checkOrCloneRepo,
+            IProvideRepositoryCheckouts repositoryCheckouts,
+            ICheckRunnability runnability)
         {
+            _CheckOrCloneRepo = checkOrCloneRepo;
+            _RepositoryCheckouts = repositoryCheckouts;
             _Runnability = runnability;
         }
         
@@ -97,11 +104,12 @@ namespace Synthesis.Bethesda.Execution.CLI
                                 pathToSln: sln.SolutionPath,
                                 pathToExtraDataBaseFolder: run.ExtraDataFolder ?? Paths.TypicalExtraData,
                                 pathToProj: Path.Combine(Path.GetDirectoryName(sln.SolutionPath)!, sln.ProjectSubpath),
-                                checkRunnability: _Runnability),
+                                checkRunnability: _Runnability,
+                                repositoryCheckouts: _RepositoryCheckouts),
                             GithubPatcherSettings git => new GitPatcherRun(
                                 settings: git,
                                 localDir: GitPatcherRun.RunnerRepoDirectory(profile.ID, git.ID),
-                                checkOrClone: new CheckOrCloneRepo(new DeleteOldRepo())),
+                                checkOrClone: _CheckOrCloneRepo),
                             _ => throw new NotImplementedException(),
                         };
                     })

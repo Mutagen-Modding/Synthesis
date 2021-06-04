@@ -119,6 +119,7 @@ namespace Synthesis.Bethesda.GUI
                 SetInitializer(new GitPatcherInitVM(
                     this, 
                     Inject.Instance.GetRequiredService<INavigateTo>(), 
+                    Inject.Instance.GetRequiredService<IProvideRepositoryCheckouts>(), 
                     Inject.Instance.GetRequiredService<ICheckOrCloneRepo>()));
             });
             AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(this)));
@@ -553,6 +554,7 @@ namespace Synthesis.Bethesda.GUI
                         this, 
                         Inject.Instance.GetRequiredService<INavigateTo>(),
                         Inject.Instance.GetRequiredService<ICheckOrCloneRepo>(),
+                        Inject.Instance.GetRequiredService<IProvideRepositoryCheckouts>(),
                         Inject.Instance.GetRequiredService<ICheckoutRunnerRepository>(),
                         Inject.Instance.GetRequiredService<ICheckRunnability>(),
                         git),

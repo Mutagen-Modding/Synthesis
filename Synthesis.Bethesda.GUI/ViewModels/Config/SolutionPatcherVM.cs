@@ -22,6 +22,7 @@ using System.Collections.ObjectModel;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.WPF.Plugins;
 using Synthesis.Bethesda.Execution.CLI;
+using Synthesis.Bethesda.Execution.GitRespository;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -262,6 +263,7 @@ namespace Synthesis.Bethesda.GUI
                         .WithLatestFrom(projPath, (_, p) => p))
                     .Select(p => (GetResponse<FilePath>.Succeed(p), default(string?))),
                 needBuild: true,
+                repoCheckouts: Inject.Instance.GetInstance<IProvideRepositoryCheckouts>(),
                 openForSettings: Inject.Instance.GetInstance<IOpenForSettings>(),
                 getSettingsStyle: Inject.Instance.GetInstance<IGetSettingsStyle>(),
                 openSettingsHost: Inject.Instance.GetInstance<IOpenSettingsHost>())
@@ -296,7 +298,8 @@ namespace Synthesis.Bethesda.GUI
                     pathToSln: SolutionPath.TargetPath,
                     pathToExtraDataBaseFolder: Execution.Paths.TypicalExtraData,
                     pathToProj: SelectedProjectPath.TargetPath,
-                    checkRunnability: Inject.Instance.GetInstance<ICheckRunnability>()));
+                    checkRunnability: Inject.Instance.GetInstance<ICheckRunnability>(),
+                    repositoryCheckouts: Inject.Instance.GetInstance<IProvideRepositoryCheckouts>()));
         }
 
         public class SolutionPatcherConfigLogic

@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.UnitTests
     {
         private CheckoutRunnerRepository Get()
         {
-            return new CheckoutRunnerRepository(new ProvideProvideRepositoryCheckouts());
+            return new CheckoutRunnerRepository(new ProvideRepositoryCheckouts());
         }
         
         public TempFolder GetRepository(

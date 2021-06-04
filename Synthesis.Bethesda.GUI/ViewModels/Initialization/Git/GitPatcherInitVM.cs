@@ -60,10 +60,15 @@ namespace Synthesis.Bethesda.GUI
 
         private bool _wasAdded = false;
 
-        public GitPatcherInitVM(ProfileVM profile, INavigateTo navigateTo, ICheckOrCloneRepo checkOrClone)
+        public GitPatcherInitVM(
+            ProfileVM profile, 
+            INavigateTo navigateTo, 
+            IProvideRepositoryCheckouts repositoryCheckouts,
+            ICheckOrCloneRepo checkOrClone)
             : base(profile)
         {
             Patcher = new GitPatcherVM(profile, navigateTo, checkOrClone,
+                Inject.Instance.GetRequiredService<IProvideRepositoryCheckouts>(),
                 Inject.Instance.GetRequiredService<ICheckoutRunnerRepository>(),
                 Inject.Instance.GetRequiredService<ICheckRunnability>());
 
@@ -87,7 +92,8 @@ namespace Synthesis.Bethesda.GUI
                             Error = localRepoPath;
                             return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
                         }
-                        using var repo = new Repository(localRepoPath.Value.Local);
+                        using var repoCheckout = repositoryCheckouts.Get(localRepoPath.Value.Local);
+                        var repo = repoCheckout.Repository;
                         repo.Fetch();
 
                         var master = repo.Branches.Where(b => b.IsCurrentRepositoryHead).FirstOrDefault();
@@ -183,6 +189,7 @@ namespace Synthesis.Bethesda.GUI
                 Profile,
                 Inject.Instance.GetRequiredService<INavigateTo>(),
                 Inject.Instance.GetRequiredService<ICheckOrCloneRepo>(),
+                Inject.Instance.GetRequiredService<IProvideRepositoryCheckouts>(),
                 Inject.Instance.GetRequiredService<ICheckoutRunnerRepository>(),
                 Inject.Instance.GetRequiredService<ICheckRunnability>())
             {

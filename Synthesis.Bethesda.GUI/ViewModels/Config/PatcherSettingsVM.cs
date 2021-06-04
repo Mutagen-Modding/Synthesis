@@ -14,11 +14,13 @@ using LibGit2Sharp;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Synthesis.Bethesda.Execution.CLI;
+using Synthesis.Bethesda.Execution.GitRespository;
 
 namespace Synthesis.Bethesda.GUI
 {
     public class PatcherSettingsVM : ViewModel
     {
+        private readonly IProvideRepositoryCheckouts _RepoCheckouts;
         public ILogger Logger { get; }
 
         public ReactiveCommand<Unit, Unit> OpenSettingsCommand { get; }
@@ -45,10 +47,12 @@ namespace Synthesis.Bethesda.GUI
             PatcherVM parent,
             IObservable<(GetResponse<FilePath> ProjPath, string? SynthVersion)> source,
             bool needBuild,
+            IProvideRepositoryCheckouts repoCheckouts,
             IGetSettingsStyle getSettingsStyle,
             IOpenForSettings openForSettings,
             IOpenSettingsHost openSettingsHost)
         {
+            _RepoCheckouts = repoCheckouts;
             Logger = logger;
             _SettingsConfiguration = source
                 .Select(i =>
@@ -158,12 +162,12 @@ namespace Synthesis.Bethesda.GUI
                 {
                     Repository.Init(vm.SettingsFolder);
                 }
-                using var repo = new Repository(vm.SettingsFolder);
-                Commands.Stage(repo, vm.SettingsSubPath);
+                using var repo = _RepoCheckouts.Get(vm.SettingsFolder);
+                Commands.Stage(repo.Repository, vm.SettingsSubPath);
                 var sig = new Signature("Synthesis", "someEmail@gmail.com", DateTimeOffset.Now);
                 try
                 {
-                    repo.Commit("Settings changed", sig, sig);
+                    repo.Repository.Commit("Settings changed", sig, sig);
                 }
                 catch (EmptyCommitException)
                 {
