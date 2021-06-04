@@ -69,12 +69,12 @@ namespace Synthesis.Bethesda.GUI.Views
             
             var mainVM = Inject.Instance.GetRequiredService<MainVM>();
             mainVM.Load(guiSettings, pipeSettings);
-            Closed += (a, b) =>
+            Closing += (a, b) =>
             {
-                mainVM.Save(out var gui, out var pipe);
-                File.WriteAllText(Execution.Paths.SettingsFileName, JsonConvert.SerializeObject(pipe, Formatting.Indented, Execution.Constants.JsonSettings));
-                File.WriteAllText(Paths.GuiSettingsPath, JsonConvert.SerializeObject(gui, Formatting.Indented, Execution.Constants.JsonSettings));
-                mainVM.Dispose();
+                if (mainVM.IsShutdown) return;
+                b.Cancel = true;
+                this.Visibility = Visibility.Collapsed;
+                mainVM.Shutdown();
             };
 
             DataContext = mainVM;

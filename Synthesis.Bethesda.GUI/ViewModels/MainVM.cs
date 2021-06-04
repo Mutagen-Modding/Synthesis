@@ -3,6 +3,7 @@ using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
+using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ using System.Threading;
 using System.Windows;
 using System.Drawing;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.GUI.Services;
 
@@ -73,6 +75,8 @@ namespace Synthesis.Bethesda.GUI
         public bool InModal => _InModal.Value;
 
         public IEnvironmentErrorsVM EnvironmentErrors { get; }
+        
+        public bool IsShutdown { get; private set; }
 
         public MainVM(Window window,
             IQueryInstalledSdk sdkQuery)
@@ -289,20 +293,57 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public override void Dispose()
+        public async void Shutdown()
         {
-            base.Dispose();
-#if !DEBUG
-            Task.Run(async () =>
+            IsShutdown = true;
+            var toDo = new List<Task>();
+            toDo.Add(Task.Run(() =>
             {
-                using var process = ProcessWrapper.Create(
-                    new ProcessStartInfo("dotnet", $"build-server shutdown"));
-                using var output = process.Output.Subscribe(x => Log.Logger.Information(x));
-                using var error = process.Error.Subscribe(x => Log.Logger.Information(x));
-                var ret = await process.Run();
-                return ret;
-            }).Wait();
+                try
+                {
+                    Save(out var gui, out var pipe);
+                    File.WriteAllText(Execution.Paths.SettingsFileName, JsonConvert.SerializeObject(pipe, Formatting.Indented, Execution.Constants.JsonSettings));
+                    File.WriteAllText(Paths.GuiSettingsPath, JsonConvert.SerializeObject(gui, Formatting.Indented, Execution.Constants.JsonSettings));
+                    Dispose();
+                }
+                catch (Exception e)
+                {
+                    Log.Logger.Error("Error saving settings", e);
+                }
+            }));
+#if !DEBUG
+            toDo.Add(Task.Run(async () =>
+            {
+                try
+                {
+                    using var process = ProcessWrapper.Create(
+                        new ProcessStartInfo("dotnet", $"build-server shutdown"));
+                    using var output = process.Output.Subscribe(x => Log.Logger.Information(x));
+                    using var error = process.Error.Subscribe(x => Log.Logger.Information(x));
+                    var ret = await process.Run();
+                }
+                catch (Exception e)
+                {
+                    Log.Logger.Error("Error shutting down build server", e);
+                }
+            }));
 #endif
+
+            toDo.Add(Task.Run(async () =>
+            {
+                try
+                {
+                    Log.Logger.Information("Disposing injection");
+                    await Inject.Instance.DisposeAsync();
+                    Log.Logger.Information("Disposed injection");
+                }
+                catch (Exception e)
+                {
+                    Log.Logger.Error("Error shutting down injector actions", e);
+                }
+            }));
+            await Task.WhenAll(toDo);
+            Application.Current.Shutdown();
         }
     }
 }

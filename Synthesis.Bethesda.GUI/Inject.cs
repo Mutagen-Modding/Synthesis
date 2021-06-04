@@ -26,7 +26,7 @@ namespace Synthesis.Bethesda.GUI
         private void Configure()
         {
             _coll.Register<MainVM>(Lifestyle.Singleton);
-            _coll.RegisterInstance<ILogger>(Log.Logger);
+            _coll.RegisterInstance(Log.Logger);
             _coll.Register<IEnvironmentErrorsVM, EnvironmentErrorsVM>(Lifestyle.Singleton);
             _coll.Collection.Register<IEnvironmentErrorVM>(
                 typeof(IEnvironmentErrorVM).Assembly.AsEnumerable(), 
