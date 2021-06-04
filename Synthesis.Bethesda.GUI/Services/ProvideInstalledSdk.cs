@@ -3,7 +3,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using Noggog;
 using ReactiveUI;
-using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.DotNet;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.GUI
     {
         public IObservable<DotNetVersion> DotNetSdkInstalled { get; }
         
-        public ProvideInstalledSdk()
+        public ProvideInstalledSdk(IQueryInstalledSdk query)
         {
             var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), RxApp.TaskpoolScheduler)
                 .StartWith(0)
@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     try
                     {
-                        return await DotNetCommands.DotNetSdkVersion(CancellationToken.None);
+                        return await query.Query(CancellationToken.None);
                     }
                     catch (Exception ex)
                     {

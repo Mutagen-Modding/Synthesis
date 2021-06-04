@@ -1,10 +1,8 @@
-using DynamicData;
 using DynamicData.Binding;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using System.Threading.Tasks;
@@ -19,6 +17,7 @@ using System.Threading;
 using System.Windows;
 using System.Drawing;
 using Microsoft.Extensions.DependencyInjection;
+using Synthesis.Bethesda.Execution.DotNet;
 
 #if !DEBUG
 using Noggog.Utility;
@@ -74,7 +73,8 @@ namespace Synthesis.Bethesda.GUI
 
         public IEnvironmentErrorsVM EnvironmentErrors { get; }
 
-        public MainVM(Window window)
+        public MainVM(Window window,
+            IQueryInstalledSdk sdkQuery)
         {
             _window = window;
             var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), RxApp.TaskpoolScheduler)
@@ -83,7 +83,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     try
                     {
-                        return await DotNetCommands.DotNetSdkVersion(CancellationToken.None);
+                        return await sdkQuery.Query(CancellationToken.None);
                     }
                     catch (Exception ex)
                     {

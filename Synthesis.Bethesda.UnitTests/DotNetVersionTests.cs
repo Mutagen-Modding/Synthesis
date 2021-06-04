@@ -1,10 +1,5 @@
 using FluentAssertions;
-using Synthesis.Bethesda.Execution;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Synthesis.Bethesda.Execution.DotNet;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests
@@ -17,7 +12,8 @@ namespace Synthesis.Bethesda.UnitTests
         [InlineData("x.5.6", false)]
         public void TestVersionString(string str, bool shouldSucceed)
         {
-            DotNetCommands.GetDotNetVersion(str)
+            var query = new QueryInstalledSdk();
+            query.ParseVersionString(str)
                 .Acceptable.Should().Be(shouldSucceed);
         }
     }

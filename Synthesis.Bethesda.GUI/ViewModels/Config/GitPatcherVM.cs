@@ -25,6 +25,7 @@ using Synthesis.Bethesda.Execution;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
+using Synthesis.Bethesda.Execution.DotNet;
 
 namespace Synthesis.Bethesda.GUI
 {
