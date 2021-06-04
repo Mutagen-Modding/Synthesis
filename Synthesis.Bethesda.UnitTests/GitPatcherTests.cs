@@ -7,24 +7,32 @@ using Noggog.Utility;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoFixture;
+using Microsoft.Extensions.Logging;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests
 {
-    public class GitPatcherTests
+    public class GitPatcherTests : IClassFixture<Fixture>
     {
+        private readonly Fixture _Fixture;
+
+        public GitPatcherTests(Fixture fixture)
+        {
+            _Fixture = fixture;
+        }
+        
         private CheckoutRunnerRepository Get()
         {
-            return new CheckoutRunnerRepository(new ProvideRepositoryCheckouts());
+            return new CheckoutRunnerRepository(
+                _Fixture.Inject.Create<IProvideRepositoryCheckouts>());
         }
         
         public TempFolder GetRepository(

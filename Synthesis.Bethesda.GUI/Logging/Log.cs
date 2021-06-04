@@ -1,14 +1,11 @@
 using Serilog;
-using Serilog.Core;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Synthesis.Bethesda.GUI
 {
     public static class Log
     {
-        public static readonly Logger Logger;
+        public static readonly ILogger Logger;
         public static readonly string LogPath;
         public static readonly DateTime StartTime;
 
@@ -16,9 +13,11 @@ namespace Synthesis.Bethesda.GUI
         {
             StartTime = DateTime.Now;
             LogPath = "logs/log-.txt";
-            Logger = GetLoggerConfig()
+            Serilog.Log.Logger = GetLoggerConfig()
                 .WriteToFile()
                 .CreateLogger();
+
+            Logger = Serilog.Log.Logger;
         }
 
         public static LoggerConfiguration GetLoggerConfig()
@@ -30,10 +29,16 @@ namespace Synthesis.Bethesda.GUI
         public static LoggerConfiguration WriteToFile(this LoggerConfiguration conf, params string[] extraIdentifiers)
         {
             return conf
-                .WriteTo.File(
-                    formatter: new ExtraAttributeFormatter(),
-                    path: LogPath,
-                    rollingInterval: RollingInterval.Day);
+                .WriteTo.Map(
+                    "PatcherName",
+                    default(string?),
+                    (key, wt) =>
+                    {
+                        wt.File(
+                            formatter: new ExtraAttributeFormatter(),
+                            $"logs/{(key ?? "Main")}.txt",
+                            rollingInterval: RollingInterval.Day);
+                    });
         }
 
     }

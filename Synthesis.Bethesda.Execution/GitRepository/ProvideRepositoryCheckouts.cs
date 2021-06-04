@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Noggog;
+using Serilog;
 
 namespace Synthesis.Bethesda.Execution.GitRespository
 {
@@ -13,6 +13,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
 
     public class ProvideRepositoryCheckouts : IProvideRepositoryCheckouts
     {
+        private readonly ILogger _Logger;
         private readonly TaskCompletionSource _shutdown = new();
         private int _numInFlight;
         private object _Lock = new();
@@ -20,8 +21,9 @@ namespace Synthesis.Bethesda.Execution.GitRespository
         public bool IsShutdownRequested { get; private set; }
         public bool IsShutdown { get; private set; }
 
-        public ProvideRepositoryCheckouts()
+        public ProvideRepositoryCheckouts(ILogger logger)
         {
+            _Logger = logger;
         }
 
         public RepositoryCheckout Get(DirectoryPath path)
@@ -60,6 +62,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
 
         public async ValueTask DisposeAsync()
         {
+            _Logger.Information("Disposing repository jobs");
             lock (_Lock)
             {
                 IsShutdownRequested = true;
@@ -67,6 +70,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
                 {
                     IsShutdown = true;
                 }
+                _Logger.Information("{NumInFlight} in flight repository jobs", _numInFlight == 0 ? "No" : _numInFlight);
             }
 
             if (IsShutdown)
@@ -75,6 +79,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
             }
 
             await _shutdown.Task.ConfigureAwait(false);
+            _Logger.Information("Finished disposing repository jobs");
         }
     }
 }
