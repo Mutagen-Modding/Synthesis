@@ -4,6 +4,7 @@ using ReactiveUI;
 using Synthesis.Bethesda.Execution;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -20,7 +21,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string?> _ErrorString;
         public string? ErrorString => _ErrorString.Value;
         
-        public DotNetNotInstalledVM(IProvideInstalledSdk mvm)
+        public DotNetNotInstalledVM(IProvideInstalledSdk mvm, INavigateTo navigate)
         {
             _InError = mvm.DotNetSdkInstalled
                 .Select(x => !x.Acceptable)
@@ -44,7 +45,7 @@ namespace Synthesis.Bethesda.GUI
             DownloadCommand = ReactiveCommand.Create(
                 () =>
                 {
-                    Utility.NavigateToPath("https://dotnet.microsoft.com/download");
+                    navigate.Navigate("https://dotnet.microsoft.com/download");
                 });
             
             _ErrorString = this.WhenAnyValue(x => x.InError)

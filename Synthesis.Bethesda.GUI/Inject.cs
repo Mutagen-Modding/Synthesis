@@ -5,6 +5,7 @@ using Noggog;
 using Serilog;
 using SimpleInjector;
 using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -24,10 +25,15 @@ namespace Synthesis.Bethesda.GUI
         {
             _coll.Register<MainVM>(Lifestyle.Singleton);
             _coll.RegisterInstance<ILogger>(Log.Logger);
-            _coll.Register<IProvideInstalledSdk, ProvideInstalledSdk>(Lifestyle.Singleton);
             _coll.Register<IEnvironmentErrorsVM, EnvironmentErrorsVM>(Lifestyle.Singleton);
             _coll.Collection.Register<IEnvironmentErrorVM>(
                 typeof(IEnvironmentErrorVM).Assembly.AsEnumerable(), 
+                Lifestyle.Singleton);
+
+            RegisterMatchingInterfaces(
+                from type in typeof(IProvideInstalledSdk).Assembly.GetExportedTypes()
+                where type.Namespace!.StartsWith("Synthesis.Bethesda.GUI.Services")
+                select type,
                 Lifestyle.Singleton);
 
             RegisterMatchingInterfaces(

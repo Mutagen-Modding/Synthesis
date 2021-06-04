@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Text;
 using System.Windows.Input;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -33,7 +34,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ObservableCollectionExtended<PersistenceMode> PersistenceModes { get; } = new(EnumExt.GetValues<PersistenceMode>());
 
-        public ProfileDisplayVM(ProfilesDisplayVM parent, ProfileVM? profile = null)
+        public ProfileDisplayVM(ProfilesDisplayVM parent, INavigateTo navigate, ProfileVM? profile = null)
         {
             Parent = parent;
             Profile = profile;
@@ -71,7 +72,7 @@ namespace Synthesis.Bethesda.GUI
             OpenInternalProfileFolderCommand = ReactiveCommand.Create(
                 execute: () =>
                 {
-                    Utility.NavigateToPath(Profile!.ProfileDirectory);
+                    navigate.Navigate(Profile!.ProfileDirectory);
                 },
                 canExecute: this.WhenAnyValue(x => x.Profile)
                     .Select(x => x != null));

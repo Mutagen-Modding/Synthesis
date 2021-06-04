@@ -18,6 +18,7 @@ using System.Windows;
 using System.Drawing;
 using Microsoft.Extensions.DependencyInjection;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.GUI.Services;
 
 #if !DEBUG
 using Noggog.Utility;

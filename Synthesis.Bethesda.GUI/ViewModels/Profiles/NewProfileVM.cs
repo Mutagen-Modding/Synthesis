@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -46,7 +48,8 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(game =>
                 {
                     if (game == null) return;
-                    var profile = new ProfileVM(config, game.Value, GetNewProfileId())
+                    var profile = new ProfileVM(config, game.Value, GetNewProfileId(),
+                        Inject.Instance.GetRequiredService<INavigateTo>())
                     {
                         Nickname = Nickname
                     };

@@ -9,16 +9,16 @@ using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Disposables;
+using System.Reactive; 
 using System.Reactive.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -57,10 +57,10 @@ namespace Synthesis.Bethesda.GUI
 
         private bool _wasAdded = false;
 
-        public GitPatcherInitVM(ProfileVM profile)
+        public GitPatcherInitVM(ProfileVM profile, INavigateTo navigateTo)
             : base(profile)
         {
-            Patcher = new GitPatcherVM(profile);
+            Patcher = new GitPatcherVM(profile, navigateTo);
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)
                 .Select(x => ErrorResponse.Create(x))
@@ -112,7 +112,7 @@ namespace Synthesis.Bethesda.GUI
                                 return repo.Patchers
                                     .Select(p =>
                                     {
-                                        return new PatcherStoreListingVM(this, p, repoVM);
+                                        return new PatcherStoreListingVM(this, p, repoVM, Inject.Instance.GetRequiredService<INavigateTo>());
                                     });
                             })
                             .AsObservableChangeSet();
@@ -156,7 +156,7 @@ namespace Synthesis.Bethesda.GUI
                     }))
                 .ToObservableCollection(this);
 
-            OpenPopulationInfoCommand = ReactiveCommand.Create(() => Utility.NavigateToPath(Constants.ListingRepositoryAddress));
+            OpenPopulationInfoCommand = ReactiveCommand.Create(() => navigateTo.Navigate(Constants.ListingRepositoryAddress));
             ClearSearchCommand = ReactiveCommand.Create(() => Search = string.Empty);
         }
 
@@ -174,7 +174,7 @@ namespace Synthesis.Bethesda.GUI
 
         public void AddStorePatcher(PatcherStoreListingVM listing)
         {
-            PatcherVM patcher = new GitPatcherVM(Profile)
+            PatcherVM patcher = new GitPatcherVM(Profile, Inject.Instance.GetRequiredService<INavigateTo>())
             {
                 RemoteRepoPath = listing.RepoPath,
                 ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')

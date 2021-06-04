@@ -26,6 +26,7 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -141,7 +142,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand SetToLastSuccessfulRunCommand { get; }
 
-        public GitPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
+        public GitPatcherVM(ProfileVM parent, INavigateTo navigate, GithubPatcherSettings? settings = null)
             : base(parent, settings)
         {
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
@@ -812,7 +813,7 @@ namespace Synthesis.Bethesda.GUI
             OpenGitPageCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.RepoValidity)
                     .Select(x => x.Succeeded),
-                execute: () => Utility.NavigateToPath(RemoteRepoPath));
+                execute: () => navigate.Navigate(RemoteRepoPath));
 
             OpenGitPageToVersionCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.RunnableData)
@@ -824,11 +825,11 @@ namespace Synthesis.Bethesda.GUI
                         if (!RunnableData.TryGet(out var runnable)) return;
                         if (runnable.Target == null)
                         {
-                            Utility.NavigateToPath(RemoteRepoPath);
+                            navigate.Navigate(RemoteRepoPath);
                         }
                         else
                         {
-                            Utility.NavigateToPath(Path.Combine(RemoteRepoPath, "tree", runnable.Target));
+                            navigate.Navigate(Path.Combine(RemoteRepoPath, "tree", runnable.Target));
                         }
                     }
                     catch (Exception ex)
@@ -837,7 +838,7 @@ namespace Synthesis.Bethesda.GUI
                     }
                 });
 
-            NavigateToInternalFilesCommand = ReactiveCommand.Create(() => Utility.NavigateToPath(localRepoDir));
+            NavigateToInternalFilesCommand = ReactiveCommand.Create(() => navigate.Navigate(localRepoDir));
 
             UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(
                 objectSource: parent.Config.MainVM.NewestMutagenVersion,

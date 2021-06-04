@@ -15,15 +15,18 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Mutagen.Bethesda.Installs;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.WPF.Plugins.Order;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
     public class ProfileVM : ViewModel
     {
+        private readonly INavigateTo _Navigate;
         public ConfigurationVM Config { get; }
         public GameRelease Release { get; }
 
@@ -103,12 +106,13 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
 
-        public ProfileVM(ConfigurationVM parent, GameRelease release, string id)
+        public ProfileVM(ConfigurationVM parent, GameRelease release, string id, INavigateTo navigate)
         {
+            _Navigate = navigate;
             ID = id;
             Config = parent;
             Release = release;
-            AddGitPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new GitPatcherInitVM(this)));
+            AddGitPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new GitPatcherInitVM(this, Inject.Instance.GetRequiredService<INavigateTo>())));
             AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(this)));
             AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(this)));
 
@@ -522,7 +526,7 @@ namespace Synthesis.Bethesda.GUI
         }
            
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)
-            : this(parent, settings.TargetRelease, id: settings.ID)
+            : this(parent, settings.TargetRelease, id: settings.ID, Inject.Instance.GetRequiredService<INavigateTo>())
         {
             Nickname = settings.Nickname;
             MutagenVersioning = settings.MutagenVersioning;
@@ -537,7 +541,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 return p switch
                 {
-                    GithubPatcherSettings git => new GitPatcherVM(this, git),
+                    GithubPatcherSettings git => new GitPatcherVM(this, Inject.Instance.GetRequiredService<INavigateTo>(), git),
                     SolutionPatcherSettings soln => new SolutionPatcherVM(this, soln),
                     CliPatcherSettings cli => new CliPatcherVM(this, cli),
                     _ => throw new NotImplementedException(),
@@ -615,7 +619,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     dataDir.DeepCopy(new DirectoryInfo(Path.Combine(subDir, "Data")));
                 }
-                Utility.NavigateToPath(subDir);
+                _Navigate.Navigate(subDir);
             }
             catch (Exception ex)
             {

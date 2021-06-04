@@ -9,6 +9,8 @@ using ReactiveUI.Fody.Helpers;
 using System.Windows.Input;
 using System;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -49,7 +51,7 @@ namespace Synthesis.Bethesda.GUI
             });
 
             ProfilesDisplay = parent.Profiles.Connect()
-                .Transform(x => new ProfileDisplayVM(this, x))
+                .Transform(x => new ProfileDisplayVM(this, Inject.Instance.GetRequiredService<INavigateTo>(), x))
                 // Select the currently active profile during initial display
                 .OnItemAdded(p =>
                 {

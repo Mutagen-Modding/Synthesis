@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -26,7 +27,11 @@ namespace Synthesis.Bethesda.GUI
 
         public string RepoPath => $"https://github.com/{Repository.Raw.User}/{Repository.Raw.Repository}";
 
-        public PatcherStoreListingVM(GitPatcherInitVM gitInit, PatcherListing listing, RepositoryStoreListingVM repo)
+        public PatcherStoreListingVM(
+            GitPatcherInitVM gitInit,
+            PatcherListing listing,
+            RepositoryStoreListingVM repo,
+            INavigateTo navigate)
         {
             Repository = repo;
             Raw = listing;
@@ -41,7 +46,7 @@ namespace Synthesis.Bethesda.GUI
             _IsSelected = gitInit.WhenAnyValue(x => x.SelectedPatcher)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsSelected));
-            OpenWebsite = ReactiveCommand.Create(() => Utility.NavigateToPath(RepoPath));
+            OpenWebsite = ReactiveCommand.Create(() => navigate.Navigate(RepoPath));
             AddCommand = ReactiveCommand.Create(() =>
             {
                 gitInit.AddStorePatcher(this);

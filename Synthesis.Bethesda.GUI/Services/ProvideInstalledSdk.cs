@@ -6,7 +6,7 @@ using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.Services
 {
     public interface IProvideInstalledSdk
     {
