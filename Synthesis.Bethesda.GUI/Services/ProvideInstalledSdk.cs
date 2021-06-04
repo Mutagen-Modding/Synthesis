@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using Noggog;
 using ReactiveUI;
+using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
 
 namespace Synthesis.Bethesda.GUI
@@ -16,7 +17,7 @@ namespace Synthesis.Bethesda.GUI
     {
         public IObservable<DotNetVersion> DotNetSdkInstalled { get; }
         
-        public ProvideInstalledSdk(IQueryInstalledSdk query)
+        public ProvideInstalledSdk(IQueryInstalledSdk query, ILogger logger)
         {
             var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), RxApp.TaskpoolScheduler)
                 .StartWith(0)
@@ -28,7 +29,7 @@ namespace Synthesis.Bethesda.GUI
                     }
                     catch (Exception ex)
                     {
-                        Log.Logger.Error(ex, $"Error retrieving dotnet SDK version");
+                        logger.Error(ex, $"Error retrieving dotnet SDK version");
                         return new DotNetVersion(string.Empty, false);
                     }
                 });
@@ -37,7 +38,7 @@ namespace Synthesis.Bethesda.GUI
                 .Merge(dotNet
                     .FirstAsync(v => v != null))
                 .DistinctUntilChanged()
-                .Do(x => Log.Logger.Information($"dotnet SDK: {x}"))
+                .Do(x => logger.Information("dotnet SDK: {Version}", x))
                 .Replay(1)
                 .RefCount();
         }

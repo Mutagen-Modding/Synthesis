@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Noggog;
+using Serilog;
 using SimpleInjector;
 using Synthesis.Bethesda.Execution;
 
@@ -22,6 +23,7 @@ namespace Synthesis.Bethesda.GUI
         private void Configure()
         {
             _coll.Register<MainVM>(Lifestyle.Singleton);
+            _coll.RegisterInstance<ILogger>(Log.Logger);
             _coll.Register<IProvideInstalledSdk, ProvideInstalledSdk>(Lifestyle.Singleton);
             _coll.Register<IEnvironmentErrorsVM, EnvironmentErrorsVM>(Lifestyle.Singleton);
             _coll.Collection.Register<IEnvironmentErrorVM>(
