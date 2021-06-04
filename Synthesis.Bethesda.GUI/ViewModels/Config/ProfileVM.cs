@@ -20,6 +20,7 @@ using Mutagen.Bethesda.Installs;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.WPF.Plugins.Order;
+using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
@@ -112,7 +113,13 @@ namespace Synthesis.Bethesda.GUI
             ID = id;
             Config = parent;
             Release = release;
-            AddGitPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new GitPatcherInitVM(this, Inject.Instance.GetRequiredService<INavigateTo>())));
+            AddGitPatcherCommand = ReactiveCommand.Create(() =>
+            {
+                SetInitializer(new GitPatcherInitVM(
+                    this, 
+                    Inject.Instance.GetRequiredService<INavigateTo>(), 
+                    Inject.Instance.GetRequiredService<ICheckOrCloneRepo>()));
+            });
             AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(this)));
             AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(this)));
 
@@ -541,7 +548,11 @@ namespace Synthesis.Bethesda.GUI
             {
                 return p switch
                 {
-                    GithubPatcherSettings git => new GitPatcherVM(this, Inject.Instance.GetRequiredService<INavigateTo>(), git),
+                    GithubPatcherSettings git => new GitPatcherVM(
+                        this, 
+                        Inject.Instance.GetRequiredService<INavigateTo>(),
+                        Inject.Instance.GetRequiredService<ICheckOrCloneRepo>(),
+                        git),
                     SolutionPatcherSettings soln => new SolutionPatcherVM(this, soln),
                     CliPatcherSettings cli => new CliPatcherVM(this, cli),
                     _ => throw new NotImplementedException(),

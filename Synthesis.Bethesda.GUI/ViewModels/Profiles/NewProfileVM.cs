@@ -19,7 +19,7 @@ namespace Synthesis.Bethesda.GUI
     {
         private ConfigurationVM _config;
 
-        public ObservableCollectionExtended<GameRelease> ReleaseOptions { get; } = new ObservableCollectionExtended<GameRelease>();
+        public ObservableCollectionExtended<GameRelease> ReleaseOptions { get; } = new();
 
         [Reactive]
         public GameRelease? SelectedGame { get; set; }

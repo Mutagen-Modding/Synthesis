@@ -26,6 +26,7 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
@@ -142,7 +143,11 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand SetToLastSuccessfulRunCommand { get; }
 
-        public GitPatcherVM(ProfileVM parent, INavigateTo navigate, GithubPatcherSettings? settings = null)
+        public GitPatcherVM(
+            ProfileVM parent, 
+            INavigateTo navigate, 
+            ICheckOrCloneRepo checkOrClone,
+            GithubPatcherSettings? settings = null)
             : base(parent, settings)
         {
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
@@ -183,7 +188,7 @@ namespace Synthesis.Bethesda.GUI
                         if (!path.IsHaltingError && path.RunnableState.Failed) return path.BubbleError<DriverRepoInfo>();
                         using var timing = Logger.Time("Cloning driver repository");
                         // Clone and/or double check the clone is correct
-                        var state = await GitUtility.CheckOrCloneRepo(path.ToGetResponse(), LocalDriverRepoDirectory, (x) => Logger.Information(x), cancel);
+                        var state = await checkOrClone.Check(path.ToGetResponse(), LocalDriverRepoDirectory, (x) => Logger.Information(x), cancel);
                         if (state.Failed)
                         {
                             Logger.Error($"Failed to check out driver repository: {state.Reason}");
@@ -254,7 +259,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         if (path.RunnableState.Failed) return path.ToUnit();
                         using var timing = Logger.Time($"runner repo: {path.Item}");
-                        return (ErrorResponse)await GitUtility.CheckOrCloneRepo(path.ToGetResponse(), LocalRunnerRepoDirectory, x => Logger.Information(x), cancel);
+                        return (ErrorResponse)await checkOrClone.Check(path.ToGetResponse(), LocalRunnerRepoDirectory, x => Logger.Information(x), cancel);
                     })
                 .Replay(1)
                 .RefCount();

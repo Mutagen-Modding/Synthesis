@@ -62,14 +62,6 @@
     <ProjectReference Include="..\Synthesis.Bethesda\Synthesis.Bethesda.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="DotNetCommands\DotNetCommands.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-  </ItemGroup>
-
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Condition="'$(IsWindows)'=='true'" Command="RD /S /Q &quot;%25USERPROFILE%25\.nuget\packages\synthesis.bethesda.execution&quot;" />
     <Exec Condition="'$(IsLinux)'=='true'" Command="rm -rf &quot;%25USERPROFILE%25\.nuget\packages\synthesis.bethesda.execution&quot;" />

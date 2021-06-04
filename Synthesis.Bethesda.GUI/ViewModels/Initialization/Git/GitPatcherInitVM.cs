@@ -18,6 +18,7 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
@@ -57,10 +58,10 @@ namespace Synthesis.Bethesda.GUI
 
         private bool _wasAdded = false;
 
-        public GitPatcherInitVM(ProfileVM profile, INavigateTo navigateTo)
+        public GitPatcherInitVM(ProfileVM profile, INavigateTo navigateTo, ICheckOrCloneRepo checkOrClone)
             : base(profile)
         {
-            Patcher = new GitPatcherVM(profile, navigateTo);
+            Patcher = new GitPatcherVM(profile, navigateTo, checkOrClone);
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)
                 .Select(x => ErrorResponse.Create(x))
@@ -72,7 +73,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     try
                     {
-                        var localRepoPath = await GitUtility.CheckOrCloneRepo(
+                        var localRepoPath = await checkOrClone.Check(
                             GetResponse<string>.Succeed("https://github.com/Mutagen-Modding/Synthesis.Registry"),
                             Paths.RegistryFolder,
                             Log.Logger.Error,
@@ -174,7 +175,10 @@ namespace Synthesis.Bethesda.GUI
 
         public void AddStorePatcher(PatcherStoreListingVM listing)
         {
-            PatcherVM patcher = new GitPatcherVM(Profile, Inject.Instance.GetRequiredService<INavigateTo>())
+            PatcherVM patcher = new GitPatcherVM(
+                Profile,
+                Inject.Instance.GetRequiredService<INavigateTo>(),
+                Inject.Instance.GetRequiredService<ICheckOrCloneRepo>())
             {
                 RemoteRepoPath = listing.RepoPath,
                 ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')

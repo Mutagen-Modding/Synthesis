@@ -18,6 +18,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Synthesis.Bethesda.Execution.GitRespository;
 
 namespace Synthesis.Bethesda.Execution.CLI
 {
@@ -89,7 +90,8 @@ namespace Synthesis.Bethesda.Execution.CLI
                                 pathToProj: Path.Combine(Path.GetDirectoryName(sln.SolutionPath)!, sln.ProjectSubpath)),
                             GithubPatcherSettings git => new GitPatcherRun(
                                 settings: git,
-                                localDir: GitPatcherRun.RunnerRepoDirectory(profile.ID, git.ID)),
+                                localDir: GitPatcherRun.RunnerRepoDirectory(profile.ID, git.ID),
+                                checkOrClone: new CheckOrCloneRepo(new DeleteOldRepo())),
                             _ => throw new NotImplementedException(),
                         };
                     })

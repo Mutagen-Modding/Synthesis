@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Synthesis.Bethesda.Execution.GitRespository;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
@@ -27,6 +28,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         public string Name { get; }
         private readonly string _localDir;
         private readonly GithubPatcherSettings _settings;
+        private readonly ICheckOrCloneRepo _CheckOrClone;
         public SolutionPatcherRun? SolutionRun { get; private set; }
 
         private readonly Subject<string> _output = new();
@@ -49,10 +51,12 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
         public GitPatcherRun(
             GithubPatcherSettings settings,
+            ICheckOrCloneRepo checkOrClone,
             string localDir)
         {
             _localDir = localDir;
             _settings = settings;
+            _CheckOrClone = checkOrClone;
             Name = $"{settings.Nickname.Decorate(x => $"{x} => ")}{settings.RemoteRepoPath} => {Path.GetFileNameWithoutExtension(settings.SelectedProjectSubpath)}";
         }
 
@@ -63,7 +67,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         public async Task Prep(GameRelease release, CancellationToken cancel)
         {
             _output.OnNext("Cloning repository");
-            var cloneResult = await GitUtility.CheckOrCloneRepo(GetResponse<string>.Succeed(_settings.RemoteRepoPath), _localDir, (x) => _output.OnNext(x), cancel);
+            var cloneResult = await _CheckOrClone.Check(GetResponse<string>.Succeed(_settings.RemoteRepoPath), _localDir, (x) => _output.OnNext(x), cancel);
             if (cloneResult.Failed)
             {
                 throw new SynthesisBuildFailure(cloneResult.Reason);
