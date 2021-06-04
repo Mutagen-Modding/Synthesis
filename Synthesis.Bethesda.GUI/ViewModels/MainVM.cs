@@ -18,6 +18,8 @@ using Mutagen.Bethesda.Synthesis;
 using System.Threading;
 using System.Windows;
 using System.Drawing;
+using Microsoft.Extensions.DependencyInjection;
+
 #if !DEBUG
 using Noggog.Utility;
 using System.Diagnostics;
@@ -25,7 +27,7 @@ using System.Diagnostics;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class MainVM : ViewModel
+    public class MainVM : ViewModel, IProvideInstalledSdk
     {
         public ConfigurationVM Configuration { get; }
         public SynthesisGuiSettings Settings { get; private set; } = new SynthesisGuiSettings();
@@ -70,7 +72,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<bool> _InModal;
         public bool InModal => _InModal.Value;
 
-        public EnvironmentErrorsVM EnvironmentErrors { get; }
+        public IEnvironmentErrorsVM EnvironmentErrors { get; }
 
         public MainVM(Window window)
         {
@@ -222,7 +224,7 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x != null)
                 .ToGuiProperty(this, nameof(InModal));
             
-            EnvironmentErrors = new EnvironmentErrorsVM(this);
+            EnvironmentErrors = Inject.Instance.GetRequiredService<IEnvironmentErrorsVM>();
         }
 
         public void Load(SynthesisGuiSettings? guiSettings, PipelineSettings? pipeSettings)

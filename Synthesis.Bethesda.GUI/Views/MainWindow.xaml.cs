@@ -5,6 +5,8 @@ using System.IO;
 using System;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using Microsoft.Extensions.DependencyInjection;
 using Mutagen.Bethesda.Synthesis;
 using Noggog;
 
@@ -63,7 +65,9 @@ namespace Synthesis.Bethesda.GUI.Views
                 })
             ).Wait();
 
-            var mainVM = new MainVM(this);
+            Inject.Instance.RegisterInstance<Window>(this);
+            
+            var mainVM = Inject.Instance.GetRequiredService<MainVM>();
             mainVM.Load(guiSettings, pipeSettings);
             Closed += (a, b) =>
             {
