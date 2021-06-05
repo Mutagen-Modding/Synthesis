@@ -6,30 +6,36 @@ using System.Threading;
 using System.Threading.Tasks;
 using Noggog;
 using Noggog.Utility;
+using Serilog;
 using Synthesis.Bethesda.Execution;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {
     public interface IExtractInfoFromProject
     {
-        Task<GetResponse<(TRet Item, TempFolder Temp)>> Extract<TRet>(string projPath, CancellationToken cancel, Func<Assembly, GetResponse<TRet>> getter, Action<string> log);
+        Task<GetResponse<(TRet Item, TempFolder Temp)>> Extract<TRet>(string projPath, CancellationToken cancel, Func<Assembly, GetResponse<TRet>> getter);
     }
 
     public class ExtractInfoFromProject : IExtractInfoFromProject
     {
         private readonly ICopyDirectory _CopyDirectory;
         private readonly IQueryExecutablePath _QueryExecutablePath;
+        private readonly ILogger _Logger;
 
         public ExtractInfoFromProject(
             ICopyDirectory copyDirectory,
-            IQueryExecutablePath queryExecutablePath)
+            IQueryExecutablePath queryExecutablePath,
+            ILogger logger)
         {
             _CopyDirectory = copyDirectory;
             _QueryExecutablePath = queryExecutablePath;
+            _Logger = logger;
         }
 
-        public async Task<GetResponse<(TRet Item, TempFolder Temp)>> Extract<TRet>(string projPath,
-            CancellationToken cancel, Func<Assembly, GetResponse<TRet>> getter, Action<string> log)
+        public async Task<GetResponse<(TRet Item, TempFolder Temp)>> Extract<TRet>(
+            string projPath,
+            CancellationToken cancel,
+            Func<Assembly, GetResponse<TRet>> getter)
         {
             if (cancel.IsCancellationRequested) return GetResponse<(TRet Item, TempFolder Temp)>.Fail("Cancelled");
 
@@ -37,13 +43,13 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             var tempFolder = TempFolder.FactoryByPath(Path.Combine(Paths.LoadingFolder, Path.GetRandomFileName()));
             if (cancel.IsCancellationRequested) return GetResponse<(TRet Item, TempFolder Temp)>.Fail("Cancelled");
             var projDir = Path.GetDirectoryName(projPath)!;
-            log($"Starting project assembly info extraction.  Copying project from {projDir} to {tempFolder.Dir.Path}");
+            _Logger.Information($"Starting project assembly info extraction.  Copying project from {projDir} to {tempFolder.Dir.Path}");
             _CopyDirectory.Copy(projDir, tempFolder.Dir.Path, cancel);
             projPath = Path.Combine(tempFolder.Dir.Path, Path.GetFileName(projPath));
-            log($"Retrieving executable path from {projPath}");
-            var exec = await _QueryExecutablePath.Query(projPath, cancel, log);
+            _Logger.Information($"Retrieving executable path from {projPath}");
+            var exec = await _QueryExecutablePath.Query(projPath, cancel);
             if (exec.Failed) return exec.BubbleFailure<(TRet Item, TempFolder Temp)>();
-            log($"Located executable path for {projPath}: {exec.Value}");
+            _Logger.Information($"Located executable path for {projPath}: {exec.Value}");
             var ret = ExecuteAndUnload(exec.Value, getter);
             if (ret.Failed) return ret.BubbleFailure<(TRet Item, TempFolder Temp)>();
             return (ret.Value, tempFolder);

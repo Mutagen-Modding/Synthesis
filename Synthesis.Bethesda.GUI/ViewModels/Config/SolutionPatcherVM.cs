@@ -279,7 +279,7 @@ namespace Synthesis.Bethesda.GUI
             CopyOverSave(ret);
             ret.SolutionPath = this.SolutionPath.TargetPath;
             ret.ProjectSubpath = this.ProjectSubpath;
-            PatcherSettings.Persist(Logger.Information);
+            PatcherSettings.Persist();
             return ret;
         }
 
@@ -292,7 +292,7 @@ namespace Synthesis.Bethesda.GUI
 
         public override PatcherRunVM ToRunner(PatchersRunVM parent)
         {
-            PatcherSettings.Persist(Logger.Information);
+            PatcherSettings.Persist();
             return new PatcherRunVM(
                 parent,
                 this,

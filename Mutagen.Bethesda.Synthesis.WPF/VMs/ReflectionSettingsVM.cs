@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Mutagen.Bethesda.WPF.Reflection;
+using Serilog;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {
     public class ReflectionSettingsVM : Mutagen.Bethesda.WPF.Reflection.ReflectionSettingsVM
     {
+        private readonly ILogger _Logger;
         public string SettingsFolder { get; }
         public string SettingsSubPath { get; }
         public string SettingsPath => Path.Combine(SettingsFolder, SettingsSubPath);
@@ -19,16 +21,17 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             ReflectionSettingsParameters param,
             string nickname,
             string settingsFolder,
-            string settingsSubPath)
+            string settingsSubPath,
+            ILogger logger)
             : base(param)
         {
+            _Logger = logger;
             Nickname = nickname;
             SettingsFolder = settingsFolder;
             SettingsSubPath = settingsSubPath;
         }
 
         public async Task Import(
-            Action<string> logger,
             CancellationToken cancel)
         {
             if (!File.Exists(SettingsPath)) return;
@@ -37,13 +40,13 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             {
                 AllowTrailingCommas = true
             });
-            ObjVM.Import(json.RootElement, logger);
+            ObjVM.Import(json.RootElement, _Logger.Information);
         }
 
-        public void Persist(Action<string> logger)
+        public void Persist()
         {
             var doc = new JObject();
-            ObjVM.Persist(doc, logger);
+            ObjVM.Persist(doc, _Logger.Information);
             Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
             File.WriteAllText(SettingsPath, doc.ToString());
         }

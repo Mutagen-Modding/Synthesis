@@ -4,24 +4,29 @@ using System.Threading;
 using System.Threading.Tasks;
 using Noggog;
 using Noggog.Utility;
+using Serilog;
 
 namespace Synthesis.Bethesda.Execution
 {
     public interface IQueryExecutablePath
     {
-        Task<GetResponse<string>> Query(string projectPath, CancellationToken cancel, Action<string>? log);
+        Task<GetResponse<string>> Query(string projectPath, CancellationToken cancel);
     }
 
     public class QueryExecutablePath : IQueryExecutablePath
     {
+        private readonly ILogger _Logger;
         private readonly IProvideBuildString _BuildString;
 
-        public QueryExecutablePath(IProvideBuildString buildString)
+        public QueryExecutablePath(
+            ILogger logger,
+            IProvideBuildString buildString)
         {
+            _Logger = logger;
             _BuildString = buildString;
         }
         
-        public async Task<GetResponse<string>> Query(string projectPath, CancellationToken cancel, Action<string>? log)
+        public async Task<GetResponse<string>> Query(string projectPath, CancellationToken cancel)
         {
             // Hacky way to locate executable, but running a build and extracting the path its logs spit out
             // Tried using Buildalyzer, but it has a lot of bad side effects like clearing build outputs when
@@ -29,7 +34,7 @@ namespace Synthesis.Bethesda.Execution
             using var proc = ProcessWrapper.Create(
                 new System.Diagnostics.ProcessStartInfo("dotnet", _BuildString.Get($"\"{projectPath}\"")),
                 cancel: cancel);
-            log?.Invoke($"({proc.StartInfo.WorkingDirectory}): {proc.StartInfo.FileName} {proc.StartInfo.Arguments}");
+            _Logger.Information($"({proc.StartInfo.WorkingDirectory}): {proc.StartInfo.FileName} {proc.StartInfo.Arguments}");
             List<string> outs = new();
             using var outp = proc.Output.Subscribe(o => outs.Add(o));
             List<string> errs = new();
@@ -41,7 +46,7 @@ namespace Synthesis.Bethesda.Execution
             }
             if (!DotNetCommands.TryGetExecutablePathFromOutput(outs, out var path))
             {
-                log?.Invoke($"Could not locate target executable: {string.Join(Environment.NewLine, outs)}");
+                _Logger.Warning($"Could not locate target executable: {string.Join(Environment.NewLine, outs)}");
                 return GetResponse<string>.Fail("Could not locate target executable.");
             }
             return GetResponse<string>.Succeed(path);

@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Noggog.Utility;
+using Serilog;
 using Synthesis.Bethesda.DTO;
 
 namespace Synthesis.Bethesda.Execution.CLI
@@ -14,16 +15,19 @@ namespace Synthesis.Bethesda.Execution.CLI
             string path,
             bool directExe,
             CancellationToken cancel,
-            bool build,
-            Action<string> log);
+            bool build);
     }
 
     public class GetSettingsStyle : IGetSettingsStyle
     {
+        private readonly ILogger _Logger;
         private readonly IProvideDotNetProcessInfo _GetProcessInfo;
 
-        public GetSettingsStyle(IProvideDotNetProcessInfo getProcessInfo)
+        public GetSettingsStyle(
+            ILogger logger,
+            IProvideDotNetProcessInfo getProcessInfo)
         {
+            _Logger = logger;
             _GetProcessInfo = getProcessInfo;
         }
         
@@ -31,10 +35,9 @@ namespace Synthesis.Bethesda.Execution.CLI
             string path,
             bool directExe,
             CancellationToken cancel,
-            bool build,
-            Action<string> log)
+            bool build)
         {
-            log($"Checking for settings.  Direct exe? {directExe}.  Build? {build}");
+            _Logger.Information($"Checking for settings.  Direct exe? {directExe}.  Build? {build}");
             using var proc = ProcessWrapper.Create(
                 _GetProcessInfo.GetStart(path, directExe, new Synthesis.Bethesda.SettingsQuery(), build: build),
                 cancel: cancel,

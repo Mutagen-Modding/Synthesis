@@ -33,8 +33,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             string displayName,
             IObservable<IChangeSet<IModListingGetter>> loadOrder,
             IObservable<ILinkCache?> linkCache,
-            IProvideReflectionSettingsBundle provideBundle,
-            Action<string> log)
+            IProvideReflectionSettingsBundle provideBundle)
         {
             var targetSettingsVM = Observable.Return(Unit.Default)
                 .ObserveOn(RxApp.TaskpoolScheduler)
@@ -51,7 +50,6 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                                 detectedLoadOrder: loadOrder,
                                 linkCache: linkCache,
                                 displayName: displayName,
-                                log: log,
                                 cancel: cancel);
                             if (reflectionBundle.Failed)
                             {

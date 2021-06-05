@@ -13,12 +13,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins.Order;
+using Serilog;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {
     public class ReflectionSettingsBundleVM : ViewModel
     {
-        private readonly Action<string>? _log;
+        private readonly ILogger? _logger;
         private readonly TempFolder? _tempFolder;
 
         public ICollection<ReflectionSettingsVM>? Settings { get; private set; }
@@ -26,10 +27,10 @@ namespace Mutagen.Bethesda.Synthesis.WPF
         public ReflectionSettingsBundleVM(
             ICollection<ReflectionSettingsVM> settings,
             TempFolder tempFolder,
-            Action<string> log)
+            ILogger logger)
         {
             _tempFolder = tempFolder;
-            _log = log;
+            _logger = logger;
             Settings = settings;
         }
 
@@ -52,7 +53,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                 }
                 catch (Exception ex)
                 {
-                    _log?.Invoke($"Could not clean up reflection settings: {ex}");
+                    _logger?.Error($"Could not clean up reflection settings:", ex);
                 }
             }
         }
