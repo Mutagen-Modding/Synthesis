@@ -42,13 +42,13 @@ namespace Synthesis.Bethesda.GUI
         private void RegisterCurrentLib()
         {
             _coll.Register<MainVM>();
-            _coll.Register<IActivePanelControllerVm, ActivePanelControllerVm>();
             _coll.RegisterInstance(Log.Logger);
-            _coll.Register<IEnvironmentErrorsVM, EnvironmentErrorsVM>();
             _coll.Collection.Register<IEnvironmentErrorVM>(
                 typeof(IEnvironmentErrorVM).Assembly.AsEnumerable());
-
-            RegisterNamespaceFromType(typeof(INavigateTo));
+            
+            RegisterMatchingInterfaces(
+                from type in typeof(INavigateTo).Assembly.GetExportedTypes()
+                select type);
         }
 
         private void RegisterWpfLib()

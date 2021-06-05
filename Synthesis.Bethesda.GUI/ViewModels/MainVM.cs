@@ -61,13 +61,6 @@ namespace Synthesis.Bethesda.GUI
         public IObservable<string?> NewestSynthesisVersion { get; }
         public IObservable<string?> NewestMutagenVersion { get; }
 
-        private readonly Window _window;
-        public Rectangle Rectangle => new(
-            x: (int)_window.Left,
-            y: (int)_window.Top,
-            width: (int)_window.Width,
-            height: (int)_window.Height);
-
         private readonly ObservableAsPropertyHelper<ConfirmationActionVM?> _ActiveConfirmation;
         public ConfirmationActionVM? ActiveConfirmation => _ActiveConfirmation.Value;
 
@@ -79,12 +72,9 @@ namespace Synthesis.Bethesda.GUI
         public bool IsShutdown { get; private set; }
 
         public MainVM(
-            Window window,
             IProvideInstalledSdk installedSdk,
             IActivePanelControllerVm activePanelControllerVm)
         {
-            _window = window;
-
             _ActivePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
                 .ToGuiProperty(this, nameof(ActivePanel), default);
             Configuration = new ConfigurationVM(this)
@@ -175,7 +165,7 @@ namespace Synthesis.Bethesda.GUI
                 .RefCount();
             NewestMutagenVersion = Observable.CombineLatest(
                     latestVersions,
-                    this.WhenAnyFallback(x=> x.Configuration.SelectedProfile!.ConsiderPrereleaseNugets),
+                    this.WhenAnyFallback(x => x.Configuration.SelectedProfile!.ConsiderPrereleaseNugets),
                     (vers, prereleases) => prereleases ? vers.Prerelease.MutagenVersion : vers.Normal.MutagenVersion)
                 .Replay(1)
                 .RefCount();

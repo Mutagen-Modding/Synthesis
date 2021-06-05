@@ -15,6 +15,7 @@ using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -90,6 +91,7 @@ namespace Synthesis.Bethesda.GUI
                 .Switch()
                 .ToGuiProperty(this, nameof(SettingsConfiguration), new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()));
 
+            var windowPlacement = Inject.Scope.GetInstance<IProvideWindowPlacement>();
             OpenSettingsCommand = NoggogCommand.CreateFromObject(
                 objectSource: Observable.CombineLatest(
                         source.Select(x => x.ProjPath),
@@ -104,7 +106,7 @@ namespace Synthesis.Bethesda.GUI
                         await openForSettings.Open(
                             o.Proj.Value,
                             directExe: false,
-                            rect: parent.Profile.Config.MainVM.Rectangle,
+                            rect: windowPlacement.Rectangle,
                             cancel: CancellationToken.None,
                             release: parent.Profile.Release,
                             dataFolderPath: parent.Profile.DataFolder,
@@ -115,7 +117,7 @@ namespace Synthesis.Bethesda.GUI
                         await openSettingsHost.Open(
                             patcherName: parent.DisplayName,
                             path: o.Proj.Value,
-                            rect: parent.Profile.Config.MainVM.Rectangle,
+                            rect: windowPlacement.Rectangle,
                             cancel: CancellationToken.None,
                             release: parent.Profile.Release,
                             dataFolderPath: parent.Profile.DataFolder,
