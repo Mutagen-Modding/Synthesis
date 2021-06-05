@@ -17,7 +17,7 @@ namespace Synthesis.Bethesda.GUI
     public class ProfilesDisplayVM : ViewModel
     {
         public ConfigurationVM Config { get; }
-        private readonly ViewModel _previous;
+        private readonly ViewModel? _previous;
 
         public ICommand GoBackCommand { get; }
         public ICommand AddCommand { get; }
@@ -30,13 +30,14 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public object? DisplayObject { get; set; } = null;
 
-        public ProfilesDisplayVM(ConfigurationVM parent, ViewModel previousPage)
+        public ProfilesDisplayVM(ConfigurationVM parent, ViewModel? previousPage)
         {
             _previous = previousPage;
             Config = parent;
+            var activePanelController = Inject.Scope.GetInstance<IActivePanelControllerVm>();
             GoBackCommand = ReactiveCommand.Create(() =>
             {
-                parent.MainVM.ActivePanel = _previous;
+                activePanelController.ActivePanel = _previous;
             });
             AddCommand = ReactiveCommand.Create(() =>
             {

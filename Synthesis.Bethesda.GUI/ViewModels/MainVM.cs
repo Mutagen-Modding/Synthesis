@@ -30,13 +30,13 @@ using System.Diagnostics;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class MainVM : ViewModel, IProvideInstalledSdk
+    public class MainVM : ViewModel
     {
         public ConfigurationVM Configuration { get; }
         public SynthesisGuiSettings Settings { get; private set; } = new SynthesisGuiSettings();
 
-        [Reactive]
-        public ViewModel ActivePanel { get; set; }
+        private readonly ObservableAsPropertyHelper<ViewModel?> _ActivePanel;
+        public ViewModel? ActivePanel => _ActivePanel.Value;
 
         public ReactiveCommand<Unit, Unit> ConfirmActionCommand { get; }
         public ReactiveCommand<Unit, Unit> DiscardActionCommand { get; }
@@ -79,7 +79,9 @@ namespace Synthesis.Bethesda.GUI
         
         public bool IsShutdown { get; private set; }
 
-        public MainVM(Window window)
+        public MainVM(
+            Window window,
+            IActivePanelControllerVm activePanelControllerVm)
         {
             _window = window;
             var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), RxApp.TaskpoolScheduler)
@@ -105,9 +107,11 @@ namespace Synthesis.Bethesda.GUI
                 .Replay(1)
                 .RefCount();
 
+            _ActivePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
+                .ToGuiProperty(this, nameof(ActivePanel), default);
             Configuration = new ConfigurationVM(this)
                 .DisposeWith(this);
-            ActivePanel = Configuration;
+            activePanelControllerVm.ActivePanel = Configuration;
             DiscardActionCommand = NoggogCommand.CreateFromObject(
                 objectSource: this.WhenAnyValue(x => x.TargetConfirmation),
                 canExecute: target => target != null,
@@ -146,7 +150,7 @@ namespace Synthesis.Bethesda.GUI
 
             OpenProfilesPageCommand = ReactiveCommand.Create(() =>
             {
-                ActivePanel = new ProfilesDisplayVM(Configuration, ActivePanel);
+                activePanelControllerVm.ActivePanel = new ProfilesDisplayVM(Configuration, ActivePanel);
             },
             canExecute: Observable.CombineLatest(
                     this.WhenAnyFallback(x => x.Configuration.CurrentRun!.Running, fallback: false),
@@ -254,11 +258,12 @@ namespace Synthesis.Bethesda.GUI
         {
             if (Configuration.Profiles.Count == 0)
             {
-                ActivePanel = new NewProfileVM(this.Configuration, (profile) =>
+                var activePanelController = Inject.Scope.GetInstance<IActivePanelControllerVm>();
+                activePanelController.ActivePanel = new NewProfileVM(this.Configuration, (profile) =>
                 {
                     profile.Nickname = profile.Release.ToDescriptionString();
                     Configuration.SelectedProfile = profile;
-                    Configuration.MainVM.ActivePanel = Configuration;
+                    activePanelController.ActivePanel = Configuration;
                 });
             }
         }

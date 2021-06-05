@@ -41,6 +41,8 @@ namespace Synthesis.Bethesda.GUI
 
         private void RegisterCurrentLib()
         {
+            _coll.Register<MainVM>();
+            _coll.Register<IActivePanelControllerVm, ActivePanelControllerVm>();
             _coll.RegisterInstance(Log.Logger);
             _coll.Register<IEnvironmentErrorsVM, EnvironmentErrorsVM>();
             _coll.Collection.Register<IEnvironmentErrorVM>(

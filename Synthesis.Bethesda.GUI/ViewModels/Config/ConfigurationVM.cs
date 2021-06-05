@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -110,9 +111,10 @@ namespace Synthesis.Bethesda.GUI
             _CurrentRun = createdRuns
                 .ToGuiProperty(this, nameof(CurrentRun), default);
 
+            var activePanelController = Inject.Scope.GetInstance<IActivePanelControllerVm>();
             this.WhenAnyValue(x => x.CurrentRun)
                 .NotNull()
-                .Do(run => MainVM.ActivePanel = run)
+                .Do(run => activePanelController.ActivePanel = run)
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .Subscribe(r => r.Run())
                 .DisposeWith(this);

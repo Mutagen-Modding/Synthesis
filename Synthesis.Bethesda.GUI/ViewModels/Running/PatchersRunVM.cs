@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -66,11 +67,12 @@ namespace Synthesis.Bethesda.GUI
             {
                 SelectedPatcher = run;
             }
-
+            
+            var activePanelController = Inject.Scope.GetInstance<IActivePanelControllerVm>();
             BackCommand = ReactiveCommand.Create(() =>
             {
                 profile.DisplayedObject = SelectedPatcher?.Config;
-                parent.MainVM.ActivePanel = parent;
+                activePanelController.ActivePanel = parent;
             },
             canExecute: this.WhenAnyValue(x => x.Running)
                 .Select(running => !running));
