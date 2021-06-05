@@ -24,6 +24,7 @@ using Mutagen.Bethesda.Synthesis.WPF;
 using Mutagen.Bethesda.WPF.Plugins;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.CLI;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 
 namespace Synthesis.Bethesda.GUI
@@ -118,12 +119,11 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(p => SelectedProjectPath.TargetPath = p)
                 .DisposeWith(this);
 
+            var dotNetSdkInstalled = Inject.Scope.GetInstance<IProvideInstalledSdk>();
             _State = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.SolutionPath.ErrorState),
                     this.WhenAnyValue(x => x.SelectedProjectPath.ErrorState),
-                    this.WhenAnyValue(x => x.Profile.Config.MainVM)
-                        .Select(x => x.DotNetSdkInstalled)
-                        .Switch(),
+                    dotNetSdkInstalled.DotNetSdkInstalled,
                     (sln, proj, dotnet) =>
                     {
                         if (sln.Failed) return new ConfigurationState(sln);

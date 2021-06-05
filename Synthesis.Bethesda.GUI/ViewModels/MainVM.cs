@@ -60,7 +60,6 @@ namespace Synthesis.Bethesda.GUI
 
         public IObservable<string?> NewestSynthesisVersion { get; }
         public IObservable<string?> NewestMutagenVersion { get; }
-        public IObservable<DotNetVersion> DotNetSdkInstalled { get; }
 
         private readonly Window _window;
         public Rectangle Rectangle => new(
@@ -81,31 +80,10 @@ namespace Synthesis.Bethesda.GUI
 
         public MainVM(
             Window window,
+            IProvideInstalledSdk installedSdk,
             IActivePanelControllerVm activePanelControllerVm)
         {
             _window = window;
-            var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), RxApp.TaskpoolScheduler)
-                .StartWith(0)
-                .SelectTask(async i =>
-                {
-                    try
-                    {
-                        return await Inject.Scope.GetInstance<IQueryInstalledSdk>().Query(CancellationToken.None);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Logger.Error(ex, $"Error retrieving dotnet SDK version");
-                        return new DotNetVersion(string.Empty, false);
-                    }
-                });
-            DotNetSdkInstalled = dotNet
-                .Take(1)
-                .Merge(dotNet
-                    .FirstAsync(v => v != null))
-                .DistinctUntilChanged()
-                .Do(x => Log.Logger.Information($"dotnet SDK: {x}"))
-                .Replay(1)
-                .RefCount();
 
             _ActivePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
                 .ToGuiProperty(this, nameof(ActivePanel), default);
@@ -168,7 +146,7 @@ namespace Synthesis.Bethesda.GUI
             var latestVersions = Observable.Return(Unit.Default)
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .CombineLatest(
-                    DotNetSdkInstalled,
+                    installedSdk.DotNetSdkInstalled,
                     (_, DotNetVersions) => DotNetVersions)
                 .SelectTask(async x =>
                 {

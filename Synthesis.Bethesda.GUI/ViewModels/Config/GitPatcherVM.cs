@@ -773,6 +773,7 @@ namespace Synthesis.Bethesda.GUI
                 .Replay(1)
                 .RefCount();
 
+            var dotNetInstalled = Inject.Scope.GetInstance<IProvideInstalledSdk>();
             _State = Observable.CombineLatest(
                     driverRepoInfo
                         .Select(x => x.ToUnit()),
@@ -780,8 +781,7 @@ namespace Synthesis.Bethesda.GUI
                     runnableState
                         .Select(x => x.ToUnit()),
                     runnability,
-                    this.WhenAnyValue(x => x.Profile.Config.MainVM.DotNetSdkInstalled)
-                        .Switch()
+                    dotNetInstalled.DotNetSdkInstalled
                         .Select(x => (x, true))
                         .StartWith((new DotNetVersion(string.Empty, false), false)),
                     this.WhenAnyFallback(x => x.Profile.Config.MainVM.EnvironmentErrors.ActiveError!.ErrorString),
