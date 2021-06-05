@@ -1,12 +1,10 @@
 using Mutagen.Bethesda.Plugins;
 using Noggog;
-using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using BaseSynthesis = Synthesis.Bethesda;
 
-namespace Mutagen.Bethesda.Synthesis
+namespace Mutagen.Bethesda.Synthesis.Versioning
 {
     public static class Versions
     {

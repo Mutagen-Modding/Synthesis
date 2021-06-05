@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mutagen.Bethesda.Synthesis;
+using Mutagen.Bethesda.Synthesis.Versioning;
 using Mutagen.Bethesda.Synthesis.WPF;
 using Noggog;
 using Serilog;
@@ -30,6 +32,8 @@ namespace Synthesis.Bethesda.GUI
         {
             _coll.Options.DefaultLifestyle = Lifestyle.Scoped;
             _coll.Options.DefaultScopedLifestyle = ScopedLifestyle.Flowing;
+
+            RegisterBaseLib();
             
             RegisterCurrentLib();
 
@@ -49,6 +53,11 @@ namespace Synthesis.Bethesda.GUI
             RegisterMatchingInterfaces(
                 from type in typeof(INavigateTo).Assembly.GetExportedTypes()
                 select type);
+        }
+
+        private void RegisterBaseLib()
+        {
+            RegisterNamespaceFromType(typeof(IProvideCurrentVersions));
         }
 
         private void RegisterWpfLib()

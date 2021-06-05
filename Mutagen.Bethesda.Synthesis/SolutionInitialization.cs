@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Mutagen.Bethesda.Synthesis.Versioning;
 
 namespace Mutagen.Bethesda.Synthesis
 {

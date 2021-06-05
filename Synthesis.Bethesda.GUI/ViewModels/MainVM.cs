@@ -18,6 +18,7 @@ using System.Threading;
 using System.Windows;
 using System.Drawing;
 using Microsoft.Extensions.DependencyInjection;
+using Mutagen.Bethesda.Synthesis.Versioning;
 using Newtonsoft.Json;
 using SimpleInjector;
 using Synthesis.Bethesda.Execution.DotNet;
@@ -71,6 +72,7 @@ namespace Synthesis.Bethesda.GUI
         public MainVM(
             IProvideInstalledSdk installedSdk,
             IConfirmationPanelControllerVm confirmationControllerVm,
+            IProvideCurrentVersions currentVersions,
             IActivePanelControllerVm activePanelControllerVm)
         {
             _ActivePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
@@ -112,8 +114,8 @@ namespace Synthesis.Bethesda.GUI
 
             Task.Run(() => Mutagen.Bethesda.WarmupAll.Init()).FireAndForget();
 
-            SynthesisVersion = Mutagen.Bethesda.Synthesis.Versions.SynthesisVersion;
-            MutagenVersion = Mutagen.Bethesda.Synthesis.Versions.MutagenVersion;
+            SynthesisVersion = currentVersions.SynthesisVersion;
+            MutagenVersion = currentVersions.MutagenVersion;
 
             var latestVersions = Observable.Return(Unit.Default)
                 .ObserveOn(RxApp.TaskpoolScheduler)

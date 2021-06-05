@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Mutagen.Bethesda.Synthesis;
+using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 
 namespace Synthesis.Bethesda.GUI.Views
