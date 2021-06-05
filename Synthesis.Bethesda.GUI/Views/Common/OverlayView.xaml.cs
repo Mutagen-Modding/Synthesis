@@ -26,19 +26,19 @@ namespace Synthesis.Bethesda.GUI.Views
                         (c, _) => c?.Description)
                     .BindToStrict(this, x => x.DescriptionBlock.Text)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.ConfirmActionCommand)
+                this.WhenAnyValue(x => x.ViewModel!.Confirmation.ConfirmActionCommand)
                     .BindToStrict(this, x => x.AcceptButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.ConfirmActionCommand)
+                this.WhenAnyValue(x => x.ViewModel!.Confirmation.ConfirmActionCommand)
                     .Select(x => x?.CanExecute ?? Observable.Return(false))
                     .Switch()
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.AcceptButton.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.DiscardActionCommand)
+                this.WhenAnyValue(x => x.ViewModel!.Confirmation.DiscardActionCommand)
                     .BindToStrict(this, x => x.CancelButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.DiscardActionCommand)
+                this.WhenAnyValue(x => x.ViewModel!.Confirmation.DiscardActionCommand)
                     .Select(x => x?.CanExecute ?? Observable.Return(false))
                     .Switch()
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)

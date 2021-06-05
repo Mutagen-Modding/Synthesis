@@ -38,12 +38,9 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<ViewModel?> _ActivePanel;
         public ViewModel? ActivePanel => _ActivePanel.Value;
 
-        public ReactiveCommand<Unit, Unit> ConfirmActionCommand { get; }
-        public ReactiveCommand<Unit, Unit> DiscardActionCommand { get; }
         public ICommand OpenProfilesPageCommand { get; }
 
-        [Reactive]
-        public ConfirmationActionVM? TargetConfirmation { get; set; }
+        public IConfirmationPanelControllerVm Confirmation { get; }
 
         public ObservableCollectionExtended<IDE> IdeOptions { get; } = new ObservableCollectionExtended<IDE>();
 
@@ -73,6 +70,7 @@ namespace Synthesis.Bethesda.GUI
 
         public MainVM(
             IProvideInstalledSdk installedSdk,
+            IConfirmationPanelControllerVm confirmationControllerVm,
             IActivePanelControllerVm activePanelControllerVm)
         {
             _ActivePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
@@ -80,23 +78,7 @@ namespace Synthesis.Bethesda.GUI
             Configuration = new ConfigurationVM(this)
                 .DisposeWith(this);
             activePanelControllerVm.ActivePanel = Configuration;
-            DiscardActionCommand = NoggogCommand.CreateFromObject(
-                objectSource: this.WhenAnyValue(x => x.TargetConfirmation),
-                canExecute: target => target != null,
-                execute: (_) =>
-                {
-                    TargetConfirmation = null;
-                },
-                disposable: this.CompositeDisposable);
-            ConfirmActionCommand = NoggogCommand.CreateFromObject(
-                objectSource: this.WhenAnyFallback(x => x.TargetConfirmation!.ToDo),
-                canExecute: toDo => toDo != null,
-                execute: toDo =>
-                {
-                    toDo?.Invoke();
-                    TargetConfirmation = null;
-                },
-                disposable: this.CompositeDisposable);
+            Confirmation = confirmationControllerVm;
 
             _Hot = this.WhenAnyValue(x => x.ActivePanel)
                 .Select(x =>
@@ -185,7 +167,7 @@ namespace Synthesis.Bethesda.GUI
                                 .Select(open => open ? (GitPatcherVM?)gitPatcher : null);
                         })
                         .Switch(),
-                    this.WhenAnyValue(x => x.TargetConfirmation),
+                    this.WhenAnyValue(x => x.Confirmation.TargetConfirmation),
                     (openPatcher, target) =>
                     {
                         if (target != null) return target;

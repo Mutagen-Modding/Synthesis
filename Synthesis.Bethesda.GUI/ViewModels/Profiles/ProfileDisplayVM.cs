@@ -46,6 +46,7 @@ namespace Synthesis.Bethesda.GUI
             _IsActive = this.WhenAnyFallback(x => x.Profile!.IsActive, fallback: false)
                 .ToGuiProperty(this, nameof(IsActive));
 
+            var confirmation = Inject.Scope.GetInstance<IConfirmationPanelControllerVm>();
             DeleteCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyFallback(x => x.Profile!.IsActive, fallback: true)
                     .Select(active => !active),
@@ -53,7 +54,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     var profile = this.Profile;
                     if (profile == null || profile.IsActive) return;
-                    Parent.Config.MainVM.TargetConfirmation = new ConfirmationActionVM(
+                    confirmation.TargetConfirmation = new ConfirmationActionVM(
                         "Confirm",
                         $"Are you sure you want to delete {profile.Nickname}?",
                         () =>

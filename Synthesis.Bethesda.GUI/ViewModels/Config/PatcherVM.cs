@@ -52,7 +52,9 @@ namespace Synthesis.Bethesda.GUI
 
         public virtual bool IsNameEditable => true;
 
-        public PatcherVM(ProfileVM parent, PatcherSettings? settings)
+        public PatcherVM(
+            ProfileVM parent,
+            PatcherSettings? settings)
         {
             DisplayedObject = this;
             InternalID = Interlocked.Increment(ref NextID);
@@ -70,9 +72,10 @@ namespace Synthesis.Bethesda.GUI
             IsOn = settings?.On ?? false;
             Nickname = settings?.Nickname ?? string.Empty;
 
+            var confirmation = Inject.Scope.GetInstance<IConfirmationPanelControllerVm>();
             DeleteCommand = ReactiveCommand.Create(() =>
             {
-                parent.Config.MainVM.TargetConfirmation = new ConfirmationActionVM(
+                confirmation.TargetConfirmation = new ConfirmationActionVM(
                     "Confirm",
                     $"Are you sure you want to delete {DisplayName}?",
                     Delete);
