@@ -280,7 +280,7 @@ namespace Synthesis.Bethesda.GUI
         {
             try
             {
-                var ret = await Inject.Instance.GetInstance<IQuerySynthesisVersions>().Query(projPath, current: false, includePrerelease: includePrerelease, CancellationToken.None);
+                var ret = await Inject.Instance.GetInstance<IQueryLibraryVersions>().Query(projPath, current: false, includePrerelease: includePrerelease, CancellationToken.None);
                 Log.Logger.Information($"Latest published {(includePrerelease ? " prerelease" : null)} library versions:");
                 Log.Logger.Information($"  Mutagen: {ret.MutagenVersion}");
                 Log.Logger.Information($"  Synthesis: {ret.SynthesisVersion}");

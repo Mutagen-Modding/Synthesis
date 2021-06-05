@@ -3,23 +3,23 @@ using System.Threading.Tasks;
 
 namespace Synthesis.Bethesda.Execution
 {
-    public record SynthVersions(string? MutagenVersion, string? SynthesisVersion);
+    public record LibraryVersions(string? MutagenVersion, string? SynthesisVersion);
     
-    public interface IQuerySynthesisVersions
+    public interface IQueryLibraryVersions
     {
-        Task<SynthVersions> Query(string projectPath, bool current, bool includePrerelease, CancellationToken cancel);
+        Task<LibraryVersions> Query(string projectPath, bool current, bool includePrerelease, CancellationToken cancel);
     }
 
-    public class QuerySynthesisVersions : IQuerySynthesisVersions
+    public class QueryLibraryVersions : IQueryLibraryVersions
     {
         private readonly IQueryNugetListing _QueryNuget;
 
-        public QuerySynthesisVersions(IQueryNugetListing queryNuget)
+        public QueryLibraryVersions(IQueryNugetListing queryNuget)
         {
             _QueryNuget = queryNuget;
         }
         
-        public async Task<SynthVersions> Query(
+        public async Task<LibraryVersions> Query(
             string projectPath, bool current, bool includePrerelease, CancellationToken cancel)
         {
             string? mutagenVersion = null, synthesisVersion = null;
