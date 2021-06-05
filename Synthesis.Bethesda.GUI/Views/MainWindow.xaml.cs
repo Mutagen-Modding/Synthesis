@@ -65,9 +65,7 @@ namespace Synthesis.Bethesda.GUI.Views
                 })
             ).Wait();
 
-            Inject.Instance.RegisterInstance<Window>(this);
-            
-            var mainVM = Inject.Instance.GetRequiredService<MainVM>();
+            var mainVM = new MainVM(this);
             mainVM.Load(guiSettings, pipeSettings);
             Closing += (a, b) =>
             {
@@ -75,6 +73,7 @@ namespace Synthesis.Bethesda.GUI.Views
                 b.Cancel = true;
                 this.Visibility = Visibility.Collapsed;
                 mainVM.Shutdown();
+                mainVM.Dispose();
             };
 
             DataContext = mainVM;

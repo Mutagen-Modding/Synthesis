@@ -51,7 +51,7 @@ namespace Synthesis.Bethesda.GUI
             });
 
             ProfilesDisplay = parent.Profiles.Connect()
-                .Transform(x => new ProfileDisplayVM(this, Inject.Instance.GetRequiredService<INavigateTo>(), x))
+                .Transform(x => new ProfileDisplayVM(this, Inject.Scope.GetRequiredService<INavigateTo>(), x))
                 // Select the currently active profile during initial display
                 .OnItemAdded(p =>
                 {

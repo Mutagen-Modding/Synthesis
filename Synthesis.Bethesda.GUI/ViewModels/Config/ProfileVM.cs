@@ -119,9 +119,9 @@ namespace Synthesis.Bethesda.GUI
             {
                 SetInitializer(new GitPatcherInitVM(
                     this, 
-                    Inject.Instance.GetRequiredService<INavigateTo>(), 
-                    Inject.Instance.GetRequiredService<IProvideRepositoryCheckouts>(), 
-                    Inject.Instance.GetRequiredService<ICheckOrCloneRepo>()));
+                    Inject.Scope.GetRequiredService<INavigateTo>(), 
+                    Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(), 
+                    Inject.Scope.GetRequiredService<ICheckOrCloneRepo>()));
             });
             AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(this)));
             AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(this)));
@@ -536,7 +536,7 @@ namespace Synthesis.Bethesda.GUI
         }
            
         public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)
-            : this(parent, settings.TargetRelease, id: settings.ID, Inject.Instance.GetRequiredService<INavigateTo>())
+            : this(parent, settings.TargetRelease, id: settings.ID, Inject.Scope.GetRequiredService<INavigateTo>())
         {
             Nickname = settings.Nickname;
             MutagenVersioning = settings.MutagenVersioning;
@@ -553,12 +553,12 @@ namespace Synthesis.Bethesda.GUI
                 {
                     GithubPatcherSettings git => new GitPatcherVM(
                         this, 
-                        Inject.Instance.GetRequiredService<INavigateTo>(),
-                        Inject.Instance.GetRequiredService<ICheckOrCloneRepo>(),
-                        Inject.Instance.GetRequiredService<IProvideRepositoryCheckouts>(),
-                        Inject.Instance.GetRequiredService<ICheckoutRunnerRepository>(),
-                        Inject.Instance.GetRequiredService<ICheckRunnability>(),
-                        Inject.Instance.GetRequiredService<IBuild>(),
+                        Inject.Scope.GetRequiredService<INavigateTo>(),
+                        Inject.Scope.GetRequiredService<ICheckOrCloneRepo>(),
+                        Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
+                        Inject.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
+                        Inject.Scope.GetRequiredService<ICheckRunnability>(),
+                        Inject.Scope.GetRequiredService<IBuild>(),
                         git),
                     SolutionPatcherSettings soln => new SolutionPatcherVM(this, soln),
                     CliPatcherSettings cli => new CliPatcherVM(this, cli),

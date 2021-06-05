@@ -22,9 +22,11 @@ namespace Synthesis.Bethesda.GUI
 
         public EnvironmentErrorsVM(IEnumerable<IEnvironmentErrorVM> envErrors)
         {
+            var envErrorsArr = envErrors.ToArray();
+            
             _ActiveError =
                 Observable.CombineLatest(
-                        envErrors.Select(env =>
+                        envErrorsArr.Select(env =>
                         {
                             return env
                                 .WhenAnyValue(x => x.InError)

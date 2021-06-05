@@ -68,10 +68,10 @@ namespace Synthesis.Bethesda.GUI
             : base(profile)
         {
             Patcher = new GitPatcherVM(profile, navigateTo, checkOrClone,
-                Inject.Instance.GetRequiredService<IProvideRepositoryCheckouts>(),
-                Inject.Instance.GetRequiredService<ICheckoutRunnerRepository>(),
-                Inject.Instance.GetRequiredService<ICheckRunnability>(),
-                Inject.Instance.GetRequiredService<IBuild>());
+                Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
+                Inject.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
+                Inject.Scope.GetRequiredService<ICheckRunnability>(),
+                Inject.Scope.GetRequiredService<IBuild>());
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)
                 .Select(x => ErrorResponse.Create(x))
@@ -124,7 +124,7 @@ namespace Synthesis.Bethesda.GUI
                                 return repo.Patchers
                                     .Select(p =>
                                     {
-                                        return new PatcherStoreListingVM(this, p, repoVM, Inject.Instance.GetRequiredService<INavigateTo>());
+                                        return new PatcherStoreListingVM(this, p, repoVM, Inject.Scope.GetRequiredService<INavigateTo>());
                                     });
                             })
                             .AsObservableChangeSet();
@@ -188,12 +188,12 @@ namespace Synthesis.Bethesda.GUI
         {
             PatcherVM patcher = new GitPatcherVM(
                 Profile,
-                Inject.Instance.GetRequiredService<INavigateTo>(),
-                Inject.Instance.GetRequiredService<ICheckOrCloneRepo>(),
-                Inject.Instance.GetRequiredService<IProvideRepositoryCheckouts>(),
-                Inject.Instance.GetRequiredService<ICheckoutRunnerRepository>(),
-                Inject.Instance.GetRequiredService<ICheckRunnability>(),
-                Inject.Instance.GetRequiredService<IBuild>())
+                Inject.Scope.GetRequiredService<INavigateTo>(),
+                Inject.Scope.GetRequiredService<ICheckOrCloneRepo>(),
+                Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
+                Inject.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
+                Inject.Scope.GetRequiredService<ICheckRunnability>(),
+                Inject.Scope.GetRequiredService<IBuild>())
             {
                 RemoteRepoPath = listing.RepoPath,
                 ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')

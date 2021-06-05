@@ -49,7 +49,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (game == null) return;
                     var profile = new ProfileVM(config, game.Value, GetNewProfileId(),
-                        Inject.Instance.GetRequiredService<INavigateTo>())
+                        Inject.Scope.GetRequiredService<INavigateTo>())
                     {
                         Nickname = Nickname
                     };

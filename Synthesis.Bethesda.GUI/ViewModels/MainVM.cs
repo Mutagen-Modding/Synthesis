@@ -19,6 +19,7 @@ using System.Windows;
 using System.Drawing;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using SimpleInjector;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.GUI.Services;
 
@@ -78,8 +79,7 @@ namespace Synthesis.Bethesda.GUI
         
         public bool IsShutdown { get; private set; }
 
-        public MainVM(Window window,
-            IQueryInstalledSdk sdkQuery)
+        public MainVM(Window window)
         {
             _window = window;
             var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), RxApp.TaskpoolScheduler)
@@ -88,7 +88,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     try
                     {
-                        return await sdkQuery.Query(CancellationToken.None);
+                        return await Inject.Scope.GetInstance<IQueryInstalledSdk>().Query(CancellationToken.None);
                     }
                     catch (Exception ex)
                     {
@@ -229,7 +229,7 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x != null)
                 .ToGuiProperty(this, nameof(InModal));
             
-            EnvironmentErrors = Inject.Instance.GetRequiredService<IEnvironmentErrorsVM>();
+            EnvironmentErrors = Inject.Scope.GetRequiredService<IEnvironmentErrorsVM>();
         }
 
         public void Load(SynthesisGuiSettings? guiSettings, PipelineSettings? pipeSettings)
@@ -280,7 +280,7 @@ namespace Synthesis.Bethesda.GUI
         {
             try
             {
-                var ret = await Inject.Instance.GetInstance<IQueryLibraryVersions>().Query(projPath, current: false, includePrerelease: includePrerelease, CancellationToken.None);
+                var ret = await Inject.Scope.GetInstance<IQueryLibraryVersions>().Query(projPath, current: false, includePrerelease: includePrerelease, CancellationToken.None);
                 Log.Logger.Information($"Latest published {(includePrerelease ? " prerelease" : null)} library versions:");
                 Log.Logger.Information($"  Mutagen: {ret.MutagenVersion}");
                 Log.Logger.Information($"  Synthesis: {ret.SynthesisVersion}");
@@ -333,8 +333,11 @@ namespace Synthesis.Bethesda.GUI
             {
                 try
                 {
+                    Log.Logger.Information("Disposing scope");
+                    await Inject.Scope.DisposeAsync();
+                    Log.Logger.Information("Disposed scope");
                     Log.Logger.Information("Disposing injection");
-                    await Inject.Instance.DisposeAsync();
+                    await Inject.Container.DisposeAsync();
                     Log.Logger.Information("Disposed injection");
                 }
                 catch (Exception e)
