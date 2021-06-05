@@ -26,15 +26,18 @@ namespace Synthesis.Bethesda.Execution.CLI
 
     public class RunPatcherPipeline : IRunPatcherPipeline
     {
+        private readonly IBuild _Build;
         private readonly ICheckOrCloneRepo _CheckOrCloneRepo;
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
         private readonly ICheckRunnability _Runnability;
 
         public RunPatcherPipeline(
+            IBuild build,
             ICheckOrCloneRepo checkOrCloneRepo,
             IProvideRepositoryCheckouts repositoryCheckouts,
             ICheckRunnability runnability)
         {
+            _Build = build;
             _CheckOrCloneRepo = checkOrCloneRepo;
             _RepositoryCheckouts = repositoryCheckouts;
             _Runnability = runnability;
@@ -105,7 +108,8 @@ namespace Synthesis.Bethesda.Execution.CLI
                                 pathToExtraDataBaseFolder: run.ExtraDataFolder ?? Paths.TypicalExtraData,
                                 pathToProj: Path.Combine(Path.GetDirectoryName(sln.SolutionPath)!, sln.ProjectSubpath),
                                 checkRunnability: _Runnability,
-                                repositoryCheckouts: _RepositoryCheckouts),
+                                repositoryCheckouts: _RepositoryCheckouts,
+                                build: _Build),
                             GithubPatcherSettings git => new GitPatcherRun(
                                 settings: git,
                                 localDir: GitPatcherRun.RunnerRepoDirectory(profile.ID, git.ID),

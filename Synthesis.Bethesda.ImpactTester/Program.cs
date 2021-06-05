@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Synthesis.Bethesda.GUI;
 
 namespace Synthesis.Bethesda.ImpactTester
 {
@@ -122,7 +123,7 @@ namespace Synthesis.Bethesda.ImpactTester
                                 continue;
                             }
                             System.Console.WriteLine($"Checking {group.Key}/{dependency.Repository}:{proj}");
-                            var compile = await DotNetCommands.Compile(path, cancel, null);
+                            var compile = await Inject.Instance.GetInstance<IBuild>().Compile(path, cancel, null);
                             if (compile.Failed)
                             {
                                 System.Console.WriteLine("Failed compilation");

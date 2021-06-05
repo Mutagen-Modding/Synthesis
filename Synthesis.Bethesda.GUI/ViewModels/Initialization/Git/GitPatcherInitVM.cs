@@ -70,7 +70,8 @@ namespace Synthesis.Bethesda.GUI
             Patcher = new GitPatcherVM(profile, navigateTo, checkOrClone,
                 Inject.Instance.GetRequiredService<IProvideRepositoryCheckouts>(),
                 Inject.Instance.GetRequiredService<ICheckoutRunnerRepository>(),
-                Inject.Instance.GetRequiredService<ICheckRunnability>());
+                Inject.Instance.GetRequiredService<ICheckRunnability>(),
+                Inject.Instance.GetRequiredService<IBuild>());
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)
                 .Select(x => ErrorResponse.Create(x))
@@ -191,7 +192,8 @@ namespace Synthesis.Bethesda.GUI
                 Inject.Instance.GetRequiredService<ICheckOrCloneRepo>(),
                 Inject.Instance.GetRequiredService<IProvideRepositoryCheckouts>(),
                 Inject.Instance.GetRequiredService<ICheckoutRunnerRepository>(),
-                Inject.Instance.GetRequiredService<ICheckRunnability>())
+                Inject.Instance.GetRequiredService<ICheckRunnability>(),
+                Inject.Instance.GetRequiredService<IBuild>())
             {
                 RemoteRepoPath = listing.RepoPath,
                 ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')

@@ -20,6 +20,7 @@ using Mutagen.Bethesda.Installs;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.WPF.Plugins.Order;
+using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services;
@@ -557,6 +558,7 @@ namespace Synthesis.Bethesda.GUI
                         Inject.Instance.GetRequiredService<IProvideRepositoryCheckouts>(),
                         Inject.Instance.GetRequiredService<ICheckoutRunnerRepository>(),
                         Inject.Instance.GetRequiredService<ICheckRunnability>(),
+                        Inject.Instance.GetRequiredService<IBuild>(),
                         git),
                     SolutionPatcherSettings soln => new SolutionPatcherVM(this, soln),
                     CliPatcherSettings cli => new CliPatcherVM(this, cli),

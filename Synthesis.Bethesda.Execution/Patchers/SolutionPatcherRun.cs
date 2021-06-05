@@ -25,6 +25,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
 {
     public class SolutionPatcherRun : IPatcherRun
     {
+        private readonly IBuild _Build;
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
         public string Name { get; }
@@ -43,9 +44,11 @@ namespace Synthesis.Bethesda.Execution.Patchers
             string pathToSln, 
             string pathToProj,
             string pathToExtraDataBaseFolder,
+            IBuild build,
             ICheckRunnability checkRunnability,
             IProvideRepositoryCheckouts repositoryCheckouts)
         {
+            _Build = build;
             _CheckRunnability = checkRunnability;
             _RepositoryCheckouts = repositoryCheckouts;
             PathToSolution = pathToSln;
@@ -60,7 +63,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 Task.Run(async () =>
                 {
                     _output.OnNext($"Compiling");
-                    var resp = await DotNetCommands.Compile(PathToProject, cancel, _output.OnNext).ConfigureAwait(false);
+                    var resp = await _Build.Compile(PathToProject, cancel, _output.OnNext).ConfigureAwait(false);
                     if (!resp.Succeeded)
                     {
                         throw new SynthesisBuildFailure(resp.Reason);

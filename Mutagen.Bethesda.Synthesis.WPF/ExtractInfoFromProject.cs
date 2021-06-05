@@ -1,59 +1,35 @@
-using Noggog;
-using Noggog.Utility;
-using Synthesis.Bethesda;
-using Synthesis.Bethesda.Execution;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Noggog;
+using Noggog.Utility;
+using Synthesis.Bethesda.Execution;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {
-    public static class ReflectionUtility
+    public interface IExtractInfoFromProject
     {
-        static void CopyDirectory(string source, string target, CancellationToken cancel)
+        Task<GetResponse<(TRet Item, TempFolder Temp)>> Extract<TRet>(string projPath, CancellationToken cancel, Func<Assembly, GetResponse<TRet>> getter, Action<string> log);
+    }
+
+    public class ExtractInfoFromProject : IExtractInfoFromProject
+    {
+        private readonly ICopyDirectory _CopyDirectory;
+        private readonly IQueryExecutablePath _QueryExecutablePath;
+
+        public ExtractInfoFromProject(
+            ICopyDirectory copyDirectory,
+            IQueryExecutablePath queryExecutablePath)
         {
-            var stack = new Stack<Folders>();
-            stack.Push(new Folders(source, target));
-
-            while (stack.Count > 0)
-            {
-                if (cancel.IsCancellationRequested) return;
-                var folders = stack.Pop();
-                Directory.CreateDirectory(folders.Target);
-                foreach (var file in Directory.GetFiles(folders.Source, "*.*"))
-                {
-                    if (cancel.IsCancellationRequested) return;
-                    File.Copy(file, Path.Combine(folders.Target, Path.GetFileName(file)));
-                }
-
-                foreach (var folder in Directory.GetDirectories(folders.Source))
-                {
-                    if (cancel.IsCancellationRequested) return;
-                    stack.Push(new Folders(folder, Path.Combine(folders.Target, Path.GetFileName(folder))));
-                }
-            }
+            _CopyDirectory = copyDirectory;
+            _QueryExecutablePath = queryExecutablePath;
         }
 
-        class Folders
-        {
-            public string Source { get; private set; }
-            public string Target { get; private set; }
-
-            public Folders(string source, string target)
-            {
-                Source = source;
-                Target = target;
-            }
-        }
-
-        public static async Task<GetResponse<(TRet Item, TempFolder Temp)>> ExtractInfoFromProject<TRet>(string projPath, CancellationToken cancel, Func<Assembly, GetResponse<TRet>> getter, Action<string> log)
+        public async Task<GetResponse<(TRet Item, TempFolder Temp)>> Extract<TRet>(string projPath,
+            CancellationToken cancel, Func<Assembly, GetResponse<TRet>> getter, Action<string> log)
         {
             if (cancel.IsCancellationRequested) return GetResponse<(TRet Item, TempFolder Temp)>.Fail("Cancelled");
 
@@ -62,17 +38,17 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             if (cancel.IsCancellationRequested) return GetResponse<(TRet Item, TempFolder Temp)>.Fail("Cancelled");
             var projDir = Path.GetDirectoryName(projPath)!;
             log($"Starting project assembly info extraction.  Copying project from {projDir} to {tempFolder.Dir.Path}");
-            CopyDirectory(projDir, tempFolder.Dir.Path, cancel);
+            _CopyDirectory.Copy(projDir, tempFolder.Dir.Path, cancel);
             projPath = Path.Combine(tempFolder.Dir.Path, Path.GetFileName(projPath));
             log($"Retrieving executable path from {projPath}");
-            var exec = await DotNetCommands.GetExecutablePath(projPath, cancel, log);
+            var exec = await _QueryExecutablePath.Query(projPath, cancel, log);
             if (exec.Failed) return exec.BubbleFailure<(TRet Item, TempFolder Temp)>();
             log($"Located executable path for {projPath}: {exec.Value}");
             var ret = ExecuteAndUnload(exec.Value, getter);
             if (ret.Failed) return ret.BubbleFailure<(TRet Item, TempFolder Temp)>();
             return (ret.Value, tempFolder);
         }
-
+        
         private static GetResponse<TRet> ExecuteAndUnload<TRet>(string exec, Func<Assembly, GetResponse<TRet>> getter)
         {
             return AssemblyLoading.ExecuteAndForceUnload(exec, getter, () => new FormKeyAssemblyLoadContext(exec));
@@ -106,19 +82,6 @@ namespace Mutagen.Bethesda.Synthesis.WPF
 
                 return null;
             }
-        }
-
-        /// <summary>
-        /// Helps to get properties in inherited interfaces
-        /// </summary>
-        public static IEnumerable<PropertyInfo> GetPublicProperties(this Type type)
-        {
-            if (!type.IsInterface)
-                return type.GetProperties();
-
-            return (new Type[] { type })
-                   .Concat(type.GetInterfaces())
-                   .SelectMany(i => i.GetProperties());
         }
     }
 }

@@ -33,6 +33,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             string displayName,
             IObservable<IChangeSet<IModListingGetter>> loadOrder,
             IObservable<ILinkCache?> linkCache,
+            IProvideReflectionSettingsBundle provideBundle,
             Action<string> log)
         {
             var targetSettingsVM = Observable.Return(Unit.Default)
@@ -44,7 +45,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                         try
                         {
                             observer.OnNext((true, GetResponse<ReflectionSettingsBundleVM>.Fail("Loading")));
-                            var reflectionBundle = await ReflectionSettingsBundleVM.ExtractBundle(
+                            var reflectionBundle = await provideBundle.ExtractBundle(
                                 projPath,
                                 targets: config.Targets,
                                 detectedLoadOrder: loadOrder,

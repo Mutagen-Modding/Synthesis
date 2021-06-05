@@ -15,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using Microsoft.Extensions.Logging;
+using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Xunit;
 
@@ -32,6 +33,7 @@ namespace Synthesis.Bethesda.UnitTests
         private CheckoutRunnerRepository Get()
         {
             return new CheckoutRunnerRepository(
+                _Fixture.Inject.Create<IBuild>(),
                 _Fixture.Inject.Create<IProvideRepositoryCheckouts>());
         }
         

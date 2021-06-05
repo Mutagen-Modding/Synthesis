@@ -23,11 +23,15 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
     public class CheckoutRunnerRepository : ICheckoutRunnerRepository
     {
+        private readonly IBuild _Build;
         private readonly IProvideRepositoryCheckouts _RepoCheckouts;
         public const string RunnerBranch = "SynthesisRunner";
 
-        public CheckoutRunnerRepository(IProvideRepositoryCheckouts repoCheckouts)
+        public CheckoutRunnerRepository(
+            IBuild build,
+            IProvideRepositoryCheckouts repoCheckouts)
         {
+            _Build = build;
             _RepoCheckouts = repoCheckouts;
         }
         
@@ -140,7 +144,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 // Compile to help prep
                 if (compile)
                 {
-                    var compileResp = await DotNetCommands.Compile(projPath, cancel, logger);
+                    var compileResp = await _Build.Compile(projPath, cancel, logger);
                     logger?.Invoke("Finished compiling");
                     if (compileResp.Failed) return compileResp.BubbleResult(runInfo);
                 }
