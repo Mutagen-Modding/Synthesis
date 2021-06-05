@@ -4,6 +4,7 @@ using ReactiveUI;
 using Synthesis.Bethesda.Execution;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI

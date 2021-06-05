@@ -1,12 +1,11 @@
 ﻿using System;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using Noggog;
-using ReactiveUI;
 using Serilog;
-using Synthesis.Bethesda.Execution.DotNet;
 
-namespace Synthesis.Bethesda.GUI.Services
+namespace Synthesis.Bethesda.Execution.DotNet
 {
     public interface IProvideInstalledSdk
     {
@@ -19,7 +18,7 @@ namespace Synthesis.Bethesda.GUI.Services
         
         public ProvideInstalledSdk(IQueryInstalledSdk query, ILogger logger)
         {
-            var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), RxApp.TaskpoolScheduler)
+            var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), TaskPoolScheduler.Default)
                 .StartWith(0)
                 .SelectTask(async i =>
                 {

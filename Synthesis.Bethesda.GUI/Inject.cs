@@ -46,7 +46,7 @@ namespace Synthesis.Bethesda.GUI
             _coll.Collection.Register<IEnvironmentErrorVM>(
                 typeof(IEnvironmentErrorVM).Assembly.AsEnumerable());
 
-            RegisterNamespaceFromType(typeof(IProvideInstalledSdk));
+            RegisterNamespaceFromType(typeof(INavigateTo));
         }
 
         private void RegisterWpfLib()
