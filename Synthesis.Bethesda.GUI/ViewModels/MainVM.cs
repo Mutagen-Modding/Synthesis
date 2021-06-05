@@ -33,6 +33,8 @@ namespace Synthesis.Bethesda.GUI
 {
     public class MainVM : ViewModel
     {
+        private readonly ISelectedProfileControllerVm _SelectedProfile;
+        private readonly IActivePanelControllerVm _ActivePanelControllerVm;
         public ConfigurationVM Configuration { get; }
         public SynthesisGuiSettings Settings { get; private set; } = new SynthesisGuiSettings();
 
@@ -73,11 +75,14 @@ namespace Synthesis.Bethesda.GUI
             IProvideInstalledSdk installedSdk,
             IConfirmationPanelControllerVm confirmationControllerVm,
             IProvideCurrentVersions currentVersions,
+            ISelectedProfileControllerVm selectedProfile,
             IActivePanelControllerVm activePanelControllerVm)
         {
+            _SelectedProfile = selectedProfile;
+            _ActivePanelControllerVm = activePanelControllerVm;
             _ActivePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
                 .ToGuiProperty(this, nameof(ActivePanel), default);
-            Configuration = new ConfigurationVM(this)
+            Configuration = new ConfigurationVM(this, selectedProfile)
                 .DisposeWith(this);
             activePanelControllerVm.ActivePanel = Configuration;
             Confirmation = confirmationControllerVm;
@@ -210,12 +215,11 @@ namespace Synthesis.Bethesda.GUI
         {
             if (Configuration.Profiles.Count == 0)
             {
-                var activePanelController = Inject.Scope.GetInstance<IActivePanelControllerVm>();
-                activePanelController.ActivePanel = new NewProfileVM(this.Configuration, (profile) =>
+                _ActivePanelControllerVm.ActivePanel = new NewProfileVM(this.Configuration, (profile) =>
                 {
                     profile.Nickname = profile.Release.ToDescriptionString();
-                    Configuration.SelectedProfile = profile;
-                    activePanelController.ActivePanel = Configuration;
+                    _SelectedProfile.SelectedProfile = profile;
+                    _ActivePanelControllerVm.ActivePanel = Configuration;
                 });
             }
         }

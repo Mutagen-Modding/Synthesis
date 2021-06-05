@@ -63,12 +63,13 @@ namespace Synthesis.Bethesda.GUI
                             Parent.SwitchToActive();
                         });
                 });
+            var selProfile = Inject.Scope.GetInstance<ISelectedProfileControllerVm>();
             SwitchToCommand = ReactiveCommand.Create(
                 execute: () =>
                 {
                     var profile = this.Profile;
                     if (profile == null || profile.IsActive) return;
-                    Parent.Config.SelectedProfile = profile;
+                    selProfile.SelectedProfile = profile;
                 });
             OpenInternalProfileFolderCommand = ReactiveCommand.Create(
                 execute: () =>

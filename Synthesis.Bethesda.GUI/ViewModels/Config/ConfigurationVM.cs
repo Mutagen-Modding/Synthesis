@@ -17,6 +17,8 @@ namespace Synthesis.Bethesda.GUI
 {
     public class ConfigurationVM : ViewModel
     {
+        private ISelectedProfileControllerVm _SelectedProfileController;
+        
         public MainVM MainVM { get; }
 
         public SourceCache<ProfileVM, string> Profiles { get; } = new SourceCache<ProfileVM, string>(p => p.ID);
@@ -30,8 +32,8 @@ namespace Synthesis.Bethesda.GUI
 
         public ReactiveCommandBase<Unit, Unit> RunPatchers { get; }
 
-        [Reactive]
-        public ProfileVM? SelectedProfile { get; set; }
+        private readonly ObservableAsPropertyHelper<ProfileVM?> _SelectedProfile;
+        public ProfileVM? SelectedProfile => _SelectedProfile.Value;
 
         [Reactive]
         public PatcherInitVM? NewPatcher { get; set; }
@@ -45,8 +47,12 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool ShowHelp { get; set; }
 
-        public ConfigurationVM(MainVM mvm)
+        public ConfigurationVM(MainVM mvm, ISelectedProfileControllerVm selectedProfile)
         {
+            _SelectedProfileController = selectedProfile;
+            _SelectedProfile = _SelectedProfileController.WhenAnyValue(x => x.SelectedProfile)
+                .ToGuiProperty(this, nameof(SelectedProfile), default);
+            
             MainVM = mvm;
             ProfilesDisplay = Profiles.Connect().ToObservableCollection(this);
             PatchersDisplay = this.WhenAnyValue(x => x.SelectedProfile)
@@ -131,7 +137,7 @@ namespace Synthesis.Bethesda.GUI
             }));
             if (Profiles.TryGetValue(settings.SelectedProfile, out var profile))
             {
-                SelectedProfile = profile;
+                _SelectedProfileController.SelectedProfile = profile;
             }
             ShowHelp = settings.ShowHelp;
         }
