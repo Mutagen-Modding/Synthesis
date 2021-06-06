@@ -12,13 +12,18 @@ namespace Synthesis.Bethesda.GUI
         public string DisplayName { get; set; } = string.Empty;
 
         public ProfileVM Profile { get; }
+        
+        public PatcherInitializationVM Init { get; }
 
         public abstract ErrorResponse CanCompleteConfiguration { get; }
 
         public abstract IAsyncEnumerable<PatcherVM> Construct();
 
-        public PatcherInitVM(ProfileVM profile)
+        public PatcherInitVM(
+            PatcherInitializationVM init,
+            ProfileVM profile)
         {
+            Init = init;
             Profile = profile;
         }
 

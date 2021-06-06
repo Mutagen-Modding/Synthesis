@@ -117,16 +117,18 @@ namespace Synthesis.Bethesda.GUI
             ID = id;
             Config = parent;
             Release = release;
+            var init = Inject.Scope.GetRequiredService<PatcherInitializationVM>();
             AddGitPatcherCommand = ReactiveCommand.Create(() =>
             {
                 SetInitializer(new GitPatcherInitVM(
+                    init, 
                     this, 
                     Inject.Scope.GetRequiredService<INavigateTo>(), 
                     Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(), 
                     Inject.Scope.GetRequiredService<ICheckOrCloneRepo>()));
             });
-            AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(this)));
-            AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(this)));
+            AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(init, this)));
+            AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(init, this)));
 
             ProfileDirectory = Path.Combine(Execution.Paths.WorkingDirectory, ID);
             WorkingDirectory = Execution.Paths.ProfileWorkingDirectory(ID);
@@ -598,7 +600,7 @@ namespace Synthesis.Bethesda.GUI
 
         private void SetInitializer(PatcherInitVM initializer)
         {
-            Config.NewPatcher = initializer;
+            Config.Init.NewPatcher = initializer;
         }
 
         public override void Dispose()

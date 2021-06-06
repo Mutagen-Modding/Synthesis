@@ -24,17 +24,12 @@ namespace Synthesis.Bethesda.GUI
         public IObservableCollection<ProfileVM> ProfilesDisplay { get; }
         public IObservableCollection<PatcherVM> PatchersDisplay { get; }
 
-        public ICommand CompleteConfiguration { get; }
-        public ICommand CancelConfiguration { get; }
         public ICommand ShowHelpToggleCommand { get; }
 
         public ReactiveCommandBase<Unit, Unit> RunPatchers { get; }
 
         private readonly ObservableAsPropertyHelper<ProfileVM?> _SelectedProfile;
         public ProfileVM? SelectedProfile => _SelectedProfile.Value;
-
-        [Reactive]
-        public PatcherInitVM? NewPatcher { get; set; }
 
         private readonly ObservableAsPropertyHelper<object?> _DisplayedObject;
         public object? DisplayedObject => _DisplayedObject.Value;
@@ -44,12 +39,16 @@ namespace Synthesis.Bethesda.GUI
 
         [Reactive]
         public bool ShowHelp { get; set; }
+        
+        public PatcherInitializationVM Init { get; }
 
         public ConfigurationVM(
+            PatcherInitializationVM initVm,
             IActivePanelControllerVm activePanelController,
             ISelectedProfileControllerVm selectedProfile,
             ISaveSignal saveSignal)
         {
+            Init = initVm;
             _SelectedProfileController = selectedProfile;
             _SelectedProfile = _SelectedProfileController.WhenAnyValue(x => x.SelectedProfile)
                 .ToGuiProperty(this, nameof(SelectedProfile), default);
@@ -60,38 +59,9 @@ namespace Synthesis.Bethesda.GUI
                 .Switch()
                 .ToObservableCollection(this);
 
-            CompleteConfiguration = ReactiveCommand.CreateFromTask(
-                async () =>
-                {
-                    var initializer = this.NewPatcher;
-                    if (initializer == null) return;
-                    AddNewPatchers(await initializer.Construct().ToListAsync());
-                },
-                canExecute: this.WhenAnyValue(x => x.NewPatcher)
-                    .Select(patcher =>
-                    {
-                        if (patcher == null) return Observable.Return(false);
-                        return patcher.WhenAnyValue(x => x.CanCompleteConfiguration)
-                            .Select(e => e.Succeeded);
-                    })
-                    .Switch());
-
-            CancelConfiguration = ReactiveCommand.Create(
-                () =>
-                {
-                    NewPatcher?.Cancel();
-                    NewPatcher = null;
-                });
-
-            // Dispose any old patcher initializations
-            this.WhenAnyValue(x => x.NewPatcher)
-                .DisposePrevious()
-                .Subscribe()
-                .DisposeWith(this);
-
             _DisplayedObject = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.SelectedProfile!.DisplayedObject),
-                    this.WhenAnyValue(x => x.NewPatcher),
+                    initVm.WhenAnyValue(x => x.NewPatcher),
                     (selected, newConfig) => (newConfig as object) ?? selected)
                 .ToGuiProperty(this, nameof(DisplayedObject), default);
 
@@ -150,19 +120,6 @@ namespace Synthesis.Bethesda.GUI
             guiSettings.ShowHelp = ShowHelp;
             guiSettings.SelectedProfile = SelectedProfile?.ID ?? string.Empty;
             pipeSettings.Profiles = Profiles.Items.Select(p => p.Save()).ToList();
-        }
-
-        public void AddNewPatchers(List<PatcherVM> patchersToAdd)
-        {
-            NewPatcher = null;
-            if (patchersToAdd.Count == 0) return;
-            if (SelectedProfile == null)
-            {
-                throw new ArgumentNullException("Selected profile unexpectedly null");
-            }
-            patchersToAdd.ForEach(p => p.IsOn = true);
-            SelectedProfile.Patchers.AddRange(patchersToAdd);
-            SelectedProfile.DisplayedObject = patchersToAdd.First();
         }
 
         public override void Dispose()

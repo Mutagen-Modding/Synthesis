@@ -55,7 +55,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Show dimmer if in initial configuration
-                this.WhenAnyValue(x => x.ViewModel!.NewPatcher)
+                this.WhenAnyValue(x => x.ViewModel!.Init.NewPatcher)
                     .Select(newPatcher => newPatcher != null ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.InitialConfigurationDimmer.Visibility)
                     .DisposeWith(disposable);

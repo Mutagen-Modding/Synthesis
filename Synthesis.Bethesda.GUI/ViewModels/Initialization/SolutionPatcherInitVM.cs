@@ -37,8 +37,10 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public IDE Ide { get; set; }
 
-        public SolutionPatcherInitVM(ProfileVM profile)
-            : base(profile)
+        public SolutionPatcherInitVM(
+            PatcherInitializationVM init,
+            ProfileVM profile)
+            : base(init, profile)
         {
             IdeOptions.AddRange(EnumExt.GetValues<IDE>());
             _SettingsSingleton = Inject.Scope.GetInstance<ISettingsSingleton>();

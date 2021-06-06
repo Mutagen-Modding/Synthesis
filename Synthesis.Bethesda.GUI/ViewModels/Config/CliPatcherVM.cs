@@ -66,6 +66,7 @@ namespace Synthesis.Bethesda.GUI
                     IsHaltingError = false
                 });
         }
+        
         private void CopyInSettings(CliPatcherSettings? settings)
         {
             if (settings == null) return;

@@ -45,6 +45,7 @@ namespace Synthesis.Bethesda.GUI
         {
             _coll.Register<MainVM>();
             _coll.Register<ConfigurationVM>();
+            _coll.Register<PatcherInitializationVM>();
             _coll.RegisterInstance(Log.Logger);
             _coll.Collection.Register<IEnvironmentErrorVM>(
                 typeof(IEnvironmentErrorVM).Assembly.AsEnumerable());

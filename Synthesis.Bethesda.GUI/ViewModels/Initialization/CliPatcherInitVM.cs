@@ -13,8 +13,8 @@ namespace Synthesis.Bethesda.GUI
 
         public CliPatcherVM Patcher { get; }
 
-        public CliPatcherInitVM(ProfileVM profile)
-            : base(profile)
+        public CliPatcherInitVM(PatcherInitializationVM init, ProfileVM profile)
+            : base(init, profile)
         {
             Patcher = new CliPatcherVM(profile);
             _CanCompleteConfiguration = Patcher.WhenAnyValue(x => x.PathToExecutable.ErrorState)

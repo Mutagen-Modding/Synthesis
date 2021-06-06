@@ -61,11 +61,12 @@ namespace Synthesis.Bethesda.GUI
         private bool _wasAdded = false;
 
         public GitPatcherInitVM(
+            PatcherInitializationVM init,
             ProfileVM profile, 
             INavigateTo navigateTo, 
             IProvideRepositoryCheckouts repositoryCheckouts,
             ICheckOrCloneRepo checkOrClone)
-            : base(profile)
+            : base(init, profile)
         {
             Patcher = new GitPatcherVM(profile, navigateTo, checkOrClone,
                 Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
@@ -198,8 +199,7 @@ namespace Synthesis.Bethesda.GUI
                 RemoteRepoPath = listing.RepoPath,
                 ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')
             };
-            Inject.Scope.GetInstance<ConfigurationVM>()
-                .AddNewPatchers(patcher.AsEnumerable().ToList());
+            Init.AddNewPatchers(patcher.AsEnumerable().ToList());
         }
 
         public override void Dispose()

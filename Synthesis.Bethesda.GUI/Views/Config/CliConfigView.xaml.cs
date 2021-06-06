@@ -21,13 +21,16 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.BindStrict(this.ViewModel, vm => vm.PathToExecutable, view => view.ExecutablePathPicker.PickerVM)
                     .DisposeWith(disposable);
 
-                var isNewPatcher = this.WhenAnyFallback(x => x.ViewModel!.Profile.Config.NewPatcher, default)
-                    .Select(newPatcher => newPatcher != null)
-                    .Replay(1)
-                    .RefCount();
-
+                // ToDo
+                // Re-enable
+                
+                // var isNewPatcher = this.WhenAnyFallback(x => x.ViewModel!.Profile.Config.NewPatcher, default)
+                //     .Select(newPatcher => newPatcher != null)
+                //     .Replay(1)
+                //     .RefCount();
+                
                 // Hide help box if not in initialization
-                UtilityBindings.HelpWiring(this.ViewModel!.Profile.Config, this.HelpButton, this.HelpText, isNewPatcher)
+                UtilityBindings.HelpWiring(this.ViewModel!.Profile.Config, this.HelpButton, this.HelpText)
                     .DisposeWith(disposable);
             });
         }

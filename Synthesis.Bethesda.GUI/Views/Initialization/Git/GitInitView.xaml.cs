@@ -22,10 +22,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(dispose);
 
                 // Set up discard/confirm clicks
-                this.WhenAnyValue(x => x.ViewModel!.Profile.Config.CancelConfiguration)
+                this.WhenAnyValue(x => x.ViewModel!.Init.CancelConfiguration)
                     .BindToStrict(this, x => x.CancelAdditionButton.Command)
                     .DisposeWith(dispose);
-                this.WhenAnyValue(x => x.ViewModel!.Profile.Config.CompleteConfiguration)
+                this.WhenAnyValue(x => x.ViewModel!.Init.CompleteConfiguration)
                     .BindToStrict(this, x => x.ConfirmButton.ConfirmAdditionButton.Command)
                     .DisposeWith(dispose);
             });
