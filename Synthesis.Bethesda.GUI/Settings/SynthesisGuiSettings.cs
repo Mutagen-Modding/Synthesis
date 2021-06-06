@@ -1,9 +1,4 @@
-using Synthesis.Bethesda.Execution.Settings;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.Settings
 {
     public class SynthesisGuiSettings
     {

@@ -1,24 +1,22 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Noggog;
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.Settings
 {
-    public interface ISettings
+    public interface ISettingsSingleton
     {
         SynthesisGuiSettings Gui { get; }
         PipelineSettings Pipeline { get; }
     }
 
-    public class Settings : ISettings
+    public class SettingsSingleton : ISettingsSingleton
     {
         public SynthesisGuiSettings Gui { get; }
         public PipelineSettings Pipeline { get; }
 
-        public Settings()
+        public SettingsSingleton()
         {
             SynthesisGuiSettings? guiSettings = null;
             PipelineSettings? pipeSettings = null;

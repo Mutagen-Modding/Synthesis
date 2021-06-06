@@ -8,12 +8,13 @@ using System.Linq;
 using System.Reactive.Linq;
 using DynamicData.Binding;
 using Synthesis.Bethesda.GUI.Services.Ide;
+using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI
 {
     public class SolutionPatcherInitVM : PatcherInitVM
     {
-        private readonly ISettings _Settings;
+        private readonly ISettingsSingleton _SettingsSingleton;
         
         public ExistingSolutionInitVM ExistingSolution { get; } = new ExistingSolutionInitVM();
         public NewSolutionInitVM New { get; } = new NewSolutionInitVM();
@@ -40,10 +41,10 @@ namespace Synthesis.Bethesda.GUI
             : base(profile)
         {
             IdeOptions.AddRange(EnumExt.GetValues<IDE>());
-            _Settings = Inject.Scope.GetInstance<ISettings>();
-            OpenCodeAfter = _Settings.Gui.OpenIdeAfterCreating;
-            New.ParentDirPath.TargetPath = _Settings.Gui.MainRepositoryFolder;
-            Ide = _Settings.Gui.Ide;
+            _SettingsSingleton = Inject.Scope.GetInstance<ISettingsSingleton>();
+            OpenCodeAfter = _SettingsSingleton.Gui.OpenIdeAfterCreating;
+            New.ParentDirPath.TargetPath = _SettingsSingleton.Gui.MainRepositoryFolder;
+            Ide = _SettingsSingleton.Gui.Ide;
 
             var initializer = this.WhenAnyValue(x => x.SelectedIndex)
                 .Select<int, ASolutionInitializer>(x =>
@@ -71,9 +72,9 @@ namespace Synthesis.Bethesda.GUI
         public override void Dispose()
         {
             base.Dispose();
-            _Settings.Gui.OpenIdeAfterCreating = OpenCodeAfter;
-            _Settings.Gui.MainRepositoryFolder = New.ParentDirPath.TargetPath;
-            _Settings.Gui.Ide = Ide;
+            _SettingsSingleton.Gui.OpenIdeAfterCreating = OpenCodeAfter;
+            _SettingsSingleton.Gui.MainRepositoryFolder = New.ParentDirPath.TargetPath;
+            _SettingsSingleton.Gui.Ide = Ide;
         }
 
         public override async IAsyncEnumerable<PatcherVM> Construct()

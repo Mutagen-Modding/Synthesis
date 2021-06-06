@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.Settings
 {
     public enum IDE
     {

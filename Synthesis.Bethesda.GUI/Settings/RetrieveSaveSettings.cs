@@ -2,7 +2,7 @@
 using System.Reactive.Subjects;
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.Settings
 {
     public interface IRetrieveSaveSettings
     {

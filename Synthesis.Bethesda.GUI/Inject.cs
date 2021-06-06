@@ -11,6 +11,7 @@ using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -51,7 +52,7 @@ namespace Synthesis.Bethesda.GUI
                 typeof(IEnvironmentErrorVM).Assembly.AsEnumerable());
             
             RegisterNamespaceFromType(typeof(INavigateTo), Lifestyle.Singleton);
-            _coll.Register<ISettings, Settings>(Lifestyle.Singleton);
+            _coll.Register<ISettingsSingleton, SettingsSingleton>(Lifestyle.Singleton);
             _coll.Register<IRetrieveSaveSettings, RetrieveSaveSettings>(Lifestyle.Singleton);
             _coll.Register<IConfirmationPanelControllerVm, ConfirmationPanelControllerVm>(Lifestyle.Singleton);
             _coll.Register<ISelectedProfileControllerVm, SelectedProfileControllerVm>(Lifestyle.Singleton);

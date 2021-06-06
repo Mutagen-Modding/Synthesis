@@ -19,6 +19,7 @@ using System.Windows;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Newtonsoft.Json;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.GUI.Settings;
 
 #if !DEBUG
 using Noggog.Utility;
@@ -31,7 +32,7 @@ namespace Synthesis.Bethesda.GUI
     {
         private readonly ISelectedProfileControllerVm _SelectedProfile;
         private readonly IRetrieveSaveSettings _Save;
-        private readonly ISettings _Settings;
+        private readonly ISettingsSingleton _SettingsSingleton;
         private readonly IActivePanelControllerVm _ActivePanelControllerVm;
         public ConfigurationVM Configuration { get; }
 
@@ -71,12 +72,12 @@ namespace Synthesis.Bethesda.GUI
             IEnvironmentErrorsVM environmentErrors,
             ISaveSignal saveSignal,
             IRetrieveSaveSettings save,
-            ISettings settings,
+            ISettingsSingleton settingsSingleton,
             IActivePanelControllerVm activePanelControllerVm)
         {
             _SelectedProfile = selectedProfile;
             _Save = save;
-            _Settings = settings;
+            _SettingsSingleton = settingsSingleton;
             _ActivePanelControllerVm = activePanelControllerVm;
             _ActivePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
                 .ToGuiProperty(this, nameof(ActivePanel), default);
@@ -195,13 +196,13 @@ namespace Synthesis.Bethesda.GUI
 
         public void Load()
         {
-            Configuration.Load(_Settings.Gui, _Settings.Pipeline);
+            Configuration.Load(_SettingsSingleton.Gui, _SettingsSingleton.Pipeline);
         }
 
         private void Save(SynthesisGuiSettings guiSettings, PipelineSettings _)
         {
-            guiSettings.MainRepositoryFolder = _Settings.Gui.MainRepositoryFolder;
-            guiSettings.OpenIdeAfterCreating = _Settings.Gui.OpenIdeAfterCreating;
+            guiSettings.MainRepositoryFolder = _SettingsSingleton.Gui.MainRepositoryFolder;
+            guiSettings.OpenIdeAfterCreating = _SettingsSingleton.Gui.OpenIdeAfterCreating;
         }
 
         public void Init()

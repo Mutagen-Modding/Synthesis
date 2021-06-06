@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using SimpleInjector;
+using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI.Services
 {
@@ -11,11 +12,11 @@ namespace Synthesis.Bethesda.GUI.Services
     public class Initilize : IInitilize
     {
         private readonly IClearLoading _Loading;
-        private readonly DependencyMetadata<ISettings> _Settings;
+        private readonly DependencyMetadata<ISettingsSingleton> _Settings;
 
         public Initilize(
             IClearLoading loading,
-            DependencyMetadata<ISettings> settings)
+            DependencyMetadata<ISettingsSingleton> settings)
         {
             _Loading = loading;
             _Settings = settings;

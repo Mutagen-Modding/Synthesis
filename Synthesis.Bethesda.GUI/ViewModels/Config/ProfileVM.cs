@@ -24,6 +24,7 @@ using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI
 {
