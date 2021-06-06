@@ -11,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleInjector;
+using Synthesis.Bethesda.GUI.Profiles;
 using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
@@ -18,6 +20,7 @@ namespace Synthesis.Bethesda.GUI
     public class NewProfileVM : ViewModel
     {
         private ConfigurationVM _config;
+        private readonly IProfileFactory _ProfileFactory;
 
         public ObservableCollectionExtended<GameRelease> ReleaseOptions { get; } = new();
 
@@ -27,9 +30,13 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string Nickname { get; set; } = string.Empty;
 
-        public NewProfileVM(ConfigurationVM config, Action<ProfileVM> postRun)
+        public NewProfileVM(
+            ConfigurationVM config, 
+            IProfileFactory profileFactory,
+            Action<ProfileVM> postRun)
         {
             _config = config;
+            _ProfileFactory = profileFactory;
             ReleaseOptions.AddRange(EnumExt.GetValues<GameRelease>()
                 .Where(x =>
                 {
@@ -49,11 +56,8 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(game =>
                 {
                     if (game == null) return;
-                    var profile = new ProfileVM(init, game.Value, GetNewProfileId(),
-                        Inject.Scope.GetRequiredService<INavigateTo>())
-                    {
-                        Nickname = Nickname
-                    };
+                    var profile = _ProfileFactory.Get(game.Value, GetNewProfileId());
+                    profile.Nickname = Nickname;
                     config.Profiles.AddOrUpdate(profile);
                     postRun(profile);
                 })

@@ -8,6 +8,8 @@ using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using Serilog;
+using Synthesis.Bethesda.GUI.Profiles;
 using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI
@@ -15,6 +17,7 @@ namespace Synthesis.Bethesda.GUI
     public class ConfigurationVM : ViewModel
     {
         private ISelectedProfileControllerVm _SelectedProfileController;
+        private readonly IProfileFactory _ProfileFactory;
 
         public SourceCache<ProfileVM, string> Profiles { get; } = new(p => p.ID);
 
@@ -38,10 +41,14 @@ namespace Synthesis.Bethesda.GUI
             PatcherInitializationVM initVm,
             IActivePanelControllerVm activePanelController,
             ISelectedProfileControllerVm selectedProfile,
-            ISaveSignal saveSignal)
+            ISaveSignal saveSignal,
+            IProfileFactory profileFactory,
+            ILogger logger)
         {
+            logger.Information("Creating ConfigurationVM");
             Init = initVm;
             _SelectedProfileController = selectedProfile;
+            _ProfileFactory = profileFactory;
             _SelectedProfile = _SelectedProfileController.WhenAnyValue(x => x.SelectedProfile)
                 .ToGuiProperty(this, nameof(SelectedProfile), default);
             
@@ -96,7 +103,7 @@ namespace Synthesis.Bethesda.GUI
             Profiles.Clear();
             Profiles.AddOrUpdate(pipeSettings.Profiles.Select(p =>
             {
-                return new ProfileVM(Init, p);
+                return _ProfileFactory.Get(p);
             }));
             if (Profiles.TryGetValue(settings.SelectedProfile, out var profile))
             {

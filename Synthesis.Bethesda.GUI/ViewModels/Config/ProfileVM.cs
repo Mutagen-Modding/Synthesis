@@ -20,6 +20,8 @@ using Mutagen.Bethesda.Installs;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.WPF.Plugins.Order;
+using Serilog;
+using SimpleInjector;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRespository;
@@ -111,10 +113,20 @@ namespace Synthesis.Bethesda.GUI
 
         [Reactive]
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
+        
+        public Scope Scope { get; }
 
-        public ProfileVM(PatcherInitializationVM init, GameRelease release, string id, INavigateTo navigate)
+        public ProfileVM(
+            Scope scope,
+            PatcherInitializationVM init, 
+            GameRelease release,
+            string id,
+            INavigateTo navigate,
+            ILogger logger)
         {
+            logger.Information("Creating Profile with ID {ID}", id);
             _Init = init;
+            Scope = scope;
             _Navigate = navigate;
             ID = id;
             Release = release;
@@ -129,7 +141,17 @@ namespace Synthesis.Bethesda.GUI
                     Inject.Scope.GetRequiredService<ICheckOrCloneRepo>()));
             });
             AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(showHelp, init, this)));
-            AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(init, this)));
+            AddCliPatcherCommand = ReactiveCommand.Create(() =>
+            {
+                try
+                {
+                    SetInitializer(scope.GetInstance<CliPatcherInitVM>());
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e, "Failed to create new Cli Patcher.");
+                }
+            });
 
             ProfileDirectory = Path.Combine(Execution.Paths.WorkingDirectory, ID);
             WorkingDirectory = Execution.Paths.ProfileWorkingDirectory(ID);
@@ -541,42 +563,7 @@ namespace Synthesis.Bethesda.GUI
 
             ExportCommand = ReactiveCommand.Create(Export);
         }
-           
-        public ProfileVM(PatcherInitializationVM init, SynthesisProfile settings)
-            : this(init, settings.TargetRelease, id: settings.ID, Inject.Scope.GetRequiredService<INavigateTo>())
-        {
-            Nickname = settings.Nickname;
-            MutagenVersioning = settings.MutagenVersioning;
-            ManualMutagenVersion = settings.MutagenManualVersion;
-            SynthesisVersioning = settings.SynthesisVersioning;
-            ManualSynthesisVersion = settings.SynthesisManualVersion;
-            DataPathOverride = settings.DataPathOverride;
-            ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
-            LockUpgrades = settings.LockToCurrentVersioning;
-            SelectedPersistenceMode = settings.Persistence;
-            Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
-            {
-                return p switch
-                {
-                    GithubPatcherSettings git => new GitPatcherVM(
-                        this, 
-                        Inject.Scope.GetRequiredService<INavigateTo>(),
-                        Inject.Scope.GetRequiredService<ICheckOrCloneRepo>(),
-                        Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
-                        Inject.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
-                        Inject.Scope.GetRequiredService<ICheckRunnability>(),
-                        Inject.Scope.GetRequiredService<IBuild>(),
-                        git),
-                    SolutionPatcherSettings soln => new SolutionPatcherVM(this, soln),
-                    CliPatcherSettings cli => new CliPatcherVM(
-                        this,
-                        Inject.Scope.GetInstance<IShowHelpSetting>(),
-                        cli),
-                    _ => throw new NotImplementedException(),
-                };
-            }));
-        }
-
+        
         public SynthesisProfile Save()
         {
             return new SynthesisProfile()

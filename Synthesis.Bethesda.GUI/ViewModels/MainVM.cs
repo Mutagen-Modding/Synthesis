@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings;
 using Mutagen.Bethesda.Synthesis.Versioning;
+using Serilog;
 using Synthesis.Bethesda.Execution.Versioning;
+using Synthesis.Bethesda.GUI.Profiles;
 using Synthesis.Bethesda.GUI.Settings;
 
 #if !DEBUG
@@ -22,6 +24,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ISelectedProfileControllerVm _SelectedProfileController;
         private readonly ISettingsSingleton _SettingsSingleton;
         private readonly IActivePanelControllerVm _ActivePanelControllerVm;
+        private readonly IProfileFactory _ProfileFactory;
         public ConfigurationVM Configuration { get; }
 
         private readonly ObservableAsPropertyHelper<ViewModel?> _ActivePanel;
@@ -65,11 +68,15 @@ namespace Synthesis.Bethesda.GUI
             IRetrieveSaveSettings save,
             ISettingsSingleton settingsSingleton,
             INewestLibraryVersions newestLibVersions,
-            IActivePanelControllerVm activePanelControllerVm)
+            IActivePanelControllerVm activePanelControllerVm,
+            IProfileFactory profileFactory,
+            ILogger logger)
         {
+            logger.Information("Creating MainVM");
             _SelectedProfileController = selectedProfile;
             _SettingsSingleton = settingsSingleton;
             _ActivePanelControllerVm = activePanelControllerVm;
+            _ProfileFactory = profileFactory;
             _ActivePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
                 .ToGuiProperty(this, nameof(ActivePanel), default);
             Configuration = configuration;
@@ -163,12 +170,15 @@ namespace Synthesis.Bethesda.GUI
         {
             if (Configuration.Profiles.Count == 0)
             {
-                _ActivePanelControllerVm.ActivePanel = new NewProfileVM(this.Configuration, (profile) =>
-                {
-                    profile.Nickname = profile.Release.ToDescriptionString();
-                    _SelectedProfileController.SelectedProfile = profile;
-                    _ActivePanelControllerVm.ActivePanel = Configuration;
-                });
+                _ActivePanelControllerVm.ActivePanel = new NewProfileVM(
+                    this.Configuration, 
+                    _ProfileFactory,
+                    (profile) =>
+                    {
+                        profile.Nickname = profile.Release.ToDescriptionString();
+                        _SelectedProfileController.SelectedProfile = profile;
+                        _ActivePanelControllerVm.ActivePanel = Configuration;
+                    });
             }
         }
     }

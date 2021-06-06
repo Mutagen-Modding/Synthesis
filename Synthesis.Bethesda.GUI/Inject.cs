@@ -7,6 +7,7 @@ using Noggog;
 using SimpleInjector;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Versioning;
+using Synthesis.Bethesda.GUI.Profiles;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
 
@@ -45,10 +46,15 @@ namespace Synthesis.Bethesda.GUI
         {
             _coll.Register<MainVM>();
             _coll.Register<ConfigurationVM>();
+            _coll.Register<CliPatcherInitVM>();
             _coll.Register<PatcherInitializationVM>();
             _coll.RegisterInstance(Log.Logger);
             _coll.Collection.Register<IEnvironmentErrorVM>(
                 typeof(IEnvironmentErrorVM).Assembly.AsEnumerable());
+            
+            _coll.Register<IProfileFactory, ProfileFactory>();
+            _coll.Register<IProfileProvider, ProfileTracker>();
+            _coll.Register<IProfileTracker, ProfileTracker>();
             
             RegisterNamespaceFromType(typeof(INavigateTo), Lifestyle.Singleton);
             _coll.Register<ISettingsSingleton, SettingsSingleton>(Lifestyle.Singleton);

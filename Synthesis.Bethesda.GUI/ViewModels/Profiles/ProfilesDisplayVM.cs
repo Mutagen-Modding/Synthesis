@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using Synthesis.Bethesda.GUI.Profiles;
 using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
@@ -41,13 +42,16 @@ namespace Synthesis.Bethesda.GUI
             });
             AddCommand = ReactiveCommand.Create(() =>
             {
-                DisplayObject = new NewProfileVM(Config, (profile) => 
-                {
-                    if (string.IsNullOrWhiteSpace(profile.Nickname))
+                DisplayObject = new NewProfileVM(
+                    Config,
+                    Inject.Scope.GetInstance<IProfileFactory>(),
+                    (profile) => 
                     {
-                        profile.Nickname = profile.Release.ToDescriptionString();
-                    }
-                });
+                        if (string.IsNullOrWhiteSpace(profile.Nickname))
+                        {
+                            profile.Nickname = profile.Release.ToDescriptionString();
+                        }
+                    });
                 DisplayedProfile = null;
             });
 

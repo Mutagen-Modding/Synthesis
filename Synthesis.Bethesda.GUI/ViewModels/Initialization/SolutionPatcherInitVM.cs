@@ -18,9 +18,9 @@ namespace Synthesis.Bethesda.GUI
         public ProfileVM Profile { get; }
         private readonly ISettingsSingleton _SettingsSingleton;
         
-        public ExistingSolutionInitVM ExistingSolution { get; } = new ExistingSolutionInitVM();
-        public NewSolutionInitVM New { get; } = new NewSolutionInitVM();
-        public ExistingProjectInitVM ExistingProject { get; } = new ExistingProjectInitVM();
+        public ExistingSolutionInitVM ExistingSolution { get; } = new();
+        public NewSolutionInitVM New { get; } = new();
+        public ExistingProjectInitVM ExistingProject { get; } = new();
 
         private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
         public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
