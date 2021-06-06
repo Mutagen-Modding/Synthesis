@@ -198,7 +198,8 @@ namespace Synthesis.Bethesda.GUI
                 RemoteRepoPath = listing.RepoPath,
                 ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')
             };
-            Profile.Config.AddNewPatchers(patcher.AsEnumerable().ToList());
+            Inject.Scope.GetInstance<ConfigurationVM>()
+                .AddNewPatchers(patcher.AsEnumerable().ToList());
         }
 
         public override void Dispose()

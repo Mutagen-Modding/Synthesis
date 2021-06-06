@@ -164,7 +164,7 @@ namespace Synthesis.Bethesda.GUI
                         });
                 })
                 .Switch()
-                // Watch folder for existance
+                // Watch folder for existence
                 .Select(x =>
                 {
                     if (x.Failed) return Observable.Return(x);
@@ -317,7 +317,8 @@ namespace Synthesis.Bethesda.GUI
                 })
                 .ToGuiProperty<ErrorResponse>(this, nameof(BlockingError), ErrorResponse.Fail("Uninitialized blocking error"));
 
-            _IsActive = this.WhenAnyValue(x => x.Config.SelectedProfile)
+            var selProfile = Inject.Scope.GetInstance<ISelectedProfileControllerVm>();
+            _IsActive = selProfile.WhenAnyValue(x => x.SelectedProfile)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsActive));
 
