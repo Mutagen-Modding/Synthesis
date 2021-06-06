@@ -1,16 +1,13 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
-using Mutagen.Bethesda;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
-using System.Reactive.Linq;
 using ReactiveUI.Fody.Helpers;
 using System.Windows.Input;
 using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Synthesis.Bethesda.GUI.Profiles;
 using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI

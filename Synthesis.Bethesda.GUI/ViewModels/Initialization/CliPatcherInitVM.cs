@@ -2,7 +2,7 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Collections.Generic;
-using Synthesis.Bethesda.GUI.Profiles;
+using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI
@@ -14,11 +14,11 @@ namespace Synthesis.Bethesda.GUI
 
         public CliPatcherVM Patcher { get; }
 
-        public CliPatcherInitVM(PatcherInitializationVM init, IProfileProvider profileProvider)
+        public CliPatcherInitVM(PatcherInitializationVM init, IScopeTracker<ProfileVM> profileProvider)
             : base(init)
         {
             Patcher = new CliPatcherVM(
-                profileProvider.Profile,
+                profileProvider.Item,
                 Inject.Scope.GetInstance<IShowHelpSetting>());
             _CanCompleteConfiguration = Patcher.WhenAnyValue(x => x.PathToExecutable.ErrorState)
                 .Cast<ErrorResponse, ErrorResponse>()

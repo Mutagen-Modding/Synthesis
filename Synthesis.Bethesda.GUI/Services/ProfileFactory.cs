@@ -11,10 +11,9 @@ using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
 
-namespace Synthesis.Bethesda.GUI.Profiles
+namespace Synthesis.Bethesda.GUI.Services
 {
     public interface IProfileFactory
     {
@@ -24,20 +23,6 @@ namespace Synthesis.Bethesda.GUI.Profiles
 
     public class ProfileFactory : IProfileFactory
     {
-        private readonly PatcherInitializationVM _Init;
-        private readonly INavigateTo _Navigate;
-        private readonly ILogger _Logger;
-
-        public ProfileFactory(
-            PatcherInitializationVM init,
-            INavigateTo navigate,
-            ILogger logger)
-        {
-            _Init = init;
-            _Navigate = navigate;
-            _Logger = logger;
-        }
-        
         public ProfileVM Get(SynthesisProfile settings)
         {
             var profile = Get(settings.TargetRelease, settings.ID);
@@ -77,9 +62,15 @@ namespace Synthesis.Bethesda.GUI.Profiles
         public ProfileVM Get(GameRelease release, string id)
         {
             var scope = new Scope(Inject.Container);
-            var profile = new ProfileVM(scope, _Init, release, id, _Navigate, _Logger);
+            var profile = new ProfileVM(
+                scope, 
+                Inject.Scope.GetInstance<PatcherInitializationVM>(),
+                release,
+                id,
+                scope.GetInstance<INavigateTo>(),
+                scope.GetInstance<ILogger>());
             scope.DisposeWith(profile);
-            scope.GetInstance<IProfileTracker>().Profile = profile;
+            scope.GetInstance<IScopeTracker<ProfileVM>>().Item = profile;
             return profile;
         }
     }

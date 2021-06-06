@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using Serilog;
-using Synthesis.Bethesda.GUI.Profiles;
+using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI
