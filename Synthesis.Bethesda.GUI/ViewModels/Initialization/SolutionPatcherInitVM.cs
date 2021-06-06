@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using DynamicData.Binding;
+using Synthesis.Bethesda.GUI.Services.Ide;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -88,12 +89,12 @@ namespace Synthesis.Bethesda.GUI
             {
                 try
                 {
-                    IdeLocator.OpenSolution(ret[0].SolutionPath.TargetPath, Ide);
+                    Inject.Scope.GetInstance<IOpenIde>()
+                        .OpenSolution(ret[0].SolutionPath.TargetPath, Ide);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    //TODO
-                    //log
+                    Log.Logger.Error(ex, "Error opening IDE");
                 }
             }
         }
