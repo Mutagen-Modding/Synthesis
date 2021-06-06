@@ -193,13 +193,9 @@ namespace Synthesis.Bethesda.GUI
                 .DisposeWith(this);
         }
 
-        public void Load(SynthesisGuiSettings? guiSettings, PipelineSettings? pipeSettings)
+        public void Load()
         {
-            if (guiSettings != null)
-            {
-                _Settings.Gui = guiSettings;
-            }
-            Configuration.Load(_Settings.Gui, pipeSettings ?? new PipelineSettings());
+            Configuration.Load(_Settings.Gui, _Settings.Pipeline);
         }
 
         private void Save(SynthesisGuiSettings guiSettings, PipelineSettings _)

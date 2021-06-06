@@ -9,13 +9,37 @@ namespace Synthesis.Bethesda.GUI
 {
     public interface ISettings
     {
-        SynthesisGuiSettings Gui { get; set;}
-        PipelineSettings Pipeline { get; set; }
+        SynthesisGuiSettings Gui { get; }
+        PipelineSettings Pipeline { get; }
     }
 
     public class Settings : ISettings
     {
-        public SynthesisGuiSettings Gui { get; set; } = null!;
-        public PipelineSettings Pipeline { get; set; } = null!;
+        public SynthesisGuiSettings Gui { get; }
+        public PipelineSettings Pipeline { get; }
+
+        public Settings()
+        {
+            SynthesisGuiSettings? guiSettings = null;
+            PipelineSettings? pipeSettings = null;
+            Task.WhenAll(
+                Task.Run(async () =>
+                {
+                    if (File.Exists(Paths.GuiSettingsPath))
+                    {
+                        guiSettings = JsonConvert.DeserializeObject<SynthesisGuiSettings>(await File.ReadAllTextAsync(Paths.GuiSettingsPath), Execution.Constants.JsonSettings)!;
+                    }
+                }),
+                Task.Run(async () =>
+                {
+                    if (File.Exists(Execution.Paths.SettingsFileName))
+                    {
+                        pipeSettings = JsonConvert.DeserializeObject<PipelineSettings>(await File.ReadAllTextAsync(Execution.Paths.SettingsFileName), Execution.Constants.JsonSettings)!;
+                    }
+                })
+            ).Wait();
+            Gui = guiSettings ?? new();
+            Pipeline = pipeSettings ?? new();
+        }
     }
 }
