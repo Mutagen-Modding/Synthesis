@@ -1,16 +1,12 @@
 using Noggog.WPF;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using System.Threading.Tasks;
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings;
-using System.IO;
-using System.Windows;
 using Mutagen.Bethesda.Synthesis.Versioning;
-using Newtonsoft.Json;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Settings;
 
@@ -24,7 +20,6 @@ namespace Synthesis.Bethesda.GUI
     public class MainVM : ViewModel
     {
         private readonly ISelectedProfileControllerVm _SelectedProfileController;
-        private readonly IRetrieveSaveSettings _Save;
         private readonly ISettingsSingleton _SettingsSingleton;
         private readonly IActivePanelControllerVm _ActivePanelControllerVm;
         public ConfigurationVM Configuration { get; }
@@ -56,8 +51,6 @@ namespace Synthesis.Bethesda.GUI
         public bool InModal => _InModal.Value;
 
         public IEnvironmentErrorsVM EnvironmentErrors { get; }
-        
-        public bool IsShutdown { get; private set; }
 
         private readonly ObservableAsPropertyHelper<ProfileVM?> _SelectedProfile;
         public ProfileVM? SelectedProfile => _SelectedProfile.Value;
@@ -75,7 +68,6 @@ namespace Synthesis.Bethesda.GUI
             IActivePanelControllerVm activePanelControllerVm)
         {
             _SelectedProfileController = selectedProfile;
-            _Save = save;
             _SettingsSingleton = settingsSingleton;
             _ActivePanelControllerVm = activePanelControllerVm;
             _ActivePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
@@ -180,60 +172,5 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public async void Shutdown()
-        {
-            IsShutdown = true;
-            var toDo = new List<Task>();
-            toDo.Add(Task.Run(() =>
-            {
-                try
-                {
-                    _Save.Retrieve(out var gui, out var pipe);
-                    File.WriteAllText(Execution.Paths.SettingsFileName, JsonConvert.SerializeObject(pipe, Formatting.Indented, Execution.Constants.JsonSettings));
-                    File.WriteAllText(Paths.GuiSettingsPath, JsonConvert.SerializeObject(gui, Formatting.Indented, Execution.Constants.JsonSettings));
-                    Dispose();
-                }
-                catch (Exception e)
-                {
-                    Log.Logger.Error("Error saving settings", e);
-                }
-            }));
-#if !DEBUG
-            toDo.Add(Task.Run(async () =>
-            {
-                try
-                {
-                    using var process = ProcessWrapper.Create(
-                        new ProcessStartInfo("dotnet", $"build-server shutdown"));
-                    using var output = process.Output.Subscribe(x => Log.Logger.Information(x));
-                    using var error = process.Error.Subscribe(x => Log.Logger.Information(x));
-                    var ret = await process.Run();
-                }
-                catch (Exception e)
-                {
-                    Log.Logger.Error("Error shutting down build server", e);
-                }
-            }));
-#endif
-
-            toDo.Add(Task.Run(async () =>
-            {
-                try
-                {
-                    Log.Logger.Information("Disposing scope");
-                    await Inject.Scope.DisposeAsync();
-                    Log.Logger.Information("Disposed scope");
-                    Log.Logger.Information("Disposing injection");
-                    await Inject.Container.DisposeAsync();
-                    Log.Logger.Information("Disposed injection");
-                }
-                catch (Exception e)
-                {
-                    Log.Logger.Error("Error shutting down injector actions", e);
-                }
-            }));
-            await Task.WhenAll(toDo);
-            Application.Current.Shutdown();
-        }
     }
 }

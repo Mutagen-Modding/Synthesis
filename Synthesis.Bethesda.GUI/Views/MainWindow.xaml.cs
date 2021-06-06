@@ -34,12 +34,12 @@ namespace Synthesis.Bethesda.GUI.Views
             
             var mainVM = Inject.Scope.GetInstance<MainVM>();
             mainVM.Load();
-            Closing += (a, b) =>
+            
+            var shutdown = Inject.Scope.GetInstance<IExecuteShutdown>();
+            Closing += (_, b) =>
             {
-                if (mainVM.IsShutdown) return;
-                b.Cancel = true;
-                this.Visibility = Visibility.Collapsed;
-                mainVM.Shutdown();
+                Visibility = Visibility.Collapsed;
+                shutdown.Closing(b);
             };
 
             DataContext = mainVM;
