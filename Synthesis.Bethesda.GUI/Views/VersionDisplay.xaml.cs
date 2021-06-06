@@ -29,7 +29,6 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, v => v.CurrentSynthesisVersionText.Text)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.NewestSynthesisVersion)
-                    .Switch()
                     .Select(x => x ?? "[Unknown]")
                     .StartWith("[Querying]")
                     .BindToStrict(this, v => v.LatestSynthesisVersionText.Text)
@@ -38,7 +37,6 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, v => v.CurrentMutagenVersionText.Text)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.NewestMutagenVersion)
-                    .Switch()
                     .Select(x => x ?? "[Unknown]")
                     .StartWith("[Querying]")
                     .BindToStrict(this, v => v.LatestMutagenVersionText.Text)
@@ -59,8 +57,7 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 var newSynthVis = Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.SynthesisVersion),
-                        this.WhenAnyValue(x => x.ViewModel!.NewestSynthesisVersion)
-                            .Switch(),
+                        this.WhenAnyValue(x => x.ViewModel!.NewestSynthesisVersion),
                         (cur, next) => string.Equals(cur, next) ? Visibility.Collapsed : Visibility.Visible)
                     .Replay(1)
                     .RefCount();
@@ -70,8 +67,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(dispose);
                 var newMutagenVis = Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.MutagenVersion),
-                        this.WhenAnyValue(x => x.ViewModel!.NewestMutagenVersion)
-                            .Switch(),
+                        this.WhenAnyValue(x => x.ViewModel!.NewestMutagenVersion),
                         (cur, next) => string.Equals(cur, next) ? Visibility.Collapsed : Visibility.Visible)
                     .Replay(1)
                     .RefCount();

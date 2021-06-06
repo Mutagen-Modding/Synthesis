@@ -1,24 +1,17 @@
-using DynamicData.Binding;
 using Noggog.WPF;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using System.Threading.Tasks;
 using Noggog;
-using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution.Settings;
-using System.Reactive;
 using System.IO;
-using Synthesis.Bethesda.Execution;
-using Mutagen.Bethesda.Synthesis;
-using System.Threading;
 using System.Windows;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Newtonsoft.Json;
-using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Settings;
 
 #if !DEBUG
@@ -48,11 +41,13 @@ namespace Synthesis.Bethesda.GUI
         public bool Hot => _Hot.Value;
 
         public string SynthesisVersion { get; }
-
         public string MutagenVersion { get; }
 
-        public IObservable<string?> NewestSynthesisVersion { get; }
-        public IObservable<string?> NewestMutagenVersion { get; }
+        private readonly ObservableAsPropertyHelper<string?> _NewestSynthesisVersion;
+        public string? NewestSynthesisVersion => _NewestSynthesisVersion.Value;
+
+        private readonly ObservableAsPropertyHelper<string?> _NewestMutagenVersion;
+        public string? NewestMutagenVersion => _NewestMutagenVersion.Value;
 
         private readonly ObservableAsPropertyHelper<ConfirmationActionVM?> _ActiveConfirmation;
         public ConfirmationActionVM? ActiveConfirmation => _ActiveConfirmation.Value;
@@ -65,7 +60,6 @@ namespace Synthesis.Bethesda.GUI
         public bool IsShutdown { get; private set; }
 
         public MainVM(
-            IProvideInstalledSdk installedSdk,
             IConfirmationPanelControllerVm confirmationControllerVm,
             IProvideCurrentVersions currentVersions,
             ISelectedProfileControllerVm selectedProfile,
@@ -73,6 +67,7 @@ namespace Synthesis.Bethesda.GUI
             ISaveSignal saveSignal,
             IRetrieveSaveSettings save,
             ISettingsSingleton settingsSingleton,
+            INewestLibraryVersions newestLibVersions,
             IActivePanelControllerVm activePanelControllerVm)
         {
             _SelectedProfile = selectedProfile;
@@ -118,49 +113,10 @@ namespace Synthesis.Bethesda.GUI
 
             SynthesisVersion = currentVersions.SynthesisVersion;
             MutagenVersion = currentVersions.MutagenVersion;
-
-            var latestVersions = Observable.Return(Unit.Default)
-                .ObserveOn(RxApp.TaskpoolScheduler)
-                .CombineLatest(
-                    installedSdk.DotNetSdkInstalled,
-                    (_, DotNetVersions) => DotNetVersions)
-                .SelectTask(async x =>
-                {
-                    try
-                    {
-                        if (!x.Acceptable)
-                        {
-                            Log.Logger.Error("Can not query for latest nuget versions as there is no acceptable dotnet SDK installed.");
-                            return (Normal: (MutagenVersion: default(string?), SynthesisVersion: default(string?)), Prerelease: (MutagenVersion: default(string?), SynthesisVersion: default(string?)));
-                        }
-
-                        var projPath = PrepLatestVersionProject();
-                    
-                        Log.Logger.Information("Querying for latest published library versions");
-                        var normalUpdate = await GetLatestVersions(includePrerelease: false, projPath);
-                        var prereleaseUpdate = await GetLatestVersions(includePrerelease: true, projPath);
-                        return (Normal: normalUpdate, Prerelease: prereleaseUpdate);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Logger.Error($"Error querying for versions: {e}");
-                        return (Normal: (MutagenVersion: default(string?), SynthesisVersion: default(string?)), Prerelease: (MutagenVersion: default(string?), SynthesisVersion: default(string?)));
-                    }
-                })
-                .Replay(1)
-                .RefCount();
-            NewestMutagenVersion = Observable.CombineLatest(
-                    latestVersions,
-                    this.WhenAnyFallback(x => x.Configuration.SelectedProfile!.ConsiderPrereleaseNugets),
-                    (vers, prereleases) => prereleases ? vers.Prerelease.MutagenVersion : vers.Normal.MutagenVersion)
-                .Replay(1)
-                .RefCount();
-            NewestSynthesisVersion = Observable.CombineLatest(
-                    latestVersions,
-                    this.WhenAnyFallback(x => x.Configuration.SelectedProfile!.ConsiderPrereleaseNugets),
-                    (vers, prereleases) => prereleases ? vers.Prerelease.SynthesisVersion : vers.Normal.SynthesisVersion)
-                .Replay(1)
-                .RefCount();
+            _NewestMutagenVersion = newestLibVersions.NewestMutagenVersion
+                .ToGuiProperty(this, nameof(NewestMutagenVersion), default);
+            _NewestSynthesisVersion = newestLibVersions.NewestSynthesisVersion
+                .ToGuiProperty(this, nameof(NewestSynthesisVersion), default);
 
             _ActiveConfirmation = Observable.CombineLatest(
                     this.WhenAnyFallback(x => x.Configuration.SelectedProfile!.SelectedPatcher)
@@ -215,36 +171,6 @@ namespace Synthesis.Bethesda.GUI
                     _SelectedProfile.SelectedProfile = profile;
                     _ActivePanelControllerVm.ActivePanel = Configuration;
                 });
-            }
-        }
-        
-        public string PrepLatestVersionProject()
-        {
-            var bootstrapProjectDir = new DirectoryPath(Path.Combine(Execution.Paths.WorkingDirectory, "VersionQuery"));
-            bootstrapProjectDir.DeleteEntireFolder();
-            bootstrapProjectDir.Create();
-            var slnPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.sln");
-            SolutionInitialization.CreateSolutionFile(slnPath);
-            var projPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.csproj");
-            SolutionInitialization.CreateProject(projPath, GameCategory.Skyrim, insertOldVersion: true);
-            SolutionInitialization.AddProjectToSolution(slnPath, projPath);
-            return projPath;
-        }
-
-        public async Task<(string? MutagenVersion, string? SynthesisVersion)> GetLatestVersions(bool includePrerelease, string projPath)
-        {
-            try
-            {
-                var ret = await Inject.Scope.GetInstance<IQueryLibraryVersions>().Query(projPath, current: false, includePrerelease: includePrerelease, CancellationToken.None);
-                Log.Logger.Information($"Latest published {(includePrerelease ? " prerelease" : null)} library versions:");
-                Log.Logger.Information($"  Mutagen: {ret.MutagenVersion}");
-                Log.Logger.Information($"  Synthesis: {ret.SynthesisVersion}");
-                return (ret.MutagenVersion ?? this.MutagenVersion, ret.SynthesisVersion ?? this.SynthesisVersion);
-            }
-            catch (Exception ex)
-            {
-                Log.Logger.Error(ex, "Error querying for latest nuget versions");
-                return (null, null);
             }
         }
 

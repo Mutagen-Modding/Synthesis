@@ -29,6 +29,7 @@ using Mutagen.Bethesda.WPF.Plugins.Order;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
@@ -471,15 +472,16 @@ namespace Synthesis.Bethesda.GUI
                 .Replay(1)
                 .RefCount();
 
+            var newest = Inject.Scope.GetInstance<INewestLibraryVersions>();
             var nugetTarget = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.Profile.ActiveVersioning)
                         .Switch(),
                     this.WhenAnyValue(x => x.MutagenVersioning),
                     this.WhenAnyValue(x => x.ManualMutagenVersion),
-                    parent.Config.MainVM.NewestMutagenVersion,
+                    newest.NewestMutagenVersion,
                     this.WhenAnyValue(x => x.SynthesisVersioning),
                     this.WhenAnyValue(x => x.ManualSynthesisVersion),
-                    parent.Config.MainVM.NewestSynthesisVersion,
+                    newest.NewestSynthesisVersion,
                     (profile, mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
                     {
                         var sb = new StringBuilder("Switching nuget targets");
@@ -856,7 +858,7 @@ namespace Synthesis.Bethesda.GUI
             NavigateToInternalFilesCommand = ReactiveCommand.Create(() => navigate.Navigate(localRepoDir));
 
             UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(
-                objectSource: parent.Config.MainVM.NewestMutagenVersion,
+                objectSource: newest.NewestMutagenVersion,
                 canExecute: v =>
                 {
                     return Observable.CombineLatest(
@@ -869,7 +871,7 @@ namespace Synthesis.Bethesda.GUI
                     .Select(vers => vers == PatcherNugetVersioningEnum.Manual),
                 disposable: this.CompositeDisposable);
             UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
-                objectSource: parent.Config.MainVM.NewestSynthesisVersion,
+                objectSource: newest.NewestSynthesisVersion,
                 canExecute: v =>
                 {
                     return Observable.CombineLatest(

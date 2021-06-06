@@ -23,6 +23,7 @@ using Mutagen.Bethesda.WPF.Plugins.Order;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
 
@@ -364,13 +365,14 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x as PatcherVM)
                 .ToGuiProperty(this, nameof(SelectedPatcher), default);
 
+            var newestLibs = Inject.Scope.GetInstance<INewestLibraryVersions>();
             ActiveVersioning = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.MutagenVersioning),
                     this.WhenAnyValue(x => x.ManualMutagenVersion),
-                    parent.MainVM.NewestMutagenVersion,
+                    newestLibs.NewestMutagenVersion,
                     this.WhenAnyValue(x => x.SynthesisVersioning),
                     this.WhenAnyValue(x => x.ManualSynthesisVersion),
-                    parent.MainVM.NewestSynthesisVersion,
+                    newestLibs.NewestSynthesisVersion,
                     (mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
                     {
                         return new SynthesisNugetVersioning(
@@ -383,7 +385,7 @@ namespace Synthesis.Bethesda.GUI
                 .RefCount();
 
             // Set manual if empty
-            parent.MainVM.NewestMutagenVersion
+            newestLibs.NewestMutagenVersion
                 .Subscribe(x =>
                 {
                     if (ManualMutagenVersion == null)
@@ -392,7 +394,7 @@ namespace Synthesis.Bethesda.GUI
                     }
                 })
                 .DisposeWith(this);
-            parent.MainVM.NewestSynthesisVersion
+            newestLibs.NewestSynthesisVersion
                 .Subscribe(x =>
                 {
                     if (ManualSynthesisVersion == null)
@@ -416,7 +418,7 @@ namespace Synthesis.Bethesda.GUI
                 });
 
             UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(
-                objectSource: parent.MainVM.NewestMutagenVersion
+                objectSource: newestLibs.NewestMutagenVersion
                     .ObserveOnGui(),
                 canExecute: v =>
                 {
@@ -434,7 +436,7 @@ namespace Synthesis.Bethesda.GUI
                 execute: v => ManualMutagenVersion = v ?? string.Empty,
                 disposable: this.CompositeDisposable);
             UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
-                objectSource: parent.MainVM.NewestSynthesisVersion
+                objectSource: newestLibs.NewestSynthesisVersion
                     .ObserveOnGui(),
                 canExecute: v =>
                 {
