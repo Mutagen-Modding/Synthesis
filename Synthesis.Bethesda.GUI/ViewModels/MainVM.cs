@@ -171,6 +171,5 @@ namespace Synthesis.Bethesda.GUI
                 });
             }
         }
-
     }
 }

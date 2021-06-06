@@ -30,10 +30,7 @@ namespace Synthesis.Bethesda.GUI.Views
             Inject.Container.RegisterInstance<Window>(this);
 
             var init = Inject.Scope.GetInstance<IInitilize>();
-            init.Initialize().Wait();
-            
-            var mainVM = Inject.Scope.GetInstance<MainVM>();
-            mainVM.Load();
+            init.Initialize(this);
             
             var shutdown = Inject.Scope.GetInstance<IExecuteShutdown>();
             Closing += (_, b) =>
@@ -41,9 +38,6 @@ namespace Synthesis.Bethesda.GUI.Views
                 Visibility = Visibility.Collapsed;
                 shutdown.Closing(b);
             };
-
-            DataContext = mainVM;
-            mainVM.Init();
         }
     }
 }
