@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -49,24 +50,14 @@ namespace Synthesis.Bethesda.GUI.Views
                     {
                         pipeSettings = JsonConvert.DeserializeObject<PipelineSettings>(await File.ReadAllTextAsync(Execution.Paths.SettingsFileName), Execution.Constants.JsonSettings)!;
                     }
-                }),
-                Task.Run(() =>
-                {
-                    try
-                    {
-                        var loadingDir = new DirectoryInfo(Execution.Paths.LoadingFolder);
-                        if (!loadingDir.Exists) return;
-                        Log.Logger.Information("Clearing Loading folder");
-                        loadingDir.DeleteEntireFolder(deleteFolderItself: false);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Logger.Error(ex, "Error clearing Loading folder");
-                    }
                 })
             ).Wait();
 
             Inject.Container.RegisterInstance<Window>(this);
+
+            var init = Inject.Scope.GetInstance<IInitilize>();
+            init.Initialize().Wait();
+            
             var mainVM = Inject.Scope.GetInstance<MainVM>();
             mainVM.Load(guiSettings, pipeSettings);
             Closing += (a, b) =>
