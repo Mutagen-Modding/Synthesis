@@ -31,8 +31,9 @@ namespace Synthesis.Bethesda.GUI
 {
     public class ProfileVM : ViewModel
     {
+        private readonly PatcherInitializationVM _Init;
         private readonly INavigateTo _Navigate;
-        public ConfigurationVM Config { get; }
+        
         public GameRelease Release { get; }
 
         public SourceList<PatcherVM> Patchers { get; } = new SourceList<PatcherVM>();
@@ -111,13 +112,12 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
 
-        public ProfileVM(ConfigurationVM parent, GameRelease release, string id, INavigateTo navigate)
+        public ProfileVM(PatcherInitializationVM init, GameRelease release, string id, INavigateTo navigate)
         {
+            _Init = init;
             _Navigate = navigate;
             ID = id;
-            Config = parent;
             Release = release;
-            var init = Inject.Scope.GetRequiredService<PatcherInitializationVM>();
             var showHelp = Inject.Scope.GetRequiredService<IShowHelpSetting>();
             AddGitPatcherCommand = ReactiveCommand.Create(() =>
             {
@@ -542,8 +542,8 @@ namespace Synthesis.Bethesda.GUI
             ExportCommand = ReactiveCommand.Create(Export);
         }
            
-        public ProfileVM(ConfigurationVM parent, SynthesisProfile settings)
-            : this(parent, settings.TargetRelease, id: settings.ID, Inject.Scope.GetRequiredService<INavigateTo>())
+        public ProfileVM(PatcherInitializationVM init, SynthesisProfile settings)
+            : this(init, settings.TargetRelease, id: settings.ID, Inject.Scope.GetRequiredService<INavigateTo>())
         {
             Nickname = settings.Nickname;
             MutagenVersioning = settings.MutagenVersioning;
@@ -604,7 +604,7 @@ namespace Synthesis.Bethesda.GUI
 
         private void SetInitializer(PatcherInitVM initializer)
         {
-            Config.Init.NewPatcher = initializer;
+            _Init.NewPatcher = initializer;
         }
 
         public override void Dispose()

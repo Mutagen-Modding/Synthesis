@@ -44,11 +44,12 @@ namespace Synthesis.Bethesda.GUI
                     }
                 }));
 
+            var init = Inject.Scope.GetInstance<PatcherInitializationVM>();
             this.WhenAnyValue(x => x.SelectedGame)
                 .Subscribe(game =>
                 {
                     if (game == null) return;
-                    var profile = new ProfileVM(config, game.Value, GetNewProfileId(),
+                    var profile = new ProfileVM(init, game.Value, GetNewProfileId(),
                         Inject.Scope.GetRequiredService<INavigateTo>())
                     {
                         Nickname = Nickname

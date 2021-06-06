@@ -99,7 +99,7 @@ namespace Synthesis.Bethesda.GUI
             Profiles.Clear();
             Profiles.AddOrUpdate(pipeSettings.Profiles.Select(p =>
             {
-                return new ProfileVM(this, p);
+                return new ProfileVM(Init, p);
             }));
             if (Profiles.TryGetValue(settings.SelectedProfile, out var profile))
             {
