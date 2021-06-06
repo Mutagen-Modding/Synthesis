@@ -59,7 +59,7 @@ namespace Synthesis.Bethesda.GUI
                 .ToObservableCollection(this);
 
             _DisplayedObject = Observable.CombineLatest(
-                    this.WhenAnyValue(x => x.SelectedProfile!.DisplayedObject),
+                    this.WhenAnyValue(x => x.SelectedProfile!.DisplayController.SelectedObject),
                     initVm.WhenAnyValue(x => x.NewPatcher),
                     (selected, newConfig) => (newConfig as object) ?? selected)
                 .ToGuiProperty(this, nameof(DisplayedObject), default);

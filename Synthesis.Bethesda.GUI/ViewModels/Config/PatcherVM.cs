@@ -1,18 +1,14 @@
 using DynamicData;
 using Synthesis.Bethesda.Execution.Settings;
-using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Text;
 using System.Windows.Input;
 using System.Threading;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Mutagen.Bethesda;
 
 namespace Synthesis.Bethesda.GUI
 {

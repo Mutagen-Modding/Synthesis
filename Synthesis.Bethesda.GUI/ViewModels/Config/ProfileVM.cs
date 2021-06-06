@@ -22,8 +22,6 @@ using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Serilog;
 using SimpleInjector;
-using Synthesis.Bethesda.Execution;
-using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services;
@@ -38,7 +36,7 @@ namespace Synthesis.Bethesda.GUI
         
         public GameRelease Release { get; }
 
-        public SourceList<PatcherVM> Patchers { get; } = new SourceList<PatcherVM>();
+        public SourceList<PatcherVM> Patchers { get; } = new();
 
         public ICommand AddGitPatcherCommand { get; }
         public ICommand AddSolutionPatcherCommand { get; }
@@ -101,8 +99,7 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string? DataPathOverride { get; set; }
 
-        [Reactive]
-        public ViewModel? DisplayedObject { get; set; }
+        public IProfileDisplayControllerVm DisplayController { get; }
 
         public ErrorVM OverallErrorVM { get; } = new ErrorVM("Overall Blocking Error");
 
@@ -126,6 +123,7 @@ namespace Synthesis.Bethesda.GUI
         {
             logger.Information("Creating Profile with ID {ID}", id);
             _Init = init;
+            DisplayController = scope.GetInstance<IProfileDisplayControllerVm>();
             Scope = scope;
             _Navigate = navigate;
             ID = id;
@@ -354,20 +352,20 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (o.Value.TryGet(out var patcher))
                     {
-                        DisplayedObject = patcher;
+                        DisplayController.SelectedObject = patcher;
                     }
                     else
                     {
-                        var curDisplayed = DisplayedObject;
+                        var curDisplayed = DisplayController.SelectedObject;
                         if (!(curDisplayed is ErrorVM))
                         {
-                            OverallErrorVM.BackAction = () => DisplayedObject = curDisplayed;
+                            OverallErrorVM.BackAction = () => DisplayController.SelectedObject = curDisplayed;
                         }
                         else
                         {
                             OverallErrorVM.BackAction = null;
                         }
-                        DisplayedObject = OverallErrorVM;
+                        DisplayController.SelectedObject = OverallErrorVM;
                     }
                 },
                 disposable: this.CompositeDisposable);
@@ -386,8 +384,8 @@ namespace Synthesis.Bethesda.GUI
                     }
                 })
                 .DisposeWith(this);
-
-            _SelectedPatcher = this.WhenAnyValue(x => x.DisplayedObject)
+            
+            _SelectedPatcher = this.WhenAnyValue(x => x.DisplayController.SelectedObject)
                 .Select(x => x as PatcherVM)
                 .ToGuiProperty(this, nameof(SelectedPatcher), default);
 
@@ -581,12 +579,6 @@ namespace Synthesis.Bethesda.GUI
                 LockToCurrentVersioning = LockUpgrades,
                 Persistence = SelectedPersistenceMode,
             };
-        }
-
-        private void SetPatcherForInitialConfiguration(PatcherVM patcher)
-        {
-            patcher.Profile.Patchers.Add(patcher);
-            DisplayedObject = patcher;
         }
 
         private void SetInitializer(PatcherInitVM initializer)

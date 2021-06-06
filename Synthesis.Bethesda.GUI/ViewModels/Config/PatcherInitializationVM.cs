@@ -65,7 +65,8 @@ namespace Synthesis.Bethesda.GUI
             }
             patchersToAdd.ForEach(p => p.IsOn = true);
             _SelectedProfile.SelectedProfile.Patchers.AddRange(patchersToAdd);
-            _SelectedProfile.SelectedProfile.DisplayedObject = patchersToAdd.First();
+            _SelectedProfile.SelectedProfile.Scope.GetInstance<IProfileDisplayControllerVm>()
+                .SelectedObject = patchersToAdd.First();
         }
     }
 }

@@ -60,6 +60,7 @@ namespace Synthesis.Bethesda.GUI
             _coll.Register<IRetrieveSaveSettings, RetrieveSaveSettings>(Lifestyle.Singleton);
             _coll.Register<IConfirmationPanelControllerVm, ConfirmationPanelControllerVm>(Lifestyle.Singleton);
             _coll.Register<ISelectedProfileControllerVm, SelectedProfileControllerVm>(Lifestyle.Singleton);
+            _coll.Register<IProfileDisplayControllerVm, ProfileDisplayControllerVm>();
             _coll.Register<IActivePanelControllerVm, ActivePanelControllerVm>(Lifestyle.Singleton);
             _coll.Register<IEnvironmentErrorsVM, EnvironmentErrorsVM>();
             _coll.Register<ISaveSignal, RetrieveSaveSettings>(Lifestyle.Singleton);

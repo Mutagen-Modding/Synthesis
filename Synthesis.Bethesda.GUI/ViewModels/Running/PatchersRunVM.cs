@@ -69,9 +69,10 @@ namespace Synthesis.Bethesda.GUI
             }
             
             var activePanelController = Inject.Scope.GetInstance<IActivePanelControllerVm>();
+            var display = profile.Scope.GetInstance<IProfileDisplayControllerVm>();
             BackCommand = ReactiveCommand.Create(() =>
             {
-                profile.DisplayedObject = SelectedPatcher?.Config;
+                display.SelectedObject = SelectedPatcher?.Config;
                 activePanelController.ActivePanel = parent;
             },
             canExecute: this.WhenAnyValue(x => x.Running)
