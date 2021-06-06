@@ -19,7 +19,7 @@ namespace Synthesis.Bethesda.GUI
     {
         private ISelectedProfileControllerVm _SelectedProfileController;
 
-        public SourceCache<ProfileVM, string> Profiles { get; } = new SourceCache<ProfileVM, string>(p => p.ID);
+        public SourceCache<ProfileVM, string> Profiles { get; } = new(p => p.ID);
 
         public IObservableCollection<ProfileVM> ProfilesDisplay { get; }
         public IObservableCollection<PatcherVM> PatchersDisplay { get; }
@@ -46,6 +46,7 @@ namespace Synthesis.Bethesda.GUI
         public bool ShowHelp { get; set; }
 
         public ConfigurationVM(
+            IActivePanelControllerVm activePanelController,
             ISelectedProfileControllerVm selectedProfile,
             ISaveSignal saveSignal)
         {
@@ -116,7 +117,6 @@ namespace Synthesis.Bethesda.GUI
             _CurrentRun = createdRuns
                 .ToGuiProperty(this, nameof(CurrentRun), default);
 
-            var activePanelController = Inject.Scope.GetInstance<IActivePanelControllerVm>();
             this.WhenAnyValue(x => x.CurrentRun)
                 .NotNull()
                 .Do(run => activePanelController.ActivePanel = run)

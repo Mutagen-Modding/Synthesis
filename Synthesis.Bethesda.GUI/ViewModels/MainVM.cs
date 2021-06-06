@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public class MainVM : ViewModel
     {
-        private readonly ISelectedProfileControllerVm _SelectedProfile;
+        private readonly ISelectedProfileControllerVm _SelectedProfileController;
         private readonly IRetrieveSaveSettings _Save;
         private readonly ISettingsSingleton _SettingsSingleton;
         private readonly IActivePanelControllerVm _ActivePanelControllerVm;
@@ -59,7 +59,11 @@ namespace Synthesis.Bethesda.GUI
         
         public bool IsShutdown { get; private set; }
 
+        private readonly ObservableAsPropertyHelper<ProfileVM?> _SelectedProfile;
+        public ProfileVM? SelectedProfile => _SelectedProfile.Value;
+
         public MainVM(
+            ConfigurationVM configuration,
             IConfirmationPanelControllerVm confirmationControllerVm,
             IProvideCurrentVersions currentVersions,
             ISelectedProfileControllerVm selectedProfile,
@@ -70,16 +74,18 @@ namespace Synthesis.Bethesda.GUI
             INewestLibraryVersions newestLibVersions,
             IActivePanelControllerVm activePanelControllerVm)
         {
-            _SelectedProfile = selectedProfile;
+            _SelectedProfileController = selectedProfile;
             _Save = save;
             _SettingsSingleton = settingsSingleton;
             _ActivePanelControllerVm = activePanelControllerVm;
             _ActivePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
                 .ToGuiProperty(this, nameof(ActivePanel), default);
-            Configuration = new ConfigurationVM(selectedProfile, saveSignal)
-                .DisposeWith(this);
+            Configuration = configuration;
             activePanelControllerVm.ActivePanel = Configuration;
             Confirmation = confirmationControllerVm;
+
+            _SelectedProfile = _SelectedProfileController.WhenAnyValue(x => x.SelectedProfile)
+                .ToGuiProperty(this, nameof(SelectedProfile), default);
 
             _Hot = this.WhenAnyValue(x => x.ActivePanel)
                 .Select(x =>
@@ -168,7 +174,7 @@ namespace Synthesis.Bethesda.GUI
                 _ActivePanelControllerVm.ActivePanel = new NewProfileVM(this.Configuration, (profile) =>
                 {
                     profile.Nickname = profile.Release.ToDescriptionString();
-                    _SelectedProfile.SelectedProfile = profile;
+                    _SelectedProfileController.SelectedProfile = profile;
                     _ActivePanelControllerVm.ActivePanel = Configuration;
                 });
             }

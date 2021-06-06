@@ -1,14 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Mutagen.Bethesda.Synthesis.WPF;
 using Noggog;
-using Serilog;
 using SimpleInjector;
-using Synthesis.Bethesda.Execution.CLI;
-using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services;
@@ -48,6 +44,7 @@ namespace Synthesis.Bethesda.GUI
         private void RegisterCurrentLib()
         {
             _coll.Register<MainVM>();
+            _coll.Register<ConfigurationVM>();
             _coll.RegisterInstance(Log.Logger);
             _coll.Collection.Register<IEnvironmentErrorVM>(
                 typeof(IEnvironmentErrorVM).Assembly.AsEnumerable());

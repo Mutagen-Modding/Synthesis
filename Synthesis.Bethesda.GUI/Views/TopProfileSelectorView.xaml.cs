@@ -30,11 +30,11 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-                this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.Nickname, string.Empty)
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Nickname, string.Empty)
                     .BindToStrict(this, x => x.ProfileNameBlock.Text)
                     .DisposeWith(dispose);
 
-                this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.Release, GameRelease.SkyrimSE)
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Release, GameRelease.SkyrimSE)
                     .ObserveOn(RxApp.TaskpoolScheduler)
                     .Select(gameRelease =>
                     {
@@ -48,15 +48,15 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.OpenProfilesPageButton.Command)
                     .DisposeWith(dispose);
 
-                this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.UpdateProfileNugetVersionCommand)
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.UpdateProfileNugetVersionCommand)
                     .Select(x => x as ICommand)
                     .BindToStrict(this, x => x.UpdateButton.Command)
                     .DisposeWith(dispose);
                 Observable.CombineLatest(
-                        this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.UpdateProfileNugetVersionCommand)
+                        this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.UpdateProfileNugetVersionCommand)
                             .Select(x => x?.CanExecute ?? Observable.Return(false))
                             .Switch(),
-                        this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.LockUpgrades),
+                        this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LockUpgrades),
                         (hasUpdate, locked) => hasUpdate && !locked)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.UpdateButton.Visibility)
