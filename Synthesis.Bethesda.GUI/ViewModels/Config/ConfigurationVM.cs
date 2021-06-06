@@ -18,8 +18,6 @@ namespace Synthesis.Bethesda.GUI
     public class ConfigurationVM : ViewModel
     {
         private ISelectedProfileControllerVm _SelectedProfileController;
-        
-        public MainVM MainVM { get; }
 
         public SourceCache<ProfileVM, string> Profiles { get; } = new SourceCache<ProfileVM, string>(p => p.ID);
 
@@ -48,7 +46,6 @@ namespace Synthesis.Bethesda.GUI
         public bool ShowHelp { get; set; }
 
         public ConfigurationVM(
-            MainVM mvm,
             ISelectedProfileControllerVm selectedProfile,
             ISaveSignal saveSignal)
         {
@@ -56,7 +53,6 @@ namespace Synthesis.Bethesda.GUI
             _SelectedProfile = _SelectedProfileController.WhenAnyValue(x => x.SelectedProfile)
                 .ToGuiProperty(this, nameof(SelectedProfile), default);
             
-            MainVM = mvm;
             ProfilesDisplay = Profiles.Connect().ToObservableCollection(this);
             PatchersDisplay = this.WhenAnyValue(x => x.SelectedProfile)
                 .Select(p => p?.Patchers.Connect() ?? Observable.Empty<IChangeSet<PatcherVM>>())

@@ -76,7 +76,7 @@ namespace Synthesis.Bethesda.GUI
             _ActivePanelControllerVm = activePanelControllerVm;
             _ActivePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
                 .ToGuiProperty(this, nameof(ActivePanel), default);
-            Configuration = new ConfigurationVM(this, selectedProfile, saveSignal)
+            Configuration = new ConfigurationVM(selectedProfile, saveSignal)
                 .DisposeWith(this);
             activePanelControllerVm.ActivePanel = Configuration;
             Confirmation = confirmationControllerVm;

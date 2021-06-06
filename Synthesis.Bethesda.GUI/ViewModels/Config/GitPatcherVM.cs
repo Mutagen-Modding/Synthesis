@@ -776,6 +776,7 @@ namespace Synthesis.Bethesda.GUI
                 .RefCount();
 
             var dotNetInstalled = Inject.Scope.GetInstance<IProvideInstalledSdk>();
+            var envErrors = Inject.Scope.GetInstance<IEnvironmentErrorsVM>();
             _State = Observable.CombineLatest(
                     driverRepoInfo
                         .Select(x => x.ToUnit()),
@@ -786,7 +787,7 @@ namespace Synthesis.Bethesda.GUI
                     dotNetInstalled.DotNetSdkInstalled
                         .Select(x => (x, true))
                         .StartWith((new DotNetVersion(string.Empty, false), false)),
-                    this.WhenAnyFallback(x => x.Profile.Config.MainVM.EnvironmentErrors.ActiveError!.ErrorString),
+                    envErrors.WhenAnyValue(x => x.ActiveError!.ErrorString),
                     missingReqMods
                         .QueryWhenChanged()
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
