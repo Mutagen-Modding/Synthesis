@@ -50,9 +50,13 @@ namespace Synthesis.Bethesda.GUI
             _coll.Collection.Register<IEnvironmentErrorVM>(
                 typeof(IEnvironmentErrorVM).Assembly.AsEnumerable());
             
-            RegisterMatchingInterfaces(
-                from type in typeof(INavigateTo).Assembly.GetExportedTypes()
-                select type);
+            RegisterNamespaceFromType(typeof(INavigateTo), Lifestyle.Singleton);
+            _coll.Register<IRetrieveSaveSettings, RetrieveSaveSettings>(Lifestyle.Singleton);
+            _coll.Register<IConfirmationPanelControllerVm, ConfirmationPanelControllerVm>(Lifestyle.Singleton);
+            _coll.Register<ISelectedProfileControllerVm, SelectedProfileControllerVm>(Lifestyle.Singleton);
+            _coll.Register<IActivePanelControllerVm, ActivePanelControllerVm>(Lifestyle.Singleton);
+            _coll.Register<IEnvironmentErrorsVM, EnvironmentErrorsVM>();
+            _coll.Register<ISaveSignal, RetrieveSaveSettings>(Lifestyle.Singleton);
         }
 
         private void RegisterBaseLib()
@@ -75,29 +79,37 @@ namespace Synthesis.Bethesda.GUI
                 select type);
         }
 
-        private void RegisterNamespaceFromType(Type type)
+        private void RegisterNamespaceFromType(Type type, Lifestyle? lifestyle = null)
         {
             RegisterMatchingInterfaces(
                 from t in type.Assembly.GetExportedTypes()
                 where t.Namespace!.StartsWith(type.Namespace!)
-                select t);
+                select t,
+                lifestyle);
         }
 
-        private void RegisterMatchingInterfaces(IEnumerable<Type> types)
+        private void RegisterMatchingInterfaces(IEnumerable<Type> types, Lifestyle? lifestyle = null)
         {
             foreach (var type in types)
             {
-                RegisterMatchingInterfaces(type);
+                RegisterMatchingInterfaces(type, lifestyle);
             }
         }
 
-        private void RegisterMatchingInterfaces(Type type)
+        private void RegisterMatchingInterfaces(Type type, Lifestyle? lifestyle = null)
         {
             type.GetInterfaces()
                 .Where(i => IsMatchingInterface(i, type))
                 .ForEach(i =>
                 {
-                    _coll.Register(i, type);
+                    if (lifestyle == null)
+                    {
+                        _coll.Register(i, type);
+                    }
+                    else
+                    {
+                        _coll.Register(i, type, lifestyle);
+                    }
                 });
         }
 

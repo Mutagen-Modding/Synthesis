@@ -47,7 +47,10 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool ShowHelp { get; set; }
 
-        public ConfigurationVM(MainVM mvm, ISelectedProfileControllerVm selectedProfile)
+        public ConfigurationVM(
+            MainVM mvm,
+            ISelectedProfileControllerVm selectedProfile,
+            ISaveSignal saveSignal)
         {
             _SelectedProfileController = selectedProfile;
             _SelectedProfile = _SelectedProfileController.WhenAnyValue(x => x.SelectedProfile)
@@ -126,6 +129,10 @@ namespace Synthesis.Bethesda.GUI
                 .DisposeWith(this);
 
             ShowHelpToggleCommand = ReactiveCommand.Create(() => ShowHelp = !ShowHelp);
+
+            saveSignal.Saving
+                .Subscribe(x => Save(x.Gui, x.Pipe))
+                .DisposeWith(this);
         }
 
         public void Load(SynthesisGuiSettings settings, PipelineSettings pipeSettings)
@@ -142,17 +149,11 @@ namespace Synthesis.Bethesda.GUI
             ShowHelp = settings.ShowHelp;
         }
 
-        public void Save(out SynthesisGuiSettings guiSettings, out PipelineSettings pipeSettings)
+        private void Save(SynthesisGuiSettings guiSettings, PipelineSettings pipeSettings)
         {
-            pipeSettings = new PipelineSettings()
-            {
-                Profiles = Profiles.Items.Select(p => p.Save()).ToList(),
-            };
-            guiSettings = new SynthesisGuiSettings()
-            {
-                ShowHelp = ShowHelp,
-                SelectedProfile = SelectedProfile?.ID ?? string.Empty
-            };
+            guiSettings.ShowHelp = ShowHelp;
+            guiSettings.SelectedProfile = SelectedProfile?.ID ?? string.Empty;
+            pipeSettings.Profiles = Profiles.Items.Select(p => p.Save()).ToList();
         }
 
         public void AddNewPatchers(List<PatcherVM> patchersToAdd)

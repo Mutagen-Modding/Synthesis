@@ -610,7 +610,7 @@ namespace Synthesis.Bethesda.GUI
         {
             try
             {
-                Config.MainVM.Save(out var guiSettings, out var pipeSettings);
+                Inject.Scope.GetInstance<IRetrieveSaveSettings>().Retrieve(out var guiSettings, out var pipeSettings);
                 pipeSettings.Profiles.RemoveWhere(p => p.ID != this.ID);
                 guiSettings.SelectedProfile = this.ID;
                 if (pipeSettings.Profiles.Count != 1)

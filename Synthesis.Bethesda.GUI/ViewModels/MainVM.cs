@@ -16,13 +16,9 @@ using Synthesis.Bethesda.Execution;
 using Mutagen.Bethesda.Synthesis;
 using System.Threading;
 using System.Windows;
-using System.Drawing;
-using Microsoft.Extensions.DependencyInjection;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Newtonsoft.Json;
-using SimpleInjector;
 using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.GUI.Services;
 
 #if !DEBUG
 using Noggog.Utility;
@@ -34,6 +30,7 @@ namespace Synthesis.Bethesda.GUI
     public class MainVM : ViewModel
     {
         private readonly ISelectedProfileControllerVm _SelectedProfile;
+        private readonly IRetrieveSaveSettings _Save;
         private readonly IActivePanelControllerVm _ActivePanelControllerVm;
         public ConfigurationVM Configuration { get; }
         public SynthesisGuiSettings Settings { get; private set; } = new SynthesisGuiSettings();
@@ -76,13 +73,17 @@ namespace Synthesis.Bethesda.GUI
             IConfirmationPanelControllerVm confirmationControllerVm,
             IProvideCurrentVersions currentVersions,
             ISelectedProfileControllerVm selectedProfile,
+            IEnvironmentErrorsVM environmentErrors,
+            ISaveSignal saveSignal,
+            IRetrieveSaveSettings save,
             IActivePanelControllerVm activePanelControllerVm)
         {
             _SelectedProfile = selectedProfile;
+            _Save = save;
             _ActivePanelControllerVm = activePanelControllerVm;
             _ActivePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
                 .ToGuiProperty(this, nameof(ActivePanel), default);
-            Configuration = new ConfigurationVM(this, selectedProfile)
+            Configuration = new ConfigurationVM(this, selectedProfile, saveSignal)
                 .DisposeWith(this);
             activePanelControllerVm.ActivePanel = Configuration;
             Confirmation = confirmationControllerVm;
@@ -190,7 +191,11 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x != null)
                 .ToGuiProperty(this, nameof(InModal));
             
-            EnvironmentErrors = Inject.Scope.GetRequiredService<IEnvironmentErrorsVM>();
+            EnvironmentErrors = environmentErrors;
+
+            saveSignal.Saving
+                .Subscribe((x) => Save(x.Gui, x.Pipe))
+                .DisposeWith(this);
         }
 
         public void Load(SynthesisGuiSettings? guiSettings, PipelineSettings? pipeSettings)
@@ -203,9 +208,8 @@ namespace Synthesis.Bethesda.GUI
             Configuration.Load(Settings, pipeSettings ?? new PipelineSettings());
         }
 
-        public void Save(out SynthesisGuiSettings guiSettings, out PipelineSettings pipeSettings)
+        private void Save(SynthesisGuiSettings guiSettings, PipelineSettings _)
         {
-            Configuration.Save(out guiSettings, out pipeSettings);
             guiSettings.Ide = this.Ide;
             guiSettings.MainRepositoryFolder = Settings.MainRepositoryFolder;
             guiSettings.OpenIdeAfterCreating = Settings.OpenIdeAfterCreating;
@@ -262,7 +266,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 try
                 {
-                    Save(out var gui, out var pipe);
+                    _Save.Retrieve(out var gui, out var pipe);
                     File.WriteAllText(Execution.Paths.SettingsFileName, JsonConvert.SerializeObject(pipe, Formatting.Indented, Execution.Constants.JsonSettings));
                     File.WriteAllText(Paths.GuiSettingsPath, JsonConvert.SerializeObject(gui, Formatting.Indented, Execution.Constants.JsonSettings));
                     Dispose();
