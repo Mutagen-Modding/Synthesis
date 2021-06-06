@@ -27,6 +27,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public class GitPatcherInitVM : PatcherInitVM
     {
+        public ProfileVM Profile { get; }
         private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
         public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
 
@@ -66,8 +67,9 @@ namespace Synthesis.Bethesda.GUI
             INavigateTo navigateTo, 
             IProvideRepositoryCheckouts repositoryCheckouts,
             ICheckOrCloneRepo checkOrClone)
-            : base(init, profile)
+            : base(init)
         {
+            Profile = profile;
             Patcher = new GitPatcherVM(profile, navigateTo, checkOrClone,
                 Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
                 Inject.Scope.GetRequiredService<ICheckoutRunnerRepository>(),

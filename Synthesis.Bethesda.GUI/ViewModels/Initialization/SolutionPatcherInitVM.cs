@@ -15,6 +15,7 @@ namespace Synthesis.Bethesda.GUI
     public class SolutionPatcherInitVM : PatcherInitVM
     {
         public IShowHelpSetting ShowHelpSetting { get; }
+        public ProfileVM Profile { get; }
         private readonly ISettingsSingleton _SettingsSingleton;
         
         public ExistingSolutionInitVM ExistingSolution { get; } = new ExistingSolutionInitVM();
@@ -42,9 +43,10 @@ namespace Synthesis.Bethesda.GUI
             IShowHelpSetting showHelpSetting,
             PatcherInitializationVM init,
             ProfileVM profile)
-            : base(init, profile)
+            : base(init)
         {
             ShowHelpSetting = showHelpSetting;
+            Profile = profile;
             IdeOptions.AddRange(EnumExt.GetValues<IDE>());
             _SettingsSingleton = Inject.Scope.GetInstance<ISettingsSingleton>();
             OpenCodeAfter = _SettingsSingleton.Gui.OpenIdeAfterCreating;

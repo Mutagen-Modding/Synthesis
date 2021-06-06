@@ -15,7 +15,7 @@ namespace Synthesis.Bethesda.GUI
         public CliPatcherVM Patcher { get; }
 
         public CliPatcherInitVM(PatcherInitializationVM init, ProfileVM profile)
-            : base(init, profile)
+            : base(init)
         {
             Patcher = new CliPatcherVM(
                 profile,

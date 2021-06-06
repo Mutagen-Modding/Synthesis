@@ -3,14 +3,11 @@ using DynamicData.Binding;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Windows.Input;
 using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI

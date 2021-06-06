@@ -1,7 +1,6 @@
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI.Fody.Helpers;
-using System;
 using System.Collections.Generic;
 
 namespace Synthesis.Bethesda.GUI
@@ -10,8 +9,6 @@ namespace Synthesis.Bethesda.GUI
     {
         [Reactive]
         public string DisplayName { get; set; } = string.Empty;
-
-        public ProfileVM Profile { get; }
         
         public PatcherInitializationVM Init { get; }
 
@@ -19,12 +16,9 @@ namespace Synthesis.Bethesda.GUI
 
         public abstract IAsyncEnumerable<PatcherVM> Construct();
 
-        public PatcherInitVM(
-            PatcherInitializationVM init,
-            ProfileVM profile)
+        public PatcherInitVM(PatcherInitializationVM init)
         {
             Init = init;
-            Profile = profile;
         }
 
         public virtual void Cancel()
