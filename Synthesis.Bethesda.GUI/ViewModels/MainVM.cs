@@ -31,9 +31,9 @@ namespace Synthesis.Bethesda.GUI
     {
         private readonly ISelectedProfileControllerVm _SelectedProfile;
         private readonly IRetrieveSaveSettings _Save;
+        private readonly ISettings _Settings;
         private readonly IActivePanelControllerVm _ActivePanelControllerVm;
         public ConfigurationVM Configuration { get; }
-        public SynthesisGuiSettings Settings { get; private set; } = new SynthesisGuiSettings();
 
         private readonly ObservableAsPropertyHelper<ViewModel?> _ActivePanel;
         public ViewModel? ActivePanel => _ActivePanel.Value;
@@ -71,10 +71,12 @@ namespace Synthesis.Bethesda.GUI
             IEnvironmentErrorsVM environmentErrors,
             ISaveSignal saveSignal,
             IRetrieveSaveSettings save,
+            ISettings settings,
             IActivePanelControllerVm activePanelControllerVm)
         {
             _SelectedProfile = selectedProfile;
             _Save = save;
+            _Settings = settings;
             _ActivePanelControllerVm = activePanelControllerVm;
             _ActivePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
                 .ToGuiProperty(this, nameof(ActivePanel), default);
@@ -195,15 +197,15 @@ namespace Synthesis.Bethesda.GUI
         {
             if (guiSettings != null)
             {
-                Settings = guiSettings;
+                _Settings.Gui = guiSettings;
             }
-            Configuration.Load(Settings, pipeSettings ?? new PipelineSettings());
+            Configuration.Load(_Settings.Gui, pipeSettings ?? new PipelineSettings());
         }
 
         private void Save(SynthesisGuiSettings guiSettings, PipelineSettings _)
         {
-            guiSettings.MainRepositoryFolder = Settings.MainRepositoryFolder;
-            guiSettings.OpenIdeAfterCreating = Settings.OpenIdeAfterCreating;
+            guiSettings.MainRepositoryFolder = _Settings.Gui.MainRepositoryFolder;
+            guiSettings.OpenIdeAfterCreating = _Settings.Gui.OpenIdeAfterCreating;
         }
 
         public void Init()

@@ -6,15 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using DynamicData.Binding;
 
 namespace Synthesis.Bethesda.GUI
 {
     public class SolutionPatcherInitVM : PatcherInitVM
     {
-        public MainVM MVM { get; }
-
+        private readonly ISettings _Settings;
+        
         public ExistingSolutionInitVM ExistingSolution { get; } = new ExistingSolutionInitVM();
         public NewSolutionInitVM New { get; } = new NewSolutionInitVM();
         public ExistingProjectInitVM ExistingProject { get; } = new ExistingProjectInitVM();
@@ -32,7 +31,7 @@ namespace Synthesis.Bethesda.GUI
         public bool OpenCodeAfter { get; set; }
 
         public ObservableCollectionExtended<IDE> IdeOptions { get; } = new();
-
+        
         [Reactive]
         public IDE Ide { get; set; }
 
@@ -40,10 +39,10 @@ namespace Synthesis.Bethesda.GUI
             : base(profile)
         {
             IdeOptions.AddRange(EnumExt.GetValues<IDE>());
-            MVM = profile.Config.MainVM;
-            OpenCodeAfter = profile.Config.MainVM.Settings.OpenIdeAfterCreating;
-            New.ParentDirPath.TargetPath = profile.Config.MainVM.Settings.MainRepositoryFolder;
-            Ide = profile.Config.MainVM.Settings.Ide;
+            _Settings = Inject.Scope.GetInstance<ISettings>();
+            OpenCodeAfter = _Settings.Gui.OpenIdeAfterCreating;
+            New.ParentDirPath.TargetPath = _Settings.Gui.MainRepositoryFolder;
+            Ide = _Settings.Gui.Ide;
 
             var initializer = this.WhenAnyValue(x => x.SelectedIndex)
                 .Select<int, ASolutionInitializer>(x =>
@@ -71,9 +70,9 @@ namespace Synthesis.Bethesda.GUI
         public override void Dispose()
         {
             base.Dispose();
-            MVM.Settings.OpenIdeAfterCreating = OpenCodeAfter;
-            MVM.Settings.MainRepositoryFolder = New.ParentDirPath.TargetPath;
-            MVM.Settings.Ide = Ide;
+            _Settings.Gui.OpenIdeAfterCreating = OpenCodeAfter;
+            _Settings.Gui.MainRepositoryFolder = New.ParentDirPath.TargetPath;
+            _Settings.Gui.Ide = Ide;
         }
 
         public override async IAsyncEnumerable<PatcherVM> Construct()

@@ -51,6 +51,7 @@ namespace Synthesis.Bethesda.GUI
                 typeof(IEnvironmentErrorVM).Assembly.AsEnumerable());
             
             RegisterNamespaceFromType(typeof(INavigateTo), Lifestyle.Singleton);
+            _coll.Register<ISettings, Settings>(Lifestyle.Singleton);
             _coll.Register<IRetrieveSaveSettings, RetrieveSaveSettings>(Lifestyle.Singleton);
             _coll.Register<IConfirmationPanelControllerVm, ConfirmationPanelControllerVm>(Lifestyle.Singleton);
             _coll.Register<ISelectedProfileControllerVm, SelectedProfileControllerVm>(Lifestyle.Singleton);
