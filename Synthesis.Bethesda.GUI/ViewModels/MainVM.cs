@@ -42,11 +42,6 @@ namespace Synthesis.Bethesda.GUI
 
         public IConfirmationPanelControllerVm Confirmation { get; }
 
-        public ObservableCollectionExtended<IDE> IdeOptions { get; } = new ObservableCollectionExtended<IDE>();
-
-        [Reactive]
-        public IDE Ide { get; set; }
-
         // Whether to show red glow in background
         private readonly ObservableAsPropertyHelper<bool> _Hot;
         public bool Hot => _Hot.Value;
@@ -115,8 +110,6 @@ namespace Synthesis.Bethesda.GUI
                     this.WhenAnyValue(x => x.ActivePanel)
                         .Select(x => x is ProfilesDisplayVM),
                     (running, isProfile) => !running && !isProfile));
-
-            IdeOptions.AddRange(EnumExt.GetValues<IDE>());
 
             Task.Run(() => Mutagen.Bethesda.WarmupAll.Init()).FireAndForget();
 
@@ -203,14 +196,12 @@ namespace Synthesis.Bethesda.GUI
             if (guiSettings != null)
             {
                 Settings = guiSettings;
-                Ide = guiSettings.Ide;
             }
             Configuration.Load(Settings, pipeSettings ?? new PipelineSettings());
         }
 
         private void Save(SynthesisGuiSettings guiSettings, PipelineSettings _)
         {
-            guiSettings.Ide = this.Ide;
             guiSettings.MainRepositoryFolder = Settings.MainRepositoryFolder;
             guiSettings.OpenIdeAfterCreating = Settings.OpenIdeAfterCreating;
         }

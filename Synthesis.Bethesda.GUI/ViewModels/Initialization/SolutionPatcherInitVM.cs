@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using DynamicData.Binding;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -30,12 +31,19 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool OpenCodeAfter { get; set; }
 
+        public ObservableCollectionExtended<IDE> IdeOptions { get; } = new();
+
+        [Reactive]
+        public IDE Ide { get; set; }
+
         public SolutionPatcherInitVM(ProfileVM profile)
             : base(profile)
         {
+            IdeOptions.AddRange(EnumExt.GetValues<IDE>());
             MVM = profile.Config.MainVM;
             OpenCodeAfter = profile.Config.MainVM.Settings.OpenIdeAfterCreating;
             New.ParentDirPath.TargetPath = profile.Config.MainVM.Settings.MainRepositoryFolder;
+            Ide = profile.Config.MainVM.Settings.Ide;
 
             var initializer = this.WhenAnyValue(x => x.SelectedIndex)
                 .Select<int, ASolutionInitializer>(x =>
@@ -65,6 +73,7 @@ namespace Synthesis.Bethesda.GUI
             base.Dispose();
             MVM.Settings.OpenIdeAfterCreating = OpenCodeAfter;
             MVM.Settings.MainRepositoryFolder = New.ParentDirPath.TargetPath;
+            MVM.Settings.Ide = Ide;
         }
 
         public override async IAsyncEnumerable<PatcherVM> Construct()
@@ -80,7 +89,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 try
                 {
-                    IdeLocator.OpenSolution(ret[0].SolutionPath.TargetPath, MVM.Ide);
+                    IdeLocator.OpenSolution(ret[0].SolutionPath.TargetPath, Ide);
                 }
                 catch (Exception)
                 {

@@ -84,10 +84,10 @@ namespace Synthesis.Bethesda.GUI.Views
                 // Bind open after checkbox
                 this.BindStrict(this.ViewModel, vm => vm.OpenCodeAfter, view => view.OpenCodeAfter.IsChecked)
                     .DisposeWith(dispose);
-                this.WhenAnyValue(x => x.ViewModel!.MVM.IdeOptions)
+                this.WhenAnyValue(x => x.ViewModel!.IdeOptions)
                     .BindToStrict(this, view => view.OpenWithComboBox.ItemsSource)
                     .DisposeWith(dispose);
-                this.BindStrict(ViewModel, vm => vm.MVM.Ide, view => view.OpenWithComboBox.SelectedValue)
+                this.BindStrict(ViewModel, vm => vm.Ide, view => view.OpenWithComboBox.SelectedValue)
                     .DisposeWith(dispose);
 
                 // Set up discard/confirm clicks
