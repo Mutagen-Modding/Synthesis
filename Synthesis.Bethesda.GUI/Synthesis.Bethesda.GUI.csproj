@@ -28,62 +28,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Views\Run\**" />
-    <EmbeddedResource Remove="Views\Run\**" />
-    <None Remove="Views\Run\**" />
-    <Page Remove="Views\Run\**" />
-    <Page Update="Views\Errors\NoDotNetSdkInstalledView.xaml">
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Page</BuildAction>
-    </Page>
-    <Compile Update="Views\Errors\NoDotNetSdkInstalledView.xaml.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Page Update="Views\Errors\NugetConfigIssueView.xaml">
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Page</BuildAction>
-    </Page>
-    <Compile Update="Views\Errors\NugetConfigIssueView.xaml.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\EnvironmentErrors\EnvironmentErrorsVM.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\EnvironmentErrors\DotNetNotInstalledVM.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\EnvironmentErrors\NugetConfigErrorVM.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\ActivePanelControllerVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Resources\mushroom.ico" />
     <None Remove="Resources\Oblivion.png" />
     <None Remove="Resources\SkyrimLE.png" />
     <None Remove="Resources\SkyrimSSE.png" />
     <None Remove="Resources\SkyrimVR.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="Views\Run\MainRunView.xaml.cs" />
-    <Compile Include="Views\Run\PatcherRunListingView.xaml.cs" />
-    <Compile Include="Views\Run\PatcherRunView.xaml.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -110,12 +59,6 @@
     <PackageReference Include="Serilog.Sinks.Map" Version="1.0.2" />
     <PackageReference Include="SimpleInjector" Version="5.3.0" />
     <PackageReference Include="System.Linq.Async" Version="5.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Include="Views\Run\MainRunView.xaml" />
-    <Page Include="Views\Run\PatcherRunListingView.xaml" />
-    <Page Include="Views\Run\PatcherRunView.xaml" />
   </ItemGroup>
 
   <ItemGroup>
