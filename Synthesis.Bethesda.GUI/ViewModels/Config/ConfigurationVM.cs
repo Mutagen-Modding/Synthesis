@@ -24,8 +24,6 @@ namespace Synthesis.Bethesda.GUI
         public IObservableCollection<ProfileVM> ProfilesDisplay { get; }
         public IObservableCollection<PatcherVM> PatchersDisplay { get; }
 
-        public ICommand ShowHelpToggleCommand { get; }
-
         public ReactiveCommandBase<Unit, Unit> RunPatchers { get; }
 
         private readonly ObservableAsPropertyHelper<ProfileVM?> _SelectedProfile;
@@ -36,9 +34,6 @@ namespace Synthesis.Bethesda.GUI
 
         private readonly ObservableAsPropertyHelper<PatchersRunVM?> _CurrentRun;
         public PatchersRunVM? CurrentRun => _CurrentRun.Value;
-
-        [Reactive]
-        public bool ShowHelp { get; set; }
         
         public PatcherInitializationVM Init { get; }
 
@@ -94,8 +89,6 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(r => r.Run())
                 .DisposeWith(this);
 
-            ShowHelpToggleCommand = ReactiveCommand.Create(() => ShowHelp = !ShowHelp);
-
             saveSignal.Saving
                 .Subscribe(x => Save(x.Gui, x.Pipe))
                 .DisposeWith(this);
@@ -112,12 +105,10 @@ namespace Synthesis.Bethesda.GUI
             {
                 _SelectedProfileController.SelectedProfile = profile;
             }
-            ShowHelp = settings.ShowHelp;
         }
 
         private void Save(SynthesisGuiSettings guiSettings, PipelineSettings pipeSettings)
         {
-            guiSettings.ShowHelp = ShowHelp;
             guiSettings.SelectedProfile = SelectedProfile?.ID ?? string.Empty;
             pipeSettings.Profiles = Profiles.Items.Select(p => p.Save()).ToList();
         }

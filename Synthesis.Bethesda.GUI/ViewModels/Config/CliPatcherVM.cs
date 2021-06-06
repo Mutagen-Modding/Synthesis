@@ -7,11 +7,13 @@ using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.IO;
 using System.Reactive.Linq;
+using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI
 {
     public class CliPatcherVM : PatcherVM
     {
+        public IShowHelpSetting ShowHelpSetting { get; }
         private readonly ObservableAsPropertyHelper<string> _DisplayName;
         public override string DisplayName => _DisplayName.Value;
 
@@ -24,9 +26,13 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
         public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
 
-        public CliPatcherVM(ProfileVM parent, CliPatcherSettings? settings = null)
+        public CliPatcherVM(
+            ProfileVM parent, 
+            IShowHelpSetting showHelpSetting,
+            CliPatcherSettings? settings = null)
             : base(parent, settings)
         {
+            ShowHelpSetting = showHelpSetting;
             CopyInSettings(settings);
             _DisplayName = this.WhenAnyValue(
                     x => x.Nickname,

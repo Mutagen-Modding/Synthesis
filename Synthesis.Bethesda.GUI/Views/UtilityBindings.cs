@@ -7,6 +7,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -16,7 +17,7 @@ namespace Synthesis.Bethesda.GUI
     public static class UtilityBindings
     {
         #region Help Sections
-        public static IDisposable HelpWiring(ConfigurationVM config, Button button, TextBlock helpBlock, IObservable<bool>? show = null)
+        public static IDisposable HelpWiring(IShowHelpSetting showHelp, Button button, TextBlock helpBlock, IObservable<bool>? show = null)
         {
             CompositeDisposable ret = new();
 
@@ -28,17 +29,17 @@ namespace Synthesis.Bethesda.GUI
 
             Observable.CombineLatest(
                     show,
-                    config.WhenAnyValue(x => x.ShowHelp),
+                    showHelp.WhenAnyValue(x => x.ShowHelp),
                     (newPatcher, on) => on && newPatcher)
                 .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                 .Subscribe(x => helpBlock.Visibility = x)
                 .DisposeWith(ret);
 
-            config.WhenAnyValue(x => x.ShowHelpToggleCommand)
+            showHelp.WhenAnyValue(x => x.ShowHelpToggleCommand)
                 .Subscribe(x => button.Command = x)
                 .DisposeWith(ret);
 
-            config.WhenAnyValue(x => x.ShowHelp)
+            showHelp.WhenAnyValue(x => x.ShowHelp)
                 .Select(x => x ? 1.0d : 0.4d)
                 .Subscribe(x => button.Opacity = x)
                 .DisposeWith(ret);

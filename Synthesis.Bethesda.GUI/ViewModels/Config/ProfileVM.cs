@@ -118,6 +118,7 @@ namespace Synthesis.Bethesda.GUI
             Config = parent;
             Release = release;
             var init = Inject.Scope.GetRequiredService<PatcherInitializationVM>();
+            var showHelp = Inject.Scope.GetRequiredService<IShowHelpSetting>();
             AddGitPatcherCommand = ReactiveCommand.Create(() =>
             {
                 SetInitializer(new GitPatcherInitVM(
@@ -127,7 +128,7 @@ namespace Synthesis.Bethesda.GUI
                     Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(), 
                     Inject.Scope.GetRequiredService<ICheckOrCloneRepo>()));
             });
-            AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(init, this)));
+            AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(showHelp, init, this)));
             AddCliPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new CliPatcherInitVM(init, this)));
 
             ProfileDirectory = Path.Combine(Execution.Paths.WorkingDirectory, ID);
@@ -567,7 +568,10 @@ namespace Synthesis.Bethesda.GUI
                         Inject.Scope.GetRequiredService<IBuild>(),
                         git),
                     SolutionPatcherSettings soln => new SolutionPatcherVM(this, soln),
-                    CliPatcherSettings cli => new CliPatcherVM(this, cli),
+                    CliPatcherSettings cli => new CliPatcherVM(
+                        this,
+                        Inject.Scope.GetInstance<IShowHelpSetting>(),
+                        cli),
                     _ => throw new NotImplementedException(),
                 };
             }));

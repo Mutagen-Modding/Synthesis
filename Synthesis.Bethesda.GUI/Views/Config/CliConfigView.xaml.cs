@@ -30,7 +30,7 @@ namespace Synthesis.Bethesda.GUI.Views
                 //     .RefCount();
                 
                 // Hide help box if not in initialization
-                UtilityBindings.HelpWiring(this.ViewModel!.Profile.Config, this.HelpButton, this.HelpText)
+                UtilityBindings.HelpWiring(this.ViewModel!.ShowHelpSetting, this.HelpButton, this.HelpText)
                     .DisposeWith(disposable);
             });
         }

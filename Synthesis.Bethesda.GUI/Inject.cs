@@ -52,6 +52,7 @@ namespace Synthesis.Bethesda.GUI
             
             RegisterNamespaceFromType(typeof(INavigateTo), Lifestyle.Singleton);
             _coll.Register<ISettingsSingleton, SettingsSingleton>(Lifestyle.Singleton);
+            _coll.Register<IShowHelpSetting, ShowHelpSetting>(Lifestyle.Singleton);
             _coll.Register<IConsiderPrereleasePreference, ConsiderPrereleasePreference>(Lifestyle.Singleton);
             _coll.Register<IRetrieveSaveSettings, RetrieveSaveSettings>(Lifestyle.Singleton);
             _coll.Register<IConfirmationPanelControllerVm, ConfirmationPanelControllerVm>(Lifestyle.Singleton);
