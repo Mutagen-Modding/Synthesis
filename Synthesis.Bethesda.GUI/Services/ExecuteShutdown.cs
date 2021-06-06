@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using Newtonsoft.Json;
 using Synthesis.Bethesda.GUI.Settings;
+    
+#if !DEBUG
+using System.Diagnostics;
+using Noggog.Utility;
+#endif
 
 namespace Synthesis.Bethesda.GUI.Services
 {
