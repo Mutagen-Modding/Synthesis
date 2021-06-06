@@ -787,7 +787,7 @@ namespace Synthesis.Bethesda.GUI
                     dotNetInstalled.DotNetSdkInstalled
                         .Select(x => (x, true))
                         .StartWith((new DotNetVersion(string.Empty, false), false)),
-                    envErrors.WhenAnyValue(x => x.ActiveError!.ErrorString),
+                    envErrors.WhenAnyFallback(x => x.ActiveError!.ErrorString),
                     missingReqMods
                         .QueryWhenChanged()
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
