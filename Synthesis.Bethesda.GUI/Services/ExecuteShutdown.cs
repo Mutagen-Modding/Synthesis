@@ -22,11 +22,14 @@ namespace Synthesis.Bethesda.GUI.Services
 
     public class ExecuteShutdown : IExecuteShutdown
     {
+        private readonly IInitilize _Init;
         private readonly IRetrieveSaveSettings _Save;
 
         public ExecuteShutdown(
+            IInitilize init,
             IRetrieveSaveSettings save)
         {
+            _Init = init;
             _Save = save;
         }
         
@@ -38,6 +41,11 @@ namespace Synthesis.Bethesda.GUI.Services
             var toDo = new List<Task>();
             toDo.Add(Task.Run(() =>
             {
+                if (!_Init.Initialized)
+                {
+                    Log.Logger.Information("App was unable to start up.  Not saving settings.");
+                    return;
+                }
                 try
                 {
                     _Save.Retrieve(out var gui, out var pipe);

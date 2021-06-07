@@ -13,6 +13,7 @@ namespace Synthesis.Bethesda.GUI.Services
 {
     public interface IInitilize
     {
+        public bool Initialized { get; }
         void Initialize(Window window);
     }
 
@@ -21,6 +22,8 @@ namespace Synthesis.Bethesda.GUI.Services
         private readonly ILogger _Logger;
         private readonly IClearLoading _Loading;
         private readonly DependencyMetadata<ISettingsSingleton> _Settings;
+        
+        public bool Initialized { get; set; }
 
         public Initilize(
             ILogger logger,
@@ -58,6 +61,7 @@ namespace Synthesis.Bethesda.GUI.Services
                         window.DataContext = mainVM;
                         mainVM.Init();
                     });
+                Initialized = true;
             }
             catch (Exception e)
             {
