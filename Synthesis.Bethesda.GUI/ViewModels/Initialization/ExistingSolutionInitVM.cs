@@ -12,6 +12,7 @@ using System.IO;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Synthesis.Bethesda.Execution.DotNet;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -51,7 +52,11 @@ namespace Synthesis.Bethesda.GUI
                     if (!i.validation.Succeeded) return i.validation.BubbleFailure<InitializerCall>();
                     return GetResponse<InitializerCall>.Succeed(async (profile) =>
                     {
-                        var patcher = new SolutionPatcherVM(profile);
+                        var patcher = new SolutionPatcherVM(
+                            profile,
+                            Inject.Scope.GetInstance<IProvideInstalledSdk>(),
+                            Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
+                            Inject.Scope.GetInstance<IConfirmationPanelControllerVm>());
                         SolutionInitialization.CreateProject(i.validation.Value, patcher.Profile.Release.ToCategory());
                         SolutionInitialization.AddProjectToSolution(i.sln.Value, i.validation.Value);
                         patcher.SolutionPath.TargetPath = i.sln.Value;

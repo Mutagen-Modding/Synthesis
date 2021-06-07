@@ -27,10 +27,12 @@ namespace Synthesis.Bethesda.GUI
         public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
 
         public CliPatcherVM(
-            ProfileVM parent, 
+            ProfileVM parent,
+            IProfileDisplayControllerVm selPatcher,
+            IConfirmationPanelControllerVm confirmation,
             IShowHelpSetting showHelpSetting,
             CliPatcherSettings? settings = null)
-            : base(parent, settings)
+            : base(parent, selPatcher, confirmation, settings)
         {
             ShowHelpSetting = showHelpSetting;
             CopyInSettings(settings);

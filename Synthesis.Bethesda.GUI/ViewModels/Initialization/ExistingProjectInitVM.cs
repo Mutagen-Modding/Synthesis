@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Synthesis.Bethesda.Execution.DotNet;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -83,7 +84,10 @@ namespace Synthesis.Bethesda.GUI
                     {
                         return q.Select(i =>
                         {
-                            var patcher = new SolutionPatcherVM(profile);
+                            var patcher = new SolutionPatcherVM(profile,
+                                Inject.Scope.GetInstance<IProvideInstalledSdk>(),
+                                Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
+                                Inject.Scope.GetInstance<IConfirmationPanelControllerVm>());
                             patcher.SolutionPath.TargetPath = SolutionPath.TargetPath;
                             patcher.ProjectSubpath = i.TargetPath.TrimStart($"{Path.GetDirectoryName(SolutionPath.TargetPath)}\\"!);
                             return patcher;

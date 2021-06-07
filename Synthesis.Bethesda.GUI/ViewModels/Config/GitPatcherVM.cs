@@ -154,9 +154,11 @@ namespace Synthesis.Bethesda.GUI
             IProvideRepositoryCheckouts repoCheckouts,
             ICheckoutRunnerRepository checkoutRunner,
             ICheckRunnability checkRunnability,
+            IProfileDisplayControllerVm selPatcher,
+            IConfirmationPanelControllerVm confirmation,
             IBuild build,
             GithubPatcherSettings? settings = null)
-            : base(parent, settings)
+            : base(parent, selPatcher, confirmation, settings)
         {
             _CheckoutRunner = checkoutRunner;
             

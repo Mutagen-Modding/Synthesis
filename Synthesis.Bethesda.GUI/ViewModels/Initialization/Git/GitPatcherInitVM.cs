@@ -74,6 +74,8 @@ namespace Synthesis.Bethesda.GUI
                 Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
                 Inject.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
                 Inject.Scope.GetRequiredService<ICheckRunnability>(),
+                Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
+                Inject.Scope.GetInstance<IConfirmationPanelControllerVm>(),
                 Inject.Scope.GetRequiredService<IBuild>());
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)
@@ -196,6 +198,8 @@ namespace Synthesis.Bethesda.GUI
                 Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
                 Inject.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
                 Inject.Scope.GetRequiredService<ICheckRunnability>(),
+                Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
+                Inject.Scope.GetInstance<IConfirmationPanelControllerVm>(),
                 Inject.Scope.GetRequiredService<IBuild>())
             {
                 RemoteRepoPath = listing.RepoPath,

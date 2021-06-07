@@ -50,6 +50,8 @@ namespace Synthesis.Bethesda.GUI
 
         public PatcherVM(
             ProfileVM parent,
+            IProfileDisplayControllerVm selPatcher,
+            IConfirmationPanelControllerVm confirmation,
             PatcherSettings? settings)
         {
             DisplayedObject = this;
@@ -60,7 +62,7 @@ namespace Synthesis.Bethesda.GUI
             });
 
             Profile = parent;
-            _IsSelected = this.WhenAnyValue(x => x.Profile.SelectedPatcher)
+            _IsSelected = selPatcher.WhenAnyValue(x => x.SelectedObject)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsSelected));
 
@@ -68,7 +70,6 @@ namespace Synthesis.Bethesda.GUI
             IsOn = settings?.On ?? false;
             Nickname = settings?.Nickname ?? string.Empty;
 
-            var confirmation = Inject.Scope.GetInstance<IConfirmationPanelControllerVm>();
             DeleteCommand = ReactiveCommand.Create(() =>
             {
                 confirmation.TargetConfirmation = new ConfirmationActionVM(

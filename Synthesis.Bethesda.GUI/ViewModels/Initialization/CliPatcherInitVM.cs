@@ -14,12 +14,19 @@ namespace Synthesis.Bethesda.GUI
 
         public CliPatcherVM Patcher { get; }
 
-        public CliPatcherInitVM(PatcherInitializationVM init, IScopeTracker<ProfileVM> profileProvider)
+        public CliPatcherInitVM(
+            PatcherInitializationVM init, 
+            IScopeTracker<ProfileVM> profileProvider,
+            IProfileDisplayControllerVm profileDisplay,
+            IConfirmationPanelControllerVm confirmation,
+            IShowHelpSetting showHelp)
             : base(init)
         {
             Patcher = new CliPatcherVM(
                 profileProvider.Item,
-                Inject.Scope.GetInstance<IShowHelpSetting>());
+                profileDisplay,
+                confirmation,
+                showHelp);
             _CanCompleteConfiguration = Patcher.WhenAnyValue(x => x.PathToExecutable.ErrorState)
                 .Cast<ErrorResponse, ErrorResponse>()
                 .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);

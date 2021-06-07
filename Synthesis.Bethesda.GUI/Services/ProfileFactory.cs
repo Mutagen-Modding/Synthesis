@@ -8,6 +8,7 @@ using Serilog;
 using SimpleInjector;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.CLI;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
@@ -46,11 +47,19 @@ namespace Synthesis.Bethesda.GUI.Services
                         Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
                         Inject.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
                         Inject.Scope.GetRequiredService<ICheckRunnability>(),
+                        Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
+                        Inject.Scope.GetInstance<IConfirmationPanelControllerVm>(),
                         Inject.Scope.GetRequiredService<IBuild>(),
                         git),
-                    SolutionPatcherSettings soln => new SolutionPatcherVM(profile, soln),
+                    SolutionPatcherSettings soln => new SolutionPatcherVM(profile,
+                        Inject.Scope.GetInstance<IProvideInstalledSdk>(),
+                        Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
+                        Inject.Scope.GetInstance<IConfirmationPanelControllerVm>(),
+                        soln),
                     CliPatcherSettings cli => new CliPatcherVM(
                         profile,
+                        Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
+                        Inject.Scope.GetInstance<IConfirmationPanelControllerVm>(),
                         Inject.Scope.GetInstance<IShowHelpSetting>(),
                         cli),
                     _ => throw new NotImplementedException(),
