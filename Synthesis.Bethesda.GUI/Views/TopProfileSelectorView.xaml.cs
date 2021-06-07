@@ -56,7 +56,7 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.UpdateProfileNugetVersionCommand)
                             .Select(x => x?.CanExecute ?? Observable.Return(false))
                             .Switch(),
-                        this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LockUpgrades),
+                        this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LockSetting.Lock),
                         (hasUpdate, locked) => hasUpdate && !locked)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.UpdateButton.Visibility)

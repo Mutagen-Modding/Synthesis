@@ -291,15 +291,15 @@ namespace Synthesis.Bethesda.GUI.Views
                 #endregion
 
                 #region Versioning
-                this.WhenAnyValue(x => x.ViewModel!.Profile.LockUpgrades)
+                this.WhenAnyValue(x => x.ViewModel!.Locking.Lock)
                     .Select(x => !x)
                     .BindToStrict(this, x => x.PatcherVersioning.IsEnabled)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.Profile.LockUpgrades)
+                this.WhenAnyValue(x => x.ViewModel!.Locking.Lock)
                     .Select(x => !x)
                     .BindToStrict(this, x => x.Nugets.IsEnabled)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.Profile.LockUpgrades)
+                this.WhenAnyValue(x => x.ViewModel!.Locking.Lock)
                     .Select(x => !x)
                     .BindToStrict(this, x => x.Nugets.IsEnabled)
                     .DisposeWith(disposable);

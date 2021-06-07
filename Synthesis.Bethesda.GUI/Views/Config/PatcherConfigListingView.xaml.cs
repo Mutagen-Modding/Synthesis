@@ -92,11 +92,21 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(patcher => (patcher as GitPatcherVM)?.UpdateAllCommand)
                     .BindToStrict(this, x => x.UpdateButton.Command)
                     .DisposeWith(disposable);
+                var gitPatcher = this.WhenAnyFallback(x => x.ViewModel)
+                    .Select(p => p as GitPatcherVM)
+                    .Replay(1)
+                    .RefCount();
                 var hasAnyUpdateCmd = Observable.CombineLatest(
-                        this.WhenAnyFallback(x => x.ViewModel)
-                            .Select(patcher => (patcher as GitPatcherVM)?.UpdateAllCommand.CanExecute ?? Observable.Return(false))
+                        gitPatcher
+                            .Select(patcher => patcher?.UpdateAllCommand.CanExecute ?? Observable.Return(false))
                             .Switch(),
-                        this.WhenAnyFallback(x => x.ViewModel!.Profile.LockUpgrades),
+                        gitPatcher
+                            .Select(g =>
+                            {
+                                if (g == null) return Observable.Return(false);
+                                return g.WhenAnyValue(x => x.Locking.Lock);
+                            })
+                            .Switch(),
                         (hasUpdate, locked) => hasUpdate && !locked)
                     .Replay(1)
                     .RefCount();

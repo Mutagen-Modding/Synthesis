@@ -31,6 +31,7 @@ using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -146,6 +147,8 @@ namespace Synthesis.Bethesda.GUI
         public GithubPatcherLastRunState? LastSuccessfulRun { get; set; }
 
         public ICommand SetToLastSuccessfulRunCommand { get; }
+        
+        public ILockToCurrentVersioning Locking { get; }
 
         public GitPatcherVM(
             ProfileVM parent, 
@@ -156,11 +159,13 @@ namespace Synthesis.Bethesda.GUI
             ICheckRunnability checkRunnability,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
+            ILockToCurrentVersioning lockToCurrentVersioning,
             IBuild build,
             GithubPatcherSettings? settings = null)
             : base(parent, selPatcher, confirmation, settings)
         {
             _CheckoutRunner = checkoutRunner;
+            Locking = lockToCurrentVersioning;
             
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
 
@@ -362,7 +367,7 @@ namespace Synthesis.Bethesda.GUI
                 .FilterSwitch(
                     Observable.CombineLatest(
                         this.WhenAnyValue(x => x.TagAutoUpdate),
-                        this.WhenAnyValue(x => x.Profile.LockUpgrades),
+                        this.WhenAnyValue(x => x.Locking.Lock),
                         this.WhenAnyValue(x => x.PatcherVersioning),
                         (autoTag, locked, versioning) => !locked && autoTag && versioning == PatcherVersioningEnum.Tag))
                 .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
@@ -454,11 +459,11 @@ namespace Synthesis.Bethesda.GUI
                 this.WhenAnyValue(x => x.TargetOriginBranchName),
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.TagAutoUpdate),
-                        this.WhenAnyValue(x => x.Profile.LockUpgrades),
+                        this.WhenAnyValue(x => x.Locking.Lock),
                         (auto, locked) => !locked && auto),
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.BranchAutoUpdate),
-                        this.WhenAnyValue(x => x.Profile.LockUpgrades),
+                        this.WhenAnyValue(x => x.Locking.Lock),
                         (auto, locked) => !locked && auto),
                 (versioning, tag, commit, branch, tagAuto, branchAuto) =>
                 {

@@ -22,6 +22,7 @@ using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -71,12 +72,13 @@ namespace Synthesis.Bethesda.GUI
         {
             Profile = profile;
             Patcher = new GitPatcherVM(profile, navigateTo, checkOrClone,
-                Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
-                Inject.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
-                Inject.Scope.GetRequiredService<ICheckRunnability>(),
-                Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
-                Inject.Scope.GetInstance<IConfirmationPanelControllerVm>(),
-                Inject.Scope.GetRequiredService<IBuild>());
+                profile.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
+                profile.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
+                profile.Scope.GetRequiredService<ICheckRunnability>(),
+                profile.Scope.GetInstance<IProfileDisplayControllerVm>(),
+                profile.Scope.GetInstance<IConfirmationPanelControllerVm>(),
+                profile.Scope.GetInstance<ILockToCurrentVersioning>(),
+                profile.Scope.GetRequiredService<IBuild>());
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)
                 .Select(x => ErrorResponse.Create(x))
@@ -193,14 +195,15 @@ namespace Synthesis.Bethesda.GUI
         {
             PatcherVM patcher = new GitPatcherVM(
                 Profile,
-                Inject.Scope.GetRequiredService<INavigateTo>(),
-                Inject.Scope.GetRequiredService<ICheckOrCloneRepo>(),
-                Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
-                Inject.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
-                Inject.Scope.GetRequiredService<ICheckRunnability>(),
-                Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
-                Inject.Scope.GetInstance<IConfirmationPanelControllerVm>(),
-                Inject.Scope.GetRequiredService<IBuild>())
+                Profile.Scope.GetRequiredService<INavigateTo>(),
+                Profile.Scope.GetRequiredService<ICheckOrCloneRepo>(),
+                Profile.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
+                Profile.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
+                Profile.Scope.GetRequiredService<ICheckRunnability>(),
+                Profile.Scope.GetInstance<IProfileDisplayControllerVm>(),
+                Profile.Scope.GetInstance<IConfirmationPanelControllerVm>(),
+                Profile.Scope.GetInstance<ILockToCurrentVersioning>(),
+                Profile.Scope.GetRequiredService<IBuild>())
             {
                 RemoteRepoPath = listing.RepoPath,
                 ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')

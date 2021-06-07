@@ -76,13 +76,13 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 #region Versioning Lock
                 Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.Profile.LockUpgrades),
+                        this.WhenAnyValue(x => x.ViewModel!.Locking.Lock),
                         this.WhenAnyValue(x => x.RespectLocking),
                         (locked, respect) => !locked || !respect)
                     .BindToStrict(this, x => x.RepositoryPath.IsEnabled)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.Profile.LockUpgrades),
+                        this.WhenAnyValue(x => x.ViewModel!.Locking.Lock),
                         this.WhenAnyValue(x => x.RespectLocking),
                         (locked, respect) => !locked || !respect)
                     .BindToStrict(this, x => x.ProjectsPickerBox.IsEnabled)

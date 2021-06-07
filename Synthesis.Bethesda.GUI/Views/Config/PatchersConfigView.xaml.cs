@@ -117,7 +117,7 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.UpdateAllPatchersCommand)
                             .Select(x => x.CanExecute)
                             .Switch(),
-                        this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LockUpgrades),
+                        this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LockSetting.Lock),
                         (hasUpdate, locked) => hasUpdate && !locked)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.UpdateAllPatchersButton.Visibility)

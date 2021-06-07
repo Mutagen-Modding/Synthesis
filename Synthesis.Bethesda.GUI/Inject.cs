@@ -52,6 +52,7 @@ namespace Synthesis.Bethesda.GUI
                 typeof(IEnvironmentErrorVM).Assembly.AsEnumerable());
             
             _coll.Register(typeof(IScopeTracker<>), typeof(ScopeTracker<>));
+            _coll.Register<ILockToCurrentVersioning, LockToCurrentVersioning>();
             
             RegisterNamespaceFromType(typeof(INavigateTo), Lifestyle.Singleton);
             _coll.Register<ISettingsSingleton, SettingsSingleton>(Lifestyle.Singleton);

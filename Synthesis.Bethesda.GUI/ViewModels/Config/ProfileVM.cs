@@ -105,8 +105,7 @@ namespace Synthesis.Bethesda.GUI
 
         public IObservable<ILinkCache?> SimpleLinkCache { get; }
 
-        [Reactive]
-        public bool LockUpgrades { get; set; }
+        public ILockToCurrentVersioning LockSetting { get; }
 
         [Reactive]
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
@@ -123,6 +122,7 @@ namespace Synthesis.Bethesda.GUI
         {
             logger.Information("Creating Profile with ID {ID}", id);
             _Init = init;
+            LockSetting = scope.GetInstance<ILockToCurrentVersioning>();
             DisplayController = scope.GetInstance<IProfileDisplayControllerVm>();
             Scope = scope;
             _Navigate = navigate;
@@ -576,7 +576,7 @@ namespace Synthesis.Bethesda.GUI
                 SynthesisVersioning = SynthesisVersioning,
                 DataPathOverride = DataPathOverride,
                 ConsiderPrereleaseNugets = ConsiderPrereleaseNugets,
-                LockToCurrentVersioning = LockUpgrades,
+                LockToCurrentVersioning = LockSetting.Lock,
                 Persistence = SelectedPersistenceMode,
             };
         }

@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.GUI.Services
             profile.ManualSynthesisVersion = settings.SynthesisManualVersion;
             profile.DataPathOverride = settings.DataPathOverride;
             profile.ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
-            profile.LockUpgrades = settings.LockToCurrentVersioning;
+            profile.LockSetting.Lock = settings.LockToCurrentVersioning;
             profile.SelectedPersistenceMode = settings.Persistence;
             profile.Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
             {
@@ -42,25 +42,26 @@ namespace Synthesis.Bethesda.GUI.Services
                 {
                     GithubPatcherSettings git => new GitPatcherVM(
                         profile, 
-                        Inject.Scope.GetRequiredService<INavigateTo>(),
-                        Inject.Scope.GetRequiredService<ICheckOrCloneRepo>(),
-                        Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
-                        Inject.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
-                        Inject.Scope.GetRequiredService<ICheckRunnability>(),
-                        Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
-                        Inject.Scope.GetInstance<IConfirmationPanelControllerVm>(),
-                        Inject.Scope.GetRequiredService<IBuild>(),
+                        profile.Scope.GetRequiredService<INavigateTo>(),
+                        profile.Scope.GetRequiredService<ICheckOrCloneRepo>(),
+                        profile.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
+                        profile.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
+                        profile.Scope.GetRequiredService<ICheckRunnability>(),
+                        profile.Scope.GetInstance<IProfileDisplayControllerVm>(),
+                        profile.Scope.GetInstance<IConfirmationPanelControllerVm>(),
+                        profile.Scope.GetInstance<ILockToCurrentVersioning>(),
+                        profile.Scope.GetRequiredService<IBuild>(),
                         git),
                     SolutionPatcherSettings soln => new SolutionPatcherVM(profile,
-                        Inject.Scope.GetInstance<IProvideInstalledSdk>(),
-                        Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
-                        Inject.Scope.GetInstance<IConfirmationPanelControllerVm>(),
+                        profile.Scope.GetInstance<IProvideInstalledSdk>(),
+                        profile.Scope.GetInstance<IProfileDisplayControllerVm>(),
+                        profile.Scope.GetInstance<IConfirmationPanelControllerVm>(),
                         soln),
                     CliPatcherSettings cli => new CliPatcherVM(
                         profile,
-                        Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
-                        Inject.Scope.GetInstance<IConfirmationPanelControllerVm>(),
-                        Inject.Scope.GetInstance<IShowHelpSetting>(),
+                        profile.Scope.GetInstance<IProfileDisplayControllerVm>(),
+                        profile.Scope.GetInstance<IConfirmationPanelControllerVm>(),
+                        profile.Scope.GetInstance<IShowHelpSetting>(),
                         cli),
                     _ => throw new NotImplementedException(),
                 };
