@@ -57,7 +57,6 @@ namespace Synthesis.Bethesda.GUI
             _coll.Collection.Register<IEnvironmentErrorVM>(
                 typeof(IEnvironmentErrorVM).Assembly.AsEnumerable());
             
-            _coll.Register(typeof(IScopeTracker<>), typeof(ScopeTracker<>));
             _coll.Register<ILockToCurrentVersioning, LockToCurrentVersioning>();
             _coll.Register<IProfileDisplayControllerVm, ProfileDisplayControllerVm>();
             _coll.Register<IEnvironmentErrorsVM, EnvironmentErrorsVM>();

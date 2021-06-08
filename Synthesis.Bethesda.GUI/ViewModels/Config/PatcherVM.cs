@@ -15,7 +15,6 @@ namespace Synthesis.Bethesda.GUI
     public abstract class PatcherVM : ViewModel
     {
         private readonly IRemovePatcherFromProfile _Remove;
-        public ProfileVM Profile { get; }
 
         private readonly ObservableAsPropertyHelper<bool> _IsSelected;
         public bool IsSelected => _IsSelected.Value;
@@ -50,7 +49,6 @@ namespace Synthesis.Bethesda.GUI
         public virtual bool IsNameEditable => true;
 
         public PatcherVM(
-            ProfileVM parent,
             IRemovePatcherFromProfile remove,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
@@ -64,7 +62,6 @@ namespace Synthesis.Bethesda.GUI
                 DisplayedObject = this;
             });
 
-            Profile = parent;
             _IsSelected = selPatcher.WhenAnyValue(x => x.SelectedObject)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsSelected));

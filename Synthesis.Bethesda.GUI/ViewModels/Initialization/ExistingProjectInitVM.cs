@@ -85,7 +85,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         return q.Select(i =>
                         {
-                            var patcher = new SolutionPatcherVM(profile,
+                            var patcher = new SolutionPatcherVM(
                                 Inject.Scope.GetInstance<ProfileLoadOrder>(),
                                 Inject.Scope.GetInstance<IRemovePatcherFromProfile>(),
                                 Inject.Scope.GetInstance<IProvideInstalledSdk>(),

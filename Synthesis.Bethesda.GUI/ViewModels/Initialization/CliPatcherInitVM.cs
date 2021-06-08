@@ -2,7 +2,6 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Collections.Generic;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.Temporary;
 
@@ -17,7 +16,6 @@ namespace Synthesis.Bethesda.GUI
 
         public CliPatcherInitVM(
             PatcherInitializationVM init, 
-            IScopeTracker<ProfileVM> profileProvider,
             IProfileDisplayControllerVm profileDisplay,
             IConfirmationPanelControllerVm confirmation,
             IRemovePatcherFromProfile remove,
@@ -25,7 +23,6 @@ namespace Synthesis.Bethesda.GUI
             : base(init)
         {
             Patcher = new CliPatcherVM(
-                profileProvider.Item,
                 remove,
                 profileDisplay,
                 confirmation,

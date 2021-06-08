@@ -153,12 +153,12 @@ namespace Synthesis.Bethesda.GUI
         public ILockToCurrentVersioning Locking { get; }
 
         public GitPatcherVM(
-            ProfileVM parent, 
             ProfileIdentifier ident,
             ProfileDirectories dirs,
             ProfileLoadOrder loadOrder,
             ProfilePatchersList patchersList,
             ProfileVersioning versioning,
+            ProfileDataFolder dataFolder,
             IRemovePatcherFromProfile remove,
             INavigateTo navigate, 
             ICheckOrCloneRepo checkOrClone,
@@ -170,7 +170,7 @@ namespace Synthesis.Bethesda.GUI
             ILockToCurrentVersioning lockToCurrentVersioning,
             IBuild build,
             GithubPatcherSettings? settings = null)
-            : base(parent, remove, selPatcher, confirmation, settings)
+            : base(remove, selPatcher, confirmation, settings)
         {
             _PatchersList = patchersList;
             _CheckoutRunner = checkoutRunner;
@@ -734,8 +734,8 @@ namespace Synthesis.Bethesda.GUI
 
             var runnability = Observable.CombineLatest(
                     compilation,
-                    parent.WhenAnyValue(x => x.DataFolder),
-                    parent.LoadOrder.Connect()
+                    dataFolder.WhenAnyValue(x => x.DataFolder),
+                    loadOrder.LoadOrder.Connect()
                         .QueryWhenChanged()
                         .StartWith(ListExt.Empty<ReadOnlyModListingVM>()),
                     (comp, data, loadOrder) => (comp, data, loadOrder))
@@ -762,7 +762,7 @@ namespace Synthesis.Bethesda.GUI
                             var runnability = await checkRunnability.Check(
                                 path: i.comp.Item.ProjPath,
                                 directExe: false,
-                                release: parent.Release,
+                                release: ident.Release,
                                 dataFolder: i.data,
                                 cancel: cancel,
                                 loadOrder: i.loadOrder.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm),

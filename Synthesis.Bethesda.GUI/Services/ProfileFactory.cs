@@ -41,12 +41,12 @@ namespace Synthesis.Bethesda.GUI.Services
                 return p switch
                 {
                     GithubPatcherSettings git => new GitPatcherVM(
-                        profile, 
                         profile.Scope.GetInstance<ProfileIdentifier>(),
                         profile.Scope.GetInstance<ProfileDirectories>(),
                         profile.Scope.GetInstance<ProfileLoadOrder>(),
                         profile.Scope.GetInstance<ProfilePatchersList>(),
                         profile.Scope.GetInstance<ProfileVersioning>(),
+                        profile.Scope.GetRequiredService<ProfileDataFolder>(),
                         profile.Scope.GetInstance<IRemovePatcherFromProfile>(),
                         profile.Scope.GetRequiredService<INavigateTo>(),
                         profile.Scope.GetRequiredService<ICheckOrCloneRepo>(),
@@ -58,7 +58,7 @@ namespace Synthesis.Bethesda.GUI.Services
                         profile.Scope.GetInstance<ILockToCurrentVersioning>(),
                         profile.Scope.GetRequiredService<IBuild>(),
                         git),
-                    SolutionPatcherSettings soln => new SolutionPatcherVM(profile,
+                    SolutionPatcherSettings soln => new SolutionPatcherVM(
                         profile.Scope.GetInstance<ProfileLoadOrder>(),
                         profile.Scope.GetInstance<IRemovePatcherFromProfile>(),
                         profile.Scope.GetInstance<IProvideInstalledSdk>(),
@@ -66,7 +66,6 @@ namespace Synthesis.Bethesda.GUI.Services
                         profile.Scope.GetInstance<IConfirmationPanelControllerVm>(),
                         soln),
                     CliPatcherSettings cli => new CliPatcherVM(
-                        profile,
                         profile.Scope.GetInstance<IRemovePatcherFromProfile>(),
                         profile.Scope.GetInstance<IProfileDisplayControllerVm>(),
                         profile.Scope.GetInstance<IConfirmationPanelControllerVm>(),
@@ -97,7 +96,6 @@ namespace Synthesis.Bethesda.GUI.Services
                 scope.GetInstance<INavigateTo>(),
                 scope.GetInstance<ILogger>());
             scope.DisposeWith(profile);
-            scope.GetInstance<IScopeTracker<ProfileVM>>().Item = profile;
             return profile;
         }
     }

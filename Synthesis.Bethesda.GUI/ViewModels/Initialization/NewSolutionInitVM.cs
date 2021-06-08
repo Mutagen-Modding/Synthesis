@@ -98,7 +98,7 @@ namespace Synthesis.Bethesda.GUI
                     if (i.validation.Failed) return i.validation.BubbleFailure<InitializerCall>();
                     return GetResponse<InitializerCall>.Succeed(async (profile) =>
                     {
-                        var patcher = new SolutionPatcherVM(profile,
+                        var patcher = new SolutionPatcherVM(
                             Inject.Scope.GetInstance<ProfileLoadOrder>(),
                             Inject.Scope.GetInstance<IRemovePatcherFromProfile>(),
                             Inject.Scope.GetInstance<IProvideInstalledSdk>(),
