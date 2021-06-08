@@ -175,7 +175,6 @@ namespace Synthesis.Bethesda.GUI
                     _ProfileFactory,
                     (profile) =>
                     {
-                        profile.Nickname = profile.Release.ToDescriptionString();
                         _SelectedProfileController.SelectedProfile = profile;
                         _ActivePanelControllerVm.ActivePanel = Configuration;
                     });

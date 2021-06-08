@@ -19,15 +19,14 @@ namespace Synthesis.Bethesda.GUI.Services
     public interface IProfileFactory
     {
         ProfileVM Get(SynthesisProfile settings);
-        ProfileVM Get(GameRelease release, string id);
+        ProfileVM Get(GameRelease release, string id, string nickname);
     }
 
     public class ProfileFactory : IProfileFactory
     {
         public ProfileVM Get(SynthesisProfile settings)
         {
-            var profile = Get(settings.TargetRelease, settings.ID);
-            profile.Nickname = settings.Nickname;
+            var profile = Get(settings.TargetRelease, settings.ID, settings.Nickname);
             profile.MutagenVersioning = settings.MutagenVersioning;
             profile.ManualMutagenVersion = settings.MutagenManualVersion;
             profile.SynthesisVersioning = settings.SynthesisVersioning;
@@ -69,14 +68,17 @@ namespace Synthesis.Bethesda.GUI.Services
             return profile;
         }
 
-        public ProfileVM Get(GameRelease release, string id)
+        public ProfileVM Get(GameRelease release, string id, string nickname)
         {
             var scope = new Scope(Inject.Container);
+            var ident = scope.GetInstance<ProfileIdentifier>();
+            ident.ID = id;
+            ident.Release = release;
+            ident.Nickname = nickname;
             var profile = new ProfileVM(
                 scope, 
                 Inject.Scope.GetInstance<PatcherInitializationVM>(),
-                release,
-                id,
+                ident,
                 scope.GetInstance<INavigateTo>(),
                 scope.GetInstance<ILogger>());
             scope.DisposeWith(profile);

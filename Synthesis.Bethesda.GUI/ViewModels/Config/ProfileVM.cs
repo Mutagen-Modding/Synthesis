@@ -50,8 +50,7 @@ namespace Synthesis.Bethesda.GUI
 
         public string ID { get; private set; }
 
-        [Reactive]
-        public string Nickname { get; set; } = string.Empty;
+        public string Nickname { get; }
 
         public string ProfileDirectory { get; }
         public string WorkingDirectory { get; }
@@ -114,20 +113,20 @@ namespace Synthesis.Bethesda.GUI
 
         public ProfileVM(
             Scope scope,
-            PatcherInitializationVM init, 
-            GameRelease release,
-            string id,
+            PatcherInitializationVM init,
+            ProfileIdentifier ident,
             INavigateTo navigate,
             ILogger logger)
         {
-            logger.Information("Creating Profile with ID {ID}", id);
+            logger.Information("Creating Profile with ID {ID}", ident.ID);
             _Init = init;
             LockSetting = scope.GetInstance<ILockToCurrentVersioning>();
             DisplayController = scope.GetInstance<IProfileDisplayControllerVm>();
             Scope = scope;
             _Navigate = navigate;
-            ID = id;
-            Release = release;
+            Nickname = ident.Nickname;
+            ID = ident.ID;
+            Release = ident.Release;
             var showHelp = Inject.Scope.GetRequiredService<IShowHelpSetting>();
             AddGitPatcherCommand = ReactiveCommand.Create(() =>
             {

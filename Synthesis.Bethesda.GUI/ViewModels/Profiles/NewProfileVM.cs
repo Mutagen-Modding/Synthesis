@@ -28,7 +28,7 @@ namespace Synthesis.Bethesda.GUI
         public NewProfileVM(
             ConfigurationVM config, 
             IProfileFactory profileFactory,
-            Action<ProfileVM> postRun)
+            Action<ProfileVM>? postRun = null)
         {
             _config = config;
             _ProfileFactory = profileFactory;
@@ -51,10 +51,9 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(game =>
                 {
                     if (game == null) return;
-                    var profile = _ProfileFactory.Get(game.Value, GetNewProfileId());
-                    profile.Nickname = Nickname;
+                    var profile = _ProfileFactory.Get(game.Value, GetNewProfileId(), Nickname.IsNullOrWhitespace() ? game.Value.ToDescriptionString() : Nickname);
                     config.Profiles.AddOrUpdate(profile);
-                    postRun(profile);
+                    postRun?.Invoke(profile);
                 })
                 .DisposeWith(this);
         }

@@ -41,14 +41,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 DisplayObject = new NewProfileVM(
                     Config,
-                    Inject.Scope.GetInstance<IProfileFactory>(),
-                    (profile) => 
-                    {
-                        if (string.IsNullOrWhiteSpace(profile.Nickname))
-                        {
-                            profile.Nickname = profile.Release.ToDescriptionString();
-                        }
-                    });
+                    Inject.Scope.GetInstance<IProfileFactory>());
                 DisplayedProfile = null;
             });
 

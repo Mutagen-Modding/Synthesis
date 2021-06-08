@@ -28,6 +28,12 @@ namespace Synthesis.Bethesda.GUI
         
         private void Configure()
         {
+            #if DEBUG
+            _coll.Options.EnableAutoVerification = true;
+            #else
+            _coll.Options.EnableAutoVerification = false;
+            #endif
+            
             _coll.Options.DefaultLifestyle = Lifestyle.Scoped;
             _coll.Options.DefaultScopedLifestyle = ScopedLifestyle.Flowing;
 
@@ -38,7 +44,6 @@ namespace Synthesis.Bethesda.GUI
             RegisterWpfLib();
             
             RegisterExecutionLib();
-            
         }
 
         private void RegisterCurrentLib()
@@ -53,6 +58,9 @@ namespace Synthesis.Bethesda.GUI
             
             _coll.Register(typeof(IScopeTracker<>), typeof(ScopeTracker<>));
             _coll.Register<ILockToCurrentVersioning, LockToCurrentVersioning>();
+            _coll.Register<IProfileDisplayControllerVm, ProfileDisplayControllerVm>();
+            _coll.Register<IEnvironmentErrorsVM, EnvironmentErrorsVM>();
+            _coll.Register<ProfileIdentifier>();
             
             RegisterNamespaceFromType(typeof(INavigateTo), Lifestyle.Singleton);
             _coll.Register<ISettingsSingleton, SettingsSingleton>(Lifestyle.Singleton);
@@ -61,9 +69,7 @@ namespace Synthesis.Bethesda.GUI
             _coll.Register<IRetrieveSaveSettings, RetrieveSaveSettings>(Lifestyle.Singleton);
             _coll.Register<IConfirmationPanelControllerVm, ConfirmationPanelControllerVm>(Lifestyle.Singleton);
             _coll.Register<ISelectedProfileControllerVm, SelectedProfileControllerVm>(Lifestyle.Singleton);
-            _coll.Register<IProfileDisplayControllerVm, ProfileDisplayControllerVm>();
             _coll.Register<IActivePanelControllerVm, ActivePanelControllerVm>(Lifestyle.Singleton);
-            _coll.Register<IEnvironmentErrorsVM, EnvironmentErrorsVM>();
             _coll.Register<ISaveSignal, RetrieveSaveSettings>(Lifestyle.Singleton);
         }
 
