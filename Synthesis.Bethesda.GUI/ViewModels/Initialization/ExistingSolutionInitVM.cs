@@ -55,6 +55,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         var patcher = new SolutionPatcherVM(
                             profile,
+                            Inject.Scope.GetInstance<ProfileLoadOrder>(),
                             Inject.Scope.GetInstance<IRemovePatcherFromProfile>(),
                             Inject.Scope.GetInstance<IProvideInstalledSdk>(),
                             Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),

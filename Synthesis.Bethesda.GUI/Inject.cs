@@ -65,6 +65,7 @@ namespace Synthesis.Bethesda.GUI
             _coll.Register<ProfilePatchersList>();
             _coll.Register<ProfileIdentifier>();
             _coll.Register<ProfileLoadOrder>();
+            _coll.Register<ProfileDirectories>();
             _coll.Register<ProfileDataFolder>();
             
             RegisterNamespaceFromType(typeof(INavigateTo), Lifestyle.Singleton);

@@ -118,6 +118,7 @@ namespace Synthesis.Bethesda.GUI
             PatcherInitializationVM init,
             ProfileIdentifier ident,
             ProfileLoadOrder loadOrder,
+            ProfileDirectories dirs,
             INavigateTo navigate,
             ILogger logger)
         {
@@ -155,8 +156,8 @@ namespace Synthesis.Bethesda.GUI
                 }
             });
 
-            ProfileDirectory = Path.Combine(Execution.Paths.WorkingDirectory, ID);
-            WorkingDirectory = Execution.Paths.ProfileWorkingDirectory(ID);
+            ProfileDirectory = dirs.ProfileDirectory;
+            WorkingDirectory = dirs.WorkingDirectory;
 
             Patchers.Connect()
                 .OnItemRemoved(p =>

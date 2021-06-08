@@ -42,6 +42,10 @@ namespace Synthesis.Bethesda.GUI.Services
                 {
                     GithubPatcherSettings git => new GitPatcherVM(
                         profile, 
+                        profile.Scope.GetInstance<ProfileIdentifier>(),
+                        profile.Scope.GetInstance<ProfileDirectories>(),
+                        profile.Scope.GetInstance<ProfileLoadOrder>(),
+                        profile.Scope.GetInstance<ProfilePatchersList>(),
                         profile.Scope.GetInstance<IRemovePatcherFromProfile>(),
                         profile.Scope.GetRequiredService<INavigateTo>(),
                         profile.Scope.GetRequiredService<ICheckOrCloneRepo>(),
@@ -54,6 +58,7 @@ namespace Synthesis.Bethesda.GUI.Services
                         profile.Scope.GetRequiredService<IBuild>(),
                         git),
                     SolutionPatcherSettings soln => new SolutionPatcherVM(profile,
+                        profile.Scope.GetInstance<ProfileLoadOrder>(),
                         profile.Scope.GetInstance<IRemovePatcherFromProfile>(),
                         profile.Scope.GetInstance<IProvideInstalledSdk>(),
                         profile.Scope.GetInstance<IProfileDisplayControllerVm>(),
@@ -86,6 +91,7 @@ namespace Synthesis.Bethesda.GUI.Services
                 scope.GetInstance<PatcherInitializationVM>(),
                 ident,
                 scope.GetInstance<ProfileLoadOrder>(),
+                scope.GetInstance<ProfileDirectories>(),
                 scope.GetInstance<INavigateTo>(),
                 scope.GetInstance<ILogger>());
             scope.DisposeWith(profile);

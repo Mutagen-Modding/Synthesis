@@ -1,4 +1,3 @@
-using DynamicData;
 using Synthesis.Bethesda.Execution.Settings;
 using Noggog.WPF;
 using ReactiveUI;

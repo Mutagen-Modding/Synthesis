@@ -73,6 +73,10 @@ namespace Synthesis.Bethesda.GUI
         {
             Profile = profile;
             Patcher = new GitPatcherVM(profile, 
+                profile.Scope.GetRequiredService<ProfileIdentifier>(),
+                profile.Scope.GetRequiredService<ProfileDirectories>(),
+                profile.Scope.GetRequiredService<ProfileLoadOrder>(),
+                profile.Scope.GetRequiredService<ProfilePatchersList>(),
                 profile.Scope.GetRequiredService<IRemovePatcherFromProfile>(),
                 navigateTo, checkOrClone,
                 profile.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
@@ -198,6 +202,10 @@ namespace Synthesis.Bethesda.GUI
         {
             PatcherVM patcher = new GitPatcherVM(
                 Profile,
+                Profile.Scope.GetRequiredService<ProfileIdentifier>(),
+                Profile.Scope.GetRequiredService<ProfileDirectories>(),
+                Profile.Scope.GetRequiredService<ProfileLoadOrder>(),
+                Profile.Scope.GetRequiredService<ProfilePatchersList>(),
                 Profile.Scope.GetRequiredService<IRemovePatcherFromProfile>(),
                 Profile.Scope.GetRequiredService<INavigateTo>(),
                 Profile.Scope.GetRequiredService<ICheckOrCloneRepo>(),

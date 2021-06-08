@@ -38,6 +38,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public class GitPatcherVM : PatcherVM
     {
+        private readonly ProfilePatchersList _PatchersList;
         private readonly ICheckoutRunnerRepository _CheckoutRunner;
         public override bool IsNameEditable => false;
 
@@ -153,6 +154,10 @@ namespace Synthesis.Bethesda.GUI
 
         public GitPatcherVM(
             ProfileVM parent, 
+            ProfileIdentifier ident,
+            ProfileDirectories dirs,
+            ProfileLoadOrder loadOrder,
+            ProfilePatchersList patchersList,
             IRemovePatcherFromProfile remove,
             INavigateTo navigate, 
             ICheckOrCloneRepo checkOrClone,
@@ -166,6 +171,7 @@ namespace Synthesis.Bethesda.GUI
             GithubPatcherSettings? settings = null)
             : base(parent, remove, selPatcher, confirmation, settings)
         {
+            _PatchersList = patchersList;
             _CheckoutRunner = checkoutRunner;
             Locking = lockToCurrentVersioning;
             
@@ -173,9 +179,9 @@ namespace Synthesis.Bethesda.GUI
 
             CopyInSettings(settings);
 
-            var localRepoDir = Path.Combine(Profile.ProfileDirectory, "Git", ID);
+            var localRepoDir = Path.Combine(dirs.ProfileDirectory, "Git", ID);
             LocalDriverRepoDirectory = Path.Combine(localRepoDir, "Driver");
-            LocalRunnerRepoDirectory = GitPatcherRun.RunnerRepoDirectory(Profile.ID, ID);
+            LocalRunnerRepoDirectory = GitPatcherRun.RunnerRepoDirectory(ident.ID, ID);
 
             _DisplayName = this.WhenAnyValue(
                 x => x.Nickname,
@@ -668,7 +674,7 @@ namespace Synthesis.Bethesda.GUI
                 })
                 .Select(x => x.AsObservableChangeSet())
                 .Switch()
-                .Except(this.Profile.LoadOrder.Connect()
+                .Except(loadOrder.LoadOrder.Connect()
                     .Transform(x => x.ModKey))
                 .RefCount();
 
@@ -1055,7 +1061,7 @@ namespace Synthesis.Bethesda.GUI
         {
             bool IsValid(string id)
             {
-                foreach (var patcher in Profile.Patchers.Items.WhereCastable<PatcherVM, GitPatcherVM>())
+                foreach (var patcher in _PatchersList.Patchers.Items.WhereCastable<PatcherVM, GitPatcherVM>())
                 {
                     if (patcher.ID == id)
                     {
