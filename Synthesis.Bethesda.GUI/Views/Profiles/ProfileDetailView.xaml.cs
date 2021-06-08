@@ -145,7 +145,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 #endregion
 
-                this.BindStrict(this.ViewModel, x => x!.Profile!.DataPathOverride, x => x.DataFolderOverrideBox.Text,
+                this.BindStrict(this.ViewModel, x => x!.Profile!.DataFolderOverride.DataPathOverride, x => x.DataFolderOverrideBox.Text,
                         vmToViewConverter: vm => vm ?? string.Empty,
                         viewToVmConverter: view => view.IsNullOrWhitespace() ? null : view)
                     .DisposeWith(disposable);

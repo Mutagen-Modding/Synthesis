@@ -104,7 +104,7 @@ namespace Synthesis.Bethesda.GUI
                             Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
                             Inject.Scope.GetInstance<IConfirmationPanelControllerVm>());
                         SolutionInitialization.CreateSolutionFile(i.sln.Value);
-                        SolutionInitialization.CreateProject(i.validation.Value, patcher.Profile.Release.ToCategory());
+                        SolutionInitialization.CreateProject(i.validation.Value, profile.Release.ToCategory());
                         SolutionInitialization.AddProjectToSolution(i.sln.Value, i.validation.Value);
                         SolutionInitialization.GenerateGitIgnore(Path.GetDirectoryName(i.sln.Value)!);
                         patcher.SolutionPath.TargetPath = i.sln.Value;

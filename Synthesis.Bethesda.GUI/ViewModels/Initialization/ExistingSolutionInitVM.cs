@@ -59,7 +59,7 @@ namespace Synthesis.Bethesda.GUI
                             Inject.Scope.GetInstance<IProvideInstalledSdk>(),
                             Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
                             Inject.Scope.GetInstance<IConfirmationPanelControllerVm>());
-                        SolutionInitialization.CreateProject(i.validation.Value, patcher.Profile.Release.ToCategory());
+                        SolutionInitialization.CreateProject(i.validation.Value, profile.Release.ToCategory());
                         SolutionInitialization.AddProjectToSolution(i.sln.Value, i.validation.Value);
                         patcher.SolutionPath.TargetPath = i.sln.Value;
                         patcher.ProjectSubpath = Path.Combine(i.proj, $"{i.proj}.csproj");

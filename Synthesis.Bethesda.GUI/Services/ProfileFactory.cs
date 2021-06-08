@@ -32,7 +32,7 @@ namespace Synthesis.Bethesda.GUI.Services
             profile.ManualMutagenVersion = settings.MutagenManualVersion;
             profile.SynthesisVersioning = settings.SynthesisVersioning;
             profile.ManualSynthesisVersion = settings.SynthesisManualVersion;
-            profile.DataPathOverride = settings.DataPathOverride;
+            profile.DataFolderOverride.DataPathOverride = settings.DataPathOverride;
             profile.ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
             profile.LockSetting.Lock = settings.LockToCurrentVersioning;
             profile.SelectedPersistenceMode = settings.Persistence;
@@ -82,6 +82,7 @@ namespace Synthesis.Bethesda.GUI.Services
             var profile = new ProfileVM(
                 scope, 
                 scope.GetInstance<ProfilePatchersList>(),
+                scope.GetInstance<ProfileDataFolder>(),
                 scope.GetInstance<PatcherInitializationVM>(),
                 ident,
                 scope.GetInstance<INavigateTo>(),

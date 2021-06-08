@@ -56,6 +56,8 @@ namespace Synthesis.Bethesda.GUI
         public string ProfileDirectory { get; }
         public string WorkingDirectory { get; }
 
+        public ProfileDataFolder DataFolderOverride { get; }
+
         private readonly ObservableAsPropertyHelper<string> _DataFolder;
         public string DataFolder => _DataFolder.Value;
 
@@ -96,9 +98,6 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool ConsiderPrereleaseNugets { get; set; }
 
-        [Reactive]
-        public string? DataPathOverride { get; set; }
-
         public IProfileDisplayControllerVm DisplayController { get; }
 
         public ErrorVM OverallErrorVM { get; } = new ErrorVM("Overall Blocking Error");
@@ -115,6 +114,7 @@ namespace Synthesis.Bethesda.GUI
         public ProfileVM(
             Scope scope,
             ProfilePatchersList patchersList,
+            ProfileDataFolder dataFolder,
             PatcherInitializationVM init,
             ProfileIdentifier ident,
             INavigateTo navigate,
@@ -122,6 +122,7 @@ namespace Synthesis.Bethesda.GUI
         {
             logger.Information("Creating Profile with ID {ID}", ident.ID);
             _Init = init;
+            DataFolderOverride = dataFolder;
             Patchers = patchersList.Patchers;
             LockSetting = scope.GetInstance<ILockToCurrentVersioning>();
             DisplayController = scope.GetInstance<IProfileDisplayControllerVm>();
@@ -165,68 +166,13 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe()
                 .DisposeWith(this);
 
-            var dataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
-                .Select(path =>
-                {
-                    if (path != null) return Observable.Return(GetResponse<string>.Succeed(path));
-                    Log.Logger.Information("Starting to locate data folder");
-                    return this.WhenAnyValue(x => x.Release)
-                        .ObserveOn(RxApp.TaskpoolScheduler)
-                        .Select(x =>
-                        {
-                            try
-                            {
-                                if (!GameLocations.TryGetGameFolder(x, out var gameFolder))
-                                {
-                                    return GetResponse<string>.Fail("Could not automatically locate Data folder.  Run Steam/GoG/etc once to properly register things.");
-                                }
-                                return GetResponse<string>.Succeed(Path.Combine(gameFolder, "Data"));
-                            }
-                            catch (Exception ex)
-                            {
-                                return GetResponse<string>.Fail(string.Empty, ex);
-                            }
-                        });
-                })
-                .Switch()
-                // Watch folder for existence
-                .Select(x =>
-                {
-                    if (x.Failed) return Observable.Return(x);
-                    return Noggog.ObservableExt.WatchFile(x.Value)
-                        .StartWith(Unit.Default)
-                        .Select(_ =>
-                        {
-                            if (Directory.Exists(x.Value)) return x;
-                            return GetResponse<string>.Fail($"Data folder did not exist: {x.Value}");
-                        });
-                })
-                .Switch()
-                .StartWith(GetResponse<string>.Fail("Data folder uninitialized"))
-                .Replay(1)
-                .RefCount();
-
-            _DataFolder = dataFolderResult
+            _DataFolder = dataFolder.DataFolderResult
                 .Select(x => x.Value)
                 .ToGuiProperty<string>(this, nameof(DataFolder), string.Empty);
 
-            dataFolderResult
-                .Subscribe(d =>
-                {
-                    if (d.Failed)
-                    {
-                        Log.Logger.Error($"Could not locate data folder: {d.Reason}");
-                    }
-                    else
-                    {
-                        Log.Logger.Information($"Data Folder: {d.Value}");
-                    }
-                })
-                .DisposeWith(this);
-
             var loadOrderResult = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.Release),
-                    dataFolderResult,
+                    dataFolder.DataFolderResult,
                     (release, dataFolder) => (release, dataFolder))
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .Select(x =>
@@ -266,7 +212,7 @@ namespace Synthesis.Bethesda.GUI
                 .DisposeWith(this);
 
             _LargeOverallError = Observable.CombineLatest(
-                    dataFolderResult,
+                    dataFolder.DataFolderResult,
                     loadOrderResult
                         .Select(x => x.State)
                         .Switch(),
@@ -576,7 +522,7 @@ namespace Synthesis.Bethesda.GUI
                 SynthesisManualVersion = ManualSynthesisVersion,
                 MutagenVersioning = MutagenVersioning,
                 SynthesisVersioning = SynthesisVersioning,
-                DataPathOverride = DataPathOverride,
+                DataPathOverride = DataFolderOverride.DataPathOverride,
                 ConsiderPrereleaseNugets = ConsiderPrereleaseNugets,
                 LockToCurrentVersioning = LockSetting.Lock,
                 Persistence = SelectedPersistenceMode,
