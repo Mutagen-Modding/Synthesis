@@ -28,10 +28,10 @@ namespace Synthesis.Bethesda.GUI.Services
         public ProfileVM Get(SynthesisProfile settings)
         {
             var profile = Get(settings.TargetRelease, settings.ID, settings.Nickname);
-            profile.MutagenVersioning = settings.MutagenVersioning;
-            profile.ManualMutagenVersion = settings.MutagenManualVersion;
-            profile.SynthesisVersioning = settings.SynthesisVersioning;
-            profile.ManualSynthesisVersion = settings.SynthesisManualVersion;
+            profile.Versioning.MutagenVersioning = settings.MutagenVersioning;
+            profile.Versioning.ManualMutagenVersion = settings.MutagenManualVersion;
+            profile.Versioning.SynthesisVersioning = settings.SynthesisVersioning;
+            profile.Versioning.ManualSynthesisVersion = settings.SynthesisManualVersion;
             profile.DataFolderOverride.DataPathOverride = settings.DataPathOverride;
             profile.ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
             profile.LockSetting.Lock = settings.LockToCurrentVersioning;
@@ -46,6 +46,7 @@ namespace Synthesis.Bethesda.GUI.Services
                         profile.Scope.GetInstance<ProfileDirectories>(),
                         profile.Scope.GetInstance<ProfileLoadOrder>(),
                         profile.Scope.GetInstance<ProfilePatchersList>(),
+                        profile.Scope.GetInstance<ProfileVersioning>(),
                         profile.Scope.GetInstance<IRemovePatcherFromProfile>(),
                         profile.Scope.GetRequiredService<INavigateTo>(),
                         profile.Scope.GetRequiredService<ICheckOrCloneRepo>(),
@@ -92,6 +93,7 @@ namespace Synthesis.Bethesda.GUI.Services
                 ident,
                 scope.GetInstance<ProfileLoadOrder>(),
                 scope.GetInstance<ProfileDirectories>(),
+                scope.GetInstance<ProfileVersioning>(),
                 scope.GetInstance<INavigateTo>(),
                 scope.GetInstance<ILogger>());
             scope.DisposeWith(profile);

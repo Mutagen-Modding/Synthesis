@@ -43,7 +43,6 @@ namespace Synthesis.Bethesda.GUI
         public ICommand AddSolutionPatcherCommand { get; }
         public ICommand AddCliPatcherCommand { get; }
         public ICommand GoToErrorCommand { get; }
-        public IReactiveCommand UpdateProfileNugetVersionCommand { get; }
         public ICommand EnableAllPatchersCommand { get; }
         public ICommand DisableAllPatchersCommand { get; }
         public ICommand ExportCommand { get; }
@@ -57,6 +56,7 @@ namespace Synthesis.Bethesda.GUI
         public string WorkingDirectory { get; }
 
         public ProfileDataFolder DataFolderOverride { get; }
+        public ProfileVersioning Versioning { get; }
 
         private readonly ObservableAsPropertyHelper<string> _DataFolder;
         public string DataFolder => _DataFolder.Value;
@@ -72,25 +72,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<bool> _IsActive;
         public bool IsActive => _IsActive.Value;
 
-        [Reactive]
-        public NugetVersioningEnum MutagenVersioning { get; set; } = NugetVersioningEnum.Manual;
-
-        [Reactive]
-        public string? ManualMutagenVersion { get; set; }
-
-        [Reactive]
-        public NugetVersioningEnum SynthesisVersioning { get; set; } = NugetVersioningEnum.Manual;
-
-        [Reactive]
-        public string? ManualSynthesisVersion { get; set; }
-
-        public IObservable<SynthesisNugetVersioning> ActiveVersioning { get; }
-
         public ICommand SetAllToProfileCommand { get; }
-
-        public ReactiveCommand<Unit, Unit> UpdateMutagenManualToLatestCommand { get; }
-
-        public ReactiveCommand<Unit, Unit> UpdateSynthesisManualToLatestCommand { get; }
 
         private readonly ObservableAsPropertyHelper<PatcherVM?> _SelectedPatcher;
         public PatcherVM? SelectedPatcher => _SelectedPatcher.Value;
@@ -119,12 +101,14 @@ namespace Synthesis.Bethesda.GUI
             ProfileIdentifier ident,
             ProfileLoadOrder loadOrder,
             ProfileDirectories dirs,
+            ProfileVersioning versioning,
             INavigateTo navigate,
             ILogger logger)
         {
             logger.Information("Creating Profile with ID {ID}", ident.ID);
             _Init = init;
             DataFolderOverride = dataFolder;
+            Versioning = versioning;
             Patchers = patchersList.Patchers;
             LockSetting = scope.GetInstance<ILockToCurrentVersioning>();
             DisplayController = scope.GetInstance<IProfileDisplayControllerVm>();
@@ -298,45 +282,6 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x as PatcherVM)
                 .ToGuiProperty(this, nameof(SelectedPatcher), default);
 
-            var newestLibs = Inject.Scope.GetInstance<INewestLibraryVersions>();
-            ActiveVersioning = Observable.CombineLatest(
-                    this.WhenAnyValue(x => x.MutagenVersioning),
-                    this.WhenAnyValue(x => x.ManualMutagenVersion),
-                    newestLibs.NewestMutagenVersion,
-                    this.WhenAnyValue(x => x.SynthesisVersioning),
-                    this.WhenAnyValue(x => x.ManualSynthesisVersion),
-                    newestLibs.NewestSynthesisVersion,
-                    (mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
-                    {
-                        return new SynthesisNugetVersioning(
-                            new NugetVersioning("Mutagen", mutaVersioning, mutaManual ?? newestMuta ?? string.Empty, newestMuta),
-                            new NugetVersioning("Synthesis", synthVersioning, synthManual ?? newestSynth ?? string.Empty, newestSynth));
-                    })
-                .Do(x => Log.Logger.Information($"Swapped profile {Nickname} to {x}"))
-                .ObserveOnGui()
-                .Replay(1)
-                .RefCount();
-
-            // Set manual if empty
-            newestLibs.NewestMutagenVersion
-                .Subscribe(x =>
-                {
-                    if (ManualMutagenVersion == null)
-                    {
-                        ManualMutagenVersion = x;
-                    }
-                })
-                .DisposeWith(this);
-            newestLibs.NewestSynthesisVersion
-                .Subscribe(x =>
-                {
-                    if (ManualSynthesisVersion == null)
-                    {
-                        ManualSynthesisVersion = x;
-                    }
-                })
-                .DisposeWith(this);
-
             SetAllToProfileCommand = ReactiveCommand.Create(
                 execute: () =>
                 {
@@ -349,47 +294,6 @@ namespace Synthesis.Bethesda.GUI
                         }
                     }
                 });
-
-            UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(
-                objectSource: newestLibs.NewestMutagenVersion
-                    .ObserveOnGui(),
-                canExecute: v =>
-                {
-                    return Observable.CombineLatest(
-                            this.WhenAnyValue(x => x.MutagenVersioning),
-                            this.WhenAnyValue(x => x.ManualMutagenVersion),
-                            v,
-                            (versioning, manual, latest) =>
-                            {
-                                if (versioning != NugetVersioningEnum.Manual) return false;
-                                return latest != null && latest != manual;
-                            })
-                        .ObserveOnGui();
-                },
-                execute: v => ManualMutagenVersion = v ?? string.Empty,
-                disposable: this.CompositeDisposable);
-            UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
-                objectSource: newestLibs.NewestSynthesisVersion
-                    .ObserveOnGui(),
-                canExecute: v =>
-                {
-                    return Observable.CombineLatest(
-                            this.WhenAnyValue(x => x.SynthesisVersioning),
-                            this.WhenAnyValue(x => x.ManualSynthesisVersion),
-                            v,
-                            (versioning, manual, latest) =>
-                            {
-                                if (versioning != NugetVersioningEnum.Manual) return false;
-                                return latest != null && latest != manual;
-                            })
-                        .ObserveOnGui();
-                },
-                execute: v => ManualSynthesisVersion = v ?? string.Empty,
-                disposable: this.CompositeDisposable);
-
-            UpdateProfileNugetVersionCommand = CommandExt.CreateCombinedAny(
-                this.UpdateMutagenManualToLatestCommand,
-                this.UpdateSynthesisManualToLatestCommand);
 
             EnableAllPatchersCommand = ReactiveCommand.Create(() =>
             {
@@ -479,10 +383,10 @@ namespace Synthesis.Bethesda.GUI
                 ID = ID,
                 Nickname = Nickname,
                 TargetRelease = Release,
-                MutagenManualVersion = ManualMutagenVersion,
-                SynthesisManualVersion = ManualSynthesisVersion,
-                MutagenVersioning = MutagenVersioning,
-                SynthesisVersioning = SynthesisVersioning,
+                MutagenManualVersion = Versioning.ManualMutagenVersion,
+                SynthesisManualVersion = Versioning.ManualSynthesisVersion,
+                MutagenVersioning = Versioning.MutagenVersioning,
+                SynthesisVersioning = Versioning.SynthesisVersioning,
                 DataPathOverride = DataFolderOverride.DataPathOverride,
                 ConsiderPrereleaseNugets = ConsiderPrereleaseNugets,
                 LockToCurrentVersioning = LockSetting.Lock,

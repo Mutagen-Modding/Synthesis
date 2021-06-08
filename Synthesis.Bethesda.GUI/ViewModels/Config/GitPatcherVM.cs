@@ -158,6 +158,7 @@ namespace Synthesis.Bethesda.GUI
             ProfileDirectories dirs,
             ProfileLoadOrder loadOrder,
             ProfilePatchersList patchersList,
+            ProfileVersioning versioning,
             IRemovePatcherFromProfile remove,
             INavigateTo navigate, 
             ICheckOrCloneRepo checkOrClone,
@@ -489,7 +490,7 @@ namespace Synthesis.Bethesda.GUI
 
             var newest = Inject.Scope.GetInstance<INewestLibraryVersions>();
             var nugetTarget = Observable.CombineLatest(
-                    this.WhenAnyValue(x => x.Profile.ActiveVersioning)
+                    versioning.WhenAnyValue(x => x.ActiveVersioning)
                         .Switch(),
                     this.WhenAnyValue(x => x.MutagenVersioning),
                     this.WhenAnyValue(x => x.ManualMutagenVersion),

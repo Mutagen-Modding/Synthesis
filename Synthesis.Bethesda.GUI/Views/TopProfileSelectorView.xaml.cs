@@ -48,12 +48,12 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.OpenProfilesPageButton.Command)
                     .DisposeWith(dispose);
 
-                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.UpdateProfileNugetVersionCommand)
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Versioning.UpdateProfileNugetVersionCommand)
                     .Select(x => x as ICommand)
                     .BindToStrict(this, x => x.UpdateButton.Command)
                     .DisposeWith(dispose);
                 Observable.CombineLatest(
-                        this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.UpdateProfileNugetVersionCommand)
+                        this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Versioning.UpdateProfileNugetVersionCommand)
                             .Select(x => x?.CanExecute ?? Observable.Return(false))
                             .Switch(),
                         this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LockSetting.Lock),
