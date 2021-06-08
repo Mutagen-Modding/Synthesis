@@ -85,6 +85,7 @@ namespace Synthesis.Bethesda.GUI.Services
                 scope.GetInstance<ProfileDataFolder>(),
                 scope.GetInstance<PatcherInitializationVM>(),
                 ident,
+                scope.GetInstance<ProfileLoadOrder>(),
                 scope.GetInstance<INavigateTo>(),
                 scope.GetInstance<ILogger>());
             scope.DisposeWith(profile);

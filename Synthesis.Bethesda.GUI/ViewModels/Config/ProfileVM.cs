@@ -117,6 +117,7 @@ namespace Synthesis.Bethesda.GUI
             ProfileDataFolder dataFolder,
             PatcherInitializationVM init,
             ProfileIdentifier ident,
+            ProfileLoadOrder loadOrder,
             INavigateTo navigate,
             ILogger logger)
         {
@@ -170,52 +171,11 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x.Value)
                 .ToGuiProperty<string>(this, nameof(DataFolder), string.Empty);
 
-            var loadOrderResult = Observable.CombineLatest(
-                    this.WhenAnyValue(x => x.Release),
-                    dataFolder.DataFolderResult,
-                    (release, dataFolder) => (release, dataFolder))
-                .ObserveOn(RxApp.TaskpoolScheduler)
-                .Select(x =>
-                {
-                    if (x.dataFolder.Failed)
-                    {
-                        return (Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
-                    }
-                    Log.Logger.Error($"Getting live load order for {x.release} -> {x.dataFolder.Value}");
-                    var liveLo = Mutagen.Bethesda.Plugins.Order.LoadOrder.GetLiveLoadOrder(x.release, x.dataFolder.Value, out var errors)
-                        .Transform(listing => new ReadOnlyModListingVM(listing, x.dataFolder.Value))
-                        .DisposeMany();
-                    return (Results: liveLo, State: errors);
-                })
-                .StartWith((Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(), State: Observable.Return(ErrorResponse.Fail("Load order uninitialized"))))
-                .Replay(1)
-                .RefCount();
-
-            LoadOrder = loadOrderResult
-                .Select(x => x.Results)
-                .Switch()
-                .AsObservableList();
-
-            loadOrderResult.Select(lo => lo.State)
-                .Switch()
-                .Subscribe(loErr =>
-                {
-                    if (loErr.Succeeded)
-                    {
-                        Log.Logger.Information($"Load order location successful");
-                    }
-                    else
-                    {
-                        Log.Logger.Information($"Load order location error: {loErr.Reason}");
-                    }
-                })
-                .DisposeWith(this);
+            LoadOrder = loadOrder.LoadOrder;
 
             _LargeOverallError = Observable.CombineLatest(
                     dataFolder.DataFolderResult,
-                    loadOrderResult
-                        .Select(x => x.State)
-                        .Switch(),
+                    loadOrder.WhenAnyValue(x => x.State),
                     Patchers.Connect()
                         .ObserveOnGui()
                         .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
