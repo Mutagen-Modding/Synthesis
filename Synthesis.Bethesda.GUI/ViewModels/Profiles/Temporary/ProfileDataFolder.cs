@@ -18,6 +18,9 @@ namespace Synthesis.Bethesda.GUI.Temporary
         
         public IObservable<GetResponse<string>> DataFolderResult { get; }
 
+        private readonly ObservableAsPropertyHelper<string> _DataFolder;
+        public string DataFolder => _DataFolder.Value;
+
         public ProfileDataFolder(
             ILogger logger,
             ProfileIdentifier ident)
@@ -73,6 +76,10 @@ namespace Synthesis.Bethesda.GUI.Temporary
                 })
                 .Replay(1)
                 .RefCount();
+
+            _DataFolder = DataFolderResult
+                .Select(x => x.Value)
+                .ToGuiProperty<string>(this, nameof(DataFolder), string.Empty);
         }
     }
 }

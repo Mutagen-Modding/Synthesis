@@ -910,6 +910,10 @@ namespace Synthesis.Bethesda.GUI
             PatcherSettings = new PatcherSettingsVM(
                 Logger,
                 this,
+                ident: Inject.Scope.GetInstance<ProfileIdentifier>(),
+                loadOrder: Inject.Scope.GetInstance<ProfileLoadOrder>(),
+                dataFolder: Inject.Scope.GetInstance<ProfileDataFolder>(),
+                linkCache: Inject.Scope.GetInstance<ProfileSimpleLinkCache>(),
                 compilation.Select(c =>
                 {
                     if (c.RunnableState.Failed) return (c.RunnableState.BubbleFailure<FilePath>(), null);

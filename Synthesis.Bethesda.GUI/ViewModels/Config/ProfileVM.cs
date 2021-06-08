@@ -152,8 +152,7 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe()
                 .DisposeWith(this);
 
-            _DataFolder = dataFolder.DataFolderResult
-                .Select(x => x.Value)
+            _DataFolder = dataFolder.WhenAnyValue(x => x.DataFolder)
                 .ToGuiProperty<string>(this, nameof(DataFolder), string.Empty);
 
             LoadOrder = loadOrder.LoadOrder;
