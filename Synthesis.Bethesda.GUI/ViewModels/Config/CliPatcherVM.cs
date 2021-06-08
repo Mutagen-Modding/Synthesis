@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.Reactive.Linq;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -28,11 +29,12 @@ namespace Synthesis.Bethesda.GUI
 
         public CliPatcherVM(
             ProfileVM parent,
+            IRemovePatcherFromProfile remove,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             IShowHelpSetting showHelpSetting,
             CliPatcherSettings? settings = null)
-            : base(parent, selPatcher, confirmation, settings)
+            : base(parent, remove, selPatcher, confirmation, settings)
         {
             ShowHelpSetting = showHelpSetting;
             CopyInSettings(settings);

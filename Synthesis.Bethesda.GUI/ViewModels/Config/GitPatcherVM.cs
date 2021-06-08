@@ -32,6 +32,7 @@ using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -152,6 +153,7 @@ namespace Synthesis.Bethesda.GUI
 
         public GitPatcherVM(
             ProfileVM parent, 
+            IRemovePatcherFromProfile remove,
             INavigateTo navigate, 
             ICheckOrCloneRepo checkOrClone,
             IProvideRepositoryCheckouts repoCheckouts,
@@ -162,7 +164,7 @@ namespace Synthesis.Bethesda.GUI
             ILockToCurrentVersioning lockToCurrentVersioning,
             IBuild build,
             GithubPatcherSettings? settings = null)
-            : base(parent, selPatcher, confirmation, settings)
+            : base(parent, remove, selPatcher, confirmation, settings)
         {
             _CheckoutRunner = checkoutRunner;
             Locking = lockToCurrentVersioning;

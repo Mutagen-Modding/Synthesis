@@ -4,6 +4,7 @@ using ReactiveUI;
 using System.Collections.Generic;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -19,11 +20,13 @@ namespace Synthesis.Bethesda.GUI
             IScopeTracker<ProfileVM> profileProvider,
             IProfileDisplayControllerVm profileDisplay,
             IConfirmationPanelControllerVm confirmation,
+            IRemovePatcherFromProfile remove,
             IShowHelpSetting showHelp)
             : base(init)
         {
             Patcher = new CliPatcherVM(
                 profileProvider.Item,
+                remove,
                 profileDisplay,
                 confirmation,
                 showHelp);

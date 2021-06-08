@@ -23,6 +23,7 @@ using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -71,7 +72,9 @@ namespace Synthesis.Bethesda.GUI
             : base(init)
         {
             Profile = profile;
-            Patcher = new GitPatcherVM(profile, navigateTo, checkOrClone,
+            Patcher = new GitPatcherVM(profile, 
+                profile.Scope.GetRequiredService<IRemovePatcherFromProfile>(),
+                navigateTo, checkOrClone,
                 profile.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
                 profile.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
                 profile.Scope.GetRequiredService<ICheckRunnability>(),
@@ -195,6 +198,7 @@ namespace Synthesis.Bethesda.GUI
         {
             PatcherVM patcher = new GitPatcherVM(
                 Profile,
+                Profile.Scope.GetRequiredService<IRemovePatcherFromProfile>(),
                 Profile.Scope.GetRequiredService<INavigateTo>(),
                 Profile.Scope.GetRequiredService<ICheckOrCloneRepo>(),
                 Profile.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),

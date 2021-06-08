@@ -9,11 +9,13 @@ using System.Windows.Input;
 using System.Threading;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI
 {
     public abstract class PatcherVM : ViewModel
     {
+        private readonly IRemovePatcherFromProfile _Remove;
         public ProfileVM Profile { get; }
 
         private readonly ObservableAsPropertyHelper<bool> _IsSelected;
@@ -50,10 +52,12 @@ namespace Synthesis.Bethesda.GUI
 
         public PatcherVM(
             ProfileVM parent,
+            IRemovePatcherFromProfile remove,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             PatcherSettings? settings)
         {
+            _Remove = remove;
             DisplayedObject = this;
             InternalID = Interlocked.Increment(ref NextID);
             ErrorVM = new ErrorVM("Error", backAction: () =>
@@ -114,7 +118,7 @@ namespace Synthesis.Bethesda.GUI
 
         public virtual void Delete()
         {
-            Profile.Patchers.Remove(this);
+            _Remove.Remove(this);
         }
 
         protected ILogger Logger => Log.Logger.ForContext(nameof(DisplayName), DisplayName);

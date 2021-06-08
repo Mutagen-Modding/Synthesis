@@ -9,6 +9,7 @@ using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -60,6 +61,8 @@ namespace Synthesis.Bethesda.GUI
             _coll.Register<ILockToCurrentVersioning, LockToCurrentVersioning>();
             _coll.Register<IProfileDisplayControllerVm, ProfileDisplayControllerVm>();
             _coll.Register<IEnvironmentErrorsVM, EnvironmentErrorsVM>();
+            _coll.Register<IRemovePatcherFromProfile, ProfilePatchersList>();
+            _coll.Register<ProfilePatchersList>();
             _coll.Register<ProfileIdentifier>();
             
             RegisterNamespaceFromType(typeof(INavigateTo), Lifestyle.Singleton);

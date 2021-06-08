@@ -13,6 +13,7 @@ using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI.Services
 {
@@ -41,6 +42,7 @@ namespace Synthesis.Bethesda.GUI.Services
                 {
                     GithubPatcherSettings git => new GitPatcherVM(
                         profile, 
+                        profile.Scope.GetInstance<IRemovePatcherFromProfile>(),
                         profile.Scope.GetRequiredService<INavigateTo>(),
                         profile.Scope.GetRequiredService<ICheckOrCloneRepo>(),
                         profile.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
@@ -52,12 +54,14 @@ namespace Synthesis.Bethesda.GUI.Services
                         profile.Scope.GetRequiredService<IBuild>(),
                         git),
                     SolutionPatcherSettings soln => new SolutionPatcherVM(profile,
+                        profile.Scope.GetInstance<IRemovePatcherFromProfile>(),
                         profile.Scope.GetInstance<IProvideInstalledSdk>(),
                         profile.Scope.GetInstance<IProfileDisplayControllerVm>(),
                         profile.Scope.GetInstance<IConfirmationPanelControllerVm>(),
                         soln),
                     CliPatcherSettings cli => new CliPatcherVM(
                         profile,
+                        profile.Scope.GetInstance<IRemovePatcherFromProfile>(),
                         profile.Scope.GetInstance<IProfileDisplayControllerVm>(),
                         profile.Scope.GetInstance<IConfirmationPanelControllerVm>(),
                         profile.Scope.GetInstance<IShowHelpSetting>(),
@@ -77,7 +81,8 @@ namespace Synthesis.Bethesda.GUI.Services
             ident.Nickname = nickname;
             var profile = new ProfileVM(
                 scope, 
-                Inject.Scope.GetInstance<PatcherInitializationVM>(),
+                scope.GetInstance<ProfilePatchersList>(),
+                scope.GetInstance<PatcherInitializationVM>(),
                 ident,
                 scope.GetInstance<INavigateTo>(),
                 scope.GetInstance<ILogger>());

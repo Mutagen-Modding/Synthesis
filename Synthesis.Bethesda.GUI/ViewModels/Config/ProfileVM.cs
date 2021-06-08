@@ -26,6 +26,7 @@ using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -36,7 +37,7 @@ namespace Synthesis.Bethesda.GUI
         
         public GameRelease Release { get; }
 
-        public SourceList<PatcherVM> Patchers { get; } = new();
+        public SourceList<PatcherVM> Patchers { get; }
 
         public ICommand AddGitPatcherCommand { get; }
         public ICommand AddSolutionPatcherCommand { get; }
@@ -113,6 +114,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ProfileVM(
             Scope scope,
+            ProfilePatchersList patchersList,
             PatcherInitializationVM init,
             ProfileIdentifier ident,
             INavigateTo navigate,
@@ -120,6 +122,7 @@ namespace Synthesis.Bethesda.GUI
         {
             logger.Information("Creating Profile with ID {ID}", ident.ID);
             _Init = init;
+            Patchers = patchersList.Patchers;
             LockSetting = scope.GetInstance<ILockToCurrentVersioning>();
             DisplayController = scope.GetInstance<IProfileDisplayControllerVm>();
             Scope = scope;

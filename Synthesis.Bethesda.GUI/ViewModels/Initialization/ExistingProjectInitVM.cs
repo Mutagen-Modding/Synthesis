@@ -13,6 +13,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -85,6 +86,7 @@ namespace Synthesis.Bethesda.GUI
                         return q.Select(i =>
                         {
                             var patcher = new SolutionPatcherVM(profile,
+                                Inject.Scope.GetInstance<IRemovePatcherFromProfile>(),
                                 Inject.Scope.GetInstance<IProvideInstalledSdk>(),
                                 Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
                                 Inject.Scope.GetInstance<IConfirmationPanelControllerVm>());
