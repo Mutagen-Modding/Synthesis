@@ -46,7 +46,7 @@ namespace Synthesis.Bethesda.GUI
             _IsActive = this.WhenAnyFallback(x => x.Profile!.IsActive, fallback: false)
                 .ToGuiProperty(this, nameof(IsActive));
 
-            var confirmation = Inject.Scope.GetInstance<IConfirmationPanelControllerVm>();
+            var confirmation = Inject.Container.GetInstance<IConfirmationPanelControllerVm>();
             DeleteCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyFallback(x => x.Profile!.IsActive, fallback: true)
                     .Select(active => !active),
@@ -63,7 +63,7 @@ namespace Synthesis.Bethesda.GUI
                             Parent.SwitchToActive();
                         });
                 });
-            var selProfile = Inject.Scope.GetInstance<ISelectedProfileControllerVm>();
+            var selProfile = Inject.Container.GetInstance<ISelectedProfileControllerVm>();
             SwitchToCommand = ReactiveCommand.Create(
                 execute: () =>
                 {

@@ -86,11 +86,11 @@ namespace Synthesis.Bethesda.GUI
                         return q.Select(i =>
                         {
                             var patcher = new SolutionPatcherVM(
-                                Inject.Scope.GetInstance<ProfileLoadOrder>(),
-                                Inject.Scope.GetInstance<IRemovePatcherFromProfile>(),
-                                Inject.Scope.GetInstance<IProvideInstalledSdk>(),
-                                Inject.Scope.GetInstance<IProfileDisplayControllerVm>(),
-                                Inject.Scope.GetInstance<IConfirmationPanelControllerVm>());
+                                profile.Container.GetInstance<ProfileLoadOrder>(),
+                                profile.Container.GetInstance<IRemovePatcherFromProfile>(),
+                                profile.Container.GetInstance<IProvideInstalledSdk>(),
+                                profile.Container.GetInstance<IProfileDisplayControllerVm>(),
+                                profile.Container.GetInstance<IConfirmationPanelControllerVm>());
                             patcher.SolutionPath.TargetPath = SolutionPath.TargetPath;
                             patcher.ProjectSubpath = i.TargetPath.TrimStart($"{Path.GetDirectoryName(SolutionPath.TargetPath)}\\"!);
                             return patcher;

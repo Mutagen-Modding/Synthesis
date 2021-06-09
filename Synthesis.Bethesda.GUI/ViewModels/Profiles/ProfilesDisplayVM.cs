@@ -32,7 +32,7 @@ namespace Synthesis.Bethesda.GUI
         {
             _previous = previousPage;
             Config = parent;
-            var activePanelController = Inject.Scope.GetInstance<IActivePanelControllerVm>();
+            var activePanelController = Inject.Container.GetInstance<IActivePanelControllerVm>();
             GoBackCommand = ReactiveCommand.Create(() =>
             {
                 activePanelController.ActivePanel = _previous;
@@ -41,12 +41,12 @@ namespace Synthesis.Bethesda.GUI
             {
                 DisplayObject = new NewProfileVM(
                     Config,
-                    Inject.Scope.GetInstance<IProfileFactory>());
+                    Inject.Container.GetInstance<IProfileFactory>());
                 DisplayedProfile = null;
             });
 
             ProfilesDisplay = parent.Profiles.Connect()
-                .Transform(x => new ProfileDisplayVM(this, Inject.Scope.GetRequiredService<INavigateTo>(), x))
+                .Transform(x => new ProfileDisplayVM(this, Inject.Container.GetInstance<INavigateTo>(), x))
                 // Select the currently active profile during initial display
                 .OnItemAdded(p =>
                 {

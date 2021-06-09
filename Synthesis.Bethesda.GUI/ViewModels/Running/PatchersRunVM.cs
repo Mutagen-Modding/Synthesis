@@ -68,8 +68,8 @@ namespace Synthesis.Bethesda.GUI
                 SelectedPatcher = run;
             }
             
-            var activePanelController = Inject.Scope.GetInstance<IActivePanelControllerVm>();
-            var display = profile.Scope.GetInstance<IProfileDisplayControllerVm>();
+            var activePanelController = profile.Container.GetInstance<IActivePanelControllerVm>();
+            var display = profile.Container.GetInstance<IProfileDisplayControllerVm>();
             BackCommand = ReactiveCommand.Create(() =>
             {
                 display.SelectedObject = SelectedPatcher?.Config;

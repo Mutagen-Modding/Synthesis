@@ -75,15 +75,12 @@ namespace Synthesis.Bethesda.GUI.Services
             }));
 #endif
 
-            toDo.Add(Task.Run(async () =>
+            toDo.Add(Task.Run(() =>
             {
                 try
                 {
-                    Log.Logger.Information("Disposing scope");
-                    await Inject.Scope.DisposeAsync();
-                    Log.Logger.Information("Disposed scope");
                     Log.Logger.Information("Disposing injection");
-                    await Inject.Container.DisposeAsync();
+                    Inject.Container.Dispose();
                     Log.Logger.Information("Disposed injection");
                 }
                 catch (Exception e)

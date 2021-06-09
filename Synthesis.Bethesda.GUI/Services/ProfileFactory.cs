@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq;
 using DynamicData;
-using Microsoft.Extensions.DependencyInjection;
 using Mutagen.Bethesda;
 using Noggog.WPF;
 using Serilog;
-using SimpleInjector;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
@@ -41,35 +39,35 @@ namespace Synthesis.Bethesda.GUI.Services
                 return p switch
                 {
                     GithubPatcherSettings git => new GitPatcherVM(
-                        profile.Scope.GetInstance<ProfileIdentifier>(),
-                        profile.Scope.GetInstance<ProfileDirectories>(),
-                        profile.Scope.GetInstance<ProfileLoadOrder>(),
-                        profile.Scope.GetInstance<ProfilePatchersList>(),
-                        profile.Scope.GetInstance<ProfileVersioning>(),
-                        profile.Scope.GetRequiredService<ProfileDataFolder>(),
-                        profile.Scope.GetInstance<IRemovePatcherFromProfile>(),
-                        profile.Scope.GetRequiredService<INavigateTo>(),
-                        profile.Scope.GetRequiredService<ICheckOrCloneRepo>(),
-                        profile.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
-                        profile.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
-                        profile.Scope.GetRequiredService<ICheckRunnability>(),
-                        profile.Scope.GetInstance<IProfileDisplayControllerVm>(),
-                        profile.Scope.GetInstance<IConfirmationPanelControllerVm>(),
-                        profile.Scope.GetInstance<ILockToCurrentVersioning>(),
-                        profile.Scope.GetRequiredService<IBuild>(),
+                        profile.Container.GetInstance<ProfileIdentifier>(),
+                        profile.Container.GetInstance<ProfileDirectories>(),
+                        profile.Container.GetInstance<ProfileLoadOrder>(),
+                        profile.Container.GetInstance<ProfilePatchersList>(),
+                        profile.Container.GetInstance<ProfileVersioning>(),
+                        profile.Container.GetInstance<ProfileDataFolder>(),
+                        profile.Container.GetInstance<IRemovePatcherFromProfile>(),
+                        profile.Container.GetInstance<INavigateTo>(),
+                        profile.Container.GetInstance<ICheckOrCloneRepo>(),
+                        profile.Container.GetInstance<IProvideRepositoryCheckouts>(),
+                        profile.Container.GetInstance<ICheckoutRunnerRepository>(),
+                        profile.Container.GetInstance<ICheckRunnability>(),
+                        profile.Container.GetInstance<IProfileDisplayControllerVm>(),
+                        profile.Container.GetInstance<IConfirmationPanelControllerVm>(),
+                        profile.Container.GetInstance<ILockToCurrentVersioning>(),
+                        profile.Container.GetInstance<IBuild>(),
                         git),
                     SolutionPatcherSettings soln => new SolutionPatcherVM(
-                        profile.Scope.GetInstance<ProfileLoadOrder>(),
-                        profile.Scope.GetInstance<IRemovePatcherFromProfile>(),
-                        profile.Scope.GetInstance<IProvideInstalledSdk>(),
-                        profile.Scope.GetInstance<IProfileDisplayControllerVm>(),
-                        profile.Scope.GetInstance<IConfirmationPanelControllerVm>(),
+                        profile.Container.GetInstance<ProfileLoadOrder>(),
+                        profile.Container.GetInstance<IRemovePatcherFromProfile>(),
+                        profile.Container.GetInstance<IProvideInstalledSdk>(),
+                        profile.Container.GetInstance<IProfileDisplayControllerVm>(),
+                        profile.Container.GetInstance<IConfirmationPanelControllerVm>(),
                         soln),
                     CliPatcherSettings cli => new CliPatcherVM(
-                        profile.Scope.GetInstance<IRemovePatcherFromProfile>(),
-                        profile.Scope.GetInstance<IProfileDisplayControllerVm>(),
-                        profile.Scope.GetInstance<IConfirmationPanelControllerVm>(),
-                        profile.Scope.GetInstance<IShowHelpSetting>(),
+                        profile.Container.GetInstance<IRemovePatcherFromProfile>(),
+                        profile.Container.GetInstance<IProfileDisplayControllerVm>(),
+                        profile.Container.GetInstance<IConfirmationPanelControllerVm>(),
+                        profile.Container.GetInstance<IShowHelpSetting>(),
                         cli),
                     _ => throw new NotImplementedException(),
                 };
@@ -79,7 +77,7 @@ namespace Synthesis.Bethesda.GUI.Services
 
         public ProfileVM Get(GameRelease release, string id, string nickname)
         {
-            var scope = new Scope(Inject.Container);
+            var scope = Inject.Container.CreateChildContainer();
             var ident = scope.GetInstance<ProfileIdentifier>();
             ident.ID = id;
             ident.Release = release;

@@ -27,12 +27,12 @@ namespace Synthesis.Bethesda.GUI.Views
             Log.Logger.Information(bars);
             Log.Logger.Information(DateTime.Now.ToString());
 
-            Inject.Container.RegisterInstance<Window>(this);
+            new Inject(c => c.ForSingletonOf<Window>().Use(this));
 
-            var init = Inject.Scope.GetInstance<IInitilize>();
+            var init = Inject.Container.GetInstance<IInitilize>();
             init.Initialize(this);
             
-            var shutdown = Inject.Scope.GetInstance<IExecuteShutdown>();
+            var shutdown = Inject.Container.GetInstance<IExecuteShutdown>();
             Closing += (_, b) =>
             {
                 Visibility = Visibility.Collapsed;

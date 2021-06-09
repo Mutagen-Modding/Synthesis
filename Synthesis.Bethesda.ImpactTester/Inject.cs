@@ -1,62 +1,28 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Noggog;
-using SimpleInjector;
+using StructureMap;
 using Synthesis.Bethesda.Execution.GitRespository;
 
 namespace Synthesis.Bethesda.GUI
 {
     public class Inject
     {
-        private Container _coll = new();
         public readonly static Container Instance;
 
         static Inject()
         {
-            var inject = new Inject();
-            inject.Configure();
-            Instance = inject._coll;
-        }
-        
-        private void Configure()
-        {
-            RegisterMatchingInterfaces(
-                from type in typeof(IProvideRepositoryCheckouts).Assembly.GetExportedTypes()
-                select type,
-                Lifestyle.Singleton);
-        }
-
-        private void RegisterNamespaceFromType(Type type, Lifestyle lifestyle)
-        {
-            RegisterMatchingInterfaces(
-                from t in type.Assembly.GetExportedTypes()
-                where t.Namespace!.StartsWith(type.Namespace!)
-                select t,
-                lifestyle);
-        }
-
-        private void RegisterMatchingInterfaces(IEnumerable<Type> types, Lifestyle lifestyle)
-        {
-            foreach (var type in types)
+            Instance = new Container(c =>
             {
-                RegisterMatchingInterfaces(type, lifestyle);
-            }
-        }
-
-        private void RegisterMatchingInterfaces(Type type, Lifestyle lifestyle)
-        {
-            type.GetInterfaces()
-                .Where(i => IsMatchingInterface(i, type))
-                .ForEach(i =>
+                c.Scan(scanner =>
                 {
-                    _coll.Register(i, type, lifestyle);
+                    scanner.AssemblyContainingType<IProvideRepositoryCheckouts>();
+                    scanner.WithDefaultConventions();
                 });
-        }
-
-        private bool IsMatchingInterface(Type interf, Type concrete)
-        {
-            return interf.Name == $"I{concrete.Name}";
+            });
+#if DEBUG
+            Instance.AssertConfigurationIsValid();
+            Console.WriteLine(Instance.WhatDidIScan());
+            Console.WriteLine(Instance.WhatDoIHave());
+#endif
         }
     }
 }

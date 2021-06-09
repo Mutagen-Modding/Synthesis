@@ -48,7 +48,7 @@ namespace Synthesis.Bethesda.GUI
             ShowHelpSetting = showHelpSetting;
             Profile = profile;
             IdeOptions.AddRange(EnumExt.GetValues<IDE>());
-            _SettingsSingleton = Inject.Scope.GetInstance<ISettingsSingleton>();
+            _SettingsSingleton = profile.Container.GetInstance<ISettingsSingleton>();
             OpenCodeAfter = _SettingsSingleton.Gui.OpenIdeAfterCreating;
             New.ParentDirPath.TargetPath = _SettingsSingleton.Gui.MainRepositoryFolder;
             Ide = _SettingsSingleton.Gui.Ide;
@@ -97,7 +97,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 try
                 {
-                    Inject.Scope.GetInstance<IOpenIde>()
+                    Profile.Container.GetInstance<IOpenIde>()
                         .OpenSolution(ret[0].SolutionPath.TargetPath, Ide);
                 }
                 catch (Exception ex)

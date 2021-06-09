@@ -15,15 +15,12 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.Extensions.DependencyInjection;
-using Mutagen.Bethesda.Installs;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Serilog;
-using SimpleInjector;
+using StructureMap;
 using Synthesis.Bethesda.Execution.GitRespository;
-using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.Temporary;
@@ -91,10 +88,10 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
         
-        public Scope Scope { get; }
+        public IContainer Container { get; }
 
         public ProfileVM(
-            Scope scope,
+            IContainer container,
             ProfilePatchersList patchersList,
             ProfileDataFolder dataFolder,
             PatcherInitializationVM init,
@@ -110,29 +107,29 @@ namespace Synthesis.Bethesda.GUI
             DataFolderOverride = dataFolder;
             Versioning = versioning;
             Patchers = patchersList.Patchers;
-            LockSetting = scope.GetInstance<ILockToCurrentVersioning>();
-            DisplayController = scope.GetInstance<IProfileDisplayControllerVm>();
-            Scope = scope;
+            LockSetting = container.GetInstance<ILockToCurrentVersioning>();
+            DisplayController = container.GetInstance<IProfileDisplayControllerVm>();
+            Container = container;
             _Navigate = navigate;
             Nickname = ident.Nickname;
             ID = ident.ID;
             Release = ident.Release;
-            var showHelp = Inject.Scope.GetRequiredService<IShowHelpSetting>();
+            var showHelp = container.GetInstance<IShowHelpSetting>();
             AddGitPatcherCommand = ReactiveCommand.Create(() =>
             {
                 SetInitializer(new GitPatcherInitVM(
                     init, 
                     this, 
-                    Inject.Scope.GetRequiredService<INavigateTo>(), 
-                    Inject.Scope.GetRequiredService<IProvideRepositoryCheckouts>(), 
-                    Inject.Scope.GetRequiredService<ICheckOrCloneRepo>()));
+                    container.GetInstance<INavigateTo>(), 
+                    container.GetInstance<IProvideRepositoryCheckouts>(), 
+                    container.GetInstance<ICheckOrCloneRepo>()));
             });
             AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(showHelp, init, this)));
             AddCliPatcherCommand = ReactiveCommand.Create(() =>
             {
                 try
                 {
-                    SetInitializer(scope.GetInstance<CliPatcherInitVM>());
+                    SetInitializer(container.GetInstance<CliPatcherInitVM>());
                 }
                 catch (Exception e)
                 {
@@ -232,7 +229,7 @@ namespace Synthesis.Bethesda.GUI
                 })
                 .ToGuiProperty<ErrorResponse>(this, nameof(BlockingError), ErrorResponse.Fail("Uninitialized blocking error"));
 
-            var selProfile = Inject.Scope.GetInstance<ISelectedProfileControllerVm>();
+            var selProfile = container.GetInstance<ISelectedProfileControllerVm>();
             _IsActive = selProfile.WhenAnyValue(x => x.SelectedProfile)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsActive));
@@ -411,7 +408,7 @@ namespace Synthesis.Bethesda.GUI
         {
             try
             {
-                Inject.Scope.GetInstance<IRetrieveSaveSettings>().Retrieve(out var guiSettings, out var pipeSettings);
+                Container.GetInstance<IRetrieveSaveSettings>().Retrieve(out var guiSettings, out var pipeSettings);
                 pipeSettings.Profiles.RemoveWhere(p => p.ID != this.ID);
                 guiSettings.SelectedProfile = this.ID;
                 if (pipeSettings.Profiles.Count != 1)

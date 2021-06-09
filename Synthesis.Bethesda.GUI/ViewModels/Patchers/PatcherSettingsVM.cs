@@ -96,7 +96,7 @@ namespace Synthesis.Bethesda.GUI
                 .Switch()
                 .ToGuiProperty(this, nameof(SettingsConfiguration), new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()));
 
-            var windowPlacement = Inject.Scope.GetInstance<IProvideWindowPlacement>();
+            var windowPlacement = Inject.Container.GetInstance<IProvideWindowPlacement>();
             OpenSettingsCommand = NoggogCommand.CreateFromObject(
                 objectSource: Observable.CombineLatest(
                         source.Select(x => x.ProjPath),

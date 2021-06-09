@@ -17,7 +17,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Windows.Input;
-using Microsoft.Extensions.DependencyInjection;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -73,21 +72,21 @@ namespace Synthesis.Bethesda.GUI
         {
             Profile = profile;
             Patcher = new GitPatcherVM( 
-                profile.Scope.GetRequiredService<ProfileIdentifier>(),
-                profile.Scope.GetRequiredService<ProfileDirectories>(),
-                profile.Scope.GetRequiredService<ProfileLoadOrder>(),
-                profile.Scope.GetRequiredService<ProfilePatchersList>(),
-                profile.Scope.GetRequiredService<ProfileVersioning>(),
-                profile.Scope.GetRequiredService<ProfileDataFolder>(),
-                profile.Scope.GetRequiredService<IRemovePatcherFromProfile>(),
+                profile.Container.GetInstance<ProfileIdentifier>(),
+                profile.Container.GetInstance<ProfileDirectories>(),
+                profile.Container.GetInstance<ProfileLoadOrder>(),
+                profile.Container.GetInstance<ProfilePatchersList>(),
+                profile.Container.GetInstance<ProfileVersioning>(),
+                profile.Container.GetInstance<ProfileDataFolder>(),
+                profile.Container.GetInstance<IRemovePatcherFromProfile>(),
                 navigateTo, checkOrClone,
-                profile.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
-                profile.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
-                profile.Scope.GetRequiredService<ICheckRunnability>(),
-                profile.Scope.GetInstance<IProfileDisplayControllerVm>(),
-                profile.Scope.GetInstance<IConfirmationPanelControllerVm>(),
-                profile.Scope.GetInstance<ILockToCurrentVersioning>(),
-                profile.Scope.GetRequiredService<IBuild>());
+                profile.Container.GetInstance<IProvideRepositoryCheckouts>(),
+                profile.Container.GetInstance<ICheckoutRunnerRepository>(),
+                profile.Container.GetInstance<ICheckRunnability>(),
+                profile.Container.GetInstance<IProfileDisplayControllerVm>(),
+                profile.Container.GetInstance<IConfirmationPanelControllerVm>(),
+                profile.Container.GetInstance<ILockToCurrentVersioning>(),
+                profile.Container.GetInstance<IBuild>());
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)
                 .Select(x => ErrorResponse.Create(x))
@@ -140,7 +139,7 @@ namespace Synthesis.Bethesda.GUI
                                 return repo.Patchers
                                     .Select(p =>
                                     {
-                                        return new PatcherStoreListingVM(this, p, repoVM, Inject.Scope.GetRequiredService<INavigateTo>());
+                                        return new PatcherStoreListingVM(this, p, repoVM, profile.Container.GetInstance<INavigateTo>());
                                     });
                             })
                             .AsObservableChangeSet();
@@ -203,22 +202,22 @@ namespace Synthesis.Bethesda.GUI
         public void AddStorePatcher(PatcherStoreListingVM listing)
         {
             PatcherVM patcher = new GitPatcherVM(
-                Profile.Scope.GetRequiredService<ProfileIdentifier>(),
-                Profile.Scope.GetRequiredService<ProfileDirectories>(),
-                Profile.Scope.GetRequiredService<ProfileLoadOrder>(),
-                Profile.Scope.GetRequiredService<ProfilePatchersList>(),
-                Profile.Scope.GetRequiredService<ProfileVersioning>(),
-                Profile.Scope.GetRequiredService<ProfileDataFolder>(),
-                Profile.Scope.GetRequiredService<IRemovePatcherFromProfile>(),
-                Profile.Scope.GetRequiredService<INavigateTo>(),
-                Profile.Scope.GetRequiredService<ICheckOrCloneRepo>(),
-                Profile.Scope.GetRequiredService<IProvideRepositoryCheckouts>(),
-                Profile.Scope.GetRequiredService<ICheckoutRunnerRepository>(),
-                Profile.Scope.GetRequiredService<ICheckRunnability>(),
-                Profile.Scope.GetInstance<IProfileDisplayControllerVm>(),
-                Profile.Scope.GetInstance<IConfirmationPanelControllerVm>(),
-                Profile.Scope.GetInstance<ILockToCurrentVersioning>(),
-                Profile.Scope.GetRequiredService<IBuild>())
+                Profile.Container.GetInstance<ProfileIdentifier>(),
+                Profile.Container.GetInstance<ProfileDirectories>(),
+                Profile.Container.GetInstance<ProfileLoadOrder>(),
+                Profile.Container.GetInstance<ProfilePatchersList>(),
+                Profile.Container.GetInstance<ProfileVersioning>(),
+                Profile.Container.GetInstance<ProfileDataFolder>(),
+                Profile.Container.GetInstance<IRemovePatcherFromProfile>(),
+                Profile.Container.GetInstance<INavigateTo>(),
+                Profile.Container.GetInstance<ICheckOrCloneRepo>(),
+                Profile.Container.GetInstance<IProvideRepositoryCheckouts>(),
+                Profile.Container.GetInstance<ICheckoutRunnerRepository>(),
+                Profile.Container.GetInstance<ICheckRunnability>(),
+                Profile.Container.GetInstance<IProfileDisplayControllerVm>(),
+                Profile.Container.GetInstance<IConfirmationPanelControllerVm>(),
+                Profile.Container.GetInstance<ILockToCurrentVersioning>(),
+                Profile.Container.GetInstance<IBuild>())
             {
                 RemoteRepoPath = listing.RepoPath,
                 ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')

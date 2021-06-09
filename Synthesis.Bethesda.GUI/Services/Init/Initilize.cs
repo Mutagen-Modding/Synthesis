@@ -6,7 +6,6 @@ using System.Windows;
 using Noggog;
 using ReactiveUI;
 using Serilog;
-using SimpleInjector;
 using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI.Services
@@ -21,14 +20,14 @@ namespace Synthesis.Bethesda.GUI.Services
     {
         private readonly ILogger _Logger;
         private readonly IClearLoading _Loading;
-        private readonly DependencyMetadata<ISettingsSingleton> _Settings;
+        private readonly Lazy<ISettingsSingleton> _Settings;
         
         public bool Initialized { get; set; }
 
         public Initilize(
             ILogger logger,
             IClearLoading loading,
-            DependencyMetadata<ISettingsSingleton> settings)
+            Lazy<ISettingsSingleton> settings)
         {
             _Logger = logger;
             _Loading = loading;
@@ -49,13 +48,13 @@ namespace Synthesis.Bethesda.GUI.Services
                             }),
                             Task.Run(() =>
                             {
-                                _Settings.GetInstance();
+                                _Settings.Value.GetType();
                             })).ConfigureAwait(false);
                     })
                     .ObserveOn(RxApp.MainThreadScheduler)
                     .Do(_ =>
                     {
-                        var mainVM = Inject.Scope.GetInstance<MainVM>();
+                        var mainVM = Inject.Container.GetInstance<MainVM>();
                         mainVM.Load();
 
                         window.DataContext = mainVM;

@@ -46,7 +46,7 @@ namespace Synthesis.Bethesda.GUI
                     }
                 }));
 
-            var init = Inject.Scope.GetInstance<PatcherInitializationVM>();
+            var init = Inject.Container.GetInstance<PatcherInitializationVM>();
             this.WhenAnyValue(x => x.SelectedGame)
                 .Subscribe(game =>
                 {
