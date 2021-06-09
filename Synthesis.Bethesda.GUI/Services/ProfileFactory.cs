@@ -82,6 +82,7 @@ namespace Synthesis.Bethesda.GUI.Services
             ident.ID = id;
             ident.Release = release;
             ident.Nickname = nickname;
+            scope.GetInstance<ContainerTracker>().Container = scope;
             var profile = new ProfileVM(
                 scope, 
                 scope.GetInstance<ProfilePatchersList>(),

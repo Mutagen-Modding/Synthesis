@@ -50,6 +50,15 @@ namespace Synthesis.Bethesda.GUI
             _coll.ForSingletonOf<CliPatcherInitVM>();
             _coll.ForSingletonOf<PatcherInitializationVM>();
             _coll.ForSingletonOf<ILogger>().Use(Log.Logger);
+            _coll.ForSingletonOf<ISettingsSingleton>().Use<SettingsSingleton>();
+            _coll.ForSingletonOf<IShowHelpSetting>().Use<ShowHelpSetting>();
+            _coll.ForSingletonOf<IConsiderPrereleasePreference>().Use<ConsiderPrereleasePreference>();
+            _coll.ForSingletonOf<IRetrieveSaveSettings>().Use<RetrieveSaveSettings>();
+            _coll.ForSingletonOf<IConfirmationPanelControllerVm>().Use<ConfirmationPanelControllerVm>();
+            _coll.ForSingletonOf<ISelectedProfileControllerVm>().Use<SelectedProfileControllerVm>();
+            _coll.ForSingletonOf<IActivePanelControllerVm>().Use<ActivePanelControllerVm>();
+            _coll.ForSingletonOf<ISaveSignal>().Use<RetrieveSaveSettings>();
+            
             _coll.Scan(s =>
             {
                 s.AssemblyContainingType<IEnvironmentErrorVM>();
@@ -67,21 +76,17 @@ namespace Synthesis.Bethesda.GUI
             _coll.For<ProfileDataFolder>().ContainerScoped();
             _coll.For<ProfileVersioning>().ContainerScoped();
             _coll.For<ProfileSimpleLinkCache>().ContainerScoped();
+            _coll.For<ContainerTracker>().ContainerScoped();
+            _coll.For<GitPatcherInitVM>().ContainerScoped();
             
+            _coll.For<GitPatcherVM>();
             _coll.Scan(s =>
             {
                 s.AssemblyContainingType<INavigateTo>();
                 s.IncludeNamespaceContainingType<INavigateTo>();
+                s.ExcludeType<ContainerTracker>();
                 s.WithDefaultConventions();
             });
-            _coll.ForSingletonOf<ISettingsSingleton>().Use<SettingsSingleton>();
-            _coll.ForSingletonOf<IShowHelpSetting>().Use<ShowHelpSetting>();
-            _coll.ForSingletonOf<IConsiderPrereleasePreference>().Use<ConsiderPrereleasePreference>();
-            _coll.ForSingletonOf<IRetrieveSaveSettings>().Use<RetrieveSaveSettings>();
-            _coll.ForSingletonOf<IConfirmationPanelControllerVm>().Use<ConfirmationPanelControllerVm>();
-            _coll.ForSingletonOf<ISelectedProfileControllerVm>().Use<SelectedProfileControllerVm>();
-            _coll.ForSingletonOf<IActivePanelControllerVm>().Use<ActivePanelControllerVm>();
-            _coll.ForSingletonOf<ISaveSignal>().Use<RetrieveSaveSettings>();
         }
 
         private void RegisterBaseLib()

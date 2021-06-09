@@ -17,18 +17,14 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Windows.Input;
-using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRespository;
-using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.GUI.Services;
-using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI
 {
     public class GitPatcherInitVM : PatcherInitVM
     {
-        public ProfileVM Profile { get; }
+        private readonly ContainerTracker _Container;
         private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
         public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
 
@@ -64,29 +60,15 @@ namespace Synthesis.Bethesda.GUI
 
         public GitPatcherInitVM(
             PatcherInitializationVM init,
-            ProfileVM profile, 
+            GitPatcherVM gitPatcherVm,
+            ContainerTracker container,
             INavigateTo navigateTo, 
             IProvideRepositoryCheckouts repositoryCheckouts,
             ICheckOrCloneRepo checkOrClone)
             : base(init)
         {
-            Profile = profile;
-            Patcher = new GitPatcherVM( 
-                profile.Container.GetInstance<ProfileIdentifier>(),
-                profile.Container.GetInstance<ProfileDirectories>(),
-                profile.Container.GetInstance<ProfileLoadOrder>(),
-                profile.Container.GetInstance<ProfilePatchersList>(),
-                profile.Container.GetInstance<ProfileVersioning>(),
-                profile.Container.GetInstance<ProfileDataFolder>(),
-                profile.Container.GetInstance<IRemovePatcherFromProfile>(),
-                navigateTo, checkOrClone,
-                profile.Container.GetInstance<IProvideRepositoryCheckouts>(),
-                profile.Container.GetInstance<ICheckoutRunnerRepository>(),
-                profile.Container.GetInstance<ICheckRunnability>(),
-                profile.Container.GetInstance<IProfileDisplayControllerVm>(),
-                profile.Container.GetInstance<IConfirmationPanelControllerVm>(),
-                profile.Container.GetInstance<ILockToCurrentVersioning>(),
-                profile.Container.GetInstance<IBuild>());
+            _Container = container;
+            Patcher = gitPatcherVm;
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)
                 .Select(x => ErrorResponse.Create(x))
@@ -139,7 +121,7 @@ namespace Synthesis.Bethesda.GUI
                                 return repo.Patchers
                                     .Select(p =>
                                     {
-                                        return new PatcherStoreListingVM(this, p, repoVM, profile.Container.GetInstance<INavigateTo>());
+                                        return new PatcherStoreListingVM(this, p, repoVM, navigateTo);
                                     });
                             })
                             .AsObservableChangeSet();
@@ -201,28 +183,10 @@ namespace Synthesis.Bethesda.GUI
 
         public void AddStorePatcher(PatcherStoreListingVM listing)
         {
-            PatcherVM patcher = new GitPatcherVM(
-                Profile.Container.GetInstance<ProfileIdentifier>(),
-                Profile.Container.GetInstance<ProfileDirectories>(),
-                Profile.Container.GetInstance<ProfileLoadOrder>(),
-                Profile.Container.GetInstance<ProfilePatchersList>(),
-                Profile.Container.GetInstance<ProfileVersioning>(),
-                Profile.Container.GetInstance<ProfileDataFolder>(),
-                Profile.Container.GetInstance<IRemovePatcherFromProfile>(),
-                Profile.Container.GetInstance<INavigateTo>(),
-                Profile.Container.GetInstance<ICheckOrCloneRepo>(),
-                Profile.Container.GetInstance<IProvideRepositoryCheckouts>(),
-                Profile.Container.GetInstance<ICheckoutRunnerRepository>(),
-                Profile.Container.GetInstance<ICheckRunnability>(),
-                Profile.Container.GetInstance<IProfileDisplayControllerVm>(),
-                Profile.Container.GetInstance<IConfirmationPanelControllerVm>(),
-                Profile.Container.GetInstance<ILockToCurrentVersioning>(),
-                Profile.Container.GetInstance<IBuild>())
-            {
-                RemoteRepoPath = listing.RepoPath,
-                ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')
-            };
-            Init.AddNewPatchers(patcher.AsEnumerable().ToList());
+            var patcher = _Container.Container.GetInstance<GitPatcherVM>();
+            patcher.RemoteRepoPath = listing.RepoPath;
+            patcher.ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\');
+            Init.AddNewPatchers(patcher.AsEnumerable<PatcherVM>().ToList());
         }
 
         public override void Dispose()

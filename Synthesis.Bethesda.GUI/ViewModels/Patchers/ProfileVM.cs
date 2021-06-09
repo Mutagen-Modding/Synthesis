@@ -115,14 +115,10 @@ namespace Synthesis.Bethesda.GUI
             ID = ident.ID;
             Release = ident.Release;
             var showHelp = container.GetInstance<IShowHelpSetting>();
+            var test = container.GetInstance<ContainerTracker>();
             AddGitPatcherCommand = ReactiveCommand.Create(() =>
             {
-                SetInitializer(new GitPatcherInitVM(
-                    init, 
-                    this, 
-                    container.GetInstance<INavigateTo>(), 
-                    container.GetInstance<IProvideRepositoryCheckouts>(), 
-                    container.GetInstance<ICheckOrCloneRepo>()));
+                SetInitializer(container.GetInstance<GitPatcherInitVM>());
             });
             AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(showHelp, init, this)));
             AddCliPatcherCommand = ReactiveCommand.Create(() =>
