@@ -6,7 +6,7 @@ using Serilog;
 
 namespace Synthesis.Bethesda.Execution.GitRespository
 {
-    public interface IProvideRepositoryCheckouts : IAsyncDisposable
+    public interface IProvideRepositoryCheckouts : IDisposable
     {
         RepositoryCheckout Get(DirectoryPath path);
     }
@@ -60,7 +60,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
             }
         }
 
-        public async ValueTask DisposeAsync()
+        public void Dispose()
         {
             _Logger.Information("Disposing repository jobs");
             lock (_Lock)
@@ -78,7 +78,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
                 _shutdown.TrySetResult();
             }
 
-            await _shutdown.Task.ConfigureAwait(false);
+            _shutdown.Task.Wait();
             _Logger.Information("Finished disposing repository jobs");
         }
     }

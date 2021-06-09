@@ -21,17 +21,20 @@ namespace Synthesis.Bethesda.GUI.Services
         private readonly ILogger _Logger;
         private readonly IClearLoading _Loading;
         private readonly Lazy<ISettingsSingleton> _Settings;
-        
+        private readonly Lazy<MainVM> _MainVm;
+
         public bool Initialized { get; set; }
 
         public Initilize(
             ILogger logger,
             IClearLoading loading,
-            Lazy<ISettingsSingleton> settings)
+            Lazy<ISettingsSingleton> settings,
+            Lazy<MainVM> mainVm)
         {
             _Logger = logger;
             _Loading = loading;
             _Settings = settings;
+            _MainVm = mainVm;
         }
         
         public async void Initialize(Window window)
@@ -54,7 +57,7 @@ namespace Synthesis.Bethesda.GUI.Services
                     .ObserveOn(RxApp.MainThreadScheduler)
                     .Do(_ =>
                     {
-                        var mainVM = Inject.Container.GetInstance<MainVM>();
+                        var mainVM = _MainVm.Value;
                         mainVM.Load();
 
                         window.DataContext = mainVM;
