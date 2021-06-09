@@ -76,10 +76,10 @@ namespace Synthesis.Bethesda.GUI
             _coll.For<ProfileDataFolder>().ContainerScoped();
             _coll.For<ProfileVersioning>().ContainerScoped();
             _coll.For<ProfileSimpleLinkCache>().ContainerScoped();
-            _coll.For<ContainerTracker>().ContainerScoped();
+            _coll.For<IContainerTracker>().Use<ContainerTracker>().ContainerScoped();
+            _coll.For<IPatcherFactory>().Use<PatcherFactory>().ContainerScoped();
             _coll.For<GitPatcherInitVM>().ContainerScoped();
             
-            _coll.For<GitPatcherVM>();
             _coll.Scan(s =>
             {
                 s.AssemblyContainingType<INavigateTo>();

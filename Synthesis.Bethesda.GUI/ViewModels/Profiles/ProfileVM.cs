@@ -20,7 +20,6 @@ using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Serilog;
 using StructureMap;
-using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.Temporary;
@@ -115,12 +114,11 @@ namespace Synthesis.Bethesda.GUI
             ID = ident.ID;
             Release = ident.Release;
             var showHelp = container.GetInstance<IShowHelpSetting>();
-            var test = container.GetInstance<ContainerTracker>();
             AddGitPatcherCommand = ReactiveCommand.Create(() =>
             {
                 SetInitializer(container.GetInstance<GitPatcherInitVM>());
             });
-            AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(new SolutionPatcherInitVM(showHelp, init, this)));
+            AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(container.GetInstance<SolutionPatcherInitVM>()));
             AddCliPatcherCommand = ReactiveCommand.Create(() =>
             {
                 try

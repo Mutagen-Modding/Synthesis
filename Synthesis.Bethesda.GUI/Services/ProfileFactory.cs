@@ -3,15 +3,7 @@ using System.Linq;
 using DynamicData;
 using Mutagen.Bethesda;
 using Noggog.WPF;
-using Serilog;
-using Synthesis.Bethesda.Execution;
-using Synthesis.Bethesda.Execution.CLI;
-using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.Execution.GitRespository;
-using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI.Services
 {
@@ -34,22 +26,8 @@ namespace Synthesis.Bethesda.GUI.Services
             profile.ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
             profile.LockSetting.Lock = settings.LockToCurrentVersioning;
             profile.SelectedPersistenceMode = settings.Persistence;
-            profile.Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
-            {
-                return p switch
-                {
-                    GithubPatcherSettings git => profile.Container
-                        .With(git)
-                        .GetInstance<GitPatcherVM>(),
-                    SolutionPatcherSettings soln => profile.Container
-                        .With(soln)
-                        .GetInstance<SolutionPatcherVM>(),
-                    CliPatcherSettings cli =>profile.Container
-                        .With(cli)
-                        .GetInstance<CliPatcherVM>(),
-                    _ => throw new NotImplementedException(),
-                };
-            }));
+            var patcherFactory = profile.Container.GetInstance<IPatcherFactory>();
+            profile.Patchers.AddRange(settings.Patchers.Select(patcherFactory.Get));
             return profile;
         }
 
@@ -60,7 +38,7 @@ namespace Synthesis.Bethesda.GUI.Services
             ident.ID = id;
             ident.Release = release;
             ident.Nickname = nickname;
-            scope.GetInstance<ContainerTracker>().Container = scope;
+            scope.GetInstance<IContainerTracker>().Container = scope;
             var profile = scope
                 .With(scope)
                 .With(ident)

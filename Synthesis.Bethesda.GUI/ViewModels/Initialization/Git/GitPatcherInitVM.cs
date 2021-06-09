@@ -24,7 +24,8 @@ namespace Synthesis.Bethesda.GUI
 {
     public class GitPatcherInitVM : PatcherInitVM
     {
-        private readonly ContainerTracker _Container;
+        private readonly IPatcherFactory _PatcherFactory;
+        private readonly IContainerTracker _Container;
         private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
         public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
 
@@ -60,15 +61,16 @@ namespace Synthesis.Bethesda.GUI
 
         public GitPatcherInitVM(
             PatcherInitializationVM init,
-            GitPatcherVM gitPatcherVm,
-            ContainerTracker container,
+            IPatcherFactory patcherFactory,
+            IContainerTracker container,
             INavigateTo navigateTo, 
             IProvideRepositoryCheckouts repositoryCheckouts,
             ICheckOrCloneRepo checkOrClone)
             : base(init)
         {
+            _PatcherFactory = patcherFactory;
             _Container = container;
-            Patcher = gitPatcherVm;
+            Patcher = patcherFactory.Get<GitPatcherVM>();
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)
                 .Select(x => ErrorResponse.Create(x))
@@ -183,7 +185,7 @@ namespace Synthesis.Bethesda.GUI
 
         public void AddStorePatcher(PatcherStoreListingVM listing)
         {
-            var patcher = _Container.Container.GetInstance<GitPatcherVM>();
+            var patcher = _PatcherFactory.Get<GitPatcherVM>();
             patcher.RemoteRepoPath = listing.RepoPath;
             patcher.ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\');
             Init.AddNewPatchers(patcher.AsEnumerable<PatcherVM>().ToList());

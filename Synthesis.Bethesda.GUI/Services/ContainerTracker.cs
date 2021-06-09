@@ -2,7 +2,12 @@
 
 namespace Synthesis.Bethesda.GUI.Services
 {
-    public class ContainerTracker
+    public interface IContainerTracker
+    {
+        IContainer Container { get; set; }
+    }
+
+    public class ContainerTracker : IContainerTracker
     {
         public IContainer Container { get; set; } = null!;
     }

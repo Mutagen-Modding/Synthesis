@@ -7,8 +7,7 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.IO;
 using System.Reactive.Linq;
-using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.GUI.Temporary;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -33,7 +32,8 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string> _ProjectNameWatermark;
         public string ProjectNameWatermark => _ProjectNameWatermark.Value;
 
-        public NewSolutionInitVM()
+        public NewSolutionInitVM(
+            IPatcherFactory patcherFactory)
         {
             ParentDirPath.PathType = PathPickerVM.PathTypeOptions.Folder;
             ParentDirPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
@@ -98,7 +98,7 @@ namespace Synthesis.Bethesda.GUI
                     if (i.validation.Failed) return i.validation.BubbleFailure<InitializerCall>();
                     return GetResponse<InitializerCall>.Succeed(async (c) =>
                     {
-                        var patcher = c.GetInstance<SolutionPatcherVM>();
+                        var patcher = patcherFactory.Get<SolutionPatcherVM>();
                         var ident = c.GetInstance<ProfileIdentifier>();
                         SolutionInitialization.CreateSolutionFile(i.sln.Value);
                         SolutionInitialization.CreateProject(i.validation.Value, ident.Release.ToCategory());

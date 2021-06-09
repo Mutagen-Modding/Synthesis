@@ -7,13 +7,9 @@ using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.GUI.Temporary;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -29,7 +25,8 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<ErrorResponse> _ProjectError;
         public ErrorResponse ProjectError => _ProjectError.Value;
 
-        public ExistingSolutionInitVM()
+        public ExistingSolutionInitVM(
+            IPatcherFactory patcherFactory)
         {
             SolutionPath.PathType = PathPickerVM.PathTypeOptions.File;
             SolutionPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
@@ -53,7 +50,7 @@ namespace Synthesis.Bethesda.GUI
                     if (!i.validation.Succeeded) return i.validation.BubbleFailure<InitializerCall>();
                     return GetResponse<InitializerCall>.Succeed(async (c) =>
                     {
-                        var patcher = c.GetInstance<SolutionPatcherVM>();
+                        var patcher = patcherFactory.Get<SolutionPatcherVM>();
                         var ident = c.GetInstance<ProfileIdentifier>();
                         SolutionInitialization.CreateProject(i.validation.Value, ident.Release.ToCategory());
                         SolutionInitialization.AddProjectToSolution(i.sln.Value, i.validation.Value);

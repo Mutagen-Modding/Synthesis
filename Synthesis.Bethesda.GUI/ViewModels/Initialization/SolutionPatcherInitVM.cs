@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using DynamicData.Binding;
+using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Ide;
 using Synthesis.Bethesda.GUI.Settings;
 
@@ -15,12 +16,13 @@ namespace Synthesis.Bethesda.GUI
     public class SolutionPatcherInitVM : PatcherInitVM
     {
         public IShowHelpSetting ShowHelpSetting { get; }
-        public ProfileVM Profile { get; }
+        private readonly IContainerTracker _Container;
         private readonly ISettingsSingleton _SettingsSingleton;
-        
-        public ExistingSolutionInitVM ExistingSolution { get; } = new();
-        public NewSolutionInitVM New { get; } = new();
-        public ExistingProjectInitVM ExistingProject { get; } = new();
+        private readonly IOpenIde _OpenIde;
+
+        public ExistingSolutionInitVM ExistingSolution { get; }
+        public NewSolutionInitVM New { get; }
+        public ExistingProjectInitVM ExistingProject { get; }
 
         private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
         public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
@@ -40,15 +42,24 @@ namespace Synthesis.Bethesda.GUI
         public IDE Ide { get; set; }
 
         public SolutionPatcherInitVM(
+            IContainerTracker container,
             IShowHelpSetting showHelpSetting,
-            PatcherInitializationVM init,
-            ProfileVM profile)
+            ISettingsSingleton settingsSingleton,
+            IOpenIde openIde,
+            ExistingSolutionInitVM existingSolutionInit,
+            NewSolutionInitVM newSolutionInit,
+            ExistingProjectInitVM existingProjectInit,
+            PatcherInitializationVM init)
             : base(init)
         {
             ShowHelpSetting = showHelpSetting;
-            Profile = profile;
             IdeOptions.AddRange(EnumExt.GetValues<IDE>());
-            _SettingsSingleton = profile.Container.GetInstance<ISettingsSingleton>();
+            ExistingSolution = existingSolutionInit;
+            ExistingProject = existingProjectInit;
+            New = newSolutionInit;
+            _Container = container;
+            _SettingsSingleton = settingsSingleton;
+            _OpenIde = openIde;
             OpenCodeAfter = _SettingsSingleton.Gui.OpenIdeAfterCreating;
             New.ParentDirPath.TargetPath = _SettingsSingleton.Gui.MainRepositoryFolder;
             Ide = _SettingsSingleton.Gui.Ide;
@@ -87,7 +98,7 @@ namespace Synthesis.Bethesda.GUI
         public override async IAsyncEnumerable<PatcherVM> Construct()
         {
             if (TargetSolutionInitializer == null) yield break;
-            var ret = (await TargetSolutionInitializer(Profile.Container)).ToList();
+            var ret = (await TargetSolutionInitializer(_Container.Container)).ToList();
             foreach (var item in ret)
             {
                 yield return item;
@@ -97,8 +108,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 try
                 {
-                    Profile.Container.GetInstance<IOpenIde>()
-                        .OpenSolution(ret[0].SolutionPath.TargetPath, Ide);
+                    _OpenIde.OpenSolution(ret[0].SolutionPath.TargetPath, Ide);
                 }
                 catch (Exception ex)
                 {

@@ -6,14 +6,10 @@ using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.GUI.Temporary;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -33,7 +29,7 @@ namespace Synthesis.Bethesda.GUI
             PathType = PathPickerVM.PathTypeOptions.File,
         };
 
-        public ExistingProjectInitVM()
+        public ExistingProjectInitVM(IPatcherFactory patcherFactory)
         {
             SolutionPath.PathType = PathPickerVM.PathTypeOptions.File;
             SolutionPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
@@ -85,7 +81,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         return q.Select(i =>
                         {
-                            var patcher = c.GetInstance<SolutionPatcherVM>();
+                            var patcher = patcherFactory.Get<SolutionPatcherVM>();
                             patcher.SolutionPath.TargetPath = SolutionPath.TargetPath;
                             patcher.ProjectSubpath = i.TargetPath.TrimStart($"{Path.GetDirectoryName(SolutionPath.TargetPath)}\\"!);
                             return patcher;
