@@ -17,7 +17,6 @@ using Newtonsoft.Json;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers;
-using Mutagen.Bethesda;
 using System.Collections.ObjectModel;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Synthesis.WPF;

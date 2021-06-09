@@ -81,16 +81,11 @@ namespace Synthesis.Bethesda.GUI
                         .And(ErrorResponse.Success)
                         .First();
                     if (err.Failed) return err.BubbleFailure<InitializerCall>();
-                    return GetResponse<InitializerCall>.Succeed(async (profile) =>
+                    return GetResponse<InitializerCall>.Succeed(async (c) =>
                     {
                         return q.Select(i =>
                         {
-                            var patcher = new SolutionPatcherVM(
-                                profile.Container.GetInstance<ProfileLoadOrder>(),
-                                profile.Container.GetInstance<IRemovePatcherFromProfile>(),
-                                profile.Container.GetInstance<IProvideInstalledSdk>(),
-                                profile.Container.GetInstance<IProfileDisplayControllerVm>(),
-                                profile.Container.GetInstance<IConfirmationPanelControllerVm>());
+                            var patcher = c.GetInstance<SolutionPatcherVM>();
                             patcher.SolutionPath.TargetPath = SolutionPath.TargetPath;
                             patcher.ProjectSubpath = i.TargetPath.TrimStart($"{Path.GetDirectoryName(SolutionPath.TargetPath)}\\"!);
                             return patcher;

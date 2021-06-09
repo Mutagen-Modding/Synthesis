@@ -87,7 +87,7 @@ namespace Synthesis.Bethesda.GUI
         public override async IAsyncEnumerable<PatcherVM> Construct()
         {
             if (TargetSolutionInitializer == null) yield break;
-            var ret = (await TargetSolutionInitializer(Profile)).ToList();
+            var ret = (await TargetSolutionInitializer(Profile.Container)).ToList();
             foreach (var item in ret)
             {
                 yield return item;

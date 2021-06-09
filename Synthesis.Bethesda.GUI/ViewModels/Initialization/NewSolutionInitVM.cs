@@ -96,16 +96,12 @@ namespace Synthesis.Bethesda.GUI
                     if (i.parentDir.Failed) return i.parentDir.BubbleFailure<InitializerCall>();
                     if (i.sln.Failed) return i.sln.BubbleFailure<InitializerCall>();
                     if (i.validation.Failed) return i.validation.BubbleFailure<InitializerCall>();
-                    return GetResponse<InitializerCall>.Succeed(async (profile) =>
+                    return GetResponse<InitializerCall>.Succeed(async (c) =>
                     {
-                        var patcher = new SolutionPatcherVM(
-                            profile.Container.GetInstance<ProfileLoadOrder>(),
-                            profile.Container.GetInstance<IRemovePatcherFromProfile>(),
-                            profile.Container.GetInstance<IProvideInstalledSdk>(),
-                            profile.Container.GetInstance<IProfileDisplayControllerVm>(),
-                            profile.Container.GetInstance<IConfirmationPanelControllerVm>());
+                        var patcher = c.GetInstance<SolutionPatcherVM>();
+                        var ident = c.GetInstance<ProfileIdentifier>();
                         SolutionInitialization.CreateSolutionFile(i.sln.Value);
-                        SolutionInitialization.CreateProject(i.validation.Value, profile.Release.ToCategory());
+                        SolutionInitialization.CreateProject(i.validation.Value, ident.Release.ToCategory());
                         SolutionInitialization.AddProjectToSolution(i.sln.Value, i.validation.Value);
                         SolutionInitialization.GenerateGitIgnore(Path.GetDirectoryName(i.sln.Value)!);
                         patcher.SolutionPath.TargetPath = i.sln.Value;

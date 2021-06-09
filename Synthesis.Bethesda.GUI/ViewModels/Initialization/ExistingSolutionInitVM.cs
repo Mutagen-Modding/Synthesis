@@ -51,15 +51,11 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (!i.sln.Succeeded) return i.sln.BubbleFailure<InitializerCall>();
                     if (!i.validation.Succeeded) return i.validation.BubbleFailure<InitializerCall>();
-                    return GetResponse<InitializerCall>.Succeed(async (profile) =>
+                    return GetResponse<InitializerCall>.Succeed(async (c) =>
                     {
-                        var patcher = new SolutionPatcherVM(
-                            profile.Container.GetInstance<ProfileLoadOrder>(),
-                            profile.Container.GetInstance<IRemovePatcherFromProfile>(),
-                            profile.Container.GetInstance<IProvideInstalledSdk>(),
-                            profile.Container.GetInstance<IProfileDisplayControllerVm>(),
-                            profile.Container.GetInstance<IConfirmationPanelControllerVm>());
-                        SolutionInitialization.CreateProject(i.validation.Value, profile.Release.ToCategory());
+                        var patcher = c.GetInstance<SolutionPatcherVM>();
+                        var ident = c.GetInstance<ProfileIdentifier>();
+                        SolutionInitialization.CreateProject(i.validation.Value, ident.Release.ToCategory());
                         SolutionInitialization.AddProjectToSolution(i.sln.Value, i.validation.Value);
                         patcher.SolutionPath.TargetPath = i.sln.Value;
                         patcher.ProjectSubpath = Path.Combine(i.proj, $"{i.proj}.csproj");

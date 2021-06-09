@@ -168,6 +168,9 @@ namespace Synthesis.Bethesda.GUI
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             ILockToCurrentVersioning lockToCurrentVersioning,
+            IProvideInstalledSdk dotNetInstalled,
+            IEnvironmentErrorsVM envErrors,
+            INewestLibraryVersions newest,
             IBuild build,
             GithubPatcherSettings? settings = null)
             : base(remove, selPatcher, confirmation, settings)
@@ -488,7 +491,6 @@ namespace Synthesis.Bethesda.GUI
                 .Replay(1)
                 .RefCount();
 
-            var newest = Inject.Container.GetInstance<INewestLibraryVersions>();
             var nugetTarget = Observable.CombineLatest(
                     versioning.WhenAnyValue(x => x.ActiveVersioning)
                         .Switch(),
@@ -791,8 +793,6 @@ namespace Synthesis.Bethesda.GUI
                 .Replay(1)
                 .RefCount();
 
-            var dotNetInstalled = Inject.Container.GetInstance<IProvideInstalledSdk>();
-            var envErrors = Inject.Container.GetInstance<IEnvironmentErrorsVM>();
             _State = Observable.CombineLatest(
                     driverRepoInfo
                         .Select(x => x.ToUnit()),

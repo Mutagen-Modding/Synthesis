@@ -2,8 +2,6 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Collections.Generic;
-using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -16,17 +14,10 @@ namespace Synthesis.Bethesda.GUI
 
         public CliPatcherInitVM(
             PatcherInitializationVM init, 
-            IProfileDisplayControllerVm profileDisplay,
-            IConfirmationPanelControllerVm confirmation,
-            IRemovePatcherFromProfile remove,
-            IShowHelpSetting showHelp)
+            CliPatcherVM patcher)
             : base(init)
         {
-            Patcher = new CliPatcherVM(
-                remove,
-                profileDisplay,
-                confirmation,
-                showHelp);
+            Patcher = patcher;
             _CanCompleteConfiguration = Patcher.WhenAnyValue(x => x.PathToExecutable.ErrorState)
                 .Cast<ErrorResponse, ErrorResponse>()
                 .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);

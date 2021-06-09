@@ -38,37 +38,15 @@ namespace Synthesis.Bethesda.GUI.Services
             {
                 return p switch
                 {
-                    GithubPatcherSettings git => new GitPatcherVM(
-                        profile.Container.GetInstance<ProfileIdentifier>(),
-                        profile.Container.GetInstance<ProfileDirectories>(),
-                        profile.Container.GetInstance<ProfileLoadOrder>(),
-                        profile.Container.GetInstance<ProfilePatchersList>(),
-                        profile.Container.GetInstance<ProfileVersioning>(),
-                        profile.Container.GetInstance<ProfileDataFolder>(),
-                        profile.Container.GetInstance<IRemovePatcherFromProfile>(),
-                        profile.Container.GetInstance<INavigateTo>(),
-                        profile.Container.GetInstance<ICheckOrCloneRepo>(),
-                        profile.Container.GetInstance<IProvideRepositoryCheckouts>(),
-                        profile.Container.GetInstance<ICheckoutRunnerRepository>(),
-                        profile.Container.GetInstance<ICheckRunnability>(),
-                        profile.Container.GetInstance<IProfileDisplayControllerVm>(),
-                        profile.Container.GetInstance<IConfirmationPanelControllerVm>(),
-                        profile.Container.GetInstance<ILockToCurrentVersioning>(),
-                        profile.Container.GetInstance<IBuild>(),
-                        git),
-                    SolutionPatcherSettings soln => new SolutionPatcherVM(
-                        profile.Container.GetInstance<ProfileLoadOrder>(),
-                        profile.Container.GetInstance<IRemovePatcherFromProfile>(),
-                        profile.Container.GetInstance<IProvideInstalledSdk>(),
-                        profile.Container.GetInstance<IProfileDisplayControllerVm>(),
-                        profile.Container.GetInstance<IConfirmationPanelControllerVm>(),
-                        soln),
-                    CliPatcherSettings cli => new CliPatcherVM(
-                        profile.Container.GetInstance<IRemovePatcherFromProfile>(),
-                        profile.Container.GetInstance<IProfileDisplayControllerVm>(),
-                        profile.Container.GetInstance<IConfirmationPanelControllerVm>(),
-                        profile.Container.GetInstance<IShowHelpSetting>(),
-                        cli),
+                    GithubPatcherSettings git => profile.Container
+                        .With(git)
+                        .GetInstance<GitPatcherVM>(),
+                    SolutionPatcherSettings soln => profile.Container
+                        .With(soln)
+                        .GetInstance<SolutionPatcherVM>(),
+                    CliPatcherSettings cli =>profile.Container
+                        .With(cli)
+                        .GetInstance<CliPatcherVM>(),
                     _ => throw new NotImplementedException(),
                 };
             }));
@@ -83,17 +61,10 @@ namespace Synthesis.Bethesda.GUI.Services
             ident.Release = release;
             ident.Nickname = nickname;
             scope.GetInstance<ContainerTracker>().Container = scope;
-            var profile = new ProfileVM(
-                scope, 
-                scope.GetInstance<ProfilePatchersList>(),
-                scope.GetInstance<ProfileDataFolder>(),
-                scope.GetInstance<PatcherInitializationVM>(),
-                ident,
-                scope.GetInstance<ProfileLoadOrder>(),
-                scope.GetInstance<ProfileDirectories>(),
-                scope.GetInstance<ProfileVersioning>(),
-                scope.GetInstance<INavigateTo>(),
-                scope.GetInstance<ILogger>());
+            var profile = scope
+                .With(scope)
+                .With(ident)
+                .GetInstance<ProfileVM>();
             scope.DisposeWith(profile);
             return profile;
         }
