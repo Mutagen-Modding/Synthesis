@@ -19,8 +19,7 @@ namespace Synthesis.Bethesda.GUI
     {
         public ProfilesDisplayVM Parent { get; }
 
-        [Reactive]
-        public ProfileVM? Profile { get; private set; }
+        public ProfileVM Profile { get; }
 
         private readonly ObservableAsPropertyHelper<bool> _IsDisplaying;
         public bool IsDisplaying => _IsDisplaying.Value;
@@ -34,7 +33,12 @@ namespace Synthesis.Bethesda.GUI
 
         public ObservableCollectionExtended<PersistenceMode> PersistenceModes { get; } = new(EnumExt.GetValues<PersistenceMode>());
 
-        public ProfileDisplayVM(ProfilesDisplayVM parent, INavigateTo navigate, ProfileVM? profile = null)
+        public ProfileDisplayVM(
+            ProfilesDisplayVM parent,
+            INavigateTo navigate, 
+            ISelectedProfileControllerVm selProfile,
+            IConfirmationPanelControllerVm confirmation,
+            ProfileVM profile)
         {
             Parent = parent;
             Profile = profile;
@@ -43,17 +47,16 @@ namespace Synthesis.Bethesda.GUI
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsDisplaying));
 
-            _IsActive = this.WhenAnyFallback(x => x.Profile!.IsActive, fallback: false)
+            _IsActive = this.WhenAnyValue(x => x.Profile.IsActive)
                 .ToGuiProperty(this, nameof(IsActive));
 
-            var confirmation = Inject.Container.GetInstance<IConfirmationPanelControllerVm>();
             DeleteCommand = ReactiveCommand.Create(
-                canExecute: this.WhenAnyFallback(x => x.Profile!.IsActive, fallback: true)
+                canExecute: this.WhenAnyValue(x => x.Profile!.IsActive)
                     .Select(active => !active),
                 execute: () =>
                 {
                     var profile = this.Profile;
-                    if (profile == null || profile.IsActive) return;
+                    if (profile.IsActive) return;
                     confirmation.TargetConfirmation = new ConfirmationActionVM(
                         "Confirm",
                         $"Are you sure you want to delete {profile.Nickname}?",
@@ -63,12 +66,11 @@ namespace Synthesis.Bethesda.GUI
                             Parent.SwitchToActive();
                         });
                 });
-            var selProfile = Inject.Container.GetInstance<ISelectedProfileControllerVm>();
             SwitchToCommand = ReactiveCommand.Create(
                 execute: () =>
                 {
                     var profile = this.Profile;
-                    if (profile == null || profile.IsActive) return;
+                    if (profile.IsActive) return;
                     selProfile.SelectedProfile = profile;
                 });
             OpenInternalProfileFolderCommand = ReactiveCommand.Create(
