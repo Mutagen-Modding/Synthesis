@@ -99,6 +99,8 @@ namespace Synthesis.Bethesda.GUI
             ProfileDirectories dirs,
             ProfileVersioning versioning,
             INavigateTo navigate,
+            IProfileDisplayControllerVm profileDisplay,
+            ILockToCurrentVersioning lockSetting,
             ILogger logger)
         {
             logger.Information("Creating Profile with ID {ID}", ident.ID);
@@ -107,13 +109,12 @@ namespace Synthesis.Bethesda.GUI
             Versioning = versioning;
             Patchers = patchersList.Patchers;
             Container = containerTracker.Container;
-            LockSetting = Container.GetInstance<ILockToCurrentVersioning>();
-            DisplayController = Container.GetInstance<IProfileDisplayControllerVm>();
+            LockSetting = lockSetting;
+            DisplayController = profileDisplay;
             _Navigate = navigate;
             Nickname = ident.Nickname;
             ID = ident.ID;
             Release = ident.Release;
-            var showHelp = Container.GetInstance<IShowHelpSetting>();
             AddGitPatcherCommand = ReactiveCommand.Create(() =>
             {
                 SetInitializer(Container.GetInstance<GitPatcherInitVM>());
