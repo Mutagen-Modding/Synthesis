@@ -8,7 +8,7 @@ using System.Windows.Input;
 using System.Threading;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.GUI.Temporary;
+using Synthesis.Bethesda.GUI.Profiles.Plugins;
 
 namespace Synthesis.Bethesda.GUI
 {

@@ -7,8 +7,8 @@ using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.IO;
 using System.Reactive.Linq;
+using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI
 {

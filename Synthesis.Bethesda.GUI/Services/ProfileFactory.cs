@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.GUI.Services
         public ProfileVM Get(GameRelease release, string id, string nickname)
         {
             var scope = Inject.Container.CreateChildContainer();
-            var ident = scope.GetInstance<ProfileIdentifier>();
+            var ident = scope.GetInstance<IProfileIdentifier>();
             ident.ID = id;
             ident.Release = release;
             ident.Nickname = nickname;

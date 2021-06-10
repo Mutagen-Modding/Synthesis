@@ -9,9 +9,16 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 
-namespace Synthesis.Bethesda.GUI.Temporary
+namespace Synthesis.Bethesda.GUI.Profiles.Plugins
 {
-    public class ProfileDataFolder : ViewModel
+    public interface IProfileDataFolder
+    {
+        string? DataPathOverride { get; set; }
+        IObservable<GetResponse<string>> DataFolderResult { get; }
+        string DataFolder { get; }
+    }
+
+    public class ProfileDataFolder : ViewModel, IProfileDataFolder
     {
         [Reactive]
         public string? DataPathOverride { get; set; }
@@ -23,7 +30,7 @@ namespace Synthesis.Bethesda.GUI.Temporary
 
         public ProfileDataFolder(
             ILogger logger,
-            ProfileIdentifier ident)
+            IProfileIdentifier ident)
         {
             DataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
                 .Select(path =>

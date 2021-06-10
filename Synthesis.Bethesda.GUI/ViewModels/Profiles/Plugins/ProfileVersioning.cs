@@ -8,9 +8,21 @@ using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Versioning;
 
-namespace Synthesis.Bethesda.GUI.Temporary
+namespace Synthesis.Bethesda.GUI.Profiles.Plugins
 {
-    public class ProfileVersioning : ViewModel
+    public interface IProfileVersioning
+    {
+        NugetVersioningEnum MutagenVersioning { get; set; }
+        string? ManualMutagenVersion { get; set; }
+        NugetVersioningEnum SynthesisVersioning { get; set; }
+        string? ManualSynthesisVersion { get; set; }
+        IObservable<SynthesisNugetVersioning> ActiveVersioning { get; }
+        ReactiveCommand<Unit, Unit> UpdateMutagenManualToLatestCommand { get; }
+        ReactiveCommand<Unit, Unit> UpdateSynthesisManualToLatestCommand { get; }
+        IReactiveCommand UpdateProfileNugetVersionCommand { get; }
+    }
+
+    public class ProfileVersioning : ViewModel, IProfileVersioning
     {
         [Reactive]
         public NugetVersioningEnum MutagenVersioning { get; set; } = NugetVersioningEnum.Manual;
@@ -33,7 +45,7 @@ namespace Synthesis.Bethesda.GUI.Temporary
         public IReactiveCommand UpdateProfileNugetVersionCommand { get; }
 
         public ProfileVersioning(
-            ProfileIdentifier ident,
+            IProfileIdentifier ident,
             INewestLibraryVersions newestLibs)
         {
             ActiveVersioning = Observable.CombineLatest(

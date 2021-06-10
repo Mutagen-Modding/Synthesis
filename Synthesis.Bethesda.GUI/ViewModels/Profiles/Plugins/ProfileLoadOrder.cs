@@ -7,9 +7,15 @@ using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
 
-namespace Synthesis.Bethesda.GUI.Temporary
+namespace Synthesis.Bethesda.GUI.Profiles.Plugins
 {
-    public class ProfileLoadOrder : ViewModel
+    public interface IProfileLoadOrder
+    {
+        IObservableList<ReadOnlyModListingVM> LoadOrder { get; }
+        ErrorResponse State { get; }
+    }
+
+    public class ProfileLoadOrder : ViewModel, IProfileLoadOrder
     {
         public IObservableList<ReadOnlyModListingVM> LoadOrder { get; }
 
@@ -18,8 +24,8 @@ namespace Synthesis.Bethesda.GUI.Temporary
 
         public ProfileLoadOrder(
             ILogger logger,
-            ProfileIdentifier ident,
-            ProfileDataFolder dataFolder)
+            IProfileIdentifier ident,
+            IProfileDataFolder dataFolder)
         {
 
             var loadOrderResult = dataFolder.DataFolderResult

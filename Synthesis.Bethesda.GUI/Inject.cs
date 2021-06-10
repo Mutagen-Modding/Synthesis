@@ -5,9 +5,9 @@ using Serilog;
 using StructureMap;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Versioning;
+using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -71,12 +71,12 @@ namespace Synthesis.Bethesda.GUI
             _coll.For<ProfilePatchersList>().ContainerScoped();
             _coll.Forward<ProfilePatchersList, IRemovePatcherFromProfile>();
             _coll.Forward<ProfilePatchersList, IProfilePatchersList>();
-            _coll.For<ProfileIdentifier>().ContainerScoped();
-            _coll.For<ProfileLoadOrder>().ContainerScoped();
-            _coll.For<ProfileDirectories>().ContainerScoped();
-            _coll.For<ProfileDataFolder>().ContainerScoped();
-            _coll.For<ProfileVersioning>().ContainerScoped();
-            _coll.For<ProfileSimpleLinkCache>().ContainerScoped();
+            _coll.For<IProfileIdentifier>().Use<ProfileIdentifier>().ContainerScoped();
+            _coll.For<IProfileLoadOrder>().Use<ProfileLoadOrder>().ContainerScoped();
+            _coll.For<IProfileDirectories>().Use<ProfileDirectories>().ContainerScoped();
+            _coll.For<IProfileDataFolder>().Use<ProfileDataFolder>().ContainerScoped();
+            _coll.For<IProfileVersioning>().Use<ProfileVersioning>().ContainerScoped();
+            _coll.For<IProfileSimpleLinkCache>().Use<ProfileSimpleLinkCache>().ContainerScoped();
             _coll.For<IContainerTracker>().Use<ContainerTracker>().ContainerScoped();
             _coll.For<IPatcherFactory>().Use<PatcherFactory>().ContainerScoped();
             _coll.For<GitPatcherInitVM>().ContainerScoped();

@@ -1,6 +1,6 @@
 ﻿using DynamicData;
 
-namespace Synthesis.Bethesda.GUI.Temporary
+namespace Synthesis.Bethesda.GUI.Profiles.Plugins
 {
     public interface IRemovePatcherFromProfile
     {

@@ -20,9 +20,9 @@ using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Serilog;
 using StructureMap;
+using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -51,8 +51,8 @@ namespace Synthesis.Bethesda.GUI
         public string ProfileDirectory { get; }
         public string WorkingDirectory { get; }
 
-        public ProfileDataFolder DataFolderOverride { get; }
-        public ProfileVersioning Versioning { get; }
+        public IProfileDataFolder DataFolderOverride { get; }
+        public IProfileVersioning Versioning { get; }
 
         private readonly ObservableAsPropertyHelper<string> _DataFolder;
         public string DataFolder => _DataFolder.Value;
@@ -92,12 +92,12 @@ namespace Synthesis.Bethesda.GUI
         public ProfileVM(
             IContainerTracker containerTracker,
             IProfilePatchersList patchersList,
-            ProfileDataFolder dataFolder,
+            IProfileDataFolder dataFolder,
             PatcherInitializationVM init,
-            ProfileIdentifier ident,
-            ProfileLoadOrder loadOrder,
-            ProfileDirectories dirs,
-            ProfileVersioning versioning,
+            IProfileIdentifier ident,
+            IProfileLoadOrder loadOrder,
+            IProfileDirectories dirs,
+            IProfileVersioning versioning,
             INavigateTo navigate,
             IProfileDisplayControllerVm profileDisplay,
             ILockToCurrentVersioning lockSetting,

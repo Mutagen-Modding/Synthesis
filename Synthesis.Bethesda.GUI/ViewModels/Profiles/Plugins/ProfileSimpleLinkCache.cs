@@ -9,17 +9,22 @@ using Mutagen.Bethesda.Plugins.Records;
 using ReactiveUI;
 using Serilog;
 
-namespace Synthesis.Bethesda.GUI.Temporary
+namespace Synthesis.Bethesda.GUI.Profiles.Plugins
 {
-    public class ProfileSimpleLinkCache
+    public interface IProfileSimpleLinkCache
+    {
+        IObservable<ILinkCache?> SimpleLinkCache { get; }
+    }
+
+    public class ProfileSimpleLinkCache : IProfileSimpleLinkCache
     {
         public IObservable<ILinkCache?> SimpleLinkCache { get; }
 
         public ProfileSimpleLinkCache(
             ILogger logger,
-            ProfileLoadOrder loadOrder,
-            ProfileDataFolder dataFolder,
-            ProfileIdentifier ident)
+            IProfileLoadOrder loadOrder,
+            IProfileDataFolder dataFolder,
+            IProfileIdentifier ident)
         {
             SimpleLinkCache = Observable.CombineLatest(
                     dataFolder.WhenAnyValue(x => x.DataFolder),

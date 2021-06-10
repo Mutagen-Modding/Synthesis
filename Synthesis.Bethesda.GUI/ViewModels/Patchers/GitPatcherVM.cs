@@ -20,7 +20,6 @@ using System.Reactive;
 using System.Text;
 using Synthesis.Bethesda.DTO;
 using Newtonsoft.Json;
-using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
@@ -30,9 +29,9 @@ using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Versioning;
+using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.Temporary;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -153,12 +152,12 @@ namespace Synthesis.Bethesda.GUI
         public ILockToCurrentVersioning Locking { get; }
 
         public GitPatcherVM(
-            ProfileIdentifier ident,
-            ProfileDirectories dirs,
-            ProfileLoadOrder loadOrder,
+            IProfileIdentifier ident,
+            IProfileDirectories dirs,
+            IProfileLoadOrder loadOrder,
             IProfilePatchersList patchersList,
-            ProfileVersioning versioning,
-            ProfileDataFolder dataFolder,
+            IProfileVersioning versioning,
+            IProfileDataFolder dataFolder,
             IRemovePatcherFromProfile remove,
             INavigateTo navigate, 
             ICheckOrCloneRepo checkOrClone,
@@ -910,10 +909,10 @@ namespace Synthesis.Bethesda.GUI
             PatcherSettings = new PatcherSettingsVM(
                 Logger,
                 this,
-                ident: Inject.Container.GetInstance<ProfileIdentifier>(),
+                ident: Inject.Container.GetInstance<IProfileIdentifier>(),
                 loadOrder: Inject.Container.GetInstance<ProfileLoadOrder>(),
                 dataFolder: Inject.Container.GetInstance<ProfileDataFolder>(),
-                linkCache: Inject.Container.GetInstance<ProfileSimpleLinkCache>(),
+                linkCache: Inject.Container.GetInstance<IProfileSimpleLinkCache>(),
                 compilation.Select(c =>
                 {
                     if (c.RunnableState.Failed) return (c.RunnableState.BubbleFailure<FilePath>(), null);

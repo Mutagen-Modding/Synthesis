@@ -51,7 +51,7 @@ namespace Synthesis.Bethesda.GUI
                     return GetResponse<InitializerCall>.Succeed(async (c) =>
                     {
                         var patcher = patcherFactory.Get<SolutionPatcherVM>();
-                        var ident = c.GetInstance<ProfileIdentifier>();
+                        var ident = c.GetInstance<IProfileIdentifier>();
                         SolutionInitialization.CreateProject(i.validation.Value, ident.Release.ToCategory());
                         SolutionInitialization.AddProjectToSolution(i.sln.Value, i.validation.Value);
                         patcher.SolutionPath.TargetPath = i.sln.Value;

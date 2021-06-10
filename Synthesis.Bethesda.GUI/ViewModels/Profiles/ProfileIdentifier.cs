@@ -2,7 +2,14 @@
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class ProfileIdentifier
+    public interface IProfileIdentifier
+    {
+        string ID { get; set; }
+        string Nickname { get; set; }
+        GameRelease Release { get; set; }
+    }
+
+    public class ProfileIdentifier : IProfileIdentifier
     {
         public string ID { get; set; } = string.Empty;
         public string Nickname { get; set; } = string.Empty;

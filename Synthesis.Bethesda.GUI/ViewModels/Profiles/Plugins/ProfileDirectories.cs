@@ -1,13 +1,19 @@
 ﻿using System.IO;
 
-namespace Synthesis.Bethesda.GUI.Temporary
+namespace Synthesis.Bethesda.GUI.Profiles.Plugins
 {
-    public class ProfileDirectories
+    public interface IProfileDirectories
+    {
+        string ProfileDirectory { get; }
+        string WorkingDirectory { get; }
+    }
+
+    public class ProfileDirectories : IProfileDirectories
     {
         public string ProfileDirectory { get; }
         public string WorkingDirectory { get; }
 
-        public ProfileDirectories(ProfileIdentifier ident)
+        public ProfileDirectories(IProfileIdentifier ident)
         {
             ProfileDirectory = Path.Combine(Execution.Paths.WorkingDirectory, ident.ID);
             WorkingDirectory = Execution.Paths.ProfileWorkingDirectory(ident.ID);
