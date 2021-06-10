@@ -7,7 +7,12 @@ namespace Synthesis.Bethesda.GUI.Temporary
         void Remove(PatcherVM patcher);
     }
 
-    public class ProfilePatchersList : IRemovePatcherFromProfile
+    public interface IProfilePatchersList
+    {
+        SourceList<PatcherVM> Patchers { get; }
+    }
+
+    public class ProfilePatchersList : IRemovePatcherFromProfile, IProfilePatchersList
     {
         public SourceList<PatcherVM> Patchers { get; } = new();
 

@@ -90,8 +90,8 @@ namespace Synthesis.Bethesda.GUI
         public IContainer Container { get; }
 
         public ProfileVM(
-            IContainer container,
-            ProfilePatchersList patchersList,
+            IContainerTracker containerTracker,
+            IProfilePatchersList patchersList,
             ProfileDataFolder dataFolder,
             PatcherInitializationVM init,
             ProfileIdentifier ident,
@@ -106,24 +106,24 @@ namespace Synthesis.Bethesda.GUI
             DataFolderOverride = dataFolder;
             Versioning = versioning;
             Patchers = patchersList.Patchers;
-            LockSetting = container.GetInstance<ILockToCurrentVersioning>();
-            DisplayController = container.GetInstance<IProfileDisplayControllerVm>();
-            Container = container;
+            Container = containerTracker.Container;
+            LockSetting = Container.GetInstance<ILockToCurrentVersioning>();
+            DisplayController = Container.GetInstance<IProfileDisplayControllerVm>();
             _Navigate = navigate;
             Nickname = ident.Nickname;
             ID = ident.ID;
             Release = ident.Release;
-            var showHelp = container.GetInstance<IShowHelpSetting>();
+            var showHelp = Container.GetInstance<IShowHelpSetting>();
             AddGitPatcherCommand = ReactiveCommand.Create(() =>
             {
-                SetInitializer(container.GetInstance<GitPatcherInitVM>());
+                SetInitializer(Container.GetInstance<GitPatcherInitVM>());
             });
-            AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(container.GetInstance<SolutionPatcherInitVM>()));
+            AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(Container.GetInstance<SolutionPatcherInitVM>()));
             AddCliPatcherCommand = ReactiveCommand.Create(() =>
             {
                 try
                 {
-                    SetInitializer(container.GetInstance<CliPatcherInitVM>());
+                    SetInitializer(Container.GetInstance<CliPatcherInitVM>());
                 }
                 catch (Exception e)
                 {
@@ -223,7 +223,7 @@ namespace Synthesis.Bethesda.GUI
                 })
                 .ToGuiProperty<ErrorResponse>(this, nameof(BlockingError), ErrorResponse.Fail("Uninitialized blocking error"));
 
-            var selProfile = container.GetInstance<ISelectedProfileControllerVm>();
+            var selProfile = Container.GetInstance<ISelectedProfileControllerVm>();
             _IsActive = selProfile.WhenAnyValue(x => x.SelectedProfile)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsActive));

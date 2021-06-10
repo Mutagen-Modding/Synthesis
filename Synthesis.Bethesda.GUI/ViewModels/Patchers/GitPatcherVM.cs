@@ -38,7 +38,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public class GitPatcherVM : PatcherVM
     {
-        private readonly ProfilePatchersList _PatchersList;
+        private readonly IProfilePatchersList _PatchersList;
         private readonly ICheckoutRunnerRepository _CheckoutRunner;
         public override bool IsNameEditable => false;
 
@@ -156,7 +156,7 @@ namespace Synthesis.Bethesda.GUI
             ProfileIdentifier ident,
             ProfileDirectories dirs,
             ProfileLoadOrder loadOrder,
-            ProfilePatchersList patchersList,
+            IProfilePatchersList patchersList,
             ProfileVersioning versioning,
             ProfileDataFolder dataFolder,
             IRemovePatcherFromProfile remove,

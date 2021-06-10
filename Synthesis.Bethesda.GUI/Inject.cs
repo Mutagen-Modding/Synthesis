@@ -68,8 +68,9 @@ namespace Synthesis.Bethesda.GUI
             _coll.For<ILockToCurrentVersioning>().Use<LockToCurrentVersioning>().ContainerScoped();
             _coll.For<IProfileDisplayControllerVm>().Use<ProfileDisplayControllerVm>().ContainerScoped();
             _coll.For<IEnvironmentErrorsVM>().Use<EnvironmentErrorsVM>().ContainerScoped();
-            _coll.For<IRemovePatcherFromProfile>().Use<ProfilePatchersList>().ContainerScoped();
             _coll.For<ProfilePatchersList>().ContainerScoped();
+            _coll.Forward<ProfilePatchersList, IRemovePatcherFromProfile>();
+            _coll.Forward<ProfilePatchersList, IProfilePatchersList>();
             _coll.For<ProfileIdentifier>().ContainerScoped();
             _coll.For<ProfileLoadOrder>().ContainerScoped();
             _coll.For<ProfileDirectories>().ContainerScoped();
