@@ -52,9 +52,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
                 using var repoCheckout = _RepoCheckouts.Get(localRepoDir);
                 var repo = repoCheckout.Repository;
-                var runnerBranch = repo.Branches[RunnerBranch] ?? repo.CreateBranch(RunnerBranch);
-                repo.Reset(ResetMode.Hard);
-                Commands.Checkout(repo, runnerBranch);
+                var runnerBranch = repo.TryCreateBranch(RunnerBranch);
+                repo.ResetHard();
+                repo.Checkout(runnerBranch);
                 string? targetSha;
                 string? target;
                 bool fetchIfMissing = patcherVersioning.Versioning switch
@@ -67,8 +67,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     case PatcherVersioningEnum.Tag:
                         if (string.IsNullOrWhiteSpace(patcherVersioning.Target)) return GetResponse<RunnerRepoInfo>.Fail("No tag selected");
                         repo.Fetch();
-                        targetSha = repo.Tags[patcherVersioning.Target]?.Target.Sha;
-                        if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate tag");
+                        if (!repo.TryGetTagSha(patcherVersioning.Target, out targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate tag");
                         target = patcherVersioning.Target;
                         break;
                     case PatcherVersioningEnum.Commit:
@@ -79,18 +78,21 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     case PatcherVersioningEnum.Branch:
                         if (string.IsNullOrWhiteSpace(patcherVersioning.Target)) return GetResponse<RunnerRepoInfo>.Fail($"Target branch had no name.");
                         repo.Fetch();
-                        var targetBranch = repo.Branches[patcherVersioning.Target];
-                        if (targetBranch == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {patcherVersioning.Target}");
+                        if (!repo.TryGetBranch(patcherVersioning.Target, out var targetBranch)) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {patcherVersioning.Target}");
                         targetSha = targetBranch.Tip.Sha;
                         target = patcherVersioning.Target;
                         break;
                     default:
                         throw new NotImplementedException();
                 }
-                if (!ObjectId.TryParse(targetSha, out var objId)) return GetResponse<RunnerRepoInfo>.Fail("Malformed sha string");
+
+                var commit = repo.TryGetCommit(targetSha, out var validSha);
+                if (!validSha)
+                {
+                    return GetResponse<RunnerRepoInfo>.Fail("Malformed sha string");
+                }
 
                 cancel.ThrowIfCancellationRequested();
-                var commit = repo.Lookup(objId, ObjectType.Commit) as Commit;
                 if (commit == null)
                 {
                     if (!fetchIfMissing)
@@ -98,7 +100,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                         return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit with given sha");
                     }
                     repo.Fetch();
-                    commit = repo.Lookup(objId, ObjectType.Commit) as Commit;
+                    commit = repo.TryGetCommit(targetSha, out _);
                     if (commit == null)
                     {
                         return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit with given sha");
@@ -115,7 +117,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
                 cancel.ThrowIfCancellationRequested();
                 logger?.Invoke($"Checking out {targetSha}");
-                repo.Reset(ResetMode.Hard, commit, new CheckoutOptions());
+                repo.ResetHard(commit);
 
                 var projPath = Path.Combine(localRepoDir, foundProjSubPath);
 

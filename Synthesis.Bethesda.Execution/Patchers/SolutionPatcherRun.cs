@@ -82,7 +82,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             if (Repository.IsValid(repoPath))
             {
                 using var repo = _RepositoryCheckouts.Get(repoPath!);
-                _output.OnNext($"Sha {repo.Repository.Head.Tip.Sha}");
+                _output.OnNext($"Sha {repo.Repository.CurrentSha}");
             }
             
             var runnability = await _CheckRunnability.Check(

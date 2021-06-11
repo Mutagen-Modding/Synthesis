@@ -12,7 +12,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
             DirectoryPath localDir,
             GetResponse<string> remoteUrl);
 
-        bool IsRepositoryUndesirable(Repository repo);
+        bool IsRepositoryUndesirable(IGitRepository repo);
     }
 
     public class DeleteOldRepo : IDeleteOldRepo
@@ -51,7 +51,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
                 if (IsRepositoryUndesirable(repo)) return true;
                 
                 // If it's the same remote repo, don't delete
-                if (repo.Network.Remotes.FirstOrDefault()?.Url.Equals(remoteUrl.Value) ?? false)
+                if (repo.MainRemoteUrl?.Equals(remoteUrl.Value) ?? false)
                 {
                     _Logger.Information("Remote repository target matched local folder's repo at {LocalDirectory}.  Keeping clone.", localDir);
                     return true;
@@ -69,12 +69,12 @@ namespace Synthesis.Bethesda.Execution.GitRespository
             return false;
         }
 
-        public bool IsRepositoryUndesirable(Repository repo)
+        public bool IsRepositoryUndesirable(IGitRepository repo)
         {
-            var master = repo.Branches.Where(b => b.IsCurrentRepositoryHead).FirstOrDefault();
+            var master = repo.MainBranch;
             if (master == null)
             {
-                _Logger.Warning("Could not locate master branch in {LocalDirectory}", repo.Info.WorkingDirectory);
+                _Logger.Warning("Could not locate master branch in {LocalDirectory}", repo.WorkingDirectory);
                 return true;
             }
             return false;

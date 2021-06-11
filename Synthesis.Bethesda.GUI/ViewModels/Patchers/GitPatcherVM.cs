@@ -244,17 +244,16 @@ namespace Synthesis.Bethesda.GUI
                         {
                             using var repoCheckout = repoCheckouts.Get(LocalDriverRepoDirectory);
                             var repo = repoCheckout.Repository;
-                            var master = repo.Branches.Where(b => b.IsCurrentRepositoryHead).FirstOrDefault();
+                            var master = repo.MainBranch;
                             if (master == null)
                             {
                                 Logger.Error($"Failed to check out driver repository: Could not locate master branch");
                                 return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate master branch."));
                             }
                             masterBranch = master.FriendlyName;
-                            repo.Reset(ResetMode.Hard);
-                            Commands.Checkout(repo, master);
-                            Signature author = new("please", "whymustidothis@gmail.com", DateTimeOffset.Now);
-                            Commands.Pull(repo, author, null);
+                            repo.ResetHard();
+                            repo.Checkout(master);
+                            repo.Pull();
                             tags = repo.Tags.Select(tag => (tag.FriendlyName, tag.Target.Sha))
                                 .WithIndex()
                                 .Select(x => (x.Index, x.Item.FriendlyName, x.Item.Sha))

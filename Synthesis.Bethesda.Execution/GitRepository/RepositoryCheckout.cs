@@ -1,17 +1,15 @@
 ﻿using System;
-using LibGit2Sharp;
-using Noggog;
 
 namespace Synthesis.Bethesda.Execution.GitRespository
 {
     public class RepositoryCheckout : IDisposable
     {
-        private Lazy<Repository> _Repository { get; }
-        public Repository Repository => _Repository.Value;
+        private Lazy<IGitRepository> _Repository { get; }
+        public IGitRepository Repository => _Repository.Value;
         
         private readonly IDisposable _Cleanup;
 
-        public RepositoryCheckout(Lazy<Repository> repo, IDisposable cleanup)
+        public RepositoryCheckout(Lazy<IGitRepository> repo, IDisposable cleanup)
         {
             _Repository = repo;
             _Cleanup = cleanup;

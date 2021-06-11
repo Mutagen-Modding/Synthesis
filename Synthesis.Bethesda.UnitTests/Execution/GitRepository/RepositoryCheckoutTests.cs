@@ -1,31 +1,25 @@
 ﻿using System;
 using System.Reactive.Disposables;
-using AutoFixture;
 using FluentAssertions;
-using LibGit2Sharp;
+using NSubstitute;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
 {
-    public class RepositoryCheckoutTests: RepoTestUtility, IClassFixture<Fixture>
+    public class RepositoryCheckoutTests: RepoTestUtility
     {
-        private readonly Fixture _Fixture;
-
-        public RepositoryCheckoutTests(Fixture fixture)
-        {
-            _Fixture = fixture;
-        }
-        
         [Fact]
         public void DoesCleanupCall()
         {
             var cleanup = new CancellationDisposable();
+            var repoMock = Substitute.For<IGitRepository>();
             new RepositoryCheckout(
-                    _Fixture.Inject.Create<Lazy<Repository>>(),
+                    new Lazy<IGitRepository>(repoMock),
                     cleanup)
                 .Dispose();
             cleanup.IsDisposed.Should().BeTrue();
+            repoMock.Received().Dispose();
         }
     }
 }

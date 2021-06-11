@@ -12,11 +12,5 @@ namespace Synthesis.Bethesda.GUI.Settings
     {
         [Reactive]
         public bool Lock { get; set; }
-
-        public LockToCurrentVersioning()
-        {
-            int wer = 23;
-            wer++;
-        }
     }
 }

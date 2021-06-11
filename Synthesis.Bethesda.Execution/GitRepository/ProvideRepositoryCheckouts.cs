@@ -38,7 +38,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
 
                 _numInFlight++;
                 return new RepositoryCheckout(
-                    new Lazy<Repository>(() => new Repository(path)),
+                    new Lazy<IGitRepository>(() => new GitRepository(new Repository(path))),
                     Disposable.Create(Cleanup));
             }
         }

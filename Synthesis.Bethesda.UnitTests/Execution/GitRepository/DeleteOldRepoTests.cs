@@ -37,7 +37,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
                 out var remote, out var local,
                 createPatcherFiles: false);
             var del = Get();
-            using var repo = new Repository(local);
+            using var repo = new Bethesda.Execution.GitRespository.GitRepository(new Repository(local));
             del.IsRepositoryUndesirable(repo)
                 .Should().BeFalse();
         }

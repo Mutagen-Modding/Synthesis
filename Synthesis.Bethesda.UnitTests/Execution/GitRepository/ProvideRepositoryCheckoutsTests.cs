@@ -31,7 +31,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
                 createPatcherFiles: false);
             var provide = Get();
             using var checkout = provide.Get(local);
-            new DirectoryPath(checkout.Repository.Info.WorkingDirectory).Should().BeEquivalentTo(local);
+            new DirectoryPath(checkout.Repository.WorkingDirectory).Should().BeEquivalentTo(local);
         }
 
         [Fact]

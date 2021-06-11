@@ -158,11 +158,11 @@ namespace Synthesis.Bethesda.GUI
                     Repository.Init(vm.SettingsFolder);
                 }
                 using var repo = _RepoCheckouts.Get(vm.SettingsFolder);
-                Commands.Stage(repo.Repository, vm.SettingsSubPath);
+                repo.Repository.Stage(vm.SettingsSubPath);
                 var sig = new Signature("Synthesis", "someEmail@gmail.com", DateTimeOffset.Now);
                 try
                 {
-                    repo.Repository.Commit("Settings changed", sig, sig);
+                    repo.Repository.Commit("Settings changed", sig);
                 }
                 catch (EmptyCommitException)
                 {

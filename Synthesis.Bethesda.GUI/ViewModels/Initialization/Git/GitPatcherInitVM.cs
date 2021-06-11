@@ -93,16 +93,22 @@ namespace Synthesis.Bethesda.GUI
                         var repo = repoCheckout.Repository;
                         repo.Fetch();
 
-                        var master = repo.Branches.Where(b => b.IsCurrentRepositoryHead).FirstOrDefault();
+                        var master = repo.MainBranch;
                         if (master == null)
                         {
                             Error = ErrorResponse.Fail("Could not find master branch");
                             Log.Logger.Error(Error.Reason);
                             return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
                         }
-                        repo.Reset(ResetMode.Hard, repo.Branches[$"{master.RemoteName}/{master.FriendlyName}"].Tip, new CheckoutOptions());
+                        if (!repo.TryGetBranch($"{master.RemoteName}/{master.FriendlyName}", out var originBranch))
+                        {
+                            Error = ErrorResponse.Fail("Could not find remote master branch");
+                            Log.Logger.Error(Error.Reason);
+                            return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
+                        }
+                        repo.ResetHard(originBranch.Tip);
 
-                        var listingPath = Path.Combine(repo.Info.WorkingDirectory, Constants.AutomaticListingFileName);
+                        var listingPath = Path.Combine(repo.WorkingDirectory, Constants.AutomaticListingFileName);
                         if (!File.Exists(listingPath))
                         {
                             Error = ErrorResponse.Fail("Could not locate listing file");
