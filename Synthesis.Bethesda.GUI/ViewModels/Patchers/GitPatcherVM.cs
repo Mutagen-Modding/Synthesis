@@ -38,7 +38,10 @@ namespace Synthesis.Bethesda.GUI
     public class GitPatcherVM : PatcherVM
     {
         private readonly IProfilePatchersList _PatchersList;
+        private readonly IProvideRepositoryCheckouts _RepoCheckouts;
         private readonly ICheckoutRunnerRepository _CheckoutRunner;
+        private readonly ICheckRunnability _CheckRunnability;
+        private readonly IBuild _Build;
         public override bool IsNameEditable => false;
 
         [Reactive]
@@ -181,7 +184,10 @@ namespace Synthesis.Bethesda.GUI
             : base(remove, selPatcher, confirmation, settings)
         {
             _PatchersList = patchersList;
+            _RepoCheckouts = repoCheckouts;
             _CheckoutRunner = checkoutRunner;
+            _CheckRunnability = checkRunnability;
+            _Build = build;
             Locking = lockToCurrentVersioning;
             
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
@@ -1133,9 +1139,9 @@ namespace Synthesis.Bethesda.GUI
                     pathToSln: RunnableData.SolutionPath,
                     pathToExtraDataBaseFolder: Execution.Paths.TypicalExtraData,
                     pathToProj: RunnableData.ProjPath,
-                    build: Inject.Container.GetInstance<IBuild>(),
-                    checkRunnability: Inject.Container.GetInstance<ICheckRunnability>(),
-                    repositoryCheckouts: Inject.Container.GetInstance<IProvideRepositoryCheckouts>()));
+                    build: _Build,
+                    checkRunnability: _CheckRunnability,
+                    repositoryCheckouts: _RepoCheckouts));
         }
 
         public static IObservable<ConfigurationState<string>> GetRepoPathValidity(IObservable<string> repoPath)

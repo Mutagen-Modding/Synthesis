@@ -33,6 +33,9 @@ namespace Synthesis.Bethesda.GUI
     public class SolutionPatcherVM : PatcherVM
     {
         private readonly IProfileLoadOrder _LoadOrder;
+        private readonly ICheckRunnability _CheckRunnability;
+        private readonly IProvideRepositoryCheckouts _ProvideRepositoryCheckouts;
+        private readonly IBuild _Build;
 
         public PathPickerVM SolutionPath { get; } = new()
         {
@@ -98,10 +101,16 @@ namespace Synthesis.Bethesda.GUI
             IProvideRepositoryCheckouts repositoryCheckouts,
             IGetSettingsStyle settingsStyle,
             IProvideWindowPlacement windowPlacement,
+            ICheckRunnability checkRunnability,
+            IProvideRepositoryCheckouts provideRepositoryCheckouts,
+            IBuild build,
             SolutionPatcherSettings? settings = null)
             : base(remove, profileDisplay, confirmation, settings)
         {
             _LoadOrder = loadOrder;
+            _CheckRunnability = checkRunnability;
+            _ProvideRepositoryCheckouts = provideRepositoryCheckouts;
+            _Build = build;
             CopyInSettings(settings);
             SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
@@ -324,9 +333,9 @@ namespace Synthesis.Bethesda.GUI
                     pathToSln: SolutionPath.TargetPath,
                     pathToExtraDataBaseFolder: Execution.Paths.TypicalExtraData,
                     pathToProj: SelectedProjectPath.TargetPath,
-                    build: Inject.Container.GetInstance<IBuild>(),
-                    checkRunnability: Inject.Container.GetInstance<ICheckRunnability>(),
-                    repositoryCheckouts: Inject.Container.GetInstance<IProvideRepositoryCheckouts>()));
+                    build: _Build,
+                    checkRunnability: _CheckRunnability,
+                    repositoryCheckouts: _ProvideRepositoryCheckouts));
         }
 
         public class SolutionPatcherConfigLogic
