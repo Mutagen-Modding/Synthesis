@@ -53,7 +53,10 @@ namespace Synthesis.Bethesda.GUI
 
         private PatcherRunVM? _previousPatcher;
 
-        public PatchersRunVM(ConfigurationVM parent, ProfileVM profile)
+        public PatchersRunVM(
+            ConfigurationVM parent,
+            IActivePanelControllerVm activePanelController,
+            ProfileVM profile)
         {
             Config = parent;
             RunningProfile = profile;
@@ -68,11 +71,9 @@ namespace Synthesis.Bethesda.GUI
                 SelectedPatcher = run;
             }
             
-            var activePanelController = profile.Container.GetInstance<IActivePanelControllerVm>();
-            var display = profile.Container.GetInstance<IProfileDisplayControllerVm>();
             BackCommand = ReactiveCommand.Create(() =>
             {
-                display.SelectedObject = SelectedPatcher?.Config;
+                profile.DisplayController.SelectedObject = SelectedPatcher?.Config;
                 activePanelController.ActivePanel = parent;
             },
             canExecute: this.WhenAnyValue(x => x.Running)

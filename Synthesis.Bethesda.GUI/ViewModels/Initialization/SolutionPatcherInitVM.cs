@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using DynamicData.Binding;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Ide;
 using Synthesis.Bethesda.GUI.Settings;
 
@@ -16,7 +15,6 @@ namespace Synthesis.Bethesda.GUI
     public class SolutionPatcherInitVM : PatcherInitVM
     {
         public IShowHelpSetting ShowHelpSetting { get; }
-        private readonly IContainerTracker _Container;
         private readonly ISettingsSingleton _SettingsSingleton;
         private readonly IOpenIde _OpenIde;
 
@@ -42,7 +40,6 @@ namespace Synthesis.Bethesda.GUI
         public IDE Ide { get; set; }
 
         public SolutionPatcherInitVM(
-            IContainerTracker container,
             IShowHelpSetting showHelpSetting,
             ISettingsSingleton settingsSingleton,
             IOpenIde openIde,
@@ -57,7 +54,6 @@ namespace Synthesis.Bethesda.GUI
             ExistingSolution = existingSolutionInit;
             ExistingProject = existingProjectInit;
             New = newSolutionInit;
-            _Container = container;
             _SettingsSingleton = settingsSingleton;
             _OpenIde = openIde;
             OpenCodeAfter = _SettingsSingleton.Gui.OpenIdeAfterCreating;
@@ -98,7 +94,7 @@ namespace Synthesis.Bethesda.GUI
         public override async IAsyncEnumerable<PatcherVM> Construct()
         {
             if (TargetSolutionInitializer == null) yield break;
-            var ret = (await TargetSolutionInitializer(_Container.Container)).ToList();
+            var ret = (await TargetSolutionInitializer()).ToList();
             foreach (var item in ret)
             {
                 yield return item;

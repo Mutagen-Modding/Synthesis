@@ -56,6 +56,7 @@ namespace Synthesis.Bethesda.GUI
             IProvideRepositoryCheckouts repoCheckouts,
             IGetSettingsStyle getSettingsStyle,
             IOpenForSettings openForSettings,
+            IProvideWindowPlacement windowPlacement,
             IOpenSettingsHost openSettingsHost)
         {
             _RepoCheckouts = repoCheckouts;
@@ -88,7 +89,6 @@ namespace Synthesis.Bethesda.GUI
                 .Switch()
                 .ToGuiProperty(this, nameof(SettingsConfiguration), new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()));
 
-            var windowPlacement = Inject.Container.GetInstance<IProvideWindowPlacement>();
             OpenSettingsCommand = NoggogCommand.CreateFromObject(
                 objectSource: Observable.CombineLatest(
                         source.Select(x => x.ProjPath),

@@ -106,7 +106,7 @@ namespace Synthesis.Bethesda.GUI
 
             OpenProfilesPageCommand = ReactiveCommand.Create(() =>
             {
-                activePanelControllerVm.ActivePanel = new ProfilesDisplayVM(Configuration, ActivePanel);
+                activePanelControllerVm.ActivePanel = new ProfilesDisplayVM(Configuration, profileFactory, activePanelControllerVm, ActivePanel);
             },
             canExecute: Observable.CombineLatest(
                     this.WhenAnyFallback(x => x.Configuration.CurrentRun!.Running, fallback: false),

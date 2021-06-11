@@ -25,7 +25,6 @@ namespace Synthesis.Bethesda.GUI
     public class GitPatcherInitVM : PatcherInitVM
     {
         private readonly IPatcherFactory _PatcherFactory;
-        private readonly IContainerTracker _Container;
         private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
         public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
 
@@ -62,14 +61,12 @@ namespace Synthesis.Bethesda.GUI
         public GitPatcherInitVM(
             PatcherInitializationVM init,
             IPatcherFactory patcherFactory,
-            IContainerTracker container,
             INavigateTo navigateTo, 
             IProvideRepositoryCheckouts repositoryCheckouts,
             ICheckOrCloneRepo checkOrClone)
             : base(init)
         {
             _PatcherFactory = patcherFactory;
-            _Container = container;
             Patcher = patcherFactory.Get<GitPatcherVM>();
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)

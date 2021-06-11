@@ -28,11 +28,14 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public object? DisplayObject { get; set; } = null;
 
-        public ProfilesDisplayVM(ConfigurationVM parent, ViewModel? previousPage)
+        public ProfilesDisplayVM(
+            ConfigurationVM parent,
+            IProfileFactory profileFactory, 
+            IActivePanelControllerVm activePanelController,
+            ViewModel? previousPage)
         {
             _previous = previousPage;
             Config = parent;
-            var activePanelController = Inject.Container.GetInstance<IActivePanelControllerVm>();
             GoBackCommand = ReactiveCommand.Create(() =>
             {
                 activePanelController.ActivePanel = _previous;
@@ -41,7 +44,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 DisplayObject = new NewProfileVM(
                     Config,
-                    Inject.Container.GetInstance<IProfileFactory>());
+                    profileFactory);
                 DisplayedProfile = null;
             });
 

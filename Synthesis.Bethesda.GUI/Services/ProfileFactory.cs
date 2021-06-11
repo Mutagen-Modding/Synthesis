@@ -2,7 +2,6 @@
 using System.Linq;
 using DynamicData;
 using Mutagen.Bethesda;
-using Noggog.WPF;
 using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.GUI.Services
@@ -26,25 +25,20 @@ namespace Synthesis.Bethesda.GUI.Services
             profile.ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
             profile.LockSetting.Lock = settings.LockToCurrentVersioning;
             profile.SelectedPersistenceMode = settings.Persistence;
-            var patcherFactory = profile.Container.GetInstance<IPatcherFactory>();
-            profile.Patchers.AddRange(settings.Patchers.Select(patcherFactory.Get));
+            profile.Patchers.AddRange(settings.Patchers.Select(profile.PatcherFactory.Get));
             return profile;
         }
 
         public ProfileVM Get(GameRelease release, string id, string nickname)
         {
-            var scope = Inject.Container.CreateChildContainer();
-            var ident = scope.GetInstance<IProfileIdentifier>();
-            ident.ID = id;
-            ident.Release = release;
-            ident.Nickname = nickname;
-            scope.GetInstance<IContainerTracker>().Container = scope;
-            var profile = scope
-                .With(scope)
-                .With(ident)
+            return Inject.Container
+                .With<IProfileIdentifier>(new ProfileIdentifier()
+                {
+                    ID = id,
+                    Release = release,
+                    Nickname = nickname
+                })
                 .GetInstance<ProfileVM>();
-            scope.DisposeWith(profile);
-            return profile;
         }
     }
 }

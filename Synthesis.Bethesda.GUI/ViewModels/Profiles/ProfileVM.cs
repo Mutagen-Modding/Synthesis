@@ -30,7 +30,8 @@ namespace Synthesis.Bethesda.GUI
     {
         private readonly PatcherInitializationVM _Init;
         private readonly INavigateTo _Navigate;
-        
+        private readonly IRetrieveSaveSettings _RetrieveSaveSettings;
+
         public GameRelease Release { get; }
 
         public SourceList<PatcherVM> Patchers { get; }
@@ -83,14 +84,12 @@ namespace Synthesis.Bethesda.GUI
         public IObservable<ILinkCache?> SimpleLinkCache { get; }
 
         public ILockToCurrentVersioning LockSetting { get; }
+        public IPatcherFactory PatcherFactory { get; }
 
         [Reactive]
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
         
-        public IContainer Container { get; }
-
         public ProfileVM(
-            IContainerTracker containerTracker,
             IProfilePatchersList patchersList,
             IProfileDataFolder dataFolder,
             PatcherInitializationVM init,
@@ -101,6 +100,12 @@ namespace Synthesis.Bethesda.GUI
             INavigateTo navigate,
             IProfileDisplayControllerVm profileDisplay,
             ILockToCurrentVersioning lockSetting,
+            GitPatcherInitVM gitPatcherInitVm,
+            SolutionPatcherInitVM solutionPatcherInitVm,
+            CliPatcherInitVM cliPatcherInitVm,
+            IRetrieveSaveSettings retrieveSaveSettings,
+            IPatcherFactory patcherFactory,
+            ISelectedProfileControllerVm selProfile,
             ILogger logger)
         {
             logger.Information("Creating Profile with ID {ID}", ident.ID);
@@ -108,23 +113,24 @@ namespace Synthesis.Bethesda.GUI
             DataFolderOverride = dataFolder;
             Versioning = versioning;
             Patchers = patchersList.Patchers;
-            Container = containerTracker.Container;
             LockSetting = lockSetting;
+            PatcherFactory = patcherFactory;
             DisplayController = profileDisplay;
             _Navigate = navigate;
+            _RetrieveSaveSettings = retrieveSaveSettings;
             Nickname = ident.Nickname;
             ID = ident.ID;
             Release = ident.Release;
             AddGitPatcherCommand = ReactiveCommand.Create(() =>
             {
-                SetInitializer(Container.GetInstance<GitPatcherInitVM>());
+                SetInitializer(gitPatcherInitVm);
             });
-            AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(Container.GetInstance<SolutionPatcherInitVM>()));
+            AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(solutionPatcherInitVm));
             AddCliPatcherCommand = ReactiveCommand.Create(() =>
             {
                 try
                 {
-                    SetInitializer(Container.GetInstance<CliPatcherInitVM>());
+                    SetInitializer(cliPatcherInitVm);
                 }
                 catch (Exception e)
                 {
@@ -224,7 +230,6 @@ namespace Synthesis.Bethesda.GUI
                 })
                 .ToGuiProperty<ErrorResponse>(this, nameof(BlockingError), ErrorResponse.Fail("Uninitialized blocking error"));
 
-            var selProfile = Container.GetInstance<ISelectedProfileControllerVm>();
             _IsActive = selProfile.WhenAnyValue(x => x.SelectedProfile)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsActive));
@@ -403,7 +408,7 @@ namespace Synthesis.Bethesda.GUI
         {
             try
             {
-                Container.GetInstance<IRetrieveSaveSettings>().Retrieve(out var guiSettings, out var pipeSettings);
+                _RetrieveSaveSettings.Retrieve(out var guiSettings, out var pipeSettings);
                 pipeSettings.Profiles.RemoveWhere(p => p.ID != this.ID);
                 guiSettings.SelectedProfile = this.ID;
                 if (pipeSettings.Profiles.Count != 1)

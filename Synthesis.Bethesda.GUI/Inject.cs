@@ -47,7 +47,6 @@ namespace Synthesis.Bethesda.GUI
         {
             _coll.ForSingletonOf<MainVM>();
             _coll.ForSingletonOf<ConfigurationVM>();
-            _coll.ForSingletonOf<CliPatcherInitVM>();
             _coll.ForSingletonOf<PatcherInitializationVM>();
             _coll.ForSingletonOf<ILogger>().Use(Log.Logger);
             _coll.ForSingletonOf<ISettingsSingleton>().Use<SettingsSingleton>();
@@ -65,27 +64,26 @@ namespace Synthesis.Bethesda.GUI
                 s.AddAllTypesOf<IEnvironmentErrorVM>();
             });
             
-            _coll.For<ILockToCurrentVersioning>().Use<LockToCurrentVersioning>().ContainerScoped();
-            _coll.For<IProfileDisplayControllerVm>().Use<ProfileDisplayControllerVm>().ContainerScoped();
-            _coll.For<IEnvironmentErrorsVM>().Use<EnvironmentErrorsVM>().ContainerScoped();
-            _coll.For<ProfilePatchersList>().ContainerScoped();
+            _coll.For<ILockToCurrentVersioning>().Use<LockToCurrentVersioning>();
+            _coll.For<IProfileDisplayControllerVm>().Use<ProfileDisplayControllerVm>();
+            _coll.For<IEnvironmentErrorsVM>().Use<EnvironmentErrorsVM>();
+            _coll.For<ProfilePatchersList>();
             _coll.Forward<ProfilePatchersList, IRemovePatcherFromProfile>();
             _coll.Forward<ProfilePatchersList, IProfilePatchersList>();
-            _coll.For<IProfileIdentifier>().Use<ProfileIdentifier>().ContainerScoped();
-            _coll.For<IProfileLoadOrder>().Use<ProfileLoadOrder>().ContainerScoped();
-            _coll.For<IProfileDirectories>().Use<ProfileDirectories>().ContainerScoped();
-            _coll.For<IProfileDataFolder>().Use<ProfileDataFolder>().ContainerScoped();
-            _coll.For<IProfileVersioning>().Use<ProfileVersioning>().ContainerScoped();
-            _coll.For<IProfileSimpleLinkCache>().Use<ProfileSimpleLinkCache>().ContainerScoped();
-            _coll.For<IContainerTracker>().Use<ContainerTracker>().ContainerScoped();
-            _coll.For<IPatcherFactory>().Use<PatcherFactory>().ContainerScoped();
-            _coll.For<GitPatcherInitVM>().ContainerScoped();
+            _coll.For<IProfileIdentifier>().Use<ProfileIdentifier>();
+            _coll.For<IProfileLoadOrder>().Use<ProfileLoadOrder>();
+            _coll.For<IProfileDirectories>().Use<ProfileDirectories>();
+            _coll.For<IProfileDataFolder>().Use<ProfileDataFolder>();
+            _coll.For<IProfileVersioning>().Use<ProfileVersioning>();
+            _coll.For<IProfileSimpleLinkCache>().Use<ProfileSimpleLinkCache>();
+            _coll.For<IPatcherFactory>().Use<PatcherFactory>();
+            _coll.For<GitPatcherInitVM>();
+            _coll.For<CliPatcherInitVM>();
             
             _coll.Scan(s =>
             {
                 s.AssemblyContainingType<INavigateTo>();
                 s.IncludeNamespaceContainingType<INavigateTo>();
-                s.ExcludeType<ContainerTracker>();
                 s.WithDefaultConventions();
             });
         }

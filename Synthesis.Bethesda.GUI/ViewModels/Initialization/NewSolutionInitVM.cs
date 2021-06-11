@@ -33,6 +33,7 @@ namespace Synthesis.Bethesda.GUI
         public string ProjectNameWatermark => _ProjectNameWatermark.Value;
 
         public NewSolutionInitVM(
+            IProfileIdentifier identifier,
             IPatcherFactory patcherFactory)
         {
             ParentDirPath.PathType = PathPickerVM.PathTypeOptions.Folder;
@@ -96,12 +97,11 @@ namespace Synthesis.Bethesda.GUI
                     if (i.parentDir.Failed) return i.parentDir.BubbleFailure<InitializerCall>();
                     if (i.sln.Failed) return i.sln.BubbleFailure<InitializerCall>();
                     if (i.validation.Failed) return i.validation.BubbleFailure<InitializerCall>();
-                    return GetResponse<InitializerCall>.Succeed(async (c) =>
+                    return GetResponse<InitializerCall>.Succeed(async () =>
                     {
                         var patcher = patcherFactory.Get<SolutionPatcherVM>();
-                        var ident = c.GetInstance<IProfileIdentifier>();
                         SolutionInitialization.CreateSolutionFile(i.sln.Value);
-                        SolutionInitialization.CreateProject(i.validation.Value, ident.Release.ToCategory());
+                        SolutionInitialization.CreateProject(i.validation.Value, identifier.Release.ToCategory());
                         SolutionInitialization.AddProjectToSolution(i.sln.Value, i.validation.Value);
                         SolutionInitialization.GenerateGitIgnore(Path.GetDirectoryName(i.sln.Value)!);
                         patcher.SolutionPath.TargetPath = i.sln.Value;

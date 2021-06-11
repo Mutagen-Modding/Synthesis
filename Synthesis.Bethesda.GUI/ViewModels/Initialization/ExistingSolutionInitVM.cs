@@ -26,6 +26,7 @@ namespace Synthesis.Bethesda.GUI
         public ErrorResponse ProjectError => _ProjectError.Value;
 
         public ExistingSolutionInitVM(
+            ProfileIdentifier profileIdentifier,
             IPatcherFactory patcherFactory)
         {
             SolutionPath.PathType = PathPickerVM.PathTypeOptions.File;
@@ -48,11 +49,10 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (!i.sln.Succeeded) return i.sln.BubbleFailure<InitializerCall>();
                     if (!i.validation.Succeeded) return i.validation.BubbleFailure<InitializerCall>();
-                    return GetResponse<InitializerCall>.Succeed(async (c) =>
+                    return GetResponse<InitializerCall>.Succeed(async () =>
                     {
                         var patcher = patcherFactory.Get<SolutionPatcherVM>();
-                        var ident = c.GetInstance<IProfileIdentifier>();
-                        SolutionInitialization.CreateProject(i.validation.Value, ident.Release.ToCategory());
+                        SolutionInitialization.CreateProject(i.validation.Value, profileIdentifier.Release.ToCategory());
                         SolutionInitialization.AddProjectToSolution(i.sln.Value, i.validation.Value);
                         patcher.SolutionPath.TargetPath = i.sln.Value;
                         patcher.ProjectSubpath = Path.Combine(i.proj, $"{i.proj}.csproj");

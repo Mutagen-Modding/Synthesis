@@ -77,7 +77,7 @@ namespace Synthesis.Bethesda.GUI
                         .And(ErrorResponse.Success)
                         .First();
                     if (err.Failed) return err.BubbleFailure<InitializerCall>();
-                    return GetResponse<InitializerCall>.Succeed(async (c) =>
+                    return GetResponse<InitializerCall>.Succeed(async () =>
                     {
                         return q.Select(i =>
                         {

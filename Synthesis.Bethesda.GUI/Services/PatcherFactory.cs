@@ -1,5 +1,6 @@
 ﻿using System;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.Profiles.Plugins;
 
 namespace Synthesis.Bethesda.GUI.Services
 {
@@ -13,30 +14,31 @@ namespace Synthesis.Bethesda.GUI.Services
 
     public class PatcherFactory : IPatcherFactory
     {
-        private readonly IContainerTracker _Tracker;
+        private readonly ProfileMetadataRegistry _MetadataRegistry;
 
-        public PatcherFactory(IContainerTracker tracker)
+        public PatcherFactory(ProfileMetadataRegistry metadataRegistry)
         {
-            _Tracker = tracker;
+            _MetadataRegistry = metadataRegistry;
         }
         
         public TPatcher Get<TPatcher>()
             where TPatcher : PatcherVM
         {
-            return _Tracker.Container.GetInstance<TPatcher>();
+            return _MetadataRegistry.Configure()
+                .GetInstance<TPatcher>();
         }
 
         public PatcherVM Get(PatcherSettings settings)
         {
             return settings switch
             {
-                GithubPatcherSettings git => _Tracker.Container
+                GithubPatcherSettings git => _MetadataRegistry.Configure()
                     .With(git)
                     .GetInstance<GitPatcherVM>(),
-                SolutionPatcherSettings soln => _Tracker.Container
+                SolutionPatcherSettings soln => _MetadataRegistry.Configure()
                     .With(soln)
                     .GetInstance<SolutionPatcherVM>(),
-                CliPatcherSettings cli => _Tracker.Container
+                CliPatcherSettings cli => _MetadataRegistry.Configure()
                     .With(cli)
                     .GetInstance<CliPatcherVM>(),
                 _ => throw new NotImplementedException(),
