@@ -8,7 +8,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
 {
     public interface ICheckOrCloneRepo
     {
-        Task<GetResponse<(string Remote, string Local)>> Check(
+        GetResponse<(string Remote, string Local)> Check(
             GetResponse<string> remote,
             DirectoryPath localDir,
             Action<string> logger,
@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
             _Delete = delete;
         }
         
-        public async Task<GetResponse<(string Remote, string Local)>> Check(
+        public GetResponse<(string Remote, string Local)> Check(
             GetResponse<string> remote,
             DirectoryPath localDir,
             Action<string> logger,
@@ -33,7 +33,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
             try
             {
                 cancel.ThrowIfCancellationRequested();
-                if (_Delete.Delete(localDir: localDir, remoteUrl: remote, logger: logger))
+                if (_Delete.CheckIfKeeping(localDir: localDir, remoteUrl: remote))
                 {
                     // Short circuiting deletion
                     return GetResponse<(string Remote, string Local)>.Succeed((remote.Value, localDir), remote.Reason);

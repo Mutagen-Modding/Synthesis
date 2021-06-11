@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
+using LibGit2Sharp;
 using Noggog;
 using Serilog;
 
@@ -37,8 +38,8 @@ namespace Synthesis.Bethesda.Execution.GitRespository
 
                 _numInFlight++;
                 return new RepositoryCheckout(
-                    path,
-                    Disposable.Create(() => Cleanup()));
+                    new Lazy<Repository>(() => new Repository(path)),
+                    Disposable.Create(Cleanup));
             }
         }
 

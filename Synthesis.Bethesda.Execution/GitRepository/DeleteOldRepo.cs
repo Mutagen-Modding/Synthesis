@@ -2,43 +2,44 @@
 using System.Linq;
 using LibGit2Sharp;
 using Noggog;
+using Serilog;
 
 namespace Synthesis.Bethesda.Execution.GitRespository
 {
     public interface IDeleteOldRepo
     {
-        bool Delete(
+        bool CheckIfKeeping(
             DirectoryPath localDir,
-            GetResponse<string> remoteUrl,
-            Action<string> logger);
+            GetResponse<string> remoteUrl);
 
-        bool IsRepositoryUndesirable(
-            Repository repo,
-            Action<string> logger);
+        bool IsRepositoryUndesirable(Repository repo);
     }
 
     public class DeleteOldRepo : IDeleteOldRepo
     {
+        private readonly ILogger _Logger;
         private readonly IProvideRepositoryCheckouts _RepoCheckouts;
 
-        public DeleteOldRepo(IProvideRepositoryCheckouts repoCheckouts)
+        public DeleteOldRepo(
+            ILogger logger,
+            IProvideRepositoryCheckouts repoCheckouts)
         {
+            _Logger = logger;
             _RepoCheckouts = repoCheckouts;
         }
         
-        public bool Delete(
+        public bool CheckIfKeeping(
             DirectoryPath localDir,
-            GetResponse<string> remoteUrl,
-            Action<string> logger)
+            GetResponse<string> remoteUrl)
         {
             if (!localDir.Exists)
             {
-                logger($"No local repository exists at {localDir}.  No cleaning to do.");
+                _Logger.Information("No local repository exists at {LocalDirectory}.  No cleaning to do.", localDir);
                 return false;
             }
             if (remoteUrl.Failed)
             {
-                logger($"No remote repository.  Deleting local at {localDir}.");
+                _Logger.Warning("No remote repository.  Deleting local at {LocalDirectory}.", localDir);
                 localDir.DeleteEntireFolder();
                 return false;
             }
@@ -47,35 +48,33 @@ namespace Synthesis.Bethesda.Execution.GitRespository
                 using var repoCheckout = _RepoCheckouts.Get(localDir);
                 var repo = repoCheckout.Repository;
 
-                if (IsRepositoryUndesirable(repo, logger)) return true;
+                if (IsRepositoryUndesirable(repo)) return true;
                 
                 // If it's the same remote repo, don't delete
                 if (repo.Network.Remotes.FirstOrDefault()?.Url.Equals(remoteUrl.Value) ?? false)
                 {
-                    logger($"Remote repository target matched local folder's repo at {localDir}.  Keeping clone.");
+                    _Logger.Information("Remote repository target matched local folder's repo at {LocalDirectory}.  Keeping clone.", localDir);
                     return true;
                 }
             }
             catch (RepositoryNotFoundException)
             {
-                logger($"Repository corrupted.  Deleting local at {localDir}");
+                _Logger.Error("Repository corrupted.  Deleting local at {LocalDirectory}.", localDir);
                 localDir.DeleteEntireFolder();
                 return false;
             }
 
-            logger($"Remote address targeted a different repository.  Deleting local at {localDir}");
+            _Logger.Information("Remote address targeted a different repository.  Deleting local at {LocalDirectory}", localDir);
             localDir.DeleteEntireFolder();
             return false;
         }
 
-        public bool IsRepositoryUndesirable(
-            Repository repo,
-            Action<string> logger)
+        public bool IsRepositoryUndesirable(Repository repo)
         {
             var master = repo.Branches.Where(b => b.IsCurrentRepositoryHead).FirstOrDefault();
             if (master == null)
             {
-                logger($"{repo.Info.Path}: Could not locate master branch");
+                _Logger.Warning("Could not locate master branch in {LocalDirectory}", repo.Info.WorkingDirectory);
                 return true;
             }
             return false;

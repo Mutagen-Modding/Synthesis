@@ -228,7 +228,7 @@ namespace Synthesis.Bethesda.GUI
                         if (!path.IsHaltingError && path.RunnableState.Failed) return path.BubbleError<DriverRepoInfo>();
                         using var timing = Logger.Time("Cloning driver repository");
                         // Clone and/or double check the clone is correct
-                        var state = await checkOrClone.Check(path.ToGetResponse(), LocalDriverRepoDirectory, (x) => Logger.Information(x), cancel);
+                        var state = checkOrClone.Check(path.ToGetResponse(), LocalDriverRepoDirectory, (x) => Logger.Information(x), cancel);
                         if (state.Failed)
                         {
                             Logger.Error($"Failed to check out driver repository: {state.Reason}");
@@ -300,7 +300,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         if (path.RunnableState.Failed) return path.ToUnit();
                         using var timing = Logger.Time($"runner repo: {path.Item}");
-                        return (ErrorResponse)await checkOrClone.Check(path.ToGetResponse(), LocalRunnerRepoDirectory, x => Logger.Information(x), cancel);
+                        return (ErrorResponse)checkOrClone.Check(path.ToGetResponse(), LocalRunnerRepoDirectory, x => Logger.Information(x), cancel);
                     })
                 .Replay(1)
                 .RefCount();

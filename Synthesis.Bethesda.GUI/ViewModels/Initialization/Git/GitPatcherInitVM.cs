@@ -79,7 +79,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     try
                     {
-                        var localRepoPath = await checkOrClone.Check(
+                        var localRepoPath = checkOrClone.Check(
                             GetResponse<string>.Succeed("https://github.com/Mutagen-Modding/Synthesis.Registry"),
                             Paths.RegistryFolder,
                             Log.Logger.Error,

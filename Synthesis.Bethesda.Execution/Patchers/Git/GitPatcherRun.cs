@@ -67,7 +67,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         public async Task Prep(GameRelease release, CancellationToken cancel)
         {
             _output.OnNext("Cloning repository");
-            var cloneResult = await _CheckOrClone.Check(GetResponse<string>.Succeed(_settings.RemoteRepoPath), _localDir, (x) => _output.OnNext(x), cancel);
+            var cloneResult = _CheckOrClone.Check(GetResponse<string>.Succeed(_settings.RemoteRepoPath), _localDir, (x) => _output.OnNext(x), cancel);
             if (cloneResult.Failed)
             {
                 throw new SynthesisBuildFailure(cloneResult.Reason);

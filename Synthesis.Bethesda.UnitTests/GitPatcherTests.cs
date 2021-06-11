@@ -1,27 +1,21 @@
 using FluentAssertions;
 using LibGit2Sharp;
-using Mutagen.Bethesda;
-using Mutagen.Bethesda.Synthesis;
-using Noggog;
-using Noggog.Utility;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
-using Microsoft.Extensions.Logging;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests
 {
-    public class GitPatcherTests : IClassFixture<Fixture>
+    public class GitPatcherTests : RepoTestUtility, IClassFixture<Fixture>
     {
         private readonly Fixture _Fixture;
 
@@ -37,49 +31,6 @@ namespace Synthesis.Bethesda.UnitTests
                 _Fixture.Inject.Create<IProvideRepositoryCheckouts>());
         }
         
-        public TempFolder GetRepository(
-            out string remote, 
-            out string local,
-            bool createPatcherFiles = true,
-            [CallerMemberName] string? testName = null)
-        {
-            var folder = Utility.GetTempFolder(nameof(GitPatcherTests), testName: testName);
-
-            local = Path.Combine(folder.Dir.Path, "Local");
-            Repository.Init(local);
-            remote = Path.Combine(folder.Dir.Path, "Remote");
-            Repository.Init(remote, isBare: true);
-
-            Directory.CreateDirectory(local);
-            using var localRepo = new Repository(local);
-            File.AppendAllText(Path.Combine(local, AFile), "Hello there");
-            Commands.Stage(localRepo, AFile);
-            var sig = Signature;
-            localRepo.Commit("Initial commit", sig, sig);
-
-            if (createPatcherFiles)
-            {
-                var files = SolutionInitialization.CreateSolutionFile(Path.Combine(local, SlnPath))
-                    .And(SolutionInitialization.CreateProject(Path.Combine(local, ProjPath), GameCategory.Skyrim));
-                SolutionInitialization.AddProjectToSolution(Path.Combine(local, SlnPath), Path.Combine(local, ProjPath));
-                foreach (var path in files)
-                {
-                    Commands.Stage(localRepo, path);
-                }
-                localRepo.Commit("Added solution", sig, sig);
-            }
-
-            var remoteRef = localRepo.Network.Remotes.Add("origin", remote);
-            var master = localRepo.Branches[DefaultBranch];
-            localRepo.Branches.Update(
-                master, 
-                b => b.Remote = remoteRef.Name, 
-                b => b.UpstreamBranch = master.CanonicalName);
-            localRepo.Network.Push(master);
-
-            return folder;
-        }
-
         public Commit AddACommit(string path)
         {
             File.AppendAllText(Path.Combine(path, AFile), "Hello there");
@@ -90,12 +41,6 @@ namespace Synthesis.Bethesda.UnitTests
             repo.Network.Push(repo.Head);
             return commit;
         }
-
-        public string DefaultBranch => "master";
-        public string AFile => "Somefile.txt";
-        public string SlnPath => "Solution.sln";
-        public string ProjPath => "MyProj/MyProj.csproj";
-        public Signature Signature => new("noggog", "someEmail@gmail.com", DateTimeOffset.Now);
 
         [DebuggerStepThrough]
         public GitPatcherVersioning TypicalPatcherVersioning() =>
@@ -133,7 +78,9 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task CreatesRunnerBranch()
         {
-            using var repoPath = GetRepository(out var remote, out var local);
+            using var repoPath = GetRepository(
+                nameof(GitPatcherTests),
+                out var remote, out var local);
             var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
@@ -149,7 +96,9 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task NonExistantProjPath()
         {
-            using var repoPath = GetRepository(out var remote, out var local);
+            using var repoPath = GetRepository(
+                nameof(GitPatcherTests),
+                out var remote, out var local);
             var resp = await Get().Checkout(
                 proj: string.Empty,
                 localRepoDir: local,
@@ -166,7 +115,9 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task NonExistantSlnPath()
         {
-            using var repoPath = GetRepository(out var remote, out var local,
+            using var repoPath = GetRepository(
+                nameof(GitPatcherTests),
+                out var remote, out var local,
                 createPatcherFiles: false);
             var resp = await Get().Checkout(
                 proj: ProjPath,
@@ -184,7 +135,9 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task UnknownSha()
         {
-            using var repoPath = GetRepository(out var remote, out var local);
+            using var repoPath = GetRepository(
+                nameof(GitPatcherTests),
+                out var remote, out var local);
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, "46c207318c1531de7dc2f8e8c2a91aced183bc30");
             var resp = await Get().Checkout(
                 proj: ProjPath,
@@ -202,7 +155,9 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task MalformedSha()
         {
-            using var repoPath = GetRepository(out var remote, out var local);
+            using var repoPath = GetRepository(
+                nameof(GitPatcherTests),
+                out var remote, out var local);
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, "derp");
             var resp = await Get().Checkout(
                 proj: ProjPath,
@@ -220,7 +175,9 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task TagTarget()
         {
-            using var repoPath = GetRepository(out var remote, out var local);
+            using var repoPath = GetRepository(
+                nameof(GitPatcherTests),
+                out var remote, out var local);
             var tagStr = "1.3.4";
             using var repo = new Repository(local);
             var tipSha = repo.Head.Tip.Sha;
@@ -243,7 +200,9 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task TagTargetNoLocal()
         {
-            using var repoPath = GetRepository(out var remote, out var local);
+            using var repoPath = GetRepository(
+                nameof(GitPatcherTests),
+                out var remote, out var local);
             var tagStr = "1.3.4";
             string tipSha;
             {
@@ -277,7 +236,9 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task TagTargetJumpback()
         {
-            using var repoPath = GetRepository(out var remote, out var local);
+            using var repoPath = GetRepository(
+                nameof(GitPatcherTests),
+                out var remote, out var local);
             var tag = "1.3.4";
             using var repo = new Repository(local);
             var tipSha = repo.Head.Tip.Sha;
@@ -304,7 +265,9 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task TagTargetNewContent()
         {
-            using var repoPath = GetRepository(out var remote, out var local);
+            using var repoPath = GetRepository(
+                nameof(GitPatcherTests),
+                out var remote, out var local);
 
             var clonePath = Path.Combine(repoPath.Dir.Path, "Clone");
             using var clone = new Repository(Repository.Clone(remote, clonePath));
@@ -337,7 +300,9 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task CommitTargetJumpback()
         {
-            using var repoPath = GetRepository(out var remote, out var local);
+            using var repoPath = GetRepository(
+                nameof(GitPatcherTests),
+                out var remote, out var local);
             using var repo = new Repository(local);
             var tipSha = repo.Head.Tip.Sha;
 
@@ -362,7 +327,9 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task CommitTargetNoLocal()
         {
-            using var repoPath = GetRepository(out var remote, out var local);
+            using var repoPath = GetRepository(
+                nameof(GitPatcherTests),
+                out var remote, out var local);
             string tipSha;
             {
                 using var repo = new Repository(local);
@@ -393,7 +360,9 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task CommitTargetNewContent()
         {
-            using var repoPath = GetRepository(out var remote, out var local);
+            using var repoPath = GetRepository(
+                nameof(GitPatcherTests),
+                out var remote, out var local);
 
             var clonePath = Path.Combine(repoPath.Dir.Path, "Clone");
             using var clone = new Repository(Repository.Clone(remote, clonePath));
@@ -425,7 +394,9 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task BranchTargetJumpback()
         {
-            using var repoPath = GetRepository(out var remote, out var local);
+            using var repoPath = GetRepository(
+                nameof(GitPatcherTests),
+                out var remote, out var local);
             using var repo = new Repository(local);
             var tipSha = repo.Head.Tip.Sha;
             var jbName = "Jumpback";
@@ -459,7 +430,9 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task BranchTargetNoLocal()
         {
-            using var repoPath = GetRepository(out var remote, out var local);
+            using var repoPath = GetRepository(
+                nameof(GitPatcherTests),
+                out var remote, out var local);
             var jbName = "Jumpback";
             string tipSha;
             string commitSha;
@@ -502,7 +475,9 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task BranchNewContent()
         {
-            using var repoPath = GetRepository(out var remote, out var local);
+            using var repoPath = GetRepository(
+                nameof(GitPatcherTests),
+                out var remote, out var local);
             string tipSha;
             string commitSha;
 

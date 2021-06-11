@@ -11,15 +11,18 @@ namespace Synthesis.Bethesda.Execution.GitRespository
         
         private readonly IDisposable _Cleanup;
 
-        public RepositoryCheckout(DirectoryPath path, IDisposable cleanup)
+        public RepositoryCheckout(Lazy<Repository> repo, IDisposable cleanup)
         {
-            _Repository = new Lazy<Repository>(() => new Repository(path));
+            _Repository = repo;
             _Cleanup = cleanup;
         }
 
         public void Dispose()
         {
-            Repository.Dispose();
+            if (_Repository.IsValueCreated)
+            {
+                _Repository.Value.Dispose();
+            }
             _Cleanup.Dispose();
         }
     }
