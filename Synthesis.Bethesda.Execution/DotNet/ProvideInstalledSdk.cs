@@ -37,7 +37,7 @@ namespace Synthesis.Bethesda.Execution.DotNet
                 .Merge(dotNet
                     .FirstAsync(v => v != null))
                 .DistinctUntilChanged()
-                .Do(x => logger.Information("dotnet SDK: {Version}", x))
+                .Do(x => logger.Information("DotNet SDK: {Version}", x))
                 .Replay(1)
                 .RefCount();
         }

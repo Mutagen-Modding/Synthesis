@@ -108,7 +108,6 @@ namespace Synthesis.Bethesda.GUI
             ISelectedProfileControllerVm selProfile,
             ILogger logger)
         {
-            logger.Information("Creating Profile with ID {ID}", ident.ID);
             _Init = init;
             DataFolderOverride = dataFolder;
             Versioning = versioning;

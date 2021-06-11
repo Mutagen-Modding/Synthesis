@@ -38,25 +38,30 @@ namespace Synthesis.Bethesda.GUI.Services
         private async void Shutdown()
         {
             IsShutdown = true;
-            var toDo = new List<Task>();
-            toDo.Add(Task.Run(() =>
+
+            await Task.Run(() =>
             {
                 if (!_Init.Initialized)
                 {
                     Log.Logger.Information("App was unable to start up.  Not saving settings.");
                     return;
                 }
+
                 try
                 {
                     _Save.Retrieve(out var gui, out var pipe);
-                    File.WriteAllText(Execution.Paths.SettingsFileName, JsonConvert.SerializeObject(pipe, Formatting.Indented, Execution.Constants.JsonSettings));
-                    File.WriteAllText(Paths.GuiSettingsPath, JsonConvert.SerializeObject(gui, Formatting.Indented, Execution.Constants.JsonSettings));
+                    File.WriteAllText(Execution.Paths.SettingsFileName,
+                        JsonConvert.SerializeObject(pipe, Formatting.Indented, Execution.Constants.JsonSettings));
+                    File.WriteAllText(Paths.GuiSettingsPath,
+                        JsonConvert.SerializeObject(gui, Formatting.Indented, Execution.Constants.JsonSettings));
                 }
                 catch (Exception e)
                 {
                     Log.Logger.Error("Error saving settings", e);
                 }
-            }));
+            });
+            
+            var toDo = new List<Task>();
 #if !DEBUG
             toDo.Add(Task.Run(async () =>
             {

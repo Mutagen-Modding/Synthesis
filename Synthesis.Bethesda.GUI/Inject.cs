@@ -1,8 +1,12 @@
 using System;
+using System.Linq;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Mutagen.Bethesda.Synthesis.WPF;
+using Noggog;
 using Serilog;
 using StructureMap;
+using StructureMap.Graph;
+using StructureMap.Graph.Scanning;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
@@ -52,11 +56,12 @@ namespace Synthesis.Bethesda.GUI
             _coll.ForSingletonOf<ISettingsSingleton>().Use<SettingsSingleton>();
             _coll.ForSingletonOf<IShowHelpSetting>().Use<ShowHelpSetting>();
             _coll.ForSingletonOf<IConsiderPrereleasePreference>().Use<ConsiderPrereleasePreference>();
-            _coll.ForSingletonOf<IRetrieveSaveSettings>().Use<RetrieveSaveSettings>();
             _coll.ForSingletonOf<IConfirmationPanelControllerVm>().Use<ConfirmationPanelControllerVm>();
             _coll.ForSingletonOf<ISelectedProfileControllerVm>().Use<SelectedProfileControllerVm>();
             _coll.ForSingletonOf<IActivePanelControllerVm>().Use<ActivePanelControllerVm>();
-            _coll.ForSingletonOf<ISaveSignal>().Use<RetrieveSaveSettings>();
+            _coll.ForSingletonOf<RetrieveSaveSettings>();
+            _coll.Forward<RetrieveSaveSettings, IRetrieveSaveSettings>();
+            _coll.Forward<RetrieveSaveSettings, ISaveSignal>();
             
             _coll.Scan(s =>
             {
@@ -84,7 +89,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 s.AssemblyContainingType<INavigateTo>();
                 s.IncludeNamespaceContainingType<INavigateTo>();
-                s.WithDefaultConventions();
+                s.Convention<SingletonConvention>();
             });
         }
 
@@ -94,7 +99,7 @@ namespace Synthesis.Bethesda.GUI
             {
                 s.AssemblyContainingType<IProvideCurrentVersions>(); 
                 s.IncludeNamespaceContainingType<IProvideCurrentVersions>();
-                s.WithDefaultConventions();
+                s.Convention<SingletonConvention>();
             });
         }
 
@@ -110,14 +115,27 @@ namespace Synthesis.Bethesda.GUI
 
         private void RegisterExecutionLib()
         {
-            _coll.ForSingletonOf<IProvideRepositoryCheckouts>().Use<ProvideRepositoryCheckouts>();
-            
             _coll.Scan(s =>
             {
                 s.AssemblyContainingType<ICheckOrCloneRepo>();
-                s.ExcludeType<ProvideRepositoryCheckouts>();
-                s.WithDefaultConventions();
+                s.Convention<SingletonConvention>();
             });
+        }
+        
+        internal class SingletonConvention : IRegistrationConvention
+        {
+            public void ScanTypes(TypeSet types, Registry registry)
+            {
+                // Only work on concrete types
+                types.FindTypes(TypeClassification.Concretes | TypeClassification.Closed).ForEach(type =>
+                {
+                    // Register against all the interfaces implemented
+                    // by this concrete class
+                    type.GetInterfaces()
+                        .Where(i => i.Name == $"I{type.Name}")
+                        .ForEach(i => registry.For(i).Use(type).Singleton());
+                });
+            }
         }
     }
 }
