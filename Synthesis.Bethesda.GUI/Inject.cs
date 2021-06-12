@@ -1,9 +1,12 @@
 using System;
 using System.IO.Abstractions;
 using System.Linq;
+using Mutagen.Bethesda.Installs;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Mutagen.Bethesda.Synthesis.WPF;
 using Noggog;
+using Noggog.Reactive;
+using Noggog.WPF;
 using Serilog;
 using StructureMap;
 using StructureMap.Graph;
@@ -40,14 +43,12 @@ namespace Synthesis.Bethesda.GUI
         private void Configure()
         {
             RegisterBaseLib();
-            
             RegisterCurrentLib();
-
             RegisterWpfLib();
-            
             RegisterExecutionLib();
-
             RegisterOther();
+            RegisterMutagen();
+            RegisterCSharpExt();
         }
 
         private void RegisterCurrentLib()
@@ -99,6 +100,26 @@ namespace Synthesis.Bethesda.GUI
         private void RegisterOther()
         {
             _coll.For<IFileSystem>().Use<FileSystem>();
+        }
+
+        private void RegisterMutagen()
+        {
+            _coll.Scan(s =>
+            {
+                s.AssemblyContainingType<IGameLocator>();
+                s.WithDefaultConventions();
+            });
+        }
+
+        private void RegisterCSharpExt()
+        {
+            _coll.For<ISchedulerProvider>().Use<SchedulerProvider>();
+            _coll.Scan(s =>
+            {
+                s.AssemblyContainingType<IWatchFile>();
+                s.IncludeNamespaceContainingType<IWatchFile>();
+                s.WithDefaultConventions();
+            });
         }
 
         private void RegisterBaseLib()

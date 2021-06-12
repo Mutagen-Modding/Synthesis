@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Linq;
 using Mutagen.Bethesda.Installs;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -14,44 +16,51 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
     public interface IProfileDataFolder
     {
         string? DataPathOverride { get; set; }
-        IObservable<GetResponse<string>> DataFolderResult { get; }
-        string DataFolder { get; }
+        GetResponse<DirectoryPath> DataFolderResult { get; }
+        DirectoryPath DataFolder { get; }
     }
 
     public class ProfileDataFolder : ViewModel, IProfileDataFolder
     {
         [Reactive]
         public string? DataPathOverride { get; set; }
-        
-        public IObservable<GetResponse<string>> DataFolderResult { get; }
 
-        private readonly ObservableAsPropertyHelper<string> _DataFolder;
-        public string DataFolder => _DataFolder.Value;
+        private readonly ObservableAsPropertyHelper<GetResponse<DirectoryPath>> _DataFolderResult;
+        public GetResponse<DirectoryPath> DataFolderResult => _DataFolderResult.Value;
+
+        private readonly ObservableAsPropertyHelper<DirectoryPath> _DataFolder;
+        public DirectoryPath DataFolder => _DataFolder.Value;
 
         public ProfileDataFolder(
             ILogger logger,
+            ISchedulerProvider schedulerProvider,
+            IWatchDirectory watchDirectory,
+            IFileSystem fileSystem,
+            IGameLocator gameLocator,
             IProfileIdentifier ident)
         {
-            DataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
+            _DataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
                 .Select(path =>
                 {
-                    if (path != null) return Observable.Return(GetResponse<string>.Succeed(path));
+                    if (path != null) return Observable.Return(GetResponse<DirectoryPath>.Succeed(path));
                     logger.Information("Starting to locate data folder");
                     return Observable.Return(ident.Release)
-                        .ObserveOn(RxApp.TaskpoolScheduler)
+                        .ObserveOn(schedulerProvider.TaskPool)
                         .Select(x =>
                         {
                             try
                             {
-                                if (!GameLocations.TryGetGameFolder(x, out var gameFolder))
+                                if (!gameLocator.TryGetGameFolder(x, out var gameFolder))
                                 {
-                                    return GetResponse<string>.Fail("Could not automatically locate Data folder.  Run Steam/GoG/etc once to properly register things.");
+                                    return GetResponse<DirectoryPath>.Fail(
+                                        "Could not automatically locate Data folder.  Run Steam/GoG/etc once to properly register things.");
                                 }
-                                return GetResponse<string>.Succeed(Path.Combine(gameFolder, "Data"));
+
+                                return GetResponse<DirectoryPath>.Succeed(Path.Combine(gameFolder, "Data"));
                             }
                             catch (Exception ex)
                             {
-                                return GetResponse<string>.Fail(string.Empty, ex);
+                                return GetResponse<DirectoryPath>.Fail(string.Empty, ex);
                             }
                         });
                 })
@@ -60,16 +69,23 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
                 .Select(x =>
                 {
                     if (x.Failed) return Observable.Return(x);
-                    return Noggog.ObservableExt.WatchFile(x.Value)
+                    return watchDirectory.Watch(x.Value)
                         .StartWith(Unit.Default)
                         .Select(_ =>
                         {
-                            if (Directory.Exists(x.Value)) return x;
-                            return GetResponse<string>.Fail($"Data folder did not exist: {x.Value}");
+                            try
+                            {
+                                if (fileSystem.Directory.Exists(x.Value)) return x;
+                                return GetResponse<DirectoryPath>.Fail($"Data folder did not exist: {x.Value}");
+                            }
+                            catch (Exception ex)
+                            {
+                                return GetResponse<DirectoryPath>.Fail(string.Empty, ex);
+                            }
                         });
                 })
                 .Switch()
-                .StartWith(GetResponse<string>.Fail("Data folder uninitialized"))
+                .StartWith(GetResponse<DirectoryPath>.Fail("Data folder uninitialized"))
                 .Do(d =>
                 {
                     if (d.Failed)
@@ -81,12 +97,11 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
                         logger.Information($"Data Folder: {d.Value}");
                     }
                 })
-                .Replay(1)
-                .RefCount();
+                .ToGuiProperty(this, nameof(DataFolderResult));
 
-            _DataFolder = DataFolderResult
+            _DataFolder = this.WhenAnyValue(x => x.DataFolderResult)
                 .Select(x => x.Value)
-                .ToGuiProperty<string>(this, nameof(DataFolder), string.Empty);
+                .ToGuiProperty(this, nameof(DataFolder));
         }
     }
 }

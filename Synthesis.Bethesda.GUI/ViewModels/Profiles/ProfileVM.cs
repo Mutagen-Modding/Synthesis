@@ -55,8 +55,8 @@ namespace Synthesis.Bethesda.GUI
         public IProfileDataFolder DataFolderOverride { get; }
         public IProfileVersioning Versioning { get; }
 
-        private readonly ObservableAsPropertyHelper<string> _DataFolder;
-        public string DataFolder => _DataFolder.Value;
+        private readonly ObservableAsPropertyHelper<DirectoryPath> _DataFolder;
+        public DirectoryPath DataFolder => _DataFolder.Value;
 
         private readonly ObservableAsPropertyHelper<ErrorResponse> _BlockingError;
         public ErrorResponse BlockingError => _BlockingError.Value;
@@ -150,12 +150,12 @@ namespace Synthesis.Bethesda.GUI
                 .DisposeWith(this);
 
             _DataFolder = dataFolder.WhenAnyValue(x => x.DataFolder)
-                .ToGuiProperty<string>(this, nameof(DataFolder), string.Empty);
+                .ToGuiProperty<DirectoryPath>(this, nameof(DataFolder), string.Empty);
 
             LoadOrder = loadOrder.LoadOrder;
 
             _LargeOverallError = Observable.CombineLatest(
-                    dataFolder.DataFolderResult,
+                    dataFolder.WhenAnyValue(x => x.DataFolderResult),
                     loadOrder.WhenAnyValue(x => x.State),
                     Patchers.Connect()
                         .ObserveOnGui()

@@ -4,10 +4,13 @@ using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
 using Noggog.Utility;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using NSubstitute;
+using NSubstitute.Core;
 
 namespace Synthesis.Bethesda.UnitTests
 {
@@ -65,6 +68,41 @@ namespace Synthesis.Bethesda.UnitTests
             var loadOrderListing = PluginListings.ListingsFromPath(loadOrderPath, release, dataFolder.Dir);
             LoadOrder.AlignTimestamps(loadOrderListing.OnlyEnabled().Select(m => m.ModKey), dataFolder.Dir.Path);
             return dataFolder;
+        }
+        
+        public enum Return { True, False, Throw }
+        
+        public static ConfiguredCall Returns(
+            this bool value,
+            Return ret)
+        {
+            return value.Returns(_ =>
+            {
+                switch (ret)
+                {
+                    case Return.False:
+                        return false;
+                    case Return.True:
+                        return true;
+                    default:
+                        throw new Exception();
+                }
+            });
+        }
+    }
+
+    public class ReturnData : IEnumerable<object[]>
+    {
+        public IEnumerator<object[]> GetEnumerator()
+        {
+            yield return new object[] { Utility.Return.True };
+            yield return new object[] { Utility.Return.False };
+            yield return new object[] { Utility.Return.Throw };
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
