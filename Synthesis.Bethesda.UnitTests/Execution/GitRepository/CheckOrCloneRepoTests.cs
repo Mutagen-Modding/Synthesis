@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
 {
-    public class CheckOrCloneRepoTests: IClassFixture<Fixture>
+    public class CheckOrCloneRepoTests : IClassFixture<Fixture>
     {
         private readonly Fixture _Fixture;
 

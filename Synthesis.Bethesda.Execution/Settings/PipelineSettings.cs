@@ -5,8 +5,13 @@ using System.Text;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
-    public class PipelineSettings
+    public interface IPipelineSettings
     {
-        public List<SynthesisProfile> Profiles = new();
+        List<ISynthesisProfile> Profiles { get; set; }
+    }
+
+    public class PipelineSettings : IPipelineSettings
+    {
+        public List<ISynthesisProfile> Profiles { get; set; } = new();
     }
 }

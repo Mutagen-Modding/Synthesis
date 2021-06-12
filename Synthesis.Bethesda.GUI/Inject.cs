@@ -1,4 +1,5 @@
 using System;
+using System.IO.Abstractions;
 using System.Linq;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Mutagen.Bethesda.Synthesis.WPF;
@@ -45,6 +46,8 @@ namespace Synthesis.Bethesda.GUI
             RegisterWpfLib();
             
             RegisterExecutionLib();
+
+            RegisterOther();
         }
 
         private void RegisterCurrentLib()
@@ -91,6 +94,11 @@ namespace Synthesis.Bethesda.GUI
                 s.IncludeNamespaceContainingType<INavigateTo>();
                 s.Convention<SingletonConvention>();
             });
+        }
+
+        private void RegisterOther()
+        {
+            _coll.For<IFileSystem>().Use<FileSystem>();
         }
 
         private void RegisterBaseLib()

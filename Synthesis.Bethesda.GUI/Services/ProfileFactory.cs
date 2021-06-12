@@ -9,7 +9,7 @@ namespace Synthesis.Bethesda.GUI.Services
 {
     public interface IProfileFactory
     {
-        ProfileVM Get(SynthesisProfile settings);
+        ProfileVM Get(ISynthesisProfile settings);
         ProfileVM Get(GameRelease release, string id, string nickname);
     }
 
@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.GUI.Services
             _Logger = logger;
         }
         
-        public ProfileVM Get(SynthesisProfile settings)
+        public ProfileVM Get(ISynthesisProfile settings)
         {
             _Logger.Information("Loading {Release} Profile {Nickname} with ID {ID}", settings.TargetRelease, settings.Nickname, settings.ID);
             var profile = Get(settings.TargetRelease, settings.ID, settings.Nickname);

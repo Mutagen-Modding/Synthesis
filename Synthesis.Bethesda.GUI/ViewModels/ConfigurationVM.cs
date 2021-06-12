@@ -98,7 +98,7 @@ namespace Synthesis.Bethesda.GUI
                 .DisposeWith(this);
         }
 
-        public void Load(SynthesisGuiSettings settings, PipelineSettings pipeSettings)
+        public void Load(ISynthesisGuiSettings settings, IPipelineSettings pipeSettings)
         {
             Profiles.Clear();
             Profiles.AddOrUpdate(pipeSettings.Profiles.Select(p =>
@@ -114,7 +114,7 @@ namespace Synthesis.Bethesda.GUI
         private void Save(SynthesisGuiSettings guiSettings, PipelineSettings pipeSettings)
         {
             guiSettings.SelectedProfile = SelectedProfile?.ID ?? string.Empty;
-            pipeSettings.Profiles = Profiles.Items.Select(p => p.Save()).ToList();
+            pipeSettings.Profiles = Profiles.Items.Select(p => p.Save()).ToList<ISynthesisProfile>();
         }
 
         public override void Dispose()

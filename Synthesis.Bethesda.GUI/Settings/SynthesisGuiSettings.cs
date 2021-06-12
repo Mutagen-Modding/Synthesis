@@ -1,11 +1,20 @@
 namespace Synthesis.Bethesda.GUI.Settings
 {
-    public class SynthesisGuiSettings
+    public interface ISynthesisGuiSettings
     {
-        public bool ShowHelp = true;
-        public bool OpenIdeAfterCreating = true;
-        public IDE Ide = IDE.SystemDefault;
-        public string MainRepositoryFolder = string.Empty;
-        public string SelectedProfile = string.Empty;
+        bool ShowHelp { get; set; }
+        bool OpenIdeAfterCreating { get; set; }
+        IDE Ide { get; set; }
+        string MainRepositoryFolder { get; set; }
+        string SelectedProfile { get; set; }
+    }
+
+    public class SynthesisGuiSettings : ISynthesisGuiSettings
+    {
+        public bool ShowHelp { get; set; } = true;
+        public bool OpenIdeAfterCreating { get; set; } = true;
+        public IDE Ide { get; set; } = IDE.SystemDefault;
+        public string MainRepositoryFolder { get; set; } = string.Empty;
+        public string SelectedProfile { get; set; } = string.Empty;
     }
 }

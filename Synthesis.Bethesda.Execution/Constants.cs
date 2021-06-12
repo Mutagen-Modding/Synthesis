@@ -11,13 +11,13 @@ namespace Synthesis.Bethesda.Execution
         public static readonly JsonSerializerSettings JsonSettings = new()
         {
             TypeNameHandling = TypeNameHandling.Auto,
-            Error = ErrorHandler
+            Error = ErrorHandler,
+            Converters =
+            {
+                new StringEnumConverter(),
+                new AbstractConverter<SynthesisProfile, ISynthesisProfile>(),
+            }
         };
-
-        static Constants()
-        {
-            JsonSettings.Converters.Add(new StringEnumConverter());
-        }
 
         static void ErrorHandler(object? sender, Newtonsoft.Json.Serialization.ErrorEventArgs args)
         {
@@ -25,6 +25,19 @@ namespace Synthesis.Bethesda.Execution
             {
                 args.ErrorContext.Handled = true;
             }
+        }
+        
+        public class AbstractConverter<TReal, TAbstract> : JsonConverter 
+            where TReal : TAbstract, new()
+        {
+            public override Boolean CanConvert(Type objectType)
+                => objectType == typeof(TAbstract);
+
+            public override Object? ReadJson(JsonReader reader, Type type, Object? value, JsonSerializer jser)
+                => jser.Deserialize<TReal>(reader);
+
+            public override void WriteJson(JsonWriter writer, Object? value, JsonSerializer jser)
+                => jser.Serialize(writer, value);
         }
     }
 }

@@ -47,8 +47,8 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string?> _NewestMutagenVersion;
         public string? NewestMutagenVersion => _NewestMutagenVersion.Value;
 
-        private readonly ObservableAsPropertyHelper<ConfirmationActionVM?> _ActiveConfirmation;
-        public ConfirmationActionVM? ActiveConfirmation => _ActiveConfirmation.Value;
+        private readonly ObservableAsPropertyHelper<IConfirmationActionVM?> _ActiveConfirmation;
+        public IConfirmationActionVM? ActiveConfirmation => _ActiveConfirmation.Value;
 
         private readonly ObservableAsPropertyHelper<bool> _InModal;
         public bool InModal => _InModal.Value;
@@ -136,7 +136,7 @@ namespace Synthesis.Bethesda.GUI
                     (openPatcher, target) =>
                     {
                         if (target != null) return target;
-                        if (openPatcher == null) return default(ConfirmationActionVM?);
+                        if (openPatcher == null) return default(IConfirmationActionVM?);
                         return new ConfirmationActionVM(
                             "External Patcher Settings Open",
                             $"{openPatcher.Nickname} is open for settings manipulation.",

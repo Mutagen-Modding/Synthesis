@@ -7,7 +7,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public interface IConfirmationPanelControllerVm
     {
-        ConfirmationActionVM? TargetConfirmation { get; set; }
+        IConfirmationActionVM? TargetConfirmation { get; set; }
         ReactiveCommand<Unit, Unit> ConfirmActionCommand { get; }
         ReactiveCommand<Unit, Unit> DiscardActionCommand { get; }
     }
@@ -15,7 +15,7 @@ namespace Synthesis.Bethesda.GUI
     public class ConfirmationPanelControllerVm : ViewModel, IConfirmationPanelControllerVm
     {
         [Reactive]
-        public ConfirmationActionVM? TargetConfirmation { get; set; }
+        public IConfirmationActionVM? TargetConfirmation { get; set; }
         
         public ReactiveCommand<Unit, Unit> ConfirmActionCommand { get; }
         
