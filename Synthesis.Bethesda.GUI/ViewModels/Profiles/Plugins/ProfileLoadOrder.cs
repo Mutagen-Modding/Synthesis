@@ -27,7 +27,6 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
             IProfileIdentifier ident,
             IProfileDataFolder dataFolder)
         {
-
             var loadOrderResult = dataFolder.WhenAnyValue(x => x.DataFolderResult)
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .Select(x =>

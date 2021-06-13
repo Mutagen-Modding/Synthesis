@@ -12,7 +12,7 @@ using System.Diagnostics;
 using Noggog.Utility;
 #endif
 
-namespace Synthesis.Bethesda.GUI.Services
+namespace Synthesis.Bethesda.GUI.Services.Singletons
 {
     public interface IExecuteShutdown
     {

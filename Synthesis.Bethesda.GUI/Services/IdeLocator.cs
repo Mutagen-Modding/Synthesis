@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Win32;
 
-namespace Synthesis.Bethesda.GUI.Services.Ide
+namespace Synthesis.Bethesda.GUI.Services
 {
     public interface IIdeLocator
     {

@@ -3,6 +3,7 @@ using System;
 using System.Windows;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.GUI.Services.Singletons;
 
 namespace Synthesis.Bethesda.GUI.Views
 {

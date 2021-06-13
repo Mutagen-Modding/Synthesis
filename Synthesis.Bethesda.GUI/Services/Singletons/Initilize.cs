@@ -8,7 +8,7 @@ using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.GUI.Settings;
 
-namespace Synthesis.Bethesda.GUI.Services
+namespace Synthesis.Bethesda.GUI.Services.Singletons
 {
     public interface IInitilize
     {

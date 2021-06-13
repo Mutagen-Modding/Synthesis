@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using DynamicData.Binding;
-using Synthesis.Bethesda.GUI.Services.Ide;
+using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI

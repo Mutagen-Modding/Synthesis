@@ -15,6 +15,7 @@ using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.GUI.Services.Singletons;
 using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI
@@ -33,11 +34,11 @@ namespace Synthesis.Bethesda.GUI
                 toAdd(c);
             });
             var logging = Container.GetInstance<ILogger>();
-#if DEBUG
-            Container.AssertConfigurationIsValid();
-            logging.Information(Container.WhatDidIScan());
-            logging.Information(Container.WhatDoIHave());
-#endif
+// #if DEBUG
+//             Container.AssertConfigurationIsValid();
+//             logging.Information(Container.WhatDidIScan());
+//             logging.Information(Container.WhatDoIHave());
+// #endif
         }
         
         private void Configure()
@@ -73,6 +74,21 @@ namespace Synthesis.Bethesda.GUI
                 s.AddAllTypesOf<IEnvironmentErrorVM>();
             });
             
+            _coll.Scan(s =>
+            {
+                s.AssemblyContainingType<INavigateTo>();
+                s.IncludeNamespaceContainingType<INavigateTo>();
+                s.ExcludeNamespaceContainingType<IInitilize>();
+                s.WithDefaultConventions();
+            });
+            
+            _coll.Scan(s =>
+            {
+                s.AssemblyContainingType<IInitilize>();
+                s.IncludeNamespaceContainingType<IInitilize>();
+                s.Convention<SingletonConvention>();
+            });
+            
             _coll.For<ILockToCurrentVersioning>().Use<LockToCurrentVersioning>();
             _coll.For<IProfileDisplayControllerVm>().Use<ProfileDisplayControllerVm>();
             _coll.For<IEnvironmentErrorsVM>().Use<EnvironmentErrorsVM>();
@@ -85,16 +101,8 @@ namespace Synthesis.Bethesda.GUI
             _coll.For<IProfileDataFolder>().Use<ProfileDataFolder>();
             _coll.For<IProfileVersioning>().Use<ProfileVersioning>();
             _coll.For<IProfileSimpleLinkCache>().Use<ProfileSimpleLinkCache>();
-            _coll.For<IPatcherFactory>().Use<PatcherFactory>();
             _coll.For<GitPatcherInitVM>();
             _coll.For<CliPatcherInitVM>();
-            
-            _coll.Scan(s =>
-            {
-                s.AssemblyContainingType<INavigateTo>();
-                s.IncludeNamespaceContainingType<INavigateTo>();
-                s.Convention<SingletonConvention>();
-            });
         }
 
         private void RegisterOther()
