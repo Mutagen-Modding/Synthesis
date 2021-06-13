@@ -21,6 +21,7 @@ using System.Collections.ObjectModel;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Synthesis.WPF;
 using Mutagen.Bethesda.WPF.Plugins;
+using Serilog;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
@@ -104,6 +105,7 @@ namespace Synthesis.Bethesda.GUI
             ICheckRunnability checkRunnability,
             IProvideRepositoryCheckouts provideRepositoryCheckouts,
             IBuild build,
+            ILogger logger,
             SolutionPatcherSettings? settings = null)
             : base(remove, profileDisplay, confirmation, settings)
         {
@@ -176,7 +178,7 @@ namespace Synthesis.Bethesda.GUI
                     }
                     catch (Exception ex)
                     {
-                        Log.Logger.Error(ex, $"Error opening solution: {SolutionPath.TargetPath}");
+                        logger.Error(ex, $"Error opening solution: {SolutionPath.TargetPath}");
                     }
                 });
 

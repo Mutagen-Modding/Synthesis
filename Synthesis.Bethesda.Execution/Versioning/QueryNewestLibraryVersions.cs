@@ -20,15 +20,18 @@ namespace Synthesis.Bethesda.Execution.Versioning
     public class QueryNewestLibraryVersions : IQueryNewestLibraryVersions
     {
         private readonly IFileSystem _FileSystem;
+        private readonly ILogger _Logger;
         private readonly IProvideCurrentVersions _CurrentVersions;
         private readonly IQueryLibraryVersions _QueryLibraryVersions;
 
         public QueryNewestLibraryVersions(
             IFileSystem fileSystem,
+            ILogger logger,
             IProvideCurrentVersions currentVersions,
             IQueryLibraryVersions queryLibraryVersions)
         {
             _FileSystem = fileSystem;
+            _Logger = logger;
             _CurrentVersions = currentVersions;
             _QueryLibraryVersions = queryLibraryVersions;
         }
@@ -51,14 +54,14 @@ namespace Synthesis.Bethesda.Execution.Versioning
             try
             {
                 var ret = await _QueryLibraryVersions.Query(projPath, current: false, includePrerelease: includePrerelease, CancellationToken.None);
-                Log.Logger.Information($"Latest published {(includePrerelease ? " prerelease" : null)} library versions:");
-                Log.Logger.Information($"  Mutagen: {ret.MutagenVersion}");
-                Log.Logger.Information($"  Synthesis: {ret.SynthesisVersion}");
+                _Logger.Information($"Latest published {(includePrerelease ? " prerelease" : null)} library versions:");
+                _Logger.Information($"  Mutagen: {ret.MutagenVersion}");
+                _Logger.Information($"  Synthesis: {ret.SynthesisVersion}");
                 return (ret.MutagenVersion ?? _CurrentVersions.MutagenVersion, ret.SynthesisVersion ?? _CurrentVersions.SynthesisVersion);
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(ex, "Error querying for latest nuget versions");
+                _Logger.Error(ex, "Error querying for latest nuget versions");
                 return (null, null);
             }
         }

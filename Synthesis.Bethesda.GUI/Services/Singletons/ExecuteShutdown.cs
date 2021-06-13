@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using Newtonsoft.Json;
+using Serilog;
 using Synthesis.Bethesda.GUI.Settings;
     
 #if !DEBUG
@@ -22,13 +23,16 @@ namespace Synthesis.Bethesda.GUI.Services.Singletons
 
     public class ExecuteShutdown : IExecuteShutdown
     {
+        private readonly ILogger _Logger;
         private readonly IInitilize _Init;
         private readonly IRetrieveSaveSettings _Save;
 
         public ExecuteShutdown(
+            ILogger logger,
             IInitilize init,
             IRetrieveSaveSettings save)
         {
+            _Logger = logger;
             _Init = init;
             _Save = save;
         }
@@ -43,7 +47,7 @@ namespace Synthesis.Bethesda.GUI.Services.Singletons
             {
                 if (!_Init.Initialized)
                 {
-                    Log.Logger.Information("App was unable to start up.  Not saving settings.");
+                    _Logger.Information("App was unable to start up.  Not saving settings.");
                     return;
                 }
 
@@ -57,7 +61,7 @@ namespace Synthesis.Bethesda.GUI.Services.Singletons
                 }
                 catch (Exception e)
                 {
-                    Log.Logger.Error("Error saving settings", e);
+                    _Logger.Error("Error saving settings", e);
                 }
             });
             
@@ -69,13 +73,13 @@ namespace Synthesis.Bethesda.GUI.Services.Singletons
                 {
                     using var process = ProcessWrapper.Create(
                         new ProcessStartInfo("dotnet", $"build-server shutdown"));
-                    using var output = process.Output.Subscribe(x => Log.Logger.Information(x));
-                    using var error = process.Error.Subscribe(x => Log.Logger.Information(x));
+                    using var output = process.Output.Subscribe(x => _Logger.Information(x));
+                    using var error = process.Error.Subscribe(x => _Logger.Information(x));
                     var ret = await process.Run();
                 }
                 catch (Exception e)
                 {
-                    Log.Logger.Error("Error shutting down build server", e);
+                    _Logger.Error("Error shutting down build server", e);
                 }
             }));
 #endif
@@ -84,13 +88,13 @@ namespace Synthesis.Bethesda.GUI.Services.Singletons
             {
                 try
                 {
-                    Log.Logger.Information("Disposing injection");
+                    _Logger.Information("Disposing injection");
                     Inject.Container.Dispose();
-                    Log.Logger.Information("Disposed injection");
+                    _Logger.Information("Disposed injection");
                 }
                 catch (Exception e)
                 {
-                    Log.Logger.Error("Error shutting down injector actions", e);
+                    _Logger.Error("Error shutting down injector actions", e);
                 }
             }));
             await Task.WhenAll(toDo);

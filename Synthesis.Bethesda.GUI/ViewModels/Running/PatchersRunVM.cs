@@ -17,12 +17,14 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
+using Serilog;
 using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {
     public class PatchersRunVM : ViewModel
     {
+        private readonly ILogger _Logger;
         public ConfigurationVM Config { get; }
 
         public ProfileVM RunningProfile { get; }
@@ -55,9 +57,11 @@ namespace Synthesis.Bethesda.GUI
 
         public PatchersRunVM(
             ConfigurationVM parent,
+            ILogger logger,
             IActivePanelControllerVm activePanelController,
             ProfileVM profile)
         {
+            _Logger = logger;
             Config = parent;
             RunningProfile = profile;
             Patchers.AddOrUpdate(RunningProfile.Patchers.Items
@@ -86,7 +90,7 @@ namespace Synthesis.Bethesda.GUI
                 .ObserveOnGui()
                 .Subscribe(ex =>
                 {
-                    Log.Logger.Error(ex, "Error while running patcher pipeline");
+                    logger.Error(ex, "Error while running patcher pipeline");
                     ResultError = ex;
                 })
                 .DisposeWith(this);
@@ -100,7 +104,7 @@ namespace Synthesis.Bethesda.GUI
                     var vm = Patchers.Get(i.data.Key);
                     vm.State = GetResponse<RunState>.Fail(RunState.Error, i.data.Error);
                     SelectedPatcher = vm;
-                    Log.Logger
+                    logger
                         .ForContext(nameof(PatcherVM.DisplayName), i.data.Run.Name)
                         .Error(i.data.Error, $"Error while {i.type}");
                 })
@@ -111,7 +115,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     var vm = Patchers.Get(i.Key);
                     vm.State = GetResponse<RunState>.Succeed(RunState.Started);
-                    Log.Logger
+                    logger
                         .ForContext(nameof(PatcherVM.DisplayName), i.Run.Name)
                         .Information($"Starting");
 
@@ -130,7 +134,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     var vm = Patchers.Get(i.Key);
                     vm.State = GetResponse<RunState>.Succeed(RunState.Finished);
-                    Log.Logger
+                    logger
                         .ForContext(nameof(PatcherVM.DisplayName), i.Run.Name)
                         .Information("Finished {RunTime}", vm.RunTime);
                 })
@@ -138,7 +142,7 @@ namespace Synthesis.Bethesda.GUI
             _reporter.Output
                 .Subscribe(s =>
                 {
-                    Log.Logger
+                    logger
                         .ForContextIfNotNull(nameof(PatcherVM.DisplayName), s.Run?.Name)
                         .Information(s.String);
                 })
@@ -146,7 +150,7 @@ namespace Synthesis.Bethesda.GUI
             _reporter.Error
                 .Subscribe(s =>
                 {
-                    Log.Logger
+                    logger
                         .ForContextIfNotNull(nameof(PatcherVM.DisplayName), s.Run?.Name)
                         .Error(s.String);
                 })
@@ -167,7 +171,7 @@ namespace Synthesis.Bethesda.GUI
 
         public async Task Run()
         {
-            Log.Logger.Information("Starting patcher run.");
+            _Logger.Information("Starting patcher run.");
             await Observable.Return(Unit.Default)
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .DoTask(async (_) =>
@@ -190,7 +194,7 @@ namespace Synthesis.Bethesda.GUI
                         if (!madePatch) return;
                         var dataFolderPath = Path.Combine(RunningProfile.DataFolder, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
                         File.Copy(output, dataFolderPath, overwrite: true);
-                        Log.Logger.Information($"Exported patch to: {dataFolderPath}");
+                        _Logger.Information($"Exported patch to: {dataFolderPath}");
                     }
                     catch (TaskCanceledException)
                     {
@@ -205,7 +209,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     Running = false;
                 });
-            Log.Logger.Information("Finished patcher run.");
+            _Logger.Information("Finished patcher run.");
         }
 
         private async Task Cancel()

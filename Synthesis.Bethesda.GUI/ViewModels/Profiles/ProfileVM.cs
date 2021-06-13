@@ -31,6 +31,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly PatcherInitializationVM _Init;
         private readonly INavigateTo _Navigate;
         private readonly IRetrieveSaveSettings _RetrieveSaveSettings;
+        private readonly ILogger _Logger;
 
         public GameRelease Release { get; }
 
@@ -117,6 +118,7 @@ namespace Synthesis.Bethesda.GUI
             DisplayController = profileDisplay;
             _Navigate = navigate;
             _RetrieveSaveSettings = retrieveSaveSettings;
+            _Logger = logger;
             Nickname = ident.Nickname;
             ID = ident.ID;
             Release = ident.Release;
@@ -143,7 +145,7 @@ namespace Synthesis.Bethesda.GUI
             Patchers.Connect()
                 .OnItemRemoved(p =>
                 {
-                    Log.Logger.Information($"Disposing of {p.DisplayName} because it was removed.");
+                    logger.Information($"Disposing of {p.DisplayName} because it was removed.");
                     p.Dispose();
                 })
                 .Subscribe()
@@ -203,7 +205,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (x.Failed)
                     {
-                        Log.Logger.Warning($"Encountered blocking overall error: {x.Reason}");
+                        logger.Warning($"Encountered blocking overall error: {x.Reason}");
                     }
                 })
                 .ToGuiProperty(this, nameof(LargeOverallError), GetResponse<PatcherVM>.Fail("Uninitialized overall error"));
@@ -328,7 +330,7 @@ namespace Synthesis.Bethesda.GUI
                             }
                             catch (Exception ex)
                             {
-                                Log.Logger.Error(ex, "Error updating a patcher");
+                                logger.Error(ex, "Error updating a patcher");
                             }
                         }));
                 });
@@ -356,7 +358,7 @@ namespace Synthesis.Bethesda.GUI
                         }
                         catch (Exception ex)
                         {
-                            Log.Logger.Error("Error creating simple link cache for GUI lookups", ex);
+                            logger.Error("Error creating simple link cache for GUI lookups", ex);
                             obs.OnNext(null);
                         }
                         obs.OnCompleted();
@@ -438,7 +440,7 @@ namespace Synthesis.Bethesda.GUI
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(ex, "Error while exporting settings");
+                _Logger.Error(ex, "Error while exporting settings");
             }
         }
     }

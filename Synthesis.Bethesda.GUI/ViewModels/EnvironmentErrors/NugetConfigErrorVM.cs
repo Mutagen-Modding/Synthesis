@@ -7,6 +7,7 @@ using DynamicData.Kernel;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
+using Serilog;
 using Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget;
 
 namespace Synthesis.Bethesda.GUI
@@ -24,7 +25,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string?> _ErrorString;
         public string? ErrorString => _ErrorString.Value;
 
-        public NugetConfigErrorVM()
+        public NugetConfigErrorVM(ILogger logger)
         {
             NugetConfigPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -40,10 +41,10 @@ namespace Synthesis.Bethesda.GUI
                     
                     if (err is CorruptError corr)
                     {
-                        Log.Logger.Error("Nuget.Config corrupt", corr.Exception);
+                        logger.Error("Nuget.Config corrupt", corr.Exception);
                     }
 
-                    return new ErrorVM(this, err);
+                    return new ErrorVM(this, logger, err);
                 })
                 .RetryWithBackOff<ErrorVM?, Exception>((_, times) => TimeSpan.FromMilliseconds(Math.Min(times * 250, 5000)))
                 .ToGuiProperty(this, nameof(Error), default);
@@ -60,7 +61,7 @@ namespace Synthesis.Bethesda.GUI
             public string ErrorText { get; }
             public ICommand RunFix { get; }
             
-            public ErrorVM(NugetConfigErrorVM parent, INugetErrorSolution errSolution)
+            public ErrorVM(NugetConfigErrorVM parent, ILogger logger, INugetErrorSolution errSolution)
             {
                 ErrorText = errSolution.ErrorText;
                 RunFix = ReactiveCommand.Create(() =>
@@ -71,7 +72,7 @@ namespace Synthesis.Bethesda.GUI
                     }
                     catch (Exception e)
                     {
-                        Log.Logger.Error("Error executing nuget config fix", e);
+                        logger.Error("Error executing nuget config fix", e);
                     }
                 });
             }

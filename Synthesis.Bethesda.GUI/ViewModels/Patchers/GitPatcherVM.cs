@@ -25,6 +25,7 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Synthesis.WPF;
 using Mutagen.Bethesda.WPF.Plugins.Order;
+using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
@@ -42,6 +43,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ICheckoutRunnerRepository _CheckoutRunner;
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IBuild _Build;
+        private readonly ILogger _Logger;
         public override bool IsNameEditable => false;
 
         [Reactive]
@@ -180,6 +182,7 @@ namespace Synthesis.Bethesda.GUI
             IProvideWindowPlacement windowPlacement,
             IOpenSettingsHost openSettingsHost,
             IBuild build,
+            ILogger logger,
             GithubPatcherSettings? settings = null)
             : base(remove, selPatcher, confirmation, settings)
         {
@@ -188,6 +191,7 @@ namespace Synthesis.Bethesda.GUI
             _CheckoutRunner = checkoutRunner;
             _CheckRunnability = checkRunnability;
             _Build = build;
+            _Logger = logger;
             Locking = lockToCurrentVersioning;
             
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
@@ -1180,7 +1184,7 @@ namespace Synthesis.Bethesda.GUI
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(ex, $"Failure deleting git repo: {this.LocalDriverRepoDirectory}");
+                _Logger.Error(ex, $"Failure deleting git repo: {this.LocalDriverRepoDirectory}");
             }
             try
             {
@@ -1189,7 +1193,7 @@ namespace Synthesis.Bethesda.GUI
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(ex, $"Failure deleting git repo: {this.LocalRunnerRepoDirectory}");
+                _Logger.Error(ex, $"Failure deleting git repo: {this.LocalRunnerRepoDirectory}");
             }
         }
 

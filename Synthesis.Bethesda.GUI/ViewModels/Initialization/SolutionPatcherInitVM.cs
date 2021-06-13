@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using DynamicData.Binding;
+using Serilog;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
 
@@ -17,6 +18,7 @@ namespace Synthesis.Bethesda.GUI
         public IShowHelpSetting ShowHelpSetting { get; }
         private readonly ISettingsSingleton _SettingsSingleton;
         private readonly IOpenIde _OpenIde;
+        private readonly ILogger _Logger;
 
         public ExistingSolutionInitVM ExistingSolution { get; }
         public NewSolutionInitVM New { get; }
@@ -43,6 +45,7 @@ namespace Synthesis.Bethesda.GUI
             IShowHelpSetting showHelpSetting,
             ISettingsSingleton settingsSingleton,
             IOpenIde openIde,
+            ILogger logger,
             ExistingSolutionInitVM existingSolutionInit,
             NewSolutionInitVM newSolutionInit,
             ExistingProjectInitVM existingProjectInit,
@@ -56,6 +59,7 @@ namespace Synthesis.Bethesda.GUI
             New = newSolutionInit;
             _SettingsSingleton = settingsSingleton;
             _OpenIde = openIde;
+            _Logger = logger;
             OpenCodeAfter = _SettingsSingleton.Gui.OpenIdeAfterCreating;
             New.ParentDirPath.TargetPath = _SettingsSingleton.Gui.MainRepositoryFolder;
             Ide = _SettingsSingleton.Gui.Ide;
@@ -108,7 +112,7 @@ namespace Synthesis.Bethesda.GUI
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger.Error(ex, "Error opening IDE");
+                    _Logger.Error(ex, "Error opening IDE");
                 }
             }
         }

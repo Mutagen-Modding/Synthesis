@@ -17,6 +17,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Windows.Input;
+using Serilog;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services;
 
@@ -60,6 +61,7 @@ namespace Synthesis.Bethesda.GUI
 
         public GitPatcherInitVM(
             PatcherInitializationVM init,
+            ILogger logger,
             IPatcherFactory patcherFactory,
             INavigateTo navigateTo, 
             IProvideRepositoryCheckouts repositoryCheckouts,
@@ -82,7 +84,7 @@ namespace Synthesis.Bethesda.GUI
                         var localRepoPath = checkOrClone.Check(
                             GetResponse<string>.Succeed("https://github.com/Mutagen-Modding/Synthesis.Registry"),
                             Paths.RegistryFolder,
-                            Log.Logger.Error,
+                            logger.Error,
                             CancellationToken.None);
                         if (localRepoPath.Failed)
                         {
@@ -97,13 +99,13 @@ namespace Synthesis.Bethesda.GUI
                         if (master == null)
                         {
                             Error = ErrorResponse.Fail("Could not find master branch");
-                            Log.Logger.Error(Error.Reason);
+                            logger.Error(Error.Reason);
                             return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
                         }
                         if (!repo.TryGetBranch($"{master.RemoteName}/{master.FriendlyName}", out var originBranch))
                         {
                             Error = ErrorResponse.Fail("Could not find remote master branch");
-                            Log.Logger.Error(Error.Reason);
+                            logger.Error(Error.Reason);
                             return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
                         }
                         repo.ResetHard(originBranch.Tip);
@@ -112,7 +114,7 @@ namespace Synthesis.Bethesda.GUI
                         if (!File.Exists(listingPath))
                         {
                             Error = ErrorResponse.Fail("Could not locate listing file");
-                            Log.Logger.Error(Error.Reason);
+                            logger.Error(Error.Reason);
                             return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
                         }
                         var settings = new JsonSerializerOptions();
@@ -133,7 +135,7 @@ namespace Synthesis.Bethesda.GUI
                     }
                     catch (Exception ex)
                     {
-                        Log.Logger.Error(ex, "Error downloading patcher listing");
+                        logger.Error(ex, "Error downloading patcher listing");
                         Error = ErrorResponse.Fail(ex);
                     }
                     return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();

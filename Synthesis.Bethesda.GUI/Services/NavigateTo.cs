@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Serilog;
 
 namespace Synthesis.Bethesda.GUI.Services
 {
@@ -10,6 +11,13 @@ namespace Synthesis.Bethesda.GUI.Services
 
     public class NavigateTo : INavigateTo
     {
+        private readonly ILogger _Logger;
+
+        public NavigateTo(ILogger logger)
+        {
+            _Logger = logger;
+        }
+        
         public void Navigate(string path)
         {
             try
@@ -21,7 +29,7 @@ namespace Synthesis.Bethesda.GUI.Services
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(ex, $"Error navigating to path: {path}");
+                _Logger.Error(ex, $"Error navigating to path: {path}");
             }
         }
     }
