@@ -1,18 +1,7 @@
-using DynamicData;
-using Mutagen.Bethesda.Plugins.Cache;
-using Mutagen.Bethesda.WPF.Reflection;
-using Noggog;
 using Noggog.Utility;
 using Noggog.WPF;
-using Synthesis.Bethesda.DTO;
-using Synthesis.Bethesda.Execution;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Mutagen.Bethesda.Plugins.Order;
 using Serilog;
 
 namespace Mutagen.Bethesda.Synthesis.WPF

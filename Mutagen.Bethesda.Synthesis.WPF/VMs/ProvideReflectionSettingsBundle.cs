@@ -1,5 +1,6 @@
 ﻿using System;
-using System.IO;
+using System.IO.Abstractions;
+using Path = System.IO.Path;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,13 +29,16 @@ namespace Mutagen.Bethesda.Synthesis.WPF
     public class ProvideReflectionSettingsBundle : IProvideReflectionSettingsBundle
     {
         private readonly ILogger _Logger;
+        private readonly IFileSystem _FileSystem;
         private readonly IExtractInfoFromProject _Extract;
 
         public ProvideReflectionSettingsBundle(
             ILogger logger,
+            IFileSystem fileSystem,
             IExtractInfoFromProject extract)
         {
             _Logger = logger;
+            _FileSystem = fileSystem;
             _Extract = extract;
         }
         
@@ -67,7 +71,8 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                                     nickname: targets[index].Nickname,
                                     settingsFolder: Path.Combine(Paths.TypicalExtraData, displayName),
                                     settingsSubPath: targets[index].Path,
-                                    logger: _Logger);
+                                    logger: _Logger,
+                                    fileSystem: _FileSystem);
                             }
                             catch (Exception ex)
                             {

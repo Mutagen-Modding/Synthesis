@@ -117,6 +117,7 @@ namespace Mutagen.Bethesda.Synthesis
         {
             var patcher = _patchers.GetOrDefault(args.GameRelease.ToCategory());
             var loadOrder = Utility.GetLoadOrder(
+                fileSystem: IFileSystemExt.DefaultFilesystem,
                 release: args.GameRelease,
                 loadOrderFilePath: args.LoadOrderFilePath,
                 dataFolderPath: args.DataFolderPath,

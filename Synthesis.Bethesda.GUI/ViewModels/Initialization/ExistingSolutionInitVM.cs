@@ -8,6 +8,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.IO;
+using System.IO.Abstractions;
 using System.Reactive.Linq;
 using Synthesis.Bethesda.GUI.Services;
 
@@ -26,6 +27,7 @@ namespace Synthesis.Bethesda.GUI
         public ErrorResponse ProjectError => _ProjectError.Value;
 
         public ExistingSolutionInitVM(
+            IFileSystem fileSystem,
             ProfileIdentifier profileIdentifier,
             IPatcherFactory patcherFactory)
         {
@@ -36,7 +38,7 @@ namespace Synthesis.Bethesda.GUI
             var validation = Observable.CombineLatest(
                     SolutionPath.PathState(),
                     this.WhenAnyValue(x => x.ProjectName),
-                    (sln, proj) => (sln, proj, validation: SolutionInitialization.ValidateProjectPath(proj, sln)))
+                    (sln, proj) => (sln, proj, validation: SolutionInitialization.ValidateProjectPath(fileSystem, proj, sln)))
                 .Replay(1)
                 .RefCount();
 
@@ -52,8 +54,8 @@ namespace Synthesis.Bethesda.GUI
                     return GetResponse<InitializerCall>.Succeed(async () =>
                     {
                         var patcher = patcherFactory.Get<SolutionPatcherVM>();
-                        SolutionInitialization.CreateProject(i.validation.Value, profileIdentifier.Release.ToCategory());
-                        SolutionInitialization.AddProjectToSolution(i.sln.Value, i.validation.Value);
+                        SolutionInitialization.CreateProject(fileSystem, i.validation.Value, profileIdentifier.Release.ToCategory());
+                        SolutionInitialization.AddProjectToSolution(fileSystem, i.sln.Value, i.validation.Value);
                         patcher.SolutionPath.TargetPath = i.sln.Value;
                         patcher.ProjectSubpath = Path.Combine(i.proj, $"{i.proj}.csproj");
                         return patcher.AsEnumerable();

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.IO;
+using Path = System.IO.Path;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog.Utility;

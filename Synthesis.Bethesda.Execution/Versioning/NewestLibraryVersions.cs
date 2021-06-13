@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO;
+using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -11,6 +11,7 @@ using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
+using Path = System.IO.Path;
 
 namespace Synthesis.Bethesda.Execution.Versioning
 {
@@ -22,6 +23,7 @@ namespace Synthesis.Bethesda.Execution.Versioning
 
     public class NewestLibraryVersions : INewestLibraryVersions
     {
+        private readonly IFileSystem _FileSystem;
         private readonly IProvideCurrentVersions _CurrentVersions;
         private readonly IQueryLibraryVersions _QueryLibraryVersions;
         
@@ -30,11 +32,13 @@ namespace Synthesis.Bethesda.Execution.Versioning
 
         public NewestLibraryVersions(
             ILogger logger,
+            IFileSystem fileSystem,
             IProvideCurrentVersions currentVersions,
             IProvideInstalledSdk installedSdk,
             IQueryLibraryVersions queryLibraryVersions,
             IConsiderPrereleasePreference considerPrerelease)
         {
+            _FileSystem = fileSystem;
             _CurrentVersions = currentVersions;
             _QueryLibraryVersions = queryLibraryVersions;
             var latestVersions = Observable.Return(Unit.Default)
@@ -87,10 +91,10 @@ namespace Synthesis.Bethesda.Execution.Versioning
             bootstrapProjectDir.DeleteEntireFolder();
             bootstrapProjectDir.Create();
             var slnPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.sln");
-            SolutionInitialization.CreateSolutionFile(slnPath);
+            SolutionInitialization.CreateSolutionFile(_FileSystem, slnPath);
             var projPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.csproj");
-            SolutionInitialization.CreateProject(projPath, GameCategory.Skyrim, insertOldVersion: true);
-            SolutionInitialization.AddProjectToSolution(slnPath, projPath);
+            SolutionInitialization.CreateProject(_FileSystem, projPath, GameCategory.Skyrim, insertOldVersion: true);
+            SolutionInitialization.AddProjectToSolution(_FileSystem, slnPath, projPath);
             return projPath;
         }
 

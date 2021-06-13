@@ -3,6 +3,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Order;
 using System.IO;
 using System.Linq;
+using Noggog;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests
@@ -27,6 +28,7 @@ namespace Synthesis.Bethesda.UnitTests
                     $"{Utility.OverrideModKey.FileName}",
                 });
             var listings = Mutagen.Bethesda.Synthesis.Internal.Utility.GetLoadOrder(
+                fileSystem: IFileSystemExt.DefaultFilesystem,
                 GameRelease.SkyrimSE,
                 loadOrderFilePath: pluginPath,
                 dataFolderPath: dataFolder).ToList();
@@ -45,6 +47,7 @@ namespace Synthesis.Bethesda.UnitTests
             using var tmpFolder = Utility.GetTempFolder(nameof(PipelineTests));
             using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimSE);
             var lo = Mutagen.Bethesda.Synthesis.Internal.Utility.GetLoadOrder(
+                fileSystem: IFileSystemExt.DefaultFilesystem,
                 GameRelease.SkyrimSE, 
                 string.Empty,
                 dataFolder.Dir.Path);

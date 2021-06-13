@@ -9,7 +9,8 @@ using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.IO.Abstractions;
+using Path = System.IO.Path;
 using System.Linq;
 
 namespace Mutagen.Bethesda.Synthesis.Internal
@@ -48,7 +49,12 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             }
 
             // Get load order
-            var loadOrderListing = GetLoadOrder(settings.GameRelease, settings.LoadOrderFilePath, settings.DataFolderPath, userPrefs)
+            var loadOrderListing = GetLoadOrder(
+                    IFileSystemExt.DefaultFilesystem,
+                    settings.GameRelease,
+                    settings.LoadOrderFilePath,
+                    settings.DataFolderPath, 
+                    userPrefs)
                 .ToExtendedList();
             var rawLoadOrder = loadOrderListing.Select(x => new ModListing(x.ModKey, x.Enabled)).ToExtendedList();
 
@@ -176,16 +182,17 @@ namespace Mutagen.Bethesda.Synthesis.Internal
         }
 
         public static IEnumerable<IModListingGetter> GetLoadOrder(
+            IFileSystem fileSystem,
             GameRelease release,
             string loadOrderFilePath,
             string dataFolderPath,
             PatcherPreferences? userPrefs = null)
         {
-            // This call will impliticly get Creation Club entries, too, as the Synthesis systems should be merging
+            // This call will implicitly get Creation Club entries, too, as the Synthesis systems should be merging
             // things into a singular load order file for consumption here
             var loadOrderListing =
                 Implicits.Get(release).Listings
-                    .Where(x => File.Exists(Path.Combine(dataFolderPath, x.FileName)))
+                    .Where(x => fileSystem.File.Exists(Path.Combine(dataFolderPath, x.FileName)))
                     .Select<ModKey, IModListingGetter>(x => new ModListing(x, enabled: true));
             if (!loadOrderFilePath.IsNullOrWhitespace())
             {

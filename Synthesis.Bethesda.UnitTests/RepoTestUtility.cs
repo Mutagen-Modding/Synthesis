@@ -40,9 +40,9 @@ namespace Synthesis.Bethesda.UnitTests
 
             if (createPatcherFiles)
             {
-                var files = SolutionInitialization.CreateSolutionFile(Path.Combine(local, SlnPath))
-                    .And(SolutionInitialization.CreateProject(Path.Combine(local, ProjPath), GameCategory.Skyrim));
-                SolutionInitialization.AddProjectToSolution(Path.Combine(local, SlnPath), Path.Combine(local, ProjPath));
+                var files = SolutionInitialization.CreateSolutionFile(IFileSystemExt.DefaultFilesystem, Path.Combine(local, SlnPath))
+                    .And(SolutionInitialization.CreateProject(IFileSystemExt.DefaultFilesystem, Path.Combine(local, ProjPath), GameCategory.Skyrim));
+                SolutionInitialization.AddProjectToSolution(IFileSystemExt.DefaultFilesystem, Path.Combine(local, SlnPath), Path.Combine(local, ProjPath));
                 foreach (var path in files)
                 {
                     Commands.Stage(localRepo, path);

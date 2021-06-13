@@ -1,5 +1,6 @@
 ﻿using System;
-using System.IO;
+using System.IO.Abstractions;
+using Path = System.IO.Path;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Threading;
@@ -18,15 +19,18 @@ namespace Mutagen.Bethesda.Synthesis.WPF
 
     public class ExtractInfoFromProject : IExtractInfoFromProject
     {
+        private readonly IFileSystem _FileSystem;
         private readonly ICopyDirectory _CopyDirectory;
         private readonly IQueryExecutablePath _QueryExecutablePath;
         private readonly ILogger _Logger;
 
         public ExtractInfoFromProject(
+            IFileSystem fileSystem,
             ICopyDirectory copyDirectory,
             IQueryExecutablePath queryExecutablePath,
             ILogger logger)
         {
+            _FileSystem = fileSystem;
             _CopyDirectory = copyDirectory;
             _QueryExecutablePath = queryExecutablePath;
             _Logger = logger;
@@ -55,9 +59,9 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             return (ret.Value, tempFolder);
         }
         
-        private static GetResponse<TRet> ExecuteAndUnload<TRet>(string exec, Func<Assembly, GetResponse<TRet>> getter)
+        private GetResponse<TRet> ExecuteAndUnload<TRet>(string exec, Func<Assembly, GetResponse<TRet>> getter)
         {
-            return AssemblyLoading.ExecuteAndForceUnload(exec, getter, () => new FormKeyAssemblyLoadContext(exec));
+            return AssemblyLoading.ExecuteAndForceUnload(exec, getter, () => new FormKeyAssemblyLoadContext(_FileSystem, exec));
         }
 
         class FormKeyAssemblyLoadContext : AssemblyLoadContext
@@ -66,9 +70,12 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             // main plugin assembly.
             private readonly AssemblyDependencyResolver _resolver;
 
-            public FormKeyAssemblyLoadContext(string pluginPath) : base(isCollectible: true)
+            public FormKeyAssemblyLoadContext(
+                IFileSystem fileSystem,
+                string pluginPath) 
+                : base(isCollectible: true)
             {
-                if (!File.Exists(pluginPath)) throw new FileNotFoundException($"Assembly path to resolve against didn't exist: {pluginPath}");
+                if (!fileSystem.File.Exists(pluginPath)) throw new System.IO.FileNotFoundException($"Assembly path to resolve against didn't exist: {pluginPath}");
                 _resolver = new AssemblyDependencyResolver(pluginPath);
             }
 
