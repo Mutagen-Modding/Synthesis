@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using Noggog;
+using Noggog.Reactive;
 using Serilog;
 
 namespace Synthesis.Bethesda.Execution.DotNet
@@ -16,9 +16,12 @@ namespace Synthesis.Bethesda.Execution.DotNet
     {
         public IObservable<DotNetVersion> DotNetSdkInstalled { get; }
         
-        public ProvideInstalledSdk(IQueryInstalledSdk query, ILogger logger)
+        public ProvideInstalledSdk(
+            ISchedulerProvider schedulerProvider,
+            IQueryInstalledSdk query, 
+            ILogger logger)
         {
-            var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), TaskPoolScheduler.Default)
+            var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), schedulerProvider.TaskPool)
                 .StartWith(0)
                 .SelectTask(async i =>
                 {
