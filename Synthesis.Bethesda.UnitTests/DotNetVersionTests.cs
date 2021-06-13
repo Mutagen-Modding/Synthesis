@@ -12,7 +12,7 @@ namespace Synthesis.Bethesda.UnitTests
         [InlineData("x.5.6", false)]
         public void TestVersionString(string str, bool shouldSucceed)
         {
-            var query = new QueryInstalledSdk();
+            var query = new QueryInstalledSdk(null!);
             query.ParseVersionString(str)
                 .Acceptable.Should().Be(shouldSucceed);
         }

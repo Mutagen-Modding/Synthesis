@@ -16,16 +16,20 @@ namespace Synthesis.Bethesda.Execution
 
     public class Build : IBuild
     {
+        private readonly IProcessFactory _ProcessFactory;
         private readonly IProvideBuildString _BuildString;
 
-        public Build(IProvideBuildString buildString)
+        public Build(
+            IProcessFactory processFactory,
+            IProvideBuildString buildString)
         {
+            _ProcessFactory = processFactory;
             _BuildString = buildString;
         }
         
         public async Task<ErrorResponse> Compile(string targetPath, CancellationToken cancel, Action<string>? log)
         {
-            using var process = ProcessWrapper.Create(
+            using var process = _ProcessFactory.Create(
                 new ProcessStartInfo("dotnet", _BuildString.Get($"\"{Path.GetFileName(targetPath)}\""))
                 {
                     WorkingDirectory = Path.GetDirectoryName(targetPath)!

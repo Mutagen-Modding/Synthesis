@@ -32,13 +32,16 @@ namespace Synthesis.Bethesda.Execution.CLI
 
     public class CheckRunnability : ICheckRunnability
     {
+        private readonly IProcessFactory _ProcessFactory;
         private readonly IProvideTemporaryLoadOrder _LoadOrder;
         private readonly IProvideDotNetProcessInfo _ProcessInfo;
 
         public CheckRunnability(
+            IProcessFactory processFactory,
             IProvideTemporaryLoadOrder loadOrder,
             IProvideDotNetProcessInfo processInfo)
         {
+            _ProcessFactory = processFactory;
             _LoadOrder = loadOrder;
             _ProcessInfo = processInfo;
         }
@@ -80,7 +83,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                 LoadOrderFilePath = loadOrderPath
             };
 
-            using var proc = ProcessWrapper.Create(
+            using var proc = _ProcessFactory.Create(
                 _ProcessInfo.GetStart(path, directExe, checkState),
                 cancel: cancel);
             

@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using Newtonsoft.Json;
+using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -29,6 +30,7 @@ namespace Synthesis.Bethesda.GUI.Services.Singletons
         private readonly IInitilize _Init;
         private readonly IPipelineSettingsPath _PipelineSettingsPath;
         private readonly IGuiSettingsPath _GuiPaths;
+        private readonly IProcessFactory _ProcessFactory;
         private readonly IRetrieveSaveSettings _Save;
 
         public ExecuteShutdown(
@@ -36,12 +38,14 @@ namespace Synthesis.Bethesda.GUI.Services.Singletons
             IInitilize init,
             IPipelineSettingsPath paths,
             IGuiSettingsPath guiPaths,
+            IProcessFactory processFactory,
             IRetrieveSaveSettings save)
         {
             _Logger = logger;
             _Init = init;
             _PipelineSettingsPath = paths;
             _GuiPaths = guiPaths;
+            _ProcessFactory = processFactory;
             _Save = save;
         }
         
@@ -79,7 +83,7 @@ namespace Synthesis.Bethesda.GUI.Services.Singletons
             {
                 try
                 {
-                    using var process = ProcessWrapper.Create(
+                    using var process = _ProcessFactory.Create(
                         new ProcessStartInfo("dotnet", $"build-server shutdown"));
                     using var output = process.Output.Subscribe(x => _Logger.Information(x));
                     using var error = process.Error.Subscribe(x => _Logger.Information(x));

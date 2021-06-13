@@ -21,6 +21,7 @@ using System.Collections.ObjectModel;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Synthesis.WPF;
 using Mutagen.Bethesda.WPF.Plugins;
+using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.CLI;
@@ -37,6 +38,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly IProfileLoadOrder _LoadOrder;
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IProvideRepositoryCheckouts _ProvideRepositoryCheckouts;
+        private readonly IProcessFactory _ProcessFactory;
         private readonly IBuild _Build;
         private readonly IWorkingDirectorySubPaths _Paths;
 
@@ -106,6 +108,7 @@ namespace Synthesis.Bethesda.GUI
             IProvideWindowPlacement windowPlacement,
             ICheckRunnability checkRunnability,
             IProvideRepositoryCheckouts provideRepositoryCheckouts,
+            IProcessFactory processFactory,
             IBuild build,
             ILogger logger,
             IWorkingDirectorySubPaths paths,
@@ -115,6 +118,7 @@ namespace Synthesis.Bethesda.GUI
             _LoadOrder = loadOrder;
             _CheckRunnability = checkRunnability;
             _ProvideRepositoryCheckouts = provideRepositoryCheckouts;
+            _ProcessFactory = processFactory;
             _Build = build;
             _Paths = paths;
             CopyInSettings(settings);
@@ -341,6 +345,7 @@ namespace Synthesis.Bethesda.GUI
                     pathToProj: SelectedProjectPath.TargetPath,
                     build: _Build,
                     checkRunnability: _CheckRunnability,
+                    processFactory: _ProcessFactory,
                     repositoryCheckouts: _ProvideRepositoryCheckouts));
         }
 

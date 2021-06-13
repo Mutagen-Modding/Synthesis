@@ -25,16 +25,19 @@ namespace Synthesis.Bethesda.Execution.Patchers
         private readonly Subject<string> _error = new();
         public IObservable<string> Error => _error;
 
+        private readonly IProcessFactory _ProcessFactory;
         public string PathToExecutable;
 
         public string? PathToExtraData;
 
         public CliPatcherRun(
+            IProcessFactory processFactory,
             string nickname,
             string pathToExecutable, 
             string? pathToExtra)
         {
             Name = nickname;
+            _ProcessFactory = processFactory;
             PathToExecutable = pathToExecutable;
             PathToExtraData = pathToExtra;
         }
@@ -57,7 +60,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             var args = Parser.Default.FormatCommandLine(internalSettings);
             try
             {
-                using ProcessWrapper process = ProcessWrapper.Create(
+                using var process = _ProcessFactory.Create(
                     new ProcessStartInfo(PathToExecutable, args)
                     {
                         WorkingDirectory = Path.GetDirectoryName(PathToExecutable)!

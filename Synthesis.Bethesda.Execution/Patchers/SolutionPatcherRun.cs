@@ -27,6 +27,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
     {
         private readonly IBuild _Build;
         private readonly ICheckRunnability _CheckRunnability;
+        private readonly IProcessFactory _ProcessFactory;
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
         public string Name { get; }
         public string PathToSolution { get; }
@@ -46,10 +47,12 @@ namespace Synthesis.Bethesda.Execution.Patchers
             string pathToExtraDataBaseFolder,
             IBuild build,
             ICheckRunnability checkRunnability,
+            IProcessFactory processFactory,
             IProvideRepositoryCheckouts repositoryCheckouts)
         {
             _Build = build;
             _CheckRunnability = checkRunnability;
+            _ProcessFactory = processFactory;
             _RepositoryCheckouts = repositoryCheckouts;
             PathToSolution = pathToSln;
             PathToProject = pathToProj;
@@ -114,7 +117,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 PersistencePath = settings.PersistencePath
             };
             var args = Parser.Default.FormatCommandLine(internalSettings);
-            using var process = ProcessWrapper.Create(
+            using var process = _ProcessFactory.Create(
                 new ProcessStartInfo("dotnet", $"run --project \"{PathToProject}\" --runtime win-x64 --no-build -c Release {args}"),
                 cancel: cancel);
             _output.OnNext("Running");

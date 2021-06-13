@@ -8,6 +8,7 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Newtonsoft.Json;
 using Noggog;
+using Noggog.Utility;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -32,6 +33,7 @@ namespace Synthesis.Bethesda.Execution.CLI
         private readonly IWorkingDirectorySubPaths _Paths;
         private readonly ICheckOrCloneRepo _CheckOrCloneRepo;
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
+        private readonly IProcessFactory _ProcessFactory;
         private readonly ICheckRunnability _Runnability;
 
         public RunPatcherPipeline(
@@ -40,6 +42,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             IWorkingDirectorySubPaths paths,
             ICheckOrCloneRepo checkOrCloneRepo,
             IProvideRepositoryCheckouts repositoryCheckouts,
+            IProcessFactory processFactory,
             ICheckRunnability runnability)
         {
             _Build = build;
@@ -47,6 +50,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             _Paths = paths;
             _CheckOrCloneRepo = checkOrCloneRepo;
             _RepositoryCheckouts = repositoryCheckouts;
+            _ProcessFactory = processFactory;
             _Runnability = runnability;
         }
         
@@ -106,6 +110,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                         return patcherSettings switch
                         {
                             CliPatcherSettings cli => new CliPatcherRun(
+                                _ProcessFactory,
                                 cli.Nickname,
                                 cli.PathToExecutable,
                                 pathToExtra: null),
@@ -115,6 +120,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                                 pathToExtraDataBaseFolder: run.ExtraDataFolder ?? _Paths.TypicalExtraData,
                                 pathToProj: Path.Combine(Path.GetDirectoryName(sln.SolutionPath)!, sln.ProjectSubpath),
                                 checkRunnability: _Runnability,
+                                processFactory: _ProcessFactory,
                                 repositoryCheckouts: _RepositoryCheckouts,
                                 build: _Build),
                             GithubPatcherSettings git => new GitPatcherRun(

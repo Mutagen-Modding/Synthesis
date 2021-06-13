@@ -25,6 +25,7 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Synthesis.WPF;
 using Mutagen.Bethesda.WPF.Plugins.Order;
+using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
@@ -46,6 +47,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly IBuild _Build;
         private readonly ILogger _Logger;
         private readonly IWorkingDirectorySubPaths _Paths;
+        private readonly IProcessFactory _ProcessFactory;
         public override bool IsNameEditable => false;
 
         [Reactive]
@@ -187,6 +189,7 @@ namespace Synthesis.Bethesda.GUI
             ILogger logger,
             IProvideWorkingDirectory workingDirectory,
             IWorkingDirectorySubPaths paths,
+            IProcessFactory processFactory,
             GithubPatcherSettings? settings = null)
             : base(remove, selPatcher, confirmation, settings)
         {
@@ -197,6 +200,7 @@ namespace Synthesis.Bethesda.GUI
             _Build = build;
             _Logger = logger;
             _Paths = paths;
+            _ProcessFactory = processFactory;
             Locking = lockToCurrentVersioning;
             
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
@@ -1148,6 +1152,7 @@ namespace Synthesis.Bethesda.GUI
                     pathToExtraDataBaseFolder: _Paths.TypicalExtraData,
                     pathToProj: RunnableData.ProjPath,
                     build: _Build,
+                    processFactory: _ProcessFactory,
                     checkRunnability: _CheckRunnability,
                     repositoryCheckouts: _RepoCheckouts));
         }

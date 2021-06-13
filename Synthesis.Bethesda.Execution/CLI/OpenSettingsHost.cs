@@ -23,13 +23,16 @@ namespace Synthesis.Bethesda.Execution.CLI
     public class OpenSettingsHost : IOpenSettingsHost
     {
         private readonly IProvideTemporaryLoadOrder _LoadOrder;
+        private readonly IProcessFactory _ProcessFactory;
         private readonly IProvideDotNetProcessInfo _ProcessInfo;
 
         public OpenSettingsHost(
             IProvideTemporaryLoadOrder loadOrder,
+            IProcessFactory processFactory,
             IProvideDotNetProcessInfo processInfo)
         {
             _LoadOrder = loadOrder;
+            _ProcessFactory = processFactory;
             _ProcessInfo = processInfo;
         }
         
@@ -44,7 +47,7 @@ namespace Synthesis.Bethesda.Execution.CLI
         {
             using var loadOrderFile = _LoadOrder.Get(release, loadOrder);
 
-            using var proc = ProcessWrapper.Create(
+            using var proc = _ProcessFactory.Create(
                 _ProcessInfo.GetStart("SettingsHost/Synthesis.Bethesda.SettingsHost.exe", directExe: true, new Synthesis.Bethesda.HostSettings()
                 {
                     PatcherName = patcherName,

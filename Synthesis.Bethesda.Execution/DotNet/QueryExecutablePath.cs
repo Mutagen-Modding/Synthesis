@@ -16,13 +16,16 @@ namespace Synthesis.Bethesda.Execution
     public class QueryExecutablePath : IQueryExecutablePath
     {
         private readonly ILogger _Logger;
+        private readonly IProcessFactory _ProcessFactory;
         private readonly IProvideBuildString _BuildString;
 
         public QueryExecutablePath(
             ILogger logger,
+            IProcessFactory processFactory,
             IProvideBuildString buildString)
         {
             _Logger = logger;
+            _ProcessFactory = processFactory;
             _BuildString = buildString;
         }
         
@@ -31,7 +34,7 @@ namespace Synthesis.Bethesda.Execution
             // Hacky way to locate executable, but running a build and extracting the path its logs spit out
             // Tried using Buildalyzer, but it has a lot of bad side effects like clearing build outputs when
             // locating information like this.
-            using var proc = ProcessWrapper.Create(
+            using var proc = _ProcessFactory.Create(
                 new System.Diagnostics.ProcessStartInfo("dotnet", _BuildString.Get($"\"{projectPath}\"")),
                 cancel: cancel);
             _Logger.Information($"({proc.StartInfo.WorkingDirectory}): {proc.StartInfo.FileName} {proc.StartInfo.Arguments}");

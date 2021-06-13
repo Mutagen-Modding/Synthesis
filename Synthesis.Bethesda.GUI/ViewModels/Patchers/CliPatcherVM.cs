@@ -7,6 +7,7 @@ using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.IO;
 using System.Reactive.Linq;
+using Noggog.Utility;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Settings;
 
@@ -14,6 +15,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public class CliPatcherVM : PatcherVM
     {
+        private readonly IProcessFactory _ProcessFactory;
         public IShowHelpSetting ShowHelpSetting { get; }
         private readonly ObservableAsPropertyHelper<string> _DisplayName;
         public override string DisplayName => _DisplayName.Value;
@@ -32,9 +34,11 @@ namespace Synthesis.Bethesda.GUI
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             IShowHelpSetting showHelpSetting,
+            IProcessFactory processFactory,
             CliPatcherSettings? settings = null)
             : base(remove, selPatcher, confirmation, settings)
         {
+            _ProcessFactory = processFactory;
             ShowHelpSetting = showHelpSetting;
             CopyInSettings(settings);
             _DisplayName = this.WhenAnyValue(
@@ -96,6 +100,7 @@ namespace Synthesis.Bethesda.GUI
                 parent, 
                 this, 
                 new CliPatcherRun(
+                    _ProcessFactory,
                     nickname: DisplayName, 
                     pathToExecutable: PathToExecutable.TargetPath, 
                     pathToExtra: null));
