@@ -13,10 +13,18 @@ namespace Synthesis.Bethesda.Execution.CLI
 
     public class ProvideTemporaryLoadOrder : IProvideTemporaryLoadOrder
     {
+        private readonly IPaths _Paths;
+
+        public ProvideTemporaryLoadOrder(
+            IPaths paths)
+        {
+            _Paths = paths;
+        }
+        
         public TempFile Get(GameRelease release, IEnumerable<IModListingGetter> loadOrder)
         {
             var loadOrderFile = new TempFile(
-                Path.Combine(Synthesis.Bethesda.Execution.Paths.WorkingDirectory, "RunnabilityChecks", Path.GetRandomFileName()));
+                Path.Combine(_Paths.WorkingDirectory, "RunnabilityChecks", Path.GetRandomFileName()));
 
             LoadOrder.Write(
                 loadOrderFile.File.Path,

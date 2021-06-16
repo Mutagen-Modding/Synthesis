@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Newtonsoft.Json;
 using Serilog;
+using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.GUI.Settings;
     
 #if !DEBUG
@@ -25,15 +26,21 @@ namespace Synthesis.Bethesda.GUI.Services.Singletons
     {
         private readonly ILogger _Logger;
         private readonly IInitilize _Init;
+        private readonly IPaths _Paths;
+        private readonly IGuiPaths _GuiPaths;
         private readonly IRetrieveSaveSettings _Save;
 
         public ExecuteShutdown(
             ILogger logger,
             IInitilize init,
+            IPaths paths,
+            IGuiPaths guiPaths,
             IRetrieveSaveSettings save)
         {
             _Logger = logger;
             _Init = init;
+            _Paths = paths;
+            _GuiPaths = guiPaths;
             _Save = save;
         }
         
@@ -54,9 +61,9 @@ namespace Synthesis.Bethesda.GUI.Services.Singletons
                 try
                 {
                     _Save.Retrieve(out var gui, out var pipe);
-                    File.WriteAllText(Execution.Paths.SettingsFileName,
+                    File.WriteAllText(_Paths.SettingsFileName,
                         JsonConvert.SerializeObject(pipe, Formatting.Indented, Execution.Constants.JsonSettings));
-                    File.WriteAllText(Paths.GuiSettingsPath,
+                    File.WriteAllText(_GuiPaths.GuiSettingsPath,
                         JsonConvert.SerializeObject(gui, Formatting.Indented, Execution.Constants.JsonSettings));
                 }
                 catch (Exception e)

@@ -44,6 +44,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IBuild _Build;
         private readonly ILogger _Logger;
+        private readonly IPaths _Paths;
         public override bool IsNameEditable => false;
 
         [Reactive]
@@ -183,6 +184,7 @@ namespace Synthesis.Bethesda.GUI
             IOpenSettingsHost openSettingsHost,
             IBuild build,
             ILogger logger,
+            IPaths paths,
             GithubPatcherSettings? settings = null)
             : base(remove, selPatcher, confirmation, settings)
         {
@@ -192,6 +194,7 @@ namespace Synthesis.Bethesda.GUI
             _CheckRunnability = checkRunnability;
             _Build = build;
             _Logger = logger;
+            _Paths = paths;
             Locking = lockToCurrentVersioning;
             
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
@@ -200,7 +203,7 @@ namespace Synthesis.Bethesda.GUI
 
             var localRepoDir = Path.Combine(dirs.ProfileDirectory, "Git", ID);
             LocalDriverRepoDirectory = Path.Combine(localRepoDir, "Driver");
-            LocalRunnerRepoDirectory = GitPatcherRun.RunnerRepoDirectory(ident.ID, ID);
+            LocalRunnerRepoDirectory = GitPatcherRun.RunnerRepoDirectory(paths, ident.ID, ID);
 
             _DisplayName = this.WhenAnyValue(
                 x => x.Nickname,
@@ -608,7 +611,7 @@ namespace Synthesis.Bethesda.GUI
 
                             Logger.Error($"Checking out runner repository succeeded");
 
-                            await SolutionPatcherRun.CopyOverExtraData(runInfo.Item.ProjPath, Execution.Paths.TypicalExtraData, DisplayName, Logger.Information);
+                            await SolutionPatcherRun.CopyOverExtraData(runInfo.Item.ProjPath, paths.TypicalExtraData, DisplayName, Logger.Information);
 
                             observer.OnNext(runInfo);
                         }
@@ -1140,7 +1143,7 @@ namespace Synthesis.Bethesda.GUI
                 new SolutionPatcherRun(
                     name: DisplayName,
                     pathToSln: RunnableData.SolutionPath,
-                    pathToExtraDataBaseFolder: Execution.Paths.TypicalExtraData,
+                    pathToExtraDataBaseFolder: _Paths.TypicalExtraData,
                     pathToProj: RunnableData.ProjPath,
                     build: _Build,
                     checkRunnability: _CheckRunnability,

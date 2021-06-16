@@ -2,6 +2,7 @@
 using System.IO;
 using Noggog;
 using Serilog;
+using Synthesis.Bethesda.Execution;
 
 namespace Synthesis.Bethesda.GUI.Services
 {
@@ -12,11 +13,14 @@ namespace Synthesis.Bethesda.GUI.Services
 
     public class ClearLoading : IClearLoading
     {
+        private readonly IPaths _Paths;
         private readonly ILogger _Logger;
 
         public ClearLoading(
+            IPaths paths,
             ILogger logger)
         {
+            _Paths = paths;
             _Logger = logger;
         }
         
@@ -24,7 +28,7 @@ namespace Synthesis.Bethesda.GUI.Services
         {
             try
             {
-                var loadingDir = new DirectoryInfo(Execution.Paths.LoadingFolder);
+                var loadingDir = new DirectoryInfo(_Paths.LoadingFolder);
                 if (!loadingDir.Exists) return;
                 _Logger.Information("Clearing Loading folder");
                 loadingDir.DeleteEntireFolder(deleteFolderItself: false);

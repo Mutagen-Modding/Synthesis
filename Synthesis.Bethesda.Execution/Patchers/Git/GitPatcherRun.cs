@@ -109,9 +109,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             return Directory.EnumerateFiles(pathToRepo, "*.sln").FirstOrDefault();
         }
 
-        public static string RunnerRepoDirectory(string profileID, string githubID)
+        public static string RunnerRepoDirectory(IPaths paths, string profileID, string githubID)
         {
-            return Path.Combine(Execution.Paths.WorkingDirectory, profileID, "Git", githubID, "Runner");
+            return Path.Combine(paths.WorkingDirectory, profileID, "Git", githubID, "Runner");
         }
 
         public static void ModifyProject(

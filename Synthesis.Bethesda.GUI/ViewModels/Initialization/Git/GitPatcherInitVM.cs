@@ -65,7 +65,8 @@ namespace Synthesis.Bethesda.GUI
             IPatcherFactory patcherFactory,
             INavigateTo navigateTo, 
             IProvideRepositoryCheckouts repositoryCheckouts,
-            ICheckOrCloneRepo checkOrClone)
+            ICheckOrCloneRepo checkOrClone,
+            IGuiPaths guiPaths)
             : base(init)
         {
             _PatcherFactory = patcherFactory;
@@ -83,7 +84,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         var localRepoPath = checkOrClone.Check(
                             GetResponse<string>.Succeed("https://github.com/Mutagen-Modding/Synthesis.Registry"),
-                            Paths.RegistryFolder,
+                            guiPaths.RegistryFolder,
                             logger.Error,
                             CancellationToken.None);
                         if (localRepoPath.Failed)

@@ -20,17 +20,20 @@ namespace Mutagen.Bethesda.Synthesis.WPF
     public class ExtractInfoFromProject : IExtractInfoFromProject
     {
         private readonly IFileSystem _FileSystem;
+        private readonly IPaths _Paths;
         private readonly ICopyDirectory _CopyDirectory;
         private readonly IQueryExecutablePath _QueryExecutablePath;
         private readonly ILogger _Logger;
 
         public ExtractInfoFromProject(
             IFileSystem fileSystem,
+            IPaths paths,
             ICopyDirectory copyDirectory,
             IQueryExecutablePath queryExecutablePath,
             ILogger logger)
         {
             _FileSystem = fileSystem;
+            _Paths = paths;
             _CopyDirectory = copyDirectory;
             _QueryExecutablePath = queryExecutablePath;
             _Logger = logger;
@@ -44,7 +47,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             if (cancel.IsCancellationRequested) return GetResponse<(TRet Item, TempFolder Temp)>.Fail("Cancelled");
 
             // Copy to a temp folder for build + loading, just to keep the main one free to be swapped/modified as needed
-            var tempFolder = TempFolder.FactoryByPath(Path.Combine(Paths.LoadingFolder, Path.GetRandomFileName()));
+            var tempFolder = TempFolder.FactoryByPath(Path.Combine(_Paths.LoadingFolder, Path.GetRandomFileName()));
             if (cancel.IsCancellationRequested) return GetResponse<(TRet Item, TempFolder Temp)>.Fail("Cancelled");
             var projDir = Path.GetDirectoryName(projPath)!;
             _Logger.Information($"Starting project assembly info extraction.  Copying project from {projDir} to {tempFolder.Dir.Path}");

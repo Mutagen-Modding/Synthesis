@@ -37,6 +37,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IProvideRepositoryCheckouts _ProvideRepositoryCheckouts;
         private readonly IBuild _Build;
+        private readonly IPaths _Paths;
 
         public PathPickerVM SolutionPath { get; } = new()
         {
@@ -106,6 +107,7 @@ namespace Synthesis.Bethesda.GUI
             IProvideRepositoryCheckouts provideRepositoryCheckouts,
             IBuild build,
             ILogger logger,
+            IPaths paths,
             SolutionPatcherSettings? settings = null)
             : base(remove, profileDisplay, confirmation, settings)
         {
@@ -113,6 +115,7 @@ namespace Synthesis.Bethesda.GUI
             _CheckRunnability = checkRunnability;
             _ProvideRepositoryCheckouts = provideRepositoryCheckouts;
             _Build = build;
+            _Paths = paths;
             CopyInSettings(settings);
             SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
@@ -333,7 +336,7 @@ namespace Synthesis.Bethesda.GUI
                 new SolutionPatcherRun(
                     name: DisplayName,
                     pathToSln: SolutionPath.TargetPath,
-                    pathToExtraDataBaseFolder: Execution.Paths.TypicalExtraData,
+                    pathToExtraDataBaseFolder: _Paths.TypicalExtraData,
                     pathToProj: SelectedProjectPath.TargetPath,
                     build: _Build,
                     checkRunnability: _CheckRunnability,

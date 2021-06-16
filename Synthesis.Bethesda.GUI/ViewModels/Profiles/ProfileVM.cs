@@ -20,6 +20,7 @@ using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Serilog;
 using StructureMap;
+using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Settings;
@@ -31,6 +32,8 @@ namespace Synthesis.Bethesda.GUI
         private readonly PatcherInitializationVM _Init;
         private readonly INavigateTo _Navigate;
         private readonly IRetrieveSaveSettings _RetrieveSaveSettings;
+        private readonly IPaths _Paths;
+        private readonly IGuiPaths _GuiPaths;
         private readonly ILogger _Logger;
 
         public GameRelease Release { get; }
@@ -107,6 +110,8 @@ namespace Synthesis.Bethesda.GUI
             IRetrieveSaveSettings retrieveSaveSettings,
             IPatcherFactory patcherFactory,
             ISelectedProfileControllerVm selProfile,
+            IPaths paths,
+            IGuiPaths guiPaths,
             ILogger logger)
         {
             _Init = init;
@@ -118,6 +123,8 @@ namespace Synthesis.Bethesda.GUI
             DisplayController = profileDisplay;
             _Navigate = navigate;
             _RetrieveSaveSettings = retrieveSaveSettings;
+            _Paths = paths;
+            _GuiPaths = guiPaths;
             _Logger = logger;
             Nickname = ident.Nickname;
             ID = ident.ID;
@@ -426,10 +433,10 @@ namespace Synthesis.Bethesda.GUI
                 var subDir = "Export";
                 Directory.CreateDirectory(subDir);
                 File.WriteAllText(
-                    Path.Combine(subDir, Execution.Paths.SettingsFileName),
+                    Path.Combine(subDir, _Paths.SettingsFileName),
                     JsonConvert.SerializeObject(pipeSettings, Formatting.Indented, Execution.Constants.JsonSettings));
                 File.WriteAllText(
-                    Path.Combine(subDir, Paths.GuiSettingsPath),
+                    Path.Combine(subDir, _GuiPaths.GuiSettingsPath),
                     JsonConvert.SerializeObject(guiSettings, Formatting.Indented, Execution.Constants.JsonSettings));
                 var dataDir = new DirectoryInfo("Data");
                 if (dataDir.Exists)

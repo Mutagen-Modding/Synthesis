@@ -21,24 +21,27 @@ namespace Synthesis.Bethesda.Execution.Versioning
     {
         private readonly IFileSystem _FileSystem;
         private readonly ILogger _Logger;
+        private readonly IPaths _Paths;
         private readonly IProvideCurrentVersions _CurrentVersions;
         private readonly IQueryLibraryVersions _QueryLibraryVersions;
 
         public QueryNewestLibraryVersions(
             IFileSystem fileSystem,
             ILogger logger,
+            IPaths paths,
             IProvideCurrentVersions currentVersions,
             IQueryLibraryVersions queryLibraryVersions)
         {
             _FileSystem = fileSystem;
             _Logger = logger;
+            _Paths = paths;
             _CurrentVersions = currentVersions;
             _QueryLibraryVersions = queryLibraryVersions;
         }
         
         public string PrepLatestVersionProject()
         {
-            var bootstrapProjectDir = new DirectoryPath(Path.Combine(Execution.Paths.WorkingDirectory, "VersionQuery"));
+            var bootstrapProjectDir = new DirectoryPath(Path.Combine(_Paths.WorkingDirectory, "VersionQuery"));
             _FileSystem.Directory.DeleteEntireFolder(bootstrapProjectDir);
             _FileSystem.Directory.CreateDirectory(bootstrapProjectDir);
             var slnPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.sln");

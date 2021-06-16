@@ -2,7 +2,9 @@
 using System.IO.Abstractions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI.Settings
 {
@@ -17,23 +19,26 @@ namespace Synthesis.Bethesda.GUI.Settings
         public ISynthesisGuiSettings Gui { get; }
         public IPipelineSettings Pipeline { get; }
 
-        public SettingsSingleton(IFileSystem fileSystem)
+        public SettingsSingleton(
+            IFileSystem fileSystem,
+            IGuiPaths guiPaths,
+            IPaths paths)
         {
             SynthesisGuiSettings? guiSettings = null;
             PipelineSettings? pipeSettings = null;
             Task.WhenAll(
                 Task.Run(async () =>
                 {
-                    if (fileSystem.File.Exists(Paths.GuiSettingsPath))
+                    if (fileSystem.File.Exists(guiPaths.GuiSettingsPath))
                     {
-                        guiSettings = JsonConvert.DeserializeObject<SynthesisGuiSettings>(await fileSystem.File.ReadAllTextAsync(Paths.GuiSettingsPath), Execution.Constants.JsonSettings)!;
+                        guiSettings = JsonConvert.DeserializeObject<SynthesisGuiSettings>(await fileSystem.File.ReadAllTextAsync(guiPaths.GuiSettingsPath), Execution.Constants.JsonSettings)!;
                     }
                 }),
                 Task.Run(async () =>
                 {
-                    if (fileSystem.File.Exists(Execution.Paths.SettingsFileName))
+                    if (fileSystem.File.Exists(paths.SettingsFileName))
                     {
-                        pipeSettings = JsonConvert.DeserializeObject<PipelineSettings>(await fileSystem.File.ReadAllTextAsync(Execution.Paths.SettingsFileName), Execution.Constants.JsonSettings)!;
+                        pipeSettings = JsonConvert.DeserializeObject<PipelineSettings>(await fileSystem.File.ReadAllTextAsync(paths.SettingsFileName), Execution.Constants.JsonSettings)!;
                     }
                 })
             ).Wait();

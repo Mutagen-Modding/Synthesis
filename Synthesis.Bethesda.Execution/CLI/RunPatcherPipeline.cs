@@ -27,17 +27,20 @@ namespace Synthesis.Bethesda.Execution.CLI
     public class RunPatcherPipeline : IRunPatcherPipeline
     {
         private readonly IBuild _Build;
+        private readonly IPaths _Paths;
         private readonly ICheckOrCloneRepo _CheckOrCloneRepo;
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
         private readonly ICheckRunnability _Runnability;
 
         public RunPatcherPipeline(
             IBuild build,
+            IPaths paths,
             ICheckOrCloneRepo checkOrCloneRepo,
             IProvideRepositoryCheckouts repositoryCheckouts,
             ICheckRunnability runnability)
         {
             _Build = build;
+            _Paths = paths;
             _CheckOrCloneRepo = checkOrCloneRepo;
             _RepositoryCheckouts = repositoryCheckouts;
             _Runnability = runnability;
@@ -105,14 +108,14 @@ namespace Synthesis.Bethesda.Execution.CLI
                             SolutionPatcherSettings sln => new SolutionPatcherRun(
                                 name: sln.Nickname,
                                 pathToSln: sln.SolutionPath,
-                                pathToExtraDataBaseFolder: run.ExtraDataFolder ?? Paths.TypicalExtraData,
+                                pathToExtraDataBaseFolder: run.ExtraDataFolder ?? _Paths.TypicalExtraData,
                                 pathToProj: Path.Combine(Path.GetDirectoryName(sln.SolutionPath)!, sln.ProjectSubpath),
                                 checkRunnability: _Runnability,
                                 repositoryCheckouts: _RepositoryCheckouts,
                                 build: _Build),
                             GithubPatcherSettings git => new GitPatcherRun(
                                 settings: git,
-                                localDir: GitPatcherRun.RunnerRepoDirectory(profile.ID, git.ID),
+                                localDir: GitPatcherRun.RunnerRepoDirectory(_Paths, profile.ID, git.ID),
                                 checkOrClone: _CheckOrCloneRepo),
                             _ => throw new NotImplementedException(),
                         };
@@ -120,7 +123,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                     .ToList();
 
                 await Runner.Run(
-                    workingDirectory: Paths.ProfileWorkingDirectory(profile.ID),
+                    workingDirectory: _Paths.ProfileWorkingDirectory(profile.ID),
                     outputPath: run.OutputPath,
                     dataFolder: run.DataFolderPath,
                     loadOrder: LoadOrder.GetListings(

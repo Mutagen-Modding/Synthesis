@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Synthesis.Bethesda.Execution;
 
 namespace Synthesis.Bethesda.GUI.Profiles.Plugins
 {
@@ -13,10 +14,12 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
         public string ProfileDirectory { get; }
         public string WorkingDirectory { get; }
 
-        public ProfileDirectories(IProfileIdentifier ident)
+        public ProfileDirectories(
+            IPaths paths,
+            IProfileIdentifier ident)
         {
-            ProfileDirectory = Path.Combine(Execution.Paths.WorkingDirectory, ident.ID);
-            WorkingDirectory = Execution.Paths.ProfileWorkingDirectory(ident.ID);
+            ProfileDirectory = Path.Combine(paths.WorkingDirectory, ident.ID);
+            WorkingDirectory = paths.ProfileWorkingDirectory(ident.ID);
         }
     }
 }
