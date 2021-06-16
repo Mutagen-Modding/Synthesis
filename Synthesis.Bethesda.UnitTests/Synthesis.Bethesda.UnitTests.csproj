@@ -24,14 +24,14 @@
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
     <PackageReference Include="Mutagen.Bethesda" Version="0.30.4.1-dev" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.19.0.1-dev" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.21.0" />
     <PackageReference Include="NSubstitute" Version="4.2.2" />
     <PackageReference Include="NuGetizer" Version="0.7.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Serilog" Version="2.10.0" />
-    <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="13.2.37" />
+    <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="13.2.38" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
