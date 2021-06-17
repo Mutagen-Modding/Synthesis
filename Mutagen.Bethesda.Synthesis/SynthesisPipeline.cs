@@ -1,6 +1,5 @@
 using CommandLine;
 using Mutagen.Bethesda.Plugins;
-using Mutagen.Bethesda.Plugins.Binary;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Synthesis.CLI;
@@ -19,6 +18,7 @@ using System.Threading.Tasks;
 using Mutagen.Bethesda.Installs;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using SynthesisBase = Synthesis.Bethesda;
+using Mutagen.Bethesda.Plugins.Binary.Parameters;
 
 namespace Mutagen.Bethesda.Synthesis
 {
@@ -593,8 +593,8 @@ namespace Mutagen.Bethesda.Synthesis
         {
             return new BinaryWriteParameters()
             {
-                ModKey = BinaryWriteParameters.ModKeyOption.NoCheck,
-                MastersListOrdering = new BinaryWriteParameters.MastersListOrderingByLoadOrder(loadOrder),
+                ModKey = ModKeyOption.NoCheck,
+                MastersListOrdering = new MastersListOrderingByLoadOrder(loadOrder),
             };
         }
 
