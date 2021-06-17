@@ -11,7 +11,9 @@ using Serilog;
 using StructureMap;
 using StructureMap.Graph;
 using StructureMap.Graph.Scanning;
+using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services;
@@ -103,6 +105,9 @@ namespace Synthesis.Bethesda.GUI
             _coll.For<IProfileSimpleLinkCache>().Use<ProfileSimpleLinkCache>();
             _coll.For<GitPatcherInitVM>();
             _coll.For<CliPatcherInitVM>();
+            
+            // Overrides
+            _coll.ForSingletonOf<IProvideWorkingDirectory>().Use<WorkingDirectoryOverride>();
         }
 
         private void RegisterOther()
@@ -155,6 +160,7 @@ namespace Synthesis.Bethesda.GUI
             _coll.Scan(s =>
             {
                 s.AssemblyContainingType<ICheckOrCloneRepo>();
+                s.ExcludeType<ProvideWorkingDirectory>();
                 s.Convention<SingletonConvention>();
             });
         }

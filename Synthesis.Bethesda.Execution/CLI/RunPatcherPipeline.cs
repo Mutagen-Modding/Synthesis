@@ -11,6 +11,7 @@ using Noggog;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
 
@@ -27,19 +28,22 @@ namespace Synthesis.Bethesda.Execution.CLI
     public class RunPatcherPipeline : IRunPatcherPipeline
     {
         private readonly IBuild _Build;
-        private readonly IPaths _Paths;
+        private readonly IProvideWorkingDirectory _WorkingDirectory;
+        private readonly IWorkingDirectorySubPaths _Paths;
         private readonly ICheckOrCloneRepo _CheckOrCloneRepo;
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
         private readonly ICheckRunnability _Runnability;
 
         public RunPatcherPipeline(
             IBuild build,
-            IPaths paths,
+            IProvideWorkingDirectory workingDirectory,
+            IWorkingDirectorySubPaths paths,
             ICheckOrCloneRepo checkOrCloneRepo,
             IProvideRepositoryCheckouts repositoryCheckouts,
             ICheckRunnability runnability)
         {
             _Build = build;
+            _WorkingDirectory = workingDirectory;
             _Paths = paths;
             _CheckOrCloneRepo = checkOrCloneRepo;
             _RepositoryCheckouts = repositoryCheckouts;
@@ -115,7 +119,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                                 build: _Build),
                             GithubPatcherSettings git => new GitPatcherRun(
                                 settings: git,
-                                localDir: GitPatcherRun.RunnerRepoDirectory(_Paths, profile.ID, git.ID),
+                                localDir: GitPatcherRun.RunnerRepoDirectory(_WorkingDirectory, profile.ID, git.ID),
                                 checkOrClone: _CheckOrCloneRepo),
                             _ => throw new NotImplementedException(),
                         };

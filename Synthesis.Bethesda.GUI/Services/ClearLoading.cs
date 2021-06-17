@@ -3,6 +3,7 @@ using System.IO;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Synthesis.Bethesda.GUI.Services
 {
@@ -13,11 +14,11 @@ namespace Synthesis.Bethesda.GUI.Services
 
     public class ClearLoading : IClearLoading
     {
-        private readonly IPaths _Paths;
+        private readonly IWorkingDirectorySubPaths _Paths;
         private readonly ILogger _Logger;
 
         public ClearLoading(
-            IPaths paths,
+            IWorkingDirectorySubPaths paths,
             ILogger logger)
         {
             _Paths = paths;

@@ -1,4 +1,4 @@
-﻿using System.Reactive;
+using System.Reactive;
 using AutoFixture;
 using FluentAssertions;
 using NSubstitute;
@@ -19,9 +19,10 @@ namespace Synthesis.Bethesda.UnitTests.UI.Settings
         [Fact]
         public void CommandDoesFlip()
         {
+            var settings = _Fixture.Inject.Create<ISettingsSingleton>();
             var help = new ShowHelpSetting(
-                new RetrieveSaveSettings(),
-                _Fixture.Inject.Create<ISettingsSingleton>());
+                new RetrieveSaveSettings(settings),
+                settings);
             var initial = help.ShowHelp;
             help.ShowHelpToggleCommand.CanExecute(Unit.Default)
                 .Should().BeTrue();
@@ -37,12 +38,12 @@ namespace Synthesis.Bethesda.UnitTests.UI.Settings
             var settings = Substitute.For<ISettingsSingleton>();
             settings.Gui.ShowHelp.Returns(true);
             var help = new ShowHelpSetting(
-                new RetrieveSaveSettings(),
+                new RetrieveSaveSettings(settings),
                 settings);
             help.ShowHelp.Should().BeTrue();
             settings.Gui.ShowHelp.Returns(false);
             help = new ShowHelpSetting(
-                new RetrieveSaveSettings(),
+                new RetrieveSaveSettings(settings),
                 settings);
             help.ShowHelp.Should().BeFalse();
         }
@@ -50,10 +51,11 @@ namespace Synthesis.Bethesda.UnitTests.UI.Settings
         [Fact]
         public void SavesSettings()
         {
-            var retrieve = new RetrieveSaveSettings();
+            var settings = _Fixture.Inject.Create<ISettingsSingleton>();
+            var retrieve = new RetrieveSaveSettings(settings);
             var help = new ShowHelpSetting(
                 retrieve,
-                _Fixture.Inject.Create<ISettingsSingleton>());
+                settings);
             help.ShowHelp = true;
             retrieve.Retrieve(out var gui, out var pipe);
             gui.ShowHelp.Should().BeTrue();

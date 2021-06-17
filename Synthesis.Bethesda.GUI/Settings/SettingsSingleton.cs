@@ -2,7 +2,7 @@
 using System.IO.Abstractions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services;
 
@@ -21,24 +21,24 @@ namespace Synthesis.Bethesda.GUI.Settings
 
         public SettingsSingleton(
             IFileSystem fileSystem,
-            IGuiPaths guiPaths,
-            IPaths paths)
+            IGuiSettingsPath guiPaths,
+            IPipelineSettingsPath paths)
         {
             SynthesisGuiSettings? guiSettings = null;
             PipelineSettings? pipeSettings = null;
             Task.WhenAll(
                 Task.Run(async () =>
                 {
-                    if (fileSystem.File.Exists(guiPaths.GuiSettingsPath))
+                    if (fileSystem.File.Exists(guiPaths.Path))
                     {
-                        guiSettings = JsonConvert.DeserializeObject<SynthesisGuiSettings>(await fileSystem.File.ReadAllTextAsync(guiPaths.GuiSettingsPath), Execution.Constants.JsonSettings)!;
+                        guiSettings = JsonConvert.DeserializeObject<SynthesisGuiSettings>(await fileSystem.File.ReadAllTextAsync(guiPaths.Path), Execution.Constants.JsonSettings)!;
                     }
                 }),
                 Task.Run(async () =>
                 {
-                    if (fileSystem.File.Exists(paths.SettingsFileName))
+                    if (fileSystem.File.Exists(paths.Path))
                     {
-                        pipeSettings = JsonConvert.DeserializeObject<PipelineSettings>(await fileSystem.File.ReadAllTextAsync(paths.SettingsFileName), Execution.Constants.JsonSettings)!;
+                        pipeSettings = JsonConvert.DeserializeObject<PipelineSettings>(await fileSystem.File.ReadAllTextAsync(paths.Path), Execution.Constants.JsonSettings)!;
                     }
                 })
             ).Wait();

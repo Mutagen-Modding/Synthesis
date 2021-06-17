@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
@@ -109,7 +110,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             return Directory.EnumerateFiles(pathToRepo, "*.sln").FirstOrDefault();
         }
 
-        public static string RunnerRepoDirectory(IPaths paths, string profileID, string githubID)
+        public static string RunnerRepoDirectory(IProvideWorkingDirectory paths, string profileID, string githubID)
         {
             return Path.Combine(paths.WorkingDirectory, profileID, "Git", githubID, "Runner");
         }

@@ -9,6 +9,7 @@ using Noggog;
 using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {
@@ -20,14 +21,14 @@ namespace Mutagen.Bethesda.Synthesis.WPF
     public class ExtractInfoFromProject : IExtractInfoFromProject
     {
         private readonly IFileSystem _FileSystem;
-        private readonly IPaths _Paths;
+        private readonly IWorkingDirectorySubPaths _Paths;
         private readonly ICopyDirectory _CopyDirectory;
         private readonly IQueryExecutablePath _QueryExecutablePath;
         private readonly ILogger _Logger;
 
         public ExtractInfoFromProject(
             IFileSystem fileSystem,
-            IPaths paths,
+            IWorkingDirectorySubPaths paths,
             ICopyDirectory copyDirectory,
             IQueryExecutablePath queryExecutablePath,
             ILogger logger)

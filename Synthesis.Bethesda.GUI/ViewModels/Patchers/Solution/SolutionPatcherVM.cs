@@ -26,6 +26,7 @@ using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services;
 
@@ -37,7 +38,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IProvideRepositoryCheckouts _ProvideRepositoryCheckouts;
         private readonly IBuild _Build;
-        private readonly IPaths _Paths;
+        private readonly IWorkingDirectorySubPaths _Paths;
 
         public PathPickerVM SolutionPath { get; } = new()
         {
@@ -107,7 +108,7 @@ namespace Synthesis.Bethesda.GUI
             IProvideRepositoryCheckouts provideRepositoryCheckouts,
             IBuild build,
             ILogger logger,
-            IPaths paths,
+            IWorkingDirectorySubPaths paths,
             SolutionPatcherSettings? settings = null)
             : base(remove, profileDisplay, confirmation, settings)
         {

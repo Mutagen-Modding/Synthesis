@@ -8,6 +8,7 @@ using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using Serilog;
+using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Synthesis.Bethesda.Execution.Versioning
 {
@@ -21,14 +22,14 @@ namespace Synthesis.Bethesda.Execution.Versioning
     {
         private readonly IFileSystem _FileSystem;
         private readonly ILogger _Logger;
-        private readonly IPaths _Paths;
+        private readonly IProvideWorkingDirectory _Paths;
         private readonly IProvideCurrentVersions _CurrentVersions;
         private readonly IQueryLibraryVersions _QueryLibraryVersions;
 
         public QueryNewestLibraryVersions(
             IFileSystem fileSystem,
             ILogger logger,
-            IPaths paths,
+            IProvideWorkingDirectory paths,
             IProvideCurrentVersions currentVersions,
             IQueryLibraryVersions queryLibraryVersions)
         {

@@ -3,6 +3,7 @@ using Path = System.IO.Path;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog.Utility;
+using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Synthesis.Bethesda.Execution.CLI
 {
@@ -13,10 +14,10 @@ namespace Synthesis.Bethesda.Execution.CLI
 
     public class ProvideTemporaryLoadOrder : IProvideTemporaryLoadOrder
     {
-        private readonly IPaths _Paths;
+        private readonly IProvideWorkingDirectory _Paths;
 
         public ProvideTemporaryLoadOrder(
-            IPaths paths)
+            IProvideWorkingDirectory paths)
         {
             _Paths = paths;
         }

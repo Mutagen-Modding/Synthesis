@@ -1,27 +1,23 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Synthesis.Bethesda.Execution;
+using Noggog;
+using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI.Services
 {
     public interface IGuiPaths
     {
-        string GuiSettingsPath { get; }
         string RegistryFolder { get; }
     }
 
     public class GuiPaths : IGuiPaths
     {
-        public string GuiSettingsPath { get; } = "GuiSettings.json";
         public string RegistryFolder { get; }
 
-        public GuiPaths(IPaths paths)
+        public GuiPaths(
+            IProvideWorkingDirectory workingDirectory)
         {
-            RegistryFolder = Path.Combine(paths.WorkingDirectory, "Registry");
+            RegistryFolder = Path.Combine(workingDirectory.WorkingDirectory, "Registry");
         }
     }
 }

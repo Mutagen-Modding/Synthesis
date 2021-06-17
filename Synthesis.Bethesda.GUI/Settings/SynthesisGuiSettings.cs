@@ -7,6 +7,7 @@ namespace Synthesis.Bethesda.GUI.Settings
         IDE Ide { get; set; }
         string MainRepositoryFolder { get; set; }
         string SelectedProfile { get; set; }
+        string WorkingDirectory { get; set; }
     }
 
     public class SynthesisGuiSettings : ISynthesisGuiSettings
@@ -16,5 +17,6 @@ namespace Synthesis.Bethesda.GUI.Settings
         public IDE Ide { get; set; } = IDE.SystemDefault;
         public string MainRepositoryFolder { get; set; } = string.Empty;
         public string SelectedProfile { get; set; } = string.Empty;
+        public string WorkingDirectory { get; set; } = string.Empty;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Synthesis.Bethesda.GUI.Profiles.Plugins
 {
@@ -15,11 +16,12 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
         public string WorkingDirectory { get; }
 
         public ProfileDirectories(
-            IPaths paths,
+            IProvideWorkingDirectory paths,
+            IWorkingDirectorySubPaths workingDirectorySubPaths,
             IProfileIdentifier ident)
         {
             ProfileDirectory = Path.Combine(paths.WorkingDirectory, ident.ID);
-            WorkingDirectory = paths.ProfileWorkingDirectory(ident.ID);
+            WorkingDirectory = workingDirectorySubPaths.ProfileWorkingDirectory(ident.ID);
         }
     }
 }

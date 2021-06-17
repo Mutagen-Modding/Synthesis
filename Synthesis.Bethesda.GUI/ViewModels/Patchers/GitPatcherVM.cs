@@ -29,6 +29,7 @@ using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services;
@@ -44,7 +45,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IBuild _Build;
         private readonly ILogger _Logger;
-        private readonly IPaths _Paths;
+        private readonly IWorkingDirectorySubPaths _Paths;
         public override bool IsNameEditable => false;
 
         [Reactive]
@@ -184,7 +185,8 @@ namespace Synthesis.Bethesda.GUI
             IOpenSettingsHost openSettingsHost,
             IBuild build,
             ILogger logger,
-            IPaths paths,
+            IProvideWorkingDirectory workingDirectory,
+            IWorkingDirectorySubPaths paths,
             GithubPatcherSettings? settings = null)
             : base(remove, selPatcher, confirmation, settings)
         {
@@ -203,7 +205,7 @@ namespace Synthesis.Bethesda.GUI
 
             var localRepoDir = Path.Combine(dirs.ProfileDirectory, "Git", ID);
             LocalDriverRepoDirectory = Path.Combine(localRepoDir, "Driver");
-            LocalRunnerRepoDirectory = GitPatcherRun.RunnerRepoDirectory(paths, ident.ID, ID);
+            LocalRunnerRepoDirectory = GitPatcherRun.RunnerRepoDirectory(workingDirectory, ident.ID, ID);
 
             _DisplayName = this.WhenAnyValue(
                 x => x.Nickname,

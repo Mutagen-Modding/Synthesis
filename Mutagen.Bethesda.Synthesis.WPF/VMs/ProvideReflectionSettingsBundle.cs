@@ -12,6 +12,7 @@ using Noggog;
 using Serilog;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {
@@ -29,13 +30,13 @@ namespace Mutagen.Bethesda.Synthesis.WPF
     public class ProvideReflectionSettingsBundle : IProvideReflectionSettingsBundle
     {
         private readonly ILogger _Logger;
-        private readonly IPaths _Paths;
+        private readonly IWorkingDirectorySubPaths _Paths;
         private readonly IFileSystem _FileSystem;
         private readonly IExtractInfoFromProject _Extract;
 
         public ProvideReflectionSettingsBundle(
             ILogger logger,
-            IPaths paths,
+            IWorkingDirectorySubPaths paths,
             IFileSystem fileSystem,
             IExtractInfoFromProject extract)
         {

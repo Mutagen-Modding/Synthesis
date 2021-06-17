@@ -1,17 +1,26 @@
-﻿using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.Settings;
 using Xunit;
 using System;
 using FluentAssertions;
+using AutoFixture;
 using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.UnitTests.UI.Settings
 {
-    public class RetrieveSaveSettingsTests
+    public class RetrieveSaveSettingsTests : IClassFixture<Fixture>
     {
+        private readonly Fixture _Fixture;
+
+        public RetrieveSaveSettingsTests(Fixture fixture)
+        {
+            _Fixture = fixture;
+        }
+
         [Fact]
         public void Saves()
         {
-            var retrieve = new RetrieveSaveSettings();
+            var settings = _Fixture.Inject.Create<ISettingsSingleton>();
+            var retrieve = new RetrieveSaveSettings(settings);
             ISynthesisGuiSettings? gui = null;
             IPipelineSettings? pipe = null;
             retrieve.Saving.Subscribe(x =>
