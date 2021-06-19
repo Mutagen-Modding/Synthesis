@@ -1,7 +1,7 @@
 using Synthesis.Bethesda.Execution.Patchers;
 using Noggog;
 using System;
-using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +12,8 @@ using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Reporters;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins;
+using Path = System.IO.Path;
+using FileNotFoundException = System.IO.FileNotFoundException;
 
 namespace Synthesis.Bethesda.UnitTests
 {
@@ -20,38 +22,38 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task EmptyRun()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
-            var output = Utility.TypicalOutputFile(tmpFolder);
+            var env = Utility.SetupEnvironment(GameRelease.Oblivion);
+            var output = Utility.TypicalOutputFile(env.BaseFolder);
             await Runner.Run(
-                workingDirectory: tmpFolder.Dir.Path,
+                workingDirectory: env.BaseFolder,
                 outputPath: output,
-                dataFolder: dataFolder.Dir.Path,
-                loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
+                dataFolder: env.DataFolder,
+                loadOrder: env.GetTypicalLoadOrder(),
                 release: GameRelease.Oblivion,
                 patchers: ListExt.Empty<IPatcherRun>(),
-                cancel: CancellationToken.None);
-            Assert.False(File.Exists(output));
+                cancel: CancellationToken.None,
+                fileSystem: env.FileSystem);
+            Assert.False(env.FileSystem.File.Exists(output));
         }
 
         [Fact]
         public async Task ListedNonExistantSourcePath()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
-            var patcher = new DummyPatcher();
-            var output = Utility.TypicalOutputFile(tmpFolder);
+            var env = Utility.SetupEnvironment(GameRelease.Oblivion);
+            var patcher = new DummyPatcher(env.FileSystem);
+            var output = Utility.TypicalOutputFile(env.BaseFolder);
             var reporter = new TrackerReporter();
             await Runner.Run(
-                workingDirectory: tmpFolder.Dir.Path,
+                workingDirectory: env.BaseFolder,
                 outputPath: output,
-                dataFolder: dataFolder.Dir.Path,
+                dataFolder: env.DataFolder,
                 release: GameRelease.Oblivion,
-                loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
+                loadOrder: env.GetTypicalLoadOrder(),
                 sourcePath: output,
                 reporter: reporter,
                 patchers: patcher.AsEnumerable().ToList(),
-                cancel: CancellationToken.None);
+                cancel: CancellationToken.None,
+                fileSystem: env.FileSystem);
             Assert.False(patcher.WasPrepped);
             Assert.IsType<FileNotFoundException>(reporter.Overall);
             Assert.False(reporter.Success);
@@ -60,18 +62,18 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task BasicPatcherFunctionsCalled()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
-            var output = Utility.TypicalOutputFile(tmpFolder);
-            var patcher = new DummyPatcher();
+            var env = Utility.SetupEnvironment(GameRelease.Oblivion);
+            var output = Utility.TypicalOutputFile(env.BaseFolder);
+            var patcher = new DummyPatcher(env.FileSystem);
             await Runner.Run(
-                workingDirectory: tmpFolder.Dir.Path,
+                workingDirectory: env.BaseFolder,
                 outputPath: output,
-                dataFolder: dataFolder.Dir.Path,
-                loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
+                dataFolder: env.DataFolder,
+                loadOrder: env.GetTypicalLoadOrder(),
                 release: GameRelease.Oblivion,
                 patchers: patcher.AsEnumerable().ToList(),
-                cancel: CancellationToken.None);
+                cancel: CancellationToken.None,
+                fileSystem: env.FileSystem);
             Assert.True(patcher.WasRun);
             Assert.True(patcher.WasPrepped);
         }
@@ -79,23 +81,23 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task ChecksIfPatchersOutput()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
-            var output = Utility.TypicalOutputFile(tmpFolder);
-            var patcher = new DummyPatcher()
+            var env = Utility.SetupEnvironment(GameRelease.Oblivion);
+            var output = Utility.TypicalOutputFile(env.BaseFolder);
+            var patcher = new DummyPatcher(env.FileSystem)
             {
                 DoWork = false,
             };
             var reporter = new TrackerReporter();
             await Runner.Run(
-                workingDirectory: tmpFolder.Dir.Path,
+                workingDirectory: env.BaseFolder,
                 outputPath: output,
-                dataFolder: dataFolder.Dir.Path,
+                dataFolder: env.DataFolder,
                 release: GameRelease.Oblivion,
-                loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
+                loadOrder: env.GetTypicalLoadOrder(),
                 reporter: reporter,
                 patchers: patcher.AsEnumerable().ToList(),
-                cancel: CancellationToken.None);
+                cancel: CancellationToken.None,
+                fileSystem: env.FileSystem);
             Assert.IsType<ArgumentException>(reporter.RunProblem?.Exception);
             Assert.False(reporter.Success);
         }
@@ -103,42 +105,42 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task FinalOutputFileCreated()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
-            var output = Utility.TypicalOutputFile(tmpFolder);
-            var patcher = new DummyPatcher();
+            var env = Utility.SetupEnvironment(GameRelease.Oblivion);
+            var output = Utility.TypicalOutputFile(env.BaseFolder);
+            var patcher = new DummyPatcher(env.FileSystem);
             await Runner.Run(
-                workingDirectory: tmpFolder.Dir.Path,
+                workingDirectory: env.BaseFolder,
                 outputPath: output,
-                dataFolder: dataFolder.Dir.Path,
+                dataFolder: env.DataFolder,
                 release: GameRelease.Oblivion,
-                loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
+                loadOrder: env.GetTypicalLoadOrder(),
                 patchers: patcher.AsEnumerable().ToList(),
-                cancel: CancellationToken.None);
-            Assert.True(File.Exists(output));
+                cancel: CancellationToken.None,
+                fileSystem: env.FileSystem);
+            Assert.True(env.FileSystem.File.Exists(output));
         }
 
         [Fact]
         public async Task PatcherThrowInPrep()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
-            var output = Utility.TypicalOutputFile(tmpFolder);
-            var patcher = new DummyPatcher()
+            var env = Utility.SetupEnvironment(GameRelease.Oblivion);
+            var output = Utility.TypicalOutputFile(env.BaseFolder);
+            var patcher = new DummyPatcher(env.FileSystem)
             {
                 ThrowInPrep = true,
             };
             var reporter = new TrackerReporter();
             await Runner.Run(
-                workingDirectory: tmpFolder.Dir.Path,
+                workingDirectory: env.BaseFolder,
                 outputPath: output,
-                dataFolder: dataFolder.Dir.Path,
+                dataFolder: env.DataFolder,
                 release: GameRelease.Oblivion,
-                loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
+                loadOrder: env.GetTypicalLoadOrder(),
                 patchers: patcher.AsEnumerable().ToList(),
                 reporter: reporter,
-                cancel: CancellationToken.None);
-            Assert.False(File.Exists(output));
+                cancel: CancellationToken.None,
+                fileSystem: env.FileSystem);
+            Assert.False(env.FileSystem.File.Exists(output));
             Assert.True(patcher.WasPrepped);
             Assert.False(patcher.WasRun);
             Assert.Equal(1, reporter.PrepProblems.Count);
@@ -149,24 +151,24 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task PatcherThrowInRun()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
-            var output = Utility.TypicalOutputFile(tmpFolder);
-            var patcher = new DummyPatcher()
+            var env = Utility.SetupEnvironment(GameRelease.Oblivion);
+            var output = Utility.TypicalOutputFile(env.BaseFolder);
+            var patcher = new DummyPatcher(env.FileSystem)
             {
                 ThrowInRun = true,
             };
             var reporter = new TrackerReporter();
             await Runner.Run(
-                workingDirectory: tmpFolder.Dir.Path,
+                workingDirectory: env.BaseFolder,
                 outputPath: output,
-                dataFolder: dataFolder.Dir.Path,
+                dataFolder: env.DataFolder,
                 release: GameRelease.Oblivion,
-                loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
+                loadOrder: env.GetTypicalLoadOrder(),
                 patchers: patcher.AsEnumerable().ToList(),
                 reporter: reporter,
-                cancel: CancellationToken.None);
-            Assert.False(File.Exists(output));
+                cancel: CancellationToken.None,
+                fileSystem: env.FileSystem);
+            Assert.False(env.FileSystem.File.Exists(output));
             Assert.True(patcher.WasPrepped);
             Assert.True(patcher.WasRun);
             Assert.Equal(0, reporter.PrepProblems.Count);
@@ -177,84 +179,87 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task PatcherOutputReported()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
-            var output = Utility.TypicalOutputFile(tmpFolder);
-            var patcher = new DummyPatcher();
+            var env = Utility.SetupEnvironment(GameRelease.Oblivion);
+            var output = Utility.TypicalOutputFile(env.BaseFolder);
+            var patcher = new DummyPatcher(env.FileSystem);
             var reporter = new TrackerReporter();
             await Runner.Run(
-                workingDirectory: tmpFolder.Dir.Path,
+                workingDirectory: env.BaseFolder,
                 outputPath: output,
-                dataFolder: dataFolder.Dir.Path,
+                dataFolder: env.DataFolder,
                 release: GameRelease.Oblivion,
-                loadOrder: Utility.TypicalLoadOrder(GameRelease.Oblivion, dataFolder.Dir),
+                loadOrder: env.GetTypicalLoadOrder(),
                 patchers: patcher.AsEnumerable().ToList(),
                 reporter: reporter,
-                cancel: CancellationToken.None);
-            Assert.True(File.Exists(output));
+                cancel: CancellationToken.None,
+                fileSystem: env.FileSystem);
+            Assert.True(env.FileSystem.File.Exists(output));
             Assert.True(patcher.WasPrepped);
             Assert.True(patcher.WasRun);
             Assert.True(reporter.Success);
             Assert.True(reporter.PatcherComplete.Count > 0);
             Assert.NotEqual(output.Path, reporter.PatcherComplete[0].OutputPath);
-            Assert.True(File.Exists(reporter.PatcherComplete[0].OutputPath));
+            Assert.True(env.FileSystem.File.Exists(reporter.PatcherComplete[0].OutputPath));
         }
 
         [Fact]
         public async Task TrimsPostSynthesisFromLoadOrder()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimLE);
-            var output = Utility.TypicalOutputFile(tmpFolder);
-            var patcher = new DummyPatcher();
+            var env = Utility.SetupEnvironment(GameRelease.SkyrimLE);
+            var workingDir = Path.Combine(env.BaseFolder, "WorkingDir");
+            var output = Utility.TypicalOutputFile(workingDir);
+            var patcher = new DummyPatcher(env.FileSystem);
             await Runner.Run(
-                workingDirectory: tmpFolder.Dir.Path,
+                workingDirectory: workingDir,
                 outputPath: output,
-                dataFolder: dataFolder.Dir.Path,
+                dataFolder: env.DataFolder,
                 release: GameRelease.SkyrimLE,
-                loadOrder: Utility.TypicalLoadOrder(GameRelease.SkyrimLE, dataFolder.Dir)
+                loadOrder: env.GetTypicalLoadOrder()
                     .And(new ModListing(Constants.SynthesisModKey, true))
                     .And(new ModListing(Utility.RandomModKey, true)),
                 patchers: patcher.AsEnumerable().ToList(),
-                cancel: CancellationToken.None);
+                cancel: CancellationToken.None,
+                fileSystem: env.FileSystem);
             Assert.Equal(
                 new string[]
                 {
                     Utility.TestModKey.FileName,
                     Utility.OverrideModKey.FileName,
-                }, File.ReadAllLines(Path.Combine(tmpFolder.Dir.Path, "Plugins.txt")));
+                }, env.FileSystem.File.ReadAllLines(Path.Combine(workingDir, Utility.PathToLoadOrderFile)));
         }
 
         [Fact]
         public async Task TrimsAtypicalOutputFromLoadOrder()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(RunnerTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimLE);
+            var env = Utility.SetupEnvironment(GameRelease.SkyrimLE);
             ModKey atypicalKey = ModKey.FromNameAndExtension("Atypical.esp");
-            var output = Path.Combine(tmpFolder.Dir.Path, atypicalKey.FileName);
-            var patcher = new DummyPatcher();
+            var workingDir = Path.Combine(env.BaseFolder, "WorkingDir");
+            var output = Path.Combine(workingDir, atypicalKey.FileName);
+            var patcher = new DummyPatcher(env.FileSystem);
             await Runner.Run(
-                workingDirectory: tmpFolder.Dir.Path,
+                workingDirectory: workingDir,
                 outputPath: output,
-                dataFolder: dataFolder.Dir.Path,
+                dataFolder: env.DataFolder,
                 release: GameRelease.SkyrimLE,
-                loadOrder: Utility.TypicalLoadOrder(GameRelease.SkyrimLE, dataFolder.Dir)
+                loadOrder: env.GetTypicalLoadOrder()
                     .And(new ModListing(Constants.SynthesisModKey, true))
                     .And(new ModListing(atypicalKey, true))
                     .And(new ModListing(Utility.RandomModKey, true)),
                 patchers: patcher.AsEnumerable().ToList(),
-                cancel: CancellationToken.None);
+                cancel: CancellationToken.None,
+                fileSystem: env.FileSystem);
             Assert.Equal(
                 new string[]
                 {
                     Utility.TestModKey.FileName,
                     Utility.OverrideModKey.FileName,
                     Constants.SynthesisModKey.FileName,
-                }, File.ReadAllLines(Path.Combine(tmpFolder.Dir.Path, "Plugins.txt")));
+                }, env.FileSystem.File.ReadAllLines(Path.Combine(workingDir, Utility.PathToLoadOrderFile)));
         }
 
         public class DummyPatcher : IPatcherRun
         {
+            private readonly IFileSystem _FileSystem;
             public string Name => "Dummy";
 
             public bool WasDisposed;
@@ -267,6 +272,11 @@ namespace Synthesis.Bethesda.UnitTests
             public IObservable<string> Output => Observable.Empty<string>();
 
             public IObservable<string> Error => Observable.Empty<string>();
+
+            public DummyPatcher(IFileSystem fileSystem)
+            {
+                _FileSystem = fileSystem;
+            }
 
             public void Dispose()
             {
@@ -286,7 +296,7 @@ namespace Synthesis.Bethesda.UnitTests
             {
                 if (DoWork)
                 {
-                    File.WriteAllText(settings.OutputPath, "Hello");
+                    _FileSystem.File.WriteAllText(settings.OutputPath, "Hello");
                 }
                 WasRun = true;
                 if (ThrowInRun)

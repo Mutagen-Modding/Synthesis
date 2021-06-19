@@ -41,11 +41,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Humanizer.Core" Version="2.11.10" />
-    <PackageReference Include="Loqui" Version="2.21.0" />
-    <PackageReference Include="Loqui.Generation" Version="2.21.0" />
+    <PackageReference Include="Loqui" Version="2.21.0.1-dev" />
+    <PackageReference Include="Loqui.Generation" Version="2.21.0.1-dev" />
     <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.30.4.1-dev" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.21.0" />
-    <PackageReference Include="Noggog.WPF" Version="2.21.0" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.21.0.1-dev" />
+    <PackageReference Include="Noggog.WPF" Version="2.21.0.1-dev" />
     <PackageReference Include="NuGetizer" Version="0.7.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

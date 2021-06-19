@@ -2,7 +2,7 @@ using Synthesis.Bethesda.Execution.Patchers;
 using Noggog;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +12,8 @@ using Synthesis.Bethesda.Execution.Settings;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Allocators;
+using Path = System.IO.Path;
+using FileNotFoundException = System.IO.FileNotFoundException;
 
 namespace Synthesis.Bethesda.Execution
 {
@@ -28,7 +30,8 @@ namespace Synthesis.Bethesda.Execution
             ModPath? sourcePath = null,
             IRunReporter? reporter = null,
             PersistenceMode persistenceMode = PersistenceMode.None,
-            string? persistencePath = null)
+            string? persistencePath = null,
+            IFileSystem? fileSystem = null)
         {
             return await Run<object?>(
                 workingDirectory: workingDirectory,
@@ -41,7 +44,8 @@ namespace Synthesis.Bethesda.Execution
                 sourcePath: sourcePath,
                 cancellation: cancel,
                 persistenceMode: persistenceMode,
-                persistencePath: persistencePath);
+                persistencePath: persistencePath,
+                fileSystem: fileSystem);
         }
 
         public static async Task<bool> Run<TKey>(
@@ -55,21 +59,23 @@ namespace Synthesis.Bethesda.Execution
             CancellationToken cancellation,
             ModPath? sourcePath = null,
             PersistenceMode persistenceMode = PersistenceMode.None,
-            string? persistencePath = null)
+            string? persistencePath = null,
+            IFileSystem? fileSystem = null)
         {
             try
             {
+                fileSystem = fileSystem.GetOrDefault();
                 if (sourcePath != null)
                 {
-                    if (!File.Exists(sourcePath))
+                    if (!fileSystem.File.Exists(sourcePath))
                     {
                         reporter.ReportOverallProblem(new FileNotFoundException($"Source path did not exist: {sourcePath}"));
                         return false;
                     }
                 }
-                var dirInfo = new DirectoryInfo(workingDirectory);
-                dirInfo.DeleteEntireFolder();
-                dirInfo.Create();
+
+                fileSystem.Directory.DeleteEntireFolder(workingDirectory);
+                fileSystem.Directory.CreateDirectory(workingDirectory);
 
                 var patchersList = patchers.ToList();
                 if (patchersList.Count == 0 || cancellation.IsCancellationRequested) return false;
@@ -86,11 +92,13 @@ namespace Synthesis.Bethesda.Execution
                 reporter.Write(default(TKey)!, default, "Load Order:");
                 loadOrderList.WithIndex().ForEach(i => reporter.Write(default(TKey)!, default, $" [{i.Index,3}] {i.Item}"));
                 string loadOrderPath = Path.Combine(workingDirectory, "Plugins.txt");
+
+                var loadOrderWriter = new LoadOrderWriter(fileSystem);
                 var writeLoadOrder = Task.Run(() =>
                 {
                     try
                     {
-                        LoadOrder.Write(
+                        loadOrderWriter.Write(
                             loadOrderPath,
                             release,
                             loadOrderList,
@@ -114,7 +122,7 @@ namespace Synthesis.Bethesda.Execution
                                 persistencePath = null;
                                 break;
                             case PersistenceMode.Text:
-                                TextFileSharedFormKeyAllocator.Initialize(persistencePath ?? throw new ArgumentNullException("Persistence mode specified, but no path provided"));
+                                TextFileSharedFormKeyAllocator.Initialize(persistencePath ?? throw new ArgumentNullException("Persistence mode specified, but no path provided"), fileSystem);
                                 break;
                             default:
                                 throw new NotImplementedException();
@@ -216,7 +224,7 @@ namespace Synthesis.Bethesda.Execution
                         return false;
                     }
                     if (cancellation.IsCancellationRequested) return false;
-                    if (!File.Exists(nextPath))
+                    if (!fileSystem.File.Exists(nextPath))
                     {
                         reporter.ReportRunProblem(patcher.Key, patcher.Run, new ArgumentException($"Patcher {patcher.Run.Name} did not produce output file."));
                         return false;
@@ -224,11 +232,11 @@ namespace Synthesis.Bethesda.Execution
                     reporter.ReportRunSuccessful(patcher.Key, patcher.Run, nextPath);
                     prevPath = nextPath;
                 }
-                if (File.Exists(outputPath))
+                if (fileSystem.File.Exists(outputPath))
                 {
-                    File.Delete(outputPath);
+                    fileSystem.File.Delete(outputPath);
                 }
-                File.Copy(prevPath!.Path, outputPath);
+                fileSystem.File.Copy(prevPath!.Path, outputPath);
                 reporter.Write(default!, default, $"Exported patch to: {outputPath}");
                 return true;
             }

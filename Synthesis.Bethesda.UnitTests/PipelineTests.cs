@@ -3,6 +3,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Order;
 using System.IO;
 using System.Linq;
+using Mutagen.Bethesda.Synthesis.States;
 using Noggog;
 using Xunit;
 
@@ -27,8 +28,12 @@ namespace Synthesis.Bethesda.UnitTests
                     $"*{Utility.TestModKey.FileName}",
                     $"{Utility.OverrideModKey.FileName}",
                 });
-            var listings = Mutagen.Bethesda.Synthesis.Internal.Utility.GetLoadOrder(
-                fileSystem: IFileSystemExt.DefaultFilesystem,
+            var getStateLoadOrder = new GetStateLoadOrder(
+                IFileSystemExt.DefaultFilesystem,
+                new PluginListingsRetriever(
+                    IFileSystemExt.DefaultFilesystem,
+                    new TimestampAligner(IFileSystemExt.DefaultFilesystem)));
+            var listings = getStateLoadOrder.GetLoadOrder(
                 GameRelease.SkyrimSE,
                 loadOrderFilePath: pluginPath,
                 dataFolderPath: dataFolder).ToList();
@@ -44,13 +49,16 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void GetLoadOrder_NoLoadOrderPath()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(PipelineTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimSE);
-            var lo = Mutagen.Bethesda.Synthesis.Internal.Utility.GetLoadOrder(
-                fileSystem: IFileSystemExt.DefaultFilesystem,
+            var env = Utility.SetupEnvironment(GameRelease.SkyrimSE);
+            var getStateLoadOrder = new GetStateLoadOrder(
+                env.FileSystem,
+                new PluginListingsRetriever(
+                    env.FileSystem,
+                    new TimestampAligner(env.FileSystem)));
+            var lo = getStateLoadOrder.GetLoadOrder(
                 GameRelease.SkyrimSE, 
                 string.Empty,
-                dataFolder.Dir.Path);
+                env.DataFolder);
             lo.Select(l => l.ModKey).Should().BeEmpty();
         }
     }

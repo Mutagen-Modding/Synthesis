@@ -54,7 +54,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Noggog.CSharpExt" Version="2.21.0" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.21.0.1-dev" />
     <PackageReference Include="Serilog" Version="2.10.0" />
   </ItemGroup>
 

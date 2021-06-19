@@ -16,28 +16,26 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task Failure()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(CheckRunnabilityTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimSE);
+            var env = Utility.SetupEnvironment(GameRelease.SkyrimSE);
             (await new SynthesisPipeline()
                 .AddRunnabilityCheck(state =>
                 {
                     throw new ArithmeticException();
                 })
-                .Run($"check-runnability -g SkyrimSE -d {dataFolder.Dir.Path}".Split(' ')))
+                .Run($"check-runnability -g SkyrimSE -d {env.DataFolder}".Split(' '), fileSystem: env.FileSystem))
                 .Should().Be((int)Codes.NotRunnable);
         }
 
         [Fact]
         public async Task PassingCheck()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(CheckRunnabilityTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimSE);
+            var env = Utility.SetupEnvironment(GameRelease.SkyrimSE);
             (await new SynthesisPipeline()
                 .AddRunnabilityCheck(state =>
                 {
                     // Looks good?
                 })
-                .Run($"check-runnability -g SkyrimSE -d {dataFolder.Dir.Path}".Split(' ')))
+                .Run($"check-runnability -g SkyrimSE -d {env.DataFolder}".Split(' '), fileSystem: env.FileSystem))
                 .Should().Be(0);
         }
     }
