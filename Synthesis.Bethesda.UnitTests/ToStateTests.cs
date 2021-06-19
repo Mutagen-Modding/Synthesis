@@ -4,6 +4,8 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.CLI;
 using System.Linq;
+using Mutagen.Bethesda.Core.Plugins.Order;
+using Mutagen.Bethesda.Plugins.Masters;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Synthesis.States;
 using Xunit;
@@ -35,14 +37,7 @@ namespace Synthesis.Bethesda.UnitTests
                 OutputPath = output,
                 SourcePath = null
             };
-            var stateFactory = new StateFactory(
-                env.FileSystem,
-                new LoadOrderImporter(env.FileSystem),
-                new GetStateLoadOrder(env.FileSystem,
-                    new PluginListingsRetriever(
-                        env.FileSystem,
-                        new TimestampAligner(env.FileSystem))),
-                new AddImplicitMasters(env.FileSystem));
+            var stateFactory = GetStateFactory(env);
             using var state = stateFactory.ToState(
                 GameCategory.Skyrim,
                 settings,
@@ -55,6 +50,21 @@ namespace Synthesis.Bethesda.UnitTests
                 Utility.OverrideModKey,
                 output.ModKey,
             });
+        }
+
+        private static StateFactory GetStateFactory(TestEnvironment env)
+        {
+            var stateFactory = new StateFactory(
+                env.FileSystem,
+                new LoadOrderImporter(env.FileSystem),
+                new GetStateLoadOrder(env.FileSystem,
+                    new PluginListingsRetriever(
+                        env.FileSystem,
+                        new TimestampAligner(env.FileSystem))),
+                new EnableImplicitMasters(
+                    new FindImplicitlyIncludedMods(
+                        new MasterReferenceReaderFactory(env.FileSystem))));
+            return stateFactory;
         }
 
         [Fact]
@@ -80,14 +90,7 @@ namespace Synthesis.Bethesda.UnitTests
                 OutputPath = output,
                 SourcePath = null
             };
-            var stateFactory = new StateFactory(
-                env.FileSystem,
-                new LoadOrderImporter(env.FileSystem),
-                new GetStateLoadOrder(env.FileSystem,
-                    new PluginListingsRetriever(
-                        env.FileSystem,
-                        new TimestampAligner(env.FileSystem))),
-                new AddImplicitMasters(env.FileSystem));
+            var stateFactory = GetStateFactory(env);
             using var state = stateFactory.ToState(
                 GameCategory.Skyrim,
                 settings,

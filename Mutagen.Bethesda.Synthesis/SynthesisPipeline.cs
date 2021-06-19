@@ -16,10 +16,12 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Mutagen.Bethesda.Core.Plugins.Order;
 using Mutagen.Bethesda.Installs;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using SynthesisBase = Synthesis.Bethesda;
 using Mutagen.Bethesda.Plugins.Binary.Parameters;
+using Mutagen.Bethesda.Plugins.Masters;
 using Mutagen.Bethesda.Synthesis.States;
 
 namespace Mutagen.Bethesda.Synthesis
@@ -475,7 +477,9 @@ namespace Mutagen.Bethesda.Synthesis
                 new GetStateLoadOrder(fileSystem,
                     new PluginListingsRetriever(fileSystem,
                         new TimestampAligner(fileSystem))),
-                new AddImplicitMasters(fileSystem));
+                new EnableImplicitMasters(
+                    new FindImplicitlyIncludedMods(
+                        new MasterReferenceReaderFactory(fileSystem))));
             using var state = stateFactory.ToState(cat, args, prefs, exportKey);
             await patcher.Patcher(state).ConfigureAwait(false);
             System.Console.WriteLine("Running patch.");

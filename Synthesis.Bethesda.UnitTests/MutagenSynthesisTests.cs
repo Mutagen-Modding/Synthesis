@@ -8,6 +8,8 @@ using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using System;
 using System.Threading.Tasks;
+using Mutagen.Bethesda.Core.Plugins.Order;
+using Mutagen.Bethesda.Plugins.Masters;
 using Mutagen.Bethesda.Synthesis.States;
 using Xunit;
 using Path = System.IO.Path;
@@ -36,6 +38,21 @@ namespace Synthesis.Bethesda.UnitTests
 
         protected static ModKey PatchModKey => new("Patch", ModType.Plugin);
         protected static ModPath PatchModPath(DirectoryPath dataFolder) => new(PatchModKey, Path.Combine(dataFolder.Path, PatchModKey.ToString()));
+
+        private static StateFactory GetStateFactory(TestEnvironment env)
+        {
+            var stateFactory = new StateFactory(
+                env.FileSystem,
+                new LoadOrderImporter(env.FileSystem),
+                new GetStateLoadOrder(env.FileSystem,
+                    new PluginListingsRetriever(
+                        env.FileSystem,
+                        new TimestampAligner(env.FileSystem))),
+                new EnableImplicitMasters(
+                    new FindImplicitlyIncludedMods(
+                        new MasterReferenceReaderFactory(env.FileSystem))));
+            return stateFactory;
+        }
 
         [Fact]
         public async Task TypicalPatcher_FreshStart()
@@ -132,14 +149,7 @@ namespace Synthesis.Bethesda.UnitTests
         {
             var env = Utility.SetupEnvironment(GameRelease.Oblivion);
             var modPath = PatchModPath(env.DataFolder);
-            var stateFactory = new StateFactory(
-                env.FileSystem,
-                new LoadOrderImporter(env.FileSystem),
-                new GetStateLoadOrder(env.FileSystem,
-                    new PluginListingsRetriever(
-                        env.FileSystem,
-                        new TimestampAligner(env.FileSystem))),
-                new AddImplicitMasters(env.FileSystem));
+            var stateFactory = GetStateFactory(env);
             using var state = stateFactory.ToState<IOblivionMod, IOblivionModGetter>(
                 new RunSynthesisMutagenPatcher()
                 {
@@ -160,14 +170,7 @@ namespace Synthesis.Bethesda.UnitTests
             var env = Utility.SetupEnvironment(GameRelease.Oblivion);
             var prevPath = new ModPath(Utility.OverrideModKey, Path.Combine(env.DataFolder, Utility.OverrideModKey.FileName));
             var modPath = PatchModPath(env.DataFolder);
-            var stateFactory = new StateFactory(
-                env.FileSystem,
-                new LoadOrderImporter(env.FileSystem),
-                new GetStateLoadOrder(env.FileSystem,
-                    new PluginListingsRetriever(
-                        env.FileSystem,
-                        new TimestampAligner(env.FileSystem))),
-                new AddImplicitMasters(env.FileSystem));
+            var stateFactory = GetStateFactory(env);
             using var state = stateFactory.ToState<IOblivionMod, IOblivionModGetter>(
                 new RunSynthesisMutagenPatcher()
                 {
@@ -198,14 +201,7 @@ namespace Synthesis.Bethesda.UnitTests
                 });
             var prevPath = new ModPath(Utility.OverrideModKey, Path.Combine(env.DataFolder, Utility.OverrideModKey.FileName));
             var modPath = PatchModPath(env.DataFolder);
-            var stateFactory = new StateFactory(
-                env.FileSystem,
-                new LoadOrderImporter(env.FileSystem),
-                new GetStateLoadOrder(env.FileSystem,
-                    new PluginListingsRetriever(
-                        env.FileSystem,
-                        new TimestampAligner(env.FileSystem))),
-                new AddImplicitMasters(env.FileSystem));
+            var stateFactory = GetStateFactory(env);
             using var state = stateFactory.ToState<Mutagen.Bethesda.Skyrim.ISkyrimMod, Mutagen.Bethesda.Skyrim.ISkyrimModGetter>(
                 new RunSynthesisMutagenPatcher()
                 {
@@ -237,14 +233,7 @@ namespace Synthesis.Bethesda.UnitTests
                 });
             var prevPath = new ModPath(Utility.OverrideModKey, Path.Combine(env.DataFolder, Utility.OverrideModKey.FileName));
             var modPath = PatchModPath(env.DataFolder);
-            var stateFactory = new StateFactory(
-                env.FileSystem,
-                new LoadOrderImporter(env.FileSystem),
-                new GetStateLoadOrder(env.FileSystem,
-                    new PluginListingsRetriever(
-                        env.FileSystem,
-                        new TimestampAligner(env.FileSystem))),
-                new AddImplicitMasters(env.FileSystem));
+            var stateFactory = GetStateFactory(env);
             using var state = stateFactory.ToState<Mutagen.Bethesda.Skyrim.ISkyrimMod, Mutagen.Bethesda.Skyrim.ISkyrimModGetter>(
                 new RunSynthesisMutagenPatcher()
                 {
@@ -297,7 +286,9 @@ namespace Synthesis.Bethesda.UnitTests
                 new ModListing(Utility.TestModKey, false),
                 new ModListing(Utility.OverrideModKey, true),
             };
-            new AddImplicitMasters(env.FileSystem)
+            new EnableImplicitMasters(
+                    new FindImplicitlyIncludedMods(
+                        new MasterReferenceReaderFactory(env.FileSystem)))
                 .Add(
                 new RunSynthesisMutagenPatcher()
                 {

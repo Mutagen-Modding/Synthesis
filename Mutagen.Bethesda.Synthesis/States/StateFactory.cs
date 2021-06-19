@@ -27,18 +27,18 @@ namespace Mutagen.Bethesda.Synthesis.States
         private readonly IFileSystem _FileSystem;
         private readonly ILoadOrderImporter _LoadOrderImporter;
         private readonly IGetStateLoadOrder _GetStateLoadOrder;
-        private readonly IAddImplicitMasters _AddImplicitMasters;
+        private readonly IEnableImplicitMasters _EnableImplicitMasters;
 
         public StateFactory(
             IFileSystem fileSystem,
             ILoadOrderImporter loadOrderImporter,
             IGetStateLoadOrder getStateLoadOrder,
-            IAddImplicitMasters addImplicitMasters)
+            IEnableImplicitMasters enableImplicitMasters)
         {
             _FileSystem = fileSystem;
             _LoadOrderImporter = loadOrderImporter;
             _GetStateLoadOrder = getStateLoadOrder;
-            _AddImplicitMasters = addImplicitMasters;
+            _EnableImplicitMasters = enableImplicitMasters;
         }
         
         public SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
@@ -74,7 +74,7 @@ namespace Mutagen.Bethesda.Synthesis.States
 
             if (userPrefs.AddImplicitMasters)
             {
-                _AddImplicitMasters.Add(settings, loadOrderListing);
+                _EnableImplicitMasters.Add(settings, loadOrderListing);
             }
 
             // Remove disabled mods
