@@ -16,13 +16,16 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Mutagen.Bethesda.Core.Plugins.Order;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Installs;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using SynthesisBase = Synthesis.Bethesda;
 using Mutagen.Bethesda.Plugins.Binary.Parameters;
+using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Mutagen.Bethesda.Plugins.Masters;
+using Mutagen.Bethesda.Plugins.Order.DI;
 using Mutagen.Bethesda.Synthesis.States;
+using Mutagen.Bethesda.Synthesis.States.DI;
 
 namespace Mutagen.Bethesda.Synthesis
 {
@@ -120,16 +123,22 @@ namespace Mutagen.Bethesda.Synthesis
         private async Task<int> CheckRunnability(CheckRunnability args, IFileSystem fileSystem)
         {
             var patcher = _patchers.GetOrDefault(args.GameRelease.ToCategory());
+            var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
             var loadOrder = new GetStateLoadOrder(
-                    fileSystem,
-                    new PluginListingsRetriever(
+                    new ImplicitListingsProvider(
                         fileSystem,
-                        new TimestampAligner(fileSystem)))
-                .GetLoadOrder(
-                    release: args.GameRelease,
-                    loadOrderFilePath: args.LoadOrderFilePath,
-                    dataFolderPath: args.DataFolderPath,
-                    patcher?.Prefs)
+                        new DataDirectoryInjection(args.DataFolderPath),
+                        new ImplicitListingModKeyProvider(
+                            gameReleaseInjection)),
+                    new StatePluginsListingProvider(
+                        args.LoadOrderFilePath,
+                        new PluginRawListingsReader(
+                            fileSystem,
+                            new PluginListingsParser(
+                                new ModListingParser(
+                                    new HasEnabledMarkersProvider(
+                                        gameReleaseInjection))))))
+                .GetLoadOrder(patcher?.Prefs)
                 .ToLoadOrder();
             var state = new RunnabilityState(args, loadOrder);
             try
@@ -471,15 +480,29 @@ namespace Mutagen.Bethesda.Synthesis
             WarmupAll.Init();
             System.Console.WriteLine("Prepping state.");
             var prefs = patcher.Prefs ?? new PatcherPreferences();
+            var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
+            var dataDirectoryInjection = new DataDirectoryInjection(args.DataFolderPath);
+            var pluginRawListingsReader = new PluginRawListingsReader(
+                fileSystem,
+                new PluginListingsParser(
+                    new ModListingParser(
+                        new HasEnabledMarkersProvider(
+                            gameReleaseInjection))));
+            var pluginListingsPathProvider = new PluginListingsPathProvider(gameReleaseInjection);
             var stateFactory = new StateFactory(
                 fileSystem,
-                new LoadOrderImporter(fileSystem),
-                new GetStateLoadOrder(fileSystem,
-                    new PluginListingsRetriever(fileSystem,
-                        new TimestampAligner(fileSystem))),
-                new EnableImplicitMasters(
-                    new FindImplicitlyIncludedMods(
-                        new MasterReferenceReaderFactory(fileSystem))));
+                new LoadOrderImporterFactory(
+                    fileSystem),
+                new GetStateLoadOrder(
+                    new ImplicitListingsProvider(
+                        fileSystem,
+                        dataDirectoryInjection,
+                        new ImplicitListingModKeyProvider(
+                            gameReleaseInjection)),
+                    new StatePluginsListingProvider(
+                        args.LoadOrderFilePath,
+                        pluginRawListingsReader)),
+                new EnableImplicitMastersFactory(fileSystem));
             using var state = stateFactory.ToState(cat, args, prefs, exportKey);
             await patcher.Patcher(state).ConfigureAwait(false);
             System.Console.WriteLine("Running patch.");

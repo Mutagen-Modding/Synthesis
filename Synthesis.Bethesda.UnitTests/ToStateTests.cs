@@ -1,13 +1,15 @@
+using System.Linq;
 using FluentAssertions;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.CLI;
-using System.Linq;
-using Mutagen.Bethesda.Core.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Masters;
-using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.Plugins.Order.DI;
 using Mutagen.Bethesda.Synthesis.States;
+using Mutagen.Bethesda.Synthesis.States.DI;
 using Xunit;
 using Path = System.IO.Path;
 
@@ -37,7 +39,7 @@ namespace Synthesis.Bethesda.UnitTests
                 OutputPath = output,
                 SourcePath = null
             };
-            var stateFactory = GetStateFactory(env);
+            var stateFactory = env.GetStateFactory();
             using var state = stateFactory.ToState(
                 GameCategory.Skyrim,
                 settings,
@@ -50,21 +52,6 @@ namespace Synthesis.Bethesda.UnitTests
                 Utility.OverrideModKey,
                 output.ModKey,
             });
-        }
-
-        private static StateFactory GetStateFactory(TestEnvironment env)
-        {
-            var stateFactory = new StateFactory(
-                env.FileSystem,
-                new LoadOrderImporter(env.FileSystem),
-                new GetStateLoadOrder(env.FileSystem,
-                    new PluginListingsRetriever(
-                        env.FileSystem,
-                        new TimestampAligner(env.FileSystem))),
-                new EnableImplicitMasters(
-                    new FindImplicitlyIncludedMods(
-                        new MasterReferenceReaderFactory(env.FileSystem))));
-            return stateFactory;
         }
 
         [Fact]
@@ -90,7 +77,7 @@ namespace Synthesis.Bethesda.UnitTests
                 OutputPath = output,
                 SourcePath = null
             };
-            var stateFactory = GetStateFactory(env);
+            var stateFactory = env.GetStateFactory();
             using var state = stateFactory.ToState(
                 GameCategory.Skyrim,
                 settings,

@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Installs;
 using Noggog;
 using Noggog.Reactive;
@@ -36,7 +37,7 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles
                 _Fixture.Inject.Create<ISchedulerProvider>(),
                 _Fixture.Inject.Create<IWatchDirectory>(),
                 fileSystem,
-                _Fixture.Inject.Create<IGameLocator>(),
+                _Fixture.Inject.Create<IGameDirectoryLookup>(),
                 _Fixture.Inject.Create<IProfileIdentifier>());
             locator.DataPathOverride = folder;
                 
@@ -57,10 +58,10 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles
         public void GameLocation(Utility.Return r)
         {
             var ident = _Fixture.Inject.Create<IProfileIdentifier>();
-            var gameLocator = Substitute.For<IGameLocator>();
+            var gameLocator = Substitute.For<IGameDirectoryLookup>();
             var fileSystem = Substitute.For<IFileSystem>();
             fileSystem.Directory.Exists(Arg.Any<string>()).Returns(true);
-            gameLocator.TryGetGameFolder(ident.Release, out Arg.Any<DirectoryPath>())
+            gameLocator.TryGet(ident.Release, out Arg.Any<DirectoryPath>())
                 .Returns(x =>
                 {
                     switch (r)
@@ -97,9 +98,9 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles
         public void WatchesForFileExistence(Utility.Return r)
         {
             var ident = _Fixture.Inject.Create<IProfileIdentifier>();
-            var gameLocator = Substitute.For<IGameLocator>();
+            var gameLocator = Substitute.For<IGameDirectoryLookup>();
             var folder = new DirectoryPath("SomeFolder");
-            gameLocator.TryGetGameFolder(ident.Release, out Arg.Any<DirectoryPath>())
+            gameLocator.TryGet(ident.Release, out Arg.Any<DirectoryPath>())
                 .Returns(x =>
                 {
                     x[1] = folder;

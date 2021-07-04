@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
-using DynamicData;
 using FluentAssertions;
-using Mutagen.Bethesda;
-using Mutagen.Bethesda.Core.Plugins.Order;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Masters;
+using Mutagen.Bethesda.Plugins.Masters.DI;
 using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.Plugins.Order.DI;
 using Mutagen.Bethesda.Plugins.Records;
-using Mutagen.Bethesda.Synthesis.CLI;
 using Mutagen.Bethesda.Synthesis.States;
 using NSubstitute;
 using Xunit;
@@ -36,7 +35,7 @@ namespace Synthesis.Bethesda.UnitTests.Pipeline.States
             var masterReaderFactory = Substitute.For<IMasterReferenceReaderFactory>();
             foreach (var listing in listings)
             {
-                masterReaderFactory.FromPath(listing.Mod, Arg.Any<GameRelease>())
+                masterReaderFactory.FromPath(listing.Mod)
                     .Returns(_ =>
                     {
                         var reader = Substitute.For<IMasterReferenceReader>();
@@ -58,7 +57,9 @@ namespace Synthesis.Bethesda.UnitTests.Pipeline.States
 
         private IFindImplicitlyIncludedMods GetImplicitlyIncluded(params Listing[] listings)
         {
-            return new FindImplicitlyIncludedMods(GetReaderFactory(listings));
+            return new FindImplicitlyIncludedMods(
+                _Fixture.Inject.Create<IDataDirectoryProvider>(),
+                GetReaderFactory(listings));
         }
 
         [Fact]
@@ -73,9 +74,7 @@ namespace Synthesis.Bethesda.UnitTests.Pipeline.States
                 new ModListing(ModC, true),
                 new ModListing(ModB, true),
             };
-            adder.Add(
-                _Fixture.Inject.Create<RunSynthesisMutagenPatcher>(),
-                list);
+            adder.Add(list);
             list.Should().HaveCount(3);
             list.All(x => x.Enabled).Should().BeTrue();
         }
@@ -92,9 +91,7 @@ namespace Synthesis.Bethesda.UnitTests.Pipeline.States
                 new ModListing(ModC, false),
                 new ModListing(ModB, true),
             };
-            adder.Add(
-                _Fixture.Inject.Create<RunSynthesisMutagenPatcher>(),
-                list);
+            adder.Add(list);
             list.Should().HaveCount(3);
             list.All(x => x.Enabled).Should().BeTrue();
         }
@@ -111,9 +108,7 @@ namespace Synthesis.Bethesda.UnitTests.Pipeline.States
                 new ModListing(ModC, false),
                 new ModListing(ModB, true),
             };
-            adder.Add(
-                _Fixture.Inject.Create<RunSynthesisMutagenPatcher>(),
-                list);
+            adder.Add(list);
             list.Should().HaveCount(3);
             list.Select(x => x.Enabled).ToArray().Should().BeEquivalentTo(
                 true, false, true);
@@ -133,9 +128,7 @@ namespace Synthesis.Bethesda.UnitTests.Pipeline.States
                 new ModListing(ModC, false),
                 new ModListing(ModB, true),
             };
-            adder.Add(
-                _Fixture.Inject.Create<RunSynthesisMutagenPatcher>(),
-                list);
+            adder.Add(list);
             list.Should().HaveCount(4);
             list.All(x => x.Enabled).Should().BeTrue();
         }
@@ -154,9 +147,7 @@ namespace Synthesis.Bethesda.UnitTests.Pipeline.States
                 new ModListing(ModB, true),
                 new ModListing(ModD, false),
             };
-            adder.Add(
-                _Fixture.Inject.Create<RunSynthesisMutagenPatcher>(),
-                list);
+            adder.Add(list);
             list.Should().HaveCount(4);
             list.All(x => x.Enabled).Should().BeTrue();
         }

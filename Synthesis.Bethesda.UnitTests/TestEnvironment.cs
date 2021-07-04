@@ -1,7 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO.Abstractions;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.Plugins.Order.DI;
+using Mutagen.Bethesda.Synthesis.States;
+using Mutagen.Bethesda.Synthesis.States.DI;
 
 namespace Synthesis.Bethesda.UnitTests
 {
@@ -14,8 +19,41 @@ namespace Synthesis.Bethesda.UnitTests
     {
         public IEnumerable<IModListingGetter> GetTypicalLoadOrder()
         {
-            var listingsFromPath = new PluginListingsRetriever(FileSystem, new TimestampAligner(FileSystem));
-            return listingsFromPath.ListingsFromPath(PluginPath, Release, DataFolder);
+            return StatePluginListings().Get();
+        }
+
+        public StateFactory GetStateFactory()
+        {
+            return new StateFactory(
+                FileSystem,
+                new LoadOrderImporterFactory(FileSystem),
+                GetStateLoadOrder(),
+                new EnableImplicitMastersFactory(FileSystem));
+        }
+
+        public GetStateLoadOrder GetStateLoadOrder()
+        {
+            var gameReleaseInjection = new GameReleaseInjection(Release);
+            var dataDirectoryInjection = new DataDirectoryInjection(DataFolder);
+            return new GetStateLoadOrder(
+                new ImplicitListingsProvider(
+                    FileSystem,
+                    dataDirectoryInjection,
+                    new ImplicitListingModKeyProvider(
+                        gameReleaseInjection)),
+                StatePluginListings());
+        }
+
+        public IPluginListingsProvider StatePluginListings()
+        {
+            return new StatePluginsListingProvider(
+                PluginPath,
+                new PluginRawListingsReader(
+                    FileSystem,
+                    new PluginListingsParser(
+                        new ModListingParser(
+                            new HasEnabledMarkersProvider(
+                                new GameReleaseInjection(Release))))));
         }
     }
 }

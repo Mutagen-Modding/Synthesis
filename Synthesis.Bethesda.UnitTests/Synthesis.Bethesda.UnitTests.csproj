@@ -28,8 +28,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
-    <PackageReference Include="Mutagen.Bethesda" Version="0.30.4.1-dev" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.21.0.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda" Version="0.30.6.1-dev" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.23.0.1-dev" />
     <PackageReference Include="NSubstitute" Version="4.2.2" />
     <PackageReference Include="NuGetizer" Version="0.7.0">
       <PrivateAssets>all</PrivateAssets>

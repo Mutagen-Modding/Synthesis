@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Mutagen.Bethesda.Core.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Order;
-using Mutagen.Bethesda.Synthesis.CLI;
+using Mutagen.Bethesda.Plugins.Order.DI;
+using Noggog;
 
 namespace Mutagen.Bethesda.Synthesis.States
 {
     public interface IEnableImplicitMasters
     {
-        void Add(RunSynthesisMutagenPatcher settings, IList<IModListingGetter> loadOrderListing);
+        void Add(IList<IModListingGetter> loadOrderListing);
     }
 
     public class EnableImplicitMasters : IEnableImplicitMasters
@@ -21,9 +21,9 @@ namespace Mutagen.Bethesda.Synthesis.States
             _FindImplicitlyIncludedMods = findImplicitlyIncludedMods;
         }
 
-        public void Add(RunSynthesisMutagenPatcher settings, IList<IModListingGetter> loadOrderListing)
+        public void Add(IList<IModListingGetter> loadOrderListing)
         {
-            var implicitlyAdded = _FindImplicitlyIncludedMods.Find(settings.GameRelease, settings.DataFolderPath, loadOrderListing)
+            var implicitlyAdded = _FindImplicitlyIncludedMods.Find(loadOrderListing)
                 .ToHashSet();
             for (int i = loadOrderListing.Count - 1; i >= 0; i--)
             {

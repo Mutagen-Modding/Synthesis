@@ -3,7 +3,6 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Order;
 using System.IO;
 using System.Linq;
-using Mutagen.Bethesda.Synthesis.States;
 using Noggog;
 using Xunit;
 
@@ -28,15 +27,14 @@ namespace Synthesis.Bethesda.UnitTests
                     $"*{Utility.TestModKey.FileName}",
                     $"{Utility.OverrideModKey.FileName}",
                 });
-            var getStateLoadOrder = new GetStateLoadOrder(
+            var testEnv = new TestEnvironment(
                 IFileSystemExt.DefaultFilesystem,
-                new PluginListingsRetriever(
-                    IFileSystemExt.DefaultFilesystem,
-                    new TimestampAligner(IFileSystemExt.DefaultFilesystem)));
-            var listings = getStateLoadOrder.GetLoadOrder(
                 GameRelease.SkyrimSE,
-                loadOrderFilePath: pluginPath,
-                dataFolderPath: dataFolder).ToList();
+                string.Empty,
+                dataFolder,
+                pluginPath);
+            var getStateLoadOrder = testEnv.GetStateLoadOrder();
+            var listings = getStateLoadOrder.GetLoadOrder().ToList();
             listings.Should().HaveCount(3);
             listings.Should().BeEquivalentTo(new IModListingGetter[]
             {
@@ -50,15 +48,9 @@ namespace Synthesis.Bethesda.UnitTests
         public void GetLoadOrder_NoLoadOrderPath()
         {
             var env = Utility.SetupEnvironment(GameRelease.SkyrimSE);
-            var getStateLoadOrder = new GetStateLoadOrder(
-                env.FileSystem,
-                new PluginListingsRetriever(
-                    env.FileSystem,
-                    new TimestampAligner(env.FileSystem)));
-            var lo = getStateLoadOrder.GetLoadOrder(
-                GameRelease.SkyrimSE, 
-                string.Empty,
-                env.DataFolder);
+            env = env with {PluginPath = string.Empty};
+            var getStateLoadOrder = env.GetStateLoadOrder();
+            var lo = getStateLoadOrder.GetLoadOrder();
             lo.Select(l => l.ModKey).Should().BeEmpty();
         }
     }

@@ -11,7 +11,7 @@ using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Plugins.Records.Internals;
 using Mutagen.Bethesda.Synthesis.CLI;
 
-namespace Mutagen.Bethesda.Synthesis.States
+namespace Mutagen.Bethesda.Synthesis.States.DI
 {
     public interface IStateFactory
     {
@@ -25,15 +25,15 @@ namespace Mutagen.Bethesda.Synthesis.States
     public class StateFactory : IStateFactory
     {
         private readonly IFileSystem _FileSystem;
-        private readonly ILoadOrderImporter _LoadOrderImporter;
+        private readonly ILoadOrderImporterFactory _LoadOrderImporter;
         private readonly IGetStateLoadOrder _GetStateLoadOrder;
-        private readonly IEnableImplicitMasters _EnableImplicitMasters;
+        private readonly IEnableImplicitMastersFactory _EnableImplicitMasters;
 
         public StateFactory(
             IFileSystem fileSystem,
-            ILoadOrderImporter loadOrderImporter,
+            ILoadOrderImporterFactory loadOrderImporter,
             IGetStateLoadOrder getStateLoadOrder,
-            IEnableImplicitMasters enableImplicitMasters)
+            IEnableImplicitMastersFactory enableImplicitMasters)
         {
             _FileSystem = fileSystem;
             _LoadOrderImporter = loadOrderImporter;
@@ -57,11 +57,7 @@ namespace Mutagen.Bethesda.Synthesis.States
             }
 
             // Get load order
-            var loadOrderListing = _GetStateLoadOrder.GetLoadOrder(
-                    settings.GameRelease,
-                    settings.LoadOrderFilePath,
-                    settings.DataFolderPath, 
-                    userPrefs)
+            var loadOrderListing = _GetStateLoadOrder.GetLoadOrder(userPrefs)
                 .ToExtendedList();
             var rawLoadOrder = loadOrderListing.Select(x => new ModListing(x.ModKey, x.Enabled)).ToExtendedList();
 
@@ -74,7 +70,9 @@ namespace Mutagen.Bethesda.Synthesis.States
 
             if (userPrefs.AddImplicitMasters)
             {
-                _EnableImplicitMasters.Add(settings, loadOrderListing);
+                _EnableImplicitMasters
+                    .Get(settings.DataFolderPath, settings.GameRelease)
+                    .Add(loadOrderListing);
             }
 
             // Remove disabled mods
@@ -83,10 +81,12 @@ namespace Mutagen.Bethesda.Synthesis.States
                 loadOrderListing = loadOrderListing.OnlyEnabled().ToExtendedList();
             }
 
-            var loadOrder = _LoadOrderImporter.Import<TModGetter>(
-                settings.DataFolderPath,
-                loadOrderListing,
-                settings.GameRelease);
+            var loadOrder = _LoadOrderImporter
+                .Get<TModGetter>(
+                    settings.DataFolderPath,
+                    loadOrderListing,
+                    settings.GameRelease)
+                .Import();
 
             // Create or import patch mod
             TModSetter patchMod;

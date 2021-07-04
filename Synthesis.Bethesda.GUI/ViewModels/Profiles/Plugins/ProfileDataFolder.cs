@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Linq;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Installs;
 using Noggog;
 using Noggog.Reactive;
@@ -36,7 +37,7 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
             ISchedulerProvider schedulerProvider,
             IWatchDirectory watchDirectory,
             IFileSystem fileSystem,
-            IGameLocator gameLocator,
+            IGameDirectoryLookup gameLocator,
             IProfileIdentifier ident)
         {
             _DataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
@@ -50,7 +51,7 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
                         {
                             try
                             {
-                                if (!gameLocator.TryGetGameFolder(x, out var gameFolder))
+                                if (!gameLocator.TryGet(x, out var gameFolder))
                                 {
                                     return GetResponse<DirectoryPath>.Fail(
                                         "Could not automatically locate Data folder.  Run Steam/GoG/etc once to properly register things.");

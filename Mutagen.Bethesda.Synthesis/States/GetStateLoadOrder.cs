@@ -1,51 +1,35 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.IO.Abstractions;
 using System.Linq;
-using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog;
 
 namespace Mutagen.Bethesda.Synthesis.States
 {
     public interface IGetStateLoadOrder
     {
-        IEnumerable<IModListingGetter> GetLoadOrder(
-            GameRelease release,
-            string loadOrderFilePath,
-            string dataFolderPath,
-            PatcherPreferences? userPrefs = null);
+        IEnumerable<IModListingGetter> GetLoadOrder(PatcherPreferences? userPrefs = null);
     }
 
     public class GetStateLoadOrder : IGetStateLoadOrder
     {
-        private readonly IFileSystem _FileSystem;
-        private readonly IPluginListingsRetriever _PluginListingsRetriever;
+        private readonly IImplicitListingsProvider _implicitListing;
+        private readonly IPluginListingsProvider _pluginListings;
 
         public GetStateLoadOrder(
-            IFileSystem fileSystem,
-            IPluginListingsRetriever pluginListingsRetriever)
+            IImplicitListingsProvider implicitListing,
+            IPluginListingsProvider pluginListings)
         {
-            _FileSystem = fileSystem;
-            _PluginListingsRetriever = pluginListingsRetriever;
+            _implicitListing = implicitListing;
+            _pluginListings = pluginListings;
         }
         
-        public IEnumerable<IModListingGetter> GetLoadOrder(
-            GameRelease release,
-            string loadOrderFilePath,
-            string dataFolderPath,
-            PatcherPreferences? userPrefs = null)
+        public IEnumerable<IModListingGetter> GetLoadOrder(PatcherPreferences? userPrefs = null)
         {
             // This call will implicitly get Creation Club entries, too, as the Synthesis systems should be merging
             // things into a singular load order file for consumption here
-            var loadOrderListing =
-                Implicits.Get(release).Listings
-                    .Where(x => _FileSystem.File.Exists(Path.Combine(dataFolderPath, x.FileName)))
-                    .Select<ModKey, IModListingGetter>(x => new ModListing(x, enabled: true));
-            if (!loadOrderFilePath.IsNullOrWhitespace())
-            {
-                loadOrderListing = loadOrderListing.Concat(_PluginListingsRetriever.RawListingsFromPath(loadOrderFilePath, release));
-            }
+            var loadOrderListing = _implicitListing.Get();
+            loadOrderListing = loadOrderListing.Concat(_pluginListings.Get());
             loadOrderListing = loadOrderListing.Distinct(x => x.ModKey);
             if (userPrefs?.InclusionMods != null)
             {

@@ -42,13 +42,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Mutagen.Bethesda" Version="0.30.4.1-dev" />
-    <PackageReference Include="Mutagen.Bethesda.Core.Windows" Version="0.30.4.1-dev" />
-    <PackageReference Include="Mutagen.Bethesda.Json" Version="0.30.4.1-dev" />
-    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.30.4.1-dev" />
-    <PackageReference Include="Mutagen.Bethesda.Sqlite" Version="0.30.4.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda" Version="0.30.6.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.Core.Windows" Version="0.30.6.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.Json" Version="0.30.6.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.30.6.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.Sqlite" Version="0.30.6.1-dev" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.21.0.1-dev" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.23.0.1-dev" />
     <PackageReference Include="NuGetizer" Version="0.7.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -65,7 +65,7 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
-    <Compile Update="States\StateFactory.cs">
+    <Compile Update="States\DI\StateFactory.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>

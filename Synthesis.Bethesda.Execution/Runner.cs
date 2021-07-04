@@ -7,11 +7,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Allocators;
+using Mutagen.Bethesda.Plugins.Implicit.DI;
+using Mutagen.Bethesda.Plugins.Order.DI;
 using Path = System.IO.Path;
 using FileNotFoundException = System.IO.FileNotFoundException;
 
@@ -93,14 +96,17 @@ namespace Synthesis.Bethesda.Execution
                 loadOrderList.WithIndex().ForEach(i => reporter.Write(default(TKey)!, default, $" [{i.Index,3}] {i.Item}"));
                 string loadOrderPath = Path.Combine(workingDirectory, "Plugins.txt");
 
-                var loadOrderWriter = new LoadOrderWriter(fileSystem);
+                var releaseContext = new GameReleaseInjection(release);
+                var loadOrderWriter = new LoadOrderWriter(
+                    fileSystem,
+                    new HasEnabledMarkersProvider(releaseContext),
+                    new ImplicitListingModKeyProvider(releaseContext));
                 var writeLoadOrder = Task.Run(() =>
                 {
                     try
                     {
                         loadOrderWriter.Write(
                             loadOrderPath,
-                            release,
                             loadOrderList,
                             removeImplicitMods: true);
                     }
