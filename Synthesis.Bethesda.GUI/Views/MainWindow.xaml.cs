@@ -1,44 +1,33 @@
-using MahApps.Metro.Controls;
-using System;
+using System.ComponentModel;
 using System.Windows;
-using Mutagen.Bethesda.Synthesis.Versioning;
-using Synthesis.Bethesda.GUI.Services;
-using Synthesis.Bethesda.GUI.Services.Singletons;
+using Synthesis.Bethesda.GUI.Services.Startup;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
+    public interface IMainWindow
+    {
+        public Visibility Visibility { get; set; }
+        public object DataContext { get; set; }
+        event CancelEventHandler Closing;
+        double Left { get; set; }
+        double Top { get; set; }
+        double Width { get; set; }
+        double Height { get; set; }
+    }
+    
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : MetroWindow
+    public partial class MainWindow : IMainWindow
     {
         public MainWindow()
         {
             InitializeComponent();
 
-            AppDomain.CurrentDomain.UnhandledException += (o, e) =>
-            {
-                Log.Logger.Error(e.ExceptionObject as Exception, "Crashing");
-            };
+            new Inject(c => c.ForSingletonOf<IMainWindow>().Use(this));
 
-            var versionLine = $"============== Opening Synthesis v{Versions.SynthesisVersion} ==============";
-            var bars = new string('=', versionLine.Length);
-            Log.Logger.Information(bars);
-            Log.Logger.Information(versionLine);
-            Log.Logger.Information(bars);
-            Log.Logger.Information(DateTime.Now.ToString());
-
-            new Inject(c => c.ForSingletonOf<Window>().Use(this));
-
-            var init = Inject.Container.GetInstance<IInitilize>();
-            init.Initialize(this);
-            
-            var shutdown = Inject.Container.GetInstance<IExecuteShutdown>();
-            Closing += (_, b) =>
-            {
-                Visibility = Visibility.Collapsed;
-                shutdown.Closing(b);
-            };
+            Inject.Container.GetInstance<IStartup>()
+                .Initialize();
         }
     }
 }

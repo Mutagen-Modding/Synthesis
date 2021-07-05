@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO.Abstractions;
-using Mutagen.Bethesda;
+﻿using System.IO.Abstractions;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.StructureMap;
 using Mutagen.Bethesda.Synthesis.Versioning;
@@ -15,7 +13,7 @@ using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services;
-using Synthesis.Bethesda.GUI.Services.Singletons;
+using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI
@@ -69,14 +67,14 @@ namespace Synthesis.Bethesda.GUI
             {
                 s.AssemblyContainingType<INavigateTo>();
                 s.IncludeNamespaceContainingType<INavigateTo>();
-                s.ExcludeNamespaceContainingType<IInitilize>();
+                s.ExcludeNamespaceContainingType<IStartup>();
                 s.WithDefaultConventions();
             });
             
             Scan(s =>
             {
-                s.AssemblyContainingType<IInitilize>();
-                s.IncludeNamespaceContainingType<IInitilize>();
+                s.AssemblyContainingType<IStartup>();
+                s.IncludeNamespaceContainingType<IStartup>();
                 s.Convention<SingletonConvention>();
             });
             

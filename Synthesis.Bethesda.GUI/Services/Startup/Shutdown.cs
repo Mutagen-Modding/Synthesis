@@ -7,39 +7,44 @@ using System.Windows;
 using Newtonsoft.Json;
 using Noggog.Utility;
 using Serilog;
-using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.GUI.Settings;
-    
+using Synthesis.Bethesda.GUI.Views;
+
 #if !DEBUG
 using System.Diagnostics;
 using Noggog.Utility;
 #endif
 
-namespace Synthesis.Bethesda.GUI.Services.Singletons
+namespace Synthesis.Bethesda.GUI.Services.Startup
 {
-    public interface IExecuteShutdown
+    public interface IShutdown
     {
         bool IsShutdown { get; }
-        void Closing(CancelEventArgs args);
+
+        void Prepare();
     }
 
-    public class ExecuteShutdown : IExecuteShutdown
+    public class Shutdown : IShutdown
     {
         private readonly ILogger _Logger;
-        private readonly IInitilize _Init;
+        private readonly IStartupTracker _Init;
         private readonly IPipelineSettingsPath _PipelineSettingsPath;
         private readonly IGuiSettingsPath _GuiPaths;
         private readonly IProcessFactory _ProcessFactory;
         private readonly IRetrieveSaveSettings _Save;
+        private readonly IMainWindow _Window;
+        
+        public bool IsShutdown { get; private set; }
 
-        public ExecuteShutdown(
+        public Shutdown(
             ILogger logger,
-            IInitilize init,
+            IStartupTracker init,
             IPipelineSettingsPath paths,
             IGuiSettingsPath guiPaths,
             IProcessFactory processFactory,
-            IRetrieveSaveSettings save)
+            IRetrieveSaveSettings save,
+            IMainWindow window)
         {
             _Logger = logger;
             _Init = init;
@@ -47,11 +52,19 @@ namespace Synthesis.Bethesda.GUI.Services.Singletons
             _GuiPaths = guiPaths;
             _ProcessFactory = processFactory;
             _Save = save;
+            _Window = window;
+        }
+
+        public void Prepare()
+        {
+            _Window.Closing += (_, b) =>
+            {
+                _Window.Visibility = Visibility.Collapsed;
+                Closing(b);
+            };
         }
         
-        public bool IsShutdown { get; private set; }
-        
-        private async void Shutdown()
+        private async void ExecuteShutdown()
         {
             IsShutdown = true;
 
@@ -113,11 +126,11 @@ namespace Synthesis.Bethesda.GUI.Services.Singletons
             Application.Current.Shutdown();
         }
 
-        public void Closing(CancelEventArgs args)
+        private void Closing(CancelEventArgs args)
         {
             if (IsShutdown) return;
             args.Cancel = true;
-            Shutdown();
+            ExecuteShutdown();
         }
     }
 }
