@@ -14,9 +14,9 @@ namespace Synthesis.Bethesda.GUI.Services
 
     public class PatcherFactory : IPatcherFactory
     {
-        private readonly ProfileMetadataRegistry _MetadataRegistry;
+        private readonly IProfileMetadataRegistry _MetadataRegistry;
 
-        public PatcherFactory(ProfileMetadataRegistry metadataRegistry)
+        public PatcherFactory(IProfileMetadataRegistry metadataRegistry)
         {
             _MetadataRegistry = metadataRegistry;
         }

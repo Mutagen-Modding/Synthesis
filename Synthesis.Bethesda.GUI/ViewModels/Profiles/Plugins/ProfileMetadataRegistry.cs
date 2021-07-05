@@ -2,7 +2,12 @@
 
 namespace Synthesis.Bethesda.GUI.Profiles.Plugins
 {
-    public class ProfileMetadataRegistry
+    public interface IProfileMetadataRegistry
+    {
+        ExplicitArgsExpression Configure();
+    }
+
+    public class ProfileMetadataRegistry : IProfileMetadataRegistry
     {
         private readonly IProfileDataFolder _DataFolder;
         private readonly IProfileDirectories _Directories;

@@ -89,6 +89,7 @@ namespace Synthesis.Bethesda.GUI
             For<IProfileDirectories>().Use<ProfileDirectories>();
             For<IProfileDataFolder>().Use<ProfileDataFolder>();
             For<IProfileVersioning>().Use<ProfileVersioning>();
+            For<IProfileMetadataRegistry>().Use<ProfileMetadataRegistry>();
             For<IProfileSimpleLinkCache>().Use<ProfileSimpleLinkCache>();
             For<GitPatcherInitVM>();
             For<CliPatcherInitVM>();
