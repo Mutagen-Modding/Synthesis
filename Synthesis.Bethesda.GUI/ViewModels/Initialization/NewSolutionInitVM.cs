@@ -8,6 +8,8 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Reactive.Linq;
+using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Synthesis.Projects;
 using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
@@ -34,9 +36,13 @@ namespace Synthesis.Bethesda.GUI
         public string ProjectNameWatermark => _ProjectNameWatermark.Value;
 
         public NewSolutionInitVM(
-            IFileSystem fileSystem,
-            IProfileIdentifier identifier,
-            IPatcherFactory patcherFactory)
+            IGameCategoryContext gameCategoryContext,
+            IPatcherFactory patcherFactory,
+            IValidateProjectPath validateProjectPath,
+            ICreateSolutionFile createSolutionFile,
+            ICreateProject createProject,
+            IAddProjectToSolution addProjectToSolution,
+            IGenerateGitIgnore gitIgnore)
         {
             ParentDirPath.PathType = PathPickerVM.PathTypeOptions.Folder;
             ParentDirPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
@@ -84,7 +90,7 @@ namespace Synthesis.Bethesda.GUI
                         {
                             proj = SolutionNameProcessor(slnName);
                         }
-                        return (parentDir, sln, proj, validation: SolutionInitialization.ValidateProjectPath(fileSystem, proj, sln));
+                        return (parentDir, sln, proj, validation: validateProjectPath.Validate(proj, sln));
                     })
                 .Replay(1)
                 .RefCount();
@@ -102,10 +108,10 @@ namespace Synthesis.Bethesda.GUI
                     return GetResponse<InitializerCall>.Succeed(async () =>
                     {
                         var patcher = patcherFactory.Get<SolutionPatcherVM>();
-                        SolutionInitialization.CreateSolutionFile(fileSystem, i.sln.Value);
-                        SolutionInitialization.CreateProject(fileSystem, i.validation.Value, identifier.Release.ToCategory());
-                        SolutionInitialization.AddProjectToSolution(fileSystem, i.sln.Value, i.validation.Value);
-                        SolutionInitialization.GenerateGitIgnore(fileSystem, Path.GetDirectoryName(i.sln.Value)!);
+                        createSolutionFile.Create(i.sln.Value);
+                        createProject.Create(gameCategoryContext.Category, i.validation.Value);
+                        addProjectToSolution.Add(i.sln.Value, i.validation.Value);
+                        gitIgnore.Generate(Path.GetDirectoryName(i.sln.Value)!);
                         patcher.SolutionPath.TargetPath = i.sln.Value;
                         var projName = Path.GetFileNameWithoutExtension(i.validation.Value);
                         patcher.ProjectSubpath = Path.Combine(projName, $"{projName}.csproj");

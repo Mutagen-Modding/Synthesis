@@ -4,7 +4,7 @@ using System.IO.Abstractions;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda;
-using Mutagen.Bethesda.Synthesis;
+using Mutagen.Bethesda.Synthesis.Projects;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using Serilog;
@@ -25,19 +25,28 @@ namespace Synthesis.Bethesda.Execution.Versioning
         private readonly IProvideWorkingDirectory _Paths;
         private readonly IProvideCurrentVersions _CurrentVersions;
         private readonly IQueryLibraryVersions _QueryLibraryVersions;
+        private readonly ICreateSolutionFile _CreateSolutionFile;
+        private readonly ICreateProject _CreateProject;
+        private readonly IAddProjectToSolution _AddProjectToSolution;
 
         public QueryNewestLibraryVersions(
             IFileSystem fileSystem,
             ILogger logger,
             IProvideWorkingDirectory paths,
             IProvideCurrentVersions currentVersions,
-            IQueryLibraryVersions queryLibraryVersions)
+            IQueryLibraryVersions queryLibraryVersions,
+            ICreateSolutionFile createSolutionFile,
+            ICreateProject createProject,
+            IAddProjectToSolution addProjectToSolution)
         {
             _FileSystem = fileSystem;
             _Logger = logger;
             _Paths = paths;
             _CurrentVersions = currentVersions;
             _QueryLibraryVersions = queryLibraryVersions;
+            _CreateSolutionFile = createSolutionFile;
+            _CreateProject = createProject;
+            _AddProjectToSolution = addProjectToSolution;
         }
         
         public string PrepLatestVersionProject()
@@ -46,10 +55,10 @@ namespace Synthesis.Bethesda.Execution.Versioning
             _FileSystem.Directory.DeleteEntireFolder(bootstrapProjectDir);
             _FileSystem.Directory.CreateDirectory(bootstrapProjectDir);
             var slnPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.sln");
-            SolutionInitialization.CreateSolutionFile(_FileSystem, slnPath);
+            _CreateSolutionFile.Create(slnPath);
             var projPath = Path.Combine(bootstrapProjectDir.Path, "VersionQuery.csproj");
-            SolutionInitialization.CreateProject(_FileSystem, projPath, GameCategory.Skyrim, insertOldVersion: true);
-            SolutionInitialization.AddProjectToSolution(_FileSystem, slnPath, projPath);
+            _CreateProject.Create(GameCategory.Skyrim, projPath, insertOldVersion: true);
+            _AddProjectToSolution.Add(slnPath, projPath);
             return projPath;
         }
 

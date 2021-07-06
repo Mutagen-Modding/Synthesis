@@ -1,6 +1,7 @@
 ﻿using System.IO.Abstractions;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.StructureMap;
+using Mutagen.Bethesda.Synthesis.Projects;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Mutagen.Bethesda.Synthesis.WPF;
 using Noggog;
@@ -22,7 +23,7 @@ namespace Synthesis.Bethesda.GUI
     {
         public Register()
         {
-            RegisterBaseLib();
+            RegisterMutagenSynthesis();
             RegisterCurrentLib();
             RegisterWpfLib();
             RegisterExecutionLib();
@@ -31,12 +32,13 @@ namespace Synthesis.Bethesda.GUI
             RegisterCSharpExt();
         }
 
-        private void RegisterBaseLib()
+        private void RegisterMutagenSynthesis()
         {
             Scan(s =>
             {
                 s.AssemblyContainingType<IProvideCurrentVersions>(); 
                 s.IncludeNamespaceContainingType<IProvideCurrentVersions>();
+                s.IncludeNamespaceContainingType<ICreateProject>();
                 s.Convention<SingletonConvention>();
             });
         }

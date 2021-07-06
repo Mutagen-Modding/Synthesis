@@ -2,6 +2,7 @@
 using System.Linq;
 using DynamicData;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Settings;
 
@@ -46,13 +47,15 @@ namespace Synthesis.Bethesda.GUI.Services
 
         public ProfileVM InternalGet(GameRelease release, string id, string nickname)
         {
+            var ident = new ProfileIdentifier()
+            {
+                ID = id,
+                Release = release,
+                Nickname = nickname
+            };
             return Inject.Container
-                .With<IProfileIdentifier>(new ProfileIdentifier()
-                {
-                    ID = id,
-                    Release = release,
-                    Nickname = nickname
-                })
+                .With<IProfileIdentifier>(ident)
+                .With<IGameReleaseContext>(ident)
                 .GetInstance<ProfileVM>();
         }
     }

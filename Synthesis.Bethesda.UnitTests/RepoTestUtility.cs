@@ -3,7 +3,9 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using LibGit2Sharp;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Synthesis;
+using Mutagen.Bethesda.Synthesis.Projects;
 using Noggog;
 using Noggog.Utility;
 
@@ -40,9 +42,9 @@ namespace Synthesis.Bethesda.UnitTests
 
             if (createPatcherFiles)
             {
-                var files = SolutionInitialization.CreateSolutionFile(IFileSystemExt.DefaultFilesystem, Path.Combine(local, SlnPath))
-                    .And(SolutionInitialization.CreateProject(IFileSystemExt.DefaultFilesystem, Path.Combine(local, ProjPath), GameCategory.Skyrim));
-                SolutionInitialization.AddProjectToSolution(IFileSystemExt.DefaultFilesystem, Path.Combine(local, SlnPath), Path.Combine(local, ProjPath));
+                var files = new CreateSolutionFile(IFileSystemExt.DefaultFilesystem).Create(Path.Combine(local, SlnPath))
+                    .And(new CreateProject(IFileSystemExt.DefaultFilesystem).Create(GameCategory.Skyrim, Path.Combine(local, ProjPath)));
+                new AddProjectToSolution(IFileSystemExt.DefaultFilesystem).Add(Path.Combine(local, SlnPath), Path.Combine(local, ProjPath));
                 foreach (var path in files)
                 {
                     Commands.Stage(localRepo, path);

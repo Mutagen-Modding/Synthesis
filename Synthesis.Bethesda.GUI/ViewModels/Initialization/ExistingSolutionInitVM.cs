@@ -10,6 +10,8 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Reactive.Linq;
+using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Synthesis.Projects;
 using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
@@ -27,9 +29,11 @@ namespace Synthesis.Bethesda.GUI
         public ErrorResponse ProjectError => _ProjectError.Value;
 
         public ExistingSolutionInitVM(
-            IFileSystem fileSystem,
-            ProfileIdentifier profileIdentifier,
-            IPatcherFactory patcherFactory)
+            IGameCategoryContext gameCategoryContext,
+            IPatcherFactory patcherFactory, 
+            IValidateProjectPath validateProjectPath,
+            ICreateProject createProject,
+            IAddProjectToSolution addProjectToSolution)
         {
             SolutionPath.PathType = PathPickerVM.PathTypeOptions.File;
             SolutionPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
@@ -38,7 +42,7 @@ namespace Synthesis.Bethesda.GUI
             var validation = Observable.CombineLatest(
                     SolutionPath.PathState(),
                     this.WhenAnyValue(x => x.ProjectName),
-                    (sln, proj) => (sln, proj, validation: SolutionInitialization.ValidateProjectPath(fileSystem, proj, sln)))
+                    (sln, proj) => (sln, proj, validation: validateProjectPath.Validate(proj, sln)))
                 .Replay(1)
                 .RefCount();
 
@@ -54,8 +58,8 @@ namespace Synthesis.Bethesda.GUI
                     return GetResponse<InitializerCall>.Succeed(async () =>
                     {
                         var patcher = patcherFactory.Get<SolutionPatcherVM>();
-                        SolutionInitialization.CreateProject(fileSystem, i.validation.Value, profileIdentifier.Release.ToCategory());
-                        SolutionInitialization.AddProjectToSolution(fileSystem, i.sln.Value, i.validation.Value);
+                        createProject.Create(gameCategoryContext.Category, i.validation.Value);
+                        addProjectToSolution.Add(i.sln.Value, i.validation.Value);
                         patcher.SolutionPath.TargetPath = i.sln.Value;
                         patcher.ProjectSubpath = Path.Combine(i.proj, $"{i.proj}.csproj");
                         return patcher.AsEnumerable();

@@ -1,12 +1,12 @@
 ﻿using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public interface IProfileIdentifier
+    public interface IProfileIdentifier : IGameReleaseContext
     {
         string ID { get; set; }
         string Nickname { get; set; }
-        GameRelease Release { get; set; }
     }
 
     public class ProfileIdentifier : IProfileIdentifier
