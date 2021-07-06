@@ -56,7 +56,6 @@ namespace Synthesis.Bethesda.GUI
             IProvideRepositoryCheckouts repoCheckouts,
             IGetSettingsStyle getSettingsStyle,
             IOpenForSettings openForSettings,
-            IProvideWindowPlacement windowPlacement,
             IOpenSettingsHost openSettingsHost)
         {
             _RepoCheckouts = repoCheckouts;
@@ -103,7 +102,6 @@ namespace Synthesis.Bethesda.GUI
                         await openForSettings.Open(
                             o.Proj.Value,
                             directExe: false,
-                            rect: windowPlacement.Rectangle,
                             cancel: CancellationToken.None,
                             release: ident.Release,
                             dataFolderPath: dataFolder.DataFolder,
@@ -114,7 +112,6 @@ namespace Synthesis.Bethesda.GUI
                         await openSettingsHost.Open(
                             patcherName: parent.DisplayName,
                             path: o.Proj.Value,
-                            rect: windowPlacement.Rectangle,
                             cancel: CancellationToken.None,
                             release: ident.Release,
                             dataFolderPath: dataFolder.DataFolder,

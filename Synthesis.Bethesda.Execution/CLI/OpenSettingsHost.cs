@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog.Utility;
+using Synthesis.Bethesda.Execution.Placement;
 
 namespace Synthesis.Bethesda.Execution.CLI
 {
@@ -16,7 +17,6 @@ namespace Synthesis.Bethesda.Execution.CLI
             GameRelease release,
             string dataFolderPath,
             IEnumerable<IModListingGetter> loadOrder,
-            Rectangle rect,
             CancellationToken cancel);
     }
 
@@ -25,15 +25,18 @@ namespace Synthesis.Bethesda.Execution.CLI
         private readonly IProvideTemporaryLoadOrder _LoadOrder;
         private readonly IProcessFactory _ProcessFactory;
         private readonly IProvideDotNetProcessInfo _ProcessInfo;
+        private readonly IWindowPlacement _WindowPlacement;
 
         public OpenSettingsHost(
             IProvideTemporaryLoadOrder loadOrder,
             IProcessFactory processFactory,
-            IProvideDotNetProcessInfo processInfo)
+            IProvideDotNetProcessInfo processInfo,
+            IWindowPlacement windowPlacement)
         {
             _LoadOrder = loadOrder;
             _ProcessFactory = processFactory;
             _ProcessInfo = processInfo;
+            _WindowPlacement = windowPlacement;
         }
         
         public async Task<int> Open(
@@ -42,7 +45,6 @@ namespace Synthesis.Bethesda.Execution.CLI
             GameRelease release,
             string dataFolderPath,
             IEnumerable<IModListingGetter> loadOrder,
-            Rectangle rect,
             CancellationToken cancel)
         {
             using var loadOrderFile = _LoadOrder.Get(release, loadOrder);
@@ -52,10 +54,10 @@ namespace Synthesis.Bethesda.Execution.CLI
                 {
                     PatcherName = patcherName,
                     PatcherPath = path,
-                    Left = rect.Left,
-                    Top = rect.Top,
-                    Height = rect.Height,
-                    Width = rect.Width,
+                    Left = (int)_WindowPlacement.Left,
+                    Top = (int)_WindowPlacement.Top,
+                    Height = (int)_WindowPlacement.Height,
+                    Width = (int)_WindowPlacement.Width,
                     LoadOrderFilePath = loadOrderFile.File.Path,
                     DataFolderPath = dataFolderPath,
                     GameRelease = release,
