@@ -1,12 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using DynamicData;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.GUI.Services
+namespace Synthesis.Bethesda.GUI.Services.Main
 {
     public interface IProfileFactory
     {

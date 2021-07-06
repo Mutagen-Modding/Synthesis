@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.Views;
 

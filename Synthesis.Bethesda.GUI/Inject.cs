@@ -2,6 +2,7 @@ using System;
 using Noggog.Reactive;
 using Serilog;
 using StructureMap;
+using Synthesis.Bethesda.GUI.Registers;
 
 namespace Synthesis.Bethesda.GUI
 {

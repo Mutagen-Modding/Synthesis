@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.GUI.Services.Main;
 
 namespace Synthesis.Bethesda.GUI
 {

@@ -1,4 +1,4 @@
-﻿namespace Synthesis.Bethesda.GUI.Services
+﻿namespace Synthesis.Bethesda.GUI.Services.Main
 {
     public interface IGuiSettingsPath
     {

@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.GUI.Services.Main;
 
 namespace Synthesis.Bethesda.GUI
 {

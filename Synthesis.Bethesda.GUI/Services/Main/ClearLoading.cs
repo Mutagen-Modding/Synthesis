@@ -2,10 +2,9 @@
 using System.IO;
 using Noggog;
 using Serilog;
-using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Pathing;
 
-namespace Synthesis.Bethesda.GUI.Services
+namespace Synthesis.Bethesda.GUI.Services.Main
 {
     public interface IClearLoading
     {

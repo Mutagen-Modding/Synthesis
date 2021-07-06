@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.GUI.Services.Main;
 
 namespace Synthesis.Bethesda.GUI
 {

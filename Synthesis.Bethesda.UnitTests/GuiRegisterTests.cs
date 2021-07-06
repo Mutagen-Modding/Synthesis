@@ -2,6 +2,7 @@
 using StructureMap;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.GUI;
+using Synthesis.Bethesda.GUI.Registers;
 using Synthesis.Bethesda.GUI.Views;
 using Xunit;
 

@@ -5,6 +5,7 @@ using NSubstitute;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Xunit;
 

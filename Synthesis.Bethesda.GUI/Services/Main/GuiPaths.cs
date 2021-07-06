@@ -1,9 +1,7 @@
 using System.IO;
-using Noggog;
 using Synthesis.Bethesda.Execution.Pathing;
-using Synthesis.Bethesda.GUI.Settings;
 
-namespace Synthesis.Bethesda.GUI.Services
+namespace Synthesis.Bethesda.GUI.Services.Main
 {
     public interface IGuiPaths
     {

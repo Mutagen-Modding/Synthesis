@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using Synthesis.Bethesda.GUI.Settings;
 
-namespace Synthesis.Bethesda.GUI.Services
+namespace Synthesis.Bethesda.GUI.Services.Main
 {
     public interface IOpenIde
     {

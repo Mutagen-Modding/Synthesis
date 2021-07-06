@@ -7,6 +7,7 @@ using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using ReactiveUI;
 using Serilog;
+using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.Views;
 

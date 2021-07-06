@@ -12,6 +12,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Windows.Input;
 using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.GUI.Services.Main;
 
 namespace Synthesis.Bethesda.GUI
 {

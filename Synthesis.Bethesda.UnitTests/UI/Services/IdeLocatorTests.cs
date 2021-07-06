@@ -3,6 +3,7 @@ using AutoFixture;
 using FluentAssertions;
 using Serilog;
 using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.GUI.Services.Main;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.UI.Services

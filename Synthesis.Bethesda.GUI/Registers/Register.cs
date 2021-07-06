@@ -13,11 +13,11 @@ using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
-using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Settings;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.Registers
 {
     public class Register : Registry
     {
@@ -69,7 +69,6 @@ namespace Synthesis.Bethesda.GUI
             {
                 s.AssemblyContainingType<INavigateTo>();
                 s.IncludeNamespaceContainingType<INavigateTo>();
-                s.ExcludeNamespaceContainingType<IStartup>();
                 s.WithDefaultConventions();
             });
             

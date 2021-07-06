@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using DynamicData.Binding;
 using Serilog;
 using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI

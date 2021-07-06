@@ -2,7 +2,7 @@
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 
-namespace Synthesis.Bethesda.GUI.Services
+namespace Synthesis.Bethesda.GUI.Services.Main
 {
     public interface IPatcherFactory
     {
