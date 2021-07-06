@@ -21,6 +21,7 @@ using Serilog;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Main;
+using Synthesis.Bethesda.GUI.Services.Profile;
 
 namespace Synthesis.Bethesda.GUI
 {

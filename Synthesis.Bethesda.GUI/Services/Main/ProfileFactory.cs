@@ -4,6 +4,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.Registers;
 
 namespace Synthesis.Bethesda.GUI.Services.Main
 {
@@ -46,16 +47,19 @@ namespace Synthesis.Bethesda.GUI.Services.Main
 
         public ProfileVM InternalGet(GameRelease release, string id, string nickname)
         {
-            var ident = new ProfileIdentifier()
+            var ident = new ProfileIdentifier(Inject.Container.CreateChildContainer())
             {
                 ID = id,
                 Release = release,
                 Nickname = nickname
             };
-            return Inject.Container
-                .With<IProfileIdentifier>(ident)
-                .With<IGameReleaseContext>(ident)
-                .GetInstance<ProfileVM>();
+            ident.Container.Configure(cfg =>
+            {
+                cfg.For<IProfileIdentifier>().Use(ident);
+                cfg.For<IGameReleaseContext>().Use(ident);
+                cfg.AddRegistry<ProfileRegister>();
+            });
+            return ident.Container.GetInstance<ProfileVM>();
         }
     }
 }

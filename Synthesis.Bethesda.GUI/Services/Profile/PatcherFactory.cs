@@ -1,8 +1,7 @@
 ﻿using System;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.GUI.Profiles.Plugins;
 
-namespace Synthesis.Bethesda.GUI.Services.Main
+namespace Synthesis.Bethesda.GUI.Services.Profile
 {
     public interface IPatcherFactory
     {
@@ -14,17 +13,18 @@ namespace Synthesis.Bethesda.GUI.Services.Main
 
     public class PatcherFactory : IPatcherFactory
     {
-        private readonly IProfileMetadataRegistry _MetadataRegistry;
+        private readonly IProfileIdentifier _Ident;
 
-        public PatcherFactory(IProfileMetadataRegistry metadataRegistry)
+        public PatcherFactory(
+            IProfileIdentifier ident)
         {
-            _MetadataRegistry = metadataRegistry;
+            _Ident = ident;
         }
         
         public TPatcher Get<TPatcher>()
             where TPatcher : PatcherVM
         {
-            return _MetadataRegistry.Configure()
+            return _Ident.Container
                 .GetInstance<TPatcher>();
         }
 
@@ -32,13 +32,13 @@ namespace Synthesis.Bethesda.GUI.Services.Main
         {
             return settings switch
             {
-                GithubPatcherSettings git => _MetadataRegistry.Configure()
+                GithubPatcherSettings git => _Ident.Container
                     .With(git)
                     .GetInstance<GitPatcherVM>(),
-                SolutionPatcherSettings soln => _MetadataRegistry.Configure()
+                SolutionPatcherSettings soln => _Ident.Container
                     .With(soln)
                     .GetInstance<SolutionPatcherVM>(),
-                CliPatcherSettings cli => _MetadataRegistry.Configure()
+                CliPatcherSettings cli => _Ident.Container
                     .With(cli)
                     .GetInstance<CliPatcherVM>(),
                 _ => throw new NotImplementedException(),

@@ -12,7 +12,6 @@ using StructureMap;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Versioning;
-using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Settings;
@@ -82,16 +81,6 @@ namespace Synthesis.Bethesda.GUI.Registers
             For<ILockToCurrentVersioning>().Use<LockToCurrentVersioning>();
             For<IProfileDisplayControllerVm>().Use<ProfileDisplayControllerVm>();
             For<IEnvironmentErrorsVM>().Use<EnvironmentErrorsVM>();
-            For<ProfilePatchersList>();
-            Forward<ProfilePatchersList, IRemovePatcherFromProfile>();
-            Forward<ProfilePatchersList, IProfilePatchersList>();
-            For<IProfileIdentifier>().Use<ProfileIdentifier>();
-            For<IProfileLoadOrder>().Use<ProfileLoadOrder>();
-            For<IProfileDirectories>().Use<ProfileDirectories>();
-            For<IProfileDataFolder>().Use<ProfileDataFolder>();
-            For<IProfileVersioning>().Use<ProfileVersioning>();
-            For<IProfileMetadataRegistry>().Use<ProfileMetadataRegistry>();
-            For<IProfileSimpleLinkCache>().Use<ProfileSimpleLinkCache>();
             For<GitPatcherInitVM>();
             For<CliPatcherInitVM>();
             

@@ -1,19 +1,15 @@
 using DynamicData;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Mutagen.Bethesda;
-using Mutagen.Bethesda.Synthesis;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.IO;
-using System.IO.Abstractions;
 using System.Reactive.Linq;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Synthesis.Projects;
-using Synthesis.Bethesda.GUI.Services;
-using Synthesis.Bethesda.GUI.Services.Main;
+using Synthesis.Bethesda.GUI.Services.Profile;
 
 namespace Synthesis.Bethesda.GUI
 {

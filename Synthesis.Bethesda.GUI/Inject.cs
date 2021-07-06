@@ -17,12 +17,6 @@ namespace Synthesis.Bethesda.GUI
                 c.IncludeRegistry<Register>();
                 toAdd(c);
             });
-#if DEBUG
-            var logging = Container.GetInstance<ILogger>();
-            Container.AssertConfigurationIsValid();
-            logging.Information(Container.WhatDidIScan());
-            logging.Information(Container.WhatDoIHave());
-#endif
         }
     }
 }
