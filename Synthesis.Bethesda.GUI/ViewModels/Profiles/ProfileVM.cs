@@ -36,6 +36,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly IPipelineSettingsPath _PipelinePaths;
         private readonly IGuiSettingsPath _GuiPaths;
         private readonly ILogger _Logger;
+        private readonly IPatchersRunFactory _RunFactory;
 
         public GameRelease Release { get; }
 
@@ -113,7 +114,8 @@ namespace Synthesis.Bethesda.GUI
             ISelectedProfileControllerVm selProfile,
             IPipelineSettingsPath pipelineSettingsPath,
             IGuiSettingsPath guiPaths,
-            ILogger logger)
+            ILogger logger,
+            IPatchersRunFactory runFactory)
         {
             _Init = init;
             DataFolderOverride = dataFolder;
@@ -127,6 +129,7 @@ namespace Synthesis.Bethesda.GUI
             _PipelinePaths = pipelineSettingsPath;
             _GuiPaths = guiPaths;
             _Logger = logger;
+            _RunFactory = runFactory;
             Nickname = ident.Nickname;
             ID = ident.ID;
             Release = ident.Release;
@@ -450,6 +453,11 @@ namespace Synthesis.Bethesda.GUI
             {
                 _Logger.Error(ex, "Error while exporting settings");
             }
+        }
+
+        public PatchersRunVM GetRun(ConfigurationVM configurationVm)
+        {
+            return _RunFactory.Create(configurationVm, this, _Logger);
         }
     }
 }

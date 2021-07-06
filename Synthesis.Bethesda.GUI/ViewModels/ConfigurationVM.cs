@@ -73,7 +73,8 @@ namespace Synthesis.Bethesda.GUI
                     {
                         return (default(PatchersRunVM?), Observable.Return(Unit.Default));
                     }
-                    var ret = new PatchersRunVM(this, logger, activePanelController, SelectedProfile);
+
+                    var ret = SelectedProfile.GetRun(this);
                     var completeSignal = ret.WhenAnyValue(x => x.Running)
                         .TurnedOff()
                         .FirstAsync();

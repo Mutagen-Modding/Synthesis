@@ -59,6 +59,7 @@
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
     <PackageReference Include="Serilog.Sinks.Map" Version="1.0.2" />
     <PackageReference Include="StructureMap" Version="4.7.1" />
+    <PackageReference Include="StructureMap.AutoFactory" Version="1.0.1" />
     <PackageReference Include="System.IO.Abstractions" Version="13.2.38" />
     <PackageReference Include="System.Linq.Async" Version="5.0.0" />
   </ItemGroup>

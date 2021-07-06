@@ -56,13 +56,13 @@ namespace Synthesis.Bethesda.GUI
         private PatcherRunVM? _previousPatcher;
 
         public PatchersRunVM(
-            ConfigurationVM parent,
+            ConfigurationVM configuration,
             ILogger logger,
             IActivePanelControllerVm activePanelController,
             ProfileVM profile)
         {
             _Logger = logger;
-            Config = parent;
+            Config = configuration;
             RunningProfile = profile;
             Patchers.AddOrUpdate(RunningProfile.Patchers.Items
                 .Where(x => x.IsOn)
@@ -78,7 +78,7 @@ namespace Synthesis.Bethesda.GUI
             BackCommand = ReactiveCommand.Create(() =>
             {
                 profile.DisplayController.SelectedObject = SelectedPatcher?.Config;
-                activePanelController.ActivePanel = parent;
+                activePanelController.ActivePanel = configuration;
             },
             canExecute: this.WhenAnyValue(x => x.Running)
                 .Select(running => !running));

@@ -1,4 +1,5 @@
 ﻿using StructureMap;
+using StructureMap.AutoFactory;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services.Profile;
 
@@ -16,6 +17,8 @@ namespace Synthesis.Bethesda.GUI.Registers
             ForSingletonOf<IProfileDataFolder>().Use<ProfileDataFolder>();
             ForSingletonOf<IProfileVersioning>().Use<ProfileVersioning>();
             ForSingletonOf<IProfileSimpleLinkCache>().Use<ProfileSimpleLinkCache>();
+            For<IPatchersRunFactory>().CreateFactory();
+            For<PatchersRunVM>();
             
             Scan(s =>
             {
