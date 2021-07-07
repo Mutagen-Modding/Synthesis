@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LibGit2Sharp;
 using Noggog;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Settings;
 

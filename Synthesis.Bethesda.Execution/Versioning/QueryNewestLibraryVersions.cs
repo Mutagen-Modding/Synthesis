@@ -8,6 +8,7 @@ using Mutagen.Bethesda.Synthesis.Projects;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using Serilog;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Synthesis.Bethesda.Execution.Versioning

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.DotNet;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.DotNet

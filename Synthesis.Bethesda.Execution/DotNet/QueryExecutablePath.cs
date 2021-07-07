@@ -6,7 +6,7 @@ using Noggog;
 using Noggog.Utility;
 using Serilog;
 
-namespace Synthesis.Bethesda.Execution
+namespace Synthesis.Bethesda.Execution.DotNet
 {
     public interface IQueryExecutablePath
     {

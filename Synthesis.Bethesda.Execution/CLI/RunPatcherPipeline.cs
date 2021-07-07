@@ -9,6 +9,7 @@ using Mutagen.Bethesda.Plugins.Order;
 using Newtonsoft.Json;
 using Noggog;
 using Noggog.Utility;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;

@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Synthesis.Bethesda.Execution
+namespace Synthesis.Bethesda.Execution.DotNet
 {
     public record LibraryVersions(string? MutagenVersion, string? SynthesisVersion);
     

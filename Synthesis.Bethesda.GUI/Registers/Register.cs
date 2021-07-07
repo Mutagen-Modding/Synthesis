@@ -9,7 +9,10 @@ using Noggog.Reactive;
 using Noggog.WPF;
 using Serilog;
 using StructureMap;
+using Synthesis.Bethesda.Execution.CLI;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services.Main;
@@ -103,8 +106,19 @@ namespace Synthesis.Bethesda.GUI.Registers
             Scan(s =>
             {
                 s.AssemblyContainingType<ICheckOrCloneRepo>();
-                s.ExcludeType<ProvideWorkingDirectory>();
+                s.IncludeNamespaceContainingType<ICheckOrCloneRepo>();
+                s.IncludeNamespaceContainingType<IQueryNewestLibraryVersions>();
+                s.IncludeNamespaceContainingType<IProvideInstalledSdk>();
                 s.Convention<SingletonConvention>();
+            });
+            Scan(s =>
+            {
+                s.AssemblyContainingType<IWorkingDirectorySubPaths>();
+                s.IncludeNamespaceContainingType<IWorkingDirectorySubPaths>();
+                s.ExcludeType<ProvideWorkingDirectory>();
+                s.IncludeNamespaceContainingType<ICheckoutRunnerRepository>();
+                s.IncludeNamespaceContainingType<ICheckRunnability>();
+                s.WithDefaultConventions();
             });
         }
 
@@ -116,7 +130,7 @@ namespace Synthesis.Bethesda.GUI.Registers
         private void RegisterMutagen()
         {
             IncludeRegistry<MutagenRegister>();
-            For<IGameReleaseContext>().Use(x => new GameReleasePlaceholder());
+            For<IGameReleaseContext>().UseIfNone<GameReleasePlaceholder>();
         }
 
         private void RegisterCSharpExt()

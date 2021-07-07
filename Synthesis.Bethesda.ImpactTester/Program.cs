@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Synthesis.Versioning;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.GUI;
 
 namespace Synthesis.Bethesda.ImpactTester

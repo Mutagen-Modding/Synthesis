@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Noggog;
 using Noggog.Utility;
 
-namespace Synthesis.Bethesda.Execution
+namespace Synthesis.Bethesda.Execution.DotNet
 {
     public interface IBuild
     {

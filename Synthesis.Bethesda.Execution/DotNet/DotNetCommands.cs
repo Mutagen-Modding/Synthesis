@@ -1,17 +1,11 @@
-using Noggog;
-using Noggog.Utility;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using Noggog;
 
-namespace Synthesis.Bethesda.Execution
+namespace Synthesis.Bethesda.Execution.DotNet
 {
     public static class DotNetCommands
     {

@@ -19,6 +19,7 @@ using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using Synthesis.Bethesda.Execution.CLI;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 
 namespace Synthesis.Bethesda.Execution.Patchers

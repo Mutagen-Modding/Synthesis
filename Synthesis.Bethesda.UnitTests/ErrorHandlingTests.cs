@@ -3,6 +3,7 @@ using Noggog;
 using Synthesis.Bethesda.Execution;
 using System;
 using System.Collections.Generic;
+using Synthesis.Bethesda.Execution.DotNet;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests

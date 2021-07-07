@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Noggog.Utility;
 
-namespace Synthesis.Bethesda.Execution
+namespace Synthesis.Bethesda.Execution.DotNet
 {
     public record NugetListingQuery(string Package, string Requested, string Resolved, string Latest);
     

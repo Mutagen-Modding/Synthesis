@@ -3,6 +3,7 @@ using Synthesis.Bethesda.Execution;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Synthesis.Bethesda.Execution.DotNet;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests

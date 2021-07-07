@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Xunit;
 
