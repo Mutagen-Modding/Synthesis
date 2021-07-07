@@ -104,7 +104,7 @@ namespace Synthesis.Bethesda.GUI
                     if (i.validation.Failed) return i.validation.BubbleFailure<InitializerCall>();
                     return GetResponse<InitializerCall>.Succeed(async () =>
                     {
-                        var patcher = patcherFactory.Get<SolutionPatcherVM>();
+                        var patcher = patcherFactory.GetSolutionPatcher();
                         createSolutionFile.Create(i.sln.Value);
                         createProject.Create(gameCategoryContext.Category, i.validation.Value);
                         addProjectToSolution.Add(i.sln.Value, i.validation.Value);

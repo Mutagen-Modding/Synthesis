@@ -72,7 +72,7 @@ namespace Synthesis.Bethesda.GUI
             : base(init)
         {
             _PatcherFactory = patcherFactory;
-            Patcher = patcherFactory.Get<GitPatcherVM>();
+            Patcher = patcherFactory.GetGitPatcher();
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)
                 .Select(x => ErrorResponse.Create(x))
@@ -193,7 +193,7 @@ namespace Synthesis.Bethesda.GUI
 
         public void AddStorePatcher(PatcherStoreListingVM listing)
         {
-            var patcher = _PatcherFactory.Get<GitPatcherVM>();
+            var patcher = _PatcherFactory.GetGitPatcher();
             patcher.RemoteRepoPath = listing.RepoPath;
             patcher.ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\');
             Init.AddNewPatchers(patcher.AsEnumerable<PatcherVM>().ToList());

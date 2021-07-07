@@ -81,7 +81,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         return q.Select(i =>
                         {
-                            var patcher = patcherFactory.Get<SolutionPatcherVM>();
+                            var patcher = patcherFactory.GetSolutionPatcher();
                             patcher.SolutionPath.TargetPath = SolutionPath.TargetPath;
                             patcher.ProjectSubpath = i.TargetPath.TrimStart($"{Path.GetDirectoryName(SolutionPath.TargetPath)}\\"!);
                             return patcher;

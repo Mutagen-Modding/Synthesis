@@ -16,7 +16,6 @@ using Mutagen.Bethesda.WPF.Plugins.Order;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
-using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI
 {

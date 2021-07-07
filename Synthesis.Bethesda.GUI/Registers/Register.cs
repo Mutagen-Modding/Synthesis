@@ -48,9 +48,9 @@ namespace Synthesis.Bethesda.GUI.Registers
 
         private void RegisterCurrentLib()
         {
-            ForSingletonOf<MainVM>();
-            ForSingletonOf<ConfigurationVM>();
-            ForSingletonOf<PatcherInitializationVM>();
+            ForConcreteType<MainVM>().Configure.Singleton();
+            ForConcreteType<ConfigurationVM>().Configure.Singleton();
+            ForConcreteType<PatcherInitializationVM>().Configure.Singleton();
             ForSingletonOf<ILogger>().Use(Log.Logger);
             ForSingletonOf<ISettingsSingleton>().Use<SettingsSingleton>();
             ForSingletonOf<IShowHelpSetting>().Use<ShowHelpSetting>();
@@ -58,7 +58,7 @@ namespace Synthesis.Bethesda.GUI.Registers
             ForSingletonOf<IConfirmationPanelControllerVm>().Use<ConfirmationPanelControllerVm>();
             ForSingletonOf<ISelectedProfileControllerVm>().Use<SelectedProfileControllerVm>();
             ForSingletonOf<IActivePanelControllerVm>().Use<ActivePanelControllerVm>();
-            ForSingletonOf<RetrieveSaveSettings>();
+            ForConcreteType<RetrieveSaveSettings>().Configure.Singleton();
             Forward<RetrieveSaveSettings, IRetrieveSaveSettings>();
             Forward<RetrieveSaveSettings, ISaveSignal>();
             
@@ -85,11 +85,6 @@ namespace Synthesis.Bethesda.GUI.Registers
             For<ILockToCurrentVersioning>().Use<LockToCurrentVersioning>();
             For<IProfileDisplayControllerVm>().Use<ProfileDisplayControllerVm>();
             For<IEnvironmentErrorsVM>().Use<EnvironmentErrorsVM>();
-            For<GitPatcherVM>();
-            For<CliPatcherVM>();
-            For<SolutionPatcherVM>();
-            For<GitPatcherInitVM>();
-            For<CliPatcherInitVM>();
             
             // Overrides
             ForSingletonOf<IProvideWorkingDirectory>().Use<WorkingDirectoryOverride>();

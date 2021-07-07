@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DynamicData;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
@@ -35,7 +36,17 @@ namespace Synthesis.Bethesda.GUI.Services.Main
             profile.ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
             profile.LockSetting.Lock = settings.LockToCurrentVersioning;
             profile.SelectedPersistenceMode = settings.Persistence;
-            profile.Patchers.AddRange(settings.Patchers.Select(profile.PatcherFactory.Get));
+            profile.Patchers.AddRange(settings.Patchers.Select(x =>
+            {
+                PatcherVM ret = x switch
+                {
+                    GithubPatcherSettings git => profile.PatcherFactory.Get(git),
+                    SolutionPatcherSettings soln => profile.PatcherFactory.Get(soln),
+                    CliPatcherSettings cli => profile.PatcherFactory.Get(cli),
+                    _ => throw new NotImplementedException(),
+                };
+                return ret;
+            }));
             return profile;
         }
 

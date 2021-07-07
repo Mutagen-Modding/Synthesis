@@ -23,10 +23,20 @@ namespace Synthesis.Bethesda.GUI.Registers
             Forward<ProfileDataFolder, IDataDirectoryProvider>();
             ForSingletonOf<IProfileVersioning>().Use<ProfileVersioning>();
             ForSingletonOf<IProfileSimpleLinkCache>().Use<ProfileSimpleLinkCache>();
+            ForConcreteType<ProfileVM>().Configure.Singleton();
+            ForConcreteType<GitPatcherInitVM>().Configure.Singleton();
+            ForConcreteType<CliPatcherInitVM>().Configure.Singleton();
+            
             For<IPatchersRunFactory>().CreateFactory();
-            For<IPatcherSettingsVmFactory>().CreateFactory();
             For<PatchersRunVM>();
+            
+            For<IPatcherSettingsVmFactory>().CreateFactory();
             For<PatcherSettingsVM>();
+            
+            For<IPatcherFactory>().CreateFactory();
+            For<SolutionPatcherVM>();
+            For<GitPatcherVM>();
+            For<CliPatcherVM>();
             
             Scan(s =>
             {
