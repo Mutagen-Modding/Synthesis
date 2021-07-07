@@ -24,7 +24,9 @@ namespace Synthesis.Bethesda.GUI.Registers
             ForSingletonOf<IProfileVersioning>().Use<ProfileVersioning>();
             ForSingletonOf<IProfileSimpleLinkCache>().Use<ProfileSimpleLinkCache>();
             For<IPatchersRunFactory>().CreateFactory();
+            For<IPatcherSettingsVmFactory>().CreateFactory();
             For<PatchersRunVM>();
+            For<PatcherSettingsVM>();
             
             Scan(s =>
             {

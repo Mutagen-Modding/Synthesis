@@ -66,7 +66,6 @@ namespace Synthesis.Bethesda.GUI
             ISelectedProfileControllerVm selectedProfile,
             IEnvironmentErrorsVM environmentErrors,
             ISaveSignal saveSignal,
-            IRetrieveSaveSettings save,
             ISettingsSingleton settingsSingleton,
             INewestLibraryVersions newestLibVersions,
             IActivePanelControllerVm activePanelControllerVm,
