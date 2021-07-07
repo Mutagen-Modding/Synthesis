@@ -18,11 +18,6 @@ namespace Synthesis.Bethesda.CLI
                     scanner.WithDefaultConventions();
                 });
             });
-            #if DEBUG
-            Instance.AssertConfigurationIsValid();
-            Console.WriteLine(Instance.WhatDidIScan());
-            Console.WriteLine(Instance.WhatDoIHave());
-            #endif
         }
     }
 }

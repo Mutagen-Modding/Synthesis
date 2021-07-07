@@ -30,7 +30,7 @@ namespace Synthesis.Bethesda.UnitTests
         public static readonly string OblivionPathToOverrideFile = "oblivion_override.esp";
         public static readonly string LePathToTestFile = "le_test.esp";
         public static readonly string LePathToOverrideFile = "le_override.esp";
-        public static readonly string PathToLoadOrderFile = "Plugins.txt";
+        public static readonly string PluginFileName = "Plugins.txt";
         public static readonly string BuildFailureFile = "BuildFailure.txt";
         public static readonly string BuildSuccessFile = "BuildSuccess.txt";
         public static readonly string BuildSuccessNonEnglishFile = "BuildSuccessNonEnglish.txt";
@@ -49,7 +49,7 @@ namespace Synthesis.Bethesda.UnitTests
         {
             var baseFolder = new DirectoryPath(BaseFolder);
             var dataFolder = new DirectoryPath($"{BaseFolder}/DataFolder");
-            var pluginPath = Path.Combine(BaseFolder, PathToLoadOrderFile);
+            var pluginPath = Path.Combine(BaseFolder, PluginFileName);
             string testPath, overridePath;
             switch (release)
             {
@@ -70,7 +70,7 @@ namespace Synthesis.Bethesda.UnitTests
             {
                 { Path.Combine(dataFolder.Path, TestFileName), new MockFileData(File.ReadAllBytes(testPath)) },
                 { Path.Combine(dataFolder.Path, OverrideFileName), new MockFileData(File.ReadAllBytes(overridePath)) },
-                { pluginPath, new MockFileData(File.ReadAllBytes(PathToLoadOrderFile)) },
+                { pluginPath, new MockFileData(File.ReadAllBytes(PluginFileName)) },
             });
 
             return new TestEnvironment(

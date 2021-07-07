@@ -5,7 +5,9 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Installs;
+using Mutagen.Bethesda.Plugins.Order.DI;
 
 namespace Synthesis.Bethesda.CLI
 {
@@ -28,7 +30,14 @@ namespace Synthesis.Bethesda.CLI
                                 }
                                 settings.DataFolderPath = Path.Combine(gameFolder, "Data");
                             }
-                            await Inject.Instance.GetInstance<IRunPatcherPipeline>().Run(settings, CancellationToken.None, new ConsoleReporter());
+                            Inject.Instance.Configure(cfg =>
+                            {
+                                cfg.For<IGameReleaseContext>().Use(new GameReleaseInjection(settings.GameRelease));
+                                cfg.For<IDataDirectoryProvider>().Use(new DataDirectoryInjection(settings.DataFolderPath));
+                                cfg.For<IPluginListingsPathProvider>().Use(new PluginListingsPathInjection(settings.LoadOrderFilePath));
+                            });
+                            await Inject.Instance.GetInstance<IRunPatcherPipeline>()
+                                .Run(settings, CancellationToken.None, new ConsoleReporter());
                         }
                         catch (Exception ex)
                         {

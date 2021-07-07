@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Newtonsoft.Json;
@@ -15,6 +16,7 @@ using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Reporters;
+using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.CLI
@@ -36,6 +38,7 @@ namespace Synthesis.Bethesda.Execution.CLI
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
         private readonly IProcessFactory _ProcessFactory;
         private readonly ICheckRunnability _Runnability;
+        private readonly IRunner _Runner;
 
         public RunPatcherPipeline(
             IBuild build,
@@ -44,7 +47,8 @@ namespace Synthesis.Bethesda.Execution.CLI
             ICheckOrCloneRepo checkOrCloneRepo,
             IProvideRepositoryCheckouts repositoryCheckouts,
             IProcessFactory processFactory,
-            ICheckRunnability runnability)
+            ICheckRunnability runnability,
+            IRunner runner)
         {
             _Build = build;
             _WorkingDirectory = workingDirectory;
@@ -53,6 +57,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             _RepositoryCheckouts = repositoryCheckouts;
             _ProcessFactory = processFactory;
             _Runnability = runnability;
+            _Runner = runner;
         }
         
         public async Task Run(
@@ -133,18 +138,10 @@ namespace Synthesis.Bethesda.Execution.CLI
                     })
                     .ToList();
 
-                await Runner.Run(
+                await _Runner
+                    .Run(
                     workingDirectory: _Paths.ProfileWorkingDirectory(profile.ID),
                     outputPath: run.OutputPath,
-                    dataFolder: run.DataFolderPath,
-                    loadOrder: LoadOrder.GetListings(
-                        run.GameRelease, 
-                        dataPath: run.DataFolderPath,
-                        pluginsFilePath: run.LoadOrderFilePath,
-                        creationClubFilePath: CreationClubListings.GetListingsPath(
-                            run.GameRelease.ToCategory(),
-                            run.DataFolderPath)),
-                    release: run.GameRelease,
                     patchers: patchers,
                     sourcePath: run.SourcePath == null ? default : ModPath.FromPath(run.SourcePath),
                     reporter: reporter,

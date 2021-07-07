@@ -27,7 +27,7 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
             IProfileIdentifier ident)
         {
             SimpleLinkCache = Observable.CombineLatest(
-                    dataFolder.WhenAnyValue(x => x.DataFolder),
+                    dataFolder.WhenAnyValue(x => x.Path),
                     loadOrder.LoadOrder.Connect()
                         .QueryWhenChanged()
                         .Select(q => q.Where(x => x.Enabled).Select(x => x.ModKey).ToArray())

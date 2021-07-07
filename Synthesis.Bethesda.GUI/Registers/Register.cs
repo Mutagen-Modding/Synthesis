@@ -14,6 +14,7 @@ using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Startup;
@@ -84,6 +85,9 @@ namespace Synthesis.Bethesda.GUI.Registers
             For<ILockToCurrentVersioning>().Use<LockToCurrentVersioning>();
             For<IProfileDisplayControllerVm>().Use<ProfileDisplayControllerVm>();
             For<IEnvironmentErrorsVM>().Use<EnvironmentErrorsVM>();
+            For<GitPatcherVM>();
+            For<CliPatcherVM>();
+            For<SolutionPatcherVM>();
             For<GitPatcherInitVM>();
             For<CliPatcherInitVM>();
             
@@ -116,6 +120,7 @@ namespace Synthesis.Bethesda.GUI.Registers
                 s.AssemblyContainingType<IWorkingDirectorySubPaths>();
                 s.IncludeNamespaceContainingType<IWorkingDirectorySubPaths>();
                 s.ExcludeType<ProvideWorkingDirectory>();
+                s.IncludeNamespaceContainingType<IRunner>();
                 s.IncludeNamespaceContainingType<ICheckoutRunnerRepository>();
                 s.IncludeNamespaceContainingType<ICheckRunnability>();
                 s.WithDefaultConventions();

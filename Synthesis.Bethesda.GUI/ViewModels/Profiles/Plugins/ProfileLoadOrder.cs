@@ -3,6 +3,10 @@ using DynamicData;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Noggog;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
@@ -15,7 +19,7 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
         ErrorResponse State { get; }
     }
 
-    public class ProfileLoadOrder : ViewModel, IProfileLoadOrder
+    public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, ILoadOrderListingsProvider
     {
         public IObservableList<ReadOnlyModListingVM> LoadOrder { get; }
 
@@ -69,6 +73,11 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
                 .Select(x => x.State)
                 .Switch()
                 .ToGuiProperty(this, nameof(State), ErrorResponse.Success);
+        }
+
+        public IEnumerable<IModListingGetter> Get()
+        {
+            return LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(x => x);
         }
     }
 }

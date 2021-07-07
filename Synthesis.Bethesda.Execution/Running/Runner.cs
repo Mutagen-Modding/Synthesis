@@ -1,5 +1,3 @@
-using Synthesis.Bethesda.Execution.Patchers;
-using Noggog;
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
@@ -8,77 +6,109 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
-using Synthesis.Bethesda.Execution.Reporters;
-using Synthesis.Bethesda.Execution.Settings;
-using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Allocators;
 using Mutagen.Bethesda.Plugins.Implicit.DI;
+using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Order.DI;
+using Noggog;
+using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Reporters;
+using Synthesis.Bethesda.Execution.Settings;
 using Path = System.IO.Path;
 using FileNotFoundException = System.IO.FileNotFoundException;
 
-namespace Synthesis.Bethesda.Execution
+namespace Synthesis.Bethesda.Execution.Running
 {
-    public class Runner
+    public interface IRunner
     {
-        public static async Task<bool> Run(
+        Task<bool> Run(
             string workingDirectory,
             ModPath outputPath,
-            string dataFolder,
-            IEnumerable<IModListingGetter> loadOrder,
-            GameRelease release,
             IEnumerable<IPatcherRun> patchers,
             CancellationToken cancel,
             ModPath? sourcePath = null,
             IRunReporter? reporter = null,
             PersistenceMode persistenceMode = PersistenceMode.None,
-            string? persistencePath = null,
-            IFileSystem? fileSystem = null)
-        {
-            return await Run<object?>(
-                workingDirectory: workingDirectory,
-                outputPath: outputPath,
-                dataFolder: dataFolder,
-                loadOrder: loadOrder,
-                release: release,
-                patchers: patchers.Select(p => (default(object?), p)),
-                reporter: new WrapReporter(reporter ?? ThrowReporter.Instance),
-                sourcePath: sourcePath,
-                cancellation: cancel,
-                persistenceMode: persistenceMode,
-                persistencePath: persistencePath,
-                fileSystem: fileSystem);
-        }
+            string? persistencePath = null);
 
-        public static async Task<bool> Run<TKey>(
+        Task<bool> Run<TKey>(
             string workingDirectory,
             ModPath outputPath,
-            string dataFolder,
-            IEnumerable<IModListingGetter> loadOrder,
-            GameRelease release,
             IEnumerable<(TKey Key, IPatcherRun Run)> patchers,
             IRunReporter<TKey> reporter,
             CancellationToken cancellation,
             ModPath? sourcePath = null,
             PersistenceMode persistenceMode = PersistenceMode.None,
-            string? persistencePath = null,
-            IFileSystem? fileSystem = null)
+            string? persistencePath = null);
+    }
+
+    public class Runner : IRunner
+    {
+        private readonly IFileSystem _FileSystem;
+        private readonly IGameReleaseContext _ReleaseContext;
+        private readonly IDataDirectoryProvider _DataDirectoryProvider;
+        private readonly ILoadOrderListingsProvider _LoadOrderListingsProvider;
+        private readonly ILoadOrderWriter _LoadOrderWriter;
+
+        public Runner(
+            IFileSystem fileSystem,
+            IGameReleaseContext releaseContext,
+            IDataDirectoryProvider dataDirectoryProvider,
+            ILoadOrderListingsProvider loadOrderListingsProvider,
+            ILoadOrderWriter loadOrderWriter)
+        {
+            _FileSystem = fileSystem;
+            _ReleaseContext = releaseContext;
+            _DataDirectoryProvider = dataDirectoryProvider;
+            _LoadOrderListingsProvider = loadOrderListingsProvider;
+            _LoadOrderWriter = loadOrderWriter;
+        }
+        
+        public async Task<bool> Run(
+            string workingDirectory,
+            ModPath outputPath,
+            IEnumerable<IPatcherRun> patchers,
+            CancellationToken cancel,
+            ModPath? sourcePath = null,
+            IRunReporter? reporter = null,
+            PersistenceMode persistenceMode = PersistenceMode.None,
+            string? persistencePath = null)
+        {
+            return await Run<object?>(
+                workingDirectory: workingDirectory,
+                outputPath: outputPath,
+                patchers: patchers.Select(p => (default(object?), p)),
+                reporter: new WrapReporter(reporter ?? ThrowReporter.Instance),
+                sourcePath: sourcePath,
+                cancellation: cancel,
+                persistenceMode: persistenceMode,
+                persistencePath: persistencePath);
+        }
+
+        public async Task<bool> Run<TKey>(
+            string workingDirectory,
+            ModPath outputPath,
+            IEnumerable<(TKey Key, IPatcherRun Run)> patchers,
+            IRunReporter<TKey> reporter,
+            CancellationToken cancellation,
+            ModPath? sourcePath = null,
+            PersistenceMode persistenceMode = PersistenceMode.None,
+            string? persistencePath = null)
         {
             try
             {
-                fileSystem = fileSystem.GetOrDefault();
                 if (sourcePath != null)
                 {
-                    if (!fileSystem.File.Exists(sourcePath))
+                    if (!_FileSystem.File.Exists(sourcePath))
                     {
                         reporter.ReportOverallProblem(new FileNotFoundException($"Source path did not exist: {sourcePath}"));
                         return false;
                     }
                 }
 
-                fileSystem.Directory.DeleteEntireFolder(workingDirectory);
-                fileSystem.Directory.CreateDirectory(workingDirectory);
+                _FileSystem.Directory.DeleteEntireFolder(workingDirectory);
+                _FileSystem.Directory.CreateDirectory(workingDirectory);
 
                 var patchersList = patchers.ToList();
                 if (patchersList.Count == 0 || cancellation.IsCancellationRequested) return false;
@@ -86,7 +116,7 @@ namespace Synthesis.Bethesda.Execution
                 bool problem = false;
 
                 // Copy plugins text to working directory, trimming synthesis and anything after
-                var loadOrderList = loadOrder.ToList();
+                var loadOrderList = _LoadOrderListingsProvider.Get().ToList();
                 var synthIndex = loadOrderList.IndexOf(outputPath.ModKey, (listing, key) => listing.ModKey == key);
                 if (synthIndex != -1)
                 {
@@ -96,16 +126,11 @@ namespace Synthesis.Bethesda.Execution
                 loadOrderList.WithIndex().ForEach(i => reporter.Write(default(TKey)!, default, $" [{i.Index,3}] {i.Item}"));
                 string loadOrderPath = Path.Combine(workingDirectory, "Plugins.txt");
 
-                var releaseContext = new GameReleaseInjection(release);
-                var loadOrderWriter = new LoadOrderWriter(
-                    fileSystem,
-                    new HasEnabledMarkersProvider(releaseContext),
-                    new ImplicitListingModKeyProvider(releaseContext));
                 var writeLoadOrder = Task.Run(() =>
                 {
                     try
                     {
-                        loadOrderWriter.Write(
+                        _LoadOrderWriter.Write(
                             loadOrderPath,
                             loadOrderList,
                             removeImplicitMods: true);
@@ -128,7 +153,7 @@ namespace Synthesis.Bethesda.Execution
                                 persistencePath = null;
                                 break;
                             case PersistenceMode.Text:
-                                TextFileSharedFormKeyAllocator.Initialize(persistencePath ?? throw new ArgumentNullException("Persistence mode specified, but no path provided"), fileSystem);
+                                TextFileSharedFormKeyAllocator.Initialize(persistencePath ?? throw new ArgumentNullException("Persistence mode specified, but no path provided"), _FileSystem);
                                 break;
                             default:
                                 throw new NotImplementedException();
@@ -152,7 +177,7 @@ namespace Synthesis.Bethesda.Execution
                             .Subscribe(i => reporter.WriteError(patcher.Key, patcher.Run, i));
                         try
                         {
-                            await patcher.Run.Prep(release, cancellation);
+                            await patcher.Run.Prep(_ReleaseContext.Release, cancellation);
                         }
                         catch (TaskCanceledException)
                         {
@@ -203,8 +228,8 @@ namespace Synthesis.Bethesda.Execution
                             {
                                 SourcePath = prevPath?.Path,
                                 OutputPath = nextPath,
-                                DataFolderPath = dataFolder,
-                                GameRelease = release,
+                                DataFolderPath = _DataDirectoryProvider.Path,
+                                GameRelease = _ReleaseContext.Release,
                                 LoadOrderFilePath = loadOrderPath,
                                 PersistencePath = persistencePath,
                                 PatcherName = fileName
@@ -230,7 +255,7 @@ namespace Synthesis.Bethesda.Execution
                         return false;
                     }
                     if (cancellation.IsCancellationRequested) return false;
-                    if (!fileSystem.File.Exists(nextPath))
+                    if (!_FileSystem.File.Exists(nextPath))
                     {
                         reporter.ReportRunProblem(patcher.Key, patcher.Run, new ArgumentException($"Patcher {patcher.Run.Name} did not produce output file."));
                         return false;
@@ -238,11 +263,11 @@ namespace Synthesis.Bethesda.Execution
                     reporter.ReportRunSuccessful(patcher.Key, patcher.Run, nextPath);
                     prevPath = nextPath;
                 }
-                if (fileSystem.File.Exists(outputPath))
+                if (_FileSystem.File.Exists(outputPath))
                 {
-                    fileSystem.File.Delete(outputPath);
+                    _FileSystem.File.Delete(outputPath);
                 }
-                fileSystem.File.Copy(prevPath!.Path, outputPath);
+                _FileSystem.File.Copy(prevPath!.Path, outputPath);
                 reporter.Write(default!, default, $"Exported patch to: {outputPath}");
                 return true;
             }

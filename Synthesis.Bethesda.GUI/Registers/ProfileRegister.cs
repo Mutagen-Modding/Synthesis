@@ -1,4 +1,5 @@
 ﻿using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Plugins.Order.DI;
 using StructureMap;
 using StructureMap.AutoFactory;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
@@ -10,12 +11,14 @@ namespace Synthesis.Bethesda.GUI.Registers
     {
         public ProfileRegister()
         {
-            ForSingletonOf<ProfilePatchersList>();
+            ForConcreteType<ProfilePatchersList>().Configure.Singleton();
             Forward<ProfilePatchersList, IRemovePatcherFromProfile>();
             Forward<ProfilePatchersList, IProfilePatchersList>();
-            ForSingletonOf<IProfileLoadOrder>().Use<ProfileLoadOrder>();
+            ForConcreteType<ProfileLoadOrder>().Configure.Singleton();
+            Forward<ProfileLoadOrder, IProfileLoadOrder>();
+            Forward<ProfileLoadOrder, ILoadOrderListingsProvider>();
             ForSingletonOf<IProfileDirectories>().Use<ProfileDirectories>();
-            ForSingletonOf<ProfileDataFolder>();
+            ForConcreteType<ProfileDataFolder>().Configure.Singleton();
             Forward<ProfileDataFolder, IProfileDataFolder>();
             Forward<ProfileDataFolder, IDataDirectoryProvider>();
             ForSingletonOf<IProfileVersioning>().Use<ProfileVersioning>();

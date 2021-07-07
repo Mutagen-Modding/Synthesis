@@ -18,10 +18,10 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
     {
         string? DataPathOverride { get; set; }
         GetResponse<DirectoryPath> DataFolderResult { get; }
-        DirectoryPath DataFolder { get; }
+        DirectoryPath Path { get; }
     }
 
-    public class ProfileDataFolder : ViewModel, IProfileDataFolder
+    public class ProfileDataFolder : ViewModel, IProfileDataFolder, IDataDirectoryProvider
     {
         [Reactive]
         public string? DataPathOverride { get; set; }
@@ -29,8 +29,8 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
         private readonly ObservableAsPropertyHelper<GetResponse<DirectoryPath>> _DataFolderResult;
         public GetResponse<DirectoryPath> DataFolderResult => _DataFolderResult.Value;
 
-        private readonly ObservableAsPropertyHelper<DirectoryPath> _DataFolder;
-        public DirectoryPath DataFolder => _DataFolder.Value;
+        private readonly ObservableAsPropertyHelper<DirectoryPath> _Path;
+        public DirectoryPath Path => _Path.Value;
 
         public ProfileDataFolder(
             ILogger logger,
@@ -57,7 +57,7 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
                                         "Could not automatically locate Data folder.  Run Steam/GoG/etc once to properly register things.");
                                 }
 
-                                return GetResponse<DirectoryPath>.Succeed(Path.Combine(gameFolder, "Data"));
+                                return GetResponse<DirectoryPath>.Succeed(System.IO.Path.Combine(gameFolder, "Data"));
                             }
                             catch (Exception ex)
                             {
@@ -100,9 +100,9 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
                 })
                 .ToGuiProperty(this, nameof(DataFolderResult));
 
-            _DataFolder = this.WhenAnyValue(x => x.DataFolderResult)
+            _Path = this.WhenAnyValue(x => x.DataFolderResult)
                 .Select(x => x.Value)
-                .ToGuiProperty(this, nameof(DataFolder));
+                .ToGuiProperty(this, nameof(Path));
         }
     }
 }

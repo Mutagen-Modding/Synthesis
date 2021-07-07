@@ -759,7 +759,7 @@ namespace Synthesis.Bethesda.GUI
 
             var runnability = Observable.CombineLatest(
                     compilation,
-                    dataFolder.WhenAnyValue(x => x.DataFolder),
+                    dataFolder.WhenAnyValue(x => x.Path),
                     loadOrder.LoadOrder.Connect()
                         .QueryWhenChanged()
                         .StartWith(ListExt.Empty<ReadOnlyModListingVM>()),

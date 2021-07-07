@@ -6,7 +6,6 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Reporters;
-using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.IO;
 using System.Linq;
@@ -15,16 +14,18 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Serilog;
-using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.Execution.Running;
 
 namespace Synthesis.Bethesda.GUI
 {
     public class PatchersRunVM : ViewModel
     {
         private readonly ILogger _Logger;
+        private readonly IRunner _Runner;
         public ConfigurationVM Config { get; }
 
         public ProfileVM RunningProfile { get; }
@@ -59,9 +60,11 @@ namespace Synthesis.Bethesda.GUI
             ConfigurationVM configuration,
             ILogger logger,
             IActivePanelControllerVm activePanelController,
-            ProfileVM profile)
+            ProfileVM profile,
+            IRunner runner)
         {
             _Logger = logger;
+            _Runner = runner;
             Config = configuration;
             RunningProfile = profile;
             Patchers.AddOrUpdate(RunningProfile.Patchers.Items
@@ -180,12 +183,9 @@ namespace Synthesis.Bethesda.GUI
                     {
                         Running = true;
                         var output = Path.Combine(RunningProfile.WorkingDirectory, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
-                        var madePatch = await Runner.Run<int>(
+                        var madePatch = await _Runner.Run<int>(
                             workingDirectory: RunningProfile.WorkingDirectory,
                             outputPath: output,
-                            dataFolder: RunningProfile.DataFolder,
-                            release: RunningProfile.Release,
-                            loadOrder: RunningProfile.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(x => x),
                             cancellation: _cancel.Token,
                             reporter: _reporter,
                             patchers: Patchers.Items.Select(vm => (vm.Config.InternalID, vm.Run)),

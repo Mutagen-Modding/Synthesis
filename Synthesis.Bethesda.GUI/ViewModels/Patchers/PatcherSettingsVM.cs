@@ -104,7 +104,7 @@ namespace Synthesis.Bethesda.GUI
                             directExe: false,
                             cancel: CancellationToken.None,
                             release: ident.Release,
-                            dataFolderPath: dataFolder.DataFolder,
+                            dataFolderPath: dataFolder.Path,
                             loadOrder: loadOrder.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                     }
                     else
@@ -114,7 +114,7 @@ namespace Synthesis.Bethesda.GUI
                             path: o.Proj.Value,
                             cancel: CancellationToken.None,
                             release: ident.Release,
-                            dataFolderPath: dataFolder.DataFolder,
+                            dataFolderPath: dataFolder.Path,
                             loadOrder: loadOrder.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                     }
                 },

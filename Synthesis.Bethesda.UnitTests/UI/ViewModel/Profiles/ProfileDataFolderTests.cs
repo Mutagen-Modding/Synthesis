@@ -45,11 +45,11 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles
             if (r == Utility.Return.True)
             {
                 locator.DataFolderResult.Value.Should().Be(folder);
-                locator.DataFolder.Path.Should().NotBeNullOrWhiteSpace();
+                locator.Path.Path.Should().NotBeNullOrWhiteSpace();
             }
             else
             {
-                locator.DataFolder.Path.Should().BeNullOrWhiteSpace();
+                locator.Path.Path.Should().BeNullOrWhiteSpace();
             }
         }
 
@@ -85,11 +85,11 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles
             locator.DataFolderResult.Succeeded.Should().Be(r == Utility.Return.True);
             if (r == Utility.Return.True)
             {
-                locator.DataFolder.Path.Should().NotBeNullOrWhiteSpace();
+                locator.Path.Path.Should().NotBeNullOrWhiteSpace();
             }
             else
             {
-                locator.DataFolder.Path.Should().BeNullOrWhiteSpace();
+                locator.Path.Path.Should().BeNullOrWhiteSpace();
             }
         }
 
@@ -122,11 +122,11 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles
             if (r == Utility.Return.True)
             {
                 locator.DataFolderResult.Value.Path.Should().Be(dataFolder);
-                locator.DataFolder.Path.Should().NotBeNullOrWhiteSpace();
+                locator.Path.Path.Should().NotBeNullOrWhiteSpace();
             }
             else
             {
-                locator.DataFolder.Path.Should().BeNullOrWhiteSpace();
+                locator.Path.Path.Should().BeNullOrWhiteSpace();
             }
         }
     }
