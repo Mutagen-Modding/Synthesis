@@ -183,6 +183,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             IWorkingDirectorySubPaths paths,
             IProcessFactory processFactory,
             IPatcherSettingsVmFactory settingsVmFactory,
+            ISolutionProjectPath projectPath,
             GithubPatcherSettings? settings = null)
             : base(remove, selPatcher, confirmation, settings)
         {
@@ -343,7 +344,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                 .Transform(x => x.Name)
                 .ToObservableCollection(this);
 
-            var projPath = SolutionPatcherVM.SolutionPatcherConfigLogic.ProjectPath(
+            var projPath = projectPath.Process(
                 driverRepoInfo
                     .Select(x => x.Item?.SolutionPath ?? string.Empty),
                 this.WhenAnyValue(x => x.ProjectSubpath));

@@ -101,6 +101,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             ILogger logger,
             IWorkingDirectorySubPaths paths,
             IPatcherSettingsVmFactory settingsVmFactory,
+            IAvailableProjects availableProjects,
+            ISolutionProjectPath projectPath,
             SolutionPatcherSettings? settings = null)
             : base(remove, profileDisplay, confirmation, settings)
         {
@@ -134,12 +136,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
                 })
                 .ToProperty(this, nameof(DisplayName), Nickname);
 
-            AvailableProjects = SolutionPatcherConfigLogic.AvailableProject(
+            AvailableProjects = availableProjects.Process(
                 this.WhenAnyValue(x => x.SolutionPath.TargetPath))
                 .ObserveOnGui()
                 .ToObservableCollection(this);
 
-            var projPath = SolutionPatcherConfigLogic.ProjectPath(
+            var projPath = projectPath.Process(
                 solutionPath: this.WhenAnyValue(x => x.SolutionPath.TargetPath),
                 projectSubpath: this.WhenAnyValue(x => x.ProjectSubpath));
             projPath
@@ -323,42 +325,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
                     checkRunnability: _CheckRunnability,
                     processFactory: _ProcessFactory,
                     repositoryCheckouts: _ProvideRepositoryCheckouts));
-        }
-
-        public class SolutionPatcherConfigLogic
-        {
-            public static IObservable<IChangeSet<string>> AvailableProject(IObservable<string> solutionPath)
-            {
-                return solutionPath
-                    .ObserveOn(RxApp.TaskpoolScheduler)
-                    .Select(SolutionPatcherRun.AvailableProjects)
-                    .Select(x => x.AsObservableChangeSet())
-                    .Switch()
-                    .RefCount();
-            }
-
-            public static IObservable<string> ProjectPath(IObservable<string> solutionPath, IObservable<string> projectSubpath)
-            {
-                return projectSubpath
-                    // Need to throttle, as bindings flip to null quickly, which we want to skip
-                    .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
-                    .DistinctUntilChanged()
-                    .CombineLatest(solutionPath.DistinctUntilChanged(),
-                        (subPath, slnPath) =>
-                        {
-                            if (subPath == null || slnPath == null) return string.Empty;
-                            try
-                            {
-                                return Path.Combine(Path.GetDirectoryName(slnPath)!, subPath);
-                            }
-                            catch (Exception)
-                            {
-                                return string.Empty;
-                            }
-                        })
-                    .Replay(1)
-                    .RefCount();
-            }
         }
     }
 }
