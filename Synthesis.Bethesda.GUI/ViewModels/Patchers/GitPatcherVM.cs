@@ -1,43 +1,40 @@
-using Synthesis.Bethesda.Execution.Settings;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Text;
+using System.Windows.Input;
+using DynamicData;
+using DynamicData.Binding;
+using LibGit2Sharp;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.WPF.Plugins.Order;
+using Newtonsoft.Json;
 using Noggog;
+using Noggog.Utility;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Reactive.Linq;
-using LibGit2Sharp;
-using System.IO;
-using System.Linq;
-using DynamicData.Binding;
-using DynamicData;
-using static Synthesis.Bethesda.GUI.SolutionPatcherVM;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using System.Windows.Input;
-using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers;
-using System.Reactive;
-using System.Text;
-using Synthesis.Bethesda.DTO;
-using Newtonsoft.Json;
-using Synthesis.Bethesda.Execution;
-using Mutagen.Bethesda.Plugins;
-using Mutagen.Bethesda.Plugins.Order;
-using Mutagen.Bethesda.Synthesis.WPF;
-using Mutagen.Bethesda.WPF.Plugins.Order;
-using Noggog.Utility;
 using Serilog;
+using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {
     public class GitPatcherVM : PatcherVM
     {
@@ -177,7 +174,7 @@ namespace Synthesis.Bethesda.GUI
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             ILockToCurrentVersioning lockToCurrentVersioning,
-            IProvideInstalledSdk dotNetInstalled,
+            IInstalledSdkProvider dotNetInstalled,
             IEnvironmentErrorsVM envErrors,
             INewestLibraryVersions newest,
             IBuild build,
@@ -346,7 +343,7 @@ namespace Synthesis.Bethesda.GUI
                 .Transform(x => x.Name)
                 .ToObservableCollection(this);
 
-            var projPath = SolutionPatcherConfigLogic.ProjectPath(
+            var projPath = SolutionPatcherVM.SolutionPatcherConfigLogic.ProjectPath(
                 driverRepoInfo
                     .Select(x => x.Item?.SolutionPath ?? string.Empty),
                 this.WhenAnyValue(x => x.ProjectSubpath));

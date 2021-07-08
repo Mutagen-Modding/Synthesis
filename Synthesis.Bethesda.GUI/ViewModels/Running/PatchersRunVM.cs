@@ -19,6 +19,7 @@ using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Serilog;
 using Synthesis.Bethesda.Execution.Running;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {

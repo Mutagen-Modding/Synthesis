@@ -1,11 +1,11 @@
 ﻿namespace Synthesis.Bethesda.Execution.DotNet
 {
-    public interface IProvideBuildString
+    public interface IBuildStringProvider
     {
         string Get(string args);
     }
 
-    public class ProvideBuildString : IProvideBuildString
+    public class BuildStringProvider : IBuildStringProvider
     {
         public string Get(string args)
         {

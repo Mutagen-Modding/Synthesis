@@ -1,16 +1,16 @@
-using Synthesis.Bethesda.Execution.Settings;
+using System;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Windows.Input;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using System;
-using System.Reactive.Linq;
-using System.Windows.Input;
-using System.Threading;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {
     public abstract class PatcherVM : ViewModel
     {

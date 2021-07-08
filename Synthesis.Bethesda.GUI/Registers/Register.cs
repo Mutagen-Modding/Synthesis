@@ -19,6 +19,7 @@ using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI.Registers
 {
@@ -107,7 +108,7 @@ namespace Synthesis.Bethesda.GUI.Registers
                 s.AssemblyContainingType<ICheckOrCloneRepo>();
                 s.IncludeNamespaceContainingType<ICheckOrCloneRepo>();
                 s.IncludeNamespaceContainingType<IQueryNewestLibraryVersions>();
-                s.IncludeNamespaceContainingType<IProvideInstalledSdk>();
+                s.IncludeNamespaceContainingType<IInstalledSdkProvider>();
                 s.Convention<SingletonConvention>();
             });
             Scan(s =>

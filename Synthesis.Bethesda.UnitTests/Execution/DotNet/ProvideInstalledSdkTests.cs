@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
             var query = Substitute.For<IQueryInstalledSdk>();
             query.Query(CancellationToken.None).Returns(
                 new DotNetVersion(version, true));
-            var provide = new ProvideInstalledSdk(
+            var provide = new InstalledSdkProvider(
                 _Fixture.Inject.Create<ISchedulerProvider>(),
                 query,
                 _Fixture.Inject.Create<ILogger>());
@@ -47,7 +47,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
             var query = Substitute.For<IQueryInstalledSdk>();
             query.Query(CancellationToken.None).Returns(
                 new DotNetVersion(string.Empty, false));
-            var provide = new ProvideInstalledSdk(
+            var provide = new InstalledSdkProvider(
                 _Fixture.Inject.Create<ISchedulerProvider>(),
                 query,
                 _Fixture.Inject.Create<ILogger>());
@@ -64,7 +64,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
             var query = Substitute.For<IQueryInstalledSdk>();
             query.Query(CancellationToken.None)
                 .ThrowsForAnyArgs(_ => new Exception());
-            var provide = new ProvideInstalledSdk(
+            var provide = new InstalledSdkProvider(
                 _Fixture.Inject.Create<ISchedulerProvider>(),
                 query,
                 _Fixture.Inject.Create<ILogger>());

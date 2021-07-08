@@ -1,17 +1,17 @@
+using System;
+using System.IO;
+using System.Reactive.Linq;
 using Noggog;
+using Noggog.Utility;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
-using System;
-using System.IO;
-using System.Reactive.Linq;
-using Noggog.Utility;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Settings;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {
     public class CliPatcherVM : PatcherVM
     {

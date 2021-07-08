@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Versioning
         [Fact]
         public void DotNetNotAcceptable()
         {
-            var sdk = Substitute.For<IProvideInstalledSdk>();
+            var sdk = Substitute.For<IInstalledSdkProvider>();
             sdk.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: false)));
             var newest = new NewestLibraryVersions(
                 _Fixture.Inject.Create<ILogger>(),
@@ -44,7 +44,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Versioning
         [Fact]
         public void ConsiderPrereleases()
         {
-            var sdk = Substitute.For<IProvideInstalledSdk>();
+            var sdk = Substitute.For<IInstalledSdkProvider>();
             sdk.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: true)));
             var consider = Substitute.For<IConsiderPrereleasePreference>();
             consider.ConsiderPrereleases.Returns(_ => Observable.Return(true));
@@ -73,7 +73,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Versioning
         [Fact]
         public void DoNotConsiderPrereleases()
         {
-            var sdk = Substitute.For<IProvideInstalledSdk>();
+            var sdk = Substitute.For<IInstalledSdkProvider>();
             sdk.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: true)));
             var consider = Substitute.For<IConsiderPrereleasePreference>();
             consider.ConsiderPrereleases.Returns(_ => Observable.Return(false));

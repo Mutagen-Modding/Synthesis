@@ -2,6 +2,7 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI.Fody.Helpers;
 using System.Collections.Generic;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {

@@ -4,6 +4,8 @@ using StructureMap;
 using StructureMap.AutoFactory;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services.Profile;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Registers
 {
@@ -42,6 +44,7 @@ namespace Synthesis.Bethesda.GUI.Registers
             {
                 s.AssemblyContainingType<IPatcherFactory>();
                 s.IncludeNamespaceContainingType<IPatcherFactory>();
+                s.IncludeNamespaceContainingType<IPatcherSettingsVmFactory>();
                 s.WithDefaultConventions();
             });
         }

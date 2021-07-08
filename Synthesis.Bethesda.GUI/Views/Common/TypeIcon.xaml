@@ -7,12 +7,14 @@
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
+    xmlns:patchers="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers"
+    xmlns:solution="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <ContentControl x:Name="ContentControl">
         <ContentControl.Resources>
-            <DataTemplate DataType="{x:Type vm:GitPatcherVM}">
+            <DataTemplate DataType="{x:Type patchers:GitPatcherVM}">
                 <icon:PackIconMaterial
                     Width="35"
                     Height="35"
@@ -26,7 +28,7 @@
                     Kind="Git"
                     ToolTip="Mutagen Git repo Patcher" />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:SolutionPatcherVM}">
+            <DataTemplate DataType="{x:Type solution:SolutionPatcherVM}">
                 <icon:PackIconModern
                     Width="35"
                     Height="35"
@@ -40,7 +42,7 @@
                     Kind="Visualstudio"
                     ToolTip="Mutagen Solution Patcher" />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:CliPatcherVM}">
+            <DataTemplate DataType="{x:Type patchers:CliPatcherVM}">
                 <icon:PackIconMaterial
                     Width="35"
                     Height="35"

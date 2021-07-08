@@ -7,16 +7,16 @@ using Serilog;
 
 namespace Synthesis.Bethesda.Execution.DotNet
 {
-    public interface IProvideInstalledSdk
+    public interface IInstalledSdkProvider
     {
         IObservable<DotNetVersion> DotNetSdkInstalled { get; }
     }
     
-    public class ProvideInstalledSdk : IProvideInstalledSdk
+    public class InstalledSdkProvider : IInstalledSdkProvider
     {
         public IObservable<DotNetVersion> DotNetSdkInstalled { get; }
         
-        public ProvideInstalledSdk(
+        public InstalledSdkProvider(
             ISchedulerProvider schedulerProvider,
             IQueryInstalledSdk query, 
             ILogger logger)

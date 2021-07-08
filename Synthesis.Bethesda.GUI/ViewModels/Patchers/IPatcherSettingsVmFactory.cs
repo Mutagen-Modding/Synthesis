@@ -2,7 +2,7 @@
 using Noggog;
 using Serilog;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {
     public interface IPatcherSettingsVmFactory
     {

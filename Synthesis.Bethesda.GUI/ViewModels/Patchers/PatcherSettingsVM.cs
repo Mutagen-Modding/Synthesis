@@ -1,23 +1,23 @@
-using Noggog;
-using Noggog.WPF;
-using ReactiveUI;
-using Serilog;
 using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using DynamicData;
-using Synthesis.Bethesda.DTO;
-using Mutagen.Bethesda.Synthesis.WPF;
 using LibGit2Sharp;
 using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.Synthesis.WPF;
 using Mutagen.Bethesda.WPF.Plugins.Order;
+using Noggog;
+using Noggog.WPF;
+using ReactiveUI;
+using Serilog;
+using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {
     public class PatcherSettingsVM : ViewModel
     {

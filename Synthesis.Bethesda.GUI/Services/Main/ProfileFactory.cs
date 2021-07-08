@@ -6,6 +6,7 @@ using Mutagen.Bethesda.Environments.DI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Registers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI.Services.Main
 {

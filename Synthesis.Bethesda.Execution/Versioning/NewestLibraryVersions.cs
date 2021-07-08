@@ -22,13 +22,13 @@ namespace Synthesis.Bethesda.Execution.Versioning
         public NewestLibraryVersions(
             ILogger logger,
             IQueryNewestLibraryVersions queryNewest,
-            IProvideInstalledSdk installedSdk,
+            IInstalledSdkProvider installedSdkProvider,
             IConsiderPrereleasePreference considerPrerelease)
         {
             var latestVersions = Observable.Return(Unit.Default)
                 .ObserveOn(TaskPoolScheduler.Default)
                 .CombineLatest(
-                    installedSdk.DotNetSdkInstalled,
+                    installedSdkProvider.DotNetSdkInstalled,
                     (_, DotNetVersions) => DotNetVersions)
                 .SelectTask(async x =>
                 {

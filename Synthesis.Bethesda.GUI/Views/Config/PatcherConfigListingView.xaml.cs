@@ -9,6 +9,7 @@ using System.Windows;
 using System.Reactive.Disposables;
 using System.Windows.Controls;
 using System.Linq;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI.Views
 {

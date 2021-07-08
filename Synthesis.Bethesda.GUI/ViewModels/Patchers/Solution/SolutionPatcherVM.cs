@@ -1,37 +1,34 @@
+using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Windows.Input;
 using DynamicData;
+using DynamicData.Binding;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Synthesis.Bethesda.Execution.Settings;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.WPF.Plugins;
+using Newtonsoft.Json;
 using Noggog;
+using Noggog.Utility;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using System;
-using System.IO;
-using System.Reactive.Linq;
-using System.Linq;
-using DynamicData.Binding;
-using System.Windows.Input;
-using System.Diagnostics;
-using System.Reactive;
-using Newtonsoft.Json;
-using Synthesis.Bethesda.DTO;
-using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers;
-using System.Collections.ObjectModel;
-using Mutagen.Bethesda.Plugins;
-using Mutagen.Bethesda.Synthesis.WPF;
-using Mutagen.Bethesda.WPF.Plugins;
-using Noggog.Utility;
 using Serilog;
-using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
-using Synthesis.Bethesda.GUI.Services;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 {
     public class SolutionPatcherVM : PatcherVM
     {
@@ -94,7 +91,7 @@ namespace Synthesis.Bethesda.GUI
         public SolutionPatcherVM(
             IProfileLoadOrder loadOrder,
             IRemovePatcherFromProfile remove,
-            IProvideInstalledSdk dotNetSdkInstalled,
+            IInstalledSdkProvider dotNetSdkProviderInstalled,
             IProfileDisplayControllerVm profileDisplay,
             IConfirmationPanelControllerVm confirmation, 
             ICheckRunnability checkRunnability,
@@ -152,7 +149,7 @@ namespace Synthesis.Bethesda.GUI
             _State = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.SolutionPath.ErrorState),
                     this.WhenAnyValue(x => x.SelectedProjectPath.ErrorState),
-                    dotNetSdkInstalled.DotNetSdkInstalled,
+                    dotNetSdkProviderInstalled.DotNetSdkInstalled,
                     (sln, proj, dotnet) =>
                     {
                         if (sln.Failed) return new ConfigurationState(sln);

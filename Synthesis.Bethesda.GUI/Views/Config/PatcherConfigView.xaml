@@ -8,6 +8,8 @@
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
+    xmlns:patchers="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers"
+    xmlns:solution="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution"
     d:DesignHeight="450"
     d:DesignWidth="800"
     FocusVisualStyle="{x:Null}"
@@ -58,13 +60,13 @@
             x:Name="ConfigDetailPane"
             Margin="7,0,7,5">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type vm:GitPatcherVM}">
+                <DataTemplate DataType="{x:Type patchers:GitPatcherVM}">
                     <local:GitConfigView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:SolutionPatcherVM}">
+                <DataTemplate DataType="{x:Type solution:SolutionPatcherVM}">
                     <local:SolutionConfigView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:CliPatcherVM}">
+                <DataTemplate DataType="{x:Type patchers:CliPatcherVM}">
                     <local:CliConfigView />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:ErrorVM}">

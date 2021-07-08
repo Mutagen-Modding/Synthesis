@@ -1,5 +1,7 @@
 ﻿using System;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Services.Profile
 {

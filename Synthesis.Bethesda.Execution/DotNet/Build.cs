@@ -17,20 +17,20 @@ namespace Synthesis.Bethesda.Execution.DotNet
     public class Build : IBuild
     {
         private readonly IProcessFactory _ProcessFactory;
-        private readonly IProvideBuildString _BuildString;
+        private readonly IBuildStringProvider _BuildStringProvider;
 
         public Build(
             IProcessFactory processFactory,
-            IProvideBuildString buildString)
+            IBuildStringProvider buildStringProvider)
         {
             _ProcessFactory = processFactory;
-            _BuildString = buildString;
+            _BuildStringProvider = buildStringProvider;
         }
         
         public async Task<ErrorResponse> Compile(string targetPath, CancellationToken cancel, Action<string>? log)
         {
             using var process = _ProcessFactory.Create(
-                new ProcessStartInfo("dotnet", _BuildString.Get($"\"{Path.GetFileName(targetPath)}\""))
+                new ProcessStartInfo("dotnet", _BuildStringProvider.Get($"\"{Path.GetFileName(targetPath)}\""))
                 {
                     WorkingDirectory = Path.GetDirectoryName(targetPath)!
                 },

@@ -17,16 +17,16 @@ namespace Synthesis.Bethesda.Execution.DotNet
     {
         private readonly ILogger _Logger;
         private readonly IProcessFactory _ProcessFactory;
-        private readonly IProvideBuildString _BuildString;
+        private readonly IBuildStringProvider _BuildStringProvider;
 
         public QueryExecutablePath(
             ILogger logger,
             IProcessFactory processFactory,
-            IProvideBuildString buildString)
+            IBuildStringProvider buildStringProvider)
         {
             _Logger = logger;
             _ProcessFactory = processFactory;
-            _BuildString = buildString;
+            _BuildStringProvider = buildStringProvider;
         }
         
         public async Task<GetResponse<string>> Query(string projectPath, CancellationToken cancel)
@@ -35,7 +35,7 @@ namespace Synthesis.Bethesda.Execution.DotNet
             // Tried using Buildalyzer, but it has a lot of bad side effects like clearing build outputs when
             // locating information like this.
             using var proc = _ProcessFactory.Create(
-                new System.Diagnostics.ProcessStartInfo("dotnet", _BuildString.Get($"\"{projectPath}\"")),
+                new System.Diagnostics.ProcessStartInfo("dotnet", _BuildStringProvider.Get($"\"{projectPath}\"")),
                 cancel: cancel);
             _Logger.Information($"({proc.StartInfo.WorkingDirectory}): {proc.StartInfo.FileName} {proc.StartInfo.Arguments}");
             List<string> outs = new();

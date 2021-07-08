@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string?> _ErrorString;
         public string? ErrorString => _ErrorString.Value;
         
-        public DotNetNotInstalledVM(IProvideInstalledSdk mvm, INavigateTo navigate)
+        public DotNetNotInstalledVM(IInstalledSdkProvider mvm, INavigateTo navigate)
         {
             _InError = mvm.DotNetSdkInstalled
                 .Select(x => !x.Acceptable)
