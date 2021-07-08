@@ -1,4 +1,5 @@
 ﻿using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Fallout4;
 using NSubstitute;
 using StructureMap;
 using Synthesis.Bethesda.Execution.Placement;
@@ -9,7 +10,7 @@ using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests
 {
-    public class GuiRegisterTests
+    public class GuiRegisterTests : IClassFixture<LoquiUse>
     {
         [Fact]
         public void ValidMain()

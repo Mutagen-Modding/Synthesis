@@ -12,7 +12,7 @@ using Synthesis.Bethesda.GUI.Profiles.Plugins;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {
-    public abstract class PatcherVM : ViewModel
+    public abstract class PatcherVM : ViewModel, IPatcherNicknameVm
     {
         private readonly IRemovePatcherFromProfile _Remove;
 
