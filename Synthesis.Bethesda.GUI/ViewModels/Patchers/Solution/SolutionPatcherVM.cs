@@ -13,18 +13,13 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.WPF.Plugins;
 using Noggog;
-using Noggog.Utility;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.DTO;
-using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.Execution.GitRespository;
-using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
@@ -34,11 +29,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
     public class SolutionPatcherVM : PatcherVM, IProvidePatcherMetaPath, ISolutionPatcherSettingsVm
     {
         private readonly IProfileLoadOrder _LoadOrder;
-        private readonly ICheckRunnability _CheckRunnability;
-        private readonly IProvideRepositoryCheckouts _ProvideRepositoryCheckouts;
-        private readonly IProcessFactory _ProcessFactory;
-        private readonly IBuild _Build;
-        private readonly IWorkingDirectorySubPaths _Paths;
+        private readonly IToSolutionRunner _ToSolutionRunner;
 
         public PathPickerVM SolutionPath { get; } = new()
         {
@@ -102,25 +93,17 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             IInstalledSdkProvider dotNetSdkProviderInstalled,
             IProfileDisplayControllerVm profileDisplay,
             IConfirmationPanelControllerVm confirmation, 
-            ICheckRunnability checkRunnability,
-            IProvideRepositoryCheckouts provideRepositoryCheckouts,
-            IProcessFactory processFactory,
-            IBuild build,
             ILogger logger,
-            IWorkingDirectorySubPaths paths,
             IPatcherSettingsVmFactory settingsVmFactory,
             IAvailableProjects availableProjects,
             ISolutionProjectPath projectPath,
             ISolutionMetaFileSync metaFileSync,
+            IToSolutionRunner toSolutionRunner,
             SolutionPatcherSettings? settings = null)
             : base(remove, profileDisplay, confirmation, settings)
         {
             _LoadOrder = loadOrder;
-            _CheckRunnability = checkRunnability;
-            _ProvideRepositoryCheckouts = provideRepositoryCheckouts;
-            _ProcessFactory = processFactory;
-            _Build = build;
-            _Paths = paths;
+            _ToSolutionRunner = toSolutionRunner;
             CopyInSettings(settings);
             SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
@@ -236,19 +219,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 
         public override PatcherRunVM ToRunner(PatchersRunVM parent)
         {
-            PatcherSettings.Persist();
-            return new PatcherRunVM(
-                parent,
-                this,
-                new SolutionPatcherRun(
-                    name: DisplayName,
-                    pathToSln: SolutionPath.TargetPath,
-                    pathToExtraDataBaseFolder: _Paths.TypicalExtraData,
-                    pathToProj: SelectedProjectPath.TargetPath,
-                    build: _Build,
-                    checkRunnability: _CheckRunnability,
-                    processFactory: _ProcessFactory,
-                    repositoryCheckouts: _ProvideRepositoryCheckouts));
+            return _ToSolutionRunner.GetRunner(parent, this);
         }
 
         public void SetRequiredMods(IEnumerable<ModKey> modKeys)
