@@ -12,7 +12,7 @@ using Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class NugetConfigErrorVM : ViewModel, IEnvironmentErrorVM
+    public class NugetConfigErrorVm : ViewModel, IEnvironmentErrorVm
     {
         private readonly ObservableAsPropertyHelper<bool> _InError;
         public bool InError => _InError.Value;
@@ -25,7 +25,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string?> _ErrorString;
         public string? ErrorString => _ErrorString.Value;
 
-        public NugetConfigErrorVM(ILogger logger)
+        public NugetConfigErrorVm(ILogger logger)
         {
             NugetConfigPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -61,7 +61,7 @@ namespace Synthesis.Bethesda.GUI
             public string ErrorText { get; }
             public ICommand RunFix { get; }
             
-            public ErrorVM(NugetConfigErrorVM parent, ILogger logger, INugetErrorSolution errSolution)
+            public ErrorVM(NugetConfigErrorVm parent, ILogger logger, INugetErrorSolution errSolution)
             {
                 ErrorText = errSolution.ErrorText;
                 RunFix = ReactiveCommand.Create(() =>

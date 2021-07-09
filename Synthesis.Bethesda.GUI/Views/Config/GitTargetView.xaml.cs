@@ -20,7 +20,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class GitTargetViewBase : NoggogUserControl<GitPatcherVM> { }
+    public class GitTargetViewBase : NoggogUserControl<GitPatcherVm> { }
 
     /// <summary>
     /// Interaction logic for GitTargetView.xaml

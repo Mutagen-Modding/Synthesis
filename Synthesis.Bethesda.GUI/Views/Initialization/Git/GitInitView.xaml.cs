@@ -4,7 +4,7 @@ using System.Reactive.Disposables;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class GitInitViewBase : NoggogUserControl<GitPatcherInitVM> { }
+    public class GitInitViewBase : NoggogUserControl<GitPatcherInitVm> { }
 
     /// <summary>
     /// Interaction logic for GitInitView.xaml
@@ -18,7 +18,7 @@ namespace Synthesis.Bethesda.GUI.Views
             {
                 this.BindStrict(this.ViewModel, vm => vm.SelectedTab, view => view.TabControl.SelectedIndex,
                         vmToViewConverter: (e) => (int)e,
-                        viewToVmConverter: (i) => (GitPatcherInitVM.TabType)i)
+                        viewToVmConverter: (i) => (GitPatcherInitVm.TabType)i)
                     .DisposeWith(dispose);
 
                 // Set up discard/confirm clicks

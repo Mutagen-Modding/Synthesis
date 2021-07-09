@@ -9,7 +9,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 {
     public interface IToSolutionRunner
     {
-        PatcherRunVM GetRunner(PatchersRunVM parent, SolutionPatcherVM slnPatcher);
+        PatcherRunVm GetRunner(PatchersRunVm parent, SolutionPatcherVm slnPatcher);
     }
 
     public class ToSolutionRunner : IToSolutionRunner
@@ -34,10 +34,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             _ProvideRepositoryCheckouts = provideRepositoryCheckouts;
         }
         
-        public PatcherRunVM GetRunner(PatchersRunVM parent, SolutionPatcherVM slnPatcher)
+        public PatcherRunVm GetRunner(PatchersRunVm parent, SolutionPatcherVm slnPatcher)
         {
             slnPatcher.PatcherSettings.Persist();
-            return new PatcherRunVM(
+            return new PatcherRunVm(
                 parent,
                 slnPatcher,
                 new SolutionPatcherRun(

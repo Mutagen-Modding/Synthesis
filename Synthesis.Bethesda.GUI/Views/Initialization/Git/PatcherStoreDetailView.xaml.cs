@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class PatcherStoreDetailViewBase : NoggogUserControl<PatcherStoreListingVM> { }
+    public class PatcherStoreDetailViewBase : NoggogUserControl<PatcherStoreListingVm> { }
 
     /// <summary>
     /// Interaction logic for PatcherStoreDetailView.xaml

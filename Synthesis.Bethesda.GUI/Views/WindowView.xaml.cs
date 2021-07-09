@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class WindowViewBase : NoggogUserControl<MainVM> { }
+    public class WindowViewBase : NoggogUserControl<MainVm> { }
 
     /// <summary>
     /// Interaction logic for MainView.xaml

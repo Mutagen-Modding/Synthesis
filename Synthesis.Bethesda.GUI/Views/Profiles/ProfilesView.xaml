@@ -79,10 +79,10 @@
         <local:VerticalSlicer Grid.Column="1" Margin="5,0" />
         <ContentControl x:Name="ProfileDetail" Grid.Column="2">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type vm:ProfileDisplayVM}">
+                <DataTemplate DataType="{x:Type vm:ProfileDisplayVm}">
                     <local:ProfileDetailView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:NewProfileVM}">
+                <DataTemplate DataType="{x:Type vm:NewProfileVm}">
                     <local:NewProfileView />
                 </DataTemplate>
             </ContentControl.Resources>

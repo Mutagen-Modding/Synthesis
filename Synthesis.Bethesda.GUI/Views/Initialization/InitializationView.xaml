@@ -13,13 +13,13 @@
     mc:Ignorable="d">
     <ContentControl x:Name="ConfigDetailPane" Margin="15,15,15,0">
         <ContentControl.Resources>
-            <DataTemplate DataType="{x:Type vm:GitPatcherInitVM}">
+            <DataTemplate DataType="{x:Type vm:GitPatcherInitVm}">
                 <local:GitInitView />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:SolutionPatcherInitVM}">
+            <DataTemplate DataType="{x:Type vm:SolutionPatcherInitVm}">
                 <local:SolutionInitView />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:CliPatcherInitVM}">
+            <DataTemplate DataType="{x:Type vm:CliPatcherInitVm}">
                 <local:CliInitView />
             </DataTemplate>
         </ContentControl.Resources>

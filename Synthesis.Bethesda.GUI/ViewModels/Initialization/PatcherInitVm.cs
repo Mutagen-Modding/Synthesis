@@ -6,18 +6,18 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public abstract class PatcherInitVM : ViewModel
+    public abstract class PatcherInitVm : ViewModel
     {
         [Reactive]
         public string DisplayName { get; set; } = string.Empty;
         
-        public PatcherInitializationVM Init { get; }
+        public PatcherInitializationVm Init { get; }
 
         public abstract ErrorResponse CanCompleteConfiguration { get; }
 
-        public abstract IAsyncEnumerable<PatcherVM> Construct();
+        public abstract IAsyncEnumerable<PatcherVm> Construct();
 
-        public PatcherInitVM(PatcherInitializationVM init)
+        public PatcherInitVm(PatcherInitializationVm init)
         {
             Init = init;
         }

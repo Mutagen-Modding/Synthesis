@@ -17,7 +17,7 @@ using System.Windows.Shapes;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class CliInitViewBase : NoggogUserControl<CliPatcherInitVM> { }
+    public class CliInitViewBase : NoggogUserControl<CliPatcherInitVm> { }
 
     /// <summary>
     /// Interaction logic for CliInitView.xaml

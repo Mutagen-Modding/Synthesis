@@ -10,7 +10,7 @@ using System.Windows;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class ProfileDetailViewBase : NoggogUserControl<ProfileDisplayVM> { }
+    public class ProfileDetailViewBase : NoggogUserControl<ProfileDisplayVm> { }
 
     /// <summary>
     /// Interaction logic for ProfileDetailView.xaml

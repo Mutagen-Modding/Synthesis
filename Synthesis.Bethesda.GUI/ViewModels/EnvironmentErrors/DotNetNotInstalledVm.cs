@@ -10,7 +10,7 @@ using Synthesis.Bethesda.GUI.Services.Main;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class DotNetNotInstalledVM : ViewModel, IEnvironmentErrorVM
+    public class DotNetNotInstalledVm : ViewModel, IEnvironmentErrorVm
     {
         public ICommand DownloadCommand { get; }
 
@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string?> _ErrorString;
         public string? ErrorString => _ErrorString.Value;
         
-        public DotNetNotInstalledVM(IInstalledSdkProvider mvm, INavigateTo navigate)
+        public DotNetNotInstalledVm(IInstalledSdkProvider mvm, INavigateTo navigate)
         {
             _InError = mvm.DotNetSdkInstalled
                 .Select(x => !x.Acceptable)

@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class OverlayViewBase : NoggogUserControl<MainVM> { }
+    public class OverlayViewBase : NoggogUserControl<MainVm> { }
 
     /// <summary>
     /// Interaction logic for OverlayView.xaml

@@ -15,16 +15,16 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class SolutionPatcherInitVM : PatcherInitVM
+    public class SolutionPatcherInitVm : PatcherInitVm
     {
         public IShowHelpSetting ShowHelpSetting { get; }
         private readonly ISettingsSingleton _SettingsSingleton;
         private readonly IOpenIde _OpenIde;
         private readonly ILogger _Logger;
 
-        public ExistingSolutionInitVM ExistingSolution { get; }
-        public NewSolutionInitVM New { get; }
-        public ExistingProjectInitVM ExistingProject { get; }
+        public ExistingSolutionInitVm ExistingSolution { get; }
+        public NewSolutionInitVm New { get; }
+        public ExistingProjectInitVm ExistingProject { get; }
 
         private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
         public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
@@ -43,15 +43,15 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public IDE Ide { get; set; }
 
-        public SolutionPatcherInitVM(
+        public SolutionPatcherInitVm(
             IShowHelpSetting showHelpSetting,
             ISettingsSingleton settingsSingleton,
             IOpenIde openIde,
             ILogger logger,
-            ExistingSolutionInitVM existingSolutionInit,
-            NewSolutionInitVM newSolutionInit,
-            ExistingProjectInitVM existingProjectInit,
-            PatcherInitializationVM init)
+            ExistingSolutionInitVm existingSolutionInit,
+            NewSolutionInitVm newSolutionInit,
+            ExistingProjectInitVm existingProjectInit,
+            PatcherInitializationVm init)
             : base(init)
         {
             ShowHelpSetting = showHelpSetting;
@@ -97,7 +97,7 @@ namespace Synthesis.Bethesda.GUI
             _SettingsSingleton.Gui.Ide = Ide;
         }
 
-        public override async IAsyncEnumerable<PatcherVM> Construct()
+        public override async IAsyncEnumerable<PatcherVm> Construct()
         {
             if (TargetSolutionInitializer == null) yield break;
             var ret = (await TargetSolutionInitializer()).ToList();

@@ -18,7 +18,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class SolutionConfigViewBase : NoggogUserControl<SolutionPatcherVM> { }
+    public class SolutionConfigViewBase : NoggogUserControl<SolutionPatcherVm> { }
 
     /// <summary>
     /// Interaction logic for SolutionConfigView.xaml

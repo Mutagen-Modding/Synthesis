@@ -1,6 +1,6 @@
 ﻿namespace Synthesis.Bethesda.GUI
 {
-    public interface IEnvironmentErrorVM
+    public interface IEnvironmentErrorVm
     {
         bool InError { get; }
         string? ErrorString { get; }

@@ -6,21 +6,21 @@ using ReactiveUI;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public interface IEnvironmentErrorsVM
+    public interface IEnvironmentErrorsVm
     {
         bool InError { get; }
-        IEnvironmentErrorVM? ActiveError { get; }
+        IEnvironmentErrorVm? ActiveError { get; }
     }
 
-    public class EnvironmentErrorsVM : ViewModel, IEnvironmentErrorsVM
+    public class EnvironmentErrorsVm : ViewModel, IEnvironmentErrorsVm
     {
         private readonly ObservableAsPropertyHelper<bool> _InError;
         public bool InError => _InError.Value;
 
-        private readonly ObservableAsPropertyHelper<IEnvironmentErrorVM?> _ActiveError;
-        public IEnvironmentErrorVM? ActiveError => _ActiveError.Value;
+        private readonly ObservableAsPropertyHelper<IEnvironmentErrorVm?> _ActiveError;
+        public IEnvironmentErrorVm? ActiveError => _ActiveError.Value;
 
-        public EnvironmentErrorsVM(IEnumerable<IEnvironmentErrorVM> envErrors)
+        public EnvironmentErrorsVm(IEnumerable<IEnvironmentErrorVm> envErrors)
         {
             var envErrorsArr = envErrors.ToArray();
             

@@ -12,7 +12,7 @@ using System.Windows;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class SolutionInitViewBase : NoggogUserControl<SolutionPatcherInitVM> { }
+    public class SolutionInitViewBase : NoggogUserControl<SolutionPatcherInitVm> { }
 
     /// <summary>
     /// Interaction logic for SolutionInitView.xaml

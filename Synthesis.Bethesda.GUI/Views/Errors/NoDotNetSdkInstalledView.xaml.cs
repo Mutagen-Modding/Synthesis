@@ -5,7 +5,7 @@ using System.Reactive.Linq;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class NoDotNetSdkInstalledViewBase : NoggogUserControl<DotNetNotInstalledVM> { }
+    public class NoDotNetSdkInstalledViewBase : NoggogUserControl<DotNetNotInstalledVm> { }
 
     /// <summary>
     /// Interaction logic for NoDotNetSdkInstalledView.xaml

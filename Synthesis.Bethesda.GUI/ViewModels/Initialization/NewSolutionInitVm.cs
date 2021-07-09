@@ -11,7 +11,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class NewSolutionInitVM : ASolutionInitializer
+    public class NewSolutionInitVm : ASolutionInitializer
     {
         public PathPickerVM ParentDirPath { get; } = new PathPickerVM();
 
@@ -32,9 +32,9 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string> _ProjectNameWatermark;
         public string ProjectNameWatermark => _ProjectNameWatermark.Value;
 
-        public NewSolutionInitVM(
+        public NewSolutionInitVm(
             IGameCategoryContext gameCategoryContext,
-            Func<SolutionPatcherVM> patcherFactory,
+            Func<SolutionPatcherVm> patcherFactory,
             IValidateProjectPath validateProjectPath,
             ICreateSolutionFile createSolutionFile,
             ICreateProject createProject,

@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
         private readonly ILogger _Logger;
         private readonly IClearLoading _Loading;
         private readonly Lazy<ISettingsSingleton> _Settings;
-        private readonly Lazy<MainVM> _MainVm;
+        private readonly Lazy<MainVm> _MainVm;
         private readonly IMainWindow _Window;
         private readonly IStartupTracker _Tracker;
         private readonly IShutdown _Shutdown;
@@ -32,7 +32,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             ILogger logger,
             IClearLoading loading,
             Lazy<ISettingsSingleton> settings,
-            Lazy<MainVM> mainVm,
+            Lazy<MainVm> mainVm,
             IMainWindow window,
             IStartupTracker tracker,
             IShutdown shutdown)

@@ -324,13 +324,13 @@
             VerticalAlignment="Center"
             Content="{Binding}">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type patchers:GitPatcherVM}">
+                <DataTemplate DataType="{x:Type patchers:GitPatcherVm}">
                     <icon:PackIconMaterial Height="13" Kind="Git" />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type patchers:CliPatcherVM}">
+                <DataTemplate DataType="{x:Type patchers:CliPatcherVm}">
                     <icon:PackIconMaterial Height="13" Kind="ConsoleLine" />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type solution:SolutionPatcherVM}">
+                <DataTemplate DataType="{x:Type solution:SolutionPatcherVm}">
                     <icon:PackIconModern Height="13" Kind="Visualstudio" />
                 </DataTemplate>
             </ContentControl.Resources>

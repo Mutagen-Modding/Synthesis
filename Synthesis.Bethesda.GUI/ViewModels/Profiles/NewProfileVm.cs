@@ -8,14 +8,13 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.IO;
 using System.Linq;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Main;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class NewProfileVM : ViewModel
+    public class NewProfileVm : ViewModel
     {
-        private ConfigurationVM _config;
+        private ConfigurationVm _config;
         private readonly IProfileFactory _ProfileFactory;
 
         public ObservableCollectionExtended<GameRelease> ReleaseOptions { get; } = new();
@@ -26,10 +25,10 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string Nickname { get; set; } = string.Empty;
 
-        public NewProfileVM(
-            ConfigurationVM config, 
+        public NewProfileVm(
+            ConfigurationVm config, 
             IProfileFactory profileFactory,
-            Action<ProfileVM>? postRun = null)
+            Action<ProfileVm>? postRun = null)
         {
             _config = config;
             _ProfileFactory = profileFactory;

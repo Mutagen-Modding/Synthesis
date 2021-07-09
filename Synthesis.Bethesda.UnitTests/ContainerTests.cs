@@ -46,7 +46,7 @@ namespace Synthesis.Bethesda.UnitTests
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGameReleaseContext>();
             var cont = builder.Build();
-            cont.ValidateRegistrations(typeof(ProfileVM));
+            cont.ValidateRegistrations(typeof(ProfileVm));
         }
         
         [Fact]

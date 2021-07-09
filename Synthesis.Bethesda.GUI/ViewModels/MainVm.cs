@@ -22,13 +22,13 @@ using System.Diagnostics;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class MainVM : ViewModel
+    public class MainVm : ViewModel
     {
         private readonly ISelectedProfileControllerVm _SelectedProfileController;
         private readonly ISettingsSingleton _SettingsSingleton;
         private readonly IActivePanelControllerVm _ActivePanelControllerVm;
         private readonly IProfileFactory _ProfileFactory;
-        public ConfigurationVM Configuration { get; }
+        public ConfigurationVm Configuration { get; }
 
         private readonly ObservableAsPropertyHelper<ViewModel?> _ActivePanel;
         public ViewModel? ActivePanel => _ActivePanel.Value;
@@ -50,23 +50,23 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string?> _NewestMutagenVersion;
         public string? NewestMutagenVersion => _NewestMutagenVersion.Value;
 
-        private readonly ObservableAsPropertyHelper<IConfirmationActionVM?> _ActiveConfirmation;
-        public IConfirmationActionVM? ActiveConfirmation => _ActiveConfirmation.Value;
+        private readonly ObservableAsPropertyHelper<IConfirmationActionVm?> _ActiveConfirmation;
+        public IConfirmationActionVm? ActiveConfirmation => _ActiveConfirmation.Value;
 
         private readonly ObservableAsPropertyHelper<bool> _InModal;
         public bool InModal => _InModal.Value;
 
-        public IEnvironmentErrorsVM EnvironmentErrors { get; }
+        public IEnvironmentErrorsVm EnvironmentErrors { get; }
 
-        private readonly ObservableAsPropertyHelper<ProfileVM?> _SelectedProfile;
-        public ProfileVM? SelectedProfile => _SelectedProfile.Value;
+        private readonly ObservableAsPropertyHelper<ProfileVm?> _SelectedProfile;
+        public ProfileVm? SelectedProfile => _SelectedProfile.Value;
 
-        public MainVM(
-            ConfigurationVM configuration,
+        public MainVm(
+            ConfigurationVm configuration,
             IConfirmationPanelControllerVm confirmationControllerVm,
             IProvideCurrentVersions currentVersions,
             ISelectedProfileControllerVm selectedProfile,
-            IEnvironmentErrorsVM environmentErrors,
+            IEnvironmentErrorsVm environmentErrors,
             ISaveSignal saveSignal,
             ISettingsSingleton settingsSingleton,
             INewestLibraryVersions newestLibVersions,
@@ -94,9 +94,9 @@ namespace Synthesis.Bethesda.GUI
                 {
                     switch (x)
                     {
-                        case ConfigurationVM config:
+                        case ConfigurationVm config:
                             return config.WhenAnyFallback(x => x.CurrentRun!.Running, fallback: false);
-                        case PatchersRunVM running:
+                        case PatchersRunVm running:
                             return running.WhenAnyValue(x => x.Running);
                         default:
                             break;
@@ -109,12 +109,12 @@ namespace Synthesis.Bethesda.GUI
 
             OpenProfilesPageCommand = ReactiveCommand.Create(() =>
             {
-                activePanelControllerVm.ActivePanel = new ProfilesDisplayVM(scope, Configuration, profileFactory, activePanelControllerVm, ActivePanel);
+                activePanelControllerVm.ActivePanel = new ProfilesDisplayVm(scope, Configuration, profileFactory, activePanelControllerVm, ActivePanel);
             },
             canExecute: Observable.CombineLatest(
                     this.WhenAnyFallback(x => x.Configuration.CurrentRun!.Running, fallback: false),
                     this.WhenAnyValue(x => x.ActivePanel)
-                        .Select(x => x is ProfilesDisplayVM),
+                        .Select(x => x is ProfilesDisplayVm),
                     (running, isProfile) => !running && !isProfile));
 
             Task.Run(() => Mutagen.Bethesda.WarmupAll.Init()).FireAndForget();
@@ -130,22 +130,22 @@ namespace Synthesis.Bethesda.GUI
                     this.WhenAnyFallback(x => x.Configuration.SelectedProfile!.SelectedPatcher)
                         .Select(x =>
                         {
-                            if (x is not GitPatcherVM gitPatcher) return Observable.Return(default(GitPatcherVM?));
+                            if (x is not GitPatcherVm gitPatcher) return Observable.Return(default(GitPatcherVm?));
                             return gitPatcher.WhenAnyValue(x => x.PatcherSettings.SettingsOpen)
-                                .Select(open => open ? (GitPatcherVM?)gitPatcher : null);
+                                .Select(open => open ? (GitPatcherVm?)gitPatcher : null);
                         })
                         .Switch(),
                     this.WhenAnyValue(x => x.Confirmation.TargetConfirmation),
                     (openPatcher, target) =>
                     {
                         if (target != null) return target;
-                        if (openPatcher == null) return default(IConfirmationActionVM?);
-                        return new ConfirmationActionVM(
+                        if (openPatcher == null) return default(IConfirmationActionVm?);
+                        return new ConfirmationActionVm(
                             "External Patcher Settings Open",
                             $"{openPatcher.Nickname} is open for settings manipulation.",
                             toDo: null);
                     })
-                .ToGuiProperty(this, nameof(ActiveConfirmation), default(ConfirmationActionVM?));
+                .ToGuiProperty(this, nameof(ActiveConfirmation), default(ConfirmationActionVm?));
 
             _InModal = this.WhenAnyValue(x => x.ActiveConfirmation)
                 .Select(x => x != null)
@@ -173,7 +173,7 @@ namespace Synthesis.Bethesda.GUI
         {
             if (Configuration.Profiles.Count == 0)
             {
-                _ActivePanelControllerVm.ActivePanel = new NewProfileVM(
+                _ActivePanelControllerVm.ActivePanel = new NewProfileVm(
                     this.Configuration, 
                     _ProfileFactory,
                     (profile) =>

@@ -22,18 +22,18 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class GitPatcherInitVM : PatcherInitVM
+    public class GitPatcherInitVm : PatcherInitVm
     {
-        private readonly Func<GitPatcherVM> _PatcherFactory;
+        private readonly Func<GitPatcherVm> _PatcherFactory;
         private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
         public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
 
-        public GitPatcherVM Patcher { get; }
+        public GitPatcherVm Patcher { get; }
 
         [Reactive]
         public string Search { get; set; } = string.Empty;
 
-        public IObservableCollection<PatcherStoreListingVM> PatcherRepos { get; }
+        public IObservableCollection<PatcherStoreListingVm> PatcherRepos { get; }
 
         [Reactive]
         public ErrorResponse Error { get; private set; } = ErrorResponse.Success;
@@ -51,17 +51,17 @@ namespace Synthesis.Bethesda.GUI
         public ICommand ClearSearchCommand { get; }
 
         [Reactive]
-        public PatcherStoreListingVM? SelectedPatcher { get; set; }
+        public PatcherStoreListingVm? SelectedPatcher { get; set; }
 
         [Reactive]
         public bool ShowAll { get; set; }
 
         private bool _wasAdded = false;
 
-        public GitPatcherInitVM(
-            PatcherInitializationVM init,
+        public GitPatcherInitVm(
+            PatcherInitializationVm init,
             ILogger logger,
-            Func<GitPatcherVM> patcherFactory,
+            Func<GitPatcherVm> patcherFactory,
             INavigateTo navigateTo, 
             IProvideRepositoryCheckouts repositoryCheckouts,
             ICheckOrCloneRepo checkOrClone,
@@ -89,7 +89,7 @@ namespace Synthesis.Bethesda.GUI
                         if (localRepoPath.Failed)
                         {
                             Error = localRepoPath;
-                            return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
+                            return Observable.Empty<IChangeSet<PatcherStoreListingVm>>();
                         }
                         using var repoCheckout = repositoryCheckouts.Get(localRepoPath.Value.Local);
                         var repo = repoCheckout.Repository;
@@ -100,13 +100,13 @@ namespace Synthesis.Bethesda.GUI
                         {
                             Error = ErrorResponse.Fail("Could not find master branch");
                             logger.Error(Error.Reason);
-                            return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
+                            return Observable.Empty<IChangeSet<PatcherStoreListingVm>>();
                         }
                         if (!repo.TryGetBranch($"{master.RemoteName}/{master.FriendlyName}", out var originBranch))
                         {
                             Error = ErrorResponse.Fail("Could not find remote master branch");
                             logger.Error(Error.Reason);
-                            return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
+                            return Observable.Empty<IChangeSet<PatcherStoreListingVm>>();
                         }
                         repo.ResetHard(originBranch.Tip);
 
@@ -115,7 +115,7 @@ namespace Synthesis.Bethesda.GUI
                         {
                             Error = ErrorResponse.Fail("Could not locate listing file");
                             logger.Error(Error.Reason);
-                            return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
+                            return Observable.Empty<IChangeSet<PatcherStoreListingVm>>();
                         }
                         var settings = new JsonSerializerOptions();
                         settings.Converters.Add(new JsonStringEnumConverter());
@@ -124,11 +124,11 @@ namespace Synthesis.Bethesda.GUI
                             .NotNull()
                             .SelectMany(repo =>
                             {
-                                var repoVM = new RepositoryStoreListingVM(repo);
+                                var repoVM = new RepositoryStoreListingVm(repo);
                                 return repo.Patchers
                                     .Select(p =>
                                     {
-                                        return new PatcherStoreListingVM(this, p, repoVM, navigateTo);
+                                        return new PatcherStoreListingVm(this, p, repoVM, navigateTo);
                                     });
                             })
                             .AsObservableChangeSet();
@@ -138,13 +138,13 @@ namespace Synthesis.Bethesda.GUI
                         logger.Error(ex, "Error downloading patcher listing");
                         Error = ErrorResponse.Fail(ex);
                     }
-                    return Observable.Empty<IChangeSet<PatcherStoreListingVM>>();
+                    return Observable.Empty<IChangeSet<PatcherStoreListingVm>>();
                 })
                 .Switch()
-                .Sort(Comparer<PatcherStoreListingVM>.Create((x, y) => x.Name.CompareTo(y.Name)))
+                .Sort(Comparer<PatcherStoreListingVm>.Create((x, y) => x.Name.CompareTo(y.Name)))
                 .Filter(this.WhenAnyValue(x => x.ShowAll)
                     .DistinctUntilChanged()
-                    .Select(show => new Func<PatcherStoreListingVM, bool>(
+                    .Select(show => new Func<PatcherStoreListingVm, bool>(
                         (p) =>
                         {
                             if (p.Raw.Customization?.Visibility is VisibilityOptions.Visible) return true;
@@ -160,9 +160,9 @@ namespace Synthesis.Bethesda.GUI
                     {
                         if (string.IsNullOrWhiteSpace(search))
                         {
-                            return new Func<PatcherStoreListingVM, bool>(_ => true);
+                            return new Func<PatcherStoreListingVm, bool>(_ => true);
                         }
-                        return new Func<PatcherStoreListingVM, bool>(
+                        return new Func<PatcherStoreListingVm, bool>(
                             (p) =>
                             {
                                 if (p.Name.Contains(search, StringComparison.OrdinalIgnoreCase)) return true;
@@ -176,7 +176,7 @@ namespace Synthesis.Bethesda.GUI
             ClearSearchCommand = ReactiveCommand.Create(() => Search = string.Empty);
         }
 
-        public override async IAsyncEnumerable<PatcherVM> Construct()
+        public override async IAsyncEnumerable<PatcherVm> Construct()
         {
             _wasAdded = true;
             yield return Patcher;
@@ -188,12 +188,12 @@ namespace Synthesis.Bethesda.GUI
             Patcher.Delete();
         }
 
-        public void AddStorePatcher(PatcherStoreListingVM listing)
+        public void AddStorePatcher(PatcherStoreListingVm listing)
         {
             var patcher = _PatcherFactory();
             patcher.RemoteRepoPath = listing.RepoPath;
             patcher.ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\');
-            Init.AddNewPatchers(patcher.AsEnumerable<PatcherVM>().ToList());
+            Init.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
         }
 
         public override void Dispose()

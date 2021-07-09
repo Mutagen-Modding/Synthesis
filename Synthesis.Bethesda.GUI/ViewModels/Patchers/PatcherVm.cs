@@ -12,7 +12,7 @@ using Synthesis.Bethesda.GUI.Profiles.Plugins;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {
-    public abstract class PatcherVM : ViewModel, IPatcherNicknameVm
+    public abstract class PatcherVm : ViewModel, IPatcherNicknameVm
     {
         private readonly IRemovePatcherFromProfile _Remove;
 
@@ -48,7 +48,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 
         public virtual bool IsNameEditable => true;
 
-        public PatcherVM(
+        public PatcherVm(
             IRemovePatcherFromProfile remove,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
@@ -72,7 +72,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 
             DeleteCommand = ReactiveCommand.Create(() =>
             {
-                confirmation.TargetConfirmation = new ConfirmationActionVM(
+                confirmation.TargetConfirmation = new ConfirmationActionVm(
                     "Confirm",
                     $"Are you sure you want to delete {DisplayName}?",
                     Delete);
@@ -110,7 +110,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             settings.Nickname = Nickname;
         }
 
-        public abstract PatcherRunVM ToRunner(PatchersRunVM parent);
+        public abstract PatcherRunVm ToRunner(PatchersRunVm parent);
 
         public virtual void Delete()
         {

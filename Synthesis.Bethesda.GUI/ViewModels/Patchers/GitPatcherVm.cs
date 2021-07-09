@@ -36,7 +36,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {
-    public class GitPatcherVM : PatcherVM
+    public class GitPatcherVm : PatcherVm
     {
         private readonly IProfilePatchersList _PatchersList;
         private readonly IProvideRepositoryCheckouts _RepoCheckouts;
@@ -145,7 +145,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         private readonly ObservableAsPropertyHelper<bool> _AttemptedCheckout;
         public bool AttemptedCheckout => _AttemptedCheckout.Value;
 
-        public PatcherSettingsVM PatcherSettings { get; }
+        public PatcherSettingsVm PatcherSettings { get; }
 
         public record StatusRecord(string Text, bool Processing, bool Blocking, ICommand? Command);
         private readonly ObservableAsPropertyHelper<StatusRecord> _StatusDisplay;
@@ -158,9 +158,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         
         public ILockToCurrentVersioning Locking { get; }
 
-        public delegate GitPatcherVM Factory(GithubPatcherSettings settings);
+        public delegate GitPatcherVm Factory(GithubPatcherSettings settings);
         
-        public GitPatcherVM(
+        public GitPatcherVm(
             IProfileIdentifier ident,
             IProfileDirectories dirs,
             IProfileLoadOrder loadOrder,
@@ -177,14 +177,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             IConfirmationPanelControllerVm confirmation,
             ILockToCurrentVersioning lockToCurrentVersioning,
             IInstalledSdkProvider dotNetInstalled,
-            IEnvironmentErrorsVM envErrors,
+            IEnvironmentErrorsVm envErrors,
             INewestLibraryVersions newest,
             IBuild build,
             ILogger logger,
             IProvideWorkingDirectory workingDirectory,
             IWorkingDirectorySubPaths paths,
             IProcessFactory processFactory,
-            PatcherSettingsVM.Factory settingsVmFactory,
+            PatcherSettingsVm.Factory settingsVmFactory,
             ISolutionProjectPath projectPath,
             GithubPatcherSettings? settings = null)
             : base(remove, selPatcher, confirmation, settings)
@@ -1074,7 +1074,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         {
             bool IsValid(string id)
             {
-                foreach (var patcher in _PatchersList.Patchers.Items.WhereCastable<PatcherVM, GitPatcherVM>())
+                foreach (var patcher in _PatchersList.Patchers.Items.WhereCastable<PatcherVm, GitPatcherVm>())
                 {
                     if (patcher.ID == id)
                     {
@@ -1120,14 +1120,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             this.LastSuccessfulRun = settings.LastSuccessfulRun;
         }
 
-        public override PatcherRunVM ToRunner(PatchersRunVM parent)
+        public override PatcherRunVm ToRunner(PatchersRunVm parent)
         {
             if (RunnableData == null)
             {
                 throw new ArgumentNullException(nameof(RunnableData));
             }
             PatcherSettings.Persist();
-            return new PatcherRunVM(
+            return new PatcherRunVm(
                 parent,
                 this,
                 new SolutionPatcherRun(

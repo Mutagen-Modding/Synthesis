@@ -14,9 +14,9 @@ using Synthesis.Bethesda.GUI.Services.Main;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class PatcherStoreListingVM : ViewModel
+    public class PatcherStoreListingVm : ViewModel
     {
-        public RepositoryStoreListingVM Repository { get; }
+        public RepositoryStoreListingVm Repository { get; }
         public PatcherListing Raw { get; }
         public string Name { get; }
 
@@ -28,10 +28,10 @@ namespace Synthesis.Bethesda.GUI
 
         public string RepoPath => $"https://github.com/{Repository.Raw.User}/{Repository.Raw.Repository}";
 
-        public PatcherStoreListingVM(
-            GitPatcherInitVM gitInit,
+        public PatcherStoreListingVm(
+            GitPatcherInitVm gitInit,
             PatcherListing listing,
-            RepositoryStoreListingVM repo,
+            RepositoryStoreListingVm repo,
             INavigateTo navigate)
         {
             Repository = repo;

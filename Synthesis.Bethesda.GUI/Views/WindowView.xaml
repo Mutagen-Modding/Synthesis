@@ -12,22 +12,22 @@
     <Grid>
         <ContentPresenter x:Name="ContentPane">
             <ContentPresenter.Resources>
-                <DataTemplate DataType="{x:Type vm:ConfigurationVM}">
+                <DataTemplate DataType="{x:Type vm:ConfigurationVm}">
                     <local:ConfigurationView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:NewProfileVM}">
+                <DataTemplate DataType="{x:Type vm:NewProfileVm}">
                     <local:NoProfileView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:PatchersRunVM}">
+                <DataTemplate DataType="{x:Type vm:PatchersRunVm}">
                     <local:MainRunView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:ProfilesDisplayVM}">
+                <DataTemplate DataType="{x:Type vm:ProfilesDisplayVm}">
                     <local:ProfilesView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:DotNetNotInstalledVM}">
+                <DataTemplate DataType="{x:Type vm:DotNetNotInstalledVm}">
                     <local:NoDotNetSdkInstalledView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:NugetConfigErrorVM}">
+                <DataTemplate DataType="{x:Type vm:NugetConfigErrorVm}">
                     <local:NugetConfigIssueView />
                 </DataTemplate>
             </ContentPresenter.Resources>

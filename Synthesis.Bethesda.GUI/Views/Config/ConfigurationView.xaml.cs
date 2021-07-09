@@ -17,7 +17,7 @@ using System.Windows.Shapes;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class ConfigurationViewBase : NoggogUserControl<ConfigurationVM> { }
+    public class ConfigurationViewBase : NoggogUserControl<ConfigurationVm> { }
 
     /// <summary>
     /// Interaction logic for ConfigurationView.xaml

@@ -5,12 +5,12 @@ namespace Synthesis.Bethesda.GUI
 {
     public interface ISelectedProfileControllerVm
     {
-        ProfileVM? SelectedProfile { get; set; }
+        ProfileVm? SelectedProfile { get; set; }
     }
 
     public class SelectedProfileControllerVm : ViewModel, ISelectedProfileControllerVm
     {
         [Reactive]
-        public ProfileVM? SelectedProfile { get; set; }
+        public ProfileVm? SelectedProfile { get; set; }
     }
 }

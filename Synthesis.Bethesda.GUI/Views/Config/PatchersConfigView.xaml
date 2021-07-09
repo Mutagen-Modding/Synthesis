@@ -334,7 +334,7 @@
         <ContentControl Grid.Row="0" Grid.RowSpan="3" Grid.Column="2"
             x:Name="DetailControl">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type patchers:PatcherVM}">
+                <DataTemplate DataType="{x:Type patchers:PatcherVm}">
                     <local:PatcherConfigView />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:ErrorVM}">

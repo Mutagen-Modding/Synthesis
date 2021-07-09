@@ -8,7 +8,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class PatcherSettingsViewBase : NoggogUserControl<PatcherSettingsVM> { }
+    public class PatcherSettingsViewBase : NoggogUserControl<PatcherSettingsVm> { }
 
     /// <summary>
     /// Interaction logic for PatcherSettingsView.xaml

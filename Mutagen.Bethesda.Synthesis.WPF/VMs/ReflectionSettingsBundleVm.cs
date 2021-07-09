@@ -6,14 +6,14 @@ using Serilog;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {
-    public class ReflectionSettingsBundleVM : ViewModel
+    public class ReflectionSettingsBundleVm : ViewModel
     {
         private readonly ILogger? _logger;
         private readonly TempFolder? _tempFolder;
 
         public ICollection<ReflectionSettingsVM>? Settings { get; private set; }
 
-        public ReflectionSettingsBundleVM(
+        public ReflectionSettingsBundleVm(
             ICollection<ReflectionSettingsVM> settings,
             TempFolder tempFolder,
             ILogger logger)
@@ -23,7 +23,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             Settings = settings;
         }
 
-        public ReflectionSettingsBundleVM()
+        public ReflectionSettingsBundleVm()
         {
         }
 

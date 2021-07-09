@@ -21,7 +21,7 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel
         public void Discards()
         {
             var confirm = new ConfirmationPanelControllerVm();
-            confirm.TargetConfirmation = _Fixture.Inject.Create<IConfirmationActionVM>();
+            confirm.TargetConfirmation = _Fixture.Inject.Create<IConfirmationActionVm>();
             ((ICommand) confirm.DiscardActionCommand).CanExecute(Unit.Default)
                 .Should().BeTrue();
             ((ICommand) confirm.DiscardActionCommand).Execute(Unit.Default);
@@ -31,7 +31,7 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel
         [Fact]
         public void Confirms()
         {
-            var confirmAction = Substitute.For<IConfirmationActionVM>();
+            var confirmAction = Substitute.For<IConfirmationActionVm>();
             var confirm = new ConfirmationPanelControllerVm();
             confirm.TargetConfirmation = confirmAction;
             ((ICommand) confirm.ConfirmActionCommand).CanExecute(Unit.Default)

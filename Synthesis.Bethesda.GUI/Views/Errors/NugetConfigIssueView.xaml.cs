@@ -5,7 +5,7 @@ using ReactiveUI;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class NugetConfigIssueViewBase : NoggogUserControl<NugetConfigErrorVM> { }
+    public class NugetConfigIssueViewBase : NoggogUserControl<NugetConfigErrorVm> { }
 
     public partial class NugetConfigIssueView : NugetConfigIssueViewBase
     {

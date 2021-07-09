@@ -10,7 +10,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class GitConfigViewBase : NoggogUserControl<GitPatcherVM> { }
+    public class GitConfigViewBase : NoggogUserControl<GitPatcherVm> { }
 
     /// <summary>
     /// Interaction logic for GitConfigView.xaml

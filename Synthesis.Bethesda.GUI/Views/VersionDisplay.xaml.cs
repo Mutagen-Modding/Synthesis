@@ -10,7 +10,7 @@ using System.Windows.Controls;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class VersionDisplayBase : NoggogUserControl<MainVM> { }
+    public class VersionDisplayBase : NoggogUserControl<MainVm> { }
 
     /// <summary>
     /// Interaction logic for VersionDisplay.xaml

@@ -125,7 +125,7 @@
         <local:VerticalSlicer Grid.Column="1" Margin="5,0" />
         <ContentControl x:Name="PatcherDetail" Grid.Column="2">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type vm:PatcherRunVM}">
+                <DataTemplate DataType="{x:Type vm:PatcherRunVm}">
                     <local:PatcherRunView />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:ErrorVM}">

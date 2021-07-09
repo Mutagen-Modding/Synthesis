@@ -13,7 +13,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class ExistingSolutionInitVM : ASolutionInitializer
+    public class ExistingSolutionInitVm : ASolutionInitializer
     {
         public override IObservable<GetResponse<InitializerCall>> InitializationCall { get; }
 
@@ -25,9 +25,9 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<ErrorResponse> _ProjectError;
         public ErrorResponse ProjectError => _ProjectError.Value;
 
-        public ExistingSolutionInitVM(
+        public ExistingSolutionInitVm(
             IGameCategoryContext gameCategoryContext,
-            Func<SolutionPatcherVM> patcherFactory, 
+            Func<SolutionPatcherVm> patcherFactory, 
             IValidateProjectPath validateProjectPath,
             ICreateProject createProject,
             IAddProjectToSolution addProjectToSolution)

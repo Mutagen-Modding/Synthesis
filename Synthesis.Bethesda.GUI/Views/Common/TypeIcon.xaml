@@ -14,42 +14,42 @@
     mc:Ignorable="d">
     <ContentControl x:Name="ContentControl">
         <ContentControl.Resources>
-            <DataTemplate DataType="{x:Type patchers:GitPatcherVM}">
+            <DataTemplate DataType="{x:Type patchers:GitPatcherVm}">
                 <icon:PackIconMaterial
                     Width="35"
                     Height="35"
                     Kind="Git"
                     ToolTip="Mutagen Git Repo Patcher" />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:GitPatcherInitVM}">
+            <DataTemplate DataType="{x:Type vm:GitPatcherInitVm}">
                 <icon:PackIconMaterial
                     Width="35"
                     Height="35"
                     Kind="Git"
                     ToolTip="Mutagen Git repo Patcher" />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type solution:SolutionPatcherVM}">
+            <DataTemplate DataType="{x:Type solution:SolutionPatcherVm}">
                 <icon:PackIconModern
                     Width="35"
                     Height="35"
                     Kind="Visualstudio"
                     ToolTip="Mutagen Solution Patcher" />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:SolutionPatcherInitVM}">
+            <DataTemplate DataType="{x:Type vm:SolutionPatcherInitVm}">
                 <icon:PackIconModern
                     Width="35"
                     Height="35"
                     Kind="Visualstudio"
                     ToolTip="Mutagen Solution Patcher" />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type patchers:CliPatcherVM}">
+            <DataTemplate DataType="{x:Type patchers:CliPatcherVm}">
                 <icon:PackIconMaterial
                     Width="35"
                     Height="35"
                     Kind="ConsoleLine"
                     ToolTip="External Patcher Program" />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:CliPatcherInitVM}">
+            <DataTemplate DataType="{x:Type vm:CliPatcherInitVm}">
                 <icon:PackIconMaterial
                     Width="35"
                     Height="35"

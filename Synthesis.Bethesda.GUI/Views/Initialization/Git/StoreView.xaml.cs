@@ -7,7 +7,7 @@ using System.Windows;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class StoreViewBase : NoggogUserControl<GitPatcherInitVM> { }
+    public class StoreViewBase : NoggogUserControl<GitPatcherInitVm> { }
 
     /// <summary>
     /// Interaction logic for StoreView.xaml

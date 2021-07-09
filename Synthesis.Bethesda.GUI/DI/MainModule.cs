@@ -76,12 +76,12 @@ namespace Synthesis.Bethesda.GUI.DI
                 .AsMatchingInterface();
             
             // GUI
-            builder.RegisterType<MainVM>().AsSelf().SingleInstance();
-            builder.RegisterType<ConfigurationVM>().AsSelf().SingleInstance();
-            builder.RegisterType<PatcherInitializationVM>().AsSelf().SingleInstance();
+            builder.RegisterType<MainVm>().AsSelf().SingleInstance();
+            builder.RegisterType<ConfigurationVm>().AsSelf().SingleInstance();
+            builder.RegisterType<PatcherInitializationVm>().AsSelf().SingleInstance();
             builder.RegisterType<ConfirmationPanelControllerVm>().As<IConfirmationPanelControllerVm>().SingleInstance();
             builder.RegisterType<SelectedProfileControllerVm>().As<ISelectedProfileControllerVm>().SingleInstance();
-            builder.RegisterType<EnvironmentErrorsVM>().As<IEnvironmentErrorsVM>().SingleInstance();
+            builder.RegisterType<EnvironmentErrorsVm>().As<IEnvironmentErrorsVm>().SingleInstance();
             builder.RegisterType<ActivePanelControllerVm>().As<IActivePanelControllerVm>().SingleInstance();
             builder.RegisterAssemblyTypes(typeof(INavigateTo).Assembly)
                 .InNamespacesOf(

@@ -13,7 +13,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class ExistingProjectInitVM : ASolutionInitializer
+    public class ExistingProjectInitVm : ASolutionInitializer
     {
         public override IObservable<GetResponse<InitializerCall>> InitializationCall { get; }
 
@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.GUI
             PathType = PathPickerVM.PathTypeOptions.File,
         };
 
-        public ExistingProjectInitVM(Func<SolutionPatcherVM> patcherFactory)
+        public ExistingProjectInitVm(Func<SolutionPatcherVm> patcherFactory)
         {
             SolutionPath.PathType = PathPickerVM.PathTypeOptions.File;
             SolutionPath.ExistCheckOption = PathPickerVM.CheckOptions.On;

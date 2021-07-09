@@ -28,19 +28,19 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class ProfileVM : ViewModel
+    public class ProfileVm : ViewModel
     {
-        private readonly PatcherInitializationVM _Init;
+        private readonly PatcherInitializationVm _Init;
         private readonly INavigateTo _Navigate;
         private readonly IRetrieveSaveSettings _RetrieveSaveSettings;
         private readonly IPipelineSettingsPath _PipelinePaths;
         private readonly IGuiSettingsPath _GuiPaths;
         private readonly ILogger _Logger;
-        private readonly PatchersRunVM.Factory _RunFactory;
+        private readonly PatchersRunVm.Factory _RunFactory;
 
         public GameRelease Release { get; }
 
-        public SourceList<PatcherVM> Patchers { get; }
+        public SourceList<PatcherVm> Patchers { get; }
 
         public ICommand AddGitPatcherCommand { get; }
         public ICommand AddSolutionPatcherCommand { get; }
@@ -67,8 +67,8 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<ErrorResponse> _BlockingError;
         public ErrorResponse BlockingError => _BlockingError.Value;
 
-        private readonly ObservableAsPropertyHelper<GetResponse<PatcherVM>> _LargeOverallError;
-        public GetResponse<PatcherVM> LargeOverallError => _LargeOverallError.Value;
+        private readonly ObservableAsPropertyHelper<GetResponse<PatcherVm>> _LargeOverallError;
+        public GetResponse<PatcherVm> LargeOverallError => _LargeOverallError.Value;
 
         public IObservableList<ReadOnlyModListingVM> LoadOrder { get; }
 
@@ -77,15 +77,15 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand SetAllToProfileCommand { get; }
 
-        private readonly ObservableAsPropertyHelper<PatcherVM?> _SelectedPatcher;
-        public PatcherVM? SelectedPatcher => _SelectedPatcher.Value;
+        private readonly ObservableAsPropertyHelper<PatcherVm?> _SelectedPatcher;
+        public PatcherVm? SelectedPatcher => _SelectedPatcher.Value;
 
         [Reactive]
         public bool ConsiderPrereleaseNugets { get; set; }
 
         public IProfileDisplayControllerVm DisplayController { get; }
 
-        public ErrorVM OverallErrorVM { get; } = new ErrorVM("Overall Blocking Error");
+        public ErrorVM OverallErrorVm { get; } = new ErrorVM("Overall Blocking Error");
 
         public IObservable<ILinkCache?> SimpleLinkCache { get; }
 
@@ -94,10 +94,10 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
         
-        public ProfileVM(
+        public ProfileVm(
             IProfilePatchersList patchersList,
             IProfileDataFolder dataFolder,
-            PatcherInitializationVM init,
+            PatcherInitializationVm init,
             IProfileIdentifier ident,
             IProfileLoadOrder loadOrder,
             IProfileDirectories dirs,
@@ -105,15 +105,15 @@ namespace Synthesis.Bethesda.GUI
             INavigateTo navigate,
             IProfileDisplayControllerVm profileDisplay,
             ILockToCurrentVersioning lockSetting,
-            GitPatcherInitVM gitPatcherInitVm,
-            SolutionPatcherInitVM solutionPatcherInitVm,
-            CliPatcherInitVM cliPatcherInitVm,
+            GitPatcherInitVm gitPatcherInitVm,
+            SolutionPatcherInitVm solutionPatcherInitVm,
+            CliPatcherInitVm cliPatcherInitVm,
             IRetrieveSaveSettings retrieveSaveSettings,
             ISelectedProfileControllerVm selProfile,
             IPipelineSettingsPath pipelineSettingsPath,
             IGuiSettingsPath guiPaths,
             ILogger logger,
-            PatchersRunVM.Factory runFactory)
+            PatchersRunVm.Factory runFactory)
         {
             _Init = init;
             DataFolderOverride = dataFolder;
@@ -171,7 +171,7 @@ namespace Synthesis.Bethesda.GUI
                         .ObserveOnGui()
                         .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
                         .QueryWhenChanged(q => q)
-                        .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
+                        .StartWith(Noggog.ListExt.Empty<PatcherVm>()),
                     Patchers.Connect()
                         .ObserveOnGui()
                         .FilterOnObservable(p => Observable.CombineLatest(
@@ -180,7 +180,7 @@ namespace Synthesis.Bethesda.GUI
                             (on, halting) => on && halting), 
                             scheduler: RxApp.MainThreadScheduler)
                         .QueryWhenChanged(q => q)
-                        .StartWith(Noggog.ListExt.Empty<PatcherVM>()),
+                        .StartWith(Noggog.ListExt.Empty<PatcherVm>()),
                     LoadOrder.Connect()
                         .Filter(x => x.ModKey != Constants.SynthesisModKey)
                         .ObserveOnGui()
@@ -194,19 +194,19 @@ namespace Synthesis.Bethesda.GUI
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler),
                     (dataFolder, loadOrder, enabledPatchers, erroredEnabledPatchers, missingMods) =>
                     {
-                        if (enabledPatchers.Count == 0) return GetResponse<PatcherVM>.Fail("There are no enabled patchers to run.");
-                        if (!dataFolder.Succeeded) return dataFolder.BubbleFailure<PatcherVM>();
-                        if (!loadOrder.Succeeded) return loadOrder.BubbleFailure<PatcherVM>();
+                        if (enabledPatchers.Count == 0) return GetResponse<PatcherVm>.Fail("There are no enabled patchers to run.");
+                        if (!dataFolder.Succeeded) return dataFolder.BubbleFailure<PatcherVm>();
+                        if (!loadOrder.Succeeded) return loadOrder.BubbleFailure<PatcherVm>();
                         if (missingMods.Count > 0)
                         {
-                            return GetResponse<PatcherVM>.Fail($"Load order had mods that were missing:{Environment.NewLine}{string.Join(Environment.NewLine, missingMods.Select(x => x.ModKey))}");
+                            return GetResponse<PatcherVm>.Fail($"Load order had mods that were missing:{Environment.NewLine}{string.Join(Environment.NewLine, missingMods.Select(x => x.ModKey))}");
                         }
                         if (erroredEnabledPatchers.Count > 0)
                         {
                             var errPatcher = erroredEnabledPatchers.First();
-                            return GetResponse<PatcherVM>.Fail(errPatcher, $"\"{errPatcher.DisplayName}\" has a blocking error: {errPatcher.State.RunnableState.Reason}");
+                            return GetResponse<PatcherVm>.Fail(errPatcher, $"\"{errPatcher.DisplayName}\" has a blocking error: {errPatcher.State.RunnableState.Reason}");
                         }
-                        return GetResponse<PatcherVM>.Succeed(null!);
+                        return GetResponse<PatcherVm>.Succeed(null!);
                     })
                 .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
                 .Do(x =>
@@ -216,7 +216,7 @@ namespace Synthesis.Bethesda.GUI
                         logger.Warning($"Encountered blocking overall error: {x.Reason}");
                     }
                 })
-                .ToGuiProperty(this, nameof(LargeOverallError), GetResponse<PatcherVM>.Fail("Uninitialized overall error"));
+                .ToGuiProperty(this, nameof(LargeOverallError), GetResponse<PatcherVm>.Fail("Uninitialized overall error"));
 
             _BlockingError = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.LargeOverallError),
@@ -257,13 +257,13 @@ namespace Synthesis.Bethesda.GUI
                         var curDisplayed = DisplayController.SelectedObject;
                         if (!(curDisplayed is ErrorVM))
                         {
-                            OverallErrorVM.BackAction = () => DisplayController.SelectedObject = curDisplayed;
+                            OverallErrorVm.BackAction = () => DisplayController.SelectedObject = curDisplayed;
                         }
                         else
                         {
-                            OverallErrorVM.BackAction = null;
+                            OverallErrorVm.BackAction = null;
                         }
-                        DisplayController.SelectedObject = OverallErrorVM;
+                        DisplayController.SelectedObject = OverallErrorVm;
                     }
                 },
                 disposable: this.CompositeDisposable);
@@ -274,17 +274,17 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (err.Succeeded || err.Value != null)
                     {
-                        OverallErrorVM.String = null;
+                        OverallErrorVm.String = null;
                     }
                     else
                     {
-                        OverallErrorVM.String = err.Reason;
+                        OverallErrorVm.String = err.Reason;
                     }
                 })
                 .DisposeWith(this);
             
             _SelectedPatcher = this.WhenAnyValue(x => x.DisplayController.SelectedObject)
-                .Select(x => x as PatcherVM)
+                .Select(x => x as PatcherVm)
                 .ToGuiProperty(this, nameof(SelectedPatcher), default);
 
             SetAllToProfileCommand = ReactiveCommand.Create(
@@ -292,7 +292,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     foreach (var patcher in Patchers.Items)
                     {
-                        if (patcher is GitPatcherVM gitPatcher)
+                        if (patcher is GitPatcherVm gitPatcher)
                         {
                             gitPatcher.MutagenVersioning = PatcherNugetVersioningEnum.Profile;
                             gitPatcher.SynthesisVersioning = PatcherNugetVersioningEnum.Profile;
@@ -315,7 +315,7 @@ namespace Synthesis.Bethesda.GUI
                 }
             });
             var allCommands = Patchers.Connect()
-                .Transform(x => x as GitPatcherVM)
+                .Transform(x => x as GitPatcherVm)
                 .ChangeNotNull()
                 .Transform(x => CommandVM.Factory(x.UpdateAllCommand))
                 .AsObservableList();
@@ -399,7 +399,7 @@ namespace Synthesis.Bethesda.GUI
             };
         }
 
-        private void SetInitializer(PatcherInitVM initializer)
+        private void SetInitializer(PatcherInitVm initializer)
         {
             _Init.NewPatcher = initializer;
         }
@@ -452,7 +452,7 @@ namespace Synthesis.Bethesda.GUI
             }
         }
 
-        public PatchersRunVM GetRun(ConfigurationVM configurationVm)
+        public PatchersRunVm GetRun(ConfigurationVm configurationVm)
         {
             return _RunFactory(configurationVm, this, _Logger);
         }

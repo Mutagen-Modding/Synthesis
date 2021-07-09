@@ -11,7 +11,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {
-    public class PatcherInitializationVM : ViewModel
+    public class PatcherInitializationVm : ViewModel
     {
         private readonly ISelectedProfileControllerVm _SelectedProfile;
         public ICommand CompleteConfiguration { get; }
@@ -19,9 +19,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         public ICommand CancelConfiguration { get; }
 
         [Reactive]
-        public PatcherInitVM? NewPatcher { get; set; }
+        public PatcherInitVm? NewPatcher { get; set; }
 
-        public PatcherInitializationVM(
+        public PatcherInitializationVm(
             ISelectedProfileControllerVm selectedProfile)
         {
             _SelectedProfile = selectedProfile;
@@ -55,7 +55,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                 .DisposeWith(this);
         }
 
-        public void AddNewPatchers(List<PatcherVM> patchersToAdd)
+        public void AddNewPatchers(List<PatcherVm> patchersToAdd)
         {
             NewPatcher = null;
             if (patchersToAdd.Count == 0) return;

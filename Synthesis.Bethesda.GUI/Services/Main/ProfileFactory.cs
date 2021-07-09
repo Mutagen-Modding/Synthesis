@@ -15,8 +15,8 @@ namespace Synthesis.Bethesda.GUI.Services.Main
 {
     public interface IProfileFactory
     {
-        ProfileVM Get(ISynthesisProfile settings);
-        ProfileVM Get(GameRelease release, string id, string nickname);
+        ProfileVm Get(ISynthesisProfile settings);
+        ProfileVm Get(GameRelease release, string id, string nickname);
     }
 
     public class ProfileFactory : IProfileFactory
@@ -32,7 +32,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
             _Logger = logger;
         }
         
-        public ProfileVM Get(ISynthesisProfile settings)
+        public ProfileVm Get(ISynthesisProfile settings)
         {
             _Logger.Information("Loading {Release} Profile {Nickname} with ID {ID}", settings.TargetRelease, settings.Nickname, settings.ID);
             var scope = _Scope.BeginLifetimeScope(cfg =>
@@ -46,7 +46,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
                 cfg.RegisterModule(new ProfileModule(ident));
                 cfg.RegisterInstance(ident).As<IGameReleaseContext>();
             });
-            var profile = scope.Resolve<ProfileVM>();
+            var profile = scope.Resolve<ProfileVm>();
             
             scope.DisposeWith(profile);
             profile.Versioning.MutagenVersioning = settings.MutagenVersioning;
@@ -58,12 +58,12 @@ namespace Synthesis.Bethesda.GUI.Services.Main
             profile.LockSetting.Lock = settings.LockToCurrentVersioning;
             profile.SelectedPersistenceMode = settings.Persistence;
 
-            var gitFactory = scope.Resolve<GitPatcherVM.Factory>();
-            var slnFactory = scope.Resolve<SolutionPatcherVM.Factory>();
-            var cliFactory = scope.Resolve<CliPatcherVM.Factory>();
+            var gitFactory = scope.Resolve<GitPatcherVm.Factory>();
+            var slnFactory = scope.Resolve<SolutionPatcherVm.Factory>();
+            var cliFactory = scope.Resolve<CliPatcherVm.Factory>();
             profile.Patchers.AddRange(settings.Patchers.Select(x =>
             {
-                PatcherVM ret = x switch
+                PatcherVm ret = x switch
                 {
                     GithubPatcherSettings git => gitFactory(git),
                     SolutionPatcherSettings soln => slnFactory(soln),
@@ -75,7 +75,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
             return profile;
         }
 
-        public ProfileVM Get(GameRelease release, string id, string nickname)
+        public ProfileVm Get(GameRelease release, string id, string nickname)
         {
             _Logger.Information("Creating {Release} Profile {Nickname} with ID {ID}", release, nickname, id);
             var scope = _Scope.BeginLifetimeScope(cfg =>
@@ -89,7 +89,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
                             Nickname = nickname
                         }));
             });
-            var ret = scope.Resolve<ProfileVM>();
+            var ret = scope.Resolve<ProfileVm>();
             scope.DisposeWith(ret);
             return ret;
         }

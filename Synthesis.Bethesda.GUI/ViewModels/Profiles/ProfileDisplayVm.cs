@@ -16,11 +16,11 @@ using Synthesis.Bethesda.GUI.Services.Main;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class ProfileDisplayVM : ViewModel
+    public class ProfileDisplayVm : ViewModel
     {
-        public ProfilesDisplayVM Parent { get; }
+        public ProfilesDisplayVm Parent { get; }
 
-        public ProfileVM Profile { get; }
+        public ProfileVm Profile { get; }
 
         private readonly ObservableAsPropertyHelper<bool> _IsDisplaying;
         public bool IsDisplaying => _IsDisplaying.Value;
@@ -34,14 +34,14 @@ namespace Synthesis.Bethesda.GUI
 
         public ObservableCollectionExtended<PersistenceMode> PersistenceModes { get; } = new(EnumExt.GetValues<PersistenceMode>());
 
-        public delegate ProfileDisplayVM Factory(ProfilesDisplayVM parent, ProfileVM profile);
+        public delegate ProfileDisplayVm Factory(ProfilesDisplayVm parent, ProfileVm profile);
         
-        public ProfileDisplayVM(
-            ProfilesDisplayVM parent,
+        public ProfileDisplayVm(
+            ProfilesDisplayVm parent,
             INavigateTo navigate, 
             ISelectedProfileControllerVm selProfile,
             IConfirmationPanelControllerVm confirmation,
-            ProfileVM profile)
+            ProfileVm profile)
         {
             Parent = parent;
             Profile = profile;
@@ -60,7 +60,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     var profile = this.Profile;
                     if (profile.IsActive) return;
-                    confirmation.TargetConfirmation = new ConfirmationActionVM(
+                    confirmation.TargetConfirmation = new ConfirmationActionVm(
                         "Confirm",
                         $"Are you sure you want to delete {profile.Nickname}?",
                         () =>

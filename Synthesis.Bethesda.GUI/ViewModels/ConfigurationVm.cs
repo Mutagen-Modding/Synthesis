@@ -9,38 +9,37 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using Serilog;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class ConfigurationVM : ViewModel
+    public class ConfigurationVm : ViewModel
     {
         private ISelectedProfileControllerVm _SelectedProfileController;
         private readonly IProfileFactory _ProfileFactory;
 
-        public SourceCache<ProfileVM, string> Profiles { get; } = new(p => p.ID);
+        public SourceCache<ProfileVm, string> Profiles { get; } = new(p => p.ID);
 
-        public IObservableCollection<ProfileVM> ProfilesDisplay { get; }
-        public IObservableCollection<PatcherVM> PatchersDisplay { get; }
+        public IObservableCollection<ProfileVm> ProfilesDisplay { get; }
+        public IObservableCollection<PatcherVm> PatchersDisplay { get; }
 
         public ReactiveCommandBase<Unit, Unit> RunPatchers { get; }
 
-        private readonly ObservableAsPropertyHelper<ProfileVM?> _SelectedProfile;
-        public ProfileVM? SelectedProfile => _SelectedProfile.Value;
+        private readonly ObservableAsPropertyHelper<ProfileVm?> _SelectedProfile;
+        public ProfileVm? SelectedProfile => _SelectedProfile.Value;
 
         private readonly ObservableAsPropertyHelper<object?> _DisplayedObject;
         public object? DisplayedObject => _DisplayedObject.Value;
 
-        private readonly ObservableAsPropertyHelper<PatchersRunVM?> _CurrentRun;
-        public PatchersRunVM? CurrentRun => _CurrentRun.Value;
+        private readonly ObservableAsPropertyHelper<PatchersRunVm?> _CurrentRun;
+        public PatchersRunVm? CurrentRun => _CurrentRun.Value;
         
-        public PatcherInitializationVM Init { get; }
+        public PatcherInitializationVm Init { get; }
 
-        public ConfigurationVM(
-            PatcherInitializationVM initVm,
+        public ConfigurationVm(
+            PatcherInitializationVm initVm,
             IActivePanelControllerVm activePanelController,
             ISelectedProfileControllerVm selectedProfile,
             ISaveSignal saveSignal,
@@ -56,7 +55,7 @@ namespace Synthesis.Bethesda.GUI
             
             ProfilesDisplay = Profiles.Connect().ToObservableCollection(this);
             PatchersDisplay = this.WhenAnyValue(x => x.SelectedProfile)
-                .Select(p => p?.Patchers.Connect() ?? Observable.Empty<IChangeSet<PatcherVM>>())
+                .Select(p => p?.Patchers.Connect() ?? Observable.Empty<IChangeSet<PatcherVm>>())
                 .Switch()
                 .ToObservableCollection(this);
 
@@ -72,7 +71,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     if (SelectedProfile == null)
                     {
-                        return (default(PatchersRunVM?), Observable.Return(Unit.Default));
+                        return (default(PatchersRunVm?), Observable.Return(Unit.Default));
                     }
 
                     var ret = SelectedProfile.GetRun(this);

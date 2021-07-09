@@ -6,7 +6,7 @@ using System.Reactive.Linq;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class InitializationViewBase : NoggogUserControl<PatcherInitVM> { }
+    public class InitializationViewBase : NoggogUserControl<PatcherInitVm> { }
 
     /// <summary>
     /// Interaction logic for InitializationView.xaml

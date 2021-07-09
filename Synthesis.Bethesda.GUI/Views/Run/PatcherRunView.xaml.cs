@@ -8,7 +8,7 @@ using Noggog;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class PatcherRunViewBase : NoggogUserControl<PatcherRunVM> { }
+    public class PatcherRunViewBase : NoggogUserControl<PatcherRunVm> { }
 
     /// <summary>
     /// Interaction logic for PatcherRunView.xaml

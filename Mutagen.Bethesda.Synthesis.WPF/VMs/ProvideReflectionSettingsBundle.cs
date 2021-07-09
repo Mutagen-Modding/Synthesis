@@ -18,7 +18,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
 {
     public interface IProvideReflectionSettingsBundle
     {
-        Task<GetResponse<ReflectionSettingsBundleVM>> ExtractBundle(
+        Task<GetResponse<ReflectionSettingsBundleVm>> ExtractBundle(
             string projPath,
             string displayName,
             ReflectionSettingsConfig[] targets,
@@ -46,7 +46,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             _Extract = extract;
         }
         
-        public async Task<GetResponse<ReflectionSettingsBundleVM>> ExtractBundle(
+        public async Task<GetResponse<ReflectionSettingsBundleVm>> ExtractBundle(
             string projPath,
             string displayName,
             ReflectionSettingsConfig[] targets,
@@ -89,10 +89,10 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                 });
             if (vms.Failed)
             {
-                return vms.BubbleFailure<ReflectionSettingsBundleVM>();
+                return vms.BubbleFailure<ReflectionSettingsBundleVm>();
             }
             await Task.WhenAll(vms.Value.Item.Select(vm => vm.Import(cancel)));
-            return new ReflectionSettingsBundleVM(vms.Value.Item, vms.Value.Temp, _Logger);
+            return new ReflectionSettingsBundleVm(vms.Value.Item, vms.Value.Temp, _Logger);
         }
     }
 }

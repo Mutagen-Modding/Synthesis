@@ -13,7 +13,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class PatcherConfigListingViewBase : NoggogUserControl<PatcherVM> { }
+    public class PatcherConfigListingViewBase : NoggogUserControl<PatcherVm> { }
 
     /// <summary>
     /// Interaction logic for PatcherConfigListingView.xaml
@@ -90,11 +90,11 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 // Update button
                 this.WhenAnyFallback(x => x.ViewModel)
-                    .Select(patcher => (patcher as GitPatcherVM)?.UpdateAllCommand)
+                    .Select(patcher => (patcher as GitPatcherVm)?.UpdateAllCommand)
                     .BindToStrict(this, x => x.UpdateButton.Command)
                     .DisposeWith(disposable);
                 var gitPatcher = this.WhenAnyFallback(x => x.ViewModel)
-                    .Select(p => p as GitPatcherVM)
+                    .Select(p => p as GitPatcherVm)
                     .Replay(1)
                     .RefCount();
                 var hasAnyUpdateCmd = Observable.CombineLatest(

@@ -16,7 +16,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class PatchersConfigViewBase : NoggogUserControl<ConfigurationVM> { }
+    public class PatchersConfigViewBase : NoggogUserControl<ConfigurationVm> { }
 
     /// <summary>
     /// Interaction logic for PatchersConfigurationView.xaml
@@ -72,14 +72,14 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.RunPatchers.CanExecute)
                     .Switch()
-                    .CombineLatest(this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LargeOverallError, GetResponse<PatcherVM>.Succeed(null!)),
+                    .CombineLatest(this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LargeOverallError, GetResponse<PatcherVm>.Succeed(null!)),
                         (can, overall) => !can && overall.Succeeded)
                     .Select(show => show ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.ProcessingRingAnimation.Visibility)
                     .DisposeWith(disposable);
 
                 // Set up large overall error button
-                var overallErr = this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LargeOverallError, fallback: GetResponse<PatcherVM>.Succeed(null!))
+                var overallErr = this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LargeOverallError, fallback: GetResponse<PatcherVm>.Succeed(null!))
                     .Replay(1)
                     .RefCount();
                 Observable.CombineLatest(
@@ -97,7 +97,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.OverallErrorButton.Command)
                     .DisposeWith(disposable);
 
-                Noggog.WPF.Drag.ListBoxDragDrop<PatcherVM>(this.PatchersList, () => this.ViewModel?.SelectedProfile?.Patchers)
+                Noggog.WPF.Drag.ListBoxDragDrop<PatcherVm>(this.PatchersList, () => this.ViewModel?.SelectedProfile?.Patchers)
                     .DisposeWith(disposable);
 
                 // Bind top patcher list buttons

@@ -21,26 +21,26 @@ namespace Synthesis.Bethesda.GUI.DI
         
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<ProfileVM>().AsSelf()
+            builder.RegisterType<ProfileVm>().AsSelf()
                 .SingleInstance();
-            builder.RegisterType<GitPatcherInitVM>().AsSelf()
+            builder.RegisterType<GitPatcherInitVm>().AsSelf()
                 .SingleInstance();
-            builder.RegisterType<SolutionPatcherInitVM>().AsSelf()
+            builder.RegisterType<SolutionPatcherInitVm>().AsSelf()
                 .SingleInstance();
-            builder.RegisterType<CliPatcherInitVM>().AsSelf()
+            builder.RegisterType<CliPatcherInitVm>().AsSelf()
                 .SingleInstance();
-            builder.RegisterType<ExistingSolutionInitVM>().AsSelf();
-            builder.RegisterType<ExistingProjectInitVM>().AsSelf();
-            builder.RegisterType<NewSolutionInitVM>().AsSelf();
-            builder.RegisterType<GitPatcherVM>().AsSelf();
-            builder.RegisterType<SolutionPatcherVM>()
+            builder.RegisterType<ExistingSolutionInitVm>().AsSelf();
+            builder.RegisterType<ExistingProjectInitVm>().AsSelf();
+            builder.RegisterType<NewSolutionInitVm>().AsSelf();
+            builder.RegisterType<GitPatcherVm>().AsSelf();
+            builder.RegisterType<SolutionPatcherVm>()
                 .AsSelf()
                 .AsImplementedInterfaces();
-            builder.RegisterType<CliPatcherVM>().AsSelf();
-            builder.RegisterType<PatchersRunVM>().AsSelf();
+            builder.RegisterType<CliPatcherVm>().AsSelf();
+            builder.RegisterType<PatchersRunVm>().AsSelf();
             
             // Test
-            builder.RegisterType<PatcherSettingsVM>().AsSelf();
+            builder.RegisterType<PatcherSettingsVm>().AsSelf();
             
             builder.RegisterInstance(_Ident)
                 .As<IProfileIdentifier>()
@@ -71,12 +71,12 @@ namespace Synthesis.Bethesda.GUI.DI
             builder.RegisterType<ProfileDisplayControllerVm>().As<IProfileDisplayControllerVm>()
                 .SingleInstance();
             
-            builder.RegisterAssemblyTypes(typeof(PatcherVM).Assembly)
+            builder.RegisterAssemblyTypes(typeof(PatcherVm).Assembly)
                 .InNamespacesOf(
-                    typeof(PatcherVM))
+                    typeof(PatcherVm))
                 .AsMatchingInterface();
             
-            builder.RegisterAssemblyTypes(typeof(PatcherVM).Assembly)
+            builder.RegisterAssemblyTypes(typeof(PatcherVm).Assembly)
                 .InNamespacesOf(
                     typeof(ISolutionMetaFileSync))
                 .SingleInstance()

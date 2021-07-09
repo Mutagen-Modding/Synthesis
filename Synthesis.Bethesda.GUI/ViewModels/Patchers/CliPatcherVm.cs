@@ -13,7 +13,7 @@ using Synthesis.Bethesda.GUI.Settings;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {
-    public class CliPatcherVM : PatcherVM
+    public class CliPatcherVm : PatcherVm
     {
         private readonly IProcessFactory _ProcessFactory;
         public IShowHelpSetting ShowHelpSetting { get; }
@@ -29,9 +29,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
         public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
 
-        public delegate CliPatcherVM Factory(CliPatcherSettings settings);
+        public delegate CliPatcherVm Factory(CliPatcherSettings settings);
 
-        public CliPatcherVM(
+        public CliPatcherVm(
             IRemovePatcherFromProfile remove,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
@@ -96,9 +96,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             return ret;
         }
 
-        public override PatcherRunVM ToRunner(PatchersRunVM parent)
+        public override PatcherRunVm ToRunner(PatchersRunVm parent)
         {
-            return new PatcherRunVM(
+            return new PatcherRunVm(
                 parent, 
                 this, 
                 new CliPatcherRun(

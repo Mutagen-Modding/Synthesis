@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class RepositoryStoreListingVM : ViewModel
+    public class RepositoryStoreListingVm : ViewModel
     {
         public RepositoryListing Raw { get; }
 
@@ -14,7 +14,7 @@ namespace Synthesis.Bethesda.GUI
 
         public int Forks { get; }
 
-        public RepositoryStoreListingVM(RepositoryListing listing)
+        public RepositoryStoreListingVm(RepositoryListing listing)
         {
             Raw = listing;
         }

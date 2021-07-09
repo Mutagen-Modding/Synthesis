@@ -6,7 +6,7 @@ using System.Reactive.Linq;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class ProfileListingViewBase : NoggogUserControl<ProfileDisplayVM> { }
+    public class ProfileListingViewBase : NoggogUserControl<ProfileDisplayVm> { }
 
     /// <summary>
     /// Interaction logic for ProfileListingView.xaml

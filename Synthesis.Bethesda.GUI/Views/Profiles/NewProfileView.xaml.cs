@@ -4,7 +4,7 @@ using System.Reactive.Disposables;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class NewProfileViewBase : NoggogUserControl<NewProfileVM> { }
+    public class NewProfileViewBase : NoggogUserControl<NewProfileVm> { }
 
     /// <summary>
     /// Interaction logic for NewProfileView.xaml

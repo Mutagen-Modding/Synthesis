@@ -15,10 +15,10 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class PatcherRunVM : ViewModel
+    public class PatcherRunVm : ViewModel
     {
         public IPatcherRun Run { get; }
-        public PatcherVM Config { get; }
+        public PatcherVm Config { get; }
 
         private readonly ObservableAsPropertyHelper<bool> _IsSelected;
         public bool IsSelected => _IsSelected.Value;
@@ -43,7 +43,7 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool AutoScrolling { get; set; }
 
-        public PatcherRunVM(PatchersRunVM parent, PatcherVM config, IPatcherRun run)
+        public PatcherRunVm(PatchersRunVm parent, PatcherVm config, IPatcherRun run)
         {
             Run = run;
             Config = config;

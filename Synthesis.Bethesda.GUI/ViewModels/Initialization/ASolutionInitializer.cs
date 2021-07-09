@@ -9,7 +9,7 @@ namespace Synthesis.Bethesda.GUI
 {
     public abstract class ASolutionInitializer : ViewModel
     {
-        public delegate Task<IEnumerable<SolutionPatcherVM>> InitializerCall();
+        public delegate Task<IEnumerable<SolutionPatcherVm>> InitializerCall();
         public abstract IObservable<GetResponse<InitializerCall>> InitializationCall { get; }
     }
 }

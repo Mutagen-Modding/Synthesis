@@ -18,7 +18,7 @@ using Mutagen.Bethesda;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class TopProfileSelectorViewBase : NoggogUserControl<MainVM> { }
+    public class TopProfileSelectorViewBase : NoggogUserControl<MainVm> { }
 
     /// <summary>
     /// Interaction logic for TopProfileSelectorView.xaml

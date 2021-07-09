@@ -7,7 +7,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class CliConfigViewBase : NoggogUserControl<CliPatcherVM> { }
+    public class CliConfigViewBase : NoggogUserControl<CliPatcherVm> { }
 
     /// <summary>
     /// Interaction logic for CliConfigView.xaml

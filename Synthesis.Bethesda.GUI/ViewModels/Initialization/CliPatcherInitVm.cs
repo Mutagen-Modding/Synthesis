@@ -6,16 +6,16 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class CliPatcherInitVM : PatcherInitVM
+    public class CliPatcherInitVm : PatcherInitVm
     {
         private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
         public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
 
-        public CliPatcherVM Patcher { get; }
+        public CliPatcherVm Patcher { get; }
 
-        public CliPatcherInitVM(
-            PatcherInitializationVM init, 
-            CliPatcherVM patcher)
+        public CliPatcherInitVm(
+            PatcherInitializationVm init, 
+            CliPatcherVm patcher)
             : base(init)
         {
             Patcher = patcher;
@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.GUI
                 .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
         }
 
-        public override async IAsyncEnumerable<PatcherVM> Construct()
+        public override async IAsyncEnumerable<PatcherVm> Construct()
         {
             yield return Patcher;
         }

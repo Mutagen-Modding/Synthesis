@@ -15,25 +15,25 @@ using Synthesis.Bethesda.GUI.Services.Main;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class ProfilesDisplayVM : ViewModel
+    public class ProfilesDisplayVm : ViewModel
     {
-        public ConfigurationVM Config { get; }
+        public ConfigurationVm Config { get; }
         private readonly ViewModel? _previous;
 
         public ICommand GoBackCommand { get; }
         public ICommand AddCommand { get; }
 
-        public IObservableCollection<ProfileDisplayVM> ProfilesDisplay { get; }
+        public IObservableCollection<ProfileDisplayVm> ProfilesDisplay { get; }
 
         [Reactive]
-        public ProfileDisplayVM? DisplayedProfile { get; set; }
+        public ProfileDisplayVm? DisplayedProfile { get; set; }
 
         [Reactive]
         public object? DisplayObject { get; set; } = null;
 
-        public ProfilesDisplayVM(
+        public ProfilesDisplayVm(
             ILifetimeScope scope,
-            ConfigurationVM parent,
+            ConfigurationVm parent,
             IProfileFactory profileFactory, 
             IActivePanelControllerVm activePanelController,
             ViewModel? previousPage)
@@ -46,13 +46,13 @@ namespace Synthesis.Bethesda.GUI
             });
             AddCommand = ReactiveCommand.Create(() =>
             {
-                DisplayObject = new NewProfileVM(
+                DisplayObject = new NewProfileVm(
                     Config,
                     profileFactory);
                 DisplayedProfile = null;
             });
 
-            var factory = scope.Resolve<ProfileDisplayVM.Factory>();
+            var factory = scope.Resolve<ProfileDisplayVm.Factory>();
             ProfilesDisplay = parent.Profiles.Connect()
                 .Transform(x => factory(this, x))
                 // Select the currently active profile during initial display

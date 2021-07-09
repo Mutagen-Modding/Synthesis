@@ -5,19 +5,19 @@ namespace Synthesis.Bethesda.GUI.Profiles.Plugins
 {
     public interface IRemovePatcherFromProfile
     {
-        void Remove(PatcherVM patcher);
+        void Remove(PatcherVm patcher);
     }
 
     public interface IProfilePatchersList
     {
-        SourceList<PatcherVM> Patchers { get; }
+        SourceList<PatcherVm> Patchers { get; }
     }
 
     public class ProfilePatchersList : IRemovePatcherFromProfile, IProfilePatchersList
     {
-        public SourceList<PatcherVM> Patchers { get; } = new();
+        public SourceList<PatcherVm> Patchers { get; } = new();
 
-        public void Remove(PatcherVM patcher)
+        public void Remove(PatcherVm patcher)
         {
             Patchers.Remove(patcher);
         }

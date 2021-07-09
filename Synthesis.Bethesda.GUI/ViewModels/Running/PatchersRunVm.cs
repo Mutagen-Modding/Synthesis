@@ -23,13 +23,13 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
-    public class PatchersRunVM : ViewModel
+    public class PatchersRunVm : ViewModel
     {
         private readonly ILogger _Logger;
         private readonly IRunner _Runner;
-        public ConfigurationVM Config { get; }
+        public ConfigurationVm Config { get; }
 
-        public ProfileVM RunningProfile { get; }
+        public ProfileVm RunningProfile { get; }
 
         private readonly CancellationTokenSource _cancel = new();
 
@@ -39,11 +39,11 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public bool Running { get; private set; } = true;
 
-        public SourceCache<PatcherRunVM, int> Patchers { get; } = new SourceCache<PatcherRunVM, int>(p => p.Config.InternalID);
-        public IObservableCollection<PatcherRunVM> PatchersDisplay { get; }
+        public SourceCache<PatcherRunVm, int> Patchers { get; } = new SourceCache<PatcherRunVm, int>(p => p.Config.InternalID);
+        public IObservableCollection<PatcherRunVm> PatchersDisplay { get; }
 
         [Reactive]
-        public PatcherRunVM? SelectedPatcher { get; set; }
+        public PatcherRunVm? SelectedPatcher { get; set; }
 
         public ICommand BackCommand { get; }
         public ICommand CancelCommand { get; }
@@ -55,15 +55,15 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<object?> _DetailDisplay;
         public object? DetailDisplay => _DetailDisplay.Value;
 
-        private PatcherRunVM? _previousPatcher;
+        private PatcherRunVm? _previousPatcher;
 
-        public delegate PatchersRunVM Factory(ConfigurationVM configuration, ProfileVM profile, ILogger logger);
+        public delegate PatchersRunVm Factory(ConfigurationVm configuration, ProfileVm profile, ILogger logger);
         
-        public PatchersRunVM(
-            ConfigurationVM configuration,
+        public PatchersRunVm(
+            ConfigurationVm configuration,
             ILogger logger,
             IActivePanelControllerVm activePanelController,
-            ProfileVM profile,
+            ProfileVm profile,
             IRunner runner)
         {
             _Logger = logger;
@@ -111,7 +111,7 @@ namespace Synthesis.Bethesda.GUI
                     vm.State = GetResponse<RunState>.Fail(RunState.Error, i.data.Error);
                     SelectedPatcher = vm;
                     logger
-                        .ForContext(nameof(PatcherVM.DisplayName), i.data.Run.Name)
+                        .ForContext(nameof(PatcherVm.DisplayName), i.data.Run.Name)
                         .Error(i.data.Error, $"Error while {i.type}");
                 })
                 .DisposeWith(this);
@@ -122,7 +122,7 @@ namespace Synthesis.Bethesda.GUI
                     var vm = Patchers.Get(i.Key);
                     vm.State = GetResponse<RunState>.Succeed(RunState.Started);
                     logger
-                        .ForContext(nameof(PatcherVM.DisplayName), i.Run.Name)
+                        .ForContext(nameof(PatcherVm.DisplayName), i.Run.Name)
                         .Information($"Starting");
 
                     // Handle automatic selection advancement
@@ -141,7 +141,7 @@ namespace Synthesis.Bethesda.GUI
                     var vm = Patchers.Get(i.Key);
                     vm.State = GetResponse<RunState>.Succeed(RunState.Finished);
                     logger
-                        .ForContext(nameof(PatcherVM.DisplayName), i.Run.Name)
+                        .ForContext(nameof(PatcherVm.DisplayName), i.Run.Name)
                         .Information("Finished {RunTime}", vm.RunTime);
                 })
                 .DisposeWith(this);
@@ -149,7 +149,7 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(s =>
                 {
                     logger
-                        .ForContextIfNotNull(nameof(PatcherVM.DisplayName), s.Run?.Name)
+                        .ForContextIfNotNull(nameof(PatcherVm.DisplayName), s.Run?.Name)
                         .Information(s.String);
                 })
                 .DisposeWith(this);
@@ -157,7 +157,7 @@ namespace Synthesis.Bethesda.GUI
                 .Subscribe(s =>
                 {
                     logger
-                        .ForContextIfNotNull(nameof(PatcherVM.DisplayName), s.Run?.Name)
+                        .ForContextIfNotNull(nameof(PatcherVm.DisplayName), s.Run?.Name)
                         .Error(s.String);
                 })
                 .DisposeWith(this);
