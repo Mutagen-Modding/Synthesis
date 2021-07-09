@@ -4,10 +4,12 @@ using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using Autofac;
 using Newtonsoft.Json;
 using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.GUI.DI;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.Views;
@@ -28,30 +30,30 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
 
     public class Shutdown : IShutdown
     {
+        private readonly ILifetimeScope _Scope;
         private readonly ILogger _Logger;
         private readonly IStartupTracker _Init;
         private readonly IPipelineSettingsPath _PipelineSettingsPath;
         private readonly IGuiSettingsPath _GuiPaths;
-        private readonly IProcessFactory _ProcessFactory;
         private readonly IRetrieveSaveSettings _Save;
         private readonly IMainWindow _Window;
         
         public bool IsShutdown { get; private set; }
 
         public Shutdown(
+            ILifetimeScope scope,
             ILogger logger,
             IStartupTracker init,
             IPipelineSettingsPath paths,
             IGuiSettingsPath guiPaths,
-            IProcessFactory processFactory,
             IRetrieveSaveSettings save,
             IMainWindow window)
         {
+            _Scope = scope;
             _Logger = logger;
             _Init = init;
             _PipelineSettingsPath = paths;
             _GuiPaths = guiPaths;
-            _ProcessFactory = processFactory;
             _Save = save;
             _Window = window;
         }
@@ -114,13 +116,13 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             {
                 try
                 {
-                    _Logger.Information("Disposing injection");
-                    Inject.Container.Dispose();
-                    _Logger.Information("Disposed injection");
+                    _Logger.Information("Disposing container");
+                    _Scope.Dispose();
+                    _Logger.Information("Disposed container");
                 }
                 catch (Exception e)
                 {
-                    _Logger.Error("Error shutting down injector actions", e);
+                    _Logger.Error("Error shutting down container actions", e);
                 }
             }));
             await Task.WhenAll(toDo);

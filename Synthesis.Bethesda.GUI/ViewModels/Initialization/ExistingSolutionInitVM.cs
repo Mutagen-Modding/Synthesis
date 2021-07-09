@@ -9,7 +9,7 @@ using System.IO;
 using System.Reactive.Linq;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Synthesis.Projects;
-using Synthesis.Bethesda.GUI.Services.Profile;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -27,7 +27,7 @@ namespace Synthesis.Bethesda.GUI
 
         public ExistingSolutionInitVM(
             IGameCategoryContext gameCategoryContext,
-            IPatcherFactory patcherFactory, 
+            Func<SolutionPatcherVM> patcherFactory, 
             IValidateProjectPath validateProjectPath,
             ICreateProject createProject,
             IAddProjectToSolution addProjectToSolution)
@@ -54,7 +54,7 @@ namespace Synthesis.Bethesda.GUI
                     if (!i.validation.Succeeded) return i.validation.BubbleFailure<InitializerCall>();
                     return GetResponse<InitializerCall>.Succeed(async () =>
                     {
-                        var patcher = patcherFactory.GetSolutionPatcher();
+                        var patcher = patcherFactory();
                         createProject.Create(gameCategoryContext.Category, i.validation.Value);
                         addProjectToSolution.Add(i.sln.Value, i.validation.Value);
                         patcher.SolutionPath.TargetPath = i.sln.Value;

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO.Abstractions;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Order;
@@ -35,7 +35,7 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
             return new LoadOrderImporter<TModGetter>(
                 _FileSystem,
                 new DataDirectoryInjection(dataFolder),
-                new LoadOrderListingsInjector(listings),
+                new LoadOrderListingsInjection(listings),
                 new ModImporter<TModGetter>(
                     _FileSystem,
                     new GameReleaseInjection(release)));

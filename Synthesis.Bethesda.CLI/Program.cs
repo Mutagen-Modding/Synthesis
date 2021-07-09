@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Installs;
 using Mutagen.Bethesda.Plugins.Order.DI;
@@ -30,13 +31,16 @@ namespace Synthesis.Bethesda.CLI
                                 }
                                 settings.DataFolderPath = Path.Combine(gameFolder, "Data");
                             }
-                            Inject.Instance.Configure(cfg =>
-                            {
-                                cfg.For<IGameReleaseContext>().Use(new GameReleaseInjection(settings.GameRelease));
-                                cfg.For<IDataDirectoryProvider>().Use(new DataDirectoryInjection(settings.DataFolderPath));
-                                cfg.For<IPluginListingsPathProvider>().Use(new PluginListingsPathInjection(settings.LoadOrderFilePath));
-                            });
-                            await Inject.Instance.GetInstance<IRunPatcherPipeline>()
+
+                            var builder = new ContainerBuilder();
+                            builder.RegisterModule<MainModule>();
+                            builder.RegisterInstance(new GameReleaseInjection(settings.GameRelease))
+                                .As<IGameReleaseContext>();
+                            builder.RegisterInstance(new DataDirectoryInjection(settings.DataFolderPath))
+                                .As<IDataDirectoryProvider>();
+                            builder.RegisterInstance(new PluginListingsPathInjection(settings.LoadOrderFilePath))
+                                .As<IPluginListingsPathProvider>();
+                            await builder.Build().Resolve<IRunPatcherPipeline>()
                                 .Run(settings, CancellationToken.None, new ConsoleReporter());
                         }
                         catch (Exception ex)

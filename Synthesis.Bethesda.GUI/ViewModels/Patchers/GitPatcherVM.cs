@@ -158,6 +158,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         
         public ILockToCurrentVersioning Locking { get; }
 
+        public delegate GitPatcherVM Factory(GithubPatcherSettings settings);
+        
         public GitPatcherVM(
             IProfileIdentifier ident,
             IProfileDirectories dirs,
@@ -182,7 +184,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             IProvideWorkingDirectory workingDirectory,
             IWorkingDirectorySubPaths paths,
             IProcessFactory processFactory,
-            IPatcherSettingsVmFactory settingsVmFactory,
+            PatcherSettingsVM.Factory settingsVmFactory,
             ISolutionProjectPath projectPath,
             GithubPatcherSettings? settings = null)
             : base(remove, selPatcher, confirmation, settings)
@@ -924,7 +926,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                 UpdateToBranchCommand,
                 UpdateToTagCommand);
 
-            PatcherSettings = settingsVmFactory.Create(
+            PatcherSettings = settingsVmFactory(
                 this, Logger, false, 
                 compilation.Select(c =>
                     {

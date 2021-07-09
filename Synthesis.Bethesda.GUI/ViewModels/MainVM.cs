@@ -4,6 +4,7 @@ using System;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using System.Threading.Tasks;
+using Autofac;
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings;
 using Mutagen.Bethesda.Synthesis.Versioning;
@@ -71,6 +72,7 @@ namespace Synthesis.Bethesda.GUI
             INewestLibraryVersions newestLibVersions,
             IActivePanelControllerVm activePanelControllerVm,
             IProfileFactory profileFactory,
+            ILifetimeScope scope,
             ILogger logger)
         {
             logger.Information("Creating MainVM");
@@ -107,7 +109,7 @@ namespace Synthesis.Bethesda.GUI
 
             OpenProfilesPageCommand = ReactiveCommand.Create(() =>
             {
-                activePanelControllerVm.ActivePanel = new ProfilesDisplayVM(Configuration, profileFactory, activePanelControllerVm, ActivePanel);
+                activePanelControllerVm.ActivePanel = new ProfilesDisplayVM(scope, Configuration, profileFactory, activePanelControllerVm, ActivePanel);
             },
             canExecute: Observable.CombineLatest(
                     this.WhenAnyFallback(x => x.Configuration.CurrentRun!.Running, fallback: false),

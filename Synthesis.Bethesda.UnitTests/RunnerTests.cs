@@ -35,7 +35,7 @@ namespace Synthesis.Bethesda.UnitTests
                     env.FileSystem,
                     new GameReleaseInjection(env.Release),
                     new DataDirectoryInjection(env.DataFolder),
-                    new LoadOrderListingsInjector(env.GetTypicalLoadOrder()),
+                    new LoadOrderListingsInjection(env.GetTypicalLoadOrder()),
                     writer)
                 .Run(
                     workingDirectory: env.BaseFolder,
@@ -57,7 +57,7 @@ namespace Synthesis.Bethesda.UnitTests
                     env.FileSystem,
                     new GameReleaseInjection(env.Release),
                     new DataDirectoryInjection(env.DataFolder),
-                    new LoadOrderListingsInjector(env.GetTypicalLoadOrder()),
+                    new LoadOrderListingsInjection(env.GetTypicalLoadOrder()),
                     writer)
                 .Run(
                     workingDirectory: env.BaseFolder,
@@ -82,7 +82,7 @@ namespace Synthesis.Bethesda.UnitTests
                     env.FileSystem,
                     new GameReleaseInjection(env.Release),
                     new DataDirectoryInjection(env.DataFolder),
-                    new LoadOrderListingsInjector(env.GetTypicalLoadOrder()),
+                    new LoadOrderListingsInjection(env.GetTypicalLoadOrder()),
                     writer)
                 .Run(
                     workingDirectory: env.BaseFolder,
@@ -108,7 +108,7 @@ namespace Synthesis.Bethesda.UnitTests
                     env.FileSystem,
                     new GameReleaseInjection(env.Release),
                     new DataDirectoryInjection(env.DataFolder),
-                    new LoadOrderListingsInjector(env.GetTypicalLoadOrder()),
+                    new LoadOrderListingsInjection(env.GetTypicalLoadOrder()),
                     writer)
                 .Run(
                     workingDirectory: env.BaseFolder,
@@ -131,7 +131,7 @@ namespace Synthesis.Bethesda.UnitTests
                     env.FileSystem,
                     new GameReleaseInjection(env.Release),
                     new DataDirectoryInjection(env.DataFolder),
-                    new LoadOrderListingsInjector(env.GetTypicalLoadOrder()),
+                    new LoadOrderListingsInjection(env.GetTypicalLoadOrder()),
                     writer)
                 .Run(
                     workingDirectory: env.BaseFolder,
@@ -156,7 +156,7 @@ namespace Synthesis.Bethesda.UnitTests
                     env.FileSystem,
                     new GameReleaseInjection(env.Release),
                     new DataDirectoryInjection(env.DataFolder),
-                    new LoadOrderListingsInjector(env.GetTypicalLoadOrder()),
+                    new LoadOrderListingsInjection(env.GetTypicalLoadOrder()),
                     writer)
                 .Run(
                     workingDirectory: env.BaseFolder,
@@ -187,7 +187,7 @@ namespace Synthesis.Bethesda.UnitTests
                     env.FileSystem,
                     new GameReleaseInjection(env.Release),
                     new DataDirectoryInjection(env.DataFolder),
-                    new LoadOrderListingsInjector(env.GetTypicalLoadOrder()),
+                    new LoadOrderListingsInjection(env.GetTypicalLoadOrder()),
                     writer)
                 .Run(
                     workingDirectory: env.BaseFolder,
@@ -215,7 +215,7 @@ namespace Synthesis.Bethesda.UnitTests
                     env.FileSystem,
                     new GameReleaseInjection(env.Release),
                     new DataDirectoryInjection(env.DataFolder),
-                    new LoadOrderListingsInjector(env.GetTypicalLoadOrder()),
+                    new LoadOrderListingsInjection(env.GetTypicalLoadOrder()),
                     writer)
                 .Run(
                     workingDirectory: env.BaseFolder,
@@ -250,7 +250,7 @@ namespace Synthesis.Bethesda.UnitTests
                     env.FileSystem,
                     gameReleaseInjection,
                     new DataDirectoryInjection(env.DataFolder),
-                    new LoadOrderListingsInjector(env.GetTypicalLoadOrder()
+                    new LoadOrderListingsInjection(env.GetTypicalLoadOrder()
                         .And(new ModListing(Constants.SynthesisModKey, true))
                         .And(new ModListing(Utility.RandomModKey, true))),
                     writer)
@@ -286,7 +286,7 @@ namespace Synthesis.Bethesda.UnitTests
                     env.FileSystem,
                     gameReleaseInjection,
                     new DataDirectoryInjection(env.DataFolder),
-                    new LoadOrderListingsInjector(env.GetTypicalLoadOrder()
+                    new LoadOrderListingsInjection(env.GetTypicalLoadOrder()
                         .And(new ModListing(Constants.SynthesisModKey, true))
                         .And(new ModListing(atypicalKey, true))
                         .And(new ModListing(Utility.RandomModKey, true))),

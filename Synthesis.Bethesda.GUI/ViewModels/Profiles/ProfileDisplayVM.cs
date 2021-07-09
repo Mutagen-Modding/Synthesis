@@ -34,6 +34,8 @@ namespace Synthesis.Bethesda.GUI
 
         public ObservableCollectionExtended<PersistenceMode> PersistenceModes { get; } = new(EnumExt.GetValues<PersistenceMode>());
 
+        public delegate ProfileDisplayVM Factory(ProfilesDisplayVM parent, ProfileVM profile);
+        
         public ProfileDisplayVM(
             ProfilesDisplayVM parent,
             INavigateTo navigate, 

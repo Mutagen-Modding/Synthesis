@@ -8,6 +8,7 @@ using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -22,7 +23,6 @@ using Serilog;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services.Main;
-using Synthesis.Bethesda.GUI.Services.Profile;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
@@ -36,7 +36,7 @@ namespace Synthesis.Bethesda.GUI
         private readonly IPipelineSettingsPath _PipelinePaths;
         private readonly IGuiSettingsPath _GuiPaths;
         private readonly ILogger _Logger;
-        private readonly IPatchersRunFactory _RunFactory;
+        private readonly PatchersRunVM.Factory _RunFactory;
 
         public GameRelease Release { get; }
 
@@ -90,7 +90,6 @@ namespace Synthesis.Bethesda.GUI
         public IObservable<ILinkCache?> SimpleLinkCache { get; }
 
         public ILockToCurrentVersioning LockSetting { get; }
-        public IPatcherFactory PatcherFactory { get; }
 
         [Reactive]
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
@@ -110,19 +109,17 @@ namespace Synthesis.Bethesda.GUI
             SolutionPatcherInitVM solutionPatcherInitVm,
             CliPatcherInitVM cliPatcherInitVm,
             IRetrieveSaveSettings retrieveSaveSettings,
-            IPatcherFactory patcherFactory,
             ISelectedProfileControllerVm selProfile,
             IPipelineSettingsPath pipelineSettingsPath,
             IGuiSettingsPath guiPaths,
             ILogger logger,
-            IPatchersRunFactory runFactory)
+            PatchersRunVM.Factory runFactory)
         {
             _Init = init;
             DataFolderOverride = dataFolder;
             Versioning = versioning;
             Patchers = patchersList.Patchers;
             LockSetting = lockSetting;
-            PatcherFactory = patcherFactory;
             DisplayController = profileDisplay;
             _Navigate = navigate;
             _RetrieveSaveSettings = retrieveSaveSettings;
@@ -457,7 +454,7 @@ namespace Synthesis.Bethesda.GUI
 
         public PatchersRunVM GetRun(ConfigurationVM configurationVm)
         {
-            return _RunFactory.Create(configurationVm, this, _Logger);
+            return _RunFactory(configurationVm, this, _Logger);
         }
     }
 }

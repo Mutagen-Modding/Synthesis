@@ -57,6 +57,8 @@ namespace Synthesis.Bethesda.GUI
 
         private PatcherRunVM? _previousPatcher;
 
+        public delegate PatchersRunVM Factory(ConfigurationVM configuration, ProfileVM profile, ILogger logger);
+        
         public PatchersRunVM(
             ConfigurationVM configuration,
             ILogger logger,

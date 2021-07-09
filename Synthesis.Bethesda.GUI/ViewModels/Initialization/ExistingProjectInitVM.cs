@@ -9,7 +9,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using Synthesis.Bethesda.GUI.Services.Profile;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.GUI
             PathType = PathPickerVM.PathTypeOptions.File,
         };
 
-        public ExistingProjectInitVM(IPatcherFactory patcherFactory)
+        public ExistingProjectInitVM(Func<SolutionPatcherVM> patcherFactory)
         {
             SolutionPath.PathType = PathPickerVM.PathTypeOptions.File;
             SolutionPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
@@ -81,7 +81,7 @@ namespace Synthesis.Bethesda.GUI
                     {
                         return q.Select(i =>
                         {
-                            var patcher = patcherFactory.GetSolutionPatcher();
+                            var patcher = patcherFactory();
                             patcher.SolutionPath.TargetPath = SolutionPath.TargetPath;
                             patcher.ProjectSubpath = i.TargetPath.TrimStart($"{Path.GetDirectoryName(SolutionPath.TargetPath)}\\"!);
                             return patcher;

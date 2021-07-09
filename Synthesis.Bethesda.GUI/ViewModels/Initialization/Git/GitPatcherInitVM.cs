@@ -1,12 +1,10 @@
 using DynamicData;
 using DynamicData.Binding;
-using LibGit2Sharp;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.DTO;
-using Synthesis.Bethesda.Execution;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,16 +17,14 @@ using System.Threading;
 using System.Windows.Input;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRespository;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Main;
-using Synthesis.Bethesda.GUI.Services.Profile;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI
 {
     public class GitPatcherInitVM : PatcherInitVM
     {
-        private readonly IPatcherFactory _PatcherFactory;
+        private readonly Func<GitPatcherVM> _PatcherFactory;
         private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
         public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
 
@@ -65,7 +61,7 @@ namespace Synthesis.Bethesda.GUI
         public GitPatcherInitVM(
             PatcherInitializationVM init,
             ILogger logger,
-            IPatcherFactory patcherFactory,
+            Func<GitPatcherVM> patcherFactory,
             INavigateTo navigateTo, 
             IProvideRepositoryCheckouts repositoryCheckouts,
             ICheckOrCloneRepo checkOrClone,
@@ -73,7 +69,7 @@ namespace Synthesis.Bethesda.GUI
             : base(init)
         {
             _PatcherFactory = patcherFactory;
-            Patcher = patcherFactory.GetGitPatcher();
+            Patcher = patcherFactory();
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)
                 .Select(x => ErrorResponse.Create(x))
@@ -194,7 +190,7 @@ namespace Synthesis.Bethesda.GUI
 
         public void AddStorePatcher(PatcherStoreListingVM listing)
         {
-            var patcher = _PatcherFactory.GetGitPatcher();
+            var patcher = _PatcherFactory();
             patcher.RemoteRepoPath = listing.RepoPath;
             patcher.ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\');
             Init.AddNewPatchers(patcher.AsEnumerable<PatcherVM>().ToList());

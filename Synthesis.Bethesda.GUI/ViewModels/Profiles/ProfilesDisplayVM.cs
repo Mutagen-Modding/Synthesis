@@ -7,7 +7,9 @@ using ReactiveUI.Fody.Helpers;
 using System.Windows.Input;
 using System;
 using System.Linq;
+using Autofac;
 using Microsoft.Extensions.DependencyInjection;
+using Synthesis.Bethesda.GUI.DI;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Main;
 
@@ -30,6 +32,7 @@ namespace Synthesis.Bethesda.GUI
         public object? DisplayObject { get; set; } = null;
 
         public ProfilesDisplayVM(
+            ILifetimeScope scope,
             ConfigurationVM parent,
             IProfileFactory profileFactory, 
             IActivePanelControllerVm activePanelController,
@@ -49,11 +52,9 @@ namespace Synthesis.Bethesda.GUI
                 DisplayedProfile = null;
             });
 
+            var factory = scope.Resolve<ProfileDisplayVM.Factory>();
             ProfilesDisplay = parent.Profiles.Connect()
-                .Transform(x => Inject.Container
-                    .With(this)
-                    .With(x)
-                    .GetInstance<ProfileDisplayVM>())
+                .Transform(x => factory(this, x))
                 // Select the currently active profile during initial display
                 .OnItemAdded(p =>
                 {

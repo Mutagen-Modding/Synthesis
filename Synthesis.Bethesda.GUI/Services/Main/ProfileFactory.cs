@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Linq;
+using System.Reactive.Disposables;
+using Autofac;
 using DynamicData;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.GUI.Registers;
+using Synthesis.Bethesda.GUI.DI;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Services.Main
 {
@@ -18,17 +21,34 @@ namespace Synthesis.Bethesda.GUI.Services.Main
 
     public class ProfileFactory : IProfileFactory
     {
+        private readonly ILifetimeScope _Scope;
         private readonly ILogger _Logger;
 
-        public ProfileFactory(ILogger logger)
+        public ProfileFactory(
+            ILifetimeScope scope,
+            ILogger logger)
         {
+            _Scope = scope;
             _Logger = logger;
         }
         
         public ProfileVM Get(ISynthesisProfile settings)
         {
             _Logger.Information("Loading {Release} Profile {Nickname} with ID {ID}", settings.TargetRelease, settings.Nickname, settings.ID);
-            var profile = Get(settings.TargetRelease, settings.ID, settings.Nickname);
+            var scope = _Scope.BeginLifetimeScope(cfg =>
+            {
+                var ident = new ProfileIdentifier()
+                {
+                    ID = settings.ID,
+                    Release = settings.TargetRelease,
+                    Nickname = settings.Nickname
+                };
+                cfg.RegisterModule(new ProfileModule(ident));
+                cfg.RegisterInstance(ident).As<IGameReleaseContext>();
+            });
+            var profile = scope.Resolve<ProfileVM>();
+            
+            scope.DisposeWith(profile);
             profile.Versioning.MutagenVersioning = settings.MutagenVersioning;
             profile.Versioning.ManualMutagenVersion = settings.MutagenManualVersion;
             profile.Versioning.SynthesisVersioning = settings.SynthesisVersioning;
@@ -37,13 +57,17 @@ namespace Synthesis.Bethesda.GUI.Services.Main
             profile.ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
             profile.LockSetting.Lock = settings.LockToCurrentVersioning;
             profile.SelectedPersistenceMode = settings.Persistence;
+
+            var gitFactory = scope.Resolve<GitPatcherVM.Factory>();
+            var slnFactory = scope.Resolve<SolutionPatcherVM.Factory>();
+            var cliFactory = scope.Resolve<CliPatcherVM.Factory>();
             profile.Patchers.AddRange(settings.Patchers.Select(x =>
             {
                 PatcherVM ret = x switch
                 {
-                    GithubPatcherSettings git => profile.PatcherFactory.Get(git),
-                    SolutionPatcherSettings soln => profile.PatcherFactory.Get(soln),
-                    CliPatcherSettings cli => profile.PatcherFactory.Get(cli),
+                    GithubPatcherSettings git => gitFactory(git),
+                    SolutionPatcherSettings soln => slnFactory(soln),
+                    CliPatcherSettings cli => cliFactory(cli),
                     _ => throw new NotImplementedException(),
                 };
                 return ret;
@@ -54,24 +78,20 @@ namespace Synthesis.Bethesda.GUI.Services.Main
         public ProfileVM Get(GameRelease release, string id, string nickname)
         {
             _Logger.Information("Creating {Release} Profile {Nickname} with ID {ID}", release, nickname, id);
-            return InternalGet(release, id, nickname);
-        }
-
-        public ProfileVM InternalGet(GameRelease release, string id, string nickname)
-        {
-            var ident = new ProfileIdentifier(Inject.Container.CreateChildContainer())
+            var scope = _Scope.BeginLifetimeScope(cfg =>
             {
-                ID = id,
-                Release = release,
-                Nickname = nickname
-            };
-            ident.Container.Configure(cfg =>
-            {
-                cfg.For<IProfileIdentifier>().Use(ident);
-                cfg.For<IGameReleaseContext>().Use(ident);
-                cfg.AddRegistry<ProfileRegister>();
+                cfg.RegisterModule(
+                    new ProfileModule(
+                        new ProfileIdentifier()
+                        {
+                            ID = id,
+                            Release = release,
+                            Nickname = nickname
+                        }));
             });
-            return ident.Container.GetInstance<ProfileVM>();
+            var ret = scope.Resolve<ProfileVM>();
+            scope.DisposeWith(ret);
+            return ret;
         }
     }
 }

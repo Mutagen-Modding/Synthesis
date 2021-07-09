@@ -1,6 +1,8 @@
 using System.ComponentModel;
 using System.Windows;
+using Autofac;
 using Synthesis.Bethesda.Execution.Placement;
+using Synthesis.Bethesda.GUI.DI;
 using Synthesis.Bethesda.GUI.Services.Startup;
 
 namespace Synthesis.Bethesda.GUI.Views
@@ -21,13 +23,15 @@ namespace Synthesis.Bethesda.GUI.Views
         {
             InitializeComponent();
 
-            new Inject(c =>
-            {
-                c.ForSingletonOf<IWindowPlacement>().Use(this);
-                c.ForSingletonOf<IMainWindow>().Use(this);
-            });
+            var builder = new ContainerBuilder();
+            builder.RegisterModule<MainModule>();
+            builder.RegisterInstance(this)
+                .AsSelf()
+                .As<IWindowPlacement>()
+                .As<IMainWindow>();
+            var container = builder.Build();
 
-            Inject.Container.GetInstance<IStartup>()
+            container.Resolve<IStartup>()
                 .Initialize();
         }
     }

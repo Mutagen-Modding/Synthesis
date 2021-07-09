@@ -3,7 +3,6 @@ using LibGit2Sharp;
 using Mutagen.Bethesda.Synthesis;
 using Noggog;
 using Noggog.Utility;
-using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using System;
@@ -12,9 +11,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.GUI;
 
 namespace Synthesis.Bethesda.ImpactTester
 {
@@ -72,6 +71,10 @@ namespace Synthesis.Bethesda.ImpactTester
 
             bool doThreading = true;
 
+            var builder = new ContainerBuilder();
+            builder.RegisterModule<MainModule>();
+            var build = builder.Build().Resolve<IBuild>();
+
             await Task.WhenAll(deps.GroupBy(x => x.User).Select(group => TaskExt.Run(doThreading, async() =>
             {
                 cancel.ThrowIfCancellationRequested();
@@ -125,7 +128,7 @@ namespace Synthesis.Bethesda.ImpactTester
                                 continue;
                             }
                             System.Console.WriteLine($"Checking {group.Key}/{dependency.Repository}:{proj}");
-                            var compile = await Inject.Instance.GetInstance<IBuild>().Compile(path, cancel, null);
+                            var compile = await build.Compile(path, cancel, null);
                             if (compile.Failed)
                             {
                                 System.Console.WriteLine("Failed compilation");

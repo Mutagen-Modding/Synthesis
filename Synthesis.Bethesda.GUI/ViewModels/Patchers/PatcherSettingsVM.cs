@@ -42,6 +42,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             }
         }
 
+        public delegate PatcherSettingsVM Factory(
+            PatcherVM parent,
+            ILogger logger, 
+            bool needBuild,
+            IObservable<(GetResponse<FilePath> ProjPath, string? SynthVersion)> source);
+        
         public PatcherSettingsVM(
             ILogger logger,
             PatcherVM parent,
