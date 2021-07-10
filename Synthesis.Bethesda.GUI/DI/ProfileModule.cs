@@ -1,5 +1,4 @@
 using Autofac;
-using Mutagen.Bethesda.Autofac;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog.Autofac;
@@ -12,23 +11,18 @@ namespace Synthesis.Bethesda.GUI.DI
 {
     public class ProfileModule : Module
     {
-        private readonly IProfileIdentifier _Ident;
-
-        public ProfileModule(IProfileIdentifier ident)
-        {
-            _Ident = ident;
-        }
+        public const string ScopeNickname = "Profile";
         
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<ProfileVm>().AsSelf()
-                .SingleInstance();
+                .InstancePerMatchingLifetimeScope(ScopeNickname);
             builder.RegisterType<GitPatcherInitVm>().AsSelf()
-                .SingleInstance();
+                .InstancePerMatchingLifetimeScope(ScopeNickname);
             builder.RegisterType<SolutionPatcherInitVm>().AsSelf()
-                .SingleInstance();
+                .InstancePerMatchingLifetimeScope(ScopeNickname);
             builder.RegisterType<CliPatcherInitVm>().AsSelf()
-                .SingleInstance();
+                .InstancePerMatchingLifetimeScope(ScopeNickname);
             builder.RegisterType<ExistingSolutionInitVm>().AsSelf();
             builder.RegisterType<ExistingProjectInitVm>().AsSelf();
             builder.RegisterType<NewSolutionInitVm>().AsSelf();
@@ -41,35 +35,31 @@ namespace Synthesis.Bethesda.GUI.DI
             
             // Test
             builder.RegisterType<PatcherSettingsVm>().AsSelf();
-            
-            builder.RegisterInstance(_Ident)
-                .As<IProfileIdentifier>()
-                .As<IGameReleaseContext>();
 
             builder.RegisterType<ProfilePatchersList>()
                 .As<IRemovePatcherFromProfile>()
                 .As<IProfilePatchersList>()
-                .SingleInstance();
+                .InstancePerMatchingLifetimeScope(ScopeNickname);
             builder.RegisterType<ProfileLoadOrder>()
                 .As<IProfileLoadOrder>()
                 .As<ILoadOrderListingsProvider>()
-                .SingleInstance();
+                .InstancePerMatchingLifetimeScope(ScopeNickname);
             builder.RegisterType<ProfileDirectories>()
                 .As<IProfileDirectories>()
-                .SingleInstance();
+                .InstancePerMatchingLifetimeScope(ScopeNickname);
             builder.RegisterType<ProfileDataFolder>()
                 .As<IProfileDataFolder>()
                 .As<IDataDirectoryProvider>()
-                .SingleInstance();
+                .InstancePerMatchingLifetimeScope(ScopeNickname);
             builder.RegisterType<ProfileVersioning>()
                 .As<IProfileVersioning>()
-                .SingleInstance();
+                .InstancePerMatchingLifetimeScope(ScopeNickname);
             builder.RegisterType<ProfileSimpleLinkCache>()
                 .As<IProfileSimpleLinkCache>()
-                .SingleInstance();
+                .InstancePerMatchingLifetimeScope(ScopeNickname);
 
             builder.RegisterType<ProfileDisplayControllerVm>().As<IProfileDisplayControllerVm>()
-                .SingleInstance();
+                .InstancePerMatchingLifetimeScope(ScopeNickname);
             
             builder.RegisterAssemblyTypes(typeof(PatcherVm).Assembly)
                 .InNamespacesOf(
@@ -79,7 +69,7 @@ namespace Synthesis.Bethesda.GUI.DI
             builder.RegisterAssemblyTypes(typeof(PatcherVm).Assembly)
                 .InNamespacesOf(
                     typeof(ISolutionMetaFileSync))
-                .SingleInstance()
+                .InstancePerMatchingLifetimeScope(ScopeNickname)
                 .AsMatchingInterface();
         }
     }

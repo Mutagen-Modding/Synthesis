@@ -35,17 +35,19 @@ namespace Synthesis.Bethesda.GUI.Services.Main
         public ProfileVm Get(ISynthesisProfile settings)
         {
             _Logger.Information("Loading {Release} Profile {Nickname} with ID {ID}", settings.TargetRelease, settings.Nickname, settings.ID);
-            var scope = _Scope.BeginLifetimeScope(cfg =>
-            {
-                var ident = new ProfileIdentifier()
+            var scope = _Scope.BeginLifetimeScope(
+                ProfileModule.ScopeNickname, 
+                cfg =>
                 {
-                    ID = settings.ID,
-                    Release = settings.TargetRelease,
-                    Nickname = settings.Nickname
-                };
-                cfg.RegisterModule(new ProfileModule(ident));
-                cfg.RegisterInstance(ident).As<IGameReleaseContext>();
-            });
+                    cfg.RegisterInstance(new ProfileIdentifier()
+                        {
+                            ID = settings.ID,
+                            Release = settings.TargetRelease,
+                            Nickname = settings.Nickname
+                        })
+                        .As<IProfileIdentifier>()
+                        .As<IGameReleaseContext>();
+                });
             var profile = scope.Resolve<ProfileVm>();
             
             scope.DisposeWith(profile);
@@ -78,17 +80,19 @@ namespace Synthesis.Bethesda.GUI.Services.Main
         public ProfileVm Get(GameRelease release, string id, string nickname)
         {
             _Logger.Information("Creating {Release} Profile {Nickname} with ID {ID}", release, nickname, id);
-            var scope = _Scope.BeginLifetimeScope(cfg =>
-            {
-                cfg.RegisterModule(
-                    new ProfileModule(
-                        new ProfileIdentifier()
+            var scope = _Scope.BeginLifetimeScope(
+                ProfileModule.ScopeNickname,
+                cfg =>
+                {
+                    cfg.RegisterInstance(new ProfileIdentifier()
                         {
                             ID = id,
                             Release = release,
                             Nickname = nickname
-                        }));
-            });
+                        })
+                        .As<IProfileIdentifier>()
+                        .As<IGameReleaseContext>();
+                });
             var ret = scope.Resolve<ProfileVm>();
             scope.DisposeWith(ret);
             return ret;

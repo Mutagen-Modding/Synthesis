@@ -80,6 +80,14 @@
   <ItemGroup>
     <Folder Include="Services\Profile" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="DI\MainModule.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+  </ItemGroup>
   
   <!-- Replace inherited target -->
   <Target Name="SetVersion" BeforeTargets="GetAssemblyVersion;GetPackageVersion" DependsOnTargets="GitVersion" Returns="$(PackageVersion)">
