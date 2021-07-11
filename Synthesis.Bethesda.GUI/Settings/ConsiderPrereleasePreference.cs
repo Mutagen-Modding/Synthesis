@@ -1,6 +1,7 @@
 ﻿using System;
 using Noggog.WPF;
 using Synthesis.Bethesda.Execution.Versioning;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Settings
 {

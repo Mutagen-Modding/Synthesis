@@ -1,5 +1,6 @@
 ﻿using System.Windows.Input;
 using ReactiveUI;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {

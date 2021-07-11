@@ -1,7 +1,7 @@
-using Noggog.WPF;
 using System;
+using Noggog.WPF;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
     public interface IConfirmationActionVm
     {

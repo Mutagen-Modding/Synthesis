@@ -4,7 +4,7 @@ using System.Reactive.Linq;
 using Noggog.WPF;
 using ReactiveUI;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
     public interface IEnvironmentErrorsVm
     {

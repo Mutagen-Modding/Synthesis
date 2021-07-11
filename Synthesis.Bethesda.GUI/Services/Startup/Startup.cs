@@ -9,6 +9,7 @@ using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 using Synthesis.Bethesda.GUI.Views;
 
 namespace Synthesis.Bethesda.GUI.Services.Startup

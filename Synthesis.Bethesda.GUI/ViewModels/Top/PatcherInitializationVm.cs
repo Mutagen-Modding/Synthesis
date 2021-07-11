@@ -10,7 +10,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
-namespace Synthesis.Bethesda.GUI.ViewModels
+namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
     public interface IPatcherInitializationVm
     {

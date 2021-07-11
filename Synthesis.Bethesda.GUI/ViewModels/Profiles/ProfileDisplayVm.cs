@@ -13,6 +13,7 @@ using System.Text;
 using System.Windows.Input;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Main;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI
 {

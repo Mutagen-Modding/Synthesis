@@ -1,16 +1,15 @@
-using Noggog.WPF;
-using ReactiveUI;
 using System;
 using System.Reactive.Linq;
-using System.Windows.Input;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Autofac;
-using Noggog;
-using Synthesis.Bethesda.Execution.Settings;
 using Mutagen.Bethesda.Synthesis.Versioning;
+using Noggog;
+using Noggog.WPF;
+using ReactiveUI;
 using Serilog;
+using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Versioning;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
@@ -20,7 +19,7 @@ using Noggog.Utility;
 using System.Diagnostics;
 #endif
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
     public class MainVm : ViewModel
     {

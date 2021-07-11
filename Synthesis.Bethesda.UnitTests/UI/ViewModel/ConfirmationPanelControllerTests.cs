@@ -4,6 +4,7 @@ using AutoFixture;
 using FluentAssertions;
 using NSubstitute;
 using Synthesis.Bethesda.GUI;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.UI.ViewModel

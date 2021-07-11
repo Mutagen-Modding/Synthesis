@@ -20,6 +20,7 @@ using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.DI
 {
@@ -74,19 +75,14 @@ namespace Synthesis.Bethesda.GUI.DI
                 .AsMatchingInterface();
             
             // GUI
-            builder.RegisterType<MainVm>().AsSelf().SingleInstance();
-            builder.RegisterType<ConfigurationVm>().AsSelf().SingleInstance();
-            builder.RegisterType<PatcherInitializationVm>().As<IPatcherInitializationVm>().SingleInstance();
-            builder.RegisterType<ConfirmationPanelControllerVm>().As<IConfirmationPanelControllerVm>().SingleInstance();
-            builder.RegisterType<SelectedProfileControllerVm>().As<ISelectedProfileControllerVm>().SingleInstance();
-            builder.RegisterType<EnvironmentErrorsVm>().As<IEnvironmentErrorsVm>().SingleInstance();
-            builder.RegisterType<ActivePanelControllerVm>().As<IActivePanelControllerVm>().SingleInstance();
             builder.RegisterAssemblyTypes(typeof(INavigateTo).Assembly)
                 .InNamespacesOf(
+                    typeof(MainVm),
                     typeof(INavigateTo),
                     typeof(IStartup),
                     typeof(ISynthesisGuiSettings))
                 .AsImplementedInterfaces()
+                .AsSelf()
                 .SingleInstance();
         }
     }

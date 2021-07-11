@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Documents;
 using DynamicData;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views
 {

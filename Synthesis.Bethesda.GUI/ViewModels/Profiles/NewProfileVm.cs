@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Synthesis.Bethesda.GUI.Services.Main;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI
 {

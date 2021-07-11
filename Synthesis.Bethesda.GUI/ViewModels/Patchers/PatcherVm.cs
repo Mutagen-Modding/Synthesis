@@ -9,6 +9,7 @@ using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {

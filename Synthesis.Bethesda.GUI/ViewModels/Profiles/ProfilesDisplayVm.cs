@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Synthesis.Bethesda.GUI.DI;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Main;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI
 {

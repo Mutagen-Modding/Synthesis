@@ -1,20 +1,19 @@
+using System;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
-using Synthesis.Bethesda.Execution.Settings;
-using System;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
 using Serilog;
+using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.ViewModels;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
     public class ConfigurationVm : ViewModel
     {
