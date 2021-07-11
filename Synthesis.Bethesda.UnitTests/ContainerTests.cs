@@ -35,7 +35,7 @@ namespace Synthesis.Bethesda.UnitTests
                 .As<IGameReleaseContext>();
             RegisterTopLevelMocks(builder);
             var cont = builder.Build();
-            cont.ValidateRegistrations(typeof(IStartup), typeof(ProfileVm));
+            cont.Validate(typeof(IStartup), typeof(ProfileVm));
         }
 
         private void RegisterTopLevelMocks(ContainerBuilder builder)
@@ -51,7 +51,7 @@ namespace Synthesis.Bethesda.UnitTests
             builder.RegisterModule<TopLevelModule>();
             RegisterTopLevelMocks(builder);
             var cont = builder.Build();
-            cont.ValidateRegistrations(typeof(IStartup));
+            cont.Validate(typeof(IStartup));
         }
 
         private void RegisterProfileMocks(ContainerBuilder builder)
@@ -70,7 +70,7 @@ namespace Synthesis.Bethesda.UnitTests
             RegisterProfileMocks(builder);
             RegisterTopLevelMocks(builder);
             var cont = builder.Build();
-            cont.ValidateRegistrations(typeof(ProfileVm));
+            cont.Validate(typeof(ProfileVm));
         }
         
         [Fact]
@@ -79,7 +79,7 @@ namespace Synthesis.Bethesda.UnitTests
             var builder = new ContainerBuilder();
             builder.RegisterModule<Synthesis.Bethesda.CLI.MainModule>();
             var cont = builder.Build();
-            cont.ValidateRegistrations(typeof(IRunPatcherPipeline));
+            cont.Validate(typeof(IRunPatcherPipeline));
         }
         
         [Fact]
@@ -88,7 +88,7 @@ namespace Synthesis.Bethesda.UnitTests
             var builder = new ContainerBuilder();
             builder.RegisterModule<Synthesis.Bethesda.ImpactTester.MainModule>();
             var cont = builder.Build();
-            cont.ValidateRegistrations(typeof(IBuild));
+            cont.Validate(typeof(IBuild));
         }
     }
 }

@@ -12,8 +12,6 @@ namespace Synthesis.Bethesda.CLI
         {
             builder.RegisterType<ProcessFactory>().As<IProcessFactory>();
             builder.RegisterAssemblyTypes(typeof(ICheckRunnability).Assembly)
-                .InNamespacesOf(typeof(ICheckRunnability))
-                .InNamespacesOf(typeof(IBuild))
                 .AsMatchingInterface();
         }
     }
