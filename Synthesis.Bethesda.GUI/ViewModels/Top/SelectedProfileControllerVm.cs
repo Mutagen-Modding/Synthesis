@@ -1,5 +1,6 @@
 ﻿using Noggog.WPF;
 using ReactiveUI.Fody.Helpers;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {

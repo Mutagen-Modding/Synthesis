@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:noggog="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
+    xmlns:running="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -35,16 +36,16 @@
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding State.Value}" Value="{x:Static vm:RunState.NotStarted}">
+                            <DataTrigger Binding="{Binding State.Value}" Value="{x:Static running:RunState.NotStarted}">
                                 <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray4}" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding State.Value}" Value="{x:Static vm:RunState.Error}">
+                            <DataTrigger Binding="{Binding State.Value}" Value="{x:Static running:RunState.Error}">
                                 <Setter Property="Foreground" Value="{StaticResource Noggog.Brushes.Error.Foreground}" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding State.Value}" Value="{x:Static vm:RunState.Started}">
+                            <DataTrigger Binding="{Binding State.Value}" Value="{x:Static running:RunState.Started}">
                                 <Setter Property="Foreground" Value="{StaticResource PaleYellowBrush}" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding State.Value}" Value="{x:Static vm:RunState.Finished}">
+                            <DataTrigger Binding="{Binding State.Value}" Value="{x:Static running:RunState.Finished}">
                                 <Setter Property="Foreground" Value="{StaticResource PurpleForegroundBrush}" />
                             </DataTrigger>
                         </Style.Triggers>

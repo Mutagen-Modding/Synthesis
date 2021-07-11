@@ -9,6 +9,8 @@
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     xmlns:patchers="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers"
     xmlns:solution="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution"
+    xmlns:git="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization.Git"
+    xmlns:initialization="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -21,7 +23,7 @@
                     Kind="Git"
                     ToolTip="Mutagen Git Repo Patcher" />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:GitPatcherInitVm}">
+            <DataTemplate DataType="{x:Type git:GitPatcherInitVm}">
                 <icon:PackIconMaterial
                     Width="35"
                     Height="35"
@@ -35,7 +37,7 @@
                     Kind="Visualstudio"
                     ToolTip="Mutagen Solution Patcher" />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:SolutionPatcherInitVm}">
+            <DataTemplate DataType="{x:Type initialization:SolutionPatcherInitVm}">
                 <icon:PackIconModern
                     Width="35"
                     Height="35"
@@ -49,7 +51,7 @@
                     Kind="ConsoleLine"
                     ToolTip="External Patcher Program" />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:CliPatcherInitVm}">
+            <DataTemplate DataType="{x:Type initialization:CliPatcherInitVm}">
                 <icon:PackIconMaterial
                     Width="35"
                     Height="35"

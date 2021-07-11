@@ -1,18 +1,14 @@
+using System;
+using System.IO;
+using System.Reactive.Linq;
+using System.Windows.Input;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.DTO;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Main;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization.Git
 {
     public class PatcherStoreListingVm : ViewModel
     {

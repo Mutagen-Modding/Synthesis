@@ -1,14 +1,4 @@
-using DynamicData;
-using Mutagen.Bethesda;
-using Newtonsoft.Json;
-using Noggog;
-using Noggog.WPF;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Settings;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -16,18 +6,28 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using DynamicData;
+using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.WPF.Plugins.Order;
+using Newtonsoft.Json;
+using Noggog;
+using Noggog.WPF;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using Serilog;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Pathing;
-using Synthesis.Bethesda.GUI.Profiles.Plugins;
+using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
     public class ProfileVm : ViewModel
     {

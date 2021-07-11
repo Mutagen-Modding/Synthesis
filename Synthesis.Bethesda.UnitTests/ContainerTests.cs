@@ -2,17 +2,18 @@
 using System.Windows;
 using Autofac;
 using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog;
 using Noggog.Autofac;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Placement;
-using Synthesis.Bethesda.GUI;
-using Synthesis.Bethesda.GUI.DI;
 using Synthesis.Bethesda.GUI.Services.Startup;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.Views;
 using Xunit;
+using Module = Synthesis.Bethesda.GUI.Module;
 
 namespace Synthesis.Bethesda.UnitTests
 {
@@ -26,51 +27,17 @@ namespace Synthesis.Bethesda.UnitTests
     public class ContainerTests
     {
         [Fact]
-        public void GuiMainModule()
+        public void GuiModule()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterModule<MainModule>();
-            builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
-                .As<IProfileIdentifier>()
-                .As<IGameReleaseContext>();
-            RegisterTopLevelMocks(builder);
-            var cont = builder.Build();
-            cont.Validate(typeof(IStartup), typeof(ProfileVm));
-        }
-
-        private void RegisterTopLevelMocks(ContainerBuilder builder)
-        {
+            builder.RegisterModule<Module>();
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
-        }
-        
-        [Fact]
-        public void GuiTopLevelModule()
-        {
-            var builder = new ContainerBuilder();
-            builder.RegisterModule<TopLevelModule>();
-            RegisterTopLevelMocks(builder);
-            var cont = builder.Build();
-            cont.Validate(typeof(IStartup));
-        }
-
-        private void RegisterProfileMocks(ContainerBuilder builder)
-        {
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
                 .As<IGameReleaseContext>();
-        }
-        
-        [Fact]
-        public void ProfileModule()
-        {
-            var builder = new ContainerBuilder();
-            builder.RegisterModule<MainModule>();
-            builder.RegisterModule<ProfileModule>();
-            RegisterProfileMocks(builder);
-            RegisterTopLevelMocks(builder);
             var cont = builder.Build();
-            cont.Validate(typeof(ProfileVm));
+            cont.Validate(typeof(IStartup), typeof(ProfileVm));
         }
         
         [Fact]
@@ -78,6 +45,9 @@ namespace Synthesis.Bethesda.UnitTests
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<Synthesis.Bethesda.CLI.MainModule>();
+            builder.RegisterMock<IGameReleaseContext>();
+            builder.RegisterMock<IDataDirectoryProvider>();
+            builder.RegisterMock<IPluginListingsPathProvider>();
             var cont = builder.Build();
             cont.Validate(typeof(IRunPatcherPipeline));
         }

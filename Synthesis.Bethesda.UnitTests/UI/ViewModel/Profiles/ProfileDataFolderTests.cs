@@ -11,7 +11,8 @@ using Noggog.Reactive;
 using NSubstitute;
 using Serilog;
 using Synthesis.Bethesda.GUI;
-using Synthesis.Bethesda.GUI.Profiles.Plugins;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles

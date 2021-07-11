@@ -4,6 +4,7 @@ using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 {

@@ -1,8 +1,10 @@
 ﻿using System.Windows.Input;
 using ReactiveUI;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
     public interface IPatcherStartInitializationVm
     {

@@ -1,21 +1,19 @@
-using Noggog;
-using Noggog.WPF;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using DynamicData.Binding;
+using Noggog;
+using Noggog.WPF;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using Serilog;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.ViewModels;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization
 {
     public class SolutionPatcherInitVm : PatcherInitVm
     {

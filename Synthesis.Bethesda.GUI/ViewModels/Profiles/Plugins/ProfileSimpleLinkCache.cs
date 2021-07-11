@@ -9,7 +9,7 @@ using Mutagen.Bethesda.Plugins.Records;
 using ReactiveUI;
 using Serilog;
 
-namespace Synthesis.Bethesda.GUI.Profiles.Plugins
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 {
     public interface IProfileSimpleLinkCache
     {

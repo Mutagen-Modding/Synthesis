@@ -1,7 +1,7 @@
 ﻿using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
     public interface IProfileIdentifier : IGameReleaseContext
     {

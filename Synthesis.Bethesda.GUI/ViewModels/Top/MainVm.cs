@@ -13,6 +13,8 @@ using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 #if !DEBUG
 using Noggog.Utility;

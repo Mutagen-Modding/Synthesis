@@ -1,21 +1,15 @@
+using System.Reactive.Linq;
+using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
-using Mutagen.Bethesda;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Settings;
-using System;
-using System.Collections.Generic;
-using System.Reactive.Linq;
-using System.Text;
-using System.Windows.Input;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
     public class ProfileDisplayVm : ViewModel
     {

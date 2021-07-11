@@ -8,18 +8,20 @@
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
+    xmlns:git="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization.Git"
+    xmlns:initialization="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <ContentControl x:Name="ConfigDetailPane" Margin="15,15,15,0">
         <ContentControl.Resources>
-            <DataTemplate DataType="{x:Type vm:GitPatcherInitVm}">
+            <DataTemplate DataType="{x:Type git:GitPatcherInitVm}">
                 <local:GitInitView />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:SolutionPatcherInitVm}">
+            <DataTemplate DataType="{x:Type initialization:SolutionPatcherInitVm}">
                 <local:SolutionInitView />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:CliPatcherInitVm}">
+            <DataTemplate DataType="{x:Type initialization:CliPatcherInitVm}">
                 <local:CliInitView />
             </DataTemplate>
         </ContentControl.Resources>

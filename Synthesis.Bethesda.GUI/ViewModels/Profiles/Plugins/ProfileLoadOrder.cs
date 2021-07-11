@@ -1,17 +1,17 @@
-﻿using System.Reactive.Linq;
-using DynamicData;
-using Mutagen.Bethesda.WPF.Plugins.Order;
-using Noggog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
+using DynamicData;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Order.DI;
+using Mutagen.Bethesda.WPF.Plugins.Order;
+using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
 
-namespace Synthesis.Bethesda.GUI.Profiles.Plugins
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 {
     public interface IProfileLoadOrder
     {

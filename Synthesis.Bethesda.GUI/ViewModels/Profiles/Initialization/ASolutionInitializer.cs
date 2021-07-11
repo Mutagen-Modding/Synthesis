@@ -1,11 +1,11 @@
-using Noggog;
-using Noggog.WPF;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Noggog;
+using Noggog.WPF;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization
 {
     public abstract class ASolutionInitializer : ViewModel
     {

@@ -1,10 +1,7 @@
 using Noggog.WPF;
 using Synthesis.Bethesda.DTO;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization.Git
 {
     public class RepositoryStoreListingVm : ViewModel
     {

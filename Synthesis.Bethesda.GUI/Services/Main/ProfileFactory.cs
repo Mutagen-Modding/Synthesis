@@ -7,9 +7,9 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.GUI.DI;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 
 namespace Synthesis.Bethesda.GUI.Services.Main
 {
@@ -36,7 +36,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
         {
             _Logger.Information("Loading {Release} Profile {Nickname} with ID {ID}", settings.TargetRelease, settings.Nickname, settings.ID);
             var scope = _Scope.BeginLifetimeScope(
-                ProfileModule.ScopeNickname, 
+                Module.ProfileNickname, 
                 cfg =>
                 {
                     cfg.RegisterInstance(new ProfileIdentifier()
@@ -81,7 +81,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
         {
             _Logger.Information("Creating {Release} Profile {Nickname} with ID {ID}", release, nickname, id);
             var scope = _Scope.BeginLifetimeScope(
-                ProfileModule.ScopeNickname,
+                Module.ProfileNickname,
                 cfg =>
                 {
                     cfg.RegisterInstance(new ProfileIdentifier()

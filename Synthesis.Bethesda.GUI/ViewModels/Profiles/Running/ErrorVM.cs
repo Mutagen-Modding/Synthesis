@@ -1,14 +1,12 @@
+using System;
+using System.Reactive.Linq;
+using System.Windows.Input;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Reactive.Linq;
-using System.Text;
-using System.Windows.Input;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 {
     public class ErrorVM : ViewModel
     {

@@ -3,6 +3,7 @@ using System.Windows;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
 
 namespace Synthesis.Bethesda.GUI.Views
 {

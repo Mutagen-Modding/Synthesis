@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+using System.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using Mutagen.Bethesda;
@@ -5,13 +8,10 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using System;
-using System.IO;
-using System.Linq;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
     public class NewProfileVm : ViewModel
     {

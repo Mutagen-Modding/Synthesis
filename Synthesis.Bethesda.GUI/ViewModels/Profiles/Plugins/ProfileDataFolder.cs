@@ -1,10 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Linq;
 using Mutagen.Bethesda.Environments.DI;
-using Mutagen.Bethesda.Installs;
 using Noggog;
 using Noggog.Reactive;
 using Noggog.WPF;
@@ -12,7 +10,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 
-namespace Synthesis.Bethesda.GUI.Profiles.Plugins
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 {
     public interface IProfileDataFolder
     {

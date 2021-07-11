@@ -1,11 +1,3 @@
-using DynamicData;
-using DynamicData.Binding;
-using Noggog;
-using Noggog.WPF;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.Execution;
-using Synthesis.Bethesda.Execution.Reporters;
 using System;
 using System.IO;
 using System.Linq;
@@ -14,15 +6,19 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Mutagen.Bethesda.Environments.DI;
-using Mutagen.Bethesda.Plugins.Order;
-using Mutagen.Bethesda.WPF.Plugins.Order;
+using DynamicData;
+using DynamicData.Binding;
+using Noggog;
+using Noggog.WPF;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using Serilog;
+using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 {
     public class PatchersRunVm : ViewModel
     {

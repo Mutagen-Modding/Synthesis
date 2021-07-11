@@ -1,8 +1,7 @@
 ﻿using System.IO;
-using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Pathing;
 
-namespace Synthesis.Bethesda.GUI.Profiles.Plugins
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 {
     public interface IProfileDirectories
     {

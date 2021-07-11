@@ -1,28 +1,27 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading;
+using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.DTO;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reactive; 
-using System.Reactive.Linq;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading;
-using System.Windows.Input;
 using Serilog;
+using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services.Main;
-using Synthesis.Bethesda.GUI.ViewModels;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization.Git
 {
     public class GitPatcherInitVm : PatcherInitVm
     {

@@ -1,7 +1,7 @@
 ﻿using DynamicData;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
-namespace Synthesis.Bethesda.GUI.Profiles.Plugins
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 {
     public interface IRemovePatcherFromProfile
     {

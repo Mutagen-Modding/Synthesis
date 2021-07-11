@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     xmlns:patchers="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers"
+    xmlns:running="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -337,7 +338,7 @@
                 <DataTemplate DataType="{x:Type patchers:PatcherVm}">
                     <local:PatcherConfigView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:ErrorVM}">
+                <DataTemplate DataType="{x:Type running:ErrorVM}">
                     <local:ErrorView />
                 </DataTemplate>
             </ContentControl.Resources>

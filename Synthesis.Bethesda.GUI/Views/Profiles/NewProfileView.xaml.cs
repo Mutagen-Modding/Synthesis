@@ -1,6 +1,7 @@
 ﻿using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 
 namespace Synthesis.Bethesda.GUI.Views
 {

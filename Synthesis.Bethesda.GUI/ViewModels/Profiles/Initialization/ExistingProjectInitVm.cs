@@ -1,3 +1,7 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -5,13 +9,9 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers;
-using System;
-using System.IO;
-using System.Linq;
-using System.Reactive.Linq;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization
 {
     public class ExistingProjectInitVm : ASolutionInitializer
     {

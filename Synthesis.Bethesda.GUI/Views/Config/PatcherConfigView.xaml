@@ -10,6 +10,7 @@
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     xmlns:patchers="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers"
     xmlns:solution="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution"
+    xmlns:running="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
     d:DesignHeight="450"
     d:DesignWidth="800"
     FocusVisualStyle="{x:Null}"
@@ -69,7 +70,7 @@
                 <DataTemplate DataType="{x:Type patchers:CliPatcherVm}">
                     <local:CliConfigView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:ErrorVM}">
+                <DataTemplate DataType="{x:Type running:ErrorVM}">
                     <local:PatcherErrorView />
                 </DataTemplate>
             </ContentControl.Resources>

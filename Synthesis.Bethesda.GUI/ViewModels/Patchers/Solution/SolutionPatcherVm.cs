@@ -21,9 +21,11 @@ using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution

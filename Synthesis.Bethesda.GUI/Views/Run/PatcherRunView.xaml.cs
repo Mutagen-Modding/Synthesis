@@ -5,6 +5,7 @@ using System;
 using System.Windows;
 using System.Reactive.Linq;
 using Noggog;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.Views
 {

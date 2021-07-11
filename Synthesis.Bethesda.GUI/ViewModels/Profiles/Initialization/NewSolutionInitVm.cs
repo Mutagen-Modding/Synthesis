@@ -1,15 +1,15 @@
-using Noggog;
-using Noggog.WPF;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System;
 using System.IO;
 using System.Reactive.Linq;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Synthesis.Projects;
+using Noggog;
+using Noggog.WPF;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization
 {
     public class NewSolutionInitVm : ASolutionInitializer
     {

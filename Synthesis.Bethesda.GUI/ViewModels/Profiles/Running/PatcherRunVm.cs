@@ -1,19 +1,15 @@
-using DynamicData;
-using DynamicData.Binding;
+using System;
+using System.Reactive.Linq;
+using System.Text;
 using ICSharpCode.AvalonEdit.Document;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reactive.Linq;
-using System.Text;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 {
     public class PatcherRunVm : ViewModel
     {
