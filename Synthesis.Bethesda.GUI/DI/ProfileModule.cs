@@ -2,6 +2,11 @@ using Autofac;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog.Autofac;
+using Synthesis.Bethesda.Execution.CLI;
+using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.GUI.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
@@ -69,6 +74,13 @@ namespace Synthesis.Bethesda.GUI.DI
             builder.RegisterAssemblyTypes(typeof(PatcherVm).Assembly)
                 .InNamespacesOf(
                     typeof(ISolutionMetaFileSync))
+                .InstancePerMatchingLifetimeScope(ScopeNickname)
+                .AsMatchingInterface();
+            
+            // Execution lib
+            builder.RegisterAssemblyTypes(typeof(IRunner).Assembly)
+                .InNamespacesOf(
+                    typeof(IRunner))
                 .InstancePerMatchingLifetimeScope(ScopeNickname)
                 .AsMatchingInterface();
         }

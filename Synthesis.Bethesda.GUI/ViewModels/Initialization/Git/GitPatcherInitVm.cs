@@ -18,6 +18,7 @@ using System.Windows.Input;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services.Main;
+using Synthesis.Bethesda.GUI.ViewModels;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI
@@ -59,7 +60,7 @@ namespace Synthesis.Bethesda.GUI
         private bool _wasAdded = false;
 
         public GitPatcherInitVm(
-            PatcherInitializationVm init,
+            IPatcherInitializationVm init,
             ILogger logger,
             Func<GitPatcherVm> patcherFactory,
             INavigateTo navigateTo, 

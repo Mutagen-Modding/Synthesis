@@ -2,6 +2,7 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI.Fody.Helpers;
 using System.Collections.Generic;
+using Synthesis.Bethesda.GUI.ViewModels;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI
@@ -11,13 +12,13 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public string DisplayName { get; set; } = string.Empty;
         
-        public PatcherInitializationVm Init { get; }
+        public IPatcherInitializationVm Init { get; }
 
         public abstract ErrorResponse CanCompleteConfiguration { get; }
 
         public abstract IAsyncEnumerable<PatcherVm> Construct();
 
-        public PatcherInitVm(PatcherInitializationVm init)
+        public PatcherInitVm(IPatcherInitializationVm init)
         {
             Init = init;
         }

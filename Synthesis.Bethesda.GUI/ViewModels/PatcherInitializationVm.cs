@@ -8,12 +8,22 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
+namespace Synthesis.Bethesda.GUI.ViewModels
 {
-    public class PatcherInitializationVm : ViewModel
+    public interface IPatcherInitializationVm
+    {
+        ICommand CompleteConfiguration { get; }
+        ICommand CancelConfiguration { get; }
+        PatcherInitVm? NewPatcher { get; set; }
+        void AddNewPatchers(List<PatcherVm> patchersToAdd);
+    }
+
+    public class PatcherInitializationVm : ViewModel, IPatcherInitializationVm
     {
         private readonly ISelectedProfileControllerVm _SelectedProfile;
+        
         public ICommand CompleteConfiguration { get; }
         
         public ICommand CancelConfiguration { get; }

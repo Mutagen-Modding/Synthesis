@@ -11,6 +11,7 @@ using System.Reactive.Linq;
 using Serilog;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.ViewModels;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI
@@ -36,10 +37,10 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<PatchersRunVm?> _CurrentRun;
         public PatchersRunVm? CurrentRun => _CurrentRun.Value;
         
-        public PatcherInitializationVm Init { get; }
+        public IPatcherInitializationVm Init { get; }
 
         public ConfigurationVm(
-            PatcherInitializationVm initVm,
+            IPatcherInitializationVm initVm,
             IActivePanelControllerVm activePanelController,
             ISelectedProfileControllerVm selectedProfile,
             ISaveSignal saveSignal,

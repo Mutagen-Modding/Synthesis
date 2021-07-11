@@ -2,6 +2,7 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Collections.Generic;
+using Synthesis.Bethesda.GUI.ViewModels;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI
@@ -14,7 +15,7 @@ namespace Synthesis.Bethesda.GUI
         public CliPatcherVm Patcher { get; }
 
         public CliPatcherInitVm(
-            PatcherInitializationVm init, 
+            IPatcherInitializationVm init, 
             CliPatcherVm patcher)
             : base(init)
         {

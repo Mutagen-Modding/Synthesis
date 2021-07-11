@@ -30,7 +30,6 @@ namespace Synthesis.Bethesda.GUI
 {
     public class ProfileVm : ViewModel
     {
-        private readonly PatcherInitializationVm _Init;
         private readonly INavigateTo _Navigate;
         private readonly IRetrieveSaveSettings _RetrieveSaveSettings;
         private readonly IPipelineSettingsPath _PipelinePaths;
@@ -42,9 +41,6 @@ namespace Synthesis.Bethesda.GUI
 
         public SourceList<PatcherVm> Patchers { get; }
 
-        public ICommand AddGitPatcherCommand { get; }
-        public ICommand AddSolutionPatcherCommand { get; }
-        public ICommand AddCliPatcherCommand { get; }
         public ICommand GoToErrorCommand { get; }
         public ICommand EnableAllPatchersCommand { get; }
         public ICommand DisableAllPatchersCommand { get; }
@@ -94,10 +90,12 @@ namespace Synthesis.Bethesda.GUI
         [Reactive]
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
         
+        public IPatcherStartInitializationVm Init { get; }
+        
         public ProfileVm(
             IProfilePatchersList patchersList,
             IProfileDataFolder dataFolder,
-            PatcherInitializationVm init,
+            IPatcherStartInitializationVm startInit,
             IProfileIdentifier ident,
             IProfileLoadOrder loadOrder,
             IProfileDirectories dirs,
@@ -105,9 +103,6 @@ namespace Synthesis.Bethesda.GUI
             INavigateTo navigate,
             IProfileDisplayControllerVm profileDisplay,
             ILockToCurrentVersioning lockSetting,
-            GitPatcherInitVm gitPatcherInitVm,
-            SolutionPatcherInitVm solutionPatcherInitVm,
-            CliPatcherInitVm cliPatcherInitVm,
             IRetrieveSaveSettings retrieveSaveSettings,
             ISelectedProfileControllerVm selProfile,
             IPipelineSettingsPath pipelineSettingsPath,
@@ -115,7 +110,7 @@ namespace Synthesis.Bethesda.GUI
             ILogger logger,
             PatchersRunVm.Factory runFactory)
         {
-            _Init = init;
+            Init = startInit;
             DataFolderOverride = dataFolder;
             Versioning = versioning;
             Patchers = patchersList.Patchers;
@@ -130,22 +125,6 @@ namespace Synthesis.Bethesda.GUI
             Nickname = ident.Nickname;
             ID = ident.ID;
             Release = ident.Release;
-            AddGitPatcherCommand = ReactiveCommand.Create(() =>
-            {
-                SetInitializer(gitPatcherInitVm);
-            });
-            AddSolutionPatcherCommand = ReactiveCommand.Create(() => SetInitializer(solutionPatcherInitVm));
-            AddCliPatcherCommand = ReactiveCommand.Create(() =>
-            {
-                try
-                {
-                    SetInitializer(cliPatcherInitVm);
-                }
-                catch (Exception e)
-                {
-                    logger.Error(e, "Failed to create new Cli Patcher.");
-                }
-            });
 
             ProfileDirectory = dirs.ProfileDirectory;
             WorkingDirectory = dirs.WorkingDirectory;
@@ -397,11 +376,6 @@ namespace Synthesis.Bethesda.GUI
                 LockToCurrentVersioning = LockSetting.Lock,
                 Persistence = SelectedPersistenceMode,
             };
-        }
-
-        private void SetInitializer(PatcherInitVm initializer)
-        {
-            _Init.NewPatcher = initializer;
         }
 
         public override void Dispose()

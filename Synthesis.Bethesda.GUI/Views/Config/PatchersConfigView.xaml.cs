@@ -28,13 +28,13 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated((disposable) =>
             {
-                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.AddGitPatcherCommand, fallback: default(ICommand))
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Init.AddGitPatcherCommand, fallback: default(ICommand))
                     .BindToStrict(this, x => x.AddGitButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.AddSolutionPatcherCommand, fallback: default(ICommand))
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Init.AddSolutionPatcherCommand, fallback: default(ICommand))
                     .BindToStrict(this, x => x.AddSolutionButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.AddCliPatcherCommand, fallback: default(ICommand))
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Init.AddCliPatcherCommand, fallback: default(ICommand))
                     .BindToStrict(this, x => x.AddCliButton.Command)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.PatchersDisplay)

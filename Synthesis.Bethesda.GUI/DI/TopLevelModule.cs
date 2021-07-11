@@ -14,11 +14,11 @@ using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Pathing;
-using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.ViewModels;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 
 namespace Synthesis.Bethesda.GUI.DI
@@ -68,7 +68,6 @@ namespace Synthesis.Bethesda.GUI.DI
             builder.RegisterAssemblyTypes(typeof(ICheckOrCloneRepo).Assembly)
                 .InNamespacesOf(
                     typeof(IWorkingDirectorySubPaths),
-                    typeof(IRunner),
                     typeof(ICheckoutRunnerRepository),
                     typeof(ICheckRunnability))
                 .Except<ProvideWorkingDirectory>()
@@ -77,7 +76,7 @@ namespace Synthesis.Bethesda.GUI.DI
             // GUI
             builder.RegisterType<MainVm>().AsSelf().SingleInstance();
             builder.RegisterType<ConfigurationVm>().AsSelf().SingleInstance();
-            builder.RegisterType<PatcherInitializationVm>().AsSelf().SingleInstance();
+            builder.RegisterType<PatcherInitializationVm>().As<IPatcherInitializationVm>().SingleInstance();
             builder.RegisterType<ConfirmationPanelControllerVm>().As<IConfirmationPanelControllerVm>().SingleInstance();
             builder.RegisterType<SelectedProfileControllerVm>().As<ISelectedProfileControllerVm>().SingleInstance();
             builder.RegisterType<EnvironmentErrorsVm>().As<IEnvironmentErrorsVm>().SingleInstance();

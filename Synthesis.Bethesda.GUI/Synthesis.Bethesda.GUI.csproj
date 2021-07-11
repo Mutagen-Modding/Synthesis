@@ -87,6 +87,11 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
+    <Compile Update="ViewModels\PatcherInitializationVm.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
   </ItemGroup>
   
   <!-- Replace inherited target -->
