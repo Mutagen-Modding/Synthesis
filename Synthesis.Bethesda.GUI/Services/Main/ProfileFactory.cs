@@ -60,20 +60,8 @@ namespace Synthesis.Bethesda.GUI.Services.Main
             profile.LockSetting.Lock = settings.LockToCurrentVersioning;
             profile.SelectedPersistenceMode = settings.Persistence;
 
-            var gitFactory = scope.Resolve<GitPatcherVm.Factory>();
-            var slnFactory = scope.Resolve<SolutionPatcherVm.Factory>();
-            var cliFactory = scope.Resolve<CliPatcherVm.Factory>();
-            profile.Patchers.AddRange(settings.Patchers.Select(x =>
-            {
-                PatcherVm ret = x switch
-                {
-                    GithubPatcherSettings git => gitFactory(git),
-                    SolutionPatcherSettings soln => slnFactory(soln),
-                    CliPatcherSettings cli => cliFactory(cli),
-                    _ => throw new NotImplementedException(),
-                };
-                return ret;
-            }));
+            var factory = scope.Resolve<IPatcherFactory>();
+            profile.Patchers.AddRange(settings.Patchers.Select(x => factory.Get(x)));
             return profile;
         }
 

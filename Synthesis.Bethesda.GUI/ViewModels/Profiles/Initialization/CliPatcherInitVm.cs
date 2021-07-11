@@ -16,10 +16,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization
 
         public CliPatcherInitVm(
             IPatcherInitializationVm init, 
-            CliPatcherVm patcher)
+            IPatcherFactory factory)
             : base(init)
         {
-            Patcher = patcher;
+            Patcher = factory.GetCliPatcher();
             _CanCompleteConfiguration = Patcher.WhenAnyValue(x => x.PathToExecutable.ErrorState)
                 .Cast<ErrorResponse, ErrorResponse>()
                 .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);

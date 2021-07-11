@@ -161,7 +161,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         
         public ILockToCurrentVersioning Locking { get; }
 
-        public delegate GitPatcherVm Factory(GithubPatcherSettings settings);
+        public delegate GitPatcherVm Factory(GithubPatcherSettings? settings);
         
         public GitPatcherVm(
             IProfileIdentifier ident,

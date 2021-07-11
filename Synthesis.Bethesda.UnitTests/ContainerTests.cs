@@ -10,6 +10,7 @@ using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.GUI.Services.Startup;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.Views;
 using Xunit;
@@ -37,7 +38,10 @@ namespace Synthesis.Bethesda.UnitTests
                 .As<IProfileIdentifier>()
                 .As<IGameReleaseContext>();
             var cont = builder.Build();
-            cont.Validate(typeof(IStartup), typeof(ProfileVm));
+            cont.Validate(
+                typeof(IStartup), 
+                typeof(ProfileVm), 
+                typeof(ScopedPatcherFactory));
         }
         
         [Fact]
