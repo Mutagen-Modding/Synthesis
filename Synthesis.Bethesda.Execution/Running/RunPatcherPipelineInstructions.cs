@@ -1,11 +1,8 @@
 using CommandLine;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution.Settings;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Synthesis.Bethesda.Execution.CLI
+namespace Synthesis.Bethesda.Execution.Running
 {
     [Verb("run-patcher", HelpText = "Run the patcher")]
     public class RunPatcherPipelineInstructions

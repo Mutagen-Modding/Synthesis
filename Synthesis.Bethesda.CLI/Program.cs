@@ -9,6 +9,7 @@ using Autofac;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Installs;
 using Mutagen.Bethesda.Plugins.Order.DI;
+using Synthesis.Bethesda.Execution.Running;
 
 namespace Synthesis.Bethesda.CLI
 {
