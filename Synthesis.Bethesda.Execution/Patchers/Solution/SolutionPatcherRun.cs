@@ -1,3 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reactive.Subjects;
+using System.Threading;
+using System.Threading.Tasks;
 using Buildalyzer;
 using CommandLine;
 using LibGit2Sharp;
@@ -9,20 +17,11 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using Noggog.Utility;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Threading;
-using System.Threading.Tasks;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 
-namespace Synthesis.Bethesda.Execution.Patchers
+namespace Synthesis.Bethesda.Execution.Patchers.Solution
 {
     public class SolutionPatcherRun : IPatcherRun
     {
@@ -140,7 +139,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
         public static async Task<(bool OverallSuccess, EmitResult? TriggeringFailure)> CompileWithRosyln(string solutionUrl, string outputDir, CancellationToken cancel)
         {
             MSBuildWorkspace workspace = MSBuildWorkspace.Create();
-            Solution solution = workspace.OpenSolutionAsync(solutionUrl).Result;
+            Microsoft.CodeAnalysis.Solution solution = workspace.OpenSolutionAsync(solutionUrl).Result;
             ProjectDependencyGraph projectGraph = solution.GetProjectDependencyGraph();
 
             foreach (ProjectId projectId in projectGraph.GetTopologicallySortedProjects())
