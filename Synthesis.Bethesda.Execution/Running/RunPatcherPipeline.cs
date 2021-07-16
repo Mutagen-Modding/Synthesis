@@ -21,10 +21,7 @@ namespace Synthesis.Bethesda.Execution.Running
 {
     public interface IRunPatcherPipeline
     {
-        Task Run(
-            RunPatcherPipelineInstructions run, 
-            CancellationToken cancel, 
-            IRunReporter? reporter = null);
+        Task Run(RunPatcherPipelineInstructions run);
     }
 
     public class RunPatcherPipeline : IRunPatcherPipeline
@@ -37,6 +34,8 @@ namespace Synthesis.Bethesda.Execution.Running
         private readonly IProcessFactory _ProcessFactory;
         private readonly ICheckRunnability _Runnability;
         private readonly IRunner _Runner;
+        public CancellationToken Cancel { get; }
+        public IRunReporter? Reporter { get; }
 
         public RunPatcherPipeline(
             IBuild build,
@@ -46,7 +45,9 @@ namespace Synthesis.Bethesda.Execution.Running
             IProvideRepositoryCheckouts repositoryCheckouts,
             IProcessFactory processFactory,
             ICheckRunnability runnability,
-            IRunner runner)
+            IRunner runner,
+            CancellationToken cancel, 
+            IRunReporter? reporter)
         {
             _Build = build;
             _WorkingDirectory = workingDirectory;
@@ -56,12 +57,11 @@ namespace Synthesis.Bethesda.Execution.Running
             _ProcessFactory = processFactory;
             _Runnability = runnability;
             _Runner = runner;
+            Cancel = cancel;
+            Reporter = reporter;
         }
         
-        public async Task Run(
-            RunPatcherPipelineInstructions run, 
-            CancellationToken cancel, 
-            IRunReporter? reporter = null)
+        public async Task Run(RunPatcherPipelineInstructions run)
         {
             try
             {
@@ -102,14 +102,14 @@ namespace Synthesis.Bethesda.Execution.Running
                     run.LoadOrderFilePath = PluginListings.GetListingsPath(run.GameRelease);
                 }
 
-                reporter?.Write(default, "Patchers to run:");
+                Reporter?.Write(default, "Patchers to run:");
                 var patchers = profile.Patchers
                     .Where(p => p.On)
                     .Select<PatcherSettings, IPatcherRun>(patcherSettings =>
                     {
-                        if (reporter != null)
+                        if (Reporter != null)
                         {
-                            patcherSettings.Print(reporter);
+                            patcherSettings.Print(Reporter);
                         }
                         return patcherSettings switch
                         {
@@ -142,15 +142,15 @@ namespace Synthesis.Bethesda.Execution.Running
                     outputPath: run.OutputPath,
                     patchers: patchers,
                     sourcePath: run.SourcePath == null ? default : ModPath.FromPath(run.SourcePath),
-                    reporter: reporter,
-                    cancel: cancel,
+                    reporter: Reporter,
+                    cancel: Cancel,
                     persistenceMode: run.PersistenceMode ?? PersistenceMode.Text,
                     persistencePath: run.PersistencePath);
             }
             catch (Exception ex)
-            when (reporter != null)
+            when (Reporter != null)
             {
-                reporter.ReportOverallProblem(ex);
+                Reporter.ReportOverallProblem(ex);
             }
         }
 

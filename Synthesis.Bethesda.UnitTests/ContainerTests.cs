@@ -49,10 +49,9 @@ namespace Synthesis.Bethesda.UnitTests
         public void CliModule()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterModule<Synthesis.Bethesda.CLI.MainModule>();
-            builder.RegisterMock<IGameReleaseContext>();
-            builder.RegisterMock<IDataDirectoryProvider>();
-            builder.RegisterMock<IPluginListingsPathProvider>();
+            builder.RegisterModule(
+                new Synthesis.Bethesda.CLI.MainModule(
+                    new RunPatcherPipelineInstructions()));
             var cont = builder.Build();
             cont.Validate(typeof(IRunPatcherPipeline));
         }
