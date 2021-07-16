@@ -42,12 +42,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Humanizer.Core" Version="2.11.10" />
-    <PackageReference Include="Loqui" Version="2.23.1" />
-    <PackageReference Include="Loqui.Generation" Version="2.23.1" />
+    <PackageReference Include="Loqui" Version="2.24.0.1-dev" />
+    <PackageReference Include="Loqui.Generation" Version="2.24.0.1-dev" />
     <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.30.6.1-dev" />
     <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.30.6.1-dev" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.23.0.1-dev" />
-    <PackageReference Include="Noggog.WPF" Version="2.23.0.1-dev" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.24.0.1-dev" />
+    <PackageReference Include="Noggog.WPF" Version="2.24.0.1-dev" />
     <PackageReference Include="NuGetizer" Version="0.7.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -75,69 +75,6 @@
     <Resource Include="Resources\SkyrimLE.png" />
     <Resource Include="Resources\SkyrimSSE.png" />
     <Resource Include="Resources\SkyrimVR.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="DI\MainModule.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Top\MainVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Top\PatcherInitializationVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Top\ConfirmationPanelControllerVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Top\ConfirmationActionVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Top\ConfigurationVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Top\ActivePanelControllerVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Top\EnvironmentErrorsVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Top\SelectedProfileControllerVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Profiles\PatcherStartInitializationVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Module.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Patchers\ScopedPatcherFactory.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
   </ItemGroup>
   
   <!-- Replace inherited target -->
