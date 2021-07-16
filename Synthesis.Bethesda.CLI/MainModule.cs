@@ -8,6 +8,8 @@ using Noggog.Autofac;
 using Noggog.Utility; 
 using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
+using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Running;
 
@@ -41,6 +43,10 @@ namespace Synthesis.Bethesda.CLI
                 .As<IDataDirectoryProvider>();
             builder.RegisterInstance(new PluginListingsPathInjection(Settings.LoadOrderFilePath))
                 .As<IPluginListingsPathProvider>();
+            builder.RegisterInstance(new ProfileDefinitionPathInjection { Path = Settings.ProfileDefinitionPath })
+                .As<IProfileDefinitionPathProvider>();
+            builder.RegisterInstance(new ProfileNameInjection { Name = Settings.ProfileName })
+                .As<IProfileNameProvider>();
         }
     }
 }

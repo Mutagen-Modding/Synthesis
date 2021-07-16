@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
-using Newtonsoft.Json;
 using Noggog;
 using Noggog.Utility;
 using Synthesis.Bethesda.Execution.CLI;
@@ -33,6 +32,7 @@ namespace Synthesis.Bethesda.Execution.Running
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
         private readonly IProcessFactory _ProcessFactory;
         private readonly ICheckRunnability _Runnability;
+        private readonly IRunProfileProvider _profileProvider;
         private readonly IRunner _Runner;
         public CancellationToken Cancel { get; }
         public IRunReporter? Reporter { get; }
@@ -45,6 +45,7 @@ namespace Synthesis.Bethesda.Execution.Running
             IProvideRepositoryCheckouts repositoryCheckouts,
             IProcessFactory processFactory,
             ICheckRunnability runnability,
+            IRunProfileProvider profileProvider,
             IRunner runner,
             CancellationToken cancel, 
             IRunReporter? reporter)
@@ -56,6 +57,7 @@ namespace Synthesis.Bethesda.Execution.Running
             _RepositoryCheckouts = repositoryCheckouts;
             _ProcessFactory = processFactory;
             _Runnability = runnability;
+            _profileProvider = profileProvider;
             _Runner = runner;
             Cancel = cancel;
             Reporter = reporter;
@@ -71,30 +73,9 @@ namespace Synthesis.Bethesda.Execution.Running
                     throw new ArgumentNullException("Profile", "Could not locate profile to run");
                 }
 
-                ISynthesisProfile? profile;
-                if (string.IsNullOrWhiteSpace(run.ProfileName))
+                if (_profileProvider.Profile.TargetRelease != run.GameRelease)
                 {
-                    profile = JsonConvert.DeserializeObject<SynthesisProfile>(File.ReadAllText(run.ProfileDefinitionPath), Constants.JsonSettings)!;
-                }
-                else
-                {
-                    var settings = JsonConvert.DeserializeObject<PipelineSettings>(File.ReadAllText(run.ProfileDefinitionPath), Constants.JsonSettings)!;
-                    profile = settings.Profiles.FirstOrDefault(profile =>
-                    {
-                        if (run.ProfileName.Equals(profile.Nickname)) return true;
-                        if (run.ProfileName.Equals(profile.ID)) return true;
-                        return false;
-                    });
-                }
-
-                if (string.IsNullOrWhiteSpace(profile?.ID))
-                {
-                    throw new ArgumentException("File did not point to a valid profile");
-                }
-
-                if (profile.TargetRelease != run.GameRelease)
-                {
-                    throw new ArgumentException($"Target game release did not match profile's: {run.GameRelease} != {profile.TargetRelease}");
+                    throw new ArgumentException($"Target game release did not match profile's: {run.GameRelease} != {_profileProvider.Profile.TargetRelease}");
                 }
 
                 if (run.LoadOrderFilePath.IsNullOrWhitespace())
@@ -103,7 +84,7 @@ namespace Synthesis.Bethesda.Execution.Running
                 }
 
                 Reporter?.Write(default, "Patchers to run:");
-                var patchers = profile.Patchers
+                var patchers = _profileProvider.Profile.Patchers
                     .Where(p => p.On)
                     .Select<PatcherSettings, IPatcherRun>(patcherSettings =>
                     {
@@ -129,7 +110,7 @@ namespace Synthesis.Bethesda.Execution.Running
                                 build: _Build),
                             GithubPatcherSettings git => new GitPatcherRun(
                                 settings: git,
-                                localDir: GitPatcherRun.RunnerRepoDirectory(_WorkingDirectory, profile.ID, git.ID),
+                                localDir: GitPatcherRun.RunnerRepoDirectory(_WorkingDirectory, _profileProvider.Profile.ID, git.ID),
                                 checkOrClone: _CheckOrCloneRepo),
                             _ => throw new NotImplementedException(),
                         };
@@ -138,7 +119,7 @@ namespace Synthesis.Bethesda.Execution.Running
 
                 await _Runner
                     .Run(
-                    workingDirectory: _Paths.ProfileWorkingDirectory(profile.ID),
+                    workingDirectory: _Paths.ProfileWorkingDirectory(_profileProvider.Profile.ID),
                     outputPath: run.OutputPath,
                     patchers: patchers,
                     sourcePath: run.SourcePath == null ? default : ModPath.FromPath(run.SourcePath),
