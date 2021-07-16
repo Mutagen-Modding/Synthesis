@@ -1135,7 +1135,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                 parent,
                 this,
                 new SolutionPatcherRun(
-                    name: DisplayName,
+                    nameProvider: new PatcherNameInjection() { Name = DisplayName },
                     pathToSln: RunnableData.SolutionPath,
                     pathToExtraDataBaseFolder: _Paths.TypicalExtraData,
                     pathToProj: RunnableData.ProjPath,

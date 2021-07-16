@@ -101,7 +101,7 @@ namespace Synthesis.Bethesda.Execution.Running
                                 cli.PathToExecutable,
                                 pathToExtra: null),
                             SolutionPatcherSettings sln => new SolutionPatcherRun(
-                                name: sln.Nickname,
+                                nameProvider: new PatcherNameInjection { Name = sln.Nickname },
                                 pathToSln: sln.SolutionPath,
                                 pathToExtraDataBaseFolder: run.ExtraDataFolder ?? _Paths.TypicalExtraData,
                                 pathToProj: Path.Combine(Path.GetDirectoryName(sln.SolutionPath)!, sln.ProjectSubpath),
