@@ -32,8 +32,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
         public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
 
-        public delegate CliPatcherVm Factory(CliPatcherSettings settings);
-
         public CliPatcherVm(
             IPatcherNameVm nameVm,
             IRemovePatcherFromProfile remove,

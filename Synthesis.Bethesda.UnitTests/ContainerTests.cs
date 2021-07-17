@@ -11,10 +11,12 @@ using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Running;
+using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
 using Synthesis.Bethesda.GUI.Views;
@@ -47,7 +49,9 @@ namespace Synthesis.Bethesda.UnitTests
             cont.Validate(
                 typeof(IStartup), 
                 typeof(ProfileVm), 
-                typeof(ScopedPatcherFactory),
+                typeof(GitPatcherVm),
+                typeof(SolutionPatcherVm),
+                typeof(CliPatcherVm),
                 typeof(IPatcherRunnerFactory),
                 typeof(GitPatcherInitVm),
                 typeof(SolutionPatcherInitVm),

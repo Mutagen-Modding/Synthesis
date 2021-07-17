@@ -10,9 +10,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
     public interface IPatcherFactory
     {
         PatcherVm Get(PatcherSettings settings);
-        GitPatcherVm GetGitPatcher();
-        SolutionPatcherVm GetSolutionPatcher();
-        CliPatcherVm GetCliPatcher();
+        GitPatcherVm GetGitPatcher(GithubPatcherSettings? settings = null);
+        SolutionPatcherVm GetSolutionPatcher(SolutionPatcherSettings? settings = null);
+        CliPatcherVm GetCliPatcher(CliPatcherSettings? settings = null);
     }
     
     public class PatcherFactory : IPatcherFactory
@@ -26,36 +26,53 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         
         public PatcherVm Get(PatcherSettings settings)
         {
-            var patcherScope = _scope.BeginLifetimeScope(Module.PatcherNickname);
-            var patcher = patcherScope.Resolve<ScopedPatcherFactory>()
-                .Get(settings);
+            return settings switch
+            {
+                GithubPatcherSettings git => GetGitPatcher(git),
+                SolutionPatcherSettings soln => GetSolutionPatcher(soln),
+                CliPatcherSettings cli => GetCliPatcher(cli),
+                _ => throw new NotImplementedException(),
+            };
+        }
+
+        public GitPatcherVm GetGitPatcher(GithubPatcherSettings? settings = null)
+        {
+            var patcherScope = _scope.BeginLifetimeScope(Module.PatcherNickname, c =>
+            {
+                if (settings != null)
+                {
+                    c.RegisterInstance(settings).AsSelf();
+                }
+            });
+            var patcher = patcherScope.Resolve<GitPatcherVm>();
             patcherScope.DisposeWith(patcher);
             return patcher;
         }
 
-        public GitPatcherVm GetGitPatcher()
+        public SolutionPatcherVm GetSolutionPatcher(SolutionPatcherSettings? settings = null)
         {
-            var patcherScope = _scope.BeginLifetimeScope(Module.PatcherNickname);
-            var patcher = patcherScope.Resolve<ScopedPatcherFactory>()
-                .GetGitPatcher();
+            var patcherScope = _scope.BeginLifetimeScope(Module.PatcherNickname, c =>
+            {
+                if (settings != null)
+                {
+                    c.RegisterInstance(settings).AsSelf();
+                }
+            });
+            var patcher = patcherScope.Resolve<SolutionPatcherVm>();
             patcherScope.DisposeWith(patcher);
             return patcher;
         }
 
-        public SolutionPatcherVm GetSolutionPatcher()
+        public CliPatcherVm GetCliPatcher(CliPatcherSettings? settings = null)
         {
-            var patcherScope = _scope.BeginLifetimeScope(Module.PatcherNickname);
-            var patcher = patcherScope.Resolve<ScopedPatcherFactory>()
-                .GetSolutionPatcher();
-            patcherScope.DisposeWith(patcher);
-            return patcher;
-        }
-
-        public CliPatcherVm GetCliPatcher()
-        {
-            var patcherScope = _scope.BeginLifetimeScope(Module.PatcherNickname);
-            var patcher = patcherScope.Resolve<ScopedPatcherFactory>()
-                .GetCliPatcher();
+            var patcherScope = _scope.BeginLifetimeScope(Module.PatcherNickname, c =>
+            {
+                if (settings != null)
+                {
+                    c.RegisterInstance(settings).AsSelf();
+                }
+            });
+            var patcher = patcherScope.Resolve<CliPatcherVm>();
             patcherScope.DisposeWith(patcher);
             return patcher;
         }

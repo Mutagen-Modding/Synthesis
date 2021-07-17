@@ -91,8 +91,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             .AsObservableChangeSet()
             .Transform(x => x.ModKey);
 
-        public delegate SolutionPatcherVm Factory(SolutionPatcherSettings settings);
-            
         public SolutionPatcherVm(
             IPatcherNameVm nameVm,
             IProfileLoadOrder loadOrder,
