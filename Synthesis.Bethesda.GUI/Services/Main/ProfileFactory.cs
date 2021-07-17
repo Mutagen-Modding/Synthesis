@@ -6,6 +6,7 @@ using DynamicData;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Serilog;
+using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
@@ -43,7 +44,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
                         {
                             ID = settings.ID,
                             Release = settings.TargetRelease,
-                            Nickname = settings.Nickname
+                            Name = settings.Nickname
                         })
                         .As<IProfileIdentifier>()
                         .As<IGameReleaseContext>();
@@ -76,7 +77,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
                         {
                             ID = id,
                             Release = release,
-                            Nickname = nickname
+                            Name = nickname
                         })
                         .As<IProfileIdentifier>()
                         .As<IGameReleaseContext>();

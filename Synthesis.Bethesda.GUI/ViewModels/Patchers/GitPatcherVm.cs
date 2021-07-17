@@ -28,6 +28,7 @@ using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services.Main;

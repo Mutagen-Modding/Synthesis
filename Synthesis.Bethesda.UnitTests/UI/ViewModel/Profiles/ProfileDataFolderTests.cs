@@ -10,6 +10,7 @@ using Noggog;
 using Noggog.Reactive;
 using NSubstitute;
 using Serilog;
+using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.GUI;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;

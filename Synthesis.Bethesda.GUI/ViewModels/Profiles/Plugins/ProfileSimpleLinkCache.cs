@@ -8,6 +8,7 @@ using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
 using ReactiveUI;
 using Serilog;
+using Synthesis.Bethesda.Execution.Profile;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 {

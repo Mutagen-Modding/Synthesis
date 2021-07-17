@@ -6,6 +6,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Versioning;
 
@@ -63,7 +64,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                             new NugetVersioning("Mutagen", mutaVersioning, mutaManual ?? newestMuta ?? string.Empty, newestMuta),
                             new NugetVersioning("Synthesis", synthVersioning, synthManual ?? newestSynth ?? string.Empty, newestSynth));
                     })
-                .Do(x => logger.Information("Swapped profile {Nickname} to {Versioning}", ident.Nickname, x))
+                .Do(x => logger.Information("Swapped profile {Nickname} to {Versioning}", ident.Name, x))
                 .ObserveOnGui()
                 .Replay(1)
                 .RefCount();

@@ -9,6 +9,7 @@ using NSubstitute;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Placement;
+using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;

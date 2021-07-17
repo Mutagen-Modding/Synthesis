@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Profile;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 {

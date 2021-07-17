@@ -19,6 +19,7 @@ using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
@@ -123,7 +124,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             _GuiPaths = guiPaths;
             _Logger = logger;
             _RunFactory = runFactory;
-            Nickname = ident.Nickname;
+            Nickname = ident.Name;
             ID = ident.ID;
             Release = ident.Release;
 
