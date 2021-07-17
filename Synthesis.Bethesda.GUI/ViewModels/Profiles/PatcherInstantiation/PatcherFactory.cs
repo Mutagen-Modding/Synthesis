@@ -5,7 +5,7 @@ using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
 {
     public interface IPatcherFactory
     {
