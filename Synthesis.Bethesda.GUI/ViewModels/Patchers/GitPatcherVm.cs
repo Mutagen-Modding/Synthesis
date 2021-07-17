@@ -1140,7 +1140,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                     name: DisplayName,
                     pathToSln: RunnableData.SolutionPath,
                     pathToExtraDataBaseFolder: _extraDataPathProvider.Path,
-                    pathToProj: RunnableData.ProjPath,
+                    pathToProjProvider: new PathToProjInjection()
+                    {
+                        Path = RunnableData.ProjPath
+                    },
                     build: _Build,
                     processFactory: _ProcessFactory,
                     checkRunnability: _CheckRunnability,

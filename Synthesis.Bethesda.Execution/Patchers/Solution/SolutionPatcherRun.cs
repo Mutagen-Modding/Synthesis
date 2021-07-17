@@ -32,13 +32,13 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
     {
         private readonly CompositeDisposable _disposable = new();
 
+        private readonly IPathToProjProvider _pathToProjProvider;
         private readonly IBuild _Build;
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IProcessFactory _ProcessFactory;
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
         public string Name { get; }
         public string PathToSolution { get; }
-        public string PathToProject { get; }
         public string PathToExtraDataBaseFolder { get; }
 
         private readonly Subject<string> _output = new();
@@ -50,26 +50,25 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
         public delegate ISolutionPatcherRun Factory(
             string name,
             string pathToSln,
-            string pathToProj,
             string pathToExtraDataBaseFolder);
 
         public SolutionPatcherRun(
             string pathToSln, 
-            string pathToProj,
             string pathToExtraDataBaseFolder,
             string name,
+            IPathToProjProvider pathToProjProvider,
             IBuild build,
             ICheckRunnability checkRunnability,
             IProcessFactory processFactory,
             IProvideRepositoryCheckouts repositoryCheckouts)
         {
             Name = name;
+            _pathToProjProvider = pathToProjProvider;
             _Build = build;
             _CheckRunnability = checkRunnability;
             _ProcessFactory = processFactory;
             _RepositoryCheckouts = repositoryCheckouts;
             PathToSolution = pathToSln;
-            PathToProject = pathToProj;
             PathToExtraDataBaseFolder = pathToExtraDataBaseFolder;
         }
 
@@ -79,7 +78,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
                 Task.Run(async () =>
                 {
                     _output.OnNext($"Compiling");
-                    var resp = await _Build.Compile(PathToProject, cancel, _output.OnNext).ConfigureAwait(false);
+                    var resp = await _Build.Compile(_pathToProjProvider.Path, cancel, _output.OnNext).ConfigureAwait(false);
                     if (!resp.Succeeded)
                     {
                         throw new SynthesisBuildFailure(resp.Reason);
@@ -102,7 +101,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
             }
             
             var runnability = await _CheckRunnability.Check(
-                PathToProject,
+                _pathToProjProvider.Path,
                 directExe: false,
                 release: settings.GameRelease,
                 dataFolder: settings.DataFolderPath,
@@ -115,7 +114,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
                 throw new CliUnsuccessfulRunException((int)Codes.NotRunnable, runnability.Reason);
             }
 
-            var defaultDataFolderPath = GetDefaultDataPathFromProj(PathToProject);
+            var defaultDataFolderPath = GetDefaultDataPathFromProj(_pathToProjProvider.Path);
 
             var internalSettings = new RunSynthesisMutagenPatcher()
             {
@@ -131,7 +130,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
             };
             var args = Parser.Default.FormatCommandLine(internalSettings);
             using var process = _ProcessFactory.Create(
-                new ProcessStartInfo("dotnet", $"run --project \"{PathToProject}\" --runtime win-x64 --no-build -c Release {args}"),
+                new ProcessStartInfo("dotnet", $"run --project \"{_pathToProjProvider.Path}\" --runtime win-x64 --no-build -c Release {args}"),
                 cancel: cancel);
             _output.OnNext("Running");
             _output.OnNext($"({process.StartInfo.WorkingDirectory}): {process.StartInfo.FileName} {process.StartInfo.Arguments}");
@@ -216,7 +215,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
 
         private Task CopyOverExtraData()
         {
-            return CopyOverExtraData(PathToProject, PathToExtraDataBaseFolder, Name, _output.OnNext);
+            return CopyOverExtraData(_pathToProjProvider.Path, PathToExtraDataBaseFolder, Name, _output.OnNext);
         }
 
         public static string GetDefaultDataPathFromProj(string pathToProject)

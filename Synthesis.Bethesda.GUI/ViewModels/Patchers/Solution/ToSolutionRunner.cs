@@ -46,7 +46,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
                     name: slnPatcher.DisplayName,
                     pathToSln: slnPatcher.SolutionPath.TargetPath,
                     pathToExtraDataBaseFolder: _extraDataPathProvider.Path,
-                    pathToProj: slnPatcher.SelectedProjectPath.TargetPath,
+                    pathToProjProvider: new PathToProjInjection()
+                    {
+                        Path = slnPatcher.SelectedProjectPath.TargetPath
+                    },
                     build: _Build,
                     checkRunnability: _CheckRunnability,
                     processFactory: _ProcessFactory,

@@ -59,13 +59,20 @@ namespace Synthesis.Bethesda.Execution.Running
 
         private ISolutionPatcherRun Sln(SolutionPatcherSettings settings, string? extraDataFolder)
         {
-            var scope = _scope.BeginLifetimeScope();
+            var scope = _scope.BeginLifetimeScope(c =>
+            {
+                c.RegisterInstance(
+                        new PathToProjInjection()
+                        {
+                            Path = Path.Combine(Path.GetDirectoryName(settings.SolutionPath)!, settings.ProjectSubpath)
+                        })
+                    .As<IPathToProjProvider>();
+            });
             var factory = scope.Resolve<SolutionPatcherRun.Factory>();
             var ret = factory(
                 name: settings.Nickname,
                 pathToSln: settings.SolutionPath,
-                pathToExtraDataBaseFolder: extraDataFolder ?? ExtraDataPathProvider.Path,
-                pathToProj: Path.Combine(Path.GetDirectoryName(settings.SolutionPath)!, settings.ProjectSubpath));
+                pathToExtraDataBaseFolder: extraDataFolder ?? ExtraDataPathProvider.Path);
             
             ret.AddForDisposal(scope);
             return ret;
