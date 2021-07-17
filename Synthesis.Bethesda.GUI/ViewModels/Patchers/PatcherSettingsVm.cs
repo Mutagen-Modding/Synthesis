@@ -15,6 +15,7 @@ using Serilog;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
@@ -44,14 +45,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         }
 
         public delegate PatcherSettingsVm Factory(
-            PatcherVm parent,
             ILogger logger, 
             bool needBuild,
             IObservable<(GetResponse<FilePath> ProjPath, string? SynthVersion)> source);
         
         public PatcherSettingsVm(
             ILogger logger,
-            PatcherVm parent,
+            IPatcherNameProvider nameProvider,
             IProfileIdentifier ident,
             IProfileLoadOrder loadOrder,
             IProfileDataFolder dataFolder,
@@ -116,7 +116,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                     else
                     {
                         await openSettingsHost.Open(
-                            patcherName: parent.DisplayName,
                             path: o.Proj.Value,
                             cancel: CancellationToken.None,
                             release: ident.Release,
@@ -143,7 +142,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                     }
                     return autoGenSettingsProvider.Get(x.SettingsConfig,
                         projPath: x.ProjPath.Value,
-                        displayName: parent.DisplayName,
                         loadOrder: loadOrder.LoadOrder.Connect().Transform<ReadOnlyModListingVM, IModListingGetter>(x => x),
                         linkCache: linkCache.SimpleLinkCache);
                 })

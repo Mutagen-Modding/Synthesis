@@ -933,7 +933,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                 UpdateToTagCommand);
 
             PatcherSettings = settingsVmFactory(
-                this, Logger, false, 
+                Logger, false, 
                 compilation.Select(c =>
                     {
                         if (c.RunnableState.Failed) return (c.RunnableState.BubbleFailure<FilePath>(), null);
