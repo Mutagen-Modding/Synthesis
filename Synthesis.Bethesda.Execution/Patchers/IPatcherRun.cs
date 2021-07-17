@@ -14,5 +14,6 @@ namespace Synthesis.Bethesda.Execution.Patchers
         Task Run(RunSynthesisPatcher settings, CancellationToken cancel);
         IObservable<string> Output { get; }
         IObservable<string> Error { get; }
+        public void AddForDisposal(IDisposable disposable);
     }
 }

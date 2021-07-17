@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
@@ -26,25 +27,25 @@ namespace Synthesis.Bethesda.Execution.Running
 
     public class RunPatcherPipeline : IRunPatcherPipeline
     {
+        private readonly ILifetimeScope _scope;
         private readonly IWorkingDirectorySubPaths _Paths;
         private readonly IRunProfileProvider _profileProvider;
         private readonly IRunner _Runner;
-        public IPatcherRunnerFactory RunnerFactory { get; }
         public CancellationToken Cancel { get; }
         public IRunReporter? Reporter { get; }
 
         public RunPatcherPipeline(
+            ILifetimeScope scope,
             IWorkingDirectorySubPaths paths,
             IRunProfileProvider profileProvider,
             IRunner runner,
-            IPatcherRunnerFactory runnerFactory,
             CancellationToken cancel, 
             IRunReporter? reporter)
         {
+            _scope = scope;
             _Paths = paths;
             _profileProvider = profileProvider;
             _Runner = runner;
-            RunnerFactory = runnerFactory;
             Cancel = cancel;
             Reporter = reporter;
         }
@@ -79,7 +80,11 @@ namespace Synthesis.Bethesda.Execution.Running
                             patcherSettings.Print(Reporter);
                         }
 
-                        return RunnerFactory.Create(patcherSettings, run.ExtraDataFolder);
+                        var runnerScope = _scope.BeginLifetimeScope();
+                        var factory = runnerScope.Resolve<IPatcherRunnerFactory>();
+                        var runner = factory.Create(patcherSettings, run.ExtraDataFolder);
+                        runner.AddForDisposal(runnerScope);
+                        return runner;
                     })
                     .ToList();
 

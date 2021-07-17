@@ -1,9 +1,5 @@
 ﻿using System;
 using System.IO;
-using Noggog.Utility;
-using Synthesis.Bethesda.Execution.CLI;
-using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
