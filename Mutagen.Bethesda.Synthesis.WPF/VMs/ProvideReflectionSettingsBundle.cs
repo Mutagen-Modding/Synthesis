@@ -30,18 +30,18 @@ namespace Mutagen.Bethesda.Synthesis.WPF
     public class ProvideReflectionSettingsBundle : IProvideReflectionSettingsBundle
     {
         private readonly ILogger _Logger;
-        private readonly IWorkingDirectorySubPaths _Paths;
+        private readonly IExtraDataPathProvider _extraDataPathProvider;
         private readonly IFileSystem _FileSystem;
         private readonly IExtractInfoFromProject _Extract;
 
         public ProvideReflectionSettingsBundle(
             ILogger logger,
-            IWorkingDirectorySubPaths paths,
+            IExtraDataPathProvider extraDataPathProvider,
             IFileSystem fileSystem,
             IExtractInfoFromProject extract)
         {
             _Logger = logger;
-            _Paths = paths;
+            _extraDataPathProvider = extraDataPathProvider;
             _FileSystem = fileSystem;
             _Extract = extract;
         }
@@ -73,7 +73,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                                         t,
                                         Activator.CreateInstance(t)),
                                     nickname: targets[index].Nickname,
-                                    settingsFolder: Path.Combine(_Paths.TypicalExtraData, displayName),
+                                    settingsFolder: Path.Combine(_extraDataPathProvider.Path, displayName),
                                     settingsSubPath: targets[index].Path,
                                     logger: _Logger,
                                     fileSystem: _FileSystem);

@@ -20,11 +20,11 @@ namespace Synthesis.Bethesda.Execution.Running
         private readonly CliPatcherRun.Factory _cliFactory;
         private readonly GitPatcherRun.Factory _gitFactory;
         private readonly SolutionPatcherRun.Factory _slnFactory;
-        public IWorkingDirectorySubPaths Paths { get; }
+        public IExtraDataPathProvider ExtraDataPathProvider { get; }
         public IProvideWorkingDirectory WorkingDirectory { get; }
 
         public PatcherRunnerFactory(
-            IWorkingDirectorySubPaths paths,
+            IExtraDataPathProvider extraDataPathProvider,
             IProfileIdentifier ident,
             IProvideWorkingDirectory workingDirectory,
             CliPatcherRun.Factory cliFactory,
@@ -35,7 +35,7 @@ namespace Synthesis.Bethesda.Execution.Running
             _cliFactory = cliFactory;
             _gitFactory = gitFactory;
             _slnFactory = slnFactory;
-            Paths = paths;
+            ExtraDataPathProvider = extraDataPathProvider;
             WorkingDirectory = workingDirectory;
         }
 
@@ -50,7 +50,7 @@ namespace Synthesis.Bethesda.Execution.Running
                 SolutionPatcherSettings sln => _slnFactory(
                     name: sln.Nickname,
                     pathToSln: sln.SolutionPath,
-                    pathToExtraDataBaseFolder: extraDataFolder ?? Paths.TypicalExtraData,
+                    pathToExtraDataBaseFolder: extraDataFolder ?? ExtraDataPathProvider.Path,
                     pathToProj: Path.Combine(Path.GetDirectoryName(sln.SolutionPath)!, sln.ProjectSubpath)),
                 GithubPatcherSettings git => _gitFactory(
                     settings: git,

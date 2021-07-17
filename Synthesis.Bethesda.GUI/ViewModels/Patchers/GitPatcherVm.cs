@@ -49,7 +49,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IBuild _Build;
         private readonly ILogger _Logger;
-        private readonly IWorkingDirectorySubPaths _Paths;
+        private readonly IExtraDataPathProvider _extraDataPathProvider;
         private readonly IProcessFactory _ProcessFactory;
         public override bool IsNameEditable => false;
 
@@ -188,7 +188,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             IBuild build,
             ILogger logger,
             IProvideWorkingDirectory workingDirectory,
-            IWorkingDirectorySubPaths paths,
+            IExtraDataPathProvider extraDataPathProvider,
             IProcessFactory processFactory,
             PatcherSettingsVm.Factory settingsVmFactory,
             ISolutionProjectPath projectPath,
@@ -201,7 +201,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             _CheckRunnability = checkRunnability;
             _Build = build;
             _Logger = logger;
-            _Paths = paths;
+            _extraDataPathProvider = extraDataPathProvider;
             _ProcessFactory = processFactory;
             Locking = lockToCurrentVersioning;
             
@@ -619,7 +619,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 
                             Logger.Error($"Checking out runner repository succeeded");
 
-                            await SolutionPatcherRun.CopyOverExtraData(runInfo.Item.ProjPath, paths.TypicalExtraData, DisplayName, Logger.Information);
+                            await SolutionPatcherRun.CopyOverExtraData(runInfo.Item.ProjPath, extraDataPathProvider.Path, DisplayName, Logger.Information);
 
                             observer.OnNext(runInfo);
                         }
@@ -1139,7 +1139,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                 new SolutionPatcherRun(
                     name: DisplayName,
                     pathToSln: RunnableData.SolutionPath,
-                    pathToExtraDataBaseFolder: _Paths.TypicalExtraData,
+                    pathToExtraDataBaseFolder: _extraDataPathProvider.Path,
                     pathToProj: RunnableData.ProjPath,
                     build: _Build,
                     processFactory: _ProcessFactory,
