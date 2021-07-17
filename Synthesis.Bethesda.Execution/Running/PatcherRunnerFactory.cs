@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Autofac;
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
@@ -16,25 +17,19 @@ namespace Synthesis.Bethesda.Execution.Running
 
     public class PatcherRunnerFactory : IPatcherRunnerFactory
     {
+        private readonly ILifetimeScope _scope;
         private readonly IProfileIdentifier _ident;
-        private readonly CliPatcherRun.Factory _cliFactory;
-        private readonly GitPatcherRun.Factory _gitFactory;
-        private readonly SolutionPatcherRun.Factory _slnFactory;
         public IExtraDataPathProvider ExtraDataPathProvider { get; }
         public IProvideWorkingDirectory WorkingDirectory { get; }
 
         public PatcherRunnerFactory(
+            ILifetimeScope scope,
             IExtraDataPathProvider extraDataPathProvider,
             IProfileIdentifier ident,
-            IProvideWorkingDirectory workingDirectory,
-            CliPatcherRun.Factory cliFactory,
-            GitPatcherRun.Factory gitFactory,
-            SolutionPatcherRun.Factory slnFactory)
+            IProvideWorkingDirectory workingDirectory)
         {
+            _scope = scope;
             _ident = ident;
-            _cliFactory = cliFactory;
-            _gitFactory = gitFactory;
-            _slnFactory = slnFactory;
             ExtraDataPathProvider = extraDataPathProvider;
             WorkingDirectory = workingDirectory;
         }
@@ -43,20 +38,48 @@ namespace Synthesis.Bethesda.Execution.Running
         {
             return patcherSettings switch
             {
-                CliPatcherSettings cli => _cliFactory(
-                    cli.Nickname,
-                    cli.PathToExecutable,
-                    pathToExtra: null),
-                SolutionPatcherSettings sln => _slnFactory(
-                    name: sln.Nickname,
-                    pathToSln: sln.SolutionPath,
-                    pathToExtraDataBaseFolder: extraDataFolder ?? ExtraDataPathProvider.Path,
-                    pathToProj: Path.Combine(Path.GetDirectoryName(sln.SolutionPath)!, sln.ProjectSubpath)),
-                GithubPatcherSettings git => _gitFactory(
-                    settings: git,
-                    localDir: GitPatcherRun.RunnerRepoDirectory(WorkingDirectory, _ident.ID, git.ID)),
+                CliPatcherSettings cli => Cli(cli),
+                SolutionPatcherSettings sln => Sln(sln, extraDataFolder),
+                GithubPatcherSettings git => Git(git),
                 _ => throw new NotImplementedException(),
             };
+        }
+
+        private ICliPatcherRun Cli(CliPatcherSettings settings)
+        {
+            var scope = _scope.BeginLifetimeScope();
+            var factory = scope.Resolve<CliPatcherRun.Factory>();
+            var ret = factory(
+                settings.Nickname,
+                settings.PathToExecutable,
+                pathToExtra: null);
+            ret.AddForDisposal(scope);
+            return ret;
+        }
+
+        private ISolutionPatcherRun Sln(SolutionPatcherSettings settings, string? extraDataFolder)
+        {
+            var scope = _scope.BeginLifetimeScope();
+            var factory = scope.Resolve<SolutionPatcherRun.Factory>();
+            var ret = factory(
+                name: settings.Nickname,
+                pathToSln: settings.SolutionPath,
+                pathToExtraDataBaseFolder: extraDataFolder ?? ExtraDataPathProvider.Path,
+                pathToProj: Path.Combine(Path.GetDirectoryName(settings.SolutionPath)!, settings.ProjectSubpath));
+            
+            ret.AddForDisposal(scope);
+            return ret;
+        }
+
+        private IGitPatcherRun Git(GithubPatcherSettings settings)
+        {
+            var scope = _scope.BeginLifetimeScope();
+            var factory = scope.Resolve<GitPatcherRun.Factory>();
+            var ret = factory(
+                settings: settings,
+                localDir: GitPatcherRun.RunnerRepoDirectory(WorkingDirectory, _ident.ID, settings.ID));
+            ret.AddForDisposal(scope);
+            return ret;
         }
     }
 }

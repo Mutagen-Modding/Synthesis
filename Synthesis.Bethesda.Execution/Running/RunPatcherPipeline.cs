@@ -27,24 +27,24 @@ namespace Synthesis.Bethesda.Execution.Running
 
     public class RunPatcherPipeline : IRunPatcherPipeline
     {
-        private readonly ILifetimeScope _scope;
         private readonly IWorkingDirectorySubPaths _Paths;
         private readonly IRunProfileProvider _profileProvider;
+        private readonly IPatcherRunnerFactory _runnerFactory;
         private readonly IRunner _Runner;
         public CancellationToken Cancel { get; }
         public IRunReporter? Reporter { get; }
 
         public RunPatcherPipeline(
-            ILifetimeScope scope,
             IWorkingDirectorySubPaths paths,
             IRunProfileProvider profileProvider,
+            IPatcherRunnerFactory runnerFactory,
             IRunner runner,
             CancellationToken cancel, 
             IRunReporter? reporter)
         {
-            _scope = scope;
             _Paths = paths;
             _profileProvider = profileProvider;
+            _runnerFactory = runnerFactory;
             _Runner = runner;
             Cancel = cancel;
             Reporter = reporter;
@@ -80,11 +80,7 @@ namespace Synthesis.Bethesda.Execution.Running
                             patcherSettings.Print(Reporter);
                         }
 
-                        var runnerScope = _scope.BeginLifetimeScope();
-                        var factory = runnerScope.Resolve<IPatcherRunnerFactory>();
-                        var runner = factory.Create(patcherSettings, run.ExtraDataFolder);
-                        runner.AddForDisposal(runnerScope);
-                        return runner;
+                        return _runnerFactory.Create(patcherSettings, run.ExtraDataFolder);;
                     })
                     .ToList();
 
