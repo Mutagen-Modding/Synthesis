@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO.Abstractions;
-using Path = System.IO.Path;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,8 +10,7 @@ using Mutagen.Bethesda.WPF.Reflection;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.DTO;
-using Synthesis.Bethesda.Execution;
-using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Patchers;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {
@@ -20,7 +18,6 @@ namespace Mutagen.Bethesda.Synthesis.WPF
     {
         Task<GetResponse<ReflectionSettingsBundleVm>> ExtractBundle(
             string projPath,
-            string displayName,
             ReflectionSettingsConfig[] targets,
             IObservable<IChangeSet<IModListingGetter>> detectedLoadOrder,
             IObservable<ILinkCache?> linkCache,
@@ -30,13 +27,13 @@ namespace Mutagen.Bethesda.Synthesis.WPF
     public class ProvideReflectionSettingsBundle : IProvideReflectionSettingsBundle
     {
         private readonly ILogger _Logger;
-        private readonly IExtraDataPathProvider _extraDataPathProvider;
+        private readonly IPatcherExtraDataPathProvider _extraDataPathProvider;
         private readonly IFileSystem _FileSystem;
         private readonly IExtractInfoFromProject _Extract;
 
         public ProvideReflectionSettingsBundle(
             ILogger logger,
-            IExtraDataPathProvider extraDataPathProvider,
+            IPatcherExtraDataPathProvider extraDataPathProvider,
             IFileSystem fileSystem,
             IExtractInfoFromProject extract)
         {
@@ -48,7 +45,6 @@ namespace Mutagen.Bethesda.Synthesis.WPF
         
         public async Task<GetResponse<ReflectionSettingsBundleVm>> ExtractBundle(
             string projPath,
-            string displayName,
             ReflectionSettingsConfig[] targets,
             IObservable<IChangeSet<IModListingGetter>> detectedLoadOrder,
             IObservable<ILinkCache?> linkCache,
@@ -73,7 +69,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                                         t,
                                         Activator.CreateInstance(t)),
                                     nickname: targets[index].Nickname,
-                                    settingsFolder: Path.Combine(_extraDataPathProvider.Path, displayName),
+                                    settingsFolder: _extraDataPathProvider.Path,
                                     settingsSubPath: targets[index].Path,
                                     logger: _Logger,
                                     fileSystem: _FileSystem);
