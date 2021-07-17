@@ -6,6 +6,7 @@ using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
+using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
@@ -15,8 +16,9 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {
-    public abstract class PatcherVm : ViewModel, IPatcherNicknameVm
+    public abstract class PatcherVm : ViewModel
     {
+        public IPatcherNameVm NameVm { get; }
         private readonly IRemovePatcherFromProfile _Remove;
 
         private readonly ObservableAsPropertyHelper<bool> _IsSelected;
@@ -26,9 +28,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 
         [Reactive]
         public bool IsOn { get; set; } = true;
-
-        [Reactive]
-        public string Nickname { get; set; } = string.Empty;
 
         public abstract string DisplayName { get; }
 
@@ -52,11 +51,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         public virtual bool IsNameEditable => true;
 
         public PatcherVm(
+            IPatcherNameVm nameVm,
             IRemovePatcherFromProfile remove,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             PatcherSettings? settings)
         {
+            NameVm = nameVm;
             _Remove = remove;
             DisplayedObject = this;
             InternalID = Interlocked.Increment(ref NextID);
@@ -71,7 +72,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 
             // Set to settings
             IsOn = settings?.On ?? false;
-            Nickname = settings?.Nickname ?? string.Empty;
+            nameVm.Name = settings?.Nickname ?? string.Empty;
 
             DeleteCommand = ReactiveCommand.Create(() =>
             {
@@ -110,7 +111,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         protected void CopyOverSave(PatcherSettings settings)
         {
             settings.On = IsOn;
-            settings.Nickname = Nickname;
+            settings.Nickname = NameVm.Name;
         }
 
         public abstract PatcherRunVm ToRunner(PatchersRunVm parent);

@@ -143,7 +143,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                         if (openPatcher == null) return default(IConfirmationActionVm?);
                         return new ConfirmationActionVm(
                             "External Patcher Settings Open",
-                            $"{openPatcher.Nickname} is open for settings manipulation.",
+                            $"{openPatcher.NameVm.Name} is open for settings manipulation.",
                             toDo: null);
                     })
                 .ToGuiProperty(this, nameof(ActiveConfirmation), default(ConfirmationActionVm?));

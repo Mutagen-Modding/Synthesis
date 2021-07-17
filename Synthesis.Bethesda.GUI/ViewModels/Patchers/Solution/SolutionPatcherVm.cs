@@ -94,6 +94,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
         public delegate SolutionPatcherVm Factory(SolutionPatcherSettings settings);
             
         public SolutionPatcherVm(
+            IPatcherNameVm nameVm,
             IProfileLoadOrder loadOrder,
             IRemovePatcherFromProfile remove,
             IInstalledSdkProvider dotNetSdkProviderInstalled,
@@ -107,7 +108,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             IToSolutionRunner toSolutionRunner,
             INavigateTo navigateTo,
             SolutionPatcherSettings? settings = null)
-            : base(remove, profileDisplay, confirmation, settings)
+            : base(nameVm, remove, profileDisplay, confirmation, settings)
         {
             _LoadOrder = loadOrder;
             _ToSolutionRunner = toSolutionRunner;
@@ -116,7 +117,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
 
             _DisplayName = Observable.CombineLatest(
-                this.WhenAnyValue(x => x.Nickname),
+                this.WhenAnyValue(x => x.NameVm.Name),
                 this.WhenAnyValue(x => x.SelectedProjectPath.TargetPath)
                     .StartWith(settings?.ProjectSubpath ?? string.Empty),
                 (nickname, path) =>
@@ -133,7 +134,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
                         return string.Empty;
                     }
                 })
-                .ToProperty(this, nameof(DisplayName), Nickname);
+                .ToProperty(this, nameof(DisplayName), NameVm.Name);
 
             AvailableProjects = availableProjects.Process(
                 this.WhenAnyValue(x => x.SolutionPath.TargetPath))

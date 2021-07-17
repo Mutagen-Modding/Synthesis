@@ -16,7 +16,6 @@ using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Profile;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers

@@ -35,19 +35,20 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         public delegate CliPatcherVm Factory(CliPatcherSettings settings);
 
         public CliPatcherVm(
+            IPatcherNameVm nameVm,
             IRemovePatcherFromProfile remove,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             IShowHelpSetting showHelpSetting,
             IProcessFactory processFactory,
             CliPatcherSettings? settings = null)
-            : base(remove, selPatcher, confirmation, settings)
+            : base(nameVm, remove, selPatcher, confirmation, settings)
         {
             _ProcessFactory = processFactory;
             ShowHelpSetting = showHelpSetting;
             CopyInSettings(settings);
             _DisplayName = this.WhenAnyValue(
-                    x => x.Nickname,
+                    x => x.NameVm.Name,
                     x => x.PathToExecutable.TargetPath,
                     (Nickname, PathToExecutable) => (Nickname, PathToExecutable))
                 .Select(x =>

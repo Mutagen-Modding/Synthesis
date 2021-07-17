@@ -167,6 +167,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         
         public GitPatcherVm(
             IProfileIdentifier ident,
+            IPatcherNameVm nameVm,
             IProfileDirectories dirs,
             IProfileLoadOrder loadOrder,
             IProfilePatchersList patchersList,
@@ -192,7 +193,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             PatcherSettingsVm.Factory settingsVmFactory,
             ISolutionProjectPath projectPath,
             GithubPatcherSettings? settings = null)
-            : base(remove, selPatcher, confirmation, settings)
+            : base(nameVm, remove, selPatcher, confirmation, settings)
         {
             _PatchersList = patchersList;
             _RepoCheckouts = repoCheckouts;
@@ -213,10 +214,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             LocalRunnerRepoDirectory = GitPatcherRun.RunnerRepoDirectory(workingDirectory, ident.ID, ID);
 
             _DisplayName = this.WhenAnyValue(
-                x => x.Nickname,
+                x => x.NameVm.Name,
                 x => x.RemoteRepoPath,
                 GetNickname)
-                .ToGuiProperty<string>(this, nameof(DisplayName), GetNickname(Nickname, RemoteRepoPath));
+                .ToGuiProperty<string>(this, nameof(DisplayName), GetNickname(NameVm.Name, RemoteRepoPath));
 
             // Check to see if remote path points to a reachable git repository
             var remoteRepoPath = GetRepoPathValidity(this.WhenAnyValue(x => x.RemoteRepoPath))

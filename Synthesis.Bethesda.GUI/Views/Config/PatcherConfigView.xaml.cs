@@ -46,7 +46,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     {
                         if (this.ViewModel.TryGet(out var vm))
                         {
-                            vm.Nickname = x;
+                            vm.NameVm.Name = x;
                         }
                     })
                     .DisposeWith(disposable);
@@ -55,7 +55,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     {
                         if (focused)
                         {
-                            return this.WhenAnyValue(x => x.ViewModel!.Nickname);
+                            return this.WhenAnyValue(x => x.ViewModel!.NameVm.Name);
                         }
                         else
                         {

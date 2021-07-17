@@ -8,7 +8,6 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
 {
     public interface ISolutionPatcherSettingsVm
     {
-        string Nickname { get; set; }
         string LongDescription { get; set; }
         string ShortDescription { get; set; }
         VisibilityOptions Visibility { get; set; }
