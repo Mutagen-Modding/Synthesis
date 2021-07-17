@@ -178,9 +178,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             IEnvironmentErrorsVm envErrors,
             INewestLibraryVersions newest,
             IBuild build,
+            IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             ILogger logger,
-            IProvideWorkingDirectory workingDirectory,
             IExtraDataPathProvider extraDataPathProvider,
+            IProcessFactory processFactory,
             IToSolutionRunner toSolutionRunner,
             PatcherSettingsVm.Factory settingsVmFactory,
             ISolutionProjectPath projectPath,
@@ -200,7 +201,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 
             var localRepoDir = Path.Combine(dirs.ProfileDirectory, "Git", ID);
             LocalDriverRepoDirectory = Path.Combine(localRepoDir, "Driver");
-            LocalRunnerRepoDirectory = GitPatcherRun.RunnerRepoDirectory(workingDirectory, profileIdent.ID, ID);
+            LocalRunnerRepoDirectory = runnerRepoDirectoryProvider.Path.Path;
 
             _DisplayName = this.WhenAnyValue(
                 x => x.NameVm.Name,

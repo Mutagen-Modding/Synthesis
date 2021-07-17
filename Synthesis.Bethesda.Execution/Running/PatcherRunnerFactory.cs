@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using Autofac;
 using Synthesis.Bethesda.Execution.Patchers;
@@ -87,8 +87,7 @@ namespace Synthesis.Bethesda.Execution.Running
             });
             var factory = scope.Resolve<GitPatcherRun.Factory>();
             var ret = factory(
-                settings: settings,
-                localDir: GitPatcherRun.RunnerRepoDirectory(WorkingDirectory, _ident.ID, settings.ID));
+                settings: settings);
             ret.AddForDisposal(scope);
             return ret;
         }

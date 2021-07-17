@@ -8,6 +8,7 @@ using Noggog.Autofac;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Running;
@@ -41,6 +42,7 @@ namespace Synthesis.Bethesda.UnitTests
             builder.RegisterModule<Module>();
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
+            builder.RegisterMock<IGithubPatcherIdentifier>();
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
                 .As<IProfileNameProvider>()

@@ -33,8 +33,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         public readonly static System.Version NewtonSoftRemoveSynthVersion = new(0, 17, 5);
         public readonly static System.Version NamespaceMutaVersion = new(0, 30, 0);
         public string Name { get; }
-        private readonly string _localDir;
         private readonly GithubPatcherSettings _settings;
+        private readonly IRunnerRepoDirectoryProvider _runnerRepoDirectoryProvider;
         private readonly ICheckOrCloneRepo _CheckOrClone;
         public SolutionPatcherRun? SolutionRun { get; private set; }
         private readonly CompositeDisposable _disposable = new();
@@ -57,15 +57,15 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 .ToHashSet();
         }
 
-        public delegate IGitPatcherRun Factory(GithubPatcherSettings settings, string localDir);
+        public delegate IGitPatcherRun Factory(GithubPatcherSettings settings);
         
         public GitPatcherRun(
             GithubPatcherSettings settings,
-            string localDir,
+            IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             ICheckOrCloneRepo checkOrClone)
         {
-            _localDir = localDir;
             _settings = settings;
+            _runnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
             _CheckOrClone = checkOrClone;
             Name = $"{settings.Nickname.Decorate(x => $"{x} => ")}{settings.RemoteRepoPath} => {Path.GetFileNameWithoutExtension(settings.SelectedProjectSubpath)}";
         }
@@ -83,7 +83,11 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         public async Task Prep(GameRelease release, CancellationToken cancel)
         {
             _output.OnNext("Cloning repository");
-            var cloneResult = _CheckOrClone.Check(GetResponse<string>.Succeed(_settings.RemoteRepoPath), _localDir, (x) => _output.OnNext(x), cancel);
+            var cloneResult = _CheckOrClone.Check(
+                GetResponse<string>.Succeed(_settings.RemoteRepoPath),
+                _runnerRepoDirectoryProvider.Path, 
+                (x) => _output.OnNext(x),
+                cancel);
             if (cloneResult.Failed)
             {
                 throw new SynthesisBuildFailure(cloneResult.Reason);
@@ -123,11 +127,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         public static string? GetPathToSolution(string pathToRepo)
         {
             return Directory.EnumerateFiles(pathToRepo, "*.sln").FirstOrDefault();
-        }
-
-        public static string RunnerRepoDirectory(IProvideWorkingDirectory paths, string profileID, string githubID)
-        {
-            return Path.Combine(paths.WorkingDirectory, profileID, "Git", githubID, "Runner");
         }
 
         public static void ModifyProject(
