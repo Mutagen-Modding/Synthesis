@@ -18,10 +18,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
     public class PatcherFactory : IPatcherFactory
     {
         private readonly ILifetimeScope _scope;
+        private readonly IGitSettingsInitializer _gitSettingsInitializer;
 
-        public PatcherFactory(ILifetimeScope scope)
+        public PatcherFactory(
+            ILifetimeScope scope,
+            IGitSettingsInitializer gitSettingsInitializer)
         {
             _scope = scope;
+            _gitSettingsInitializer = gitSettingsInitializer;
         }
         
         public PatcherVm Get(PatcherSettings settings)
@@ -39,10 +43,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         {
             var patcherScope = _scope.BeginLifetimeScope(Module.PatcherNickname, c =>
             {
-                if (settings != null)
-                {
-                    c.RegisterInstance(settings).AsSelf();
-                }
+                settings = _gitSettingsInitializer.Get(settings);
+                c.RegisterInstance(settings)
+                    .AsSelf()
+                    .AsImplementedInterfaces();
             });
             var patcher = patcherScope.Resolve<GitPatcherVm>();
             patcherScope.DisposeWith(patcher);
@@ -55,7 +59,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             {
                 if (settings != null)
                 {
-                    c.RegisterInstance(settings).AsSelf();
+                    c.RegisterInstance(settings)
+                        .AsSelf()
+                        .AsImplementedInterfaces();
                 }
             });
             var patcher = patcherScope.Resolve<SolutionPatcherVm>();
@@ -69,7 +75,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             {
                 if (settings != null)
                 {
-                    c.RegisterInstance(settings).AsSelf();
+                    c.RegisterInstance(settings)
+                        .AsSelf()
+                        .AsImplementedInterfaces();
                 }
             });
             var patcher = patcherScope.Resolve<CliPatcherVm>();

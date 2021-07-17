@@ -42,13 +42,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {
     public class GitPatcherVm : PatcherVm
     {
-        private readonly IProfilePatchersList _PatchersList;
         private readonly ICheckoutRunnerRepository _CheckoutRunner;
-        private readonly ICheckRunnability _CheckRunnability;
-        private readonly IBuild _Build;
         private readonly ILogger _Logger;
-        private readonly IExtraDataPathProvider _extraDataPathProvider;
-        private readonly IProcessFactory _ProcessFactory;
         private readonly IToSolutionRunner _toSolutionRunner;
         public override bool IsNameEditable => false;
 
@@ -163,11 +158,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         public ILockToCurrentVersioning Locking { get; }
 
         public GitPatcherVm(
-            IProfileIdentifier ident,
+            IGithubPatcherIdentifier ident,
+            IProfileIdentifier profileIdent,
             IPatcherNameVm nameVm,
             IProfileDirectories dirs,
             IProfileLoadOrder loadOrder,
-            IProfilePatchersList patchersList,
             IProfileVersioning versioning,
             IProfileDataFolder dataFolder,
             IRemovePatcherFromProfile remove,
@@ -186,30 +181,26 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             ILogger logger,
             IProvideWorkingDirectory workingDirectory,
             IExtraDataPathProvider extraDataPathProvider,
-            IProcessFactory processFactory,
             IToSolutionRunner toSolutionRunner,
             PatcherSettingsVm.Factory settingsVmFactory,
             ISolutionProjectPath projectPath,
             GithubPatcherSettings? settings = null)
             : base(nameVm, remove, selPatcher, confirmation, settings)
         {
-            _PatchersList = patchersList;
             _CheckoutRunner = checkoutRunner;
-            _CheckRunnability = checkRunnability;
-            _Build = build;
             _Logger = logger;
-            _extraDataPathProvider = extraDataPathProvider;
-            _ProcessFactory = processFactory;
             _toSolutionRunner = toSolutionRunner;
             Locking = lockToCurrentVersioning;
             
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
 
+            ID = ident.Id;
+            
             CopyInSettings(settings);
 
             var localRepoDir = Path.Combine(dirs.ProfileDirectory, "Git", ID);
             LocalDriverRepoDirectory = Path.Combine(localRepoDir, "Driver");
-            LocalRunnerRepoDirectory = GitPatcherRun.RunnerRepoDirectory(workingDirectory, ident.ID, ID);
+            LocalRunnerRepoDirectory = GitPatcherRun.RunnerRepoDirectory(workingDirectory, profileIdent.ID, ID);
 
             _DisplayName = this.WhenAnyValue(
                 x => x.NameVm.Name,
@@ -787,7 +778,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                             var runnability = await checkRunnability.Check(
                                 path: i.comp.Item.ProjPath,
                                 directExe: false,
-                                release: ident.Release,
+                                release: profileIdent.Release,
                                 dataFolder: i.data,
                                 cancel: cancel,
                                 loadOrder: i.loadOrder.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm),
@@ -1074,41 +1065,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             return ret;
         }
 
-        public string GetNewId()
-        {
-            bool IsValid(string id)
-            {
-                foreach (var patcher in _PatchersList.Patchers.Items.WhereCastable<PatcherVm, GitPatcherVm>())
-                {
-                    if (patcher.ID == id)
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            for (int i = 0; i < 15; i++)
-            {
-                var attempt = Path.GetRandomFileName();
-                if (IsValid(attempt))
-                {
-                    return attempt;
-                }
-            }
-
-            throw new ArgumentException("Could not allocate a new profile");
-        }
-
         private void CopyInSettings(GithubPatcherSettings? settings)
         {
-            if (settings == null)
-            {
-                this.ID = GetNewId();
-                return;
-            }
+            if (settings == null) return;
             this.RemoteRepoPath = settings.RemoteRepoPath;
-            this.ID = string.IsNullOrWhiteSpace(settings.ID) ? GetNewId() : settings.ID;
+            this.ID = settings.ID;
             this.ProjectSubpath = settings.SelectedProjectSubpath;
             this.PatcherVersioning = settings.PatcherVersioning;
             this.MutagenVersioning = settings.MutagenVersionType;
