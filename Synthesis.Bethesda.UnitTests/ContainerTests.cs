@@ -38,12 +38,14 @@ namespace Synthesis.Bethesda.UnitTests
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
+                .As<IProfileNameProvider>()
                 .As<IGameReleaseContext>();
             var cont = builder.Build();
             cont.Validate(
                 typeof(IStartup), 
                 typeof(ProfileVm), 
-                typeof(ScopedPatcherFactory));
+                typeof(ScopedPatcherFactory),
+                typeof(IPatcherRunnerFactory));
         }
         
         [Fact]

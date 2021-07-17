@@ -36,8 +36,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IProcessFactory _ProcessFactory;
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
-        public IPatcherNameProvider NameProvider { get; }
-        public string Name => NameProvider.Name;
+        public string Name { get; }
         public string PathToSolution { get; }
         public string PathToProject { get; }
         public string PathToExtraDataBaseFolder { get; }
@@ -48,16 +47,23 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
         private readonly Subject<string> _error = new();
         public IObservable<string> Error => _error;
 
+        public delegate ISolutionPatcherRun Factory(
+            string name,
+            string pathToSln,
+            string pathToProj,
+            string pathToExtraDataBaseFolder);
+
         public SolutionPatcherRun(
             string pathToSln, 
             string pathToProj,
             string pathToExtraDataBaseFolder,
-            IPatcherNameProvider nameProvider,
+            string name,
             IBuild build,
             ICheckRunnability checkRunnability,
             IProcessFactory processFactory,
             IProvideRepositoryCheckouts repositoryCheckouts)
         {
+            Name = name;
             _Build = build;
             _CheckRunnability = checkRunnability;
             _ProcessFactory = processFactory;
@@ -65,7 +71,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
             PathToSolution = pathToSln;
             PathToProject = pathToProj;
             PathToExtraDataBaseFolder = pathToExtraDataBaseFolder;
-            NameProvider = nameProvider;
         }
 
         public async Task Prep(GameRelease release, CancellationToken cancel)

@@ -12,7 +12,7 @@ using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
-using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.Execution.Versioning;
@@ -83,7 +83,7 @@ namespace Synthesis.Bethesda.GUI
             builder.RegisterAssemblyTypes(typeof(ICheckOrCloneRepo).Assembly)
                 .InNamespacesOf(
                     typeof(IWorkingDirectorySubPaths),
-                    typeof(ICheckoutRunnerRepository),
+                    typeof(IPatcherRun),
                     typeof(ICheckRunnability))
                 .Except<ProvideWorkingDirectory>()
                 .AsMatchingInterface();

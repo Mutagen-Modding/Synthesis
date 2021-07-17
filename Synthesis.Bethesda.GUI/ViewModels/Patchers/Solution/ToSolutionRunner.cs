@@ -43,7 +43,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
                 parent,
                 slnPatcher,
                 new SolutionPatcherRun(
-                    nameProvider: new PatcherNameInjection() { Name = slnPatcher.DisplayName },
+                    name: slnPatcher.DisplayName,
                     pathToSln: slnPatcher.SolutionPath.TargetPath,
                     pathToExtraDataBaseFolder: _Paths.TypicalExtraData,
                     pathToProj: slnPatcher.SelectedProjectPath.TargetPath,

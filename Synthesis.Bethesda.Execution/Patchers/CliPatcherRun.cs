@@ -1,13 +1,10 @@
 using Mutagen.Bethesda;
-using Noggog;
-using Synthesis.Bethesda.Execution.Patchers;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reactive.Disposables;
 using CommandLine;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Reactive.Subjects;

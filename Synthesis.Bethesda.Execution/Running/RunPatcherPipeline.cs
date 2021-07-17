@@ -26,40 +26,25 @@ namespace Synthesis.Bethesda.Execution.Running
 
     public class RunPatcherPipeline : IRunPatcherPipeline
     {
-        private readonly IBuild _Build;
-        private readonly IProvideWorkingDirectory _WorkingDirectory;
         private readonly IWorkingDirectorySubPaths _Paths;
-        private readonly ICheckOrCloneRepo _CheckOrCloneRepo;
-        private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
-        private readonly IProcessFactory _ProcessFactory;
-        private readonly ICheckRunnability _Runnability;
         private readonly IRunProfileProvider _profileProvider;
         private readonly IRunner _Runner;
+        public IPatcherRunnerFactory RunnerFactory { get; }
         public CancellationToken Cancel { get; }
         public IRunReporter? Reporter { get; }
 
         public RunPatcherPipeline(
-            IBuild build,
-            IProvideWorkingDirectory workingDirectory,
             IWorkingDirectorySubPaths paths,
-            ICheckOrCloneRepo checkOrCloneRepo,
-            IProvideRepositoryCheckouts repositoryCheckouts,
-            IProcessFactory processFactory,
-            ICheckRunnability runnability,
             IRunProfileProvider profileProvider,
             IRunner runner,
+            IPatcherRunnerFactory runnerFactory,
             CancellationToken cancel, 
             IRunReporter? reporter)
         {
-            _Build = build;
-            _WorkingDirectory = workingDirectory;
             _Paths = paths;
-            _CheckOrCloneRepo = checkOrCloneRepo;
-            _RepositoryCheckouts = repositoryCheckouts;
-            _ProcessFactory = processFactory;
-            _Runnability = runnability;
             _profileProvider = profileProvider;
             _Runner = runner;
+            RunnerFactory = runnerFactory;
             Cancel = cancel;
             Reporter = reporter;
         }
@@ -87,34 +72,14 @@ namespace Synthesis.Bethesda.Execution.Running
                 Reporter?.Write(default, "Patchers to run:");
                 var patchers = _profileProvider.Profile.Patchers
                     .Where(p => p.On)
-                    .Select<PatcherSettings, IPatcherRun>(patcherSettings =>
+                    .Select(patcherSettings =>
                     {
                         if (Reporter != null)
                         {
                             patcherSettings.Print(Reporter);
                         }
-                        return patcherSettings switch
-                        {
-                            CliPatcherSettings cli => new CliPatcherRun(
-                                _ProcessFactory,
-                                cli.Nickname,
-                                cli.PathToExecutable,
-                                pathToExtra: null),
-                            SolutionPatcherSettings sln => new SolutionPatcherRun(
-                                nameProvider: new PatcherNameInjection { Name = sln.Nickname },
-                                pathToSln: sln.SolutionPath,
-                                pathToExtraDataBaseFolder: run.ExtraDataFolder ?? _Paths.TypicalExtraData,
-                                pathToProj: Path.Combine(Path.GetDirectoryName(sln.SolutionPath)!, sln.ProjectSubpath),
-                                checkRunnability: _Runnability,
-                                processFactory: _ProcessFactory,
-                                repositoryCheckouts: _RepositoryCheckouts,
-                                build: _Build),
-                            GithubPatcherSettings git => new GitPatcherRun(
-                                settings: git,
-                                localDir: GitPatcherRun.RunnerRepoDirectory(_WorkingDirectory, _profileProvider.Profile.ID, git.ID),
-                                checkOrClone: _CheckOrCloneRepo),
-                            _ => throw new NotImplementedException(),
-                        };
+
+                        return RunnerFactory.Create(patcherSettings, run.ExtraDataFolder);
                     })
                     .ToList();
 

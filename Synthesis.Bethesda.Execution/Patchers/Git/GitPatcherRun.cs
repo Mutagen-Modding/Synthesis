@@ -57,10 +57,12 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 .ToHashSet();
         }
 
+        public delegate IGitPatcherRun Factory(GithubPatcherSettings settings, string localDir);
+        
         public GitPatcherRun(
             GithubPatcherSettings settings,
-            ICheckOrCloneRepo checkOrClone,
-            string localDir)
+            string localDir,
+            ICheckOrCloneRepo checkOrClone)
         {
             _localDir = localDir;
             _settings = settings;
