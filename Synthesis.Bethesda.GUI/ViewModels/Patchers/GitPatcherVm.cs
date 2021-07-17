@@ -24,7 +24,6 @@ using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
-using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -44,13 +43,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
     public class GitPatcherVm : PatcherVm
     {
         private readonly IProfilePatchersList _PatchersList;
-        private readonly IProvideRepositoryCheckouts _RepoCheckouts;
         private readonly ICheckoutRunnerRepository _CheckoutRunner;
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IBuild _Build;
         private readonly ILogger _Logger;
         private readonly IExtraDataPathProvider _extraDataPathProvider;
         private readonly IProcessFactory _ProcessFactory;
+        private readonly IToSolutionRunner _toSolutionRunner;
         public override bool IsNameEditable => false;
 
         [Reactive]
@@ -190,19 +189,20 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             IProvideWorkingDirectory workingDirectory,
             IExtraDataPathProvider extraDataPathProvider,
             IProcessFactory processFactory,
+            IToSolutionRunner toSolutionRunner,
             PatcherSettingsVm.Factory settingsVmFactory,
             ISolutionProjectPath projectPath,
             GithubPatcherSettings? settings = null)
             : base(nameVm, remove, selPatcher, confirmation, settings)
         {
             _PatchersList = patchersList;
-            _RepoCheckouts = repoCheckouts;
             _CheckoutRunner = checkoutRunner;
             _CheckRunnability = checkRunnability;
             _Build = build;
             _Logger = logger;
             _extraDataPathProvider = extraDataPathProvider;
             _ProcessFactory = processFactory;
+            _toSolutionRunner = toSolutionRunner;
             Locking = lockToCurrentVersioning;
             
             SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
@@ -1128,26 +1128,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 
         public override PatcherRunVm ToRunner(PatchersRunVm parent)
         {
-            if (RunnableData == null)
-            {
-                throw new ArgumentNullException(nameof(RunnableData));
-            }
             PatcherSettings.Persist();
-            return new PatcherRunVm(
-                parent,
-                this,
-                new SolutionPatcherRun(
-                    name: DisplayName,
-                    pathToSln: RunnableData.SolutionPath,
-                    pathToExtraDataBaseFolder: _extraDataPathProvider.Path,
-                    pathToProjProvider: new PathToProjInjection()
-                    {
-                        Path = RunnableData.ProjPath
-                    },
-                    build: _Build,
-                    processFactory: _ProcessFactory,
-                    checkRunnability: _CheckRunnability,
-                    repositoryCheckouts: _RepoCheckouts));
+            return _toSolutionRunner.GetRunner(parent, this);
         }
 
         public static IObservable<ConfigurationState<string>> GetRepoPathValidity(IObservable<string> repoPath)
