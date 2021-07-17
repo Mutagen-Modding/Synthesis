@@ -9,6 +9,7 @@ using System.Windows.Controls.Primitives;
 using System.Linq;
 using DynamicData;
 using System.Windows;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
 
 namespace Synthesis.Bethesda.GUI.Views

@@ -8,7 +8,7 @@ using ReactiveUI;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.GUI.Services.Main;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization.Git
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
 {
     public class PatcherStoreListingVm : ViewModel
     {

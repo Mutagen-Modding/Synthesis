@@ -18,10 +18,10 @@ using Serilog;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services.Main;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization.Git
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
 {
     public class GitPatcherInitVm : PatcherInitVm
     {

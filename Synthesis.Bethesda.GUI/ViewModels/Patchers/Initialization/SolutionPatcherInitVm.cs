@@ -10,10 +10,9 @@ using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
 {
     public class SolutionPatcherInitVm : PatcherInitVm
     {

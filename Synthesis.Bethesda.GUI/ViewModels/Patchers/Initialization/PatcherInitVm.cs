@@ -2,10 +2,9 @@ using System.Collections.Generic;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
 {
     public abstract class PatcherInitVm : ViewModel
     {

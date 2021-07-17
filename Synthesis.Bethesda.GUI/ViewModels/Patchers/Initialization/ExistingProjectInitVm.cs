@@ -11,7 +11,7 @@ using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
 {
     public class ExistingProjectInitVm : ASolutionInitializer
     {

@@ -13,7 +13,10 @@ using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
 using Synthesis.Bethesda.GUI.Views;
 using Xunit;
 using Module = Synthesis.Bethesda.GUI.Module;
@@ -45,7 +48,10 @@ namespace Synthesis.Bethesda.UnitTests
                 typeof(IStartup), 
                 typeof(ProfileVm), 
                 typeof(ScopedPatcherFactory),
-                typeof(IPatcherRunnerFactory));
+                typeof(IPatcherRunnerFactory),
+                typeof(GitPatcherInitVm),
+                typeof(SolutionPatcherInitVm),
+                typeof(CliPatcherInitVm));
         }
         
         [Fact]
