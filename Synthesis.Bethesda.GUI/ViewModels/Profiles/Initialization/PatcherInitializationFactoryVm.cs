@@ -1,25 +1,24 @@
 ﻿using System.Windows.Input;
 using ReactiveUI;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization
 {
-    public interface IPatcherStartInitializationVm
+    public interface IPatcherInitializationFactoryVm
     {
         ICommand AddGitPatcherCommand { get; }
         ICommand AddSolutionPatcherCommand { get; }
         ICommand AddCliPatcherCommand { get; }
     }
 
-    public class PatcherStartInitializationVm : IPatcherStartInitializationVm
+    public class PatcherInitializationFactoryVm : IPatcherInitializationFactoryVm
     {
         public ICommand AddGitPatcherCommand { get; }
         public ICommand AddSolutionPatcherCommand { get; }
         public ICommand AddCliPatcherCommand { get; }
 
-        public PatcherStartInitializationVm(
+        public PatcherInitializationFactoryVm(
             IPatcherInitializationVm initializationVm,
             GitPatcherInitVm gitPatcherInitVm,
             SolutionPatcherInitVm solutionPatcherInitVm,

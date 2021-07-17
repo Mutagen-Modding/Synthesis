@@ -24,6 +24,7 @@ using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
@@ -92,12 +93,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         [Reactive]
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
         
-        public IPatcherStartInitializationVm Init { get; }
+        public IPatcherInitializationFactoryVm Init { get; }
         
         public ProfileVm(
             IProfilePatchersList patchersList,
             IProfileDataFolder dataFolder,
-            IPatcherStartInitializationVm startInit,
+            IPatcherInitializationFactoryVm init,
             IProfileIdentifier ident,
             IProfileLoadOrder loadOrder,
             IProfileDirectories dirs,
@@ -112,7 +113,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             ILogger logger,
             PatchersRunVm.Factory runFactory)
         {
-            Init = startInit;
+            Init = init;
             DataFolderOverride = dataFolder;
             Versioning = versioning;
             Patchers = patchersList.Patchers;
