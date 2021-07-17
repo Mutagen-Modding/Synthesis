@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Autofac;
 using Synthesis.Bethesda.Execution.Patchers;
@@ -80,7 +80,11 @@ namespace Synthesis.Bethesda.Execution.Running
 
         private IGitPatcherRun Git(GithubPatcherSettings settings)
         {
-            var scope = _scope.BeginLifetimeScope();
+            var scope = _scope.BeginLifetimeScope(c =>
+            {
+                c.RegisterInstance(settings)
+                    .AsImplementedInterfaces();
+            });
             var factory = scope.Resolve<GitPatcherRun.Factory>();
             var ret = factory(
                 settings: settings,

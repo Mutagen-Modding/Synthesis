@@ -1,6 +1,7 @@
 using Noggog;
 using Synthesis.Bethesda.Execution.Reporters;
 using System;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
@@ -11,9 +12,10 @@ namespace Synthesis.Bethesda.Execution.Settings
         string MutagenVersion,
         string SynthesisVersion);
 
-    public class GithubPatcherSettings : PatcherSettings
+    public class GithubPatcherSettings : PatcherSettings, IGithubPatcherIdentifier
     {
         public string ID = string.Empty;
+        string IGithubPatcherIdentifier.Id => ID;
         public string RemoteRepoPath = string.Empty;
         public string SelectedProjectSubpath = string.Empty;
         public PatcherVersioningEnum PatcherVersioning = PatcherVersioningEnum.Branch;
