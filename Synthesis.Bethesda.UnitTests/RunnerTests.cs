@@ -320,6 +320,10 @@ namespace Synthesis.Bethesda.UnitTests
             public IObservable<string> Output => Observable.Empty<string>();
 
             public IObservable<string> Error => Observable.Empty<string>();
+            
+            public void AddForDisposal(IDisposable disposable)
+            {
+            }
 
             public DummyPatcher(IFileSystem fileSystem)
             {

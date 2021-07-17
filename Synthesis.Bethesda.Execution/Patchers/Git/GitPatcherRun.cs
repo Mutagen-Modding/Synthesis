@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading;
@@ -20,7 +21,11 @@ using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
-    public class GitPatcherRun : IPatcherRun
+    public interface IGitPatcherRun : IPatcherRun
+    {
+    }
+
+    public class GitPatcherRun : IGitPatcherRun
     {
         public readonly static System.Version NewtonSoftAddMutaVersion = new(0, 26);
         public readonly static System.Version NewtonSoftAddSynthVersion = new(0, 14, 1);
@@ -32,6 +37,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         private readonly GithubPatcherSettings _settings;
         private readonly ICheckOrCloneRepo _CheckOrClone;
         public SolutionPatcherRun? SolutionRun { get; private set; }
+        private readonly CompositeDisposable _disposable = new();
 
         private readonly Subject<string> _output = new();
         public IObservable<string> Output => _output;
@@ -62,8 +68,14 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             Name = $"{settings.Nickname.Decorate(x => $"{x} => ")}{settings.RemoteRepoPath} => {Path.GetFileNameWithoutExtension(settings.SelectedProjectSubpath)}";
         }
 
+        public void AddForDisposal(IDisposable disposable)
+        {
+            _disposable.Add(disposable);
+        }
+
         public void Dispose()
         {
+            _disposable.Dispose();
         }
 
         public async Task Prep(GameRelease release, CancellationToken cancel)

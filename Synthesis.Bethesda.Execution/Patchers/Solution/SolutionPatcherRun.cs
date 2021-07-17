@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,8 +24,14 @@ using Synthesis.Bethesda.Execution.GitRespository;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Solution
 {
-    public class SolutionPatcherRun : IPatcherRun
+    public interface ISolutionPatcherRun : IPatcherRun
     {
+    }
+
+    public class SolutionPatcherRun : ISolutionPatcherRun
+    {
+        private readonly CompositeDisposable _disposable = new();
+
         private readonly IBuild _Build;
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IProcessFactory _ProcessFactory;
@@ -132,8 +139,14 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
             }
         }
 
+        public void AddForDisposal(IDisposable disposable)
+        {
+            _disposable.Add(disposable);
+        }
+
         public void Dispose()
         {
+            _disposable.Dispose();
         }
 
         // Almost there, I think, but not currently working.

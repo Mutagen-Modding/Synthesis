@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Reactive.Disposables;
 using CommandLine;
 using System.Text;
 using System.Threading;
@@ -15,8 +16,14 @@ using Mutagen.Bethesda.Synthesis.CLI;
 
 namespace Synthesis.Bethesda.Execution.Patchers
 {
-    public class CliPatcherRun : IPatcherRun
+    public interface ICliPatcherRun : IPatcherRun
     {
+    }
+
+    public class CliPatcherRun : ICliPatcherRun
+    {
+        private readonly CompositeDisposable _disposable = new();
+        
         public string Name { get; }
 
         private readonly Subject<string> _output = new();
@@ -30,6 +37,8 @@ namespace Synthesis.Bethesda.Execution.Patchers
 
         public string? PathToExtraData;
 
+        public delegate ICliPatcherRun Factory(string nickname, string pathToExecutable, string? pathToExtra);
+
         public CliPatcherRun(
             IProcessFactory processFactory,
             string nickname,
@@ -42,8 +51,14 @@ namespace Synthesis.Bethesda.Execution.Patchers
             PathToExtraData = pathToExtra;
         }
 
+        public void AddForDisposal(IDisposable disposable)
+        {
+            _disposable.Add(disposable);
+        }
+
         public void Dispose()
         {
+            _disposable.Dispose();
         }
 
         public async Task Prep(GameRelease release, CancellationToken cancel)
