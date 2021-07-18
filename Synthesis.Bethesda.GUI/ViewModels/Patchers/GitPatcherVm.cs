@@ -180,6 +180,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             IBuild build,
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             ILogger logger,
+            IPrepareRunnableState prepareRunnableState,
             IExtraDataPathProvider extraDataPathProvider,
             IProcessFactory processFactory,
             IToSolutionRunner toSolutionRunner,
@@ -563,65 +564,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                 .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                 .DistinctUntilChanged()
                 .ObserveOn(RxApp.TaskpoolScheduler)
-                .Select((item) =>
-                {
-                    return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
-                    {
-                        try
-                        {
-                            if (item.runnerState.RunnableState.Failed)
-                            {
-                                observer.OnNext(item.runnerState.BubbleError<RunnerRepoInfo>());
-                                return;
-                            }
-                            if (item.proj.Failed)
-                            {
-                                observer.OnNext(item.proj.BubbleFailure<RunnerRepoInfo>());
-                                return;
-                            }
-                            if (item.libraryNugets.Failed)
-                            {
-                                observer.OnNext(item.libraryNugets.BubbleFailure<RunnerRepoInfo>());
-                                return;
-                            }
-
-                            observer.OnNext(new ConfigurationState<RunnerRepoInfo>(default!)
-                            {
-                                RunnableState = ErrorResponse.Fail("Checking out the proper commit"),
-                                IsHaltingError = false,
-                            });
-
-                            var runInfo = await _CheckoutRunner.Checkout(
-                                proj: item.proj.Value,
-                                localRepoDir: LocalRunnerRepoDirectory,
-                                patcherVersioning: item.patcherVersioning,
-                                nugetVersioning: item.libraryNugets.Value,
-                                logger: (s) => Logger.Information(s),
-                                cancel: cancel,
-                                compile: false);
-
-                            if (runInfo.RunnableState.Failed)
-                            {
-                                Logger.Error($"Checking out runner repository failed: {runInfo.RunnableState.Reason}");
-                                observer.OnNext(runInfo);
-                                return;
-                            }
-
-                            Logger.Error($"Checking out runner repository succeeded");
-
-                            await SolutionPatcherRun.CopyOverExtraData(runInfo.Item.ProjPath, extraDataPathProvider.Path, DisplayName, Logger.Information);
-
-                            observer.OnNext(runInfo);
-                        }
-                        catch (Exception ex)
-                        {
-                            var str = $"Error checking out runner repository: {ex}";
-                            Logger.Error(str);
-                            observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
-                        }
-                        observer.OnCompleted();
-                    });
-                })
+                .Select((item) => prepareRunnableState.Prepare(item.runnerState, item.proj, item.patcherVersioning, item.libraryNugets))
                 .Switch()
                 .StartWith(new ConfigurationState<RunnerRepoInfo>(GetResponse<RunnerRepoInfo>.Fail("Constructing runnable state"))
                 {
