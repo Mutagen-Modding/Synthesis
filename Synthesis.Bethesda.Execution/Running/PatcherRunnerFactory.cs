@@ -5,7 +5,6 @@ using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Pathing;
-using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Running
@@ -13,23 +12,23 @@ namespace Synthesis.Bethesda.Execution.Running
     public interface IPatcherRunnerFactory
     {
         IPatcherRun Create(PatcherSettings patcherSettings, string? extraDataFolder);
+        ICliPatcherRun Cli(CliPatcherSettings settings);
+        ISolutionPatcherRun Sln(SolutionPatcherSettings settings, string? extraDataFolder);
+        IGitPatcherRun Git(GithubPatcherSettings settings);
     }
 
     public class PatcherRunnerFactory : IPatcherRunnerFactory
     {
         private readonly ILifetimeScope _scope;
-        private readonly IProfileIdentifier _ident;
         public IExtraDataPathProvider ExtraDataPathProvider { get; }
         public IProvideWorkingDirectory WorkingDirectory { get; }
 
         public PatcherRunnerFactory(
             ILifetimeScope scope,
             IExtraDataPathProvider extraDataPathProvider,
-            IProfileIdentifier ident,
             IProvideWorkingDirectory workingDirectory)
         {
             _scope = scope;
-            _ident = ident;
             ExtraDataPathProvider = extraDataPathProvider;
             WorkingDirectory = workingDirectory;
         }
@@ -45,7 +44,7 @@ namespace Synthesis.Bethesda.Execution.Running
             };
         }
 
-        private ICliPatcherRun Cli(CliPatcherSettings settings)
+        public ICliPatcherRun Cli(CliPatcherSettings settings)
         {
             var scope = _scope.BeginLifetimeScope();
             var factory = scope.Resolve<CliPatcherRun.Factory>();
@@ -57,7 +56,7 @@ namespace Synthesis.Bethesda.Execution.Running
             return ret;
         }
 
-        private ISolutionPatcherRun Sln(SolutionPatcherSettings settings, string? extraDataFolder)
+        public ISolutionPatcherRun Sln(SolutionPatcherSettings settings, string? extraDataFolder)
         {
             var scope = _scope.BeginLifetimeScope(c =>
             {
@@ -78,7 +77,7 @@ namespace Synthesis.Bethesda.Execution.Running
             return ret;
         }
 
-        private IGitPatcherRun Git(GithubPatcherSettings settings)
+        public IGitPatcherRun Git(GithubPatcherSettings settings)
         {
             var scope = _scope.BeginLifetimeScope(c =>
             {

@@ -5,6 +5,8 @@ using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Running;
+using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
@@ -17,24 +19,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 
     public class ToSolutionRunner : IToSolutionRunner
     {
-        private readonly IBuild _Build;
         private readonly IExtraDataPathProvider _extraDataPathProvider;
-        private readonly ICheckRunnability _CheckRunnability;
-        private readonly IProcessFactory _ProcessFactory;
-        private readonly IProvideRepositoryCheckouts _ProvideRepositoryCheckouts;
+        private readonly IPatcherRunnerFactory _runnerFactory;
 
         public ToSolutionRunner(
-            IBuild build,
             IExtraDataPathProvider extraDataPathProvider,
-            ICheckRunnability checkRunnability,
-            IProcessFactory processFactory,
-            IProvideRepositoryCheckouts provideRepositoryCheckouts)
+            IPatcherRunnerFactory runnerFactory)
         {
-            _Build = build;
             _extraDataPathProvider = extraDataPathProvider;
-            _CheckRunnability = checkRunnability;
-            _ProcessFactory = processFactory;
-            _ProvideRepositoryCheckouts = provideRepositoryCheckouts;
+            _runnerFactory = runnerFactory;
         }
         
         public PatcherRunVm GetRunner(PatchersRunVm parent, SolutionPatcherVm slnPatcher)
@@ -43,18 +36,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             return new PatcherRunVm(
                 parent,
                 slnPatcher,
-                new SolutionPatcherRun(
-                    name: slnPatcher.DisplayName,
-                    pathToSln: slnPatcher.SolutionPath.TargetPath,
-                    pathToExtraDataBaseFolder: _extraDataPathProvider.Path,
-                    pathToProjProvider: new PathToProjInjection()
+                _runnerFactory.Sln(
+                    new SolutionPatcherSettings()
                     {
-                        Path = slnPatcher.SelectedProjectPath.TargetPath
-                    },
-                    build: _Build,
-                    checkRunnability: _CheckRunnability,
-                    processFactory: _ProcessFactory,
-                    repositoryCheckouts: _ProvideRepositoryCheckouts));
+                        Nickname = slnPatcher.DisplayName,
+                        On = true,
+                        ProjectSubpath = slnPatcher.SelectedProjectPath.TargetPath,
+                        SolutionPath = slnPatcher.SolutionPath.TargetPath
+                    }, 
+                    extraDataFolder: _extraDataPathProvider.Path));
         }
 
         public PatcherRunVm GetRunner(PatchersRunVm parent, GitPatcherVm gitPatcher)
@@ -66,18 +56,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             return new PatcherRunVm(
                 parent,
                 gitPatcher,
-                new SolutionPatcherRun(
-                    name: gitPatcher.DisplayName,
-                    pathToSln: gitPatcher.RunnableData.SolutionPath,
-                    pathToExtraDataBaseFolder: _extraDataPathProvider.Path,
-                    pathToProjProvider: new PathToProjInjection()
+                _runnerFactory.Sln(
+                    new SolutionPatcherSettings()
                     {
-                        Path = gitPatcher.RunnableData.ProjPath
-                    },
-                    build: _Build,
-                    processFactory: _ProcessFactory,
-                    checkRunnability: _CheckRunnability,
-                    repositoryCheckouts: _ProvideRepositoryCheckouts));
+                        Nickname = gitPatcher.DisplayName,
+                        On = true,
+                        ProjectSubpath = gitPatcher.RunnableData.ProjPath,
+                        SolutionPath = gitPatcher.RunnableData.SolutionPath
+                    }, 
+                    extraDataFolder: _extraDataPathProvider.Path));
         }
     }
 }

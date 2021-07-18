@@ -36,6 +36,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
         private readonly IBuild _Build;
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IProcessFactory _ProcessFactory;
+        private readonly IDefaultDataPathProvider _defaultDataPathProvider;
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
         public string Name { get; }
         public string PathToSolution { get; }
@@ -60,6 +61,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
             IBuild build,
             ICheckRunnability checkRunnability,
             IProcessFactory processFactory,
+            IDefaultDataPathProvider defaultDataPathProvider,
             IProvideRepositoryCheckouts repositoryCheckouts)
         {
             Name = name;
@@ -67,6 +69,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
             _Build = build;
             _CheckRunnability = checkRunnability;
             _ProcessFactory = processFactory;
+            _defaultDataPathProvider = defaultDataPathProvider;
             _RepositoryCheckouts = repositoryCheckouts;
             PathToSolution = pathToSln;
             PathToExtraDataBaseFolder = pathToExtraDataBaseFolder;
@@ -114,13 +117,13 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
                 throw new CliUnsuccessfulRunException((int)Codes.NotRunnable, runnability.Reason);
             }
 
-            var defaultDataFolderPath = GetDefaultDataPathFromProj(_pathToProjProvider.Path);
+            var defaultDataFolderPath = _defaultDataPathProvider.Path;
 
             var internalSettings = new RunSynthesisMutagenPatcher()
             {
                 DataFolderPath = settings.DataFolderPath,
                 ExtraDataFolder = Path.Combine(PathToExtraDataBaseFolder, Name),
-                DefaultDataFolderPath = Directory.Exists(defaultDataFolderPath) ? defaultDataFolderPath : null,
+                DefaultDataFolderPath = Directory.Exists(defaultDataFolderPath) ? defaultDataFolderPath.Path : null,
                 GameRelease = settings.GameRelease,
                 LoadOrderFilePath = settings.LoadOrderFilePath,
                 OutputPath = settings.OutputPath,
