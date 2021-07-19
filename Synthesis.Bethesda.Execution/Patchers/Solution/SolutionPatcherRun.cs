@@ -32,6 +32,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
     {
         private readonly CompositeDisposable _disposable = new();
 
+        private readonly ICopyOverExtraData _copyOverExtraData;
         private readonly IPathToProjProvider _pathToProjProvider;
         private readonly IBuild _Build;
         private readonly ICheckRunnability _CheckRunnability;
@@ -57,6 +58,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
             string pathToSln, 
             string pathToExtraDataBaseFolder,
             string name,
+            ICopyOverExtraData copyOverExtraData,
             IPathToProjProvider pathToProjProvider,
             IBuild build,
             ICheckRunnability checkRunnability,
@@ -66,6 +68,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
         {
             Name = name;
             _pathToProjProvider = pathToProjProvider;
+            _copyOverExtraData = copyOverExtraData;
             _Build = build;
             _CheckRunnability = checkRunnability;
             _ProcessFactory = processFactory;
@@ -88,9 +91,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
                     }
                     _output.OnNext($"Compiled");
                 }),
-                Task.Run(async () =>
+                Task.Run(() =>
                 {
-                    await CopyOverExtraData().ConfigureAwait(false);
+                    _copyOverExtraData.Copy(_output.OnNext);
                 })).ConfigureAwait(false); ;
         }
 
@@ -214,38 +217,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
             return AvailableProjects(solutionPath)
                 .Where(av => Path.GetFileName(av).Equals(projName))
                 .FirstOrDefault();
-        }
-
-        private Task CopyOverExtraData()
-        {
-            return CopyOverExtraData(_pathToProjProvider.Path, PathToExtraDataBaseFolder, Name, _output.OnNext);
-        }
-
-        public static string GetDefaultDataPathFromProj(string pathToProject)
-        {
-            return Path.Combine(Path.GetDirectoryName(pathToProject)!, "Data");
-        }
-
-        public static async Task CopyOverExtraData(string pathToProject, string pathToExtraDataBaseFolder, string name, Action<string> log)
-        {
-            var inputExtraData = new DirectoryInfo(GetDefaultDataPathFromProj(pathToProject));
-            if (!inputExtraData.Exists)
-            {
-                log("No extra data to consider.");
-                return;
-            }
-
-            var outputExtraData = new DirectoryInfo(Path.Combine(pathToExtraDataBaseFolder, name));
-            if (outputExtraData.Exists)
-            {
-                log($"Extra data folder already exists. Leaving as is: {outputExtraData}");
-                return;
-            }
-
-            log("Copying extra data folder");
-            log($"  From: {inputExtraData}");
-            log($"  To: {outputExtraData}");
-            inputExtraData.DeepCopy(outputExtraData);
         }
 
         public static IEnumerable<string> AvailableProjectSubpaths(string solutionPath)
