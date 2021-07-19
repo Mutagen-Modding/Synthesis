@@ -8,6 +8,7 @@ using Noggog.Autofac;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.Execution.Profile;
