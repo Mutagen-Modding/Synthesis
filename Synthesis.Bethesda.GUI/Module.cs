@@ -14,6 +14,7 @@ using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services.Main;
@@ -118,7 +119,8 @@ namespace Synthesis.Bethesda.GUI
             // Execution lib
             builder.RegisterAssemblyTypes(typeof(IRunner).Assembly)
                 .InNamespacesOf(
-                    typeof(IRunner))
+                    typeof(IRunner),
+                    typeof(IProfileDirectories))
                 .InstancePerMatchingLifetimeScope(ProfileNickname)
                 .AsMatchingInterface();
         }

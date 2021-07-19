@@ -178,11 +178,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             IEnvironmentErrorsVm envErrors,
             INewestLibraryVersions newest,
             IBuild build,
+            IBaseRepoDirectoryProvider baseRepoDir,
+            IDriverRepoDirectoryProvider driverRepoDirectoryProvider,
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             ILogger logger,
             IPrepareRunnableState prepareRunnableState,
-            IExtraDataPathProvider extraDataPathProvider,
-            IProcessFactory processFactory,
             IToSolutionRunner toSolutionRunner,
             PatcherSettingsVm.Factory settingsVmFactory,
             ISolutionProjectPath projectPath,
@@ -200,8 +200,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             
             CopyInSettings(settings);
 
-            var localRepoDir = Path.Combine(dirs.ProfileDirectory, "Git", ID);
-            LocalDriverRepoDirectory = Path.Combine(localRepoDir, "Driver");
+            LocalDriverRepoDirectory = driverRepoDirectoryProvider.Path.Path;
             LocalRunnerRepoDirectory = runnerRepoDirectoryProvider.Path.Path;
 
             _DisplayName = this.WhenAnyValue(
@@ -830,7 +829,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                     }
                 });
 
-            NavigateToInternalFilesCommand = ReactiveCommand.Create(() => navigate.Navigate(localRepoDir));
+            NavigateToInternalFilesCommand = ReactiveCommand.Create(() => navigate.Navigate(baseRepoDir.Path));
 
             UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(
                 objectSource: newest.NewestMutagenVersion,

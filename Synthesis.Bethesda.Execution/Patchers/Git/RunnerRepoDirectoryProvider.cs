@@ -11,25 +11,13 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
     public class RunnerRepoDirectoryProvider : IRunnerRepoDirectoryProvider
     {
-        private readonly IProvideWorkingDirectory _workingDirectory;
-        private readonly IProfileIdentifier _identifier;
-        private readonly IGithubPatcherIdentifier _githubId;
+        private readonly IBaseRepoDirectoryProvider _baseRepoDir;
 
-        public DirectoryPath Path => System.IO.Path.Combine(
-            _workingDirectory.WorkingDirectory,
-            _identifier.ID,
-            "Git",
-            _githubId.Id, 
-            "Runner");
+        public DirectoryPath Path => System.IO.Path.Combine(_baseRepoDir.Path, "Runner");
         
-        public RunnerRepoDirectoryProvider(
-            IProvideWorkingDirectory workingDirectory,
-            IProfileIdentifier identifier,
-            IGithubPatcherIdentifier githubId)
+        public RunnerRepoDirectoryProvider(IBaseRepoDirectoryProvider baseRepoDir)
         {
-            _workingDirectory = workingDirectory;
-            _identifier = identifier;
-            _githubId = githubId;
+            _baseRepoDir = baseRepoDir;
         }
     }
 }
