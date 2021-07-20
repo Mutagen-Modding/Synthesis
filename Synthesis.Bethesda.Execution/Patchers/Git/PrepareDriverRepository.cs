@@ -13,13 +13,13 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
     public interface IPrepareDriverRepository
     {
-        IObservable<ConfigurationState<DriverRepoInfo>> Get(
-            IObservable<ConfigurationState<string>> remoteRepoPath);
+        IObservable<ConfigurationState<DriverRepoInfo>> Get();
     }
 
     public class PrepareDriverRepository : IPrepareDriverRepository
     {
         private readonly ILogger _logger;
+        private readonly IGetRepoPathValidity _getRepoPathValidity;
         private readonly IProvideRepositoryCheckouts _repoCheckouts;
         private readonly IPathToSolutionProvider _pathToSolutionProvider;
         private readonly ICheckOrCloneRepo _checkOrClone;
@@ -28,6 +28,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
         public PrepareDriverRepository(
             ILogger logger,
+            IGetRepoPathValidity getRepoPathValidity,
             IProvideRepositoryCheckouts repoCheckouts,
             IPathToSolutionProvider pathToSolutionProvider,
             ICheckOrCloneRepo checkOrClone,
@@ -35,6 +36,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             ISchedulerProvider schedulerProvider)
         {
             _logger = logger;
+            _getRepoPathValidity = getRepoPathValidity;
             _repoCheckouts = repoCheckouts;
             _pathToSolutionProvider = pathToSolutionProvider;
             _checkOrClone = checkOrClone;
@@ -42,9 +44,11 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             _schedulerProvider = schedulerProvider;
         }
         
-        public IObservable<ConfigurationState<DriverRepoInfo>> Get(IObservable<ConfigurationState<string>> remoteRepoPath)
+        public IObservable<ConfigurationState<DriverRepoInfo>> Get()
         {
-            return remoteRepoPath
+            // Clone repository to a folder where driving information will be retrieved from master.
+            // This will be where we get available projects + tags, etc.
+            return _getRepoPathValidity.Get()
                 .Throttle(TimeSpan.FromMilliseconds(100), _schedulerProvider.MainThread)
                 .ObserveOn(_schedulerProvider.TaskPool)
                 .SelectReplaceWithIntermediate(
@@ -122,7 +126,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                                 branchShas: branchShas,
                                 tags: tags,
                                 availableProjects: availableProjs));
-                    });
+                    })
+                .Replay(1)
+                .RefCount();
         }
     }
 }

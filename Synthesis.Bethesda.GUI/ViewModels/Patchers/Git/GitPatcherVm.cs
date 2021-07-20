@@ -203,18 +203,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 GetNickname)
                 .ToGuiProperty<string>(this, nameof(DisplayName), GetNickname(NameVm.Name, Input.RemoteRepoPath));
 
-            var remoteRepoPath = getRepoPathValidity.Get(this.WhenAnyValue(x => x.Input.RemoteRepoPath))
-                .Replay(1)
-                .RefCount();
+            var remoteRepoPath = getRepoPathValidity.Get();
             _RepoValidity = remoteRepoPath
                 .Select(r => r.RunnableState)
                 .ToGuiProperty(this, nameof(RepoValidity));
 
-            // Clone repository to a folder where driving information will be retrieved from master.
-            // This will be where we get available projects + tags, etc.
-            var driverRepoInfo = prepareDriverRepository.Get(remoteRepoPath)
-                .Replay(1)
-                .RefCount();
+            var driverRepoInfo = prepareDriverRepository.Get();
 
             // Clone a second repository that we will check out the desired target commit to actually run
             var runnerRepoState = remoteRepoPath
