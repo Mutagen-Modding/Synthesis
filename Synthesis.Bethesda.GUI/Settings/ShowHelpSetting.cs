@@ -14,6 +14,8 @@ namespace Synthesis.Bethesda.GUI.Settings
 
     public class ShowHelpSetting : ViewModel, IShowHelpSetting
     {
+        public ISaveSignal SaveSignal { get; }
+
         [Reactive]
         public bool ShowHelp { get; set; }
 
@@ -23,6 +25,7 @@ namespace Synthesis.Bethesda.GUI.Settings
             ISaveSignal saveSignal,
             ISettingsSingleton settings)
         {
+            SaveSignal = saveSignal;
             ShowHelpToggleCommand = ReactiveCommand.Create(() => ShowHelp = !ShowHelp);
 
             ShowHelp = settings.Gui.ShowHelp;

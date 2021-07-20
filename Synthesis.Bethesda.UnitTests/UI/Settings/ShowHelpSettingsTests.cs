@@ -3,33 +3,23 @@ using AutoFixture;
 using FluentAssertions;
 using NSubstitute;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.UI.Settings
 {
-    public class ShowHelpSettingsTests : IClassFixture<Fixture>
+    public class ShowHelpSettingsTests
     {
-        private readonly Fixture _Fixture;
-
-        public ShowHelpSettingsTests(Fixture fixture)
+        [Theory, SynthAutoData]
+        public void CommandDoesFlip(ShowHelpSetting sut)
         {
-            _Fixture = fixture;
-        }
-        
-        [Fact]
-        public void CommandDoesFlip()
-        {
-            var settings = _Fixture.Inject.Create<ISettingsSingleton>();
-            var help = new ShowHelpSetting(
-                new RetrieveSaveSettings(settings),
-                settings);
-            var initial = help.ShowHelp;
-            help.ShowHelpToggleCommand.CanExecute(Unit.Default)
+            var initial = sut.ShowHelp;
+            sut.ShowHelpToggleCommand.CanExecute(Unit.Default)
                 .Should().BeTrue();
-            help.ShowHelpToggleCommand.Execute(Unit.Default);
-            help.ShowHelp.Should().Be(!initial);
-            help.ShowHelpToggleCommand.Execute(Unit.Default);
-            help.ShowHelp.Should().Be(initial);
+            sut.ShowHelpToggleCommand.Execute(Unit.Default);
+            sut.ShowHelp.Should().Be(!initial);
+            sut.ShowHelpToggleCommand.Execute(Unit.Default);
+            sut.ShowHelp.Should().Be(initial);
         }
 
         [Fact]
@@ -48,10 +38,9 @@ namespace Synthesis.Bethesda.UnitTests.UI.Settings
             help.ShowHelp.Should().BeFalse();
         }
 
-        [Fact]
-        public void SavesSettings()
+        [Theory, SynthAutoData]
+        public void SavesSettings(ISettingsSingleton settings)
         {
-            var settings = _Fixture.Inject.Create<ISettingsSingleton>();
             var retrieve = new RetrieveSaveSettings(settings);
             var help = new ShowHelpSetting(
                 retrieve,

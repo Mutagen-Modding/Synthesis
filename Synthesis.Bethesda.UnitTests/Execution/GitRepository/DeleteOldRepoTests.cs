@@ -10,100 +10,81 @@ using LibGit2Sharp;
 using Noggog;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Synthesis.Bethesda.UnitTests.AutoData;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
 {
-    public class DeleteOldRepoTests : RepoTestUtility, IClassFixture<Fixture>
+    public class DeleteOldRepoTests : RepoTestUtility
     {
-        private readonly Fixture _Fixture;
-
-        public DeleteOldRepoTests(Fixture fixture)
-        {
-            _Fixture = fixture;
-        }
-
-        private DeleteOldRepo Get()
-        {
-            return new DeleteOldRepo(
-                _Fixture.Inject.Create<ILogger>(),
-                new ProvideRepositoryCheckouts(_Fixture.Inject.Create<ILogger>()));
-        }
-        
-        [Fact]
-        public void IsRepositoryDesirable()
+        [Theory, SynthAutoData]
+        public void IsRepositoryDesirable(DeleteOldRepo sut)
         {
             using var repoPath = GetRepository(
                 nameof(DeleteOldRepoTests),
                 out var remote, out var local,
                 createPatcherFiles: false);
-            var del = Get();
             using var repo = new Bethesda.Execution.GitRespository.GitRepository(new Repository(local));
-            del.IsRepositoryUndesirable(repo)
+            sut.IsRepositoryUndesirable(repo)
                 .Should().BeFalse();
         }
 
-        [Fact]
-        public void Keep()
+        [Theory, SynthAutoData]
+        public void Keep(DeleteOldRepo sut)
         {
             using var repoPath = GetRepository(
                 nameof(DeleteOldRepoTests),
                 out var remote, out var local,
                 createPatcherFiles: false);
-            var tmp = Utility.GetTempFolder(nameof(DeleteOldRepoTests));
-            var del = Get();
-            del.CheckIfKeeping(local, remote.Path)
+            using var tmp = Utility.GetTempFolder(nameof(DeleteOldRepoTests));
+            sut.CheckIfKeeping(local, remote.Path)
                 .Should().BeTrue();
             local.Exists.Should().BeTrue();
         }
 
-        [Fact]
-        public void Exception()
+        [Theory, SynthAutoData(UseMockRepositoryProvider: false)]
+        public void Exception(DeleteOldRepo sut)
         {
             using var repoPath = GetRepository(
                 nameof(DeleteOldRepoTests),
                 out var remote, out var local,
                 createPatcherFiles: false);
-            var provide = Substitute.For<IProvideRepositoryCheckouts>();
-            provide.Get(_Fixture.Inject.Create<DirectoryPath>()).ThrowsForAnyArgs(new RepositoryNotFoundException());
-            var del = new DeleteOldRepo(
-                _Fixture.Inject.Create<ILogger>(),
-                provide);
-            del.CheckIfKeeping(local, remote.Path)
+            sut.RepoCheckouts.Get(default).ThrowsForAnyArgs(new RepositoryNotFoundException());
+            sut.CheckIfKeeping(local, remote.Path)
                 .Should().BeFalse();
             local.Exists.Should().BeFalse();
         }
 
-        [Fact]
-        public void DoesNotExist()
+        [Theory, SynthAutoData]
+        public void DoesNotExist(DeleteOldRepo sut)
         {
             var tmp = Utility.GetTempFolder(nameof(DeleteOldRepoTests));
-            var del = Get();
-            del.CheckIfKeeping(Path.Combine(tmp.Dir.Path, "Nothing"), GetResponse<string>.Failure)
+            sut.CheckIfKeeping(Path.Combine(tmp.Dir.Path, "Nothing"), GetResponse<string>.Failure)
                 .Should().BeFalse();
         }
 
-        [Fact]
-        public void RemoteFailed()
+        [Theory, SynthAutoData]
+        public void RemoteFailed(DeleteOldRepo sut)
         {
             using var repoPath = GetRepository(
                 nameof(DeleteOldRepoTests),
                 out var remote, out var local,
                 createPatcherFiles: false);
-            var del = Get();
-            del.CheckIfKeeping(local, GetResponse<string>.Failure)
+            sut.CheckIfKeeping(local, GetResponse<string>.Failure)
                 .Should().BeFalse();
             local.Exists.Should().BeFalse();
         }
 
-        [Fact]
-        public void RemoteDifferent()
+        [Theory, SynthAutoData]
+        public void RemoteDifferent(
+            RepositoryCheckout checkout,
+            DeleteOldRepo sut)
         {
             using var repoPath = GetRepository(
                 nameof(DeleteOldRepoTests),
                 out var remote, out var local,
                 createPatcherFiles: false);
-            var del = Get();
-            del.CheckIfKeeping(local, GetResponse<string>.Succeed("SomethingElse"))
+            sut.RepoCheckouts.Get(default).ThrowsForAnyArgs(new RepositoryNotFoundException());
+            sut.CheckIfKeeping(local, GetResponse<string>.Succeed("SomethingElse"))
                 .Should().BeFalse();
             local.Exists.Should().BeFalse();
         }

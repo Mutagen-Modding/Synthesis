@@ -4,71 +4,57 @@ using FluentAssertions;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
 {
-    public class ProvideRepositoryCheckoutsTests : RepoTestUtility, IClassFixture<Fixture>
+    public class ProvideRepositoryCheckoutsTests : RepoTestUtility
     {
-        private readonly Fixture _Fixture;
-
-        public ProvideRepositoryCheckoutsTests(Fixture fixture)
-        {
-            _Fixture = fixture;
-        }
-
-        private ProvideRepositoryCheckouts Get()
-        {
-            return new(_Fixture.Inject.Create<ILogger>());
-        }
-
-        [Fact]
-        public void TypicalGet()
+        [Theory, SynthAutoData]
+        public void TypicalGet(ProvideRepositoryCheckouts sut)
         {
             using var repoPath = GetRepository(
                 nameof(ProvideRepositoryCheckoutsTests),
                 out var remote, out var local,
                 createPatcherFiles: false);
-            var provide = Get();
-            using var checkout = provide.Get(local);
+            using var checkout = sut.Get(local);
             new DirectoryPath(checkout.Repository.WorkingDirectory).Should().BeEquivalentTo(local);
         }
 
-        [Fact]
-        public void CleanShutdown()
+        [Theory, SynthAutoData]
+        public void CleanShutdown(ProvideRepositoryCheckouts sut)
         {
             using var repoPath = GetRepository(
                 nameof(ProvideRepositoryCheckoutsTests),
                 out var remote, out var local,
                 createPatcherFiles: false);
-            var provide = Get();
-            provide.Get(local).Dispose();
-            provide.Dispose();
-            provide.IsShutdownRequested.Should().BeTrue();
-            provide.IsShutdown.Should().BeTrue();
+            sut.Get(local).Dispose();
+            sut.Dispose();
+            sut.IsShutdownRequested.Should().BeTrue();
+            sut.IsShutdown.Should().BeTrue();
         }
 
-        [Fact]
-        public async Task BlockedShutdown()
+        [Theory, SynthAutoData]
+        public async Task BlockedShutdown(ProvideRepositoryCheckouts sut)
         {
             using var repoPath = GetRepository(
                 nameof(ProvideRepositoryCheckoutsTests),
                 out var remote, out var local,
                 createPatcherFiles: false);
-            var provide = Get();
-            var checkout = provide.Get(local);
+            var checkout = sut.Get(local);
             var waited = false;
             var t = Task.Run(async () =>
             {
                 await Task.Delay(500);
-                provide.IsShutdownRequested.Should().BeTrue();
+                sut.IsShutdownRequested.Should().BeTrue();
                 waited = true;
                 checkout.Dispose();
             });
-            provide.Dispose();
+            sut.Dispose();
             waited.Should().BeTrue();
             await t;
-            provide.IsShutdown.Should().BeTrue();
+            sut.IsShutdown.Should().BeTrue();
         }
     }
 }

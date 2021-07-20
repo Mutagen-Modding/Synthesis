@@ -5,41 +5,36 @@ using FluentAssertions;
 using NSubstitute;
 using Synthesis.Bethesda.GUI;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
+using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.UI.ViewModel
 {
-    public class ConfirmationPanelControllerTests : IClassFixture<Fixture>
+    public class ConfirmationPanelControllerTests
     {
-        private readonly Fixture _Fixture;
-
-        public ConfirmationPanelControllerTests(Fixture fixture)
+        [Theory, SynthAutoData]
+        public void Discards(
+            IConfirmationActionVm confirmVm,
+            ConfirmationPanelControllerVm sut)
         {
-            _Fixture = fixture;
+            sut.TargetConfirmation = confirmVm;
+            ((ICommand) sut.DiscardActionCommand).CanExecute(Unit.Default)
+                .Should().BeTrue();
+            ((ICommand) sut.DiscardActionCommand).Execute(Unit.Default);
+            sut.TargetConfirmation.Should().BeNull();
         }
         
-        [Fact]
-        public void Discards()
+        [Theory, SynthAutoData]
+        public void Confirms(
+            IConfirmationActionVm confirmVm,
+            ConfirmationPanelControllerVm sut)
         {
-            var confirm = new ConfirmationPanelControllerVm();
-            confirm.TargetConfirmation = _Fixture.Inject.Create<IConfirmationActionVm>();
-            ((ICommand) confirm.DiscardActionCommand).CanExecute(Unit.Default)
+            sut.TargetConfirmation = confirmVm;
+            ((ICommand) sut.ConfirmActionCommand).CanExecute(Unit.Default)
                 .Should().BeTrue();
-            ((ICommand) confirm.DiscardActionCommand).Execute(Unit.Default);
-            confirm.TargetConfirmation.Should().BeNull();
-        }
-        
-        [Fact]
-        public void Confirms()
-        {
-            var confirmAction = Substitute.For<IConfirmationActionVm>();
-            var confirm = new ConfirmationPanelControllerVm();
-            confirm.TargetConfirmation = confirmAction;
-            ((ICommand) confirm.ConfirmActionCommand).CanExecute(Unit.Default)
-                .Should().BeTrue();
-            ((ICommand) confirm.ConfirmActionCommand).Execute(Unit.Default);
-            confirm.TargetConfirmation.Should().BeNull();
-            confirmAction.ToDo!.Received().Invoke();
+            ((ICommand) sut.ConfirmActionCommand).Execute(Unit.Default);
+            sut.TargetConfirmation.Should().BeNull();
+            confirmVm.ToDo!.Received().Invoke();
         }
     }
 }

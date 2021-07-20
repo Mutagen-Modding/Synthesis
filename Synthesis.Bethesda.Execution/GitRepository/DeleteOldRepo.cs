@@ -18,14 +18,14 @@ namespace Synthesis.Bethesda.Execution.GitRespository
     public class DeleteOldRepo : IDeleteOldRepo
     {
         private readonly ILogger _Logger;
-        private readonly IProvideRepositoryCheckouts _RepoCheckouts;
+        public IProvideRepositoryCheckouts RepoCheckouts { get; }
 
         public DeleteOldRepo(
             ILogger logger,
             IProvideRepositoryCheckouts repoCheckouts)
         {
             _Logger = logger;
-            _RepoCheckouts = repoCheckouts;
+            RepoCheckouts = repoCheckouts;
         }
         
         public bool CheckIfKeeping(
@@ -45,7 +45,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
             }
             try
             {
-                using var repoCheckout = _RepoCheckouts.Get(localDir);
+                using var repoCheckout = RepoCheckouts.Get(localDir);
                 var repo = repoCheckout.Repository;
 
                 if (IsRepositoryUndesirable(repo)) return true;

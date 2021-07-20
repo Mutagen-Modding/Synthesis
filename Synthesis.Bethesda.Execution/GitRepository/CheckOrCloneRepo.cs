@@ -17,11 +17,11 @@ namespace Synthesis.Bethesda.Execution.GitRespository
 
     public class CheckOrCloneRepo : ICheckOrCloneRepo
     {
-        private readonly IDeleteOldRepo _Delete;
+        public IDeleteOldRepo Delete { get; }
 
         public CheckOrCloneRepo(IDeleteOldRepo delete)
         {
-            _Delete = delete;
+            Delete = delete;
         }
         
         public GetResponse<(string Remote, string Local)> Check(
@@ -33,7 +33,7 @@ namespace Synthesis.Bethesda.Execution.GitRespository
             try
             {
                 cancel.ThrowIfCancellationRequested();
-                if (_Delete.CheckIfKeeping(localDir: localDir, remoteUrl: remote))
+                if (Delete.CheckIfKeeping(localDir: localDir, remoteUrl: remote))
                 {
                     // Short circuiting deletion
                     return GetResponse<(string Remote, string Local)>.Succeed((remote.Value, localDir), remote.Reason);

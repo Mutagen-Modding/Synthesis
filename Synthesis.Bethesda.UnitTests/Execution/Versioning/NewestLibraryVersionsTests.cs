@@ -6,94 +6,68 @@ using System;
 using FluentAssertions;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Versioning;
+using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Versioning
 {
-    public class NewestLibraryVersionsTests : IClassFixture<Fixture>
+    public class NewestLibraryVersionsTests
     {
-        private readonly Fixture _Fixture;
-
-        public NewestLibraryVersionsTests(Fixture fixture)
+        [Theory, SynthAutoData]
+        public void DotNetNotAcceptable(NewestLibraryVersions sut)
         {
-            _Fixture = fixture;
-        }
-        
-        [Fact]
-        public void DotNetNotAcceptable()
-        {
-            var sdk = Substitute.For<IInstalledSdkProvider>();
-            sdk.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: false)));
-            var newest = new NewestLibraryVersions(
-                _Fixture.Inject.Create<ILogger>(),
-                _Fixture.Inject.Create<IQueryNewestLibraryVersions>(),
-                sdk,
-                _Fixture.Inject.Create<IConsiderPrereleasePreference>());
-            newest.NewestSynthesisVersion.Subscribe();
-            newest.NewestSynthesisVersion.Subscribe(x =>
+            sut.InstalledSdkProvider.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: false)));
+            sut.NewestSynthesisVersion.Subscribe();
+            sut.NewestSynthesisVersion.Subscribe(x =>
             {
                 x.Should().BeNull();
             });
-            newest.NewestMutagenVersion.Subscribe();
-            newest.NewestMutagenVersion.Subscribe(x =>
+            sut.NewestMutagenVersion.Subscribe();
+            sut.NewestMutagenVersion.Subscribe(x =>
             {
                 x.Should().BeNull();
             });
         }
 
-        [Fact]
-        public void ConsiderPrereleases()
+        [Theory, SynthAutoData]
+        public void ConsiderPrereleases(NewestLibraryVersions sut)
         {
-            var sdk = Substitute.For<IInstalledSdkProvider>();
-            sdk.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: true)));
-            var consider = Substitute.For<IConsiderPrereleasePreference>();
-            consider.ConsiderPrereleases.Returns(_ => Observable.Return(true));
-            var queryNewest = Substitute.For<IQueryNewestLibraryVersions>();
-            queryNewest.GetLatestVersions(includePrerelease: true, Arg.Any<string>())
+            sut.InstalledSdkProvider.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: true)));
+            sut.ConsiderPrerelease.ConsiderPrereleases.Returns(_ => Observable.Return(true));
+            sut.QueryNewest.GetLatestVersions(includePrerelease: true, Arg.Any<string>())
                 .Returns(_ => ("PrereleaseMutagenVersion", "PrereleaseSynthesisVersion"));
-            queryNewest.GetLatestVersions(includePrerelease: false, Arg.Any<string>())
+            sut.QueryNewest.GetLatestVersions(includePrerelease: false, Arg.Any<string>())
                 .Returns(_ => ("MutagenVersion", "SynthesisVersion"));
-            var newest = new NewestLibraryVersions(
-                _Fixture.Inject.Create<ILogger>(),
-                queryNewest,
-                sdk,
-                consider);
-            newest.NewestSynthesisVersion.Subscribe();
-            newest.NewestSynthesisVersion.Subscribe(x =>
+            
+            sut.NewestSynthesisVersion.Subscribe();
+            sut.NewestSynthesisVersion.Subscribe(x =>
             {
                 x.Should().Be("PrereleaseSynthesisVersion");
             });
-            newest.NewestMutagenVersion.Subscribe();
-            newest.NewestMutagenVersion.Subscribe(x =>
+            sut.NewestMutagenVersion.Subscribe();
+            sut.NewestMutagenVersion.Subscribe(x =>
             {
                 x.Should().Be("PrereleaseMutagenVersion");
             });
         }
 
-        [Fact]
-        public void DoNotConsiderPrereleases()
+        [Theory, SynthAutoData]
+        public void DoNotConsiderPrereleases(NewestLibraryVersions sut)
         {
-            var sdk = Substitute.For<IInstalledSdkProvider>();
-            sdk.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: true)));
-            var consider = Substitute.For<IConsiderPrereleasePreference>();
-            consider.ConsiderPrereleases.Returns(_ => Observable.Return(false));
-            var queryNewest = Substitute.For<IQueryNewestLibraryVersions>();
-            queryNewest.GetLatestVersions(includePrerelease: true, Arg.Any<string>())
+            sut.InstalledSdkProvider.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: true)));
+            sut.ConsiderPrerelease.ConsiderPrereleases.Returns(_ => Observable.Return(false));
+            sut.QueryNewest.GetLatestVersions(includePrerelease: true, Arg.Any<string>())
                 .Returns(_ => ("PrereleaseMutagenVersion", "PrereleaseSynthesisVersion"));
-            queryNewest.GetLatestVersions(includePrerelease: false, Arg.Any<string>())
+            sut.QueryNewest.GetLatestVersions(includePrerelease: false, Arg.Any<string>())
                 .Returns(_ => ("MutagenVersion", "SynthesisVersion"));
-            var newest = new NewestLibraryVersions(
-                _Fixture.Inject.Create<ILogger>(),
-                queryNewest,
-                sdk,
-                consider);
-            newest.NewestSynthesisVersion.Subscribe();
-            newest.NewestSynthesisVersion.Subscribe(x =>
+            
+            sut.NewestSynthesisVersion.Subscribe();
+            sut.NewestSynthesisVersion.Subscribe(x =>
             {
                 x.Should().Be("SynthesisVersion");
             });
-            newest.NewestMutagenVersion.Subscribe();
-            newest.NewestMutagenVersion.Subscribe(x =>
+            sut.NewestMutagenVersion.Subscribe();
+            sut.NewestMutagenVersion.Subscribe(x =>
             {
                 x.Should().Be("MutagenVersion");
             });

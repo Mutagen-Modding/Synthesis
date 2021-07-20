@@ -14,15 +14,8 @@ using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Pipeline.States
 {
-    public class AddImplicitMastersTests : IClassFixture<Fixture>
+    public class AddImplicitMastersTests
     {
-        private readonly Fixture _Fixture;
-
-        public AddImplicitMastersTests(Fixture fixture)
-        {
-            _Fixture = fixture;
-        }
-
         private const string ModA = "ModA.esp";
         private const string ModB = "ModB.esp";
         private const string ModC = "ModC.esp";
@@ -58,7 +51,7 @@ namespace Synthesis.Bethesda.UnitTests.Pipeline.States
         private IFindImplicitlyIncludedMods GetImplicitlyIncluded(params Listing[] listings)
         {
             return new FindImplicitlyIncludedMods(
-                _Fixture.Inject.Create<IDataDirectoryProvider>(),
+                Substitute.For<IDataDirectoryProvider>(),
                 GetReaderFactory(listings));
         }
 

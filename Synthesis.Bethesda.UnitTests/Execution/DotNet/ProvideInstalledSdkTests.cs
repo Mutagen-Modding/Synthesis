@@ -2,38 +2,24 @@
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoFixture;
 using FluentAssertions;
-using Noggog.Reactive;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
 {
-    public class ProvideInstalledSdkTests : IClassFixture<Fixture>
+    public class ProvideInstalledSdkTests
     {
-        private readonly Fixture _Fixture;
-
-        public ProvideInstalledSdkTests(Fixture fixture)
-        {
-            _Fixture = fixture;
-        }
-        
-        [Fact]
-        public async Task Success()
+        [Theory, SynthAutoData]
+        public async Task Success(InstalledSdkProvider sut)
         {
             var version = "Version";
-            var query = Substitute.For<IQueryInstalledSdk>();
-            query.Query(CancellationToken.None).Returns(
+            sut.Query.Query(CancellationToken.None).Returns(
                 new DotNetVersion(version, true));
-            var provide = new InstalledSdkProvider(
-                _Fixture.Inject.Create<ISchedulerProvider>(),
-                query,
-                _Fixture.Inject.Create<ILogger>());
-            await provide.DotNetSdkInstalled
+            await sut.DotNetSdkInstalled
                 .Do(x =>
                 {
                     x.Acceptable.Should().BeTrue();
@@ -41,34 +27,24 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
                 });
         }
         
-        [Fact]
-        public async Task Fail()
+        [Theory, SynthAutoData]
+        public async Task Fail(InstalledSdkProvider sut)
         {
-            var query = Substitute.For<IQueryInstalledSdk>();
-            query.Query(CancellationToken.None).Returns(
+            sut.Query.Query(CancellationToken.None).Returns(
                 new DotNetVersion(string.Empty, false));
-            var provide = new InstalledSdkProvider(
-                _Fixture.Inject.Create<ISchedulerProvider>(),
-                query,
-                _Fixture.Inject.Create<ILogger>());
-            await provide.DotNetSdkInstalled
+            await sut.DotNetSdkInstalled
                 .Do(x =>
                 {
                     x.Acceptable.Should().BeFalse();
                 });
         }
         
-        [Fact]
-        public async Task Throws()
+        [Theory, SynthAutoData]
+        public async Task Throws(InstalledSdkProvider sut)
         {
-            var query = Substitute.For<IQueryInstalledSdk>();
-            query.Query(CancellationToken.None)
+            sut.Query.Query(CancellationToken.None)
                 .ThrowsForAnyArgs(_ => new Exception());
-            var provide = new InstalledSdkProvider(
-                _Fixture.Inject.Create<ISchedulerProvider>(),
-                query,
-                _Fixture.Inject.Create<ILogger>());
-            await provide.DotNetSdkInstalled
+            await sut.DotNetSdkInstalled
                 .Do(x =>
                 {
                     x.Acceptable.Should().BeFalse();

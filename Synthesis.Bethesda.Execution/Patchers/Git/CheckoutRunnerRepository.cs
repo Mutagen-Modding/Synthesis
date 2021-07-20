@@ -26,7 +26,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
     public class CheckoutRunnerRepository : ICheckoutRunnerRepository
     {
         private readonly IBuild _Build;
-        private readonly IProvideRepositoryCheckouts _RepoCheckouts;
+        public IProvideRepositoryCheckouts RepoCheckouts { get; }
         public const string RunnerBranch = "SynthesisRunner";
 
         public CheckoutRunnerRepository(
@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             IProvideRepositoryCheckouts repoCheckouts)
         {
             _Build = build;
-            _RepoCheckouts = repoCheckouts;
+            RepoCheckouts = repoCheckouts;
         }
         
         public async Task<ConfigurationState<RunnerRepoInfo>> Checkout(
@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
                 logger?.Invoke($"Targeting {patcherVersioning}");
 
-                using var repoCheckout = _RepoCheckouts.Get(localRepoDir);
+                using var repoCheckout = RepoCheckouts.Get(localRepoDir);
                 var repo = repoCheckout.Repository;
                 var runnerBranch = repo.TryCreateBranch(RunnerBranch);
                 repo.ResetHard();

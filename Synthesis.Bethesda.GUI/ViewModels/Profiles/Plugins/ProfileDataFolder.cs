@@ -22,6 +22,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 
     public class ProfileDataFolder : ViewModel, IProfileDataFolder, IDataDirectoryProvider
     {
+        public IFileSystem FileSystem { get; }
+        public IGameDirectoryLookup GameLocator { get; }
+
         [Reactive]
         public string? DataPathOverride { get; set; }
 
@@ -39,6 +42,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
             IGameDirectoryLookup gameLocator,
             IProfileIdentifier ident)
         {
+            FileSystem = fileSystem;
+            GameLocator = gameLocator;
             _DataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
                 .Select(path =>
                 {
@@ -97,11 +102,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                         logger.Information($"Data Folder: {d.Value}");
                     }
                 })
-                .ToGuiProperty(this, nameof(DataFolderResult));
+                .ToGuiProperty(this, nameof(DataFolderResult), deferSubscription: true);
 
             _Path = this.WhenAnyValue(x => x.DataFolderResult)
                 .Select(x => x.Value)
-                .ToGuiProperty(this, nameof(Path));
+                .ToGuiProperty(this, nameof(Path), deferSubscription: true);
         }
     }
 }

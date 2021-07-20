@@ -4,28 +4,18 @@ using FluentAssertions;
 using Serilog;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Main;
+using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.UI.Services
 {
-    public class IdeLocatorTests: IClassFixture<Fixture>
+    public class IdeLocatorTests
     {
-        private readonly Fixture _Fixture;
-
-        public IdeLocatorTests(Fixture fixture)
+        [Theory, SynthAutoData]
+        public void MissingPathsDoesNotThrow(IdeLocator sut)
         {
-            _Fixture = fixture;
-        }
-        
-        [Fact]
-        public void MissingPathsDoesNotThrow()
-        {
-            var fileSystem = new MockFileSystem();
-            var ideLocator = new IdeLocator(
-                _Fixture.Inject.Create<ILogger>(),
-                fileSystem);
-            ideLocator.VSPath.Should().BeNull();
-            ideLocator.RiderPath.Should().BeNull();
+            sut.VSPath.Should().BeNull();
+            sut.RiderPath.Should().BeNull();
         }
     }
 }

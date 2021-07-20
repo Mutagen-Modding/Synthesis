@@ -14,6 +14,7 @@ namespace Synthesis.Bethesda.Execution.DotNet
     
     public class InstalledSdkProvider : IInstalledSdkProvider
     {
+        public IQueryInstalledSdk Query { get; }
         public IObservable<DotNetVersion> DotNetSdkInstalled { get; }
         
         public InstalledSdkProvider(
@@ -21,6 +22,7 @@ namespace Synthesis.Bethesda.Execution.DotNet
             IQueryInstalledSdk query, 
             ILogger logger)
         {
+            Query = query;
             var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), schedulerProvider.TaskPool)
                 .StartWith(0)
                 .SelectTask(async i =>
