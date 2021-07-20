@@ -41,7 +41,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.BindStrict(this.ViewModel, vm => vm.Input.RemoteRepoPath, view => view.RepositoryPath.Text)
+                this.BindStrict(this.ViewModel, vm => vm.RemoteRepoPathInput.RemoteRepoPath, view => view.RepositoryPath.Text)
                     .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.RepoValidity)
