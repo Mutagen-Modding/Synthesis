@@ -26,14 +26,17 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
     public class CheckoutRunnerRepository : ICheckoutRunnerRepository
     {
         private readonly IBuild _Build;
+        private readonly IPathToSolutionProvider _pathToSolutionProvider;
         public IProvideRepositoryCheckouts RepoCheckouts { get; }
         public const string RunnerBranch = "SynthesisRunner";
 
         public CheckoutRunnerRepository(
             IBuild build,
+            IPathToSolutionProvider _pathToSolutionProvider,
             IProvideRepositoryCheckouts repoCheckouts)
         {
             _Build = build;
+            this._pathToSolutionProvider = _pathToSolutionProvider;
             RepoCheckouts = repoCheckouts;
         }
         
@@ -110,7 +113,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 }
 
                 cancel.ThrowIfCancellationRequested();
-                var slnPath = GitPatcherRun.GetPathToSolution(localRepoDir);
+                var slnPath = _pathToSolutionProvider.Path;
                 if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
 
                 var foundProjSubPath = SolutionPatcherRun.AvailableProject(slnPath, proj);

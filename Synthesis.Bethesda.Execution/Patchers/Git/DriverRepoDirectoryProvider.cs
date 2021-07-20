@@ -19,4 +19,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             _baseRepo = baseRepo;
         }
     }
+
+    public record DriverRepoDirectoryInjection(DirectoryPath Path) : IDriverRepoDirectoryProvider;
 }

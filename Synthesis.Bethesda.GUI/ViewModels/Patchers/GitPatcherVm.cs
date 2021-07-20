@@ -43,6 +43,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
     public class GitPatcherVm : PatcherVm
     {
         private readonly ICheckoutRunnerRepository _CheckoutRunner;
+        private readonly IPathToSolutionProvider _pathToSolutionProvider;
         private readonly ILogger _Logger;
         private readonly IToSolutionRunner _toSolutionRunner;
         public override bool IsNameEditable => false;
@@ -181,6 +182,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             IBaseRepoDirectoryProvider baseRepoDir,
             IDriverRepoDirectoryProvider driverRepoDirectoryProvider,
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
+            IPathToSolutionProvider pathToSolutionProvider,
             ILogger logger,
             IPrepareRunnableState prepareRunnableState,
             IToSolutionRunner toSolutionRunner,
@@ -190,6 +192,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             : base(nameVm, remove, selPatcher, confirmation, settings)
         {
             _CheckoutRunner = checkoutRunner;
+            _pathToSolutionProvider = pathToSolutionProvider;
             _Logger = logger;
             _toSolutionRunner = toSolutionRunner;
             Locking = lockToCurrentVersioning;
@@ -273,7 +276,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                         }
 
                         // Try to locate a solution to drive from
-                        var slnPath = GitPatcherRun.GetPathToSolution(LocalDriverRepoDirectory);
+                        var slnPath = _pathToSolutionProvider.Path;
                         if (slnPath == null)
                         {
                             Logger.Error($"Failed to check out driver repository: Could not locate solution to run.");

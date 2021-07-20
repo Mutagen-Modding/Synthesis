@@ -124,11 +124,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             await SolutionRun.Run(settings, cancel).ConfigureAwait(false);
         }
 
-        public static string? GetPathToSolution(string pathToRepo)
-        {
-            return Directory.EnumerateFiles(pathToRepo, "*.sln").FirstOrDefault();
-        }
-
         public static void ModifyProject(
             string solutionPath,
             string drivingProjSubPath,

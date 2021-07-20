@@ -103,7 +103,10 @@ namespace Synthesis.Bethesda.ImpactTester
 
                         cancel.ThrowIfCancellationRequested();
                         using var repo = new Repository(repoDir.FullName);
-                        var slnPath = GitPatcherRun.GetPathToSolution(repo.Info.WorkingDirectory);
+                        var slnPath = new PathToSolutionProvider(
+                            IFileSystemExt.DefaultFilesystem,
+                            new DriverRepoDirectoryInjection(
+                                repo.Info.WorkingDirectory)).Path;
                         if (slnPath == null)
                         {
                             System.Console.Error.WriteLine($"Could not get path to solution {clonePath}");
