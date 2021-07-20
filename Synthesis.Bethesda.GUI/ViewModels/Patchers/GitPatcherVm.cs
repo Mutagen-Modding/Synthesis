@@ -26,7 +26,6 @@ using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
-using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Versioning;
@@ -42,7 +41,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {
     public class GitPatcherVm : PatcherVm
     {
-        private readonly ICheckoutRunnerRepository _CheckoutRunner;
         private readonly IPathToSolutionProvider _pathToSolutionProvider;
         private readonly ILogger _Logger;
         private readonly IToSolutionRunner _toSolutionRunner;
@@ -162,7 +160,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             IGithubPatcherIdentifier ident,
             IProfileIdentifier profileIdent,
             IPatcherNameVm nameVm,
-            IProfileDirectories dirs,
             IProfileLoadOrder loadOrder,
             IProfileVersioning versioning,
             IProfileDataFolder dataFolder,
@@ -170,7 +167,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             INavigateTo navigate, 
             ICheckOrCloneRepo checkOrClone,
             IProvideRepositoryCheckouts repoCheckouts,
-            ICheckoutRunnerRepository checkoutRunner,
             ICheckRunnability checkRunnability,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
@@ -183,6 +179,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             IDriverRepoDirectoryProvider driverRepoDirectoryProvider,
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             IPathToSolutionProvider pathToSolutionProvider,
+            IGetRepoPathValidity getRepoPathValidity,
             ILogger logger,
             IPrepareRunnableState prepareRunnableState,
             IToSolutionRunner toSolutionRunner,
@@ -191,7 +188,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             GithubPatcherSettings? settings = null)
             : base(nameVm, remove, selPatcher, confirmation, settings)
         {
-            _CheckoutRunner = checkoutRunner;
             _pathToSolutionProvider = pathToSolutionProvider;
             _Logger = logger;
             _toSolutionRunner = toSolutionRunner;
@@ -212,8 +208,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                 GetNickname)
                 .ToGuiProperty<string>(this, nameof(DisplayName), GetNickname(NameVm.Name, RemoteRepoPath));
 
-            // Check to see if remote path points to a reachable git repository
-            var remoteRepoPath = GetRepoPathValidity(this.WhenAnyValue(x => x.RemoteRepoPath))
+            var remoteRepoPath = getRepoPathValidity.Get(this.WhenAnyValue(x => x.RemoteRepoPath))
                 .Replay(1)
                 .RefCount();
             _RepoValidity = remoteRepoPath
@@ -1035,33 +1030,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         {
             PatcherSettings.Persist();
             return _toSolutionRunner.GetRunner(parent, this);
-        }
-
-        public static IObservable<ConfigurationState<string>> GetRepoPathValidity(IObservable<string> repoPath)
-        {
-            return repoPath
-                .DistinctUntilChanged()
-                .Select(x => new ConfigurationState<string>(string.Empty)
-                {
-                    IsHaltingError = false,
-                    RunnableState = ErrorResponse.Fail("Checking remote repository correctness.")
-                })
-                // But merge in the work of checking the repo on that same path to get the eventual result
-                .Merge(repoPath
-                    .DistinctUntilChanged()
-                    .Debounce(TimeSpan.FromMilliseconds(300), RxApp.MainThreadScheduler)
-                    .ObserveOn(RxApp.TaskpoolScheduler)
-                    .Select(p =>
-                    {
-                        try
-                        {
-                            if (Repository.ListRemoteReferences(p).Any()) return new ConfigurationState<string>(p);
-                        }
-                        catch (Exception)
-                        {
-                        }
-                        return new ConfigurationState<string>(string.Empty, ErrorResponse.Fail("Path does not point to a valid repository."));
-                    }));
         }
 
         public override void Delete()
