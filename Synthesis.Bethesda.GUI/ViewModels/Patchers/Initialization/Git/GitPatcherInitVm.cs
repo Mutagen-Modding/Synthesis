@@ -18,6 +18,7 @@ using Serilog;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services.Main;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
@@ -193,7 +194,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
         public void AddStorePatcher(PatcherStoreListingVm listing)
         {
             var patcher = _PatcherFactory.GetGitPatcher();
-            patcher.RemoteRepoPath = listing.RepoPath;
+            patcher.Input.RemoteRepoPath = listing.RepoPath;
             patcher.ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\');
             Init.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
         }

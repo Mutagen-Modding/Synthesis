@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -40,7 +41,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.BindStrict(this.ViewModel, vm => vm.RemoteRepoPath, view => view.RepositoryPath.Text)
+                this.BindStrict(this.ViewModel, vm => vm.Input.RemoteRepoPath, view => view.RepositoryPath.Text)
                     .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.RepoValidity)

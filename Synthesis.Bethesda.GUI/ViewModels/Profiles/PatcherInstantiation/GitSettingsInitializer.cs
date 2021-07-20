@@ -3,6 +3,7 @@ using System.IO;
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation

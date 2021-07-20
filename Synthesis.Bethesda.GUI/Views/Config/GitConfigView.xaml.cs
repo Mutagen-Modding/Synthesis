@@ -7,6 +7,7 @@ using Synthesis.Bethesda.Execution.Settings;
 using System.Reactive.Linq;
 using Noggog;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 
 namespace Synthesis.Bethesda.GUI.Views
 {

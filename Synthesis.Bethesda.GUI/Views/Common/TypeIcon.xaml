@@ -12,12 +12,13 @@
     xmlns:initialization="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization"
     xmlns:git="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git"
     xmlns:initialization1="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization"
+    xmlns:patchers1="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Git"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <ContentControl x:Name="ContentControl">
         <ContentControl.Resources>
-            <DataTemplate DataType="{x:Type patchers:GitPatcherVm}">
+            <DataTemplate DataType="{x:Type patchers1:GitPatcherVm}">
                 <icon:PackIconMaterial
                     Width="35"
                     Height="35"

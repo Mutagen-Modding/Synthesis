@@ -24,6 +24,7 @@ using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;

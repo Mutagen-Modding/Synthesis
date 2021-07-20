@@ -10,6 +10,7 @@
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     xmlns:patchers="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers"
     xmlns:solution="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution"
+    xmlns:git="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Git"
     d:DesignHeight="60"
     d:DesignWidth="800"
     FocusVisualStyle="{x:Null}"
@@ -324,7 +325,7 @@
             VerticalAlignment="Center"
             Content="{Binding}">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type patchers:GitPatcherVm}">
+                <DataTemplate DataType="{x:Type git:GitPatcherVm}">
                     <icon:PackIconMaterial Height="13" Kind="Git" />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type patchers:CliPatcherVm}">

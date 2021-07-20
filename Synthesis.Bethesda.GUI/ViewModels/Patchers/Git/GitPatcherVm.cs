@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -35,16 +34,15 @@ using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 {
     public class GitPatcherVm : PatcherVm
     {
         private readonly ILogger _Logger;
         private readonly IToSolutionRunner _toSolutionRunner;
         public override bool IsNameEditable => false;
-
-        [Reactive]
-        public string RemoteRepoPath { get; set; } = string.Empty;
+        
+        public IGitInputVm Input { get; }
 
         private readonly ObservableAsPropertyHelper<string> _DisplayName;
         public override string DisplayName => _DisplayName.Value;
@@ -157,6 +155,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             IGithubPatcherIdentifier ident,
             IProfileIdentifier profileIdent,
             IPatcherNameVm nameVm,
+            IGitInputVm inputVm,
             IProfileLoadOrder loadOrder,
             IProfileVersioning versioning,
             IProfileDataFolder dataFolder,
@@ -185,6 +184,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             : base(nameVm, remove, selPatcher, confirmation, settings)
         {
             _Logger = logger;
+            Input = inputVm;
             _toSolutionRunner = toSolutionRunner;
             Locking = lockToCurrentVersioning;
             
@@ -199,11 +199,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 
             _DisplayName = this.WhenAnyValue(
                 x => x.NameVm.Name,
-                x => x.RemoteRepoPath,
+                x => x.Input.RemoteRepoPath,
                 GetNickname)
-                .ToGuiProperty<string>(this, nameof(DisplayName), GetNickname(NameVm.Name, RemoteRepoPath));
+                .ToGuiProperty<string>(this, nameof(DisplayName), GetNickname(NameVm.Name, Input.RemoteRepoPath));
 
-            var remoteRepoPath = getRepoPathValidity.Get(this.WhenAnyValue(x => x.RemoteRepoPath))
+            var remoteRepoPath = getRepoPathValidity.Get(this.WhenAnyValue(x => x.Input.RemoteRepoPath))
                 .Replay(1)
                 .RefCount();
             _RepoValidity = remoteRepoPath
@@ -680,7 +680,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             OpenGitPageCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.RepoValidity)
                     .Select(x => x.Succeeded),
-                execute: () => navigate.Navigate(RemoteRepoPath));
+                execute: () => navigate.Navigate(Input.RemoteRepoPath));
 
             OpenGitPageToVersionCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.RunnableData)
@@ -692,11 +692,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                         if (!RunnableData.TryGet(out var runnable)) return;
                         if (runnable.Target == null)
                         {
-                            navigate.Navigate(RemoteRepoPath);
+                            navigate.Navigate(Input.RemoteRepoPath);
                         }
                         else
                         {
-                            navigate.Navigate(Path.Combine(RemoteRepoPath, "tree", runnable.Target));
+                            navigate.Navigate(Path.Combine(Input.RemoteRepoPath, "tree", runnable.Target));
                         }
                     }
                     catch (Exception ex)
@@ -848,7 +848,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                 execute: () =>
                 {
                     if (LastSuccessfulRun == null) return;
-                    this.RemoteRepoPath = LastSuccessfulRun.TargetRepo;
+                    Input.RemoteRepoPath = LastSuccessfulRun.TargetRepo;
                     this.ProjectSubpath = LastSuccessfulRun.ProjectSubpath;
                     this.TargetCommit = LastSuccessfulRun.Commit;
                     this.ManualMutagenVersion = LastSuccessfulRun.MutagenVersion;
@@ -863,7 +863,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         {
             var ret = new GithubPatcherSettings
             {
-                RemoteRepoPath = this.RemoteRepoPath,
+                RemoteRepoPath = Input.RemoteRepoPath,
                 ID = this.ID,
                 SelectedProjectSubpath = this.ProjectSubpath,
                 PatcherVersioning = this.PatcherVersioning,
@@ -887,7 +887,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
         private void CopyInSettings(GithubPatcherSettings? settings)
         {
             if (settings == null) return;
-            this.RemoteRepoPath = settings.RemoteRepoPath;
+            Input.RemoteRepoPath = settings.RemoteRepoPath;
             this.ID = settings.ID;
             this.ProjectSubpath = settings.SelectedProjectSubpath;
             this.PatcherVersioning = settings.PatcherVersioning;
@@ -958,7 +958,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             if (MutagenVersionDiff.SelectedVersion == null) return;
             if (SynthesisVersionDiff.SelectedVersion == null) return;
             LastSuccessfulRun = new GithubPatcherLastRunState(
-                TargetRepo: this.RemoteRepoPath,
+                TargetRepo: Input.RemoteRepoPath,
                 ProjectSubpath: this.ProjectSubpath,
                 Commit: this.TargetCommit,
                 MutagenVersion: MutagenVersionDiff.SelectedVersion,

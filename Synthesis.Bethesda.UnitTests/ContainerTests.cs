@@ -16,6 +16,7 @@ using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
