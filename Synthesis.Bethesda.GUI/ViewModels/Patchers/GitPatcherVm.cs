@@ -170,7 +170,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             IInstalledSdkProvider dotNetInstalled,
             IEnvironmentErrorsVm envErrors,
             INewestLibraryVersions newest,
-            IBuild build,
+            IPerformGitPatcherCompilation performGitPatcherCompilation,
             IPrepareDriverRepository prepareDriverRepository,
             IBaseRepoDirectoryProvider baseRepoDir,
             IDriverRepoDirectoryProvider driverRepoDirectoryProvider,
@@ -563,56 +563,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
                     .Transform(x => x.ModKey))
                 .RefCount();
 
-            var compilation = runnableState
-                .Select(state =>
-                {
-                    return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
-                    {
-                        if (state.RunnableState.Failed)
-                        {
-                            observer.OnNext(state);
-                            return;
-                        }
-
-                        try
-                        {
-                            Logger.Information("Compiling");
-                            // Return early with the values, but mark not complete
-                            observer.OnNext(new ConfigurationState<RunnerRepoInfo>(state.Item)
-                            {
-                                IsHaltingError = false,
-                                RunnableState = ErrorResponse.Fail("Compiling")
-                            });
-
-                            // Compile to help prep
-                            var compileResp = await build.Compile(state.Item.ProjPath, cancel, Logger.Information);
-                            if (compileResp.Failed)
-                            {
-                                Logger.Information($"Compiling failed: {compileResp.Reason}");
-                                List<string> errs = new List<string>();
-                                DotNetCommands.PrintErrorMessage(compileResp.Reason, $"{Path.GetDirectoryName(state.Item.ProjPath)}\\", (s, _) =>
-                                {
-                                    errs.Add(s.ToString());
-                                });
-                                observer.OnNext(GetResponse<RunnerRepoInfo>.Fail(string.Join(Environment.NewLine, errs)));
-                                return;
-                            }
-
-                            // Return things again, without error
-                            Logger.Information("Finished compiling");
-                            observer.OnNext(state);
-                        }
-                        catch (Exception ex)
-                        {
-                            var str = $"Error checking out runner repository: {ex}";
-                            Logger.Error(str);
-                            observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
-                        }
-                        observer.OnCompleted();
-                    });
-                })
-                .Switch()
-                .StartWith(new ConfigurationState<RunnerRepoInfo>(GetResponse<RunnerRepoInfo>.Fail("Compilation uninitialized")))
+            var compilation = performGitPatcherCompilation.Process(runnableState)
                 .Replay(1)
                 .RefCount();
 
