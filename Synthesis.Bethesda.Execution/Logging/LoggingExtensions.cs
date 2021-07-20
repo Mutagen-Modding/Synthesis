@@ -1,9 +1,8 @@
+using System;
 using Noggog;
 using Serilog;
-using Synthesis.Bethesda.GUI.Logging;
-using System;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.Execution.Logging
 {
     public static class LoggingExtensions
     {

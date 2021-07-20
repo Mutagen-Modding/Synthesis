@@ -1,10 +1,8 @@
-using Serilog;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
+using Serilog;
 
-namespace Synthesis.Bethesda.GUI.Logging
+namespace Synthesis.Bethesda.Execution.Logging
 {
     public class TimingMeasurement : IDisposable
     {

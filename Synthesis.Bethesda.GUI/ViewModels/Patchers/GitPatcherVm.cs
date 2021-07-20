@@ -8,14 +8,12 @@ using System.Text;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
-using LibGit2Sharp;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Newtonsoft.Json;
 using Noggog;
-using Noggog.Utility;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -24,8 +22,8 @@ using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Logging;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Versioning;
@@ -41,7 +39,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 {
     public class GitPatcherVm : PatcherVm
     {
-        private readonly IPathToSolutionProvider _pathToSolutionProvider;
         private readonly ILogger _Logger;
         private readonly IToSolutionRunner _toSolutionRunner;
         public override bool IsNameEditable => false;
@@ -166,7 +163,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             IRemovePatcherFromProfile remove,
             INavigateTo navigate, 
             ICheckOrCloneRepo checkOrClone,
-            IProvideRepositoryCheckouts repoCheckouts,
             ICheckRunnability checkRunnability,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
@@ -175,10 +171,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             IEnvironmentErrorsVm envErrors,
             INewestLibraryVersions newest,
             IBuild build,
+            IPrepareDriverRepository prepareDriverRepository,
             IBaseRepoDirectoryProvider baseRepoDir,
             IDriverRepoDirectoryProvider driverRepoDirectoryProvider,
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
-            IPathToSolutionProvider pathToSolutionProvider,
             IGetRepoPathValidity getRepoPathValidity,
             ILogger logger,
             IPrepareRunnableState prepareRunnableState,
@@ -188,7 +184,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
             GithubPatcherSettings? settings = null)
             : base(nameVm, remove, selPatcher, confirmation, settings)
         {
-            _pathToSolutionProvider = pathToSolutionProvider;
             _Logger = logger;
             _toSolutionRunner = toSolutionRunner;
             Locking = lockToCurrentVersioning;
@@ -217,75 +212,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
 
             // Clone repository to a folder where driving information will be retrieved from master.
             // This will be where we get available projects + tags, etc.
-            var driverRepoInfo = remoteRepoPath
-                .Throttle(TimeSpan.FromMilliseconds(100), RxApp.MainThreadScheduler)
-                .ObserveOn(RxApp.TaskpoolScheduler)
-                .SelectReplaceWithIntermediate(
-                    new ConfigurationState<DriverRepoInfo>(default!)
-                    {
-                        IsHaltingError = false,
-                        RunnableState = ErrorResponse.Fail("Cloning driver repository"),
-                    },
-                    async (path, cancel) =>
-                    {
-                        if (!path.IsHaltingError && path.RunnableState.Failed) return path.BubbleError<DriverRepoInfo>();
-                        using var timing = Logger.Time("Cloning driver repository");
-                        // Clone and/or double check the clone is correct
-                        var state = checkOrClone.Check(path.ToGetResponse(), LocalDriverRepoDirectory, (x) => Logger.Information(x), cancel);
-                        if (state.Failed)
-                        {
-                            Logger.Error($"Failed to check out driver repository: {state.Reason}");
-                            return new ConfigurationState<DriverRepoInfo>(default!, (ErrorResponse)state);
-                        }
-                        cancel.ThrowIfCancellationRequested();
-
-                        // Grab all the interesting metadata
-                        List<(int Index, string Name, string Sha)> tags;
-                        Dictionary<string, string> branchShas;
-                        string masterBranch;
-                        try
-                        {
-                            using var repoCheckout = repoCheckouts.Get(LocalDriverRepoDirectory);
-                            var repo = repoCheckout.Repository;
-                            var master = repo.MainBranch;
-                            if (master == null)
-                            {
-                                Logger.Error($"Failed to check out driver repository: Could not locate master branch");
-                                return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate master branch."));
-                            }
-                            masterBranch = master.FriendlyName;
-                            repo.ResetHard();
-                            repo.Checkout(master);
-                            repo.Pull();
-                            tags = repo.Tags.Select(tag => (tag.FriendlyName, tag.Target.Sha))
-                                .WithIndex()
-                                .Select(x => (x.Index, x.Item.FriendlyName, x.Item.Sha))
-                                .ToList();
-                            branchShas = repo.Branches
-                                .ToDictionary(x => x.FriendlyName, x => x.Tip.Sha, StringComparer.OrdinalIgnoreCase);
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error(ex, $"Failed to check out driver repository");
-                            return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail(ex));
-                        }
-
-                        // Try to locate a solution to drive from
-                        var slnPath = _pathToSolutionProvider.Path;
-                        if (slnPath == null)
-                        {
-                            Logger.Error($"Failed to check out driver repository: Could not locate solution to run.");
-                            return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail("Could not locate solution to run."));
-                        }
-                        var availableProjs = SolutionPatcherRun.AvailableProjectSubpaths(slnPath).ToList();
-                        return new ConfigurationState<DriverRepoInfo>(
-                            new DriverRepoInfo(
-                                slnPath: slnPath,
-                                masterBranchName: masterBranch,
-                                branchShas: branchShas,
-                                tags: tags,
-                                availableProjects: availableProjs));
-                    })
+            var driverRepoInfo = prepareDriverRepository.Get(remoteRepoPath)
                 .Replay(1)
                 .RefCount();
 
