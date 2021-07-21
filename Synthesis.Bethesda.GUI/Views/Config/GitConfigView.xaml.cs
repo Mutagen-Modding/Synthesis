@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated(disposable =>
             {
                 var isRepoValid = Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid),
+                        this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid.Valid),
                         this.WhenAnyValue(x => x.ViewModel!.SelectedProjectInput.Picker.ErrorState),
                         (driver, proj) => driver && proj.Succeeded)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)

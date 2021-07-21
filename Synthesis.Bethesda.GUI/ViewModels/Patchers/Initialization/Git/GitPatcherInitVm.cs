@@ -75,7 +75,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             _PatcherFactory = patcherFactory;
             Patcher = patcherFactory.GetGitPatcher();
 
-            _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid)
+            _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid.Valid)
                 .Select(x => ErrorResponse.Create(x))
                 .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
 

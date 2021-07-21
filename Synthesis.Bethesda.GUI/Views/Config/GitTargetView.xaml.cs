@@ -63,7 +63,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.OneWayBindStrict(this.ViewModel, vm => vm.AvailableProjects, view => view.ProjectsPickerBox.ItemsSource)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid)
+                this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid.Valid)
                     .BindToStrict(this, view => view.ProjectsPickerBox.IsEnabled)
                     .DisposeWith(disposable);
 

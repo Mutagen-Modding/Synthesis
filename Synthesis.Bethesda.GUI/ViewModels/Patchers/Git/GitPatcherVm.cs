@@ -58,9 +58,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         private readonly ObservableAsPropertyHelper<ErrorResponse> _RepoValidity;
         public ErrorResponse RepoValidity => _RepoValidity.Value;
 
-        private readonly ObservableAsPropertyHelper<bool> _RepoClonesValid;
-        public bool RepoClonesValid => _RepoClonesValid.Value;
-
         public IObservableCollection<string> AvailableProjects { get; }
 
         [Reactive]
@@ -141,6 +138,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         public ICommand SetToLastSuccessfulRunCommand { get; }
         
         public ILockToCurrentVersioning Locking { get; }
+        public IRepoClonesValidStateVm RepoClonesValid { get; }
 
         public GitPatcherVm(
             IGithubPatcherIdentifier ident,
@@ -167,7 +165,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IDriverRepoDirectoryProvider driverRepoDirectoryProvider,
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             IGetRepoPathValidity getRepoPathValidity,
-            IRunnerRepositoryPreparation runnerRepositoryPreparation,
+            IRepoClonesValidStateVm repoClonesValid,
             ILogger logger,
             IPrepareRunnableState prepareRunnableState,
             IToSolutionRunner toSolutionRunner,
@@ -180,6 +178,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             RemoteRepoPathInput = remoteRepoPathInputVm;
             _toSolutionRunner = toSolutionRunner;
             Locking = lockToCurrentVersioning;
+            RepoClonesValid = repoClonesValid;
 
             ID = ident.Id;
             
@@ -193,12 +192,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 .ToGuiProperty(this, nameof(RepoValidity));
 
             var driverRepoInfo = driverRepositoryPreparation.DriverInfo;
-
-            _RepoClonesValid = Observable.CombineLatest(
-                    driverRepoInfo,
-                    runnerRepositoryPreparation.State,
-                    (driver, runner) => driver.RunnableState.Succeeded && runner.RunnableState.Succeeded)
-                .ToGuiProperty(this, nameof(RepoClonesValid));
 
             AvailableProjects = driverRepoInfo
                 .Select(x => x.Item?.AvailableProjects ?? Enumerable.Empty<string>())
