@@ -8,7 +8,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
     public interface IGetRepoPathValidity
     {
-        IObservable<ConfigurationState<string>> Get();
+        IObservable<ConfigurationState<string>> RepoPath { get; }
     }
 
     public class GetRepoPathValidity : IGetRepoPathValidity
@@ -16,6 +16,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
         private readonly IRemoteRepoPathFollower _remoteRepoPathFollower;
         private readonly ICheckRepoIsValid _checkRepoIsValid;
         private readonly ISchedulerProvider _schedulerProvider;
+        public IObservable<ConfigurationState<string>> RepoPath { get; }
 
         public GetRepoPathValidity(
             IRemoteRepoPathFollower remoteRepoPathFollower,
@@ -25,16 +26,14 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             _remoteRepoPathFollower = remoteRepoPathFollower;
             _checkRepoIsValid = checkRepoIsValid;
             _schedulerProvider = schedulerProvider;
-        }
-        
-        public IObservable<ConfigurationState<string>> Get()
-        {
+            
+            
             var replay = _remoteRepoPathFollower.Path
                 .Replay()
                 .AutoConnect(2);
             
             // Check to see if remote path points to a reachable git repository
-            return replay
+            RepoPath = replay
                 .DistinctUntilChanged()
                 .Select(x => new ConfigurationState<string>(string.Empty)
                 {

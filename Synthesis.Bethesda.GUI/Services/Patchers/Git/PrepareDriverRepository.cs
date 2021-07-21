@@ -15,7 +15,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
     public interface IPrepareDriverRepository
     {
-        IObservable<ConfigurationState<DriverRepoInfo>> Get();
+        IObservable<ConfigurationState<DriverRepoInfo>> DriverInfo { get; }
     }
 
     public class PrepareDriverRepository : IPrepareDriverRepository
@@ -27,6 +27,8 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
         private readonly ICheckOrCloneRepo _checkOrClone;
         private readonly IDriverRepoDirectoryProvider _driverRepoDirectoryProvider;
         private readonly ISchedulerProvider _schedulerProvider;
+        
+        public IObservable<ConfigurationState<DriverRepoInfo>> DriverInfo { get; }
 
         public PrepareDriverRepository(
             ILogger logger,
@@ -44,13 +46,10 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             _checkOrClone = checkOrClone;
             _driverRepoDirectoryProvider = driverRepoDirectoryProvider;
             _schedulerProvider = schedulerProvider;
-        }
-        
-        public IObservable<ConfigurationState<DriverRepoInfo>> Get()
-        {
+            
             // Clone repository to a folder where driving information will be retrieved from master.
             // This will be where we get available projects + tags, etc.
-            return _getRepoPathValidity.Get()
+            DriverInfo = _getRepoPathValidity.RepoPath
                 .Throttle(TimeSpan.FromMilliseconds(100), _schedulerProvider.MainThread)
                 .ObserveOn(_schedulerProvider.TaskPool)
                 .SelectReplaceWithIntermediate(

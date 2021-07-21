@@ -1,8 +1,5 @@
-﻿using System;
-using Autofac;
+﻿using Autofac;
 using Synthesis.Bethesda.Execution.Patchers.Running;
-using Synthesis.Bethesda.Execution.Pathing;
-using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Patchers.TopLevel
 {

@@ -192,15 +192,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             LocalDriverRepoDirectory = driverRepoDirectoryProvider.Path.Path;
             LocalRunnerRepoDirectory = runnerRepoDirectoryProvider.Path.Path;
 
-            var remoteRepoPath = getRepoPathValidity.Get();
-            _RepoValidity = remoteRepoPath
+            _RepoValidity = getRepoPathValidity.RepoPath
                 .Select(r => r.RunnableState)
                 .ToGuiProperty(this, nameof(RepoValidity));
 
-            var driverRepoInfo = prepareDriverRepository.Get();
+            var driverRepoInfo = prepareDriverRepository.DriverInfo;
 
             // Clone a second repository that we will check out the desired target commit to actually run
-            var runnerRepoState = remoteRepoPath
+            var runnerRepoState = getRepoPathValidity.RepoPath
                 .Throttle(TimeSpan.FromMilliseconds(100), RxApp.MainThreadScheduler)
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .SelectReplaceWithIntermediate(
