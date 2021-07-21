@@ -7,7 +7,6 @@ using System.Text;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
-using Microsoft.WindowsAPICodePack.Dialogs;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
@@ -23,6 +22,7 @@ using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Logging;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Versioning;
@@ -36,7 +36,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 {
-    public class GitPatcherVm : PatcherVm
+    public class GitPatcherVm : PatcherVm, IPathToProjProvider
     {
         private readonly ILogger _Logger;
         private readonly IToSolutionRunner _toSolutionRunner;
@@ -953,5 +953,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 MutagenVersion: MutagenVersionDiff.SelectedVersion,
                 SynthesisVersion: SynthesisVersionDiff.SelectedVersion);
         }
+
+        FilePath IPathToProjProvider.Path => RunnableData?.ProjPath ?? throw new ArgumentNullException($"{nameof(IPathToProjProvider)}.{nameof(IPathToProjProvider.Path)}");
     }
 }

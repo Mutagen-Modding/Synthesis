@@ -57,15 +57,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
 
         public ISolutionPatcherRun Sln(SolutionPatcherSettings settings)
         {
-            var scope = _scope.BeginLifetimeScope(c =>
-            {
-                c.RegisterInstance(
-                        new PathToProjInjection()
-                        {
-                            Path = Path.Combine(Path.GetDirectoryName(settings.SolutionPath)!, settings.ProjectSubpath)
-                        })
-                    .As<IPathToProjProvider>();
-            });
+            var scope = _scope.BeginLifetimeScope();
             var factory = scope.Resolve<SolutionPatcherRun.Factory>();
             var ret = factory(
                 name: settings.Nickname,
