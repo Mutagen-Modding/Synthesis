@@ -153,7 +153,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IProfileDataFolder dataFolder,
             IRemovePatcherFromProfile remove,
             INavigateTo navigate, 
-            ICheckOrCloneRepo checkOrClone,
+            IRunnerRepositoryPreparation runnerRepositoryState,
             ICheckRunnability checkRunnability,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
@@ -162,11 +162,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IEnvironmentErrorsVm envErrors,
             INewestLibraryVersions newest,
             IPerformGitPatcherCompilation performGitPatcherCompilation,
-            IPrepareDriverRepository prepareDriverRepository,
+            IDriverRepositoryPreparation driverRepositoryPreparation,
             IBaseRepoDirectoryProvider baseRepoDir,
             IDriverRepoDirectoryProvider driverRepoDirectoryProvider,
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             IGetRepoPathValidity getRepoPathValidity,
+            IRunnerRepositoryPreparation runnerRepositoryPreparation,
             ILogger logger,
             IPrepareRunnableState prepareRunnableState,
             IToSolutionRunner toSolutionRunner,
@@ -191,29 +192,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 .Select(r => r.RunnableState)
                 .ToGuiProperty(this, nameof(RepoValidity));
 
-            var driverRepoInfo = prepareDriverRepository.DriverInfo;
-
-            // Clone a second repository that we will check out the desired target commit to actually run
-            var runnerRepoState = getRepoPathValidity.RepoPath
-                .Throttle(TimeSpan.FromMilliseconds(100), RxApp.MainThreadScheduler)
-                .ObserveOn(RxApp.TaskpoolScheduler)
-                .SelectReplaceWithIntermediate(
-                    new ConfigurationState(ErrorResponse.Fail("Cloning runner repository"))
-                    {
-                        IsHaltingError = false
-                    },
-                    async (path, cancel) =>
-                    {
-                        if (path.RunnableState.Failed) return path.ToUnit();
-                        using var timing = Logger.Time($"runner repo: {path.Item}");
-                        return (ErrorResponse)checkOrClone.Check(path.ToGetResponse(), LocalRunnerRepoDirectory, x => Logger.Information(x), cancel);
-                    })
-                .Replay(1)
-                .RefCount();
+            var driverRepoInfo = driverRepositoryPreparation.DriverInfo;
 
             _RepoClonesValid = Observable.CombineLatest(
                     driverRepoInfo,
-                    runnerRepoState,
+                    runnerRepositoryPreparation.State,
                     (driver, runner) => driver.RunnableState.Succeeded && runner.RunnableState.Succeeded)
                 .ToGuiProperty(this, nameof(RepoClonesValid));
 
@@ -439,7 +422,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
             // Checkout desired patcher commit on the runner repository
             var checkoutInput = Observable.CombineLatest(
-                    runnerRepoState,
+                    runnerRepositoryState.State,
                     SelectedProjectInput.Picker.PathState()
                         .Select(x => x.Succeeded ? x : GetResponse<string>.Fail("No patcher project selected.")),
                     patcherVersioning,
@@ -593,7 +576,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             _State = Observable.CombineLatest(
                     driverRepoInfo
                         .Select(x => x.ToUnit()),
-                    runnerRepoState,
+                    runnerRepositoryState.State,
                     runnableState
                         .Select(x => x.ToUnit()),
                     runnability,

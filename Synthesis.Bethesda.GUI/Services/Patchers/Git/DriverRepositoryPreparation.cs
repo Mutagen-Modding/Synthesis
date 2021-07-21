@@ -14,12 +14,12 @@ using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
-    public interface IPrepareDriverRepository : ISolutionFilePathFollower
+    public interface IDriverRepositoryPreparation : ISolutionFilePathFollower
     {
         IObservable<ConfigurationState<DriverRepoInfo>> DriverInfo { get; }
     }
 
-    public class PrepareDriverRepository : IPrepareDriverRepository
+    public class DriverRepositoryPreparation : IDriverRepositoryPreparation
     {
         private readonly ILogger _logger;
         private readonly IGetRepoPathValidity _getRepoPathValidity;
@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
         IObservable<FilePath> ISolutionFilePathFollower.Path => DriverInfo
             .Select(x => x.Item?.SolutionPath ?? default);
 
-        public PrepareDriverRepository(
+        public DriverRepositoryPreparation(
             ILogger logger,
             IGetRepoPathValidity getRepoPathValidity,
             IProvideRepositoryCheckouts repoCheckouts,
