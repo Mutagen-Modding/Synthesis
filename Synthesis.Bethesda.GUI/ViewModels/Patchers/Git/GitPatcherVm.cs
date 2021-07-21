@@ -151,6 +151,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IProfileDataFolder dataFolder,
             IRemovePatcherFromProfile remove,
             INavigateTo navigate, 
+            IAvailableTags availableTags,
             IRunnerRepositoryPreparation runnerRepositoryState,
             ICheckRunnability checkRunnability,
             IProfileDisplayControllerVm selPatcher,
@@ -159,6 +160,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IInstalledSdkProvider dotNetInstalled,
             IEnvironmentErrorsVm envErrors,
             INewestLibraryVersions newest,
+            IAvailableProjects availableProjects,
             IPerformGitPatcherCompilation performGitPatcherCompilation,
             IDriverRepositoryPreparation driverRepositoryPreparation,
             IBaseRepoDirectoryProvider baseRepoDir,
@@ -193,32 +195,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
             var driverRepoInfo = driverRepositoryPreparation.DriverInfo;
 
-            AvailableProjects = driverRepoInfo
-                .Select(x => x.Item?.AvailableProjects ?? Enumerable.Empty<string>())
-                .Select(x => x.AsObservableChangeSet<string>())
-                .Switch()
-                .ToObservableCollection(this);
+            AvailableProjects = availableProjects.Projects;
 
-            var tagInput = Observable.CombineLatest(
-                SelectedProjectInput.Picker.WhenAnyValue(x => x.TargetPath),
-                this.WhenAnyValue(x => x.AvailableProjects.Count),
-                (targetPath, count) => (targetPath, count));
-            AvailableTags = driverRepoInfo
-                .Select(x => x.Item?.Tags ?? Enumerable.Empty<(int Index, string Name, string Sha)>())
-                .Select(x => x.AsObservableChangeSet())
-                .Switch()
-                .Filter(
-                    tagInput.Select(x =>
-                    {
-                        if (x.count == 0) return new Func<(int Index, string Name, string Sha), bool>(_ => false);
-                        if (x.count == 1) return new Func<(int Index, string Name, string Sha), bool>(_ => true);
-                        if (!x.targetPath.EndsWith(".csproj")) return new Func<(int Index, string Name, string Sha), bool>(_ => false);
-                        var projName = Path.GetFileName(x.targetPath);
-                        return new Func<(int Index, string Name, string Sha), bool>(i => i.Name.StartsWith(projName, StringComparison.OrdinalIgnoreCase));
-                    }))
-                .Sort(SortExpressionComparer<(int Index, string Name, string Sha)>.Descending(x => x.Index))
-                .Transform(x => x.Name)
-                .ToObservableCollection(this);
+            AvailableTags = availableTags.Tags;
 
             _TargetOriginBranchName = this.WhenAnyValue(x => x.TargetBranchName)
                 .Select(x => $"origin/{x}")
