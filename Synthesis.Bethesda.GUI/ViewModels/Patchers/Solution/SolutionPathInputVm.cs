@@ -5,8 +5,9 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
+using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 
-namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 {
     public interface ISolutionPathInputVm : ISolutionFilePathFollower
     {

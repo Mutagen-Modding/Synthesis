@@ -58,7 +58,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
                         createProject.Create(gameCategoryContext.Category, i.validation.Value);
                         addProjectToSolution.Add(i.sln.Value, i.validation.Value);
                         patcher.SolutionPathInput.Picker.TargetPath = i.sln.Value;
-                        patcher.ProjectSubpath = Path.Combine(i.proj, $"{i.proj}.csproj");
+                        patcher.SelectedProjectInput.ProjectSubpath = Path.Combine(i.proj, $"{i.proj}.csproj");
                         return patcher.AsEnumerable();
                     });
                 });

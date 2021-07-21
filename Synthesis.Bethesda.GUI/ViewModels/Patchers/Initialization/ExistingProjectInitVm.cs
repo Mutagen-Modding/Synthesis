@@ -84,7 +84,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
                         {
                             var patcher = patcherFactory();
                             patcher.SolutionPathInput.Picker.TargetPath = SolutionPath.TargetPath;
-                            patcher.ProjectSubpath = i.TargetPath.TrimStart($"{Path.GetDirectoryName(SolutionPath.TargetPath)}\\"!);
+                            patcher.SelectedProjectInput.ProjectSubpath = i.TargetPath.TrimStart($"{Path.GetDirectoryName(SolutionPath.TargetPath)}\\"!);
                             return patcher;
                         });
                     });

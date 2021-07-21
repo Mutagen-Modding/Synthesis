@@ -196,7 +196,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
         {
             var patcher = _PatcherFactory.GetGitPatcher();
             patcher.RemoteRepoPathInput.RemoteRepoPath = listing.RepoPath;
-            patcher.ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\');
+            patcher.SelectedProjectInput.ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\');
             Init.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
         }
 

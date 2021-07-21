@@ -64,9 +64,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         public IObservableCollection<string> AvailableProjects { get; }
 
         [Reactive]
-        public string ProjectSubpath { get; set; } = string.Empty;
-
-        [Reactive]
         public PatcherVersioningEnum PatcherVersioning { get; set; } = PatcherVersioningEnum.Branch;
 
         public IObservableCollection<string> AvailableTags { get; }
@@ -171,11 +168,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             IGetRepoPathValidity getRepoPathValidity,
             ILogger logger,
-            IConstructName nameConstructor,
             IPrepareRunnableState prepareRunnableState,
             IToSolutionRunner toSolutionRunner,
             PatcherSettingsVm.Factory settingsVmFactory,
-            ISolutionProjectPath projectPath,
             GithubPatcherSettings? settings = null)
             : base(nameVm, remove, selPatcher, confirmation, settings)
         {
@@ -248,19 +243,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 .Sort(SortExpressionComparer<(int Index, string Name, string Sha)>.Descending(x => x.Index))
                 .Transform(x => x.Name)
                 .ToObservableCollection(this);
-
-            var projPath = projectPath.Process(
-                driverRepoInfo
-                    .Select(x => x.Item?.SolutionPath ?? string.Empty),
-                this.WhenAnyValue(x => x.ProjectSubpath));
-
-            projPath
-                .Subscribe(p =>
-                {
-                    Logger.Information($"Setting target project path to: {p}");
-                    SelectedProjectInput.Picker.TargetPath = p;
-                })
-                .DisposeWith(this);
 
             _TargetOriginBranchName = this.WhenAnyValue(x => x.TargetBranchName)
                 .Select(x => $"origin/{x}")
@@ -831,7 +813,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 {
                     if (LastSuccessfulRun == null) return;
                     RemoteRepoPathInput.RemoteRepoPath = LastSuccessfulRun.TargetRepo;
-                    this.ProjectSubpath = LastSuccessfulRun.ProjectSubpath;
+                    this.SelectedProjectInput.ProjectSubpath = LastSuccessfulRun.ProjectSubpath;
                     this.TargetCommit = LastSuccessfulRun.Commit;
                     this.ManualMutagenVersion = LastSuccessfulRun.MutagenVersion;
                     this.ManualSynthesisVersion = LastSuccessfulRun.SynthesisVersion;
@@ -847,7 +829,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             {
                 RemoteRepoPath = RemoteRepoPathInput.RemoteRepoPath,
                 ID = this.ID,
-                SelectedProjectSubpath = this.ProjectSubpath,
+                SelectedProjectSubpath = this.SelectedProjectInput.ProjectSubpath,
                 PatcherVersioning = this.PatcherVersioning,
                 MutagenVersionType = this.MutagenVersioning,
                 ManualMutagenVersion = this.ManualMutagenVersion,
@@ -871,7 +853,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             if (settings == null) return;
             RemoteRepoPathInput.RemoteRepoPath = settings.RemoteRepoPath;
             this.ID = settings.ID;
-            this.ProjectSubpath = settings.SelectedProjectSubpath;
+            this.SelectedProjectInput.ProjectSubpath = settings.SelectedProjectSubpath;
             this.PatcherVersioning = settings.PatcherVersioning;
             this.MutagenVersioning = settings.MutagenVersionType;
             this.SynthesisVersioning = settings.SynthesisVersionType;
@@ -921,7 +903,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             if (SynthesisVersionDiff.SelectedVersion == null) return;
             LastSuccessfulRun = new GithubPatcherLastRunState(
                 TargetRepo: RemoteRepoPathInput.RemoteRepoPath,
-                ProjectSubpath: this.ProjectSubpath,
+                ProjectSubpath: this.SelectedProjectInput.ProjectSubpath,
                 Commit: this.TargetCommit,
                 MutagenVersion: MutagenVersionDiff.SelectedVersion,
                 SynthesisVersion: SynthesisVersionDiff.SelectedVersion);

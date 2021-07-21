@@ -10,10 +10,11 @@ using Synthesis.Bethesda.Execution.Logging;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
+using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
-    public interface IPrepareDriverRepository
+    public interface IPrepareDriverRepository : ISolutionFilePathFollower
     {
         IObservable<ConfigurationState<DriverRepoInfo>> DriverInfo { get; }
     }
@@ -29,6 +30,9 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
         private readonly ISchedulerProvider _schedulerProvider;
         
         public IObservable<ConfigurationState<DriverRepoInfo>> DriverInfo { get; }
+
+        IObservable<FilePath> ISolutionFilePathFollower.Path => DriverInfo
+            .Select(x => x.Item?.SolutionPath ?? default);
 
         public PrepareDriverRepository(
             ILogger logger,
