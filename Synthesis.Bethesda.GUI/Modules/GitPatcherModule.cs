@@ -2,6 +2,7 @@
 using Noggog.Autofac;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
+using Synthesis.Bethesda.GUI.Services.Patchers.Git;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 
@@ -22,7 +23,8 @@ namespace Synthesis.Bethesda.GUI.Modules
             builder.RegisterAssemblyTypes(typeof(GitPatcherVm).Assembly)
                 .InNamespacesOf(
                     typeof(GitPatcherVm),
-                    typeof(ToSolutionRunner))
+                    typeof(IPrepareRunnableState),
+                    typeof(IToSolutionRunner))
                 .SingleInstance()
                 .NotInjection()
                 .AsImplementedInterfaces()
