@@ -31,7 +31,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBox Grid.Column="0"
+            <TextBlock Grid.Column="0"
                 Name="PatcherDetailName"
                 MinWidth="150"
                 Margin="0,0,10,0"
@@ -39,7 +39,6 @@
                 VerticalAlignment="Top"
                 mahapps:TextBoxHelper.Watermark="Patcher Name"
                 Background="Transparent"
-                BorderThickness="0"
                 FontSize="26"
                 FontWeight="Black" />
             <Button Grid.Column="1"
