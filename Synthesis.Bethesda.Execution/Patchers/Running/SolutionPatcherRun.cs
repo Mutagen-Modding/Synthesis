@@ -35,6 +35,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
         private readonly CompositeDisposable _disposable = new();
 
         private readonly ICopyOverExtraData _copyOverExtraData;
+        private readonly IPathToSolutionFileProvider _pathToSln;
         private readonly IPatcherExtraDataPathProvider _patcherExtraDataPathProvider;
         private readonly IPathToProjProvider _pathToProjProvider;
         private readonly IBuild _Build;
@@ -43,7 +44,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
         private readonly IDefaultDataPathProvider _defaultDataPathProvider;
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
         public string Name { get; }
-        public string PathToSolution { get; }
 
         private readonly Subject<string> _output = new();
         public IObservable<string> Output => _output;
@@ -51,12 +51,10 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
         private readonly Subject<string> _error = new();
         public IObservable<string> Error => _error;
 
-        public delegate ISolutionPatcherRun Factory(
-            string name,
-            string pathToSln);
+        public delegate ISolutionPatcherRun Factory(string name);
 
         public SolutionPatcherRun(
-            string pathToSln, 
+            IPathToSolutionFileProvider pathToSln, 
             IPatcherExtraDataPathProvider patcherExtraDataPathProvider,
             string name,
             ICopyOverExtraData copyOverExtraData,
@@ -68,6 +66,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             IProvideRepositoryCheckouts repositoryCheckouts)
         {
             Name = name;
+            _pathToSln = pathToSln;
             _patcherExtraDataPathProvider = patcherExtraDataPathProvider;
             _pathToProjProvider = pathToProjProvider;
             _copyOverExtraData = copyOverExtraData;
@@ -76,7 +75,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             _ProcessFactory = processFactory;
             _defaultDataPathProvider = defaultDataPathProvider;
             _RepositoryCheckouts = repositoryCheckouts;
-            PathToSolution = pathToSln;
         }
 
         public async Task Prep(GameRelease release, CancellationToken cancel)
@@ -100,7 +98,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
 
         public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)
         {
-            var repoPath = Path.GetDirectoryName(PathToSolution);
+            var repoPath = Path.GetDirectoryName(_pathToSln.Path);
             if (Repository.IsValid(repoPath))
             {
                 using var repo = _RepositoryCheckouts.Get(repoPath!);

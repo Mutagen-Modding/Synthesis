@@ -37,7 +37,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 {
-    public class GitPatcherVm : PatcherVm, IPathToProjProvider
+    public class GitPatcherVm : PatcherVm, IPathToProjProvider, IPathToSolutionFileProvider
     {
         private readonly ILogger _Logger;
         private readonly IToSolutionRunner _toSolutionRunner;
@@ -956,5 +956,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         }
 
         FilePath IPathToProjProvider.Path => RunnableData?.ProjPath ?? throw new ArgumentNullException($"{nameof(IPathToProjProvider)}.{nameof(IPathToProjProvider.Path)}");
+        FilePath IPathToSolutionFileProvider.Path => RunnableData?.SolutionPath ?? throw new ArgumentNullException($"{nameof(IPathToProjProvider)}.{nameof(IPathToProjProvider.Path)}");
     }
 }

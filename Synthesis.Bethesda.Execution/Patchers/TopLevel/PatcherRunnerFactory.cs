@@ -57,9 +57,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.TopLevel
         {
             var scope = _scope.BeginLifetimeScope();
             var factory = scope.Resolve<SolutionPatcherRun.Factory>();
-            var ret = factory(
-                name: settings.Nickname,
-                pathToSln: settings.SolutionPath);
+            var ret = factory(name: settings.Nickname);
             
             ret.AddForDisposal(scope);
             return ret;
