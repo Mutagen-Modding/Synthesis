@@ -37,13 +37,14 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
         private readonly ICopyOverExtraData _copyOverExtraData;
         private readonly IPathToSolutionFileProvider _pathToSln;
         private readonly IPatcherExtraDataPathProvider _patcherExtraDataPathProvider;
+        private readonly IPatcherNameProvider _nameProvider;
         private readonly IPathToProjProvider _pathToProjProvider;
         private readonly IBuild _Build;
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IProcessFactory _ProcessFactory;
         private readonly IDefaultDataPathProvider _defaultDataPathProvider;
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
-        public string Name { get; }
+        public string Name => _nameProvider.Name;
 
         private readonly Subject<string> _output = new();
         public IObservable<string> Output => _output;
@@ -51,12 +52,10 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
         private readonly Subject<string> _error = new();
         public IObservable<string> Error => _error;
 
-        public delegate ISolutionPatcherRun Factory(string name);
-
         public SolutionPatcherRun(
             IPathToSolutionFileProvider pathToSln, 
             IPatcherExtraDataPathProvider patcherExtraDataPathProvider,
-            string name,
+            IPatcherNameProvider nameProvider,
             ICopyOverExtraData copyOverExtraData,
             IPathToProjProvider pathToProjProvider,
             IBuild build,
@@ -65,9 +64,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             IDefaultDataPathProvider defaultDataPathProvider,
             IProvideRepositoryCheckouts repositoryCheckouts)
         {
-            Name = name;
             _pathToSln = pathToSln;
             _patcherExtraDataPathProvider = patcherExtraDataPathProvider;
+            _nameProvider = nameProvider;
             _pathToProjProvider = pathToProjProvider;
             _copyOverExtraData = copyOverExtraData;
             _Build = build;

@@ -8,71 +8,22 @@ namespace Synthesis.Bethesda.Execution.Patchers.TopLevel
 {
     public interface IPatcherRunnerFactory
     {
-        IPatcherRun Create(PatcherSettings patcherSettings);
-        ICliPatcherRun Cli(CliPatcherSettings settings);
-        ISolutionPatcherRun Sln(SolutionPatcherSettings settings);
-        IGitPatcherRun Git(GithubPatcherSettings settings);
+        ISolutionPatcherRun Sln();
     }
 
     public class PatcherRunnerFactory : IPatcherRunnerFactory
     {
         private readonly ILifetimeScope _scope;
-        public IExtraDataPathProvider ExtraDataPathProvider { get; }
-        public IProvideWorkingDirectory WorkingDirectory { get; }
 
-        public PatcherRunnerFactory(
-            ILifetimeScope scope,
-            IExtraDataPathProvider extraDataPathProvider,
-            IProvideWorkingDirectory workingDirectory)
+        public PatcherRunnerFactory(ILifetimeScope scope)
         {
             _scope = scope;
-            ExtraDataPathProvider = extraDataPathProvider;
-            WorkingDirectory = workingDirectory;
         }
 
-        public IPatcherRun Create(PatcherSettings patcherSettings)
-        {
-            return patcherSettings switch
-            {
-                CliPatcherSettings cli => Cli(cli),
-                SolutionPatcherSettings sln => Sln(sln),
-                GithubPatcherSettings git => Git(git),
-                _ => throw new NotImplementedException(),
-            };
-        }
-
-        public ICliPatcherRun Cli(CliPatcherSettings settings)
+        public ISolutionPatcherRun Sln()
         {
             var scope = _scope.BeginLifetimeScope();
-            var factory = scope.Resolve<CliPatcherRun.Factory>();
-            var ret = factory(
-                settings.Nickname,
-                settings.PathToExecutable,
-                pathToExtra: null);
-            ret.AddForDisposal(scope);
-            return ret;
-        }
-
-        public ISolutionPatcherRun Sln(SolutionPatcherSettings settings)
-        {
-            var scope = _scope.BeginLifetimeScope();
-            var factory = scope.Resolve<SolutionPatcherRun.Factory>();
-            var ret = factory(name: settings.Nickname);
-            
-            ret.AddForDisposal(scope);
-            return ret;
-        }
-
-        public IGitPatcherRun Git(GithubPatcherSettings settings)
-        {
-            var scope = _scope.BeginLifetimeScope(c =>
-            {
-                c.RegisterInstance(settings)
-                    .AsImplementedInterfaces();
-            });
-            var factory = scope.Resolve<GitPatcherRun.Factory>();
-            var ret = factory(
-                settings: settings);
+            var ret = scope.Resolve<SolutionPatcherRun>();
             ret.AddForDisposal(scope);
             return ret;
         }

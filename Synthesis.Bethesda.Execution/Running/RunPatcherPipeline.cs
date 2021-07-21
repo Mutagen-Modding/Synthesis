@@ -13,6 +13,7 @@ using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -30,7 +31,6 @@ namespace Synthesis.Bethesda.Execution.Running
     {
         private readonly IWorkingDirectorySubPaths _Paths;
         private readonly IRunProfileProvider _profileProvider;
-        private readonly IPatcherRunnerFactory _runnerFactory;
         private readonly IRunner _Runner;
         public CancellationToken Cancel { get; }
         public IRunReporter? Reporter { get; }
@@ -38,14 +38,12 @@ namespace Synthesis.Bethesda.Execution.Running
         public RunPatcherPipeline(
             IWorkingDirectorySubPaths paths,
             IRunProfileProvider profileProvider,
-            IPatcherRunnerFactory runnerFactory,
             IRunner runner,
             CancellationToken cancel, 
             IRunReporter? reporter)
         {
             _Paths = paths;
             _profileProvider = profileProvider;
-            _runnerFactory = runnerFactory;
             _Runner = runner;
             Cancel = cancel;
             Reporter = reporter;
@@ -81,7 +79,9 @@ namespace Synthesis.Bethesda.Execution.Running
                             patcherSettings.Print(Reporter);
                         }
 
-                        return _runnerFactory.Create(patcherSettings);
+                        throw new NotImplementedException();
+                        return default(IPatcherRun);
+                        // return _runnerFactory.Create(patcherSettings);
                     })
                     .ToList();
 
