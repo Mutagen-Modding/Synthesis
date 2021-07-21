@@ -23,6 +23,7 @@ using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI
@@ -106,7 +107,13 @@ namespace Synthesis.Bethesda.GUI
             builder.RegisterAssemblyTypes(typeof(ProfileVm).Assembly)
                 .InNamespacesOf(
                     typeof(ProfileVm))
+                .NotInNamespacesOf(typeof(PatchersRunVm))
                 .InstancePerMatchingLifetimeScope(ProfileNickname)
+                .AsImplementedInterfaces()
+                .AsSelf();
+            
+            builder.RegisterAssemblyTypes(typeof(ProfileVm).Assembly)
+                .InNamespaceOf<PatchersRunVm>()
                 .AsImplementedInterfaces()
                 .AsSelf();
 
