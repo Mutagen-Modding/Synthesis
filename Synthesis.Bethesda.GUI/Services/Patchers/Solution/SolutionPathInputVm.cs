@@ -1,10 +1,14 @@
-﻿using DynamicData;
+﻿using System;
+using System.Reactive.Linq;
+using DynamicData;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Noggog;
 using Noggog.WPF;
+using ReactiveUI;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
 {
-    public interface ISolutionPathInputVm
+    public interface ISolutionPathInputVm : ISolutionFilePathFollower
     {
         PathPickerVM Picker { get; }
     }
@@ -21,5 +25,8 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
         {
             Picker.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
         }
+
+        public IObservable<FilePath> Path => Picker.WhenAnyValue(x => x.TargetPath)
+            .Select(x => new FilePath(x));
     }
 }
