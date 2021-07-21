@@ -1,12 +1,10 @@
 ﻿using System;
-using System.IO;
 using Autofac;
-using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Solution;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.Execution.Patchers
+namespace Synthesis.Bethesda.Execution.Patchers.TopLevel
 {
     public interface IPatcherRunnerFactory
     {

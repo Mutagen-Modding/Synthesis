@@ -6,7 +6,6 @@ using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
-using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
@@ -14,7 +13,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
 {
     public abstract class PatcherVm : ViewModel
     {

@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.ImpactTester

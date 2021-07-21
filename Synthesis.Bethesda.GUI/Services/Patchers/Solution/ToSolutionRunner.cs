@@ -1,10 +1,11 @@
 ﻿using System;
-using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
+namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
 {
     public interface IToSolutionRunner
     {

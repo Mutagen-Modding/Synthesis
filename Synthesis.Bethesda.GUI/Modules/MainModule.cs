@@ -12,23 +12,21 @@ using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
-using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services.Main;
-using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.Modules
 {
-    public class Module : Autofac.Module
+    public class MainModule : Autofac.Module
     {
         public const string ProfileNickname = "Profile";
         public const string PatcherNickname = "Patcher";
@@ -38,8 +36,6 @@ namespace Synthesis.Bethesda.GUI
             TopLevel(builder);
 
             ProfileLevel(builder);
-            
-            PatcherLevel(builder);
         }
 
         private static void TopLevel(ContainerBuilder builder)
@@ -117,12 +113,6 @@ namespace Synthesis.Bethesda.GUI
                 .AsImplementedInterfaces()
                 .AsSelf();
 
-            builder.RegisterAssemblyTypes(typeof(ProfileVm).Assembly)
-                .InNamespacesOf(
-                    typeof(ISolutionMetaFileSync))
-                .InstancePerMatchingLifetimeScope(ProfileNickname)
-                .AsMatchingInterface();
-
             // Execution lib
             builder.RegisterAssemblyTypes(typeof(IRunner).Assembly)
                 .InNamespacesOf(
@@ -133,16 +123,6 @@ namespace Synthesis.Bethesda.GUI
                 .InNamespacesOf(
                     typeof(IRunner))
                 .AsMatchingInterface();
-        }
-
-        private static void PatcherLevel(ContainerBuilder builder)
-        {
-            builder.RegisterAssemblyTypes(typeof(PatcherVm).Assembly)
-                .InNamespacesOf(
-                    typeof(PatcherVm))
-                .InstancePerMatchingLifetimeScope(PatcherNickname)
-                .AsImplementedInterfaces()
-                .AsSelf();
         }
     }
 }

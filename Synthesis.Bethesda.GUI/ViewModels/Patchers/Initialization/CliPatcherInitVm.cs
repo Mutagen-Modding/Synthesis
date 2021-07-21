@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 using Synthesis.Bethesda.GUI.ViewModels.Top;

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reactive.Subjects;
 using System.Text;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 
 namespace Synthesis.Bethesda.Execution.Reporters
 {

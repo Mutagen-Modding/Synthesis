@@ -2,6 +2,7 @@
 using Autofac;
 using Noggog.WPF;
 using ReactiveUI;
+using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
@@ -29,23 +30,27 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization
             _scope = scope;
             AddGitPatcherCommand = ReactiveCommand.Create(() =>
             {
-                initializationVm.NewPatcher = Resolve<GitPatcherInitVm>();
+                initializationVm.NewPatcher = Resolve<GitPatcherInitVm, GitPatcherModule>();
             });
             AddSolutionPatcherCommand = ReactiveCommand.Create(() =>
             {
-                initializationVm.NewPatcher = Resolve<SolutionPatcherInitVm>();
+                initializationVm.NewPatcher = Resolve<SolutionPatcherInitVm, SolutionPatcherModule>();
             });
             AddCliPatcherCommand = ReactiveCommand.Create(() =>
             {
-                initializationVm.NewPatcher = Resolve<CliPatcherInitVm>();
+                initializationVm.NewPatcher = Resolve<CliPatcherInitVm, CliPatcherModule>();
             });
         }
 
-        private T Resolve<T>()
-            where T : PatcherInitVm
+        private TInit Resolve<TInit, TModule>()
+            where TInit : PatcherInitVm
+            where TModule : Autofac.Module, new()
         {
-            var initScope = _scope.BeginLifetimeScope(Module.PatcherNickname);
-            var init = initScope.Resolve<T>();
+            var initScope = _scope.BeginLifetimeScope(MainModule.PatcherNickname, c =>
+            {
+                c.RegisterModule<TModule>();
+            });
+            var init = initScope.Resolve<TInit>();
             initScope.DisposeWith(init);
             return init;
         }

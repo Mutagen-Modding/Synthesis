@@ -16,6 +16,7 @@ using Serilog;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running

@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Linq;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.GUI.Views
 {

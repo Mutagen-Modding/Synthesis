@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Synthesis.Bethesda.Execution.Patchers
+﻿namespace Synthesis.Bethesda.Execution.Patchers.TopLevel
 {
     public interface IPatcherNameProvider
     {

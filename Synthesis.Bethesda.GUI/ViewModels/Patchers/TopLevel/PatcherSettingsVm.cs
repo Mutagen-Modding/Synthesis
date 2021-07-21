@@ -15,11 +15,11 @@ using Serilog;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRespository;
-using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
 {
     public class PatcherSettingsVm : ViewModel
     {

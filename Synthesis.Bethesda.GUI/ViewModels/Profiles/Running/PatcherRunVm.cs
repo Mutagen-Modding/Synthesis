@@ -7,7 +7,9 @@ using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 {

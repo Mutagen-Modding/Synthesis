@@ -3,7 +3,7 @@ using System.IO;
 using System.Reactive.Linq;
 using ReactiveUI;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
+namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
 {
     public interface ISolutionProjectPath
     {

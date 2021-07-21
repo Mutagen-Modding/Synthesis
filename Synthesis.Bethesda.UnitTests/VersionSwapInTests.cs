@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests

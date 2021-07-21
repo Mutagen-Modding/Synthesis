@@ -7,6 +7,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.Views

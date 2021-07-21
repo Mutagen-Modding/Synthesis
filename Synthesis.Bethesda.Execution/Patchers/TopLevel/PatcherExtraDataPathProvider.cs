@@ -1,7 +1,7 @@
 ﻿using Noggog;
 using Synthesis.Bethesda.Execution.Pathing;
 
-namespace Synthesis.Bethesda.Execution.Patchers
+namespace Synthesis.Bethesda.Execution.Patchers.TopLevel
 {
     public interface IPatcherExtraDataPathProvider
     {

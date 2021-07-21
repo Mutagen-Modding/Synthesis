@@ -8,6 +8,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 

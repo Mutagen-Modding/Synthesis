@@ -10,6 +10,7 @@
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     xmlns:patchers="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers"
     xmlns:running="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
+    xmlns:topLevel="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -335,7 +336,7 @@
         <ContentControl Grid.Row="0" Grid.RowSpan="3" Grid.Column="2"
             x:Name="DetailControl">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type patchers:PatcherVm}">
+                <DataTemplate DataType="{x:Type topLevel:PatcherVm}">
                     <local:PatcherConfigView />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type running:ErrorVM}">

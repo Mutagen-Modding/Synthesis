@@ -1,11 +1,9 @@
-using Mutagen.Bethesda;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Mutagen.Bethesda;
 
-namespace Synthesis.Bethesda.Execution.Patchers
+namespace Synthesis.Bethesda.Execution.Patchers.Running
 {
     public interface IPatcherRun : IDisposable
     {

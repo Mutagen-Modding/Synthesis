@@ -6,6 +6,7 @@ using LibGit2Sharp;
 using Noggog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Settings;
 

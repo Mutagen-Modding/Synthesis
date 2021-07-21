@@ -1,17 +1,17 @@
-using Mutagen.Bethesda;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reactive.Disposables;
-using CommandLine;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Reactive.Subjects;
-using Noggog.Utility;
+using CommandLine;
+using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis.CLI;
+using Noggog.Utility;
 
-namespace Synthesis.Bethesda.Execution.Patchers
+namespace Synthesis.Bethesda.Execution.Patchers.Running
 {
     public interface ICliPatcherRun : IPatcherRun
     {

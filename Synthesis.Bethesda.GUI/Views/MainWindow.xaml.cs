@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Windows;
 using Autofac;
 using Synthesis.Bethesda.Execution.Placement;
+using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.Services.Startup;
 
 namespace Synthesis.Bethesda.GUI.Views
@@ -23,7 +24,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
 
             var builder = new ContainerBuilder();
-            builder.RegisterModule<Module>();
+            builder.RegisterModule<MainModule>();
             builder.RegisterInstance(this)
                 .AsSelf()
                 .As<IWindowPlacement>()

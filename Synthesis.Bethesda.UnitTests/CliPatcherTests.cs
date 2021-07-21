@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Noggog.Utility;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests

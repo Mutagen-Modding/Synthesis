@@ -5,6 +5,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog.Utility;
 using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Placement;
 
 namespace Synthesis.Bethesda.Execution.CLI

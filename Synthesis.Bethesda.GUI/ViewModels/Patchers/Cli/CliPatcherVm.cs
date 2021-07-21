@@ -5,16 +5,17 @@ using Noggog;
 using Noggog.Utility;
 using Noggog.WPF;
 using ReactiveUI;
-using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
 {
     public class CliPatcherVm : PatcherVm
     {

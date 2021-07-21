@@ -10,6 +10,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top

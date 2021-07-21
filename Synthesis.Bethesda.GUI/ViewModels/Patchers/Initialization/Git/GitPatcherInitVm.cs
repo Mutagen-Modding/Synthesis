@@ -19,6 +19,7 @@ using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 using Synthesis.Bethesda.GUI.ViewModels.Top;

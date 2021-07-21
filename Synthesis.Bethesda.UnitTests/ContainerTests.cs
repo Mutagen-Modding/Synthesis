@@ -10,12 +10,15 @@ using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
@@ -24,7 +27,6 @@ using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
 using Synthesis.Bethesda.GUI.Views;
 using Xunit;
-using Module = Synthesis.Bethesda.GUI.Module;
 
 namespace Synthesis.Bethesda.UnitTests
 {
@@ -41,7 +43,7 @@ namespace Synthesis.Bethesda.UnitTests
         public void GuiModule()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterModule<Module>();
+            builder.RegisterModule<MainModule>();
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
@@ -52,13 +54,63 @@ namespace Synthesis.Bethesda.UnitTests
             var cont = builder.Build();
             cont.Validate(
                 typeof(IStartup), 
-                typeof(ProfileVm), 
+                typeof(ProfileVm));
+        }
+        
+        [Fact]
+        public void GitPatcherVm()
+        {
+            var builder = new ContainerBuilder();
+            builder.RegisterModule<GitPatcherModule>();
+            builder.RegisterModule<MainModule>();
+            builder.RegisterMock<IMainWindow>();
+            builder.RegisterMock<IWindowPlacement>();
+            builder.RegisterMock<IGithubPatcherIdentifier>();
+            builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
+                .As<IProfileIdentifier>()
+                .As<IProfileNameProvider>()
+                .As<IGameReleaseContext>();
+            var cont = builder.Build();
+            cont.Validate(
                 typeof(GitPatcherVm),
+                typeof(GitPatcherInitVm));
+        }
+        
+        [Fact]
+        public void SolutionPatcherVm()
+        {
+            var builder = new ContainerBuilder();
+            builder.RegisterModule<SolutionPatcherModule>();
+            builder.RegisterModule<MainModule>();
+            builder.RegisterMock<IMainWindow>();
+            builder.RegisterMock<IWindowPlacement>();
+            builder.RegisterMock<IGithubPatcherIdentifier>();
+            builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
+                .As<IProfileIdentifier>()
+                .As<IProfileNameProvider>()
+                .As<IGameReleaseContext>();
+            var cont = builder.Build();
+            cont.Validate(
                 typeof(SolutionPatcherVm),
+                typeof(SolutionPatcherInitVm));
+        }
+        
+        [Fact]
+        public void CliPatcherVm()
+        {
+            var builder = new ContainerBuilder();
+            builder.RegisterModule<CliPatcherModule>();
+            builder.RegisterModule<MainModule>();
+            builder.RegisterMock<IMainWindow>();
+            builder.RegisterMock<IWindowPlacement>();
+            builder.RegisterMock<IGithubPatcherIdentifier>();
+            builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
+                .As<IProfileIdentifier>()
+                .As<IProfileNameProvider>()
+                .As<IGameReleaseContext>();
+            var cont = builder.Build();
+            cont.Validate(
                 typeof(CliPatcherVm),
-                typeof(IPatcherRunnerFactory),
-                typeof(GitPatcherInitVm),
-                typeof(SolutionPatcherInitVm),
                 typeof(CliPatcherInitVm));
         }
         

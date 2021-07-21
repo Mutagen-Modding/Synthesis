@@ -21,8 +21,10 @@ using Noggog.Utility;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Patchers.Solution;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Solution
+namespace Synthesis.Bethesda.Execution.Patchers.Running
 {
     public interface ISolutionPatcherRun : IPatcherRun
     {

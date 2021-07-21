@@ -11,6 +11,7 @@ using Noggog;
 using Serilog;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {

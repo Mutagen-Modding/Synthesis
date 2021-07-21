@@ -7,6 +7,7 @@ using Noggog.Reactive;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Logging;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git

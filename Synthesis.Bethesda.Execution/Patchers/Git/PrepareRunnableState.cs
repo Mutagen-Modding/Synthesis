@@ -4,6 +4,7 @@ using Autofac;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git

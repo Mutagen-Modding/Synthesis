@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO.Abstractions;
 using Noggog;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Solution
 {

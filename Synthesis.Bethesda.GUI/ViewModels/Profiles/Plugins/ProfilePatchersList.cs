@@ -1,5 +1,6 @@
 ﻿using DynamicData;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 {

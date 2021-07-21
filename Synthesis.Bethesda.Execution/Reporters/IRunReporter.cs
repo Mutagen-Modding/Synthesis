@@ -2,6 +2,7 @@ using Synthesis.Bethesda.Execution.Patchers;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 
 namespace Synthesis.Bethesda.Execution.Reporters
 {

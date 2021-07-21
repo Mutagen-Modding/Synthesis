@@ -1,25 +1,21 @@
-using LibGit2Sharp;
-using Mutagen.Bethesda;
-using Mutagen.Bethesda.Synthesis;
-using Noggog;
-using NuGet.Versioning;
-using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis.Versioning;
+using Noggog;
+using NuGet.Versioning;
 using Synthesis.Bethesda.Execution.GitRespository;
-using Synthesis.Bethesda.Execution.Patchers.Solution;
-using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git
+namespace Synthesis.Bethesda.Execution.Patchers.Running
 {
     public interface IGitPatcherRun : IPatcherRun
     {

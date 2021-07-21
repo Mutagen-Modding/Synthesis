@@ -2,9 +2,12 @@
 using System.Reactive.Disposables;
 using Autofac;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
 {
@@ -42,8 +45,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
 
         public GitPatcherVm GetGitPatcher(GithubPatcherSettings? settings = null)
         {
-            var patcherScope = _scope.BeginLifetimeScope(Module.PatcherNickname, c =>
+            var patcherScope = _scope.BeginLifetimeScope(MainModule.PatcherNickname, c =>
             {
+                c.RegisterModule<GitPatcherModule>();
                 settings = _gitSettingsInitializer.Get(settings);
                 c.RegisterInstance(settings)
                     .AsSelf()
@@ -56,8 +60,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
 
         public SolutionPatcherVm GetSolutionPatcher(SolutionPatcherSettings? settings = null)
         {
-            var patcherScope = _scope.BeginLifetimeScope(Module.PatcherNickname, c =>
+            var patcherScope = _scope.BeginLifetimeScope(MainModule.PatcherNickname, c =>
             {
+                c.RegisterModule<SolutionPatcherModule>();
                 if (settings != null)
                 {
                     c.RegisterInstance(settings)
@@ -72,8 +77,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
 
         public CliPatcherVm GetCliPatcher(CliPatcherSettings? settings = null)
         {
-            var patcherScope = _scope.BeginLifetimeScope(Module.PatcherNickname, c =>
+            var patcherScope = _scope.BeginLifetimeScope(MainModule.PatcherNickname, c =>
             {
+                c.RegisterModule<CliPatcherModule>();
                 if (settings != null)
                 {
                     c.RegisterInstance(settings)

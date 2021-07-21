@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution

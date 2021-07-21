@@ -4,6 +4,7 @@ using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli;
 
 namespace Synthesis.Bethesda.GUI.Views
 {

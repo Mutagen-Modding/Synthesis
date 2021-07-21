@@ -17,6 +17,7 @@ using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Running;
 using Path = System.IO.Path;
 using FileNotFoundException = System.IO.FileNotFoundException;
