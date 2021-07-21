@@ -110,7 +110,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
             {
                 try
                 {
-                    _OpenIde.OpenSolution(ret[0].SolutionPath.TargetPath, Ide);
+                    _OpenIde.OpenSolution(ret[0].SolutionPathInput.Picker.TargetPath, Ide);
                 }
                 catch (Exception ex)
                 {

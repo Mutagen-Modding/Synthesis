@@ -37,15 +37,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
         IPathToProjProvider,
         ISolutionPatcherSettingsVm
     {
+        public ISolutionPathInputVm SolutionPathInput { get; }
         public ISelectedProjectInputVm SelectedProjectInput { get; }
         private readonly IProfileLoadOrder _LoadOrder;
         private readonly IToSolutionRunner _ToSolutionRunner;
-        
-        public PathPickerVM SolutionPath { get; } = new()
-        {
-            ExistCheckOption = PathPickerVM.CheckOptions.On,
-            PathType = PathPickerVM.PathTypeOptions.File,
-        };
 
         public IObservableCollection<string> AvailableProjects { get; }
 
@@ -95,6 +90,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             IInstalledSdkProvider dotNetSdkProviderInstalled,
             IProfileDisplayControllerVm profileDisplay,
             IConfirmationPanelControllerVm confirmation, 
+            ISolutionPathInputVm solutionPathInput,
             ILogger logger,
             ISelectedProjectInputVm selectedProjectInput,
             PatcherSettingsVm.Factory settingsVmFactory,
@@ -106,26 +102,26 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             SolutionPatcherSettings? settings = null)
             : base(nameVm, remove, profileDisplay, confirmation, settings)
         {
+            SolutionPathInput = solutionPathInput;
             SelectedProjectInput = selectedProjectInput;
             _LoadOrder = loadOrder;
             _ToSolutionRunner = toSolutionRunner;
             CopyInSettings(settings);
-            SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
 
             AvailableProjects = availableProjects.Process(
-                this.WhenAnyValue(x => x.SolutionPath.TargetPath))
+                this.WhenAnyValue(x => x.SolutionPathInput.Picker.TargetPath))
                 .ObserveOnGui()
                 .ToObservableCollection(this);
 
             var projPath = projectPath.Process(
-                solutionPath: this.WhenAnyValue(x => x.SolutionPath.TargetPath),
+                solutionPath: this.WhenAnyValue(x => x.SolutionPathInput.Picker.TargetPath),
                 projectSubpath: this.WhenAnyValue(x => x.ProjectSubpath));
             projPath
                 .Subscribe(p => SelectedProjectInput.Picker.TargetPath = p)
                 .DisposeWith(this);
 
             _State = Observable.CombineLatest(
-                    this.WhenAnyValue(x => x.SolutionPath.ErrorState),
+                    this.WhenAnyValue(x => x.SolutionPathInput.Picker.ErrorState),
                     SelectedProjectInput.WhenAnyValue(x => x.Picker.ErrorState),
                     dotNetSdkProviderInstalled.DotNetSdkInstalled,
                     (sln, proj, dotnet) =>
@@ -140,17 +136,17 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
                 });
 
             OpenSolutionCommand = ReactiveCommand.Create(
-                canExecute: this.WhenAnyValue(x => x.SolutionPath.InError)
+                canExecute: this.WhenAnyValue(x => x.SolutionPathInput.Picker.InError)
                     .Select(x => !x),
                 execute: () =>
                 {
                     try
                     {
-                        navigateTo.Navigate(SolutionPath.TargetPath);
+                        navigateTo.Navigate(SolutionPathInput.Picker.TargetPath);
                     }
                     catch (Exception ex)
                     {
-                        logger.Error(ex, $"Error opening solution: {SolutionPath.TargetPath}");
+                        logger.Error(ex, $"Error opening solution: {SolutionPathInput.Picker.TargetPath}");
                     }
                 });
 
@@ -185,7 +181,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
         {
             var ret = new SolutionPatcherSettings();
             CopyOverSave(ret);
-            ret.SolutionPath = this.SolutionPath.TargetPath;
+            ret.SolutionPath = this.SolutionPathInput.Picker.TargetPath;
             ret.ProjectSubpath = this.ProjectSubpath;
             PatcherSettings.Persist();
             return ret;
@@ -194,7 +190,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
         private void CopyInSettings(SolutionPatcherSettings? settings)
         {
             if (settings == null) return;
-            this.SolutionPath.TargetPath = settings.SolutionPath;
+            this.SolutionPathInput.Picker.TargetPath = settings.SolutionPath;
             this.ProjectSubpath = settings.ProjectSubpath;
         }
 

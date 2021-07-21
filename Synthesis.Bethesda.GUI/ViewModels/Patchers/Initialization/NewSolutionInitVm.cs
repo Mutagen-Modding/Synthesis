@@ -109,7 +109,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
                         createProject.Create(gameCategoryContext.Category, i.validation.Value);
                         addProjectToSolution.Add(i.sln.Value, i.validation.Value);
                         gitIgnore.Generate(Path.GetDirectoryName(i.sln.Value)!);
-                        patcher.SolutionPath.TargetPath = i.sln.Value;
+                        patcher.SolutionPathInput.Picker.TargetPath = i.sln.Value;
                         var projName = Path.GetFileNameWithoutExtension(i.validation.Value);
                         patcher.ProjectSubpath = Path.Combine(projName, $"{projName}.csproj");
                         return patcher.AsEnumerable();
