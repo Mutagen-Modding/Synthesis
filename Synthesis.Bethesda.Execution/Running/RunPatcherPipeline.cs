@@ -80,7 +80,7 @@ namespace Synthesis.Bethesda.Execution.Running
                             patcherSettings.Print(Reporter);
                         }
 
-                        return _runnerFactory.Create(patcherSettings, run.ExtraDataFolder);;
+                        return _runnerFactory.Create(patcherSettings);
                     })
                     .ToList();
 

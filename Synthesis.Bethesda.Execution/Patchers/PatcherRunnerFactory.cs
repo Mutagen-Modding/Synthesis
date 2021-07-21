@@ -10,9 +10,9 @@ namespace Synthesis.Bethesda.Execution.Patchers
 {
     public interface IPatcherRunnerFactory
     {
-        IPatcherRun Create(PatcherSettings patcherSettings, string? extraDataFolder);
+        IPatcherRun Create(PatcherSettings patcherSettings);
         ICliPatcherRun Cli(CliPatcherSettings settings);
-        ISolutionPatcherRun Sln(SolutionPatcherSettings settings, string? extraDataFolder);
+        ISolutionPatcherRun Sln(SolutionPatcherSettings settings);
         IGitPatcherRun Git(GithubPatcherSettings settings);
     }
 
@@ -32,12 +32,12 @@ namespace Synthesis.Bethesda.Execution.Patchers
             WorkingDirectory = workingDirectory;
         }
 
-        public IPatcherRun Create(PatcherSettings patcherSettings, string? extraDataFolder)
+        public IPatcherRun Create(PatcherSettings patcherSettings)
         {
             return patcherSettings switch
             {
                 CliPatcherSettings cli => Cli(cli),
-                SolutionPatcherSettings sln => Sln(sln, extraDataFolder),
+                SolutionPatcherSettings sln => Sln(sln),
                 GithubPatcherSettings git => Git(git),
                 _ => throw new NotImplementedException(),
             };
@@ -55,7 +55,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             return ret;
         }
 
-        public ISolutionPatcherRun Sln(SolutionPatcherSettings settings, string? extraDataFolder)
+        public ISolutionPatcherRun Sln(SolutionPatcherSettings settings)
         {
             var scope = _scope.BeginLifetimeScope(c =>
             {
@@ -69,8 +69,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             var factory = scope.Resolve<SolutionPatcherRun.Factory>();
             var ret = factory(
                 name: settings.Nickname,
-                pathToSln: settings.SolutionPath,
-                pathToExtraDataBaseFolder: extraDataFolder ?? ExtraDataPathProvider.Path);
+                pathToSln: settings.SolutionPath);
             
             ret.AddForDisposal(scope);
             return ret;

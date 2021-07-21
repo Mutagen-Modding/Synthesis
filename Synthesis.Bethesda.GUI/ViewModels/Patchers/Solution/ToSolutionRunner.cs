@@ -1,12 +1,5 @@
 ﻿using System;
-using Noggog.Utility;
-using Synthesis.Bethesda.Execution.CLI;
-using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers;
-using Synthesis.Bethesda.Execution.Patchers.Solution;
-using Synthesis.Bethesda.Execution.Pathing;
-using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
@@ -21,14 +14,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 
     public class ToSolutionRunner : IToSolutionRunner
     {
-        private readonly IExtraDataPathProvider _extraDataPathProvider;
         private readonly IPatcherRunnerFactory _runnerFactory;
 
         public ToSolutionRunner(
-            IExtraDataPathProvider extraDataPathProvider,
             IPatcherRunnerFactory runnerFactory)
         {
-            _extraDataPathProvider = extraDataPathProvider;
             _runnerFactory = runnerFactory;
         }
         
@@ -45,8 +35,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
                         On = true,
                         ProjectSubpath = slnPatcher.SelectedProjectPath.TargetPath,
                         SolutionPath = slnPatcher.SolutionPath.TargetPath
-                    }, 
-                    extraDataFolder: _extraDataPathProvider.Path));
+                    }));
         }
 
         public PatcherRunVm GetRunner(PatchersRunVm parent, GitPatcherVm gitPatcher)
@@ -65,8 +54,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
                         On = true,
                         ProjectSubpath = gitPatcher.RunnableData.ProjPath,
                         SolutionPath = gitPatcher.RunnableData.SolutionPath
-                    }, 
-                    extraDataFolder: _extraDataPathProvider.Path));
+                    }));
         }
     }
 }

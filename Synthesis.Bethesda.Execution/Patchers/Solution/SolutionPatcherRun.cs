@@ -33,6 +33,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
         private readonly CompositeDisposable _disposable = new();
 
         private readonly ICopyOverExtraData _copyOverExtraData;
+        private readonly IPatcherExtraDataPathProvider _patcherExtraDataPathProvider;
         private readonly IPathToProjProvider _pathToProjProvider;
         private readonly IBuild _Build;
         private readonly ICheckRunnability _CheckRunnability;
@@ -41,7 +42,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
         public string Name { get; }
         public string PathToSolution { get; }
-        public string PathToExtraDataBaseFolder { get; }
 
         private readonly Subject<string> _output = new();
         public IObservable<string> Output => _output;
@@ -51,12 +51,11 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
 
         public delegate ISolutionPatcherRun Factory(
             string name,
-            string pathToSln,
-            string pathToExtraDataBaseFolder);
+            string pathToSln);
 
         public SolutionPatcherRun(
             string pathToSln, 
-            string pathToExtraDataBaseFolder,
+            IPatcherExtraDataPathProvider patcherExtraDataPathProvider,
             string name,
             ICopyOverExtraData copyOverExtraData,
             IPathToProjProvider pathToProjProvider,
@@ -67,6 +66,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
             IProvideRepositoryCheckouts repositoryCheckouts)
         {
             Name = name;
+            _patcherExtraDataPathProvider = patcherExtraDataPathProvider;
             _pathToProjProvider = pathToProjProvider;
             _copyOverExtraData = copyOverExtraData;
             _Build = build;
@@ -75,7 +75,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
             _defaultDataPathProvider = defaultDataPathProvider;
             _RepositoryCheckouts = repositoryCheckouts;
             PathToSolution = pathToSln;
-            PathToExtraDataBaseFolder = pathToExtraDataBaseFolder;
         }
 
         public async Task Prep(GameRelease release, CancellationToken cancel)
@@ -125,7 +124,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
             var internalSettings = new RunSynthesisMutagenPatcher()
             {
                 DataFolderPath = settings.DataFolderPath,
-                ExtraDataFolder = Path.Combine(PathToExtraDataBaseFolder, Name),
+                ExtraDataFolder = _patcherExtraDataPathProvider.Path,
                 DefaultDataFolderPath = Directory.Exists(defaultDataFolderPath) ? defaultDataFolderPath.Path : null,
                 GameRelease = settings.GameRelease,
                 LoadOrderFilePath = settings.LoadOrderFilePath,
