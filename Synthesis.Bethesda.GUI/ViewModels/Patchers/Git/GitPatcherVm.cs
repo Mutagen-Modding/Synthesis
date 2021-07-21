@@ -174,6 +174,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             IGetRepoPathValidity getRepoPathValidity,
             ILogger logger,
+            IConstructName nameConstructor,
             IPrepareRunnableState prepareRunnableState,
             IToSolutionRunner toSolutionRunner,
             PatcherSettingsVm.Factory settingsVmFactory,
@@ -194,11 +195,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             LocalDriverRepoDirectory = driverRepoDirectoryProvider.Path.Path;
             LocalRunnerRepoDirectory = runnerRepoDirectoryProvider.Path.Path;
 
-            _DisplayName = this.WhenAnyValue(
-                x => x.NameVm.Name,
-                x => x.RemoteRepoPathInput.RemoteRepoPath,
-                GetNickname)
-                .ToGuiProperty<string>(this, nameof(DisplayName), GetNickname(NameVm.Name, RemoteRepoPathInput.RemoteRepoPath));
+            _DisplayName = this.WhenAnyValue(x => x.RemoteRepoPathInput.RemoteRepoPath)
+                .Select(nameConstructor.Construct)
+                .ToGuiProperty<string>(this, nameof(DisplayName), nameConstructor.Construct(RemoteRepoPathInput.RemoteRepoPath));
 
             var remoteRepoPath = getRepoPathValidity.Get();
             _RepoValidity = remoteRepoPath
@@ -921,26 +920,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             catch (Exception ex)
             {
                 _Logger.Error(ex, $"Failure deleting git repo: {this.LocalRunnerRepoDirectory}");
-            }
-        }
-
-        private static string GetNickname(string nickname, string path)
-        {
-            if (!string.IsNullOrWhiteSpace(nickname)) return nickname;
-            try
-            {
-                if (string.IsNullOrWhiteSpace(path)) return "Mutagen Git Patcher";
-                var span = path.AsSpan();
-                var slashIndex = span.LastIndexOf('/');
-                if (slashIndex != -1)
-                {
-                    span = span.Slice(slashIndex + 1);
-                }
-                return span.ToString();
-            }
-            catch (Exception)
-            {
-                return "Mutagen Git Patcher";
             }
         }
 
