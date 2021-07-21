@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
                     {
                         Nickname = slnPatcher.DisplayName,
                         On = true,
-                        ProjectSubpath = slnPatcher.SelectedProjectPath.TargetPath,
+                        ProjectSubpath = slnPatcher.SelectedProjectInput.Picker.TargetPath,
                         SolutionPath = slnPatcher.SolutionPath.TargetPath
                     }));
         }

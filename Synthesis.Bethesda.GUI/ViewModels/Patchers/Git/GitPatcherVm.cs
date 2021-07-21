@@ -30,6 +30,7 @@ using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Patchers.Git;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
@@ -44,7 +45,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         private readonly IToSolutionRunner _toSolutionRunner;
         public override bool IsNameEditable => false;
 
-        public IGitSelectedProjectInputVm SelectedProjectInput { get; }
+        public ISelectedProjectInputVm SelectedProjectInput { get; }
         public IGitRemoteRepoPathInputVm RemoteRepoPathInput { get; }
 
         private readonly ObservableAsPropertyHelper<string> _DisplayName;
@@ -152,7 +153,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IGithubPatcherIdentifier ident,
             IProfileIdentifier profileIdent,
             IPatcherNameVm nameVm,
-            IGitSelectedProjectInputVm selectedProjectInput,
+            ISelectedProjectInputVm selectedProjectInput,
             IGitRemoteRepoPathInputVm remoteRepoPathInputVm,
             IProfileLoadOrder loadOrder,
             IProfileVersioning versioning,

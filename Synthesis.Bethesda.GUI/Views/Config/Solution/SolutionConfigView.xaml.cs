@@ -57,7 +57,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Set project picker tooltips
-                this.WhenAnyValue(x => x.ViewModel!.SelectedProjectPath.ErrorState)
+                this.WhenAnyValue(x => x.ViewModel!.SelectedProjectInput.Picker.ErrorState)
                     .Select(e =>
                     {
                         if (e.Succeeded) return "Project in the solution to run";

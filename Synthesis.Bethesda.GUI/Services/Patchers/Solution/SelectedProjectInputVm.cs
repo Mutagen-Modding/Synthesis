@@ -2,14 +2,14 @@
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Noggog.WPF;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
+namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
 {
-    public interface IGitSelectedProjectInputVm
+    public interface ISelectedProjectInputVm
     {
         PathPickerVM Picker { get; }
     }
 
-    public class GitSelectedProjectInputVm : ViewModel, IGitSelectedProjectInputVm
+    public class SelectedProjectInputVm : ViewModel, ISelectedProjectInputVm
     {
         public PathPickerVM Picker { get; } = new PathPickerVM()
         {
@@ -17,7 +17,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             PathType = PathPickerVM.PathTypeOptions.File,
         };
 
-        public GitSelectedProjectInputVm()
+        public SelectedProjectInputVm()
         {
             Picker.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
         }

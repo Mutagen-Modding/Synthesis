@@ -33,6 +33,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 {
     public class SolutionPatcherVm : PatcherVm, IProvidePatcherMetaPath, ISolutionPatcherSettingsVm
     {
+        public ISelectedProjectInputVm SelectedProjectInput { get; }
         private readonly IProfileLoadOrder _LoadOrder;
         private readonly IToSolutionRunner _ToSolutionRunner;
         
@@ -46,12 +47,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 
         [Reactive]
         public string ProjectSubpath { get; set; } = string.Empty;
-
-        public PathPickerVM SelectedProjectPath { get; } = new()
-        {
-            ExistCheckOption = PathPickerVM.CheckOptions.On,
-            PathType = PathPickerVM.PathTypeOptions.File,
-        };
 
         private readonly ObservableAsPropertyHelper<string> _DisplayName;
         public override string DisplayName => _DisplayName.Value;
@@ -100,6 +95,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             IProfileDisplayControllerVm profileDisplay,
             IConfirmationPanelControllerVm confirmation, 
             ILogger logger,
+            ISelectedProjectInputVm selectedProjectInput,
             PatcherSettingsVm.Factory settingsVmFactory,
             IAvailableProjects availableProjects,
             ISolutionProjectPath projectPath,
@@ -109,15 +105,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             SolutionPatcherSettings? settings = null)
             : base(nameVm, remove, profileDisplay, confirmation, settings)
         {
+            SelectedProjectInput = selectedProjectInput;
             _LoadOrder = loadOrder;
             _ToSolutionRunner = toSolutionRunner;
             CopyInSettings(settings);
             SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
-            SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
 
             _DisplayName = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.NameVm.Name),
-                this.WhenAnyValue(x => x.SelectedProjectPath.TargetPath)
+                SelectedProjectInput.WhenAnyValue(x => x.Picker.TargetPath)
                     .StartWith(settings?.ProjectSubpath ?? string.Empty),
                 (nickname, path) =>
                 {
@@ -144,12 +140,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
                 solutionPath: this.WhenAnyValue(x => x.SolutionPath.TargetPath),
                 projectSubpath: this.WhenAnyValue(x => x.ProjectSubpath));
             projPath
-                .Subscribe(p => SelectedProjectPath.TargetPath = p)
+                .Subscribe(p => SelectedProjectInput.Picker.TargetPath = p)
                 .DisposeWith(this);
 
             _State = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.SolutionPath.ErrorState),
-                    this.WhenAnyValue(x => x.SelectedProjectPath.ErrorState),
+                    SelectedProjectInput.WhenAnyValue(x => x.Picker.ErrorState),
                     dotNetSdkProviderInstalled.DotNetSdkInstalled,
                     (sln, proj, dotnet) =>
                     {
@@ -177,7 +173,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
                     }
                 });
 
-            MetaPath = this.WhenAnyValue(x => x.SelectedProjectPath.TargetPath)
+            MetaPath = SelectedProjectInput.WhenAnyValue(x => x.Picker.TargetPath)
                 .Select(projPath =>
                 {
                     try
