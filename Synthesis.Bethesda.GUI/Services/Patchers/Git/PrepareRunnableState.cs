@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Reactive.Linq;
-using Autofac;
 using Noggog;
 using Serilog;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
-using Synthesis.Bethesda.Execution.Patchers.TopLevel;
-using Synthesis.Bethesda.Execution.Pathing;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git
+namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
     public interface IPrepareRunnableState
     {
@@ -20,28 +18,19 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
     public class PrepareRunnableState : IPrepareRunnableState
     {
-        private readonly ILifetimeScope _scope;
         private readonly ICheckoutRunnerRepository _checkoutRunner;
-        private readonly IPatcherNameProvider _patcherNameProvider;
         private readonly IRunnerRepoDirectoryProvider _runnerRepoDirectoryProvider;
-        private readonly IExtraDataPathProvider _extraDataPathProvider;
         private readonly CopyOverExtraData.Factory _copyOverFactory;
         public ILogger Logger { get; }
 
         public PrepareRunnableState(
             ILogger logger,
-            ILifetimeScope scope,
             ICheckoutRunnerRepository checkoutRunner,
-            IPatcherNameProvider patcherNameProvider,
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
-            IExtraDataPathProvider extraDataPathProvider,
             CopyOverExtraData.Factory copyOverFactory)
         {
-            _scope = scope;
             _checkoutRunner = checkoutRunner;
-            _patcherNameProvider = patcherNameProvider;
             _runnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
-            _extraDataPathProvider = extraDataPathProvider;
             _copyOverFactory = copyOverFactory;
             Logger = logger;
         }

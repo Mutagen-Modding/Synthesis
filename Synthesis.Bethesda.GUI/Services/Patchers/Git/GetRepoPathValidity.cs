@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reactive.Linq;
-using LibGit2Sharp;
 using Noggog;
 using Noggog.Reactive;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -14,23 +13,23 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
     public class GetRepoPathValidity : IGetRepoPathValidity
     {
-        private readonly IRemoteRepoPathProvider _remoteRepoPathProvider;
+        private readonly IRemoteRepoPathFollower _remoteRepoPathFollower;
         private readonly ICheckRepoIsValid _checkRepoIsValid;
         private readonly ISchedulerProvider _schedulerProvider;
 
         public GetRepoPathValidity(
-            IRemoteRepoPathProvider remoteRepoPathProvider,
+            IRemoteRepoPathFollower remoteRepoPathFollower,
             ICheckRepoIsValid checkRepoIsValid,
             ISchedulerProvider schedulerProvider)
         {
-            _remoteRepoPathProvider = remoteRepoPathProvider;
+            _remoteRepoPathFollower = remoteRepoPathFollower;
             _checkRepoIsValid = checkRepoIsValid;
             _schedulerProvider = schedulerProvider;
         }
         
         public IObservable<ConfigurationState<string>> Get()
         {
-            var replay = _remoteRepoPathProvider.Path
+            var replay = _remoteRepoPathFollower.Path
                 .Replay()
                 .AutoConnect(2);
             

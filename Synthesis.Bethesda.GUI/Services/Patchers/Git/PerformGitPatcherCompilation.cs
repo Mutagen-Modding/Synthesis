@@ -5,8 +5,9 @@ using System.Reactive.Linq;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git
+namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
     public interface IPerformGitPatcherCompilation
     {
@@ -56,7 +57,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                             if (compileResp.Failed)
                             {
                                 _logger.Information($"Compiling failed: {compileResp.Reason}");
-                                List<string> errs = new List<string>();
+                                var errs = new List<string>();
                                 DotNetCommands.PrintErrorMessage(compileResp.Reason,
                                     $"{Path.GetDirectoryName(state.Item.ProjPath)}\\", (s, _) =>
                                     {
