@@ -13,6 +13,7 @@ using NSubstitute;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests
@@ -23,9 +24,8 @@ namespace Synthesis.Bethesda.UnitTests
         {
             return new CheckoutRunnerRepository(
                 Substitute.For<IBuild>(),
-                new PathToSolutionProvider(
-                    new FileSystem(),
-                    new DriverRepoDirectoryInjection(local)),
+                new SolutionFileLocator(
+                    new FileSystem()),
                 new ProvideRepositoryCheckouts(Substitute.For<ILogger>()));
         }
         

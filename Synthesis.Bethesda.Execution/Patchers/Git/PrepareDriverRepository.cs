@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         private readonly ILogger _logger;
         private readonly IGetRepoPathValidity _getRepoPathValidity;
         private readonly IProvideRepositoryCheckouts _repoCheckouts;
-        private readonly IPathToSolutionProvider _pathToSolutionProvider;
+        private readonly ISolutionFileLocator _solutionFileLocator;
         private readonly ICheckOrCloneRepo _checkOrClone;
         private readonly IDriverRepoDirectoryProvider _driverRepoDirectoryProvider;
         private readonly ISchedulerProvider _schedulerProvider;
@@ -31,7 +31,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             ILogger logger,
             IGetRepoPathValidity getRepoPathValidity,
             IProvideRepositoryCheckouts repoCheckouts,
-            IPathToSolutionProvider pathToSolutionProvider,
+            ISolutionFileLocator solutionFileLocator,
             ICheckOrCloneRepo checkOrClone,
             IDriverRepoDirectoryProvider driverRepoDirectoryProvider,
             ISchedulerProvider schedulerProvider)
@@ -39,7 +39,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             _logger = logger;
             _getRepoPathValidity = getRepoPathValidity;
             _repoCheckouts = repoCheckouts;
-            _pathToSolutionProvider = pathToSolutionProvider;
+            _solutionFileLocator = solutionFileLocator;
             _checkOrClone = checkOrClone;
             _driverRepoDirectoryProvider = driverRepoDirectoryProvider;
             _schedulerProvider = schedulerProvider;
@@ -111,7 +111,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                         }
 
                         // Try to locate a solution to drive from
-                        var slnPath = _pathToSolutionProvider.Path;
+                        var slnPath = _solutionFileLocator.GetPath(driverRepoPath);
                         if (slnPath == null)
                         {
                             _logger.Error($"Failed to check out driver repository: Could not locate solution to run.");
