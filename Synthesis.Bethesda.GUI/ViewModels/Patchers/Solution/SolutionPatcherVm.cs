@@ -8,14 +8,12 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
-using Microsoft.WindowsAPICodePack.Dialogs;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.WPF.Plugins;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Serilog;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -87,7 +85,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             IProfileDisplayControllerVm profileDisplay,
             IConfirmationPanelControllerVm confirmation, 
             ISolutionPathInputVm solutionPathInput,
-            ILogger logger,
             ISelectedProjectInputVm selectedProjectInput,
             PatcherSettingsVm.Factory settingsVmFactory,
             IAvailableProjects availableProjects,
@@ -128,14 +125,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
                     .Select(x => !x),
                 execute: () =>
                 {
-                    try
-                    {
-                        navigateTo.Navigate(SolutionPathInput.Picker.TargetPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Error(ex, $"Error opening solution: {SolutionPathInput.Picker.TargetPath}");
-                    }
+                    navigateTo.Navigate(SolutionPathInput.Picker.TargetPath);
                 });
 
             MetaPath = SelectedProjectInput.WhenAnyValue(x => x.Picker.TargetPath)
