@@ -109,7 +109,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     vm.State = GetResponse<RunState>.Fail(RunState.Error, i.data.Error);
                     SelectedPatcher = vm;
                     logger
-                        .ForContext(nameof(PatcherVm.DisplayName), i.data.Run.Name)
+                        .ForContext(nameof(IPatcherNameVm.Name), i.data.Run.Name)
                         .Error(i.data.Error, $"Error while {i.type}");
                 })
                 .DisposeWith(this);
@@ -120,7 +120,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     var vm = Patchers.Get(i.Key);
                     vm.State = GetResponse<RunState>.Succeed(RunState.Started);
                     logger
-                        .ForContext(nameof(PatcherVm.DisplayName), i.Run.Name)
+                        .ForContext(nameof(IPatcherNameVm.Name), i.Run.Name)
                         .Information($"Starting");
 
                     // Handle automatic selection advancement
@@ -139,7 +139,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     var vm = Patchers.Get(i.Key);
                     vm.State = GetResponse<RunState>.Succeed(RunState.Finished);
                     logger
-                        .ForContext(nameof(PatcherVm.DisplayName), i.Run.Name)
+                        .ForContext(nameof(IPatcherNameVm.Name), i.Run.Name)
                         .Information("Finished {RunTime}", vm.RunTime);
                 })
                 .DisposeWith(this);
@@ -147,7 +147,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .Subscribe(s =>
                 {
                     logger
-                        .ForContextIfNotNull(nameof(PatcherVm.DisplayName), s.Run?.Name)
+                        .ForContextIfNotNull(nameof(IPatcherNameVm.Name), s.Run?.Name)
                         .Information(s.String);
                 })
                 .DisposeWith(this);
@@ -155,7 +155,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .Subscribe(s =>
                 {
                     logger
-                        .ForContextIfNotNull(nameof(PatcherVm.DisplayName), s.Run?.Name)
+                        .ForContextIfNotNull(nameof(IPatcherNameVm.Name), s.Run?.Name)
                         .Error(s.String);
                 })
                 .DisposeWith(this);

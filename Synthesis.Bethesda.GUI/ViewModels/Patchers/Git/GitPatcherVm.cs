@@ -30,7 +30,6 @@ using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Patchers.Git;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
@@ -47,9 +46,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
         public ISelectedProjectInputVm SelectedProjectInput { get; }
         public IGitRemoteRepoPathInputVm RemoteRepoPathInput { get; }
-
-        private readonly ObservableAsPropertyHelper<string> _DisplayName;
-        public override string DisplayName => _DisplayName.Value;
 
         private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
         public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
@@ -195,10 +191,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
             LocalDriverRepoDirectory = driverRepoDirectoryProvider.Path.Path;
             LocalRunnerRepoDirectory = runnerRepoDirectoryProvider.Path.Path;
-
-            _DisplayName = this.WhenAnyValue(x => x.RemoteRepoPathInput.RemoteRepoPath)
-                .Select(nameConstructor.Construct)
-                .ToGuiProperty<string>(this, nameof(DisplayName), nameConstructor.Construct(RemoteRepoPathInput.RemoteRepoPath));
 
             var remoteRepoPath = getRepoPathValidity.Get();
             _RepoValidity = remoteRepoPath

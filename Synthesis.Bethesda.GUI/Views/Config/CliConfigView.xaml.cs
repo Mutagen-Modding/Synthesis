@@ -20,7 +20,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.BindStrict(this.ViewModel, vm => vm.PathToExecutable, view => view.ExecutablePathPicker.PickerVM)
+                this.BindStrict(this.ViewModel, vm => vm.ExecutableInput.Picker, view => view.ExecutablePathPicker.PickerVM)
                     .DisposeWith(disposable);
 
                 // ToDo

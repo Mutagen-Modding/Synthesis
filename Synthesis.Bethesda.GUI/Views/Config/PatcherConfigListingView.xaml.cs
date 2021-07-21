@@ -33,7 +33,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.BindStrict(this.ViewModel, vm => vm.IsOn, view => view.OnToggle.IsChecked)
                     .DisposeWith(disposable);
-                this.WhenAnyFallback(x => x.ViewModel!.DisplayName)
+                this.WhenAnyFallback(x => x.ViewModel!.NameVm.Name)
                     .BindToStrict(this, x => x.NameBlock.Text)
                     .DisposeWith(disposable);
 

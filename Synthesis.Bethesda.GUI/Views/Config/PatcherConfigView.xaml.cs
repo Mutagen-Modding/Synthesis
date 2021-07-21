@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel!.DisplayName)
+                this.WhenAnyValue(x => x.ViewModel!.NameVm.Name)
                     .BindToStrict(this, x => x.PatcherDetailName.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel)
@@ -47,7 +47,7 @@ namespace Synthesis.Bethesda.GUI.Views
                         }
                         else
                         {
-                            return this.WhenAnyValue(x => x.ViewModel!.DisplayName);
+                            return this.WhenAnyValue(x => x.ViewModel!.NameVm.Name);
                         }
                     })
                     .Switch()

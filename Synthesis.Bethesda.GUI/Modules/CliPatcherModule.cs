@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Noggog.Autofac;
+using Synthesis.Bethesda.GUI.Services.Patchers.Cli;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli;
 
 namespace Synthesis.Bethesda.GUI.Modules
@@ -10,7 +11,9 @@ namespace Synthesis.Bethesda.GUI.Modules
         {
             builder.RegisterModule<PatcherModule>();
             builder.RegisterAssemblyTypes(typeof(CliPatcherVm).Assembly)
-                .InNamespaceOf<CliPatcherVm>()
+                .InNamespacesOf(
+                    typeof(CliPatcherVm),
+                    typeof(IPathToExecutableInputVm))
                 .SingleInstance()
                 .NotInjection()
                 .AsImplementedInterfaces()

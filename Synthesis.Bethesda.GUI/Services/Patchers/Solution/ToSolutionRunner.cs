@@ -32,7 +32,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
                 _runnerFactory.Sln(
                     new SolutionPatcherSettings()
                     {
-                        Nickname = slnPatcher.DisplayName,
+                        Nickname = slnPatcher.NameVm.Name,
                         On = true,
                         ProjectSubpath = slnPatcher.SelectedProjectInput.Picker.TargetPath,
                         SolutionPath = slnPatcher.SolutionPath.TargetPath
@@ -51,7 +51,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
                 _runnerFactory.Sln(
                     new SolutionPatcherSettings()
                     {
-                        Nickname = gitPatcher.DisplayName,
+                        Nickname = gitPatcher.NameVm.Name,
                         On = true,
                         ProjectSubpath = gitPatcher.RunnableData.ProjPath,
                         SolutionPath = gitPatcher.RunnableData.SolutionPath

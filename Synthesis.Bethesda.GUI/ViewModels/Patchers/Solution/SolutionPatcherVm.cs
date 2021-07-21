@@ -48,9 +48,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
         [Reactive]
         public string ProjectSubpath { get; set; } = string.Empty;
 
-        private readonly ObservableAsPropertyHelper<string> _DisplayName;
-        public override string DisplayName => _DisplayName.Value;
-
         private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
         public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
 
@@ -110,26 +107,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             _ToSolutionRunner = toSolutionRunner;
             CopyInSettings(settings);
             SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
-
-            _DisplayName = Observable.CombineLatest(
-                this.WhenAnyValue(x => x.NameVm.Name),
-                SelectedProjectInput.WhenAnyValue(x => x.Picker.TargetPath)
-                    .StartWith(settings?.ProjectSubpath ?? string.Empty),
-                (nickname, path) =>
-                {
-                    if (!string.IsNullOrWhiteSpace(nickname)) return nickname;
-                    try
-                    {
-                        var name = Path.GetFileName(Path.GetDirectoryName(path));
-                        if (string.IsNullOrWhiteSpace(name)) return string.Empty;
-                        return name;
-                    }
-                    catch (Exception)
-                    {
-                        return string.Empty;
-                    }
-                })
-                .ToProperty(this, nameof(DisplayName), NameVm.Name);
 
             AvailableProjects = availableProjects.Process(
                 this.WhenAnyValue(x => x.SolutionPath.TargetPath))

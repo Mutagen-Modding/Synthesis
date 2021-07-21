@@ -28,8 +28,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         [Reactive]
         public bool IsOn { get; set; } = true;
 
-        public abstract string DisplayName { get; }
-
         public ICommand DeleteCommand { get; }
 
         public ICommand GoToErrorCommand => NoggogCommand.CreateFromObject(
@@ -71,13 +69,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
 
             // Set to settings
             IsOn = settings?.On ?? false;
-            nameVm.Name = settings?.Nickname ?? string.Empty;
 
             DeleteCommand = ReactiveCommand.Create(() =>
             {
                 confirmation.TargetConfirmation = new ConfirmationActionVm(
                     "Confirm",
-                    $"Are you sure you want to delete {DisplayName}?",
+                    $"Are you sure you want to delete {NameVm.Name}?",
                     Delete);
             });
 
@@ -120,7 +117,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
             _Remove.Remove(this);
         }
 
-        protected ILogger Logger => Log.Logger.ForContext(nameof(DisplayName), DisplayName);
+        protected ILogger Logger => Log.Logger.ForContext(nameof(PatcherVm.NameVm.Name), NameVm.Name);
 
         public virtual void SuccessfulRunCompleted()
         {

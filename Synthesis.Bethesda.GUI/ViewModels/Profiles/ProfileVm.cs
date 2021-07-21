@@ -137,7 +137,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             Patchers.Connect()
                 .OnItemRemoved(p =>
                 {
-                    logger.Information($"Disposing of {p.DisplayName} because it was removed.");
+                    logger.Information($"Disposing of {p.NameVm.Name} because it was removed.");
                     p.Dispose();
                 })
                 .Subscribe()
@@ -188,7 +188,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                         if (erroredEnabledPatchers.Count > 0)
                         {
                             var errPatcher = erroredEnabledPatchers.First();
-                            return GetResponse<PatcherVm>.Fail(errPatcher, $"\"{errPatcher.DisplayName}\" has a blocking error: {errPatcher.State.RunnableState.Reason}");
+                            return GetResponse<PatcherVm>.Fail(errPatcher, $"\"{errPatcher.NameVm.Name}\" has a blocking error: {errPatcher.State.RunnableState.Reason}");
                         }
                         return GetResponse<PatcherVm>.Succeed(null!);
                     })

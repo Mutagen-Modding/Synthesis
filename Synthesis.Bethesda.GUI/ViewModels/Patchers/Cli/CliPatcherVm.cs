@@ -8,6 +8,7 @@ using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.Services.Patchers.Cli;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
@@ -19,22 +20,16 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
 {
     public class CliPatcherVm : PatcherVm
     {
+        public IPathToExecutableInputVm ExecutableInput { get; }
         private readonly IProcessFactory _ProcessFactory;
         public IShowHelpSetting ShowHelpSetting { get; }
-        private readonly ObservableAsPropertyHelper<string> _DisplayName;
-        public override string DisplayName => _DisplayName.Value;
-
-        public readonly PathPickerVM PathToExecutable = new()
-        {
-             PathType = PathPickerVM.PathTypeOptions.File,
-             ExistCheckOption = PathPickerVM.CheckOptions.On,
-        };
 
         private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
         public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
 
         public CliPatcherVm(
             IPatcherNameVm nameVm,
+            IPathToExecutableInputVm pathToExecutableInputVm,
             IRemovePatcherFromProfile remove,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
@@ -43,34 +38,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
             CliPatcherSettings? settings = null)
             : base(nameVm, remove, selPatcher, confirmation, settings)
         {
+            ExecutableInput = pathToExecutableInputVm;
             _ProcessFactory = processFactory;
             ShowHelpSetting = showHelpSetting;
             CopyInSettings(settings);
-            _DisplayName = this.WhenAnyValue(
-                    x => x.NameVm.Name,
-                    x => x.PathToExecutable.TargetPath,
-                    (Nickname, PathToExecutable) => (Nickname, PathToExecutable))
-                .Select(x =>
-                {
-                    if (string.IsNullOrWhiteSpace(x.Nickname))
-                    {
-                        try
-                        {
-                            return Path.GetFileNameWithoutExtension(x.PathToExecutable);
-                        }
-                        catch (Exception)
-                        {
-                            return "<Naming Error>";
-                        }
-                    }
-                    else
-                    {
-                        return x.Nickname;
-                    }
-                })
-                .ToGuiProperty<string>(this, nameof(DisplayName), string.Empty);
 
-            _State = this.WhenAnyValue(x => x.PathToExecutable.ErrorState)
+            _State = pathToExecutableInputVm.WhenAnyValue(x => x.Picker.ErrorState)
                 .Select(e =>
                 {
                     return new ConfigurationState()
@@ -88,14 +61,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
         private void CopyInSettings(CliPatcherSettings? settings)
         {
             if (settings == null) return;
-            PathToExecutable.TargetPath = settings.PathToExecutable;
+            ExecutableInput.Picker.TargetPath = settings.PathToExecutable;
         }
 
         public override PatcherSettings Save()
         {
             var ret = new CliPatcherSettings();
             CopyOverSave(ret);
-            ret.PathToExecutable = PathToExecutable.TargetPath;
+            ret.PathToExecutable = ExecutableInput.Picker.TargetPath;
             return ret;
         }
 
@@ -106,8 +79,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
                 this, 
                 new CliPatcherRun(
                     _ProcessFactory,
-                    nickname: DisplayName, 
-                    pathToExecutable: PathToExecutable.TargetPath, 
+                    nickname: NameVm.Name, 
+                    pathToExecutable: ExecutableInput.Picker.TargetPath, 
                     pathToExtra: null));
         }
     }

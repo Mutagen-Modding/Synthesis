@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
             : base(init)
         {
             Patcher = factory.GetCliPatcher();
-            _CanCompleteConfiguration = Patcher.WhenAnyValue(x => x.PathToExecutable.ErrorState)
+            _CanCompleteConfiguration = Patcher.WhenAnyValue(x => x.ExecutableInput.Picker.ErrorState)
                 .Cast<ErrorResponse, ErrorResponse>()
                 .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
         }
