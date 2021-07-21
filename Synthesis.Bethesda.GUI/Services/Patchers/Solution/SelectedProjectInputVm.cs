@@ -3,8 +3,10 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using Noggog.WPF;
 using ReactiveUI;
 using System;
+using System.Reactive.Linq;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
+using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
 {
@@ -27,14 +29,17 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
 
         public SelectedProjectInputVm(
             ILogger logger,
-            ISolutionFilePathFollower solutionFilePathFollower,
-            ISolutionProjectPath projectPath)
+            IProjectPathConstructor pathConstructor,
+            ISolutionFilePathFollower solutionFilePathFollower)
         {
             Picker.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
             
-            projectPath.Process(
-                    solutionPath: solutionFilePathFollower.Path,
-                    projectSubpath: this.WhenAnyValue(x => x.ProjectSubpath))
+            this.WhenAnyValue(x => x.ProjectSubpath)
+                // Need to throttle, as bindings flip to null quickly, which we want to skip
+                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                .DistinctUntilChanged()
+                .CombineLatest(solutionFilePathFollower.Path.DistinctUntilChanged(),
+                    (subPath, slnPath) => pathConstructor.Construct(slnPath, subPath))
                 .Subscribe(p =>
                 {
                     logger.Information($"Setting target project path to: {p}");
