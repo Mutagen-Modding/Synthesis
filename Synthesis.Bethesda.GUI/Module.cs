@@ -126,9 +126,12 @@ namespace Synthesis.Bethesda.GUI
             // Execution lib
             builder.RegisterAssemblyTypes(typeof(IRunner).Assembly)
                 .InNamespacesOf(
-                    typeof(IRunner),
                     typeof(IProfileDirectories))
                 .InstancePerMatchingLifetimeScope(ProfileNickname)
+                .AsMatchingInterface();
+            builder.RegisterAssemblyTypes(typeof(IRunner).Assembly)
+                .InNamespacesOf(
+                    typeof(IRunner))
                 .AsMatchingInterface();
         }
 
