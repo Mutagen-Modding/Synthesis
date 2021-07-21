@@ -3,8 +3,9 @@ using System.Reactive.Linq;
 using LibGit2Sharp;
 using Noggog;
 using Noggog.Reactive;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git
+namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
     public interface IGetRepoPathValidity
     {
@@ -14,13 +15,16 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
     public class GetRepoPathValidity : IGetRepoPathValidity
     {
         private readonly IRemoteRepoPathProvider _remoteRepoPathProvider;
+        private readonly ICheckRepoIsValid _checkRepoIsValid;
         private readonly ISchedulerProvider _schedulerProvider;
 
         public GetRepoPathValidity(
             IRemoteRepoPathProvider remoteRepoPathProvider,
+            ICheckRepoIsValid checkRepoIsValid,
             ISchedulerProvider schedulerProvider)
         {
             _remoteRepoPathProvider = remoteRepoPathProvider;
+            _checkRepoIsValid = checkRepoIsValid;
             _schedulerProvider = schedulerProvider;
         }
         
@@ -45,12 +49,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                     .ObserveOn(_schedulerProvider.TaskPool)
                     .Select(p =>
                     {
-                        try
+                        if (_checkRepoIsValid.IsValidRepository(p))
                         {
-                            if (Repository.ListRemoteReferences(p).Any()) return new ConfigurationState<string>(p);
-                        }
-                        catch (Exception)
-                        {
+                            return new ConfigurationState<string>(p);
                         }
                         return new ConfigurationState<string>(string.Empty, ErrorResponse.Fail("Path does not point to a valid repository."));
                     }))
