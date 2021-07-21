@@ -41,7 +41,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         private readonly ILogger _Logger;
         private readonly IToSolutionRunner _toSolutionRunner;
         public override bool IsNameEditable => false;
-        
+
+        public IGitSelectedProjectInputVm SelectedProjectInput { get; }
         public IGitRemoteRepoPathInputVm RemoteRepoPathInput { get; }
 
         private readonly ObservableAsPropertyHelper<string> _DisplayName;
@@ -65,12 +66,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
         [Reactive]
         public string ProjectSubpath { get; set; } = string.Empty;
-
-        public PathPickerVM SelectedProjectPath { get; } = new PathPickerVM()
-        {
-            ExistCheckOption = PathPickerVM.CheckOptions.On,
-            PathType = PathPickerVM.PathTypeOptions.File,
-        };
 
         [Reactive]
         public PatcherVersioningEnum PatcherVersioning { get; set; } = PatcherVersioningEnum.Branch;
@@ -155,6 +150,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IGithubPatcherIdentifier ident,
             IProfileIdentifier profileIdent,
             IPatcherNameVm nameVm,
+            IGitSelectedProjectInputVm selectedProjectInput,
             IGitRemoteRepoPathInputVm remoteRepoPathInputVm,
             IProfileLoadOrder loadOrder,
             IProfileVersioning versioning,
@@ -184,11 +180,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             : base(nameVm, remove, selPatcher, confirmation, settings)
         {
             _Logger = logger;
+            SelectedProjectInput = selectedProjectInput;
             RemoteRepoPathInput = remoteRepoPathInputVm;
             _toSolutionRunner = toSolutionRunner;
             Locking = lockToCurrentVersioning;
-            
-            SelectedProjectPath.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
 
             ID = ident.Id;
             
@@ -241,7 +236,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 .ToObservableCollection(this);
 
             var tagInput = Observable.CombineLatest(
-                this.WhenAnyValue(x => x.SelectedProjectPath.TargetPath),
+                SelectedProjectInput.Picker.WhenAnyValue(x => x.TargetPath),
                 this.WhenAnyValue(x => x.AvailableProjects.Count),
                 (targetPath, count) => (targetPath, count));
             AvailableTags = driverRepoInfo
@@ -270,7 +265,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 .Subscribe(p =>
                 {
                     Logger.Information($"Setting target project path to: {p}");
-                    SelectedProjectPath.TargetPath = p;
+                    SelectedProjectInput.Picker.TargetPath = p;
                 })
                 .DisposeWith(this);
 
@@ -470,7 +465,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             // Checkout desired patcher commit on the runner repository
             var checkoutInput = Observable.CombineLatest(
                     runnerRepoState,
-                    SelectedProjectPath.PathState()
+                    SelectedProjectInput.Picker.PathState()
                         .Select(x => x.Succeeded ? x : GetResponse<string>.Fail("No patcher project selected.")),
                     patcherVersioning,
                     nugetTarget,
