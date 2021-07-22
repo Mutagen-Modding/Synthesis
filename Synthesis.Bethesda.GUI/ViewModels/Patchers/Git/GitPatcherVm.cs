@@ -67,12 +67,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
         public ICommand NavigateToInternalFilesCommand { get; }
 
-        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _MutagenVersionDiff;
-        public (string? MatchVersion, string? SelectedVersion) MutagenVersionDiff => _MutagenVersionDiff.Value;
-
-        private readonly ObservableAsPropertyHelper<(string? MatchVersion, string? SelectedVersion)> _SynthesisVersionDiff;
-        public (string? MatchVersion, string? SelectedVersion) SynthesisVersionDiff => _SynthesisVersionDiff.Value;
-
         private readonly ObservableAsPropertyHelper<bool> _AttemptedCheckout;
         public bool AttemptedCheckout => _AttemptedCheckout.Value;
 
@@ -89,6 +83,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         
         public ILockToCurrentVersioning Locking { get; }
         public IRepoClonesValidStateVm RepoClonesValid { get; }
+        public INugetDiffProviderVm NugetDiff { get; }
         public IGitPatcherTargetingVm PatcherTargeting { get; }
         public IGitNugetTargetingVm NugetTargeting { get; }
         public IUpdateAllCommand UpdateAllCommand { get; }
@@ -119,6 +114,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             IGetRepoPathValidity getRepoPathValidity,
             IRepoClonesValidStateVm repoClonesValid,
+            INugetDiffProviderVm nugetDiff,
             ILogger logger,
             IRunnableStateProvider runnableStateProvider,
             IToSolutionRunner toSolutionRunner,
@@ -136,6 +132,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             _toSolutionRunner = toSolutionRunner;
             Locking = lockToCurrentVersioning;
             RepoClonesValid = repoClonesValid;
+            NugetDiff = nugetDiff;
             PatcherTargeting = patcherTargeting;
             NugetTargeting = nugetTargetingVm;
             UpdateAllCommand = updateAllCommand;
@@ -169,20 +166,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             _RunnableData = runnableStateProvider.State
                 .Select(x => x.Item ?? default(RunnerRepoInfo?))
                 .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?));
-
-            _MutagenVersionDiff = Observable.CombineLatest(
-                    this.WhenAnyValue(x => x.RunnableData)
-                        .Select(x => x?.ListedMutagenVersion),
-                    nugetTargetingVm.ActiveNugetVersion.Select(x => x.Value?.MutagenVersion),
-                    (matchVersion, selVersion) => (matchVersion, selVersion))
-                .ToGuiProperty(this, nameof(MutagenVersionDiff));
-
-            _SynthesisVersionDiff = Observable.CombineLatest(
-                    this.WhenAnyValue(x => x.RunnableData)
-                        .Select(x => x?.ListedSynthesisVersion),
-                    nugetTargetingVm.ActiveNugetVersion.Select(x => x.Value?.SynthesisVersion),
-                    (matchVersion, selVersion) => (matchVersion, selVersion))
-                .ToGuiProperty(this, nameof(SynthesisVersionDiff));
 
             var patcherConfiguration = runnableStateProvider.State
                 .Select(x =>
@@ -559,14 +542,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
         public override void SuccessfulRunCompleted()
         {
-            if (MutagenVersionDiff.SelectedVersion == null) return;
-            if (SynthesisVersionDiff.SelectedVersion == null) return;
+            if (NugetDiff.MutagenVersionDiff.SelectedVersion == null) return;
+            if (NugetDiff.SynthesisVersionDiff.SelectedVersion == null) return;
             LastSuccessfulRun = new GithubPatcherLastRunState(
                 TargetRepo: RemoteRepoPathInput.RemoteRepoPath,
                 ProjectSubpath: this.SelectedProjectInput.ProjectSubpath,
                 Commit: this.PatcherTargeting.TargetCommit,
-                MutagenVersion: MutagenVersionDiff.SelectedVersion,
-                SynthesisVersion: SynthesisVersionDiff.SelectedVersion);
+                MutagenVersion: NugetDiff.MutagenVersionDiff.SelectedVersion,
+                SynthesisVersion: NugetDiff.SynthesisVersionDiff.SelectedVersion);
         }
 
         FilePath IPathToProjProvider.Path => RunnableData?.ProjPath ?? throw new ArgumentNullException($"{nameof(IPathToProjProvider)}.{nameof(IPathToProjProvider.Path)}");

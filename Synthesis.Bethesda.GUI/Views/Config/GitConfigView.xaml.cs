@@ -144,7 +144,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.MutagenVersionDiff),
+                        this.WhenAnyValue(x => x.ViewModel!.NugetDiff.MutagenVersionDiff),
                         this.WhenAnyValue(x => x.ViewModel!.NugetTargeting.MutagenVersioning),
                         (diff, vers) =>
                         {
@@ -157,7 +157,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.Nugets.Mutagen.VersionChangeArrow.Visibility)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.SynthesisVersionDiff),
+                        this.WhenAnyValue(x => x.ViewModel!.NugetDiff.SynthesisVersionDiff),
                         this.WhenAnyValue(x => x.ViewModel!.NugetTargeting.SynthesisVersioning),
                         (diff, vers) =>
                         {
@@ -181,18 +181,18 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Subscribe(x => this.Nugets.Mutagen.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
 
-                this.WhenAnyValue(x => x.ViewModel!.MutagenVersionDiff)
+                this.WhenAnyValue(x => x.ViewModel!.NugetDiff.MutagenVersionDiff)
                     .Select(x => x.MatchVersion)
                     .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .BindToStrict(this, x => x.Nugets.Mutagen.ListedVersionText.Text)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.SynthesisVersionDiff)
+                this.WhenAnyValue(x => x.ViewModel!.NugetDiff.SynthesisVersionDiff)
                     .Select(x => x.MatchVersion)
                     .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .BindToStrict(this, x => x.Nugets.Synthesis.ListedVersionText.Text)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.MutagenVersionDiff),
+                        this.WhenAnyValue(x => x.ViewModel!.NugetDiff.MutagenVersionDiff),
                         this.WhenAnyValue(x => x.ViewModel!.NugetTargeting.MutagenVersioning),
                         (diff, vers) =>
                         {
@@ -205,7 +205,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.Nugets.Mutagen.ListedVersionText.Visibility)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.SynthesisVersionDiff),
+                        this.WhenAnyValue(x => x.ViewModel!.NugetDiff.SynthesisVersionDiff),
                         this.WhenAnyValue(x => x.ViewModel!.NugetTargeting.SynthesisVersioning),
                         (diff, vers) =>
                         {
@@ -218,7 +218,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.Nugets.Synthesis.ListedVersionText.Visibility)
                     .DisposeWith(disposable);
 
-                this.WhenAnyValue(x => x.ViewModel!.MutagenVersionDiff)
+                this.WhenAnyValue(x => x.ViewModel!.NugetDiff.MutagenVersionDiff)
                     .Select(x =>
                     {
                         if (object.Equals(x.MatchVersion, x.SelectedVersion)) return x.MatchVersion;
@@ -228,7 +228,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .NotNull()
                     .BindToStrict(this, x => x.Nugets.Mutagen.TargetVersionText.Text)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.SynthesisVersionDiff)
+                this.WhenAnyValue(x => x.ViewModel!.NugetDiff.SynthesisVersionDiff)
                     .Select(x =>
                     {
                         if (object.Equals(x.MatchVersion, x.SelectedVersion)) return x.MatchVersion;
