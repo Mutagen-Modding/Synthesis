@@ -120,7 +120,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IGetRepoPathValidity getRepoPathValidity,
             IRepoClonesValidStateVm repoClonesValid,
             ILogger logger,
-            IPrepareRunnableState prepareRunnableState,
+            IRunnableStateProvider runnableStateProvider,
             IToSolutionRunner toSolutionRunner,
             IGitPatcherTargetingVm patcherTargeting,
             ICheckoutInputProvider checkoutInputProvider,
@@ -157,19 +157,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
             AvailableTags = availableTags.Tags;
 
-            var runnableState = checkoutInputProvider.Input
-                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
-                .DistinctUntilChanged()
-                .ObserveOn(RxApp.TaskpoolScheduler)
-                .Select(prepareRunnableState.Prepare)
-                .Switch()
-                .StartWith(new ConfigurationState<RunnerRepoInfo>(GetResponse<RunnerRepoInfo>.Fail("Constructing runnable state"))
-                {
-                    IsHaltingError = false
-                })
-                .Replay(1)
-                .RefCount();
-
             _AttemptedCheckout = checkoutInputProvider.Input
                 .Select(input =>
                 {
@@ -179,7 +166,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 })
                 .ToGuiProperty(this, nameof(AttemptedCheckout));
 
-            _RunnableData = runnableState
+            _RunnableData = runnableStateProvider.State
                 .Select(x => x.Item ?? default(RunnerRepoInfo?))
                 .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?));
 
@@ -197,7 +184,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                     (matchVersion, selVersion) => (matchVersion, selVersion))
                 .ToGuiProperty(this, nameof(SynthesisVersionDiff));
 
-            var patcherConfiguration = runnableState
+            var patcherConfiguration = runnableStateProvider.State
                 .Select(x =>
                 {
                     if (x.RunnableState.Failed) return Observable.Return(default(PatcherCustomization?));
@@ -236,7 +223,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                     .Transform(x => x.ModKey))
                 .RefCount();
 
-            var compilation = performGitPatcherCompilation.Process(runnableState)
+            var compilation = performGitPatcherCompilation.Process(runnableStateProvider.State)
                 .Replay(1)
                 .RefCount();
 
@@ -303,7 +290,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                     driverRepoInfo
                         .Select(x => x.ToUnit()),
                     runnerRepositoryState.State,
-                    runnableState
+                    runnableStateProvider.State
                         .Select(x => x.ToUnit()),
                     runnability,
                     dotNetInstalled.DotNetSdkInstalled
@@ -393,7 +380,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
             _StatusDisplay = Observable.CombineLatest(
                 driverRepoInfo,
-                runnableState,
+                runnableStateProvider.State,
                 compilation,
                 runnability,
                 (driver, runnable, comp, runnability) =>
