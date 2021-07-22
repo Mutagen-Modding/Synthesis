@@ -2,15 +2,12 @@ using System;
 using System.IO;
 using System.Reactive.Linq;
 using System.Windows.Input;
-using DynamicData;
 using DynamicData.Binding;
-using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
-using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Settings;
@@ -64,7 +61,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
         public PatcherSettingsVm PatcherSettings { get; }
 
-        public record StatusRecord(string Text, bool Processing, bool Blocking, ICommand? Command);
         private readonly ObservableAsPropertyHelper<StatusRecord> _StatusDisplay;
         public StatusRecord StatusDisplay => _StatusDisplay.Value;
 
@@ -83,19 +79,18 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         public GitPatcherVm(
             IGithubPatcherIdentifier ident,
             IPatcherNameVm nameVm,
-            ISelectedProjectInputVm selectedProjectInput,
-            IGitRemoteRepoPathInputVm remoteRepoPathInputVm,
             IRemovePatcherFromProfile remove,
-            INavigateTo navigate, 
-            IAvailableTags availableTags,
-            IPatcherRunnabilityCliState runnabilityCliState,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
+            ISelectedProjectInputVm selectedProjectInput,
+            IGitRemoteRepoPathInputVm remoteRepoPathInputVm,
+            INavigateTo navigate, 
+            IAvailableTags availableTags,
             ILockToCurrentVersioning lockToCurrentVersioning,
             IAvailableProjects availableProjects,
             ICompliationProvider compliationProvider,
-            IDriverRepositoryPreparation driverRepositoryPreparation,
             IBaseRepoDirectoryProvider baseRepoDir,
+            IGitStatusDisplay gitStatusDisplay,
             IDriverRepoDirectoryProvider driverRepoDirectoryProvider,
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             IGetRepoPathValidity getRepoPathValidity,
@@ -135,8 +130,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             _RepoValidity = getRepoPathValidity.RepoPath
                 .Select(r => r.RunnableState)
                 .ToGuiProperty(this, nameof(RepoValidity));
-
-            var driverRepoInfo = driverRepositoryPreparation.DriverInfo;
 
             AvailableProjects = availableProjects.Projects;
 
@@ -196,83 +189,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                     .DistinctUntilChanged(x => (x.Item1.Value, x.TargetSynthesisVersion)))
                 .DisposeWith(this);
 
-            _StatusDisplay = Observable.CombineLatest(
-                driverRepoInfo,
-                runnableStateProvider.State,
-                compliationProvider.State,
-                runnabilityCliState.Runnable,
-                (driver, runnable, comp, runnability) =>
-                {
-                    if (driver.RunnableState.Failed)
-                    {
-                        if (driver.IsHaltingError)
-                        {
-                            return new StatusRecord(
-                                Text: "Blocking Error",
-                                Processing: false,
-                                Blocking: true,
-                                Command: null);
-                        }
-                        return new StatusRecord(
-                            Text: "Analyzing repository",
-                            Processing: true,
-                            Blocking: false,
-                            Command: null);
-                    }
-                    if (runnable.RunnableState.Failed)
-                    {
-                        if (runnable.IsHaltingError)
-                        {
-                            return new StatusRecord(
-                                Text: "Blocking Error",
-                                Processing: false,
-                                Blocking: true,
-                                Command: null);
-                        }
-                        return new StatusRecord(
-                            Text: "Checking out desired state",
-                            Processing: true,
-                            Blocking: false,
-                            Command: null);
-                    }
-                    if (comp.RunnableState.Failed)
-                    {
-                        if (comp.IsHaltingError)
-                        {
-                            return new StatusRecord(
-                                Text: "Blocking Error",
-                                Processing: false,
-                                Blocking: true,
-                                Command: null);
-                        }
-                        return new StatusRecord(
-                            Text: "Compiling",
-                            Processing: true,
-                            Blocking: false,
-                            Command: null);
-                    }
-                    if (runnability.RunnableState.Failed)
-                    {
-                        if (runnability.IsHaltingError)
-                        {
-                            return new StatusRecord(
-                                Text: "Blocking Error",
-                                Processing: false,
-                                Blocking: true,
-                                Command: null);
-                        }
-                        return new StatusRecord(
-                            Text: "Checking runnability",
-                            Processing: true,
-                            Blocking: false,
-                            Command: null);
-                    }
-                    return new StatusRecord(
-                        Text: "Ready",
-                        Processing: false,
-                        Blocking: false,
-                        Command: null);
-                })
+            _StatusDisplay = gitStatusDisplay.StatusDisplay
                 .ToGuiProperty(this, nameof(StatusDisplay),
                     new StatusRecord(
                         Text: "Initializing",
