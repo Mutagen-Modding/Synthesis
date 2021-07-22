@@ -122,6 +122,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             ICheckoutInputProvider checkoutInputProvider,
             IGitNugetTargetingVm nugetTargetingVm,
             IUpdateAllCommand updateAllCommand,
+            IAttemptedCheckout attemptedCheckout,
             PatcherSettingsVm.Factory settingsVmFactory,
             GithubPatcherSettings? settings = null)
             : base(nameVm, remove, selPatcher, confirmation, settings)
@@ -155,12 +156,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             AvailableTags = availableTags.Tags;
 
             _AttemptedCheckout = checkoutInputProvider.Input
-                .Select(input =>
-                {
-                    return input.RunnerState.RunnableState.Succeeded
-                        && input.Proj.Succeeded
-                        && input.LibraryNugets.Succeeded;
-                })
+                .Select(attemptedCheckout.Attempted)
                 .ToGuiProperty(this, nameof(AttemptedCheckout));
 
             _RunnableData = runnableStateProvider.State
