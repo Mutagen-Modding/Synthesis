@@ -21,10 +21,14 @@ namespace Synthesis.Bethesda.Execution.DotNet
     public class QueryNugetListing : IQueryNugetListing
     {
         private readonly IProcessFactory _ProcessFactory;
+        private readonly IDotNetCommandStartConstructor _dotNetCommandStartConstructor;
 
-        public QueryNugetListing(IProcessFactory processFactory)
+        public QueryNugetListing(
+            IProcessFactory processFactory,
+            IDotNetCommandStartConstructor dotNetCommandStartConstructor)
         {
             _ProcessFactory = processFactory;
+            _dotNetCommandStartConstructor = dotNetCommandStartConstructor;
         }
         
         public async Task<IEnumerable<NugetListingQuery>> Query(string projectPath, bool outdated, bool includePrerelease, CancellationToken cancel)
@@ -32,7 +36,7 @@ namespace Synthesis.Bethesda.Execution.DotNet
             // Run restore first
             {
                 using var restore = _ProcessFactory.Create(
-                    new ProcessStartInfo("dotnet", $"restore \"{projectPath}\""),
+                    _dotNetCommandStartConstructor.Construct("restore", projectPath),
                     cancel: cancel);
                 await restore.Run();
             }
@@ -41,7 +45,11 @@ namespace Synthesis.Bethesda.Execution.DotNet
             List<string> lines = new();
             List<string> errors = new();
             using var process = _ProcessFactory.Create(
-                new ProcessStartInfo("dotnet", $"list \"{projectPath}\" package{(outdated ? " --outdated" : null)}{(includePrerelease ? " --include-prerelease" : null)}"),
+                _dotNetCommandStartConstructor.Construct("list",
+                    projectPath, 
+                    "package",
+                    outdated ? " --outdated" : null,
+                    includePrerelease ? " --include-prerelease" : null),
                 cancel: cancel);
             using var outSub = process.Output.Subscribe(s =>
             {

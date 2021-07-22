@@ -34,16 +34,16 @@ namespace Synthesis.Bethesda.Execution.CLI
     {
         private readonly IProcessFactory _ProcessFactory;
         private readonly IProvideTemporaryLoadOrder _LoadOrder;
-        private readonly IProvideDotNetProcessInfo _ProcessInfo;
+        private readonly IProvideDotNetRunProcessInfo _runProcessInfo;
 
         public CheckRunnability(
             IProcessFactory processFactory,
             IProvideTemporaryLoadOrder loadOrder,
-            IProvideDotNetProcessInfo processInfo)
+            IProvideDotNetRunProcessInfo runProcessInfo)
         {
             _ProcessFactory = processFactory;
             _LoadOrder = loadOrder;
-            _ProcessInfo = processInfo;
+            _runProcessInfo = runProcessInfo;
         }
         
         public async Task<ErrorResponse> Check(
@@ -84,7 +84,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             };
 
             using var proc = _ProcessFactory.Create(
-                _ProcessInfo.GetStart(path, directExe, checkState),
+                _runProcessInfo.GetStart(path, directExe, checkState),
                 cancel: cancel);
             
             log?.Invoke($"({proc.StartInfo.WorkingDirectory}): {proc.StartInfo.FileName} {proc.StartInfo.Arguments}");

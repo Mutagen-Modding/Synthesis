@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Noggog;
 using Noggog.Utility;
 using Serilog;
-using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Pathing;
 

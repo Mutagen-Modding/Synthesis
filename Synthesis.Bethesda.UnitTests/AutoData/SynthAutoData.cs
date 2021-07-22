@@ -34,6 +34,17 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
     public class SynthInlineData : CompositeDataAttribute
     {
         public SynthInlineData(
+            params object[] ExtraParameters)
+            : base(
+                new InlineDataAttribute(ExtraParameters), 
+                new SynthAutoData())
+        {
+        }
+    }
+    
+    public class SynthCustomInlineData : CompositeDataAttribute
+    {
+        public SynthCustomInlineData(
             bool ConfigureMembers = false, 
             GameRelease Release = GameRelease.SkyrimSE,
             bool UseMockFileSystem = true,

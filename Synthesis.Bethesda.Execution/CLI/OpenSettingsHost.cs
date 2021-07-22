@@ -25,20 +25,20 @@ namespace Synthesis.Bethesda.Execution.CLI
         private readonly IPatcherNameProvider _nameProvider;
         private readonly IProvideTemporaryLoadOrder _LoadOrder;
         private readonly IProcessFactory _ProcessFactory;
-        private readonly IProvideDotNetProcessInfo _ProcessInfo;
+        private readonly IProvideDotNetRunProcessInfo _runProcessInfo;
         private readonly IWindowPlacement _WindowPlacement;
 
         public OpenSettingsHost(
             IPatcherNameProvider nameProvider,
             IProvideTemporaryLoadOrder loadOrder,
             IProcessFactory processFactory,
-            IProvideDotNetProcessInfo processInfo,
+            IProvideDotNetRunProcessInfo runProcessInfo,
             IWindowPlacement windowPlacement)
         {
             _nameProvider = nameProvider;
             _LoadOrder = loadOrder;
             _ProcessFactory = processFactory;
-            _ProcessInfo = processInfo;
+            _runProcessInfo = runProcessInfo;
             _WindowPlacement = windowPlacement;
         }
         
@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             using var loadOrderFile = _LoadOrder.Get(release, loadOrder);
 
             using var proc = _ProcessFactory.Create(
-                _ProcessInfo.GetStart("SettingsHost/Synthesis.Bethesda.SettingsHost.exe", directExe: true, new Synthesis.Bethesda.HostSettings()
+                _runProcessInfo.GetStart("SettingsHost/Synthesis.Bethesda.SettingsHost.exe", directExe: true, new Synthesis.Bethesda.HostSettings()
                 {
                     PatcherName = _nameProvider.Name,
                     PatcherPath = path,

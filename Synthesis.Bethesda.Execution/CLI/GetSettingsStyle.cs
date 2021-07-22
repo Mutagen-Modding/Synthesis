@@ -22,16 +22,16 @@ namespace Synthesis.Bethesda.Execution.CLI
     {
         private readonly ILogger _Logger;
         private readonly IProcessFactory _ProcessFactory;
-        private readonly IProvideDotNetProcessInfo _GetProcessInfo;
+        private readonly IProvideDotNetRunProcessInfo _getRunProcessInfo;
 
         public GetSettingsStyle(
             ILogger logger,
             IProcessFactory processFactory,
-            IProvideDotNetProcessInfo getProcessInfo)
+            IProvideDotNetRunProcessInfo getRunProcessInfo)
         {
             _Logger = logger;
             _ProcessFactory = processFactory;
-            _GetProcessInfo = getProcessInfo;
+            _getRunProcessInfo = getRunProcessInfo;
         }
         
         public async Task<SettingsConfiguration> Get(
@@ -42,7 +42,7 @@ namespace Synthesis.Bethesda.Execution.CLI
         {
             _Logger.Information($"Checking for settings.  Direct exe? {directExe}.  Build? {build}");
             using var proc = _ProcessFactory.Create(
-                _GetProcessInfo.GetStart(path, directExe, new Synthesis.Bethesda.SettingsQuery(), build: build),
+                _getRunProcessInfo.GetStart(path, directExe, new Synthesis.Bethesda.SettingsQuery(), build: build),
                 cancel: cancel,
                 hookOntoOutput: true);
 

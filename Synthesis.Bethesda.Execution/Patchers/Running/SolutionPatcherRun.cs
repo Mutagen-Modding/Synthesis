@@ -42,6 +42,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
         private readonly IBuild _Build;
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IProcessFactory _ProcessFactory;
+        private readonly IDotNetCommandStartConstructor _commandStartConstructor;
         private readonly IDefaultDataPathProvider _defaultDataPathProvider;
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
         public string Name => _nameProvider.Name;
@@ -61,6 +62,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             IBuild build,
             ICheckRunnability checkRunnability,
             IProcessFactory processFactory,
+            IDotNetCommandStartConstructor commandStartConstructor,
             IDefaultDataPathProvider defaultDataPathProvider,
             IProvideRepositoryCheckouts repositoryCheckouts)
         {
@@ -72,6 +74,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             _Build = build;
             _CheckRunnability = checkRunnability;
             _ProcessFactory = processFactory;
+            _commandStartConstructor = commandStartConstructor;
             _defaultDataPathProvider = defaultDataPathProvider;
             _RepositoryCheckouts = repositoryCheckouts;
         }
@@ -134,7 +137,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             };
             var args = Parser.Default.FormatCommandLine(internalSettings);
             using var process = _ProcessFactory.Create(
-                new ProcessStartInfo("dotnet", $"run --project \"{_pathToProjProvider.Path}\" --runtime win-x64 --no-build -c Release {args}"),
+                _commandStartConstructor.Construct("run --project", _pathToProjProvider.Path, "--no-build", args),
                 cancel: cancel);
             _output.OnNext("Running");
             _output.OnNext($"({process.StartInfo.WorkingDirectory}): {process.StartInfo.FileName} {process.StartInfo.Arguments}");

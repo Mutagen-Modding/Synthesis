@@ -7,6 +7,7 @@ using System.Windows;
 using Autofac;
 using Newtonsoft.Json;
 using Serilog;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
@@ -34,6 +35,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
         private readonly IPipelineSettingsPath _PipelineSettingsPath;
         private readonly IGuiSettingsPath _GuiPaths;
         private readonly IRetrieveSaveSettings _Save;
+        private readonly IDotNetCommandPathProvider _dotNetCommandPathProvider;
         private readonly IMainWindow _Window;
         
         public bool IsShutdown { get; private set; }
@@ -45,6 +47,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             IPipelineSettingsPath paths,
             IGuiSettingsPath guiPaths,
             IRetrieveSaveSettings save,
+            IDotNetCommandPathProvider dotNetCommandPathProvider,
             IMainWindow window)
         {
             _Scope = scope;
@@ -53,6 +56,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             _PipelineSettingsPath = paths;
             _GuiPaths = guiPaths;
             _Save = save;
+            _dotNetCommandPathProvider = dotNetCommandPathProvider;
             _Window = window;
         }
 
@@ -98,7 +102,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
                 try
                 {
                     using var process = _ProcessFactory.Create(
-                        new ProcessStartInfo("dotnet", $"build-server shutdown"));
+                        new ProcessStartInfo(_dotNetCommandPathProvider.Path, $"build-server shutdown"));
                     using var output = process.Output.Subscribe(x => _Logger.Information(x));
                     using var error = process.Error.Subscribe(x => _Logger.Information(x));
                     var ret = await process.Run();

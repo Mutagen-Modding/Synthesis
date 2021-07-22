@@ -24,18 +24,18 @@ namespace Synthesis.Bethesda.Execution.CLI
     {
         private readonly IProvideTemporaryLoadOrder _LoadOrder;
         private readonly IProcessFactory _ProcessFactory;
-        private readonly IProvideDotNetProcessInfo _ProcessInfo;
+        private readonly IProvideDotNetRunProcessInfo _runProcessInfo;
         private readonly IWindowPlacement _WindowPlacement;
 
         public OpenForSettings(
             IProvideTemporaryLoadOrder loadOrder,
             IProcessFactory processFactory,
-            IProvideDotNetProcessInfo processInfo,
+            IProvideDotNetRunProcessInfo runProcessInfo,
             IWindowPlacement windowPlacement)
         {
             _LoadOrder = loadOrder;
             _ProcessFactory = processFactory;
-            _ProcessInfo = processInfo;
+            _runProcessInfo = runProcessInfo;
             _WindowPlacement = windowPlacement;
         }
         
@@ -50,7 +50,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             using var loadOrderFile = _LoadOrder.Get(release, loadOrder);
 
             using var proc = _ProcessFactory.Create(
-                _ProcessInfo.GetStart(path, directExe, new Synthesis.Bethesda.OpenForSettings()
+                _runProcessInfo.GetStart(path, directExe, new Synthesis.Bethesda.OpenForSettings()
                 {
                     Left = (int)_WindowPlacement.Left,
                     Top = (int)_WindowPlacement.Top,

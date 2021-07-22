@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,23 +16,22 @@ namespace Synthesis.Bethesda.Execution.DotNet
     public class Build : IBuild
     {
         private readonly IProcessFactory _ProcessFactory;
-        private readonly IBuildStringProvider _BuildStringProvider;
+        private readonly IBuildStartProvider _buildStartProvider;
 
         public Build(
             IProcessFactory processFactory,
-            IBuildStringProvider buildStringProvider)
+            IBuildStartProvider buildStartProvider)
         {
             _ProcessFactory = processFactory;
-            _BuildStringProvider = buildStringProvider;
+            _buildStartProvider = buildStartProvider;
         }
         
         public async Task<ErrorResponse> Compile(string targetPath, CancellationToken cancel, Action<string>? log)
         {
+            var start = _buildStartProvider.Construct(Path.GetFileName(targetPath));
+            start.WorkingDirectory = Path.GetDirectoryName(targetPath)!;
             using var process = _ProcessFactory.Create(
-                new ProcessStartInfo("dotnet", _BuildStringProvider.Get($"\"{Path.GetFileName(targetPath)}\""))
-                {
-                    WorkingDirectory = Path.GetDirectoryName(targetPath)!
-                },
+                start,
                 cancel: cancel);
             log?.Invoke($"({process.StartInfo.WorkingDirectory}): {process.StartInfo.FileName} {process.StartInfo.Arguments}");
             string? firstError = null;

@@ -22,9 +22,9 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles
     public class ProfileDataFolderTests
     {
         [Theory]
-        [SynthInlineData(ExtraParameters: Utility.Return.True, UseMockFileSystem: false)]
-        [SynthInlineData(ExtraParameters: Utility.Return.False, UseMockFileSystem: false)]
-        [SynthInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false)]
+        [SynthCustomInlineData(ExtraParameters: Utility.Return.True, UseMockFileSystem: false)]
+        [SynthCustomInlineData(ExtraParameters: Utility.Return.False, UseMockFileSystem: false)]
+        [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false)]
         public async Task HasDataPathOverride(
             Utility.Return r,
             ProfileDataFolder sut)
@@ -46,9 +46,9 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles
         }
 
         [Theory]
-        [SynthInlineData(ExtraParameters: Utility.Return.True, UseMockFileSystem: false)]
-        [SynthInlineData(ExtraParameters: Utility.Return.False, UseMockFileSystem: false)]
-        [SynthInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false)]
+        [SynthCustomInlineData(ExtraParameters: Utility.Return.True, UseMockFileSystem: false)]
+        [SynthCustomInlineData(ExtraParameters: Utility.Return.False, UseMockFileSystem: false)]
+        [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false)]
         public void GameLocation(
             Utility.Return r,
             ProfileDataFolder sut)
@@ -80,9 +80,9 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles
         }
 
         [Theory]
-        [SynthInlineData(ExtraParameters: Utility.Return.True, UseMockFileSystem: false)]
-        [SynthInlineData(ExtraParameters: Utility.Return.False, UseMockFileSystem: false)]
-        [SynthInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false)]
+        [SynthCustomInlineData(ExtraParameters: Utility.Return.True, UseMockFileSystem: false)]
+        [SynthCustomInlineData(ExtraParameters: Utility.Return.False, UseMockFileSystem: false)]
+        [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false)]
         public void WatchesForFileExistence(
             Utility.Return r,
             DirectoryPath folder,

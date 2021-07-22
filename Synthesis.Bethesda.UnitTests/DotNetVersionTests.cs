@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests
@@ -7,13 +8,15 @@ namespace Synthesis.Bethesda.UnitTests
     public class DotNetVersionTests
     {
         [Theory]
-        [InlineData("5.0.1", true)]
-        [InlineData("6.0.100-preview.2.21119.3", true)]
-        [InlineData("x.5.6", false)]
-        public void TestVersionString(string str, bool shouldSucceed)
+        [SynthInlineData("5.0.1", true)]
+        [SynthInlineData("6.0.100-preview.2.21119.3", true)]
+        [SynthInlineData("x.5.6", false)]
+        public void TestVersionString(
+            string str,
+            bool shouldSucceed,
+            QueryInstalledSdk sut)
         {
-            var query = new QueryInstalledSdk(null!);
-            query.ParseVersionString(str)
+            sut.ParseVersionString(str)
                 .Acceptable.Should().Be(shouldSucceed);
         }
     }

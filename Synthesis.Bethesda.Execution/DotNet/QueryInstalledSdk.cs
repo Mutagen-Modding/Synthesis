@@ -14,18 +14,22 @@ namespace Synthesis.Bethesda.Execution.DotNet
 
     public class QueryInstalledSdk : IQueryInstalledSdk
     {
+        private readonly IDotNetCommandPathProvider _dotNetCommandPathProvider;
         private readonly IProcessFactory _ProcessFactory;
         public const int MinVersion = 5;
 
-        public QueryInstalledSdk(IProcessFactory processFactory)
+        public QueryInstalledSdk(
+            IDotNetCommandPathProvider dotNetCommandPathProvider,
+            IProcessFactory processFactory)
         {
+            _dotNetCommandPathProvider = dotNetCommandPathProvider;
             _ProcessFactory = processFactory;
         }
         
         public async Task<DotNetVersion> Query(CancellationToken cancel)
         {
             using var proc = _ProcessFactory.Create(
-                new System.Diagnostics.ProcessStartInfo("dotnet", "--version"),
+                new System.Diagnostics.ProcessStartInfo(_dotNetCommandPathProvider.Path, "--version"),
                 cancel: cancel);
             List<string> outs = new();
             using var outp = proc.Output.Subscribe(o => outs.Add(o));
