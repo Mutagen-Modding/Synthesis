@@ -1,23 +1,18 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
 using Mutagen.Bethesda.Plugins;
-using Mutagen.Bethesda.Plugins.Order;
-using Mutagen.Bethesda.WPF.Plugins.Order;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
-using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
-using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Patchers.Git;
@@ -87,17 +82,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
         public GitPatcherVm(
             IGithubPatcherIdentifier ident,
-            IProfileIdentifier profileIdent,
             IPatcherNameVm nameVm,
             ISelectedProjectInputVm selectedProjectInput,
             IGitRemoteRepoPathInputVm remoteRepoPathInputVm,
-            IProfileLoadOrder loadOrder,
-            IProfileDataFolder dataFolder,
             IRemovePatcherFromProfile remove,
             INavigateTo navigate, 
             IAvailableTags availableTags,
             IRunnerRepositoryPreparation runnerRepositoryState,
-            ICheckRunnability checkRunnability,
+            IPatcherRunnabilityCliState runnabilityCliState,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             ILockToCurrentVersioning lockToCurrentVersioning,
@@ -161,72 +153,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 .Select(x => x.Item ?? default(RunnerRepoInfo?))
                 .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?));
 
-            var runnability = Observable.CombineLatest(
-                    compliationProvider.State,
-                    dataFolder.WhenAnyValue(x => x.Path),
-                    loadOrder.LoadOrder.Connect()
-                        .QueryWhenChanged()
-                        .StartWith(ListExt.Empty<ReadOnlyModListingVM>()),
-                    (comp, data, loadOrder) => (comp, data, loadOrder))
-                .Select(i =>
-                {
-                    return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
-                    {
-                        if (i.comp.RunnableState.Failed)
-                        {
-                            observer.OnNext(i.comp);
-                            return;
-                        }
-
-                        Logger.Information("Checking runnability");
-                        // Return early with the values, but mark not complete
-                        observer.OnNext(new ConfigurationState<RunnerRepoInfo>(i.comp.Item)
-                        {
-                            IsHaltingError = false,
-                            RunnableState = ErrorResponse.Fail("Checking runnability")
-                        });
-
-                        try
-                        {
-                            var runnability = await checkRunnability.Check(
-                                path: i.comp.Item.ProjPath,
-                                directExe: false,
-                                release: profileIdent.Release,
-                                dataFolder: i.data,
-                                cancel: cancel,
-                                loadOrder: i.loadOrder.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm),
-                                log: (s) => Logger.Information(s));
-                            if (runnability.Failed)
-                            {
-                                Logger.Information($"Checking runnability failed: {runnability.Reason}");
-                                observer.OnNext(runnability.BubbleFailure<RunnerRepoInfo>());
-                                return;
-                            }
-
-                            // Return things again, without error
-                            Logger.Information("Checking runnability succeeded");
-                            observer.OnNext(i.comp);
-                        }
-                        catch (Exception ex)
-                        {
-                            var str = $"Error checking runnability on runner repository: {ex}";
-                            Logger.Error(str);
-                            observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
-                        }
-                        observer.OnCompleted();
-                    });
-                })
-                .Switch()
-                .Replay(1)
-                .RefCount();
-
             _State = Observable.CombineLatest(
                     driverRepoInfo
                         .Select(x => x.ToUnit()),
                     runnerRepositoryState.State,
                     runnableStateProvider.State
                         .Select(x => x.ToUnit()),
-                    runnability,
+                    runnabilityCliState.Runnable,
                     dotNetInstalled.DotNetSdkInstalled
                         .Select(x => (x, true))
                         .StartWith((new DotNetVersion(string.Empty, false), false)),
@@ -316,7 +249,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 driverRepoInfo,
                 runnableStateProvider.State,
                 compliationProvider.State,
-                runnability,
+                runnabilityCliState.Runnable,
                 (driver, runnable, comp, runnability) =>
                 {
                     if (driver.RunnableState.Failed)
