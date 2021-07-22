@@ -88,13 +88,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IRemovePatcherFromProfile remove,
             INavigateTo navigate, 
             IAvailableTags availableTags,
-            IRunnerRepositoryPreparation runnerRepositoryState,
             IPatcherRunnabilityCliState runnabilityCliState,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             ILockToCurrentVersioning lockToCurrentVersioning,
-            IInstalledSdkProvider dotNetInstalled,
-            IEnvironmentErrorsVm envErrors,
             IAvailableProjects availableProjects,
             ICompliationProvider compliationProvider,
             IDriverRepositoryPreparation driverRepositoryPreparation,
@@ -104,7 +101,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IGetRepoPathValidity getRepoPathValidity,
             IRepoClonesValidStateVm repoClonesValid,
             INugetDiffProviderVm nugetDiff,
-            IMissingMods missingMods,
+            IGitPatcherState state,
             ILogger logger,
             IRunnableStateProvider runnableStateProvider,
             IToSolutionRunner toSolutionRunner,
@@ -153,53 +150,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 .Select(x => x.Item ?? default(RunnerRepoInfo?))
                 .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?));
 
-            _State = Observable.CombineLatest(
-                    driverRepoInfo
-                        .Select(x => x.ToUnit()),
-                    runnerRepositoryState.State,
-                    runnableStateProvider.State
-                        .Select(x => x.ToUnit()),
-                    runnabilityCliState.Runnable,
-                    dotNetInstalled.DotNetSdkInstalled
-                        .Select(x => (x, true))
-                        .StartWith((new DotNetVersion(string.Empty, false), false)),
-                    envErrors.WhenAnyFallback(x => x.ActiveError!.ErrorString),
-                    missingMods.Missing
-                        .QueryWhenChanged()
-                        .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
-                        .StartWith(ListExt.Empty<ModKey>()),
-                    (driver, runner, checkout, runnability, dotnet, envError, reqModsMissing) =>
-                    {
-                        if (driver.IsHaltingError) return driver;
-                        if (runner.IsHaltingError) return runner;
-                        if (!dotnet.Item2)
-                        {
-                            return new ConfigurationState(ErrorResponse.Fail("Determining DotNet SDK installed"))
-                            {
-                                IsHaltingError = false
-                            };
-                        }
-                        if (!dotnet.Item1.Acceptable) return new ConfigurationState(ErrorResponse.Fail("No DotNet SDK installed"));
-                        if (envError != null)
-                        {
-                            return new ConfigurationState(ErrorResponse.Fail(envError));
-                        }
-                        if (reqModsMissing.Count > 0)
-                        {
-                            return new ConfigurationState(ErrorResponse.Fail($"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));
-                        }
-                        if (runnability.RunnableState.Failed)
-                        {
-                            return runnability.BubbleError();
-                        }
-                        if (checkout.RunnableState.Failed)
-                        {
-                            return checkout.BubbleError();
-                        }
-                        Logger.Information("State returned success!");
-                        return ConfigurationState.Success;
-                    })
-                .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
+            _State = state.State
+                .ToGuiProperty(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
                 {
                     IsHaltingError = false
                 });
@@ -233,7 +185,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 });
 
             NavigateToInternalFilesCommand = ReactiveCommand.Create(() => navigate.Navigate(baseRepoDir.Path));
-
 
             PatcherSettings = settingsVmFactory(
                 Logger, false, 
