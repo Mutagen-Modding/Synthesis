@@ -70,5 +70,13 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Execution\DotNet\ParseNugetVersionStringTests.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+  </ItemGroup>
+
 
 </Project>

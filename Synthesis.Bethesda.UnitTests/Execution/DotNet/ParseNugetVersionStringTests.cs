@@ -3,9 +3,9 @@ using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests
+namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
 {
-    public class DotNetVersionTests
+    public class ParseNugetVersionStringTests
     {
         [Theory]
         [SynthInlineData("5.0.1", true)]
@@ -14,9 +14,9 @@ namespace Synthesis.Bethesda.UnitTests
         public void TestVersionString(
             string str,
             bool shouldSucceed,
-            QueryInstalledSdk sut)
+            ParseNugetVersionString sut)
         {
-            sut.ParseVersionString(str)
+            sut.Parse(str)
                 .Acceptable.Should().Be(shouldSucceed);
         }
     }

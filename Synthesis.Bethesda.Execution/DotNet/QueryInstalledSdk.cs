@@ -9,20 +9,21 @@ namespace Synthesis.Bethesda.Execution.DotNet
     public interface IQueryInstalledSdk
     {
         Task<DotNetVersion> Query(CancellationToken cancel);
-        DotNetVersion ParseVersionString(ReadOnlySpan<char> str);
     }
 
     public class QueryInstalledSdk : IQueryInstalledSdk
     {
         private readonly IDotNetCommandPathProvider _dotNetCommandPathProvider;
+        private readonly IParseNugetVersionString _parseNugetVersionString;
         private readonly IProcessFactory _ProcessFactory;
-        public const int MinVersion = 5;
 
         public QueryInstalledSdk(
             IDotNetCommandPathProvider dotNetCommandPathProvider,
+            IParseNugetVersionString parseNugetVersionString,
             IProcessFactory processFactory)
         {
             _dotNetCommandPathProvider = dotNetCommandPathProvider;
+            _parseNugetVersionString = parseNugetVersionString;
             _ProcessFactory = processFactory;
         }
         
@@ -44,23 +45,7 @@ namespace Synthesis.Bethesda.Execution.DotNet
             {
                 throw new ArgumentException($"Unexpected messages:\n{string.Join("\n", outs)}");
             }
-            return ParseVersionString(outs[0]);
-        }
-
-        public DotNetVersion ParseVersionString(ReadOnlySpan<char> str)
-        {
-            var orig = str;
-            var indexOf = str.IndexOf('-');
-            if (indexOf != -1)
-            {
-                str = str.Slice(0, indexOf);
-            }
-            if (Version.TryParse(str, out var vers)
-                && vers.Major >= MinVersion)
-            {
-                return new DotNetVersion(orig.ToString(), true);
-            }
-            return new DotNetVersion(orig.ToString(), false);
+            return _parseNugetVersionString.Parse(outs[0]);
         }
     }
 }
