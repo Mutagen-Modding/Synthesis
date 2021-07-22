@@ -38,22 +38,22 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 #region Patcher Versioning
-                this.BindStrict(this.ViewModel, vm => vm.PatcherVersioning, view => view.PatcherVersioning.TabControl.SelectedIndex, (e) => (int)e, i => (PatcherVersioningEnum)i)
+                this.BindStrict(this.ViewModel, vm => vm.TargetingInput.PatcherVersioning, view => view.PatcherVersioning.TabControl.SelectedIndex, (e) => (int)e, i => (PatcherVersioningEnum)i)
                     .DisposeWith(disposable);
 
                 // Bind tag picker
-                this.BindStrict(this.ViewModel, vm => vm.TargetTag, view => view.PatcherVersioning.TagPickerBox.SelectedItem)
+                this.BindStrict(this.ViewModel, vm => vm.TargetingInput.TargetTag, view => view.PatcherVersioning.TagPickerBox.SelectedItem)
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.TagAutoUpdate, view => view.PatcherVersioning.LatestTagCheck.IsChecked)
+                this.BindStrict(this.ViewModel, vm => vm.TargetingInput.TagAutoUpdate, view => view.PatcherVersioning.LatestTagCheck.IsChecked)
                     .DisposeWith(disposable);
                 this.OneWayBindStrict(this.ViewModel, vm => vm.AvailableTags, view => view.PatcherVersioning.TagPickerBox.ItemsSource)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.TagAutoUpdate)
+                this.WhenAnyValue(x => x.ViewModel!.TargetingInput.TagAutoUpdate)
                     .Select(x => !x)
                     .BindToStrict(this, x => x.PatcherVersioning.TagPickerBox.IsEnabled)
                     .DisposeWith(disposable);
 
-                this.BindStrict(this.ViewModel, vm => vm.TargetCommit, view => view.PatcherVersioning.CurrentCommit.Text)
+                this.BindStrict(this.ViewModel, vm => vm.TargetingInput.TargetCommit, view => view.PatcherVersioning.CurrentCommit.Text)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.AttemptedCheckout),
@@ -62,20 +62,20 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .Subscribe(x => this.PatcherVersioning.CurrentCommit.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.TargetBranchName, view => view.PatcherVersioning.BranchNameBox.Text)
+                this.BindStrict(this.ViewModel, vm => vm.TargetingInput.TargetBranchName, view => view.PatcherVersioning.BranchNameBox.Text)
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.BranchAutoUpdate, view => view.PatcherVersioning.AutoBranchCheck.IsChecked)
+                this.BindStrict(this.ViewModel, vm => vm.TargetingInput.BranchAutoUpdate, view => view.PatcherVersioning.AutoBranchCheck.IsChecked)
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.BranchFollowMain, view => view.PatcherVersioning.DefaultBranchCheck.IsChecked)
+                this.BindStrict(this.ViewModel, vm => vm.TargetingInput.BranchFollowMain, view => view.PatcherVersioning.DefaultBranchCheck.IsChecked)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.BranchFollowMain)
+                this.WhenAnyValue(x => x.ViewModel!.TargetingInput.BranchFollowMain)
                     .Select(x => !x)
                     .BindToStrict(this, x => x.PatcherVersioning.BranchNameBox.IsEnabled)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.AttemptedCheckout),
                         this.WhenAnyValue(x => x.ViewModel!.RunnableData),
-                        this.WhenAnyValue(x => x.ViewModel!.PatcherVersioning),
+                        this.WhenAnyValue(x => x.ViewModel!.TargetingInput.PatcherVersioning),
                         (attempted, data, patcher) => attempted && data == null && patcher == PatcherVersioningEnum.Branch)
                     .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .Subscribe(x => this.PatcherVersioning.BranchNameBox.SetValue(ControlsHelper.InErrorProperty, x))
@@ -90,7 +90,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x == null ? string.Empty : x.CommitDate.ToShortTimeString())
                     .BindToStrict(this, view => view.PatcherVersioning.TimeText.Text)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.TargetCommit)
+                this.WhenAnyValue(x => x.ViewModel!.TargetingInput.TargetCommit)
                     .Select(x =>
                     {
                         if (x.IsNullOrWhitespace())
@@ -103,49 +103,49 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Bind update buttons
-                this.WhenAnyFallback(x => x.ViewModel!.UpdateToTagCommand)
+                this.WhenAnyFallback(x => x.ViewModel!.TargetingInput.UpdateToTagCommand)
                     .Select(x => x?.CanExecute ?? Observable.Return(false))
                     .Switch()
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.PatcherVersioning.UpdateTagButton.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyFallback(x => x.ViewModel!.UpdateToBranchCommand)
+                this.WhenAnyFallback(x => x.ViewModel!.TargetingInput.UpdateToBranchCommand)
                     .Select(x => x?.CanExecute ?? Observable.Return(false))
                     .Switch()
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.PatcherVersioning.UpdateBranchButton.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.UpdateToTagCommand)
+                this.WhenAnyValue(x => x.ViewModel!.TargetingInput.UpdateToTagCommand)
                     .BindToStrict(this, x => x.PatcherVersioning.UpdateTagButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.UpdateToBranchCommand)
+                this.WhenAnyValue(x => x.ViewModel!.TargetingInput.UpdateToBranchCommand)
                     .BindToStrict(this, x => x.PatcherVersioning.UpdateBranchButton.Command)
                     .DisposeWith(disposable);
                 #endregion
 
                 #region Nuget
-                this.BindStrict(this.ViewModel, vm => vm.MutagenVersioning, view => view.Nugets.Mutagen.VersioningTab.SelectedIndex, (e) => (int)e, i => (PatcherNugetVersioningEnum)i)
+                this.BindStrict(this.ViewModel, vm => vm.TargetingInput.MutagenVersioning, view => view.Nugets.Mutagen.VersioningTab.SelectedIndex, (e) => (int)e, i => (PatcherNugetVersioningEnum)i)
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.SynthesisVersioning, view => view.Nugets.Synthesis.VersioningTab.SelectedIndex, (e) => (int)e, i => (PatcherNugetVersioningEnum)i)
-                    .DisposeWith(disposable);
-
-                this.BindStrict(this.ViewModel, vm => vm.ManualMutagenVersion, view => view.Nugets.Mutagen.ManualVersionBox.Text)
-                    .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.ManualSynthesisVersion, view => view.Nugets.Synthesis.ManualVersionBox.Text)
+                this.BindStrict(this.ViewModel, vm => vm.TargetingInput.SynthesisVersioning, view => view.Nugets.Synthesis.VersioningTab.SelectedIndex, (e) => (int)e, i => (PatcherNugetVersioningEnum)i)
                     .DisposeWith(disposable);
 
-                this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning)
+                this.BindStrict(this.ViewModel, vm => vm.TargetingInput.ManualMutagenVersion, view => view.Nugets.Mutagen.ManualVersionBox.Text)
+                    .DisposeWith(disposable);
+                this.BindStrict(this.ViewModel, vm => vm.TargetingInput.ManualSynthesisVersion, view => view.Nugets.Synthesis.ManualVersionBox.Text)
+                    .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.TargetingInput.MutagenVersioning)
                     .Select(x => x == PatcherNugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.Nugets.Mutagen.ManualVersionBox.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning)
+                this.WhenAnyValue(x => x.ViewModel!.TargetingInput.SynthesisVersioning)
                     .Select(x => x == PatcherNugetVersioningEnum.Manual ? Visibility.Visible : Visibility.Collapsed)
                     .BindToStrict(this, x => x.Nugets.Synthesis.ManualVersionBox.Visibility)
                     .DisposeWith(disposable);
 
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.MutagenVersionDiff),
-                        this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning),
+                        this.WhenAnyValue(x => x.ViewModel!.TargetingInput.MutagenVersioning),
                         (diff, vers) =>
                         {
                             if (vers == PatcherNugetVersioningEnum.Match) return false;
@@ -158,7 +158,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.SynthesisVersionDiff),
-                        this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning),
+                        this.WhenAnyValue(x => x.ViewModel!.TargetingInput.SynthesisVersioning),
                         (diff, vers) =>
                         {
                             if (vers == PatcherNugetVersioningEnum.Match) return false;
@@ -170,12 +170,12 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.Nugets.Synthesis.VersionChangeArrow.Visibility)
                     .DisposeWith(disposable);
 
-                this.WhenAnyValue(x => x.ViewModel!.ManualSynthesisVersion)
+                this.WhenAnyValue(x => x.ViewModel!.TargetingInput.ManualSynthesisVersion)
                     .Select(x => x.IsNullOrWhitespace())
                     .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .Subscribe(x => this.Nugets.Synthesis.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.ManualMutagenVersion)
+                this.WhenAnyValue(x => x.ViewModel!.TargetingInput.ManualMutagenVersion)
                     .Select(x => x.IsNullOrWhitespace())
                     .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                     .Subscribe(x => this.Nugets.Mutagen.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
@@ -193,7 +193,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.MutagenVersionDiff),
-                        this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning),
+                        this.WhenAnyValue(x => x.ViewModel!.TargetingInput.MutagenVersioning),
                         (diff, vers) =>
                         {
                             if (vers == PatcherNugetVersioningEnum.Match) return false;
@@ -206,7 +206,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.SynthesisVersionDiff),
-                        this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning),
+                        this.WhenAnyValue(x => x.ViewModel!.TargetingInput.SynthesisVersioning),
                         (diff, vers) =>
                         {
                             if (vers == PatcherNugetVersioningEnum.Match) return false;
@@ -239,25 +239,25 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.Nugets.Synthesis.TargetVersionText.Text)
                     .DisposeWith(disposable);
 
-                this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning)
+                this.WhenAnyValue(x => x.ViewModel!.TargetingInput.MutagenVersioning)
                     .Select(x => x == PatcherNugetVersioningEnum.Manual ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.Nugets.Mutagen.TargetVersionText.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning)
+                this.WhenAnyValue(x => x.ViewModel!.TargetingInput.SynthesisVersioning)
                     .Select(x => x == PatcherNugetVersioningEnum.Manual ? Visibility.Collapsed : Visibility.Visible)
                     .BindToStrict(this, x => x.Nugets.Synthesis.TargetVersionText.Visibility)
                     .DisposeWith(disposable);
 
-                this.WhenAnyValue(x => x.ViewModel!.UpdateMutagenManualToLatestCommand)
+                this.WhenAnyValue(x => x.ViewModel!.TargetingInput.UpdateMutagenManualToLatestCommand)
                     .BindToStrict(this, x => x.Nugets.Mutagen.UpdateButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.UpdateSynthesisManualToLatestCommand)
+                this.WhenAnyValue(x => x.ViewModel!.TargetingInput.UpdateSynthesisManualToLatestCommand)
                     .BindToStrict(this, x => x.Nugets.Synthesis.UpdateButton.Command)
                     .DisposeWith(disposable);
 
                 Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.MutagenVersioning),
-                        this.WhenAnyValue(x => x.ViewModel!.UpdateMutagenManualToLatestCommand)
+                        this.WhenAnyValue(x => x.ViewModel!.TargetingInput.MutagenVersioning),
+                        this.WhenAnyValue(x => x.ViewModel!.TargetingInput.UpdateMutagenManualToLatestCommand)
                             .Select(x => x.CanExecute)
                             .Switch(),
                         (versioning, can) =>
@@ -268,8 +268,8 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindToStrict(this, x => x.Nugets.Mutagen.UpdateButton.Visibility)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.SynthesisVersioning),
-                        this.WhenAnyValue(x => x.ViewModel!.UpdateSynthesisManualToLatestCommand)
+                        this.WhenAnyValue(x => x.ViewModel!.TargetingInput.SynthesisVersioning),
+                        this.WhenAnyValue(x => x.ViewModel!.TargetingInput.UpdateSynthesisManualToLatestCommand)
                             .Select(x => x.CanExecute)
                             .Switch(),
                         (versioning, can) =>
