@@ -123,6 +123,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IPrepareRunnableState prepareRunnableState,
             IToSolutionRunner toSolutionRunner,
             IGitPatcherTargetingVm patcherTargeting,
+            ICheckoutInputProvider checkoutInputProvider,
             IGitNugetTargetingVm nugetTargetingVm,
             IUpdateAllCommand updateAllCommand,
             PatcherSettingsVm.Factory settingsVmFactory,
@@ -156,22 +157,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
             AvailableTags = availableTags.Tags;
 
-            // Checkout desired patcher commit on the runner repository
-            var checkoutInput = Observable.CombineLatest(
-                    runnerRepositoryState.State,
-                    SelectedProjectInput.Picker.PathState()
-                        .Select(x => x.Succeeded ? x : GetResponse<string>.Fail("No patcher project selected.")),
-                    PatcherTargeting.ActivePatcherVersion,
-                    nugetTargetingVm.ActiveNugetVersion,
-                    (runnerState, proj, patcherVersioning, libraryNugets) =>
-                    (runnerState, proj, patcherVersioning, libraryNugets))
-                .Replay(1)
-                .RefCount();
-            var runnableState = checkoutInput
+            var runnableState = checkoutInputProvider.Input
                 .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                 .DistinctUntilChanged()
                 .ObserveOn(RxApp.TaskpoolScheduler)
-                .Select((item) => prepareRunnableState.Prepare(item.runnerState, item.proj, item.patcherVersioning, item.libraryNugets))
+                .Select(prepareRunnableState.Prepare)
                 .Switch()
                 .StartWith(new ConfigurationState<RunnerRepoInfo>(GetResponse<RunnerRepoInfo>.Fail("Constructing runnable state"))
                 {
@@ -180,12 +170,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 .Replay(1)
                 .RefCount();
 
-            _AttemptedCheckout = checkoutInput
+            _AttemptedCheckout = checkoutInputProvider.Input
                 .Select(input =>
                 {
-                    return input.runnerState.RunnableState.Succeeded
-                        && input.proj.Succeeded
-                        && input.libraryNugets.Succeeded;
+                    return input.RunnerState.RunnableState.Succeeded
+                        && input.Proj.Succeeded
+                        && input.LibraryNugets.Succeeded;
                 })
                 .ToGuiProperty(this, nameof(AttemptedCheckout));
 

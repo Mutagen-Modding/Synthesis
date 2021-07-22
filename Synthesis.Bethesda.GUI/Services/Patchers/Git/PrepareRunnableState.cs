@@ -9,11 +9,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
     public interface IPrepareRunnableState
     {
-        IObservable<ConfigurationState<RunnerRepoInfo>> Prepare(
-            ConfigurationState runnerState,
-            GetResponse<string> proj,
-            GitPatcherVersioning patcherVersioning,
-            GetResponse<NugetVersioningTarget> libraryNugets);
+        IObservable<ConfigurationState<RunnerRepoInfo>> Prepare(CheckoutInput checkoutInput);
     }
 
     public class PrepareRunnableState : IPrepareRunnableState
@@ -35,31 +31,27 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             Logger = logger;
         }
         
-        public IObservable<ConfigurationState<RunnerRepoInfo>> Prepare(
-            ConfigurationState runnerState,
-            GetResponse<string> proj,
-            GitPatcherVersioning patcherVersioning,
-            GetResponse<NugetVersioningTarget> libraryNugets)
+        public IObservable<ConfigurationState<RunnerRepoInfo>> Prepare(CheckoutInput checkoutInput)
         {
             return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
             {
                 try
                 {
-                    if (runnerState.RunnableState.Failed)
+                    if (checkoutInput.RunnerState.RunnableState.Failed)
                     {
-                        observer.OnNext(runnerState.BubbleError<RunnerRepoInfo>());
+                        observer.OnNext(checkoutInput.RunnerState.BubbleError<RunnerRepoInfo>());
                         return;
                     }
 
-                    if (proj.Failed)
+                    if (checkoutInput.Proj.Failed)
                     {
-                        observer.OnNext(proj.BubbleFailure<RunnerRepoInfo>());
+                        observer.OnNext(checkoutInput.Proj.BubbleFailure<RunnerRepoInfo>());
                         return;
                     }
 
-                    if (libraryNugets.Failed)
+                    if (checkoutInput.LibraryNugets.Failed)
                     {
-                        observer.OnNext(libraryNugets.BubbleFailure<RunnerRepoInfo>());
+                        observer.OnNext(checkoutInput.LibraryNugets.BubbleFailure<RunnerRepoInfo>());
                         return;
                     }
 
@@ -70,10 +62,10 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                     });
 
                     var runInfo = await _checkoutRunner.Checkout(
-                        proj: proj.Value,
+                        proj: checkoutInput.Proj.Value,
                         localRepoDir: _runnerRepoDirectoryProvider.Path,
-                        patcherVersioning: patcherVersioning,
-                        nugetVersioning: libraryNugets.Value,
+                        patcherVersioning: checkoutInput.PatcherVersioning,
+                        nugetVersioning: checkoutInput.LibraryNugets.Value,
                         logger: (s) => Logger.Information(s),
                         cancel: cancel,
                         compile: false);
