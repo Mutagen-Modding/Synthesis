@@ -112,7 +112,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IInstalledSdkProvider dotNetInstalled,
             IEnvironmentErrorsVm envErrors,
             IAvailableProjects availableProjects,
-            IPerformGitPatcherCompilation performGitPatcherCompilation,
+            ICompliationProvider compliationProvider,
             IDriverRepositoryPreparation driverRepositoryPreparation,
             IBaseRepoDirectoryProvider baseRepoDir,
             IDriverRepoDirectoryProvider driverRepoDirectoryProvider,
@@ -223,12 +223,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                     .Transform(x => x.ModKey))
                 .RefCount();
 
-            var compilation = performGitPatcherCompilation.Process(runnableStateProvider.State)
-                .Replay(1)
-                .RefCount();
-
             var runnability = Observable.CombineLatest(
-                    compilation,
+                    compliationProvider.State,
                     dataFolder.WhenAnyValue(x => x.Path),
                     loadOrder.LoadOrder.Connect()
                         .QueryWhenChanged()
@@ -370,7 +366,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
             PatcherSettings = settingsVmFactory(
                 Logger, false, 
-                compilation.Select(c =>
+                compliationProvider.State.Select(c =>
                     {
                         if (c.RunnableState.Failed) return (c.RunnableState.BubbleFailure<FilePath>(), null);
                         return (GetResponse<FilePath>.Succeed(c.Item.ProjPath), c.Item.TargetSynthesisVersion);
@@ -381,7 +377,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             _StatusDisplay = Observable.CombineLatest(
                 driverRepoInfo,
                 runnableStateProvider.State,
-                compilation,
+                compliationProvider.State,
                 runnability,
                 (driver, runnable, comp, runnability) =>
                 {

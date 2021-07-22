@@ -9,29 +9,29 @@ using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
-    public interface IPerformGitPatcherCompilation
+    public interface ICompliationProvider
     {
-        IObservable<ConfigurationState<RunnerRepoInfo>> Process(
-            IObservable<ConfigurationState<RunnerRepoInfo>> runnableState);
+        IObservable<ConfigurationState<RunnerRepoInfo>> State { get; }
     }
 
-    public class PerformGitPatcherCompilation : IPerformGitPatcherCompilation
+    public class CompilationProvider : ICompliationProvider
     {
         private readonly IBuild _build;
         private readonly ILogger _logger;
+        private readonly IRunnableStateProvider _runnableStateProvider;
+        
+        public IObservable<ConfigurationState<RunnerRepoInfo>> State { get; }
 
-        public PerformGitPatcherCompilation(
+        public CompilationProvider(
             IBuild build,
-            ILogger logger)
+            ILogger logger,
+            IRunnableStateProvider runnableStateProvider)
         {
             _build = build;
             _logger = logger;
-        }
-        
-        public IObservable<ConfigurationState<RunnerRepoInfo>> Process(
-            IObservable<ConfigurationState<RunnerRepoInfo>> runnableState)
-        {
-            return runnableState
+            _runnableStateProvider = runnableStateProvider;
+            
+            State = _runnableStateProvider.State
                 .Select(state =>
                 {
                     return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
@@ -84,7 +84,9 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                 })
                 .Switch()
                 .StartWith(new ConfigurationState<RunnerRepoInfo>(
-                    GetResponse<RunnerRepoInfo>.Fail("Compilation uninitialized")));
+                    GetResponse<RunnerRepoInfo>.Fail("Compilation uninitialized")))
+                .Replay(1)
+                .RefCount();
         }
     }
 }
