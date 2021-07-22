@@ -65,12 +65,22 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             CopyDirectory(projDir, tempFolder.Dir.Path, cancel);
             projPath = Path.Combine(tempFolder.Dir.Path, Path.GetFileName(projPath));
             log($"Retrieving executable path from {projPath}");
-            var exec = await DotNetCommands.GetExecutablePath(projPath, cancel, log);
-            if (exec.Failed) return exec.BubbleFailure<(TRet Item, TempFolder Temp)>();
-            log($"Located executable path for {projPath}: {exec.Value}");
-            var ret = ExecuteAndUnload(exec.Value, getter);
+            var execResp = await DotNetCommands.GetExecutablePath(projPath, cancel, log);
+            if (execResp.Failed) return execResp.BubbleFailure<(TRet Item, TempFolder Temp)>();
+            var exec = CorrectUserFolder(execResp.Value, Path.GetTempPath());
+            log($"Located executable path for {projPath}: {exec}");
+            var ret = ExecuteAndUnload(exec, getter);
             if (ret.Failed) return ret.BubbleFailure<(TRet Item, TempFolder Temp)>();
             return (ret.Value, tempFolder);
+        }
+
+        public static string CorrectUserFolder(string execPath, string tempFolder)
+        {
+            if (File.Exists(execPath)) return execPath;
+            const string delimiter = "AppData\\Local\\Temp";
+            if (!execPath.ContainsInsensitive(delimiter)) return execPath;
+            var trim = execPath.Substring(execPath.IndexOf(delimiter) + delimiter.Length + 1);
+            return Path.Combine(tempFolder, trim);
         }
 
         private static GetResponse<TRet> ExecuteAndUnload<TRet>(string exec, Func<Assembly, GetResponse<TRet>> getter)

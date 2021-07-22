@@ -186,7 +186,9 @@ namespace Synthesis.Bethesda.Execution
             return GetResponse<string>.Succeed(path);
         }
 
-        public static bool TryGetExecutablePathFromOutput(IEnumerable<string> lines, [MaybeNullWhen(false)] out string output)
+        public static bool TryGetExecutablePathFromOutput(
+            IEnumerable<string> lines, 
+            [MaybeNullWhen(false)] out string output)
         {
             foreach (var line in lines)
             {
