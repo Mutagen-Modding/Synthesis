@@ -112,7 +112,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IGetRepoPathValidity getRepoPathValidity,
             IRepoClonesValidStateVm repoClonesValid,
             INugetDiffProviderVm nugetDiff,
-            IPatcherConfigurationWatcher configurationWatcher,
+            IMissingMods missingMods,
             ILogger logger,
             IRunnableStateProvider runnableStateProvider,
             IToSolutionRunner toSolutionRunner,
@@ -160,19 +160,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             _RunnableData = runnableStateProvider.State
                 .Select(x => x.Item ?? default(RunnerRepoInfo?))
                 .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?));
-
-            var missingReqMods = configurationWatcher.Customization
-                .Select(conf =>
-                {
-                    if (conf == null) return Enumerable.Empty<ModKey>();
-                    return conf.RequiredMods
-                        .SelectWhere(x => TryGet<ModKey>.Create(ModKey.TryFromNameAndExtension(x, out var modKey), modKey));
-                })
-                .Select(x => x.AsObservableChangeSet())
-                .Switch()
-                .Except(loadOrder.LoadOrder.Connect()
-                    .Transform(x => x.ModKey))
-                .RefCount();
 
             var runnability = Observable.CombineLatest(
                     compliationProvider.State,
@@ -244,7 +231,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                         .Select(x => (x, true))
                         .StartWith((new DotNetVersion(string.Empty, false), false)),
                     envErrors.WhenAnyFallback(x => x.ActiveError!.ErrorString),
-                    missingReqMods
+                    missingMods.Missing
                         .QueryWhenChanged()
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
                         .StartWith(ListExt.Empty<ModKey>()),
