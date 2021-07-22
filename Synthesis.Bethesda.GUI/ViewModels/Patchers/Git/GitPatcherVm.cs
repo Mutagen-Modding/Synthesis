@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
@@ -9,13 +8,11 @@ using DynamicData.Binding;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
-using Newtonsoft.Json;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
-using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -115,6 +112,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IGetRepoPathValidity getRepoPathValidity,
             IRepoClonesValidStateVm repoClonesValid,
             INugetDiffProviderVm nugetDiff,
+            IPatcherConfigurationWatcher configurationWatcher,
             ILogger logger,
             IRunnableStateProvider runnableStateProvider,
             IToSolutionRunner toSolutionRunner,
@@ -163,33 +161,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 .Select(x => x.Item ?? default(RunnerRepoInfo?))
                 .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?));
 
-            var patcherConfiguration = runnableStateProvider.State
-                .Select(x =>
-                {
-                    if (x.RunnableState.Failed) return Observable.Return(default(PatcherCustomization?));
-                    var confPath = Path.Combine(Path.GetDirectoryName(x.Item.ProjPath)!, Constants.MetaFileName);
-                    return Noggog.ObservableExt.WatchFile(confPath)
-                        .StartWith(Unit.Default)
-                        .Select(x =>
-                        {
-                            try
-                            {
-                                if (!File.Exists(confPath)) return default;
-                                return JsonConvert.DeserializeObject<PatcherCustomization>(
-                                    File.ReadAllText(confPath),
-                                    Execution.Constants.JsonSettings);
-                            }
-                            catch (Exception)
-                            {
-                                return default(PatcherCustomization?);
-                            }
-                        });
-                })
-                .Switch()
-                .Replay(1)
-                .RefCount();
-
-            var missingReqMods = patcherConfiguration
+            var missingReqMods = configurationWatcher.Customization
                 .Select(conf =>
                 {
                     if (conf == null) return Enumerable.Empty<ModKey>();
