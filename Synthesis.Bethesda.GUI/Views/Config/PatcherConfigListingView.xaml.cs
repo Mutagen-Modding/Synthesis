@@ -92,7 +92,7 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 // Update button
                 this.WhenAnyFallback(x => x.ViewModel)
-                    .Select(patcher => (patcher as GitPatcherVm)?.TargetingInput.UpdateAllCommand)
+                    .Select(patcher => (patcher as GitPatcherVm)?.UpdateAllCommand.Command)
                     .BindToStrict(this, x => x.UpdateButton.Command)
                     .DisposeWith(disposable);
                 var gitPatcher = this.WhenAnyFallback(x => x.ViewModel)
@@ -101,7 +101,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .RefCount();
                 var hasAnyUpdateCmd = Observable.CombineLatest(
                         gitPatcher
-                            .Select(patcher => patcher?.TargetingInput.UpdateAllCommand.CanExecute ?? Observable.Return(false))
+                            .Select(patcher => patcher?.UpdateAllCommand.Command.CanExecute ?? Observable.Return(false))
                             .Switch(),
                         gitPatcher
                             .Select(g =>

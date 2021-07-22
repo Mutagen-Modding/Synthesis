@@ -2,71 +2,64 @@
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
-    public class GitTargetingInputVm : ViewModel
+    public interface IPatcherVersioningFollower
+    {
+        IObservable<GitPatcherVersioning> ActivePatcherVersion { get; }
+    }
+    
+    public interface IGitPatcherTargetingVm : IPatcherVersioningFollower
+    {
+        PatcherVersioningEnum PatcherVersioning { get; set; }
+        string TargetTag { get; set; }
+        string TargetCommit { get; set; }
+        string TargetBranchName { get; set; }
+        bool TagAutoUpdate { get; set; }
+        bool BranchAutoUpdate { get; set; }
+        bool BranchFollowMain { get; set; }
+        ReactiveCommand<Unit, Unit> UpdateToBranchCommand { get; }
+        ReactiveCommand<Unit, Unit> UpdateToTagCommand { get; }
+    }
+
+    public class GitPatcherTargetingVm : ViewModel, IGitPatcherTargetingVm
     {
         [Reactive] public PatcherVersioningEnum PatcherVersioning { get; set; } = PatcherVersioningEnum.Branch;
 
         [Reactive] public string TargetTag { get; set; } = string.Empty;
 
-        [Reactive] public bool TagAutoUpdate { get; set; } = false;
-
         [Reactive] public string TargetCommit { get; set; } = string.Empty;
 
+        [Reactive] public string TargetBranchName { get; set; } = string.Empty;
+
+        [Reactive] public bool TagAutoUpdate { get; set; } = false;
+        
         [Reactive] public bool BranchAutoUpdate { get; set; } = false;
 
         [Reactive] public bool BranchFollowMain { get; set; } = true;
 
-        [Reactive] public string TargetBranchName { get; set; } = string.Empty;
-
-        [Reactive] public string ManualMutagenVersion { get; set; } = string.Empty;
-
-        [Reactive] public string ManualSynthesisVersion { get; set; } = string.Empty;
-
-        [Reactive]
-        public PatcherNugetVersioningEnum MutagenVersioning { get; set; } = PatcherNugetVersioningEnum.Profile;
-
-        [Reactive]
-        public PatcherNugetVersioningEnum SynthesisVersioning { get; set; } = PatcherNugetVersioningEnum.Profile;
-
-        public ReactiveCommand<Unit, Unit> UpdateAllCommand { get; }
+        public IObservable<GitPatcherVersioning> ActivePatcherVersion { get; }
 
         public ReactiveCommand<Unit, Unit> UpdateToBranchCommand { get; }
 
         public ReactiveCommand<Unit, Unit> UpdateToTagCommand { get; }
 
-        public ReactiveCommand<Unit, Unit> UpdateMutagenManualToLatestCommand { get; }
-
-        public ReactiveCommand<Unit, Unit> UpdateSynthesisManualToLatestCommand { get; }
-
-        public IObservable<GitPatcherVersioning> ActivePatcherVersion { get; }
-
-        public IObservable<GetResponse<NugetVersioningTarget>> ActiveNugetVersion { get; }
-
-        public GitTargetingInputVm(
-            ILogger logger,
-            INewestLibraryVersions newest,
-            IProfileVersioning versioning,
+        public GitPatcherTargetingVm(
             ILockToCurrentVersioning lockToCurrentVersioning,
             IDriverRepositoryPreparation driverRepositoryPreparation)
         {
             var targetOriginBranchName = this.WhenAnyValue(x => x.TargetBranchName)
                 .Select(x => $"origin/{x}")
                 .Replay(1).RefCount();
-
+            
             // Set latest checkboxes to drive user input
             driverRepositoryPreparation.DriverInfo
                 .FilterSwitch(this.WhenAnyValue(x => x.BranchFollowMain))
@@ -79,6 +72,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                     }
                 })
                 .DisposeWith(this);
+            
             Observable.CombineLatest(
                     driverRepositoryPreparation.DriverInfo,
                     targetOriginBranchName,
@@ -150,7 +144,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                 .Where(x => x.targetTagSha != null && TargetCommit.IsNullOrWhitespace())
                 .Subscribe(x => { this.TargetCommit = x.targetTagSha?.Sha ?? string.Empty; })
                 .DisposeWith(this);
-
+            
             // Set up update available systems
             UpdateToBranchCommand = NoggogCommand.CreateFromObject(
                 objectSource: Observable.CombineLatest(
@@ -182,39 +176,6 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                 },
                 this.CompositeDisposable);
 
-            UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(
-                objectSource: newest.NewestMutagenVersion,
-                canExecute: v =>
-                {
-                    return Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ManualMutagenVersion),
-                        v,
-                        (manual, latest) => latest != null && latest != manual);
-                },
-                execute: v => ManualMutagenVersion = v ?? string.Empty,
-                extraCanExecute: this.WhenAnyValue(x => x.MutagenVersioning)
-                    .Select(vers => vers == PatcherNugetVersioningEnum.Manual),
-                disposable: this.CompositeDisposable);
-            UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
-                objectSource: newest.NewestSynthesisVersion,
-                canExecute: v =>
-                {
-                    return Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ManualSynthesisVersion),
-                        v,
-                        (manual, latest) => latest != null && latest != manual);
-                },
-                execute: v => ManualSynthesisVersion = v ?? string.Empty,
-                extraCanExecute: this.WhenAnyValue(x => x.SynthesisVersioning)
-                    .Select(vers => vers == PatcherNugetVersioningEnum.Manual),
-                disposable: this.CompositeDisposable);
-
-            UpdateAllCommand = CommandExt.CreateCombinedAny(
-                UpdateMutagenManualToLatestCommand,
-                UpdateSynthesisManualToLatestCommand,
-                UpdateToBranchCommand,
-                UpdateToTagCommand);
-
             ActivePatcherVersion = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.PatcherVersioning),
                     this.WhenAnyValue(x => x.TargetTag),
@@ -239,52 +200,6 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                             autoBranch: branchAuto);
                     })
                 .DistinctUntilChanged()
-                .Replay(1)
-                .RefCount();
-
-            ActiveNugetVersion = Observable.CombineLatest(
-                    versioning.WhenAnyValue(x => x.ActiveVersioning)
-                        .Switch(),
-                    this.WhenAnyValue(x => x.MutagenVersioning),
-                    this.WhenAnyValue(x => x.ManualMutagenVersion),
-                    newest.NewestMutagenVersion,
-                    this.WhenAnyValue(x => x.SynthesisVersioning),
-                    this.WhenAnyValue(x => x.ManualSynthesisVersion),
-                    newest.NewestSynthesisVersion,
-                    (profile, mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
-                    {
-                        var sb = new StringBuilder("Switching nuget targets");
-                        NugetVersioning mutagen, synthesis;
-                        if (mutaVersioning == PatcherNugetVersioningEnum.Profile)
-                        {
-                            sb.Append($"  Mutagen following profile: {profile.Mutagen}");
-                            mutagen = profile.Mutagen;
-                        }
-                        else
-                        {
-                            mutagen = new NugetVersioning("Mutagen", mutaVersioning.ToNugetVersioningEnum(), mutaManual,
-                                newestMuta);
-                            sb.Append($"  {mutagen}");
-                        }
-
-                        if (synthVersioning == PatcherNugetVersioningEnum.Profile)
-                        {
-                            sb.Append($"  Synthesis following profile: {profile.Synthesis}");
-                            synthesis = profile.Synthesis;
-                        }
-                        else
-                        {
-                            synthesis = new NugetVersioning("Synthesis", synthVersioning.ToNugetVersioningEnum(),
-                                synthManual, newestSynth);
-                            sb.Append($"  {synthesis}");
-                        }
-
-                        logger.Information(sb.ToString());
-                        return new SynthesisNugetVersioning(
-                            mutagen: mutagen,
-                            synthesis: synthesis);
-                    })
-                .Select(nuget => nuget.TryGetTarget())
                 .Replay(1)
                 .RefCount();
         }

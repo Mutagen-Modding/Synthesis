@@ -89,7 +89,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         
         public ILockToCurrentVersioning Locking { get; }
         public IRepoClonesValidStateVm RepoClonesValid { get; }
-        public GitTargetingInputVm TargetingInput { get; }
+        public IGitPatcherTargetingVm PatcherTargeting { get; }
+        public IGitNugetTargetingVm NugetTargeting { get; }
+        public IUpdateAllCommand UpdateAllCommand { get; }
 
         public GitPatcherVm(
             IGithubPatcherIdentifier ident,
@@ -120,7 +122,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             ILogger logger,
             IPrepareRunnableState prepareRunnableState,
             IToSolutionRunner toSolutionRunner,
-            GitTargetingInputVm targetingInputVm,
+            IGitPatcherTargetingVm patcherTargeting,
+            IGitNugetTargetingVm nugetTargetingVm,
+            IUpdateAllCommand updateAllCommand,
             PatcherSettingsVm.Factory settingsVmFactory,
             GithubPatcherSettings? settings = null)
             : base(nameVm, remove, selPatcher, confirmation, settings)
@@ -131,7 +135,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             _toSolutionRunner = toSolutionRunner;
             Locking = lockToCurrentVersioning;
             RepoClonesValid = repoClonesValid;
-            TargetingInput = targetingInputVm;
+            PatcherTargeting = patcherTargeting;
+            NugetTargeting = nugetTargetingVm;
+            UpdateAllCommand = updateAllCommand;
 
             ID = ident.Id;
             
@@ -155,8 +161,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                     runnerRepositoryState.State,
                     SelectedProjectInput.Picker.PathState()
                         .Select(x => x.Succeeded ? x : GetResponse<string>.Fail("No patcher project selected.")),
-                    targetingInputVm.ActivePatcherVersion,
-                    targetingInputVm.ActiveNugetVersion,
+                    PatcherTargeting.ActivePatcherVersion,
+                    nugetTargetingVm.ActiveNugetVersion,
                     (runnerState, proj, patcherVersioning, libraryNugets) =>
                     (runnerState, proj, patcherVersioning, libraryNugets))
                 .Replay(1)
@@ -190,14 +196,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             _MutagenVersionDiff = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.RunnableData)
                         .Select(x => x?.ListedMutagenVersion),
-                    targetingInputVm.ActiveNugetVersion.Select(x => x.Value?.MutagenVersion),
+                    nugetTargetingVm.ActiveNugetVersion.Select(x => x.Value?.MutagenVersion),
                     (matchVersion, selVersion) => (matchVersion, selVersion))
                 .ToGuiProperty(this, nameof(MutagenVersionDiff));
 
             _SynthesisVersionDiff = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.RunnableData)
                         .Select(x => x?.ListedSynthesisVersion),
-                    targetingInputVm.ActiveNugetVersion.Select(x => x.Value?.SynthesisVersion),
+                    nugetTargetingVm.ActiveNugetVersion.Select(x => x.Value?.SynthesisVersion),
                     (matchVersion, selVersion) => (matchVersion, selVersion))
                 .ToGuiProperty(this, nameof(SynthesisVersionDiff));
 
@@ -495,12 +501,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                     if (LastSuccessfulRun == null) return;
                     RemoteRepoPathInput.RemoteRepoPath = LastSuccessfulRun.TargetRepo;
                     this.SelectedProjectInput.ProjectSubpath = LastSuccessfulRun.ProjectSubpath;
-                    this.TargetingInput.TargetCommit = LastSuccessfulRun.Commit;
-                    this.TargetingInput.ManualMutagenVersion = LastSuccessfulRun.MutagenVersion;
-                    this.TargetingInput.ManualSynthesisVersion = LastSuccessfulRun.SynthesisVersion;
-                    this.TargetingInput.PatcherVersioning = PatcherVersioningEnum.Commit;
-                    this.TargetingInput.SynthesisVersioning = PatcherNugetVersioningEnum.Manual;
-                    this.TargetingInput.MutagenVersioning = PatcherNugetVersioningEnum.Manual;
+                    this.PatcherTargeting.TargetCommit = LastSuccessfulRun.Commit;
+                    this.NugetTargeting.ManualMutagenVersion = LastSuccessfulRun.MutagenVersion;
+                    this.NugetTargeting.ManualSynthesisVersion = LastSuccessfulRun.SynthesisVersion;
+                    this.PatcherTargeting.PatcherVersioning = PatcherVersioningEnum.Commit;
+                    this.NugetTargeting.SynthesisVersioning = PatcherNugetVersioningEnum.Manual;
+                    this.NugetTargeting.MutagenVersioning = PatcherNugetVersioningEnum.Manual;
                 });
         }
 
@@ -511,17 +517,17 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 RemoteRepoPath = RemoteRepoPathInput.RemoteRepoPath,
                 ID = this.ID,
                 SelectedProjectSubpath = this.SelectedProjectInput.ProjectSubpath,
-                PatcherVersioning = this.TargetingInput.PatcherVersioning,
-                MutagenVersionType = this.TargetingInput.MutagenVersioning,
-                ManualMutagenVersion = this.TargetingInput.ManualMutagenVersion,
-                SynthesisVersionType = this.TargetingInput.SynthesisVersioning,
-                ManualSynthesisVersion = this.TargetingInput.ManualSynthesisVersion,
-                TargetTag = this.TargetingInput.TargetTag,
-                TargetCommit = this.TargetingInput.TargetCommit,
-                LatestTag = this.TargetingInput.TagAutoUpdate,
-                FollowDefaultBranch = this.TargetingInput.BranchFollowMain,
-                AutoUpdateToBranchTip = this.TargetingInput.BranchAutoUpdate,
-                TargetBranch = this.TargetingInput.TargetBranchName,
+                PatcherVersioning = this.PatcherTargeting.PatcherVersioning,
+                MutagenVersionType = this.NugetTargeting.MutagenVersioning,
+                ManualMutagenVersion = this.NugetTargeting.ManualMutagenVersion,
+                SynthesisVersionType = this.NugetTargeting.SynthesisVersioning,
+                ManualSynthesisVersion = this.NugetTargeting.ManualSynthesisVersion,
+                TargetTag = this.PatcherTargeting.TargetTag,
+                TargetCommit = this.PatcherTargeting.TargetCommit,
+                LatestTag = this.PatcherTargeting.TagAutoUpdate,
+                FollowDefaultBranch = this.PatcherTargeting.BranchFollowMain,
+                AutoUpdateToBranchTip = this.PatcherTargeting.BranchAutoUpdate,
+                TargetBranch = this.PatcherTargeting.TargetBranchName,
                 LastSuccessfulRun = this.LastSuccessfulRun,
             };
             CopyOverSave(ret);
@@ -535,17 +541,17 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             RemoteRepoPathInput.RemoteRepoPath = settings.RemoteRepoPath;
             this.ID = settings.ID;
             this.SelectedProjectInput.ProjectSubpath = settings.SelectedProjectSubpath;
-            this.TargetingInput.PatcherVersioning = settings.PatcherVersioning;
-            this.TargetingInput.MutagenVersioning = settings.MutagenVersionType;
-            this.TargetingInput.SynthesisVersioning = settings.SynthesisVersionType;
-            this.TargetingInput.ManualMutagenVersion = settings.ManualMutagenVersion;
-            this.TargetingInput.ManualSynthesisVersion = settings.ManualSynthesisVersion;
-            this.TargetingInput.TargetTag = settings.TargetTag;
-            this.TargetingInput.TargetCommit = settings.TargetCommit;
-            this.TargetingInput.BranchAutoUpdate = settings.AutoUpdateToBranchTip;
-            this.TargetingInput.BranchFollowMain = settings.FollowDefaultBranch;
-            this.TargetingInput.TagAutoUpdate = settings.LatestTag;
-            this.TargetingInput.TargetBranchName = settings.TargetBranch;
+            this.PatcherTargeting.PatcherVersioning = settings.PatcherVersioning;
+            this.NugetTargeting.MutagenVersioning = settings.MutagenVersionType;
+            this.NugetTargeting.SynthesisVersioning = settings.SynthesisVersionType;
+            this.NugetTargeting.ManualMutagenVersion = settings.ManualMutagenVersion;
+            this.NugetTargeting.ManualSynthesisVersion = settings.ManualSynthesisVersion;
+            this.PatcherTargeting.TargetTag = settings.TargetTag;
+            this.PatcherTargeting.TargetCommit = settings.TargetCommit;
+            this.PatcherTargeting.BranchAutoUpdate = settings.AutoUpdateToBranchTip;
+            this.PatcherTargeting.BranchFollowMain = settings.FollowDefaultBranch;
+            this.PatcherTargeting.TagAutoUpdate = settings.LatestTag;
+            this.PatcherTargeting.TargetBranchName = settings.TargetBranch;
             this.LastSuccessfulRun = settings.LastSuccessfulRun;
         }
 
@@ -585,7 +591,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             LastSuccessfulRun = new GithubPatcherLastRunState(
                 TargetRepo: RemoteRepoPathInput.RemoteRepoPath,
                 ProjectSubpath: this.SelectedProjectInput.ProjectSubpath,
-                Commit: this.TargetingInput.TargetCommit,
+                Commit: this.PatcherTargeting.TargetCommit,
                 MutagenVersion: MutagenVersionDiff.SelectedVersion,
                 SynthesisVersion: SynthesisVersionDiff.SelectedVersion);
         }

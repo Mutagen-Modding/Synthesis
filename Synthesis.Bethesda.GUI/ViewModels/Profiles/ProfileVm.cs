@@ -278,8 +278,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                     {
                         if (patcher is GitPatcherVm gitPatcher)
                         {
-                            gitPatcher.TargetingInput.MutagenVersioning = PatcherNugetVersioningEnum.Profile;
-                            gitPatcher.TargetingInput.SynthesisVersioning = PatcherNugetVersioningEnum.Profile;
+                            gitPatcher.NugetTargeting.MutagenVersioning = PatcherNugetVersioningEnum.Profile;
+                            gitPatcher.NugetTargeting.SynthesisVersioning = PatcherNugetVersioningEnum.Profile;
                         }
                     }
                 });
@@ -301,7 +301,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             var allCommands = Patchers.Connect()
                 .Transform(x => x as GitPatcherVm)
                 .ChangeNotNull()
-                .Transform(x => CommandVM.Factory(x.TargetingInput.UpdateAllCommand))
+                .Transform(x => CommandVM.Factory(x.UpdateAllCommand.Command))
                 .AsObservableList();
             UpdateAllPatchersCommand = ReactiveCommand.CreateFromTask(
                 canExecute: allCommands.Connect()
