@@ -6,7 +6,7 @@ using Noggog;
 using Noggog.Utility;
 using Serilog;
 
-namespace Synthesis.Bethesda.Execution.DotNet
+namespace Synthesis.Bethesda.Execution.DotNet.ExecutablePath
 {
     public interface IQueryExecutablePath
     {
@@ -17,15 +17,18 @@ namespace Synthesis.Bethesda.Execution.DotNet
     {
         private readonly ILogger _Logger;
         private readonly IProcessFactory _ProcessFactory;
+        private readonly IRetrieveExecutablePath _retrieveExecutablePath;
         private readonly IBuildStartProvider _buildStartProvider;
 
         public QueryExecutablePath(
             ILogger logger,
             IProcessFactory processFactory,
+            IRetrieveExecutablePath retrieveExecutablePath,
             IBuildStartProvider buildStartProvider)
         {
             _Logger = logger;
             _ProcessFactory = processFactory;
+            _retrieveExecutablePath = retrieveExecutablePath;
             _buildStartProvider = buildStartProvider;
         }
         
@@ -50,7 +53,7 @@ namespace Synthesis.Bethesda.Execution.DotNet
             {
                 throw new ArgumentException($"{string.Join(Environment.NewLine, errs)}");
             }
-            if (!DotNetCommands.TryGetExecutablePathFromOutput(outs, out var path))
+            if (!_retrieveExecutablePath.TryGet(projectPath, outs, out var path))
             {
                 _Logger.Warning("Could not locate target executable: {Lines}", string.Join(Environment.NewLine, outs));
                 return GetResponse<string>.Fail("Could not locate target executable.");

@@ -1,14 +1,15 @@
 ﻿using System.IO;
+using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Pathing
 {
     public interface IProvideWorkingDirectory
     {
-        string WorkingDirectory { get; }
+        DirectoryPath WorkingDirectory { get; }
     }
 
     public class ProvideWorkingDirectory : IProvideWorkingDirectory
     {
-        public string WorkingDirectory => Path.Combine(Path.GetTempPath(), "Synthesis")!;
+        public DirectoryPath WorkingDirectory => Path.Combine(Path.GetTempPath(), "Synthesis")!;
     }
 }

@@ -6,7 +6,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
 {
     public class WorkingDirectoryOverride : IProvideWorkingDirectory
     {
-        public string WorkingDirectory { get; }
+        public DirectoryPath WorkingDirectory { get; }
         
         public WorkingDirectoryOverride(
             ISettingsSingleton settings)

@@ -41,22 +41,6 @@ namespace Synthesis.Bethesda.Execution.DotNet
             return true;
         }
 
-        public static bool TryGetExecutablePathFromOutput(IEnumerable<string> lines, [MaybeNullWhen(false)] out string output)
-        {
-            foreach (var line in lines)
-            {
-                var trimmed = line.Trim();
-                if (!trimmed.EndsWith(".dll")) continue;
-                const string delimiter = " -> ";
-                var index = trimmed.IndexOf(delimiter, StringComparison.Ordinal);
-                if (index == -1) continue;
-                output = trimmed.Substring(index + delimiter.Length).Trim();
-                return true;
-            }
-            output = null;
-            return false;
-        }
-
         public static bool IsApplicableErrorLine(ReadOnlySpan<char> str)
         {
             return str.Contains(": error ", StringComparison.Ordinal);

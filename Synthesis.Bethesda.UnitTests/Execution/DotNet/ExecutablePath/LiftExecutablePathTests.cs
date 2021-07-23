@@ -1,41 +1,36 @@
+﻿using System.IO;
 using FluentAssertions;
-using Synthesis.Bethesda.Execution;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.DotNet.ExecutablePath;
+using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests
+namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.ExecutablePath
 {
-    public class ExecutableLocationTests
+    public class LiftExecutablePathTests
     {
-        [Fact]
-        public void Success()
+        [Theory, SynthAutoData]
+        public void Success(LiftExecutablePath sut)
         {
             var lines = File.ReadAllLines(Utility.BuildSuccessFile);
-            DotNetCommands.TryGetExecutablePathFromOutput(lines, out var path)
+            sut.TryGet(lines, out var path)
                 .Should().BeTrue();
             path.Should().Be(@"C:\Repos\Patchers\khajiitearsshow\KhajiitEarsShow\bin\Debug\net5.0\KhajiitEarsShow.dll");
         }
 
-        [Fact]
-        public void SuccessNonEnglish()
+        [Theory, SynthAutoData]
+        public void SuccessNonEnglish(LiftExecutablePath sut)
         {
             var lines = File.ReadAllLines(Utility.BuildSuccessNonEnglishFile);
-            DotNetCommands.TryGetExecutablePathFromOutput(lines, out var path)
+            sut.TryGet(lines, out var path)
                 .Should().BeTrue();
             path.Should().Be(@"C:\Users\Andrew\AppData\Local\Temp\Synthesis\Loading\ugqvnbdg.i1q\bin\Debug\net5.0\win-x64\FaceFixer.dll");
         }
 
-        [Fact]
-        public void Failure()
+        [Theory, SynthAutoData]
+        public void Failure(LiftExecutablePath sut)
         {
             var lines = File.ReadAllLines(Utility.BuildFailureFile);
-            DotNetCommands.TryGetExecutablePathFromOutput(lines, out var _)
+            sut.TryGet(lines, out var _)
                 .Should().BeFalse();
         }
     }

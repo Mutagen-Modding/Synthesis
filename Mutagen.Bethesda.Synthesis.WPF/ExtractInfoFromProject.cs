@@ -9,6 +9,7 @@ using Noggog;
 using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.DotNet.ExecutablePath;
 using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
