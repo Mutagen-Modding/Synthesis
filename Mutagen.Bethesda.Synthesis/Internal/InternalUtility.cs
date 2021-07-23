@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Mutagen.Bethesda.Plugins.Masters;
 
 namespace Mutagen.Bethesda.Synthesis.Internal
 {

@@ -2,7 +2,7 @@ using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Noggog;
 using Synthesis.Bethesda;
-using System.Collections.Generic;
+using Mutagen.Bethesda.Environments;
 
 namespace Mutagen.Bethesda.Synthesis
 {
@@ -43,7 +43,7 @@ namespace Mutagen.Bethesda.Synthesis
             return new GameEnvironmentState<TModSetter, TModGetter>(
                 dataFolderPath: DataFolderPath,
                 loadOrderFilePath: LoadOrderFilePath,
-                creationKitLoadOrderFilePath: null,
+                creationClubListingsFilePath: null,
                 loadOrder: lo,
                 linkCache: lo.ToImmutableLinkCache<TModSetter, TModGetter>());
         }
