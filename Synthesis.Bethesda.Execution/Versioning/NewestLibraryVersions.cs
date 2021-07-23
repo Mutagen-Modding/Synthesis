@@ -17,7 +17,7 @@ namespace Synthesis.Bethesda.Execution.Versioning
     public class NewestLibraryVersions : INewestLibraryVersions
     {
         public IQueryNewestLibraryVersions QueryNewest { get; }
-        public IInstalledSdkProvider InstalledSdkProvider { get; }
+        public IInstalledSdkFollower InstalledSdkFollower { get; }
         public IConsiderPrereleasePreference ConsiderPrerelease { get; }
         public IObservable<string?> NewestSynthesisVersion { get; }
         public IObservable<string?> NewestMutagenVersion { get; }
@@ -25,16 +25,16 @@ namespace Synthesis.Bethesda.Execution.Versioning
         public NewestLibraryVersions(
             ILogger logger,
             IQueryNewestLibraryVersions queryNewest,
-            IInstalledSdkProvider installedSdkProvider,
+            IInstalledSdkFollower installedSdkFollower,
             IConsiderPrereleasePreference considerPrerelease)
         {
             QueryNewest = queryNewest;
-            InstalledSdkProvider = installedSdkProvider;
+            InstalledSdkFollower = installedSdkFollower;
             ConsiderPrerelease = considerPrerelease;
             var latestVersions = Observable.Return(Unit.Default)
                 .ObserveOn(TaskPoolScheduler.Default)
                 .CombineLatest(
-                    installedSdkProvider.DotNetSdkInstalled,
+                    installedSdkFollower.DotNetSdkInstalled,
                     (_, DotNetVersions) => DotNetVersions)
                 .SelectTask(async x =>
                 {

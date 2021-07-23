@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Versioning
         [Theory, SynthAutoData]
         public void DotNetNotAcceptable(NewestLibraryVersions sut)
         {
-            sut.InstalledSdkProvider.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: false)));
+            sut.InstalledSdkFollower.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: false)));
             sut.NewestSynthesisVersion.Subscribe();
             sut.NewestSynthesisVersion.Subscribe(x =>
             {
@@ -32,7 +32,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Versioning
         [Theory, SynthAutoData]
         public void ConsiderPrereleases(NewestLibraryVersions sut)
         {
-            sut.InstalledSdkProvider.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: true)));
+            sut.InstalledSdkFollower.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: true)));
             sut.ConsiderPrerelease.ConsiderPrereleases.Returns(_ => Observable.Return(true));
             sut.QueryNewest.GetLatestVersions(includePrerelease: true, Arg.Any<string>())
                 .Returns(_ => ("PrereleaseMutagenVersion", "PrereleaseSynthesisVersion"));
@@ -54,7 +54,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Versioning
         [Theory, SynthAutoData]
         public void DoNotConsiderPrereleases(NewestLibraryVersions sut)
         {
-            sut.InstalledSdkProvider.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: true)));
+            sut.InstalledSdkFollower.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: true)));
             sut.ConsiderPrerelease.ConsiderPrereleases.Returns(_ => Observable.Return(false));
             sut.QueryNewest.GetLatestVersions(includePrerelease: true, Arg.Any<string>())
                 .Returns(_ => ("PrereleaseMutagenVersion", "PrereleaseSynthesisVersion"));

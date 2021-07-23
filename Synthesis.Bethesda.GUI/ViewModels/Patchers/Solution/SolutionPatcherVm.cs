@@ -81,7 +81,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             IPatcherNameVm nameVm,
             IProfileLoadOrder loadOrder,
             IRemovePatcherFromProfile remove,
-            IInstalledSdkProvider dotNetSdkProviderInstalled,
+            IInstalledSdkFollower dotNetSdkFollowerInstalled,
             IProfileDisplayControllerVm profileDisplay,
             IConfirmationPanelControllerVm confirmation, 
             ISolutionPathInputVm solutionPathInput,
@@ -108,7 +108,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             _State = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.SolutionPathInput.Picker.ErrorState),
                     SelectedProjectInput.WhenAnyValue(x => x.Picker.ErrorState),
-                    dotNetSdkProviderInstalled.DotNetSdkInstalled,
+                    dotNetSdkFollowerInstalled.DotNetSdkInstalled,
                     (sln, proj, dotnet) =>
                     {
                         if (sln.Failed) return new ConfigurationState(sln);

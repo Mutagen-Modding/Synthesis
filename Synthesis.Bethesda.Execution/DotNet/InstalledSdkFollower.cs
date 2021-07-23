@@ -7,25 +7,29 @@ using Serilog;
 
 namespace Synthesis.Bethesda.Execution.DotNet
 {
-    public interface IInstalledSdkProvider
+    public interface IInstalledSdkFollower
     {
         IObservable<DotNetVersion> DotNetSdkInstalled { get; }
     }
     
-    public class InstalledSdkProvider : IInstalledSdkProvider
+    public class InstalledSdkFollower : IInstalledSdkFollower
     {
+        public static readonly TimeSpan RequeryTime = TimeSpan.FromSeconds(10);
+        
         public IQueryInstalledSdk Query { get; }
+        public ILogger Logger { get; }
         public IObservable<DotNetVersion> DotNetSdkInstalled { get; }
         
-        public InstalledSdkProvider(
+        public InstalledSdkFollower(
             ISchedulerProvider schedulerProvider,
             IQueryInstalledSdk query, 
             ILogger logger)
         {
             Query = query;
-            var dotNet = Observable.Interval(TimeSpan.FromSeconds(10), schedulerProvider.TaskPool)
+            Logger = logger;
+            var dotNet = Observable.Interval(RequeryTime, schedulerProvider.TaskPool)
                 .StartWith(0)
-                .SelectTask(async i =>
+                .SelectTask(async _ =>
                 {
                     try
                     {
@@ -33,14 +37,12 @@ namespace Synthesis.Bethesda.Execution.DotNet
                     }
                     catch (Exception ex)
                     {
-                        logger.Error(ex, $"Error retrieving dotnet SDK version");
+                        logger.Error(ex, "Error retrieving dotnet SDK version");
                         return new DotNetVersion(string.Empty, false);
                     }
                 });
             DotNetSdkInstalled = dotNet
-                .Take(1)
-                .Merge(dotNet
-                    .FirstAsync(v => v != null))
+                .TakeUntil(x => x.Acceptable)
                 .DistinctUntilChanged()
                 .Do(x => logger.Information("DotNet SDK: {Version}", x))
                 .Replay(1)

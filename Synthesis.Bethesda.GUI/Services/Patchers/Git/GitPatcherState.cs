@@ -26,7 +26,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             IRunnerRepositoryPreparation runnerRepositoryState,
             IRunnableStateProvider runnableStateProvider,
             IPatcherRunnabilityCliState runnabilityCliState,
-            IInstalledSdkProvider dotNetInstalled,
+            IInstalledSdkFollower dotNetInstalled,
             IEnvironmentErrorsVm envErrors,
             IMissingMods missingMods,
             ILogger logger)

@@ -75,7 +75,7 @@ namespace Synthesis.Bethesda.GUI.Modules
                 .InNamespacesOf(
                     typeof(ICheckOrCloneRepo),
                     typeof(IQueryNewestLibraryVersions),
-                    typeof(IInstalledSdkProvider))
+                    typeof(IInstalledSdkFollower))
                 .AsMatchingInterface()
                 .SingleInstance();
             builder.RegisterAssemblyTypes(typeof(ICheckOrCloneRepo).Assembly)
