@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Noggog;
 
 namespace Synthesis.Bethesda.Execution.DotNet
 {
@@ -7,7 +8,7 @@ namespace Synthesis.Bethesda.Execution.DotNet
     
     public interface IQueryLibraryVersions
     {
-        Task<LibraryVersions> Query(string projectPath, bool current, bool includePrerelease, CancellationToken cancel);
+        Task<LibraryVersions> Query(FilePath projectPath, bool current, bool includePrerelease, CancellationToken cancel);
     }
 
     public class QueryLibraryVersions : IQueryLibraryVersions
@@ -20,7 +21,7 @@ namespace Synthesis.Bethesda.Execution.DotNet
         }
         
         public async Task<LibraryVersions> Query(
-            string projectPath, bool current, bool includePrerelease, CancellationToken cancel)
+            FilePath projectPath, bool current, bool includePrerelease, CancellationToken cancel)
         {
             string? mutagenVersion = null, synthesisVersion = null;
             var queries = await _QueryNuget.Query(projectPath, outdated: !current, includePrerelease: includePrerelease, cancel: cancel);

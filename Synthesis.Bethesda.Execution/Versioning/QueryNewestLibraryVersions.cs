@@ -15,8 +15,8 @@ namespace Synthesis.Bethesda.Execution.Versioning
 {
     public interface IQueryNewestLibraryVersions
     {
-        string PrepLatestVersionProject();
-        Task<(string? MutagenVersion, string? SynthesisVersion)> GetLatestVersions(bool includePrerelease, string projPath);
+        FilePath PrepLatestVersionProject();
+        Task<(string? MutagenVersion, string? SynthesisVersion)> GetLatestVersions(bool includePrerelease, FilePath projPath);
     }
 
     public class QueryNewestLibraryVersions : IQueryNewestLibraryVersions
@@ -50,7 +50,7 @@ namespace Synthesis.Bethesda.Execution.Versioning
             _AddProjectToSolution = addProjectToSolution;
         }
         
-        public string PrepLatestVersionProject()
+        public FilePath PrepLatestVersionProject()
         {
             var bootstrapProjectDir = new DirectoryPath(Path.Combine(_Paths.WorkingDirectory, "VersionQuery"));
             _FileSystem.Directory.DeleteEntireFolder(bootstrapProjectDir);
@@ -63,7 +63,7 @@ namespace Synthesis.Bethesda.Execution.Versioning
             return projPath;
         }
 
-        public async Task<(string? MutagenVersion, string? SynthesisVersion)> GetLatestVersions(bool includePrerelease, string projPath)
+        public async Task<(string? MutagenVersion, string? SynthesisVersion)> GetLatestVersions(bool includePrerelease, FilePath projPath)
         {
             try
             {

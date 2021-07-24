@@ -4,6 +4,7 @@ using NSubstitute;
 using Serilog;
 using System;
 using FluentAssertions;
+using Noggog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -34,9 +35,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Versioning
         {
             sut.InstalledSdkFollower.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: true)));
             sut.ConsiderPrerelease.ConsiderPrereleases.Returns(_ => Observable.Return(true));
-            sut.QueryNewest.GetLatestVersions(includePrerelease: true, Arg.Any<string>())
+            sut.QueryNewest.GetLatestVersions(includePrerelease: true, Arg.Any<FilePath>())
                 .Returns(_ => ("PrereleaseMutagenVersion", "PrereleaseSynthesisVersion"));
-            sut.QueryNewest.GetLatestVersions(includePrerelease: false, Arg.Any<string>())
+            sut.QueryNewest.GetLatestVersions(includePrerelease: false, Arg.Any<FilePath>())
                 .Returns(_ => ("MutagenVersion", "SynthesisVersion"));
             
             sut.NewestSynthesisVersion.Subscribe();
@@ -56,9 +57,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Versioning
         {
             sut.InstalledSdkFollower.DotNetSdkInstalled.Returns(_ => Observable.Return(new DotNetVersion(string.Empty, Acceptable: true)));
             sut.ConsiderPrerelease.ConsiderPrereleases.Returns(_ => Observable.Return(false));
-            sut.QueryNewest.GetLatestVersions(includePrerelease: true, Arg.Any<string>())
+            sut.QueryNewest.GetLatestVersions(includePrerelease: true, Arg.Any<FilePath>())
                 .Returns(_ => ("PrereleaseMutagenVersion", "PrereleaseSynthesisVersion"));
-            sut.QueryNewest.GetLatestVersions(includePrerelease: false, Arg.Any<string>())
+            sut.QueryNewest.GetLatestVersions(includePrerelease: false, Arg.Any<FilePath>())
                 .Returns(_ => ("MutagenVersion", "SynthesisVersion"));
             
             sut.NewestSynthesisVersion.Subscribe();

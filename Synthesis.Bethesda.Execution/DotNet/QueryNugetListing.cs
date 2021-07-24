@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Noggog;
 using Noggog.Utility;
 
 namespace Synthesis.Bethesda.Execution.DotNet
@@ -12,7 +13,7 @@ namespace Synthesis.Bethesda.Execution.DotNet
     public interface IQueryNugetListing
     {
         Task<IEnumerable<NugetListingQuery>> Query(
-            string projectPath,
+            FilePath projectPath,
             bool outdated,
             bool includePrerelease,
             CancellationToken cancel);
@@ -31,7 +32,7 @@ namespace Synthesis.Bethesda.Execution.DotNet
             _dotNetCommandStartConstructor = dotNetCommandStartConstructor;
         }
         
-        public async Task<IEnumerable<NugetListingQuery>> Query(string projectPath, bool outdated, bool includePrerelease, CancellationToken cancel)
+        public async Task<IEnumerable<NugetListingQuery>> Query(FilePath projectPath, bool outdated, bool includePrerelease, CancellationToken cancel)
         {
             // Run restore first
             {
