@@ -31,6 +31,7 @@ namespace Synthesis.Bethesda.GUI.Modules
     {
         public const string ProfileNickname = "Profile";
         public const string PatcherNickname = "Patcher";
+        public const string RunNickname = "Run";
         
         protected override void Load(ContainerBuilder builder)
         {

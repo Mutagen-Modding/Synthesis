@@ -77,7 +77,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                         return (default(PatchersRunVm?), Observable.Return(Unit.Default));
                     }
 
-                    var ret = SelectedProfile.GetRun(this);
+                    var ret = SelectedProfile.GetRun();
                     var completeSignal = ret.WhenAnyValue(x => x.Running)
                         .TurnedOff()
                         .FirstAsync();

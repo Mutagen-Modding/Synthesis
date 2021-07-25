@@ -25,6 +25,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.Views;
 using Xunit;
 
@@ -54,7 +55,8 @@ namespace Synthesis.Bethesda.UnitTests
             var cont = builder.Build();
             cont.Validate(
                 typeof(IStartup), 
-                typeof(ProfileVm));
+                typeof(ProfileVm), 
+                typeof(PatchersRunVm));
         }
         
         [Fact]

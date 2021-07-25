@@ -233,5 +233,10 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
                 return Enumerable.Empty<string>();
             }
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

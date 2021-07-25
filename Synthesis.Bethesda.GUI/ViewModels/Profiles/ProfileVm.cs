@@ -6,6 +6,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Autofac;
 using DynamicData;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Cache;
@@ -35,12 +36,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
     public class ProfileVm : ViewModel
     {
+        private readonly IRunFactory _RunFactory;
         private readonly INavigateTo _Navigate;
         private readonly IRetrieveSaveSettings _RetrieveSaveSettings;
         private readonly IPipelineSettingsPath _PipelinePaths;
         private readonly IGuiSettingsPath _GuiPaths;
         private readonly ILogger _Logger;
-        private readonly PatchersRunVm.Factory _RunFactory;
 
         public GameRelease Release { get; }
 
@@ -98,6 +99,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         public IPatcherInitializationFactoryVm Init { get; }
         
         public ProfileVm(
+            IRunFactory runFactory,
             IProfilePatchersList patchersList,
             IProfileDataFolder dataFolder,
             IPatcherInitializationFactoryVm init,
@@ -112,8 +114,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             ISelectedProfileControllerVm selProfile,
             IPipelineSettingsPath pipelineSettingsPath,
             IGuiSettingsPath guiPaths,
-            ILogger logger,
-            PatchersRunVm.Factory runFactory)
+            ILogger logger)
         {
             Init = init;
             DataFolderOverride = dataFolder;
@@ -121,12 +122,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             Patchers = patchersList.Patchers;
             LockSetting = lockSetting;
             DisplayController = profileDisplay;
+            _RunFactory = runFactory;
             _Navigate = navigate;
             _RetrieveSaveSettings = retrieveSaveSettings;
             _PipelinePaths = pipelineSettingsPath;
             _GuiPaths = guiPaths;
             _Logger = logger;
-            _RunFactory = runFactory;
             Nickname = ident.Name;
             ID = ident.ID;
             Release = ident.Release;
@@ -431,9 +432,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             }
         }
 
-        public PatchersRunVm GetRun(ConfigurationVm configurationVm)
+        public PatchersRunVm GetRun()
         {
-            return _RunFactory(configurationVm, this, _Logger);
+            return _RunFactory.GetRun();
         }
     }
 }

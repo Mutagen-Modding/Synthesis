@@ -110,6 +110,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .Subscribe(_ => config.SuccessfulRunCompleted())
                 .DisposeWith(this);
         }
+
+        public override string ToString()
+        {
+            return Run.ToString() ?? nameof(PatcherRunVm);
+        }
     }
 
     public enum RunState
