@@ -11,26 +11,26 @@ namespace Synthesis.Bethesda.Execution.DotNet.ExecutablePath
 
     public class RetrieveExecutablePath : IRetrieveExecutablePath
     {
-        private readonly ILiftExecutablePath _lift;
-        private readonly IProcessExecutablePath _process;
+        public ILiftExecutablePath Lift { get; }
+        public IProcessExecutablePath Process { get; }
 
         public RetrieveExecutablePath(
             ILiftExecutablePath lift,
             IProcessExecutablePath process)
         {
-            _lift = lift;
-            _process = process;
+            Lift = lift;
+            Process = process;
         }
 
         public bool TryGet(FilePath projPath, IEnumerable<string> lines, [MaybeNullWhen(false)] out string output)
         {
-            if (!_lift.TryGet(lines, out var execPath))
+            if (!Lift.TryGet(lines, out var execPath))
             {
                 output = default;
                 return false;
             }
 
-            output = _process.Process(projPath, execPath);
+            output = Process.Process(projPath, execPath);
             return true;
         }
     }

@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Noggog.Utility;
+using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.DotNet
 {
@@ -13,39 +12,34 @@ namespace Synthesis.Bethesda.Execution.DotNet
 
     public class QueryInstalledSdk : IQueryInstalledSdk
     {
-        private readonly IDotNetCommandPathProvider _dotNetCommandPathProvider;
-        private readonly IParseNugetVersionString _parseNugetVersionString;
-        private readonly IProcessFactory _ProcessFactory;
+        public IProcessRunner ProcessRunner { get; }
+        public IDotNetCommandPathProvider NetCommandPathProvider { get; }
+        public IParseNugetVersionString NugetVersionString { get; }
 
         public QueryInstalledSdk(
             IDotNetCommandPathProvider dotNetCommandPathProvider,
             IParseNugetVersionString parseNugetVersionString,
-            IProcessFactory processFactory)
+            IProcessRunner processRunner)
         {
-            _dotNetCommandPathProvider = dotNetCommandPathProvider;
-            _parseNugetVersionString = parseNugetVersionString;
-            _ProcessFactory = processFactory;
+            ProcessRunner = processRunner;
+            NetCommandPathProvider = dotNetCommandPathProvider;
+            NugetVersionString = parseNugetVersionString;
         }
         
         public async Task<DotNetVersion> Query(CancellationToken cancel)
         {
-            using var proc = _ProcessFactory.Create(
-                new System.Diagnostics.ProcessStartInfo(_dotNetCommandPathProvider.Path, "--version"),
+            var result = await ProcessRunner.RunAndCapture(
+                new System.Diagnostics.ProcessStartInfo(NetCommandPathProvider.Path, "--version"),
                 cancel: cancel);
-            List<string> outs = new();
-            using var outp = proc.Output.Subscribe(o => outs.Add(o));
-            List<string> errs = new();
-            using var errp = proc.Error.Subscribe(o => errs.Add(o));
-            var result = await proc.Run();
-            if (errs.Count > 0)
+            if (result.Errors.Count > 0)
             {
-                throw new ArgumentException($"{string.Join("\n", errs)}");
+                throw new InvalidOperationException($"{string.Join("\n", result.Errors)}");
             }
-            if (outs.Count != 1)
+            if (result.Out.Count != 1)
             {
-                throw new ArgumentException($"Unexpected messages:\n{string.Join("\n", outs)}");
+                throw new InvalidOperationException($"Unexpected messages:\n{string.Join("\n", result.Out)}");
             }
-            return _parseNugetVersionString.Parse(outs[0]);
+            return NugetVersionString.Parse(result.Out[0]);
         }
     }
 }

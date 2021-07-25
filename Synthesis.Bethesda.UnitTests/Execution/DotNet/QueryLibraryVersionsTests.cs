@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.DotNet.NugetListing;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
@@ -14,7 +15,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
         {
             var queryNuget = Substitute.For<IQueryNugetListing>();
             queryNuget.Query(default, default, default, default)
-                .ReturnsForAnyArgs(x => new List<NugetListingQuery>()
+                .ReturnsForAnyArgs(_ => new List<NugetListingQuery>()
                 {
                     new NugetListingQuery("Mutagen.Bethesda", Requested: "0.14.0", Resolved: "0.14.0", Latest: "0.30.3"),
                     new NugetListingQuery("Mutagen.Bethesda.Synthesis", Requested: "0.0.3", Resolved: "0.0.3", Latest: "0.19.1"),

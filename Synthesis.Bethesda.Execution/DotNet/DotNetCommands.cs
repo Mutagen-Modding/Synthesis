@@ -11,36 +11,6 @@ namespace Synthesis.Bethesda.Execution.DotNet
     {
         public const int MinVersion = 5;
 
-        public static bool TryParseLibraryLine(
-            string line, 
-            [MaybeNullWhen(false)] out string package,
-            [MaybeNullWhen(false)] out string requested,
-            [MaybeNullWhen(false)] out string resolved,
-            [MaybeNullWhen(false)] out string latest)
-        {
-            var startIndex = line.IndexOf("> ");
-            if (startIndex == -1)
-            {
-                package = default;
-                requested = default;
-                resolved = default;
-                latest = default;
-                return false;
-            }
-            var split = line
-                .Substring(startIndex + 2)
-                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                .WithIndex()
-                .Where(x => x.Index == 0 || x.Item != "(D)")
-                .Select(x => x.Item)
-                .ToArray();
-            package = split[0];
-            requested = split[1];
-            resolved = split[2];
-            latest = split[3];
-            return true;
-        }
-
         public static bool IsApplicableErrorLine(ReadOnlySpan<char> str)
         {
             return str.Contains(": error ", StringComparison.Ordinal);

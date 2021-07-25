@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Noggog;
-using Noggog.Utility;
 using Serilog;
+using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.DotNet.ExecutablePath
 {
@@ -16,20 +15,20 @@ namespace Synthesis.Bethesda.Execution.DotNet.ExecutablePath
     public class QueryExecutablePath : IQueryExecutablePath
     {
         private readonly ILogger _Logger;
-        private readonly IProcessFactory _ProcessFactory;
-        private readonly IRetrieveExecutablePath _retrieveExecutablePath;
-        private readonly IBuildStartProvider _buildStartProvider;
+        public IProcessRunner Runner { get; }
+        public IRetrieveExecutablePath RetrievePath { get; }
+        public IBuildStartProvider StartProvider { get; }
 
         public QueryExecutablePath(
             ILogger logger,
-            IProcessFactory processFactory,
+            IProcessRunner processRunner,
             IRetrieveExecutablePath retrieveExecutablePath,
             IBuildStartProvider buildStartProvider)
         {
             _Logger = logger;
-            _ProcessFactory = processFactory;
-            _retrieveExecutablePath = retrieveExecutablePath;
-            _buildStartProvider = buildStartProvider;
+            Runner = processRunner;
+            RetrievePath = retrieveExecutablePath;
+            StartProvider = buildStartProvider;
         }
         
         public async Task<GetResponse<string>> Query(FilePath projectPath, CancellationToken cancel)
@@ -37,25 +36,16 @@ namespace Synthesis.Bethesda.Execution.DotNet.ExecutablePath
             // Hacky way to locate executable, but running a build and extracting the path its logs spit out
             // Tried using Buildalyzer, but it has a lot of bad side effects like clearing build outputs when
             // locating information like this.
-            using var proc = _ProcessFactory.Create(
-                _buildStartProvider.Construct(projectPath),
+            var result = await Runner.RunAndCapture(
+                StartProvider.Construct(projectPath),
                 cancel: cancel);
-            _Logger.Information("({WorkingDirectory}): {FileName} {Args}",
-                proc.StartInfo.WorkingDirectory,
-                proc.StartInfo.FileName,
-                proc.StartInfo.Arguments);
-            List<string> outs = new();
-            using var outp = proc.Output.Subscribe(o => outs.Add(o));
-            List<string> errs = new();
-            using var errp = proc.Error.Subscribe(o => errs.Add(o));
-            var result = await proc.Run();
-            if (errs.Count > 0)
+            if (result.Errors.Count > 0)
             {
-                throw new ArgumentException($"{string.Join(Environment.NewLine, errs)}");
+                return GetResponse<string>.Fail($"{string.Join(Environment.NewLine, result.Errors)}");
             }
-            if (!_retrieveExecutablePath.TryGet(projectPath, outs, out var path))
+            if (!RetrievePath.TryGet(projectPath, result.Out, out var path))
             {
-                _Logger.Warning("Could not locate target executable: {Lines}", string.Join(Environment.NewLine, outs));
+                _Logger.Warning("Could not locate target executable: {Lines}", string.Join(Environment.NewLine, result.Out));
                 return GetResponse<string>.Fail("Could not locate target executable.");
             }
             return GetResponse<string>.Succeed(path);

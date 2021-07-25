@@ -16,6 +16,7 @@ using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Running;
+using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Startup;
@@ -75,7 +76,8 @@ namespace Synthesis.Bethesda.GUI.Modules
                 .InNamespacesOf(
                     typeof(ICheckOrCloneRepo),
                     typeof(IQueryNewestLibraryVersions),
-                    typeof(IInstalledSdkFollower))
+                    typeof(IInstalledSdkFollower),
+                    typeof(IProcessRunner))
                 .AsMatchingInterface()
                 .SingleInstance();
             builder.RegisterAssemblyTypes(typeof(ICheckOrCloneRepo).Assembly)

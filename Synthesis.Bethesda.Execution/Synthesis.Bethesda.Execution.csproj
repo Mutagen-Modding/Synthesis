@@ -57,6 +57,7 @@
     </PackageReference>
     <PackageReference Include="Noggog.CSharpExt" Version="2.25.0.1-dev" />
     <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -81,6 +82,16 @@
       <BuildAction>Compile</BuildAction>
     </Compile>
     <Compile Update="DotNet\ExecutablePath\LiftExecutablePath.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Utility\ProcessRunner.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="DotNet\NugetListing\QueryNugetListing.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>

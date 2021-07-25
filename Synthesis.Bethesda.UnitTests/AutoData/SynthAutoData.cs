@@ -97,6 +97,7 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
             fixture.Customizations.Add(new FileSystemBuilder(_useMockFilesystem));
             fixture.Customizations.Add(new SchedulerBuilder());
             fixture.Customizations.Add(new PathBuilder());
+            fixture.Customizations.Add(new ProcessBuilder());
             fixture.Behaviors.Add(new ObservableEmptyBehavior());
             if (_useMockRepositoryProvider)
             {
