@@ -13,7 +13,6 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
     {
         public SynthAutoData(
             bool ConfigureMembers = false, 
-            GameRelease Release = GameRelease.SkyrimSE,
             bool UseMockFileSystem = true,
             bool GenerateDelegates = false,
             bool UseMockRepositoryProvider = true)
@@ -23,7 +22,6 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
                     .Customize(new SynthAutoDataCustomization(
                         useMockFilesystem: UseMockFileSystem,
                         configureMembers: ConfigureMembers,
-                        release: Release,
                         generateDelegates: GenerateDelegates,
                         useMockRepositoryProvider: UseMockRepositoryProvider));
             })
@@ -46,7 +44,6 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
     {
         public SynthCustomInlineData(
             bool ConfigureMembers = false, 
-            GameRelease Release = GameRelease.SkyrimSE,
             bool UseMockFileSystem = true,
             bool GenerateDelegates = false,
             bool UseMockRepositoryProvider = true,
@@ -55,7 +52,6 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
                 new InlineDataAttribute(ExtraParameters), 
                 new SynthAutoData(
                     ConfigureMembers: ConfigureMembers, 
-                    Release: Release,
                     UseMockFileSystem: UseMockFileSystem,
                     GenerateDelegates: GenerateDelegates,
                     UseMockRepositoryProvider: UseMockRepositoryProvider))
@@ -65,7 +61,6 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
     
     public class SynthAutoDataCustomization : ICustomization
     {
-        private readonly GameRelease _release;
         private readonly bool _useMockFilesystem;
         private readonly bool _generateDelegates;
         private readonly bool _useMockRepositoryProvider;
@@ -73,12 +68,10 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
 
         public SynthAutoDataCustomization(
             bool configureMembers, 
-            GameRelease release,
             bool useMockFilesystem,
             bool generateDelegates,
             bool useMockRepositoryProvider)
         {
-            _release = release;
             _useMockFilesystem = useMockFilesystem;
             _generateDelegates = generateDelegates;
             _useMockRepositoryProvider = useMockRepositoryProvider;

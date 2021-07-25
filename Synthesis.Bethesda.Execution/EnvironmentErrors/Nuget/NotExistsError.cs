@@ -1,11 +1,13 @@
-﻿using System.Xml.Linq;
+﻿using System.IO;
+using System.IO.Abstractions;
+using System.Xml.Linq;
 using Noggog;
 
 namespace Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget
 {
     public class NotExistsError : INugetErrorSolution
     {
-        public static readonly NotExistsError Instance = new();
+        private readonly IFileSystem _fileSystem;
         public virtual string ErrorText => $"Config did not exist or was empty.";
 
         public static XDocument TypicalFile()
@@ -20,10 +22,15 @@ namespace Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget
                 new XDeclaration("1.0", "utf-8", null),
                 elem);
         }
+
+        public NotExistsError(IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
         
         public void RunFix(FilePath path)
         {
-            TypicalFile().Save(path);
+            TypicalFile().Save(_fileSystem.FileStream.Create(path, FileMode.Create, FileAccess.Write));
         }
     }
 }

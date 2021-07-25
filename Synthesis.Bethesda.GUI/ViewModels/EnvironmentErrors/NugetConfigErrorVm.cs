@@ -25,7 +25,9 @@ namespace Synthesis.Bethesda.GUI
         private readonly ObservableAsPropertyHelper<string?> _ErrorString;
         public string? ErrorString => _ErrorString.Value;
 
-        public NugetConfigErrorVm(ILogger logger)
+        public NugetConfigErrorVm(
+            IAnalyzeNugetConfig analyzeNugetConfig,
+            ILogger logger)
         {
             NugetConfigPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -35,7 +37,7 @@ namespace Synthesis.Bethesda.GUI
                 .StartWith(Unit.Default)
                 .Select(_ =>
                 {
-                    var err = NugetErrors.AnalyzeNugetConfig(NugetConfigPath);
+                    var err = analyzeNugetConfig.Analyze(NugetConfigPath);
 
                     if (err == null) return default(ErrorVM?);
                     
