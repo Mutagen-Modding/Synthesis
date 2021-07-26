@@ -1,8 +1,10 @@
-﻿using Noggog.WPF;
+﻿using Noggog;
+using Noggog.WPF;
+using Synthesis.Bethesda.Execution.Patchers.Cli;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Cli
 {
-    public interface IPathToExecutableInputVm
+    public interface IPathToExecutableInputVm : IPathToExecutableInputProvider
     {
         PathPickerVM Picker { get; }
     }
@@ -14,5 +16,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Cli
             PathType = PathPickerVM.PathTypeOptions.File,
             ExistCheckOption = PathPickerVM.CheckOptions.On,
         };
+
+        public FilePath Path => Picker.TargetPath;
     }
 }

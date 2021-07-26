@@ -7,6 +7,7 @@ using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Patchers.Cli;
 using Synthesis.Bethesda.GUI.Settings;
@@ -21,6 +22,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
     public class CliPatcherVm : PatcherVm
     {
         public IPathToExecutableInputVm ExecutableInput { get; }
+        private readonly IPatcherExtraDataPathProvider _ExtraDataPathProvider;
         private readonly IProcessFactory _ProcessFactory;
         public IShowHelpSetting ShowHelpSetting { get; }
 
@@ -34,11 +36,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             IShowHelpSetting showHelpSetting,
+            IPatcherExtraDataPathProvider extraDataPathProvider,
             IProcessFactory processFactory,
             CliPatcherSettings? settings = null)
             : base(nameVm, remove, selPatcher, confirmation, settings)
         {
             ExecutableInput = pathToExecutableInputVm;
+            _ExtraDataPathProvider = extraDataPathProvider;
             _ProcessFactory = processFactory;
             ShowHelpSetting = showHelpSetting;
             CopyInSettings(settings);
@@ -79,9 +83,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
                 this, 
                 new CliPatcherRun(
                     _ProcessFactory,
-                    nickname: NameVm.Name, 
-                    pathToExecutable: ExecutableInput.Picker.TargetPath, 
-                    pathToExtra: null));
+                    name: NameVm,
+                    exePath: ExecutableInput,
+                    extraDataPathProvider: _ExtraDataPathProvider));
         }
     }
 }

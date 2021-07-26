@@ -10,6 +10,8 @@ using CommandLine;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog.Utility;
+using Synthesis.Bethesda.Execution.Patchers.Cli;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running
 {
@@ -20,8 +22,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
     public class CliPatcherRun : ICliPatcherRun
     {
         private readonly CompositeDisposable _disposable = new();
-        
-        public string Name { get; }
+
+        public string Name => _Name.Name;
+        public IPathToExecutableInputProvider ExePath { get; }
 
         private readonly Subject<string> _output = new();
         public IObservable<string> Output => _output;
@@ -30,22 +33,21 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
         public IObservable<string> Error => _error;
 
         private readonly IProcessFactory _ProcessFactory;
-        public string PathToExecutable;
-
-        public string? PathToExtraData;
+        private readonly IPatcherNameProvider _Name;
+        private readonly IPatcherExtraDataPathProvider _ExtraDataPathProvider;
 
         public delegate ICliPatcherRun Factory(string nickname, string pathToExecutable, string? pathToExtra);
 
         public CliPatcherRun(
             IProcessFactory processFactory,
-            string nickname,
-            string pathToExecutable, 
-            string? pathToExtra)
+            IPatcherNameProvider name,
+            IPathToExecutableInputProvider exePath,
+            IPatcherExtraDataPathProvider extraDataPathProvider)
         {
-            Name = nickname;
+            ExePath = exePath;
             _ProcessFactory = processFactory;
-            PathToExecutable = pathToExecutable;
-            PathToExtraData = pathToExtra;
+            _Name = name;
+            _ExtraDataPathProvider = extraDataPathProvider;
         }
 
         public void AddForDisposal(IDisposable disposable)
@@ -67,15 +69,15 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             if (cancel.IsCancellationRequested) return;
 
             var internalSettings = RunSynthesisMutagenPatcher.Factory(settings);
-            internalSettings.ExtraDataFolder = PathToExtraData;
+            internalSettings.ExtraDataFolder = _ExtraDataPathProvider.Path;
 
             var args = Parser.Default.FormatCommandLine(internalSettings);
             try
             {
                 using var process = _ProcessFactory.Create(
-                    new ProcessStartInfo(PathToExecutable, args)
+                    new ProcessStartInfo(ExePath.Path, args)
                     {
-                        WorkingDirectory = Path.GetDirectoryName(PathToExecutable)!
+                        WorkingDirectory = Path.GetDirectoryName(ExePath.Path)!
                     },
                     cancel);
                 using var outputSub = process.Output.Subscribe(_output);
@@ -90,7 +92,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             }
             catch (Win32Exception ex)
             {
-                throw new FileNotFoundException($"Could not find target CLI file: {PathToExecutable}", ex);
+                throw new FileNotFoundException($"Could not find target CLI file: {ExePath.Path}", ex);
             }
         }
     }
