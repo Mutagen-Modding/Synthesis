@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using Autofac;
 using DynamicData;
 using DynamicData.Binding;
 using Mutagen.Bethesda.Plugins;
@@ -17,6 +18,7 @@ using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
@@ -37,7 +39,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
         public ISolutionPathInputVm SolutionPathInput { get; }
         public ISelectedProjectInputVm SelectedProjectInput { get; }
         private readonly IProfileLoadOrder _LoadOrder;
-        private readonly IToSolutionRunner _ToSolutionRunner;
+        private readonly ILifetimeScope _Scope;
 
         public IObservableCollection<string> AvailableProjects { get; }
 
@@ -89,7 +91,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             PatcherSettingsVm.Factory settingsVmFactory,
             IAvailableProjects availableProjects,
             ISolutionMetaFileSync metaFileSync,
-            IToSolutionRunner toSolutionRunner,
+            ILifetimeScope scope,
             INavigateTo navigateTo,
             SolutionPatcherSettings? settings = null)
             : base(nameVm, remove, profileDisplay, confirmation, settings)
@@ -97,7 +99,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             SolutionPathInput = solutionPathInput;
             SelectedProjectInput = selectedProjectInput;
             _LoadOrder = loadOrder;
-            _ToSolutionRunner = toSolutionRunner;
+            _Scope = scope;
             CopyInSettings(settings);
 
             AvailableProjects = availableProjects.Process(
@@ -174,7 +176,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 
         public override PatcherRunVm ToRunner(PatchersRunVm parent)
         {
-            return _ToSolutionRunner.GetRunner(parent, this);
+            PatcherSettings.Persist();
+            return new PatcherRunVm(
+                parent,
+                this,
+                _Scope.Resolve<ISolutionPatcherRun>());
         }
 
         public void SetRequiredMods(IEnumerable<ModKey> modKeys)

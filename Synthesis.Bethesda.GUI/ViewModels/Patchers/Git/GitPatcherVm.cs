@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using Autofac;
 using DynamicData.Binding;
 using Noggog;
 using Noggog.WPF;
@@ -9,6 +10,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
@@ -26,7 +28,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
     public class GitPatcherVm : PatcherVm, IPathToProjProvider, IPathToSolutionFileProvider
     {
         private readonly ILogger _Logger;
-        private readonly IToSolutionRunner _toSolutionRunner;
+        private readonly ILifetimeScope _Scope;
         public override bool IsNameEditable => false;
 
         public ISelectedProjectInputVm SelectedProjectInput { get; }
@@ -99,7 +101,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IGitPatcherState state,
             ILogger logger,
             IRunnableStateProvider runnableStateProvider,
-            IToSolutionRunner toSolutionRunner,
+            ILifetimeScope scope,
             IGitPatcherTargetingVm patcherTargeting,
             ICheckoutInputProvider checkoutInputProvider,
             IGitNugetTargetingVm nugetTargetingVm,
@@ -110,9 +112,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             : base(nameVm, remove, selPatcher, confirmation, settings)
         {
             _Logger = logger;
+            _Scope = scope;
             SelectedProjectInput = selectedProjectInput;
             RemoteRepoPathInput = remoteRepoPathInputVm;
-            _toSolutionRunner = toSolutionRunner;
             Locking = lockToCurrentVersioning;
             RepoClonesValid = repoClonesValid;
             NugetDiff = nugetDiff;
@@ -270,7 +272,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         public override PatcherRunVm ToRunner(PatchersRunVm parent)
         {
             PatcherSettings.Persist();
-            return _toSolutionRunner.GetRunner(parent, this);
+            return new PatcherRunVm(
+                parent,
+                this,
+                _Scope.Resolve<ISolutionPatcherRun>());
         }
 
         public override void Delete()
