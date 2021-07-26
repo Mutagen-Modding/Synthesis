@@ -69,7 +69,7 @@ namespace Synthesis.Bethesda.Execution.Running
                     run.LoadOrderFilePath = PluginListings.GetListingsPath(run.GameRelease);
                 }
 
-                Reporter?.Write(default, "Patchers to run:");
+                Reporter?.Write(null, default, "Patchers to run:");
                 var patchers = _profileProvider.Profile.Patchers
                     .Where(p => p.On)
                     .Select(patcherSettings =>

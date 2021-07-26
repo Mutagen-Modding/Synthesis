@@ -13,7 +13,7 @@ namespace Synthesis.Bethesda.Execution.Settings
 
         public override void Print(IRunReporter logger)
         {
-            logger.Write(default, $"[Solution] {Nickname.Decorate(x => $"{x} => ")}{SolutionPath} => {ProjectSubpath}");
+            logger.Write(null, default, $"[Solution] {Nickname.Decorate(x => $"{x} => ")}{SolutionPath} => {ProjectSubpath}");
         }
     }
 }

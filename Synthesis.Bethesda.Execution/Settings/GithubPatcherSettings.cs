@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.Execution.Settings
 
         public override void Print(IRunReporter logger)
         {
-            logger.Write(default, $"[Git] {Nickname.Decorate(x => $"{x} => ")}{RemoteRepoPath}/{SelectedProjectSubpath} {PatcherVersioningString()}");
+            logger.Write(null, default, $"[Git] {Nickname.Decorate(x => $"{x} => ")}{RemoteRepoPath}/{SelectedProjectSubpath} {PatcherVersioningString()}");
         }
 
         public string PatcherVersioningString()

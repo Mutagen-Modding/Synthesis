@@ -80,7 +80,7 @@ namespace Synthesis.Bethesda.Execution.Running
                 workingDirectory: workingDirectory,
                 outputPath: outputPath,
                 patchers: patchers.Select(p => (default(object?), p)),
-                reporter: new WrapReporter(reporter ?? ThrowReporter.Instance),
+                reporter: reporter ?? ThrowReporter.Instance,
                 sourcePath: sourcePath,
                 cancellation: cancel,
                 persistenceMode: persistenceMode,

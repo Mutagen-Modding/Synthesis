@@ -1,7 +1,4 @@
-using Synthesis.Bethesda.Execution.Patchers;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 
 namespace Synthesis.Bethesda.Execution.Reporters
@@ -14,38 +11,34 @@ namespace Synthesis.Bethesda.Execution.Reporters
         {
         }
 
-        public void WriteError(IPatcherRun? patcher, string str)
-        {
-        }
-
-        public void Write(IPatcherRun? patcher, string str)
-        {
-        }
-
-        public void ReportOutputMapping(IPatcherRun patcher, string str)
-        {
-        }
-
         public void ReportOverallProblem(Exception ex)
         {
             throw ex;
         }
 
-        public void ReportPrepProblem(IPatcherRun patcher, Exception ex)
+        public void ReportPrepProblem(object? key, IPatcherRun patcher, Exception ex)
         {
             throw ex;
         }
 
-        public void ReportRunProblem(IPatcherRun patcher, Exception ex)
+        public void ReportRunProblem(object? key, IPatcherRun patcher, Exception ex)
         {
             throw ex;
         }
 
-        public void ReportRunSuccessful(IPatcherRun patcher, string outputPath)
+        public void ReportStartingRun(object? key, IPatcherRun patcher)
         {
         }
 
-        public void ReportStartingRun(IPatcherRun patcher)
+        public void ReportRunSuccessful(object? key, IPatcherRun patcher, string outputPath)
+        {
+        }
+
+        public void Write(object? key, IPatcherRun? patcher, string str)
+        {
+        }
+
+        public void WriteError(object? key, IPatcherRun? patcher, string str)
         {
         }
     }
