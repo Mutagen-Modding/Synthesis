@@ -18,15 +18,14 @@ using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
@@ -93,8 +92,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             IAvailableProjects availableProjects,
             ISolutionMetaFileSync metaFileSync,
             INavigateTo navigateTo,
+            IPatcherIdProvider idProvider,
             SolutionPatcherSettings? settings = null)
-            : base(scope, nameVm, remove, profileDisplay, confirmation, settings)
+            : base(scope, nameVm, remove, profileDisplay, confirmation, idProvider, settings)
         {
             SolutionPathInput = solutionPathInput;
             SelectedProjectInput = selectedProjectInput;

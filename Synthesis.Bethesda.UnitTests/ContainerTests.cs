@@ -68,6 +68,7 @@ namespace Synthesis.Bethesda.UnitTests
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
+            builder.RegisterMock<IPatcherIdProvider>();
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
                 .As<IProfileNameProvider>()
@@ -87,6 +88,7 @@ namespace Synthesis.Bethesda.UnitTests
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
+            builder.RegisterMock<IPatcherIdProvider>();
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
                 .As<IProfileNameProvider>()
@@ -106,6 +108,7 @@ namespace Synthesis.Bethesda.UnitTests
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
+            builder.RegisterMock<IPatcherIdProvider>();
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
                 .As<IProfileNameProvider>()

@@ -15,12 +15,14 @@ namespace Synthesis.Bethesda.GUI.Modules
                 .InNamespacesOf(
                     typeof(PatcherVm),
                     typeof(PatcherInitVm))
+                .NotInjection()
                 .InstancePerMatchingLifetimeScope(MainModule.PatcherNickname)
                 .AsImplementedInterfaces()
                 .AsSelf();
             builder.RegisterAssemblyTypes(typeof(IPatcherNameProvider).Assembly)
                 .InNamespacesOf(
                     typeof(IPatcherNameProvider))
+                .NotInjection()
                 .InstancePerMatchingLifetimeScope(MainModule.PatcherNickname)
                 .AsImplementedInterfaces();
             builder.RegisterAssemblyTypes(typeof(IPatcherNameProvider).Assembly)

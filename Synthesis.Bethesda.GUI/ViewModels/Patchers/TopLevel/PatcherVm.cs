@@ -9,7 +9,9 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.Services.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
@@ -44,8 +46,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         [Reactive]
         public ViewModel DisplayedObject { get; set; }
 
-        private static int NextID;
-
         public ErrorVM ErrorVM { get; }
 
         public virtual bool IsNameEditable => true;
@@ -56,6 +56,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
             IRemovePatcherFromProfile remove,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
+            IPatcherIdProvider idProvider,
             PatcherSettings? settings)
         {
             Scope = scope;
@@ -63,7 +64,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
             NameVm = nameVm;
             _Remove = remove;
             DisplayedObject = this;
-            InternalID = Interlocked.Increment(ref NextID);
+            InternalID = idProvider.InternalId;
             ErrorVM = new ErrorVM("Error", backAction: () =>
             {
                 DisplayedObject = this;

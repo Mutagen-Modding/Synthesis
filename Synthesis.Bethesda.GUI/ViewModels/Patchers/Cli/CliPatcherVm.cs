@@ -7,6 +7,7 @@ using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.Services.Patchers;
 using Synthesis.Bethesda.GUI.Services.Patchers.Cli;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
@@ -28,6 +29,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
         public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
 
         public CliPatcherVm(
+            IPatcherIdProvider idProvider,
             IPatcherNameVm nameVm,
             IPathToExecutableInputVm pathToExecutableInputVm,
             IRemovePatcherFromProfile remove,
@@ -38,7 +40,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
             IPatcherExtraDataPathProvider extraDataPathProvider,
             IProcessFactory processFactory,
             CliPatcherSettings? settings = null)
-            : base(scope, nameVm, remove, selPatcher, confirmation, settings)
+            : base(scope, nameVm, remove, selPatcher, confirmation, idProvider, settings)
         {
             ExecutableInput = pathToExecutableInputVm;
             _Scope = scope;

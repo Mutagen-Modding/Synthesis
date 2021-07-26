@@ -10,8 +10,8 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Patchers.Git;
@@ -20,7 +20,6 @@ using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
@@ -106,9 +105,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IGitNugetTargetingVm nugetTargetingVm,
             IUpdateAllCommand updateAllCommand,
             IAttemptedCheckout attemptedCheckout,
+            IPatcherIdProvider idProvider,
             PatcherSettingsVm.Factory settingsVmFactory,
             GithubPatcherSettings? settings = null)
-            : base(scope, nameVm, remove, selPatcher, confirmation, settings)
+            : base(scope, nameVm, remove, selPatcher, confirmation, idProvider, settings)
         {
             _Logger = logger;
             SelectedProjectInput = selectedProjectInput;
