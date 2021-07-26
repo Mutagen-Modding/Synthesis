@@ -2,6 +2,8 @@
 using Autofac;
 using Noggog.WPF;
 using Synthesis.Bethesda.Execution.Patchers.Running;
+using Synthesis.Bethesda.Execution.Reporters;
+using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
@@ -36,6 +38,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
             var scope = patcherVm.Scope.BeginLifetimeScope(c =>
             {
                 c.RegisterType<T>().As<IPatcherRun>();
+                c.RegisterInstance(parent.Reporter).As<IRunReporter<int>>();
+                c.RegisterType<ReporterLoggerWrapper>()
+                    .AsImplementedInterfaces()
+                    .SingleInstance();
             });
             var runnerFactory = scope.Resolve<PatcherRunVm.Factory>();
             var ret = runnerFactory(parent, patcherVm);

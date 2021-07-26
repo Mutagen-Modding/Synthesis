@@ -1,18 +1,20 @@
 ﻿using System;
 using System.IO.Abstractions;
 using Noggog;
+using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Solution
 {
     public interface ICopyOverExtraData
     {
-        void Copy(Action<string> log);
+        void Copy();
     }
 
     public class CopyOverExtraData : ICopyOverExtraData
     {
         private readonly IFileSystem _fileSystem;
+        private readonly ILogger _logger;
         private readonly IDefaultDataPathProvider _defaultDataPathProvider;
         private readonly IPatcherExtraDataPathProvider _userExtraData;
 
@@ -20,20 +22,22 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
 
         public CopyOverExtraData(
             IFileSystem fileSystem,
+            ILogger logger,
             IDefaultDataPathProvider defaultDataPathProvider,
             IPatcherExtraDataPathProvider userExtraData)
         {
             _fileSystem = fileSystem;
+            _logger = logger;
             _defaultDataPathProvider = defaultDataPathProvider;
             _userExtraData = userExtraData;
         }
         
-        public void Copy(Action<string> log)
+        public void Copy()
         {
             var inputExtraData = _defaultDataPathProvider.Path;
             if (!_fileSystem.File.Exists(inputExtraData))
             {
-                log("No extra data to consider.");
+                _logger.Information("No extra data to consider");
                 return;
             }
 
@@ -41,13 +45,13 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
             var outputExtraData = _userExtraData.Path;
             if (_fileSystem.File.Exists(outputExtraData))
             {
-                log($"Extra data folder already exists. Leaving as is: {outputExtraData}");
+                _logger.Information("Extra data folder already exists. Leaving as is: {OutputExtraData}", outputExtraData);
                 return;
             }
 
-            log("Copying extra data folder");
-            log($"  From: {inputExtraData}");
-            log($"  To: {outputExtraData}");
+            _logger.Information("Copying extra data folder");
+            _logger.Information("  From: {InputExtraData}", inputExtraData);
+            _logger.Information("  To: {OutputExtraData}", outputExtraData);
             _fileSystem.Directory.DeepCopy(inputExtraData, outputExtraData);
         }
     }

@@ -4,15 +4,11 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Allocators;
-using Mutagen.Bethesda.Plugins.Implicit.DI;
-using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog;
-using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
@@ -172,10 +168,6 @@ namespace Synthesis.Bethesda.Execution.Running
                 {
                     try
                     {
-                        using var outputSub = patcher.Run.Output
-                            .Subscribe(i => reporter.Write(patcher.Key, patcher.Run.Name, i));
-                        using var errorSub = patcher.Run.Error
-                            .Subscribe(i => reporter.WriteError(patcher.Key, patcher.Run.Name, i));
                         try
                         {
                             await patcher.Run.Prep(_ReleaseContext.Release, cancellation);
@@ -216,11 +208,6 @@ namespace Synthesis.Bethesda.Execution.Running
                     var nextPath = new ModPath(outputPath.ModKey, Path.Combine(workingDirectory, $"{i} - {fileName}"));
                     try
                     {
-                        using var outputSub = patcher.Run.Output
-                            .Subscribe(i => reporter.Write(patcher.Key, patcher.Run.Name, i));
-                        using var errorSub = patcher.Run.Error
-                            .Subscribe(i => reporter.WriteError(patcher.Key, patcher.Run.Name, i));
-
                         try
                         {
                             // Start run

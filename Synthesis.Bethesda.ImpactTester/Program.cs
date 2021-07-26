@@ -132,7 +132,7 @@ namespace Synthesis.Bethesda.ImpactTester
                                 continue;
                             }
                             System.Console.WriteLine($"Checking {group.Key}/{dependency.Repository}:{proj}");
-                            var compile = await build.Compile(path, cancel, null);
+                            var compile = await build.Compile(path, cancel);
                             if (compile.Failed)
                             {
                                 System.Console.WriteLine("Failed compilation");

@@ -82,7 +82,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                     _copyOverFactory(
                         new DefaultDataPathProvider(
                             new PathToProjInjection {Path = runInfo.Item.ProjPath}))
-                        .Copy(Logger.Information);
+                        .Copy();
 
                     observer.OnNext(runInfo);
                 }

@@ -18,6 +18,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using Noggog.Utility;
+using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRespository;
@@ -39,19 +40,14 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
         private readonly IPatcherExtraDataPathProvider _patcherExtraDataPathProvider;
         private readonly IPatcherNameProvider _nameProvider;
         private readonly IPathToProjProvider _pathToProjProvider;
-        private readonly IBuild _Build;
+        private readonly IBuild _build;
+        private readonly ILogger _logger;
         private readonly ICheckRunnability _CheckRunnability;
         private readonly IProcessFactory _ProcessFactory;
         private readonly IDotNetCommandStartConstructor _commandStartConstructor;
         private readonly IDefaultDataPathProvider _defaultDataPathProvider;
         private readonly IProvideRepositoryCheckouts _RepositoryCheckouts;
         public string Name => _nameProvider.Name;
-
-        private readonly Subject<string> _output = new();
-        public IObservable<string> Output => _output;
-
-        private readonly Subject<string> _error = new();
-        public IObservable<string> Error => _error;
 
         public SolutionPatcherRun(
             IPathToSolutionFileProvider pathToSln, 
@@ -60,6 +56,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             ICopyOverExtraData copyOverExtraData,
             IPathToProjProvider pathToProjProvider,
             IBuild build,
+            ILogger logger,
             ICheckRunnability checkRunnability,
             IProcessFactory processFactory,
             IDotNetCommandStartConstructor commandStartConstructor,
@@ -71,7 +68,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             _nameProvider = nameProvider;
             _pathToProjProvider = pathToProjProvider;
             _copyOverExtraData = copyOverExtraData;
-            _Build = build;
+            _build = build;
+            _logger = logger;
             _CheckRunnability = checkRunnability;
             _ProcessFactory = processFactory;
             _commandStartConstructor = commandStartConstructor;
@@ -84,17 +82,17 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             await Task.WhenAll(
                 Task.Run(async () =>
                 {
-                    _output.OnNext($"Compiling");
-                    var resp = await _Build.Compile(_pathToProjProvider.Path, cancel, _output.OnNext).ConfigureAwait(false);
+                    _logger.Information("Compiling");
+                    var resp = await _build.Compile(_pathToProjProvider.Path, cancel).ConfigureAwait(false);
                     if (!resp.Succeeded)
                     {
                         throw new SynthesisBuildFailure(resp.Reason);
                     }
-                    _output.OnNext($"Compiled");
+                    _logger.Information("Compiled");
                 }),
                 Task.Run(() =>
                 {
-                    _copyOverExtraData.Copy(_output.OnNext);
+                    _copyOverExtraData.Copy();
                 })).ConfigureAwait(false); ;
         }
 
@@ -104,7 +102,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             if (Repository.IsValid(repoPath))
             {
                 using var repo = _RepositoryCheckouts.Get(repoPath!);
-                _output.OnNext($"Sha {repo.Repository.CurrentSha}");
+                _logger.Information("Sha {Sha}", repo.Repository.CurrentSha);
             }
             
             var runnability = await _CheckRunnability.Check(
@@ -113,8 +111,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
                 release: settings.GameRelease,
                 dataFolder: settings.DataFolderPath,
                 loadOrderPath: settings.LoadOrderFilePath,
-                cancel: cancel,
-                log: (s) => _output.OnNext(s));
+                cancel: cancel);
 
             if (runnability.Failed)
             {
@@ -139,10 +136,13 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             using var process = _ProcessFactory.Create(
                 _commandStartConstructor.Construct("run --project", _pathToProjProvider.Path, "--no-build", args),
                 cancel: cancel);
-            _output.OnNext("Running");
-            _output.OnNext($"({process.StartInfo.WorkingDirectory}): {process.StartInfo.FileName} {process.StartInfo.Arguments}");
-            using var outputSub = process.Output.Subscribe(_output);
-            using var errSub = process.Error.Subscribe(_error);
+            _logger.Information("Running");
+            _logger.Information("({WorkingDirectory}): {FileName} {Args}",
+                process.StartInfo.WorkingDirectory,
+                process.StartInfo.FileName,
+                process.StartInfo.Arguments);
+            using var outputSub = process.Output.Subscribe(x => _logger.Information(x));
+            using var errSub = process.Error.Subscribe(x => _logger.Error(x));
             var result = await process.Run().ConfigureAwait(false);
             if (result != 0)
             {

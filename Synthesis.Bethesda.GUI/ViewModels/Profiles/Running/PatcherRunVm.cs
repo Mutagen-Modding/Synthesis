@@ -7,6 +7,7 @@ using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Running;
+using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
@@ -41,7 +42,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 
         public delegate PatcherRunVm Factory(PatchersRunVm parent, PatcherVm config);
 
-        public PatcherRunVm(PatchersRunVm parent, PatcherVm config, IPatcherRun run)
+        public PatcherRunVm(PatchersRunVm parent, PatcherVm config, IPatcherRun run, IReporterLoggerWrapper loggerWrapper)
         {
             Run = run;
             Config = config;
@@ -51,8 +52,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .ToGuiProperty(this, nameof(IsSelected));
 
             Observable.Merge(
-                    run.Output,
-                    run.Error,
+                    loggerWrapper.Events
+                        .Select(e => e.RenderMessage()),
                     this.WhenAnyValue(x => x.State)
                         .Where(x => x.Value == RunState.Error)
                         .Select(x => x.Reason))

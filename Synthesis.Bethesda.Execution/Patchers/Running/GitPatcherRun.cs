@@ -11,6 +11,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using NuGet.Versioning;
+using Serilog;
 using Synthesis.Bethesda.Execution.GitRespository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
@@ -30,16 +31,11 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
         public readonly static System.Version NamespaceMutaVersion = new(0, 30, 0);
         public string Name { get; }
         private readonly GithubPatcherSettings _settings;
+        private readonly ILogger _logger;
         private readonly IRunnerRepoDirectoryProvider _runnerRepoDirectoryProvider;
-        private readonly ICheckOrCloneRepo _CheckOrClone;
+        private readonly ICheckOrCloneRepo _checkOrClone;
         public SolutionPatcherRun? SolutionRun { get; private set; }
         private readonly CompositeDisposable _disposable = new();
-
-        private readonly Subject<string> _output = new();
-        public IObservable<string> Output => _output;
-
-        private readonly Subject<string> _error = new();
-        public IObservable<string> Error => _error;
 
         internal static readonly HashSet<string> MutagenLibraries;
 
@@ -53,16 +49,16 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
                 .ToHashSet();
         }
 
-        public delegate IGitPatcherRun Factory(GithubPatcherSettings settings);
-        
         public GitPatcherRun(
             GithubPatcherSettings settings,
+            ILogger logger,
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             ICheckOrCloneRepo checkOrClone)
         {
             _settings = settings;
+            _logger = logger;
             _runnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
-            _CheckOrClone = checkOrClone;
+            _checkOrClone = checkOrClone;
             Name = $"{settings.Nickname.Decorate(x => $"{x} => ")}{settings.RemoteRepoPath} => {Path.GetFileNameWithoutExtension(settings.SelectedProjectSubpath)}";
         }
 
@@ -78,11 +74,10 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
 
         public async Task Prep(GameRelease release, CancellationToken cancel)
         {
-            _output.OnNext("Cloning repository");
-            var cloneResult = _CheckOrClone.Check(
+            _logger.Information("Cloning repository");
+            var cloneResult = _checkOrClone.Check(
                 GetResponse<string>.Succeed(_settings.RemoteRepoPath),
-                _runnerRepoDirectoryProvider.Path, 
-                (x) => _output.OnNext(x),
+                _runnerRepoDirectoryProvider.Path,
                 cancel);
             if (cloneResult.Failed)
             {
@@ -115,8 +110,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             {
                 throw new SynthesisBuildFailure("Expected Solution Run object did not exist.");
             }
-            using var outputSub = SolutionRun.Output.Subscribe(this._output);
-            using var errSub = SolutionRun.Error.Subscribe(this._error);
             await SolutionRun.Run(settings, cancel).ConfigureAwait(false);
         }
 

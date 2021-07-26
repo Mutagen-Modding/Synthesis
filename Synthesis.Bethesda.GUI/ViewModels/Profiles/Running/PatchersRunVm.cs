@@ -15,7 +15,6 @@ using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Running;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
@@ -48,14 +47,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 
         public ReactiveCommand<Unit, Unit> ShowOverallErrorCommand { get; } = ReactiveCommand.Create(ActionExt.Nothing);
 
-        private readonly RxReporter<int> _reporter = new();
+        public RxReporter<int> Reporter { get; } = new();
 
         private readonly ObservableAsPropertyHelper<object?> _DetailDisplay;
         public object? DetailDisplay => _DetailDisplay.Value;
 
         private PatcherRunVm? _previousPatcher;
 
-        public delegate PatchersRunVm Factory(ConfigurationVm configuration, ProfileVm profile, ILogger logger);
+        public delegate PatchersRunVm Factory(ConfigurationVm configuration, ProfileVm profile);
         
         public PatchersRunVm(
             ConfigurationVm configuration,
@@ -91,7 +90,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 execute: Cancel,
                 canExecute: this.WhenAnyValue(x => x.Running));
 
-            _reporter.Overall
+            Reporter.Overall
                 .ObserveOnGui()
                 .Subscribe(ex =>
                 {
@@ -99,9 +98,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     ResultError = ex;
                 })
                 .DisposeWith(this);
-            _reporter.PrepProblem
+            Reporter.PrepProblem
                 .Select(data => (data, type: "prepping"))
-                .Merge(_reporter.RunProblem
+                .Merge(Reporter.RunProblem
                     .Select(data => (data, type: "running")))
                 .ObserveOnGui()
                 .Subscribe(i =>
@@ -114,7 +113,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                         .Error(i.data.Error, $"Error while {i.type}");
                 })
                 .DisposeWith(this);
-            _reporter.Starting
+            Reporter.Starting
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
@@ -133,7 +132,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     _previousPatcher = vm;
                 })
                 .DisposeWith(this);
-            _reporter.RunSuccessful
+            Reporter.RunSuccessful
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
@@ -144,7 +143,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                         .Information("Finished {RunTime}", vm.RunTime);
                 })
                 .DisposeWith(this);
-            _reporter.Output
+            Reporter.Output
                 .Subscribe(s =>
                 {
                     logger
@@ -152,7 +151,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                         .Information(s.String);
                 })
                 .DisposeWith(this);
-            _reporter.Error
+            Reporter.Error
                 .Subscribe(s =>
                 {
                     logger
@@ -189,7 +188,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                             workingDirectory: RunningProfile.WorkingDirectory,
                             outputPath: output,
                             cancellation: _cancel.Token,
-                            reporter: _reporter,
+                            reporter: Reporter,
                             patchers: Patchers.Items.Select(vm => (vm.Config.InternalID, vm.Run)),
                             persistenceMode: RunningProfile.SelectedPersistenceMode,
                             persistencePath: Path.Combine(RunningProfile.ProfileDirectory, "Persistence"));
@@ -203,7 +202,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     }
                     catch (Exception ex)
                     {
-                        _reporter.ReportOverallProblem(ex);
+                        Reporter.ReportOverallProblem(ex);
                     }
                 })
                 .ObserveOnGui()

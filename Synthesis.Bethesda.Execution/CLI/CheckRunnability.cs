@@ -6,6 +6,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
 using Noggog.Utility;
+using Serilog;
 
 namespace Synthesis.Bethesda.Execution.CLI
 {
@@ -17,8 +18,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             GameRelease release,
             string dataFolder,
             IEnumerable<IModListingGetter> loadOrder,
-            CancellationToken cancel,
-            Action<string>? log);
+            CancellationToken cancel);
 
         Task<ErrorResponse> Check(
             string path,
@@ -26,23 +26,25 @@ namespace Synthesis.Bethesda.Execution.CLI
             GameRelease release,
             string dataFolder,
             string loadOrderPath,
-            CancellationToken cancel,
-            Action<string>? log);
+            CancellationToken cancel);
     }
 
     public class CheckRunnability : ICheckRunnability
     {
-        private readonly IProcessFactory _ProcessFactory;
-        private readonly IProvideTemporaryLoadOrder _LoadOrder;
+        private readonly ILogger _Logger;
+        private readonly IProcessFactory _processFactory;
+        private readonly IProvideTemporaryLoadOrder _loadOrder;
         private readonly IProvideDotNetRunProcessInfo _runProcessInfo;
 
         public CheckRunnability(
+            ILogger logger,
             IProcessFactory processFactory,
             IProvideTemporaryLoadOrder loadOrder,
             IProvideDotNetRunProcessInfo runProcessInfo)
         {
-            _ProcessFactory = processFactory;
-            _LoadOrder = loadOrder;
+            _Logger = logger;
+            _processFactory = processFactory;
+            _loadOrder = loadOrder;
             _runProcessInfo = runProcessInfo;
         }
         
@@ -52,10 +54,9 @@ namespace Synthesis.Bethesda.Execution.CLI
             GameRelease release,
             string dataFolder,
             IEnumerable<IModListingGetter> loadOrder,
-            CancellationToken cancel,
-            Action<string>? log)
+            CancellationToken cancel)
         {
-            using var loadOrderFile = _LoadOrder.Get(release, loadOrder);
+            using var loadOrderFile = _loadOrder.Get(release, loadOrder);
 
             return await Check(
                 path,
@@ -63,8 +64,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                 release: release,
                 dataFolder: dataFolder,
                 loadOrderPath: loadOrderFile.File.Path,
-                cancel: cancel,
-                log: log);
+                cancel: cancel);
         }
 
         public async Task<ErrorResponse> Check(
@@ -73,8 +73,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             GameRelease release,
             string dataFolder,
             string loadOrderPath,
-            CancellationToken cancel,
-            Action<string>? log)
+            CancellationToken cancel)
         {
             var checkState = new Synthesis.Bethesda.CheckRunnability()
             {
@@ -83,12 +82,14 @@ namespace Synthesis.Bethesda.Execution.CLI
                 LoadOrderFilePath = loadOrderPath
             };
 
-            using var proc = _ProcessFactory.Create(
+            using var proc = _processFactory.Create(
                 _runProcessInfo.GetStart(path, directExe, checkState),
                 cancel: cancel);
+            _Logger.Information("({WorkingDirectory}): {FileName} {Args}",
+                proc.StartInfo.WorkingDirectory,
+                proc.StartInfo.FileName,
+                proc.StartInfo.Arguments);
             
-            log?.Invoke($"({proc.StartInfo.WorkingDirectory}): {proc.StartInfo.FileName} {proc.StartInfo.Arguments}");
-
             var results = new List<string>();
             void AddResult(string s)
             {

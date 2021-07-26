@@ -88,7 +88,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
                         var localRepoPath = checkOrClone.Check(
                             GetResponse<string>.Succeed("https://github.com/Mutagen-Modding/Synthesis.Registry"),
                             guiPaths.RegistryFolder,
-                            logger.Error,
                             CancellationToken.None);
                         if (localRepoPath.Failed)
                         {

@@ -71,8 +71,10 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                         var driverRepoPath = _driverRepoDirectoryProvider.Path;
 
                         // Clone and/or double check the clone is correct
-                        var state = _checkOrClone.Check(path.ToGetResponse(), driverRepoPath,
-                            (x) => _logger.Information(x), cancel);
+                        var state = _checkOrClone.Check(
+                            path.ToGetResponse(), 
+                            driverRepoPath,
+                            cancel);
                         if (state.Failed)
                         {
                             _logger.Error($"Failed to check out driver repository: {state.Reason}");

@@ -16,14 +16,12 @@ namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
         public void CallsCheckIfKeeping(
             GetResponse<string> remote,
             DirectoryPath local,
-            Action<string> logger,
             CheckOrCloneRepo sut)
         {
             sut.Delete.CheckIfKeeping(default, default).ReturnsForAnyArgs(true);
             var ret = sut.Check(
                 remote,
                 local,
-                logger,
                 CancellationToken.None);
             sut.Delete.Received().CheckIfKeeping(local, remote);
             ret.Succeeded.Should().BeTrue();
@@ -34,7 +32,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
         [Theory, SynthAutoData]
         public void RemoteFailed(
             DirectoryPath local,
-            Action<string> logger,
             CheckOrCloneRepo sut)
         {
             sut.Delete.CheckIfKeeping(default, default).ReturnsForAnyArgs(false);
@@ -42,7 +39,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
             var ret = sut.Check(
                 remote,
                 local,
-                logger,
                 CancellationToken.None);
             ret.Failed.Should().BeTrue();
             ret.Reason.Should().Be(remote.Reason);

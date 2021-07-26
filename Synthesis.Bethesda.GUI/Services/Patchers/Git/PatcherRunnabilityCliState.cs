@@ -64,8 +64,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                                 release: profileIdent.Release,
                                 dataFolder: i.data,
                                 cancel: cancel,
-                                loadOrder: i.loadOrder.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm),
-                                log: (s) => logger.Information(s));
+                                loadOrder: i.loadOrder.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                             if (runnability.Failed)
                             {
                                 logger.Information($"Checking runnability failed: {runnability.Reason}");

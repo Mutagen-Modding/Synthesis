@@ -5,35 +5,42 @@ using System.Threading;
 using System.Threading.Tasks;
 using Noggog;
 using Noggog.Utility;
+using Serilog;
 
 namespace Synthesis.Bethesda.Execution.DotNet
 {
     public interface IBuild
     {
-        Task<ErrorResponse> Compile(string targetPath, CancellationToken cancel, Action<string>? log);
+        Task<ErrorResponse> Compile(string targetPath, CancellationToken cancel);
     }
 
     public class Build : IBuild
     {
-        private readonly IProcessFactory _ProcessFactory;
+        private readonly ILogger _Logger;
+        private readonly IProcessFactory _processFactory;
         private readonly IBuildStartProvider _buildStartProvider;
 
         public Build(
+            ILogger logger,
             IProcessFactory processFactory,
             IBuildStartProvider buildStartProvider)
         {
-            _ProcessFactory = processFactory;
+            _Logger = logger;
+            _processFactory = processFactory;
             _buildStartProvider = buildStartProvider;
         }
         
-        public async Task<ErrorResponse> Compile(string targetPath, CancellationToken cancel, Action<string>? log)
+        public async Task<ErrorResponse> Compile(string targetPath, CancellationToken cancel)
         {
             var start = _buildStartProvider.Construct(Path.GetFileName(targetPath));
             start.WorkingDirectory = Path.GetDirectoryName(targetPath)!;
-            using var process = _ProcessFactory.Create(
+            using var process = _processFactory.Create(
                 start,
                 cancel: cancel);
-            log?.Invoke($"({process.StartInfo.WorkingDirectory}): {process.StartInfo.FileName} {process.StartInfo.Arguments}");
+            _Logger.Information("({WorkingDirectory}): {FileName} {Args}",
+                process.StartInfo.WorkingDirectory,
+                process.StartInfo.FileName,
+                process.StartInfo.Arguments);
             string? firstError = null;
             bool buildFailed = false;
             List<string> output = new();

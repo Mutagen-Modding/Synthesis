@@ -40,7 +40,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                         return (ErrorResponse)checkOrClone.Check(
                             path.ToGetResponse(),
                             runnerRepoDirectoryProvider.Path, 
-                            x => logger.Information(x), cancel);
+                            cancel);
                     })
                 .Replay(1)
                 .RefCount();

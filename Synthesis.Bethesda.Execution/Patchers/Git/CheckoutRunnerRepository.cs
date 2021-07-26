@@ -26,7 +26,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
     public class CheckoutRunnerRepository : ICheckoutRunnerRepository
     {
-        private readonly IBuild _Build;
+        private readonly IBuild _build;
         private readonly ISolutionFileLocator _solutionFileLocator;
         public IProvideRepositoryCheckouts RepoCheckouts { get; }
         public const string RunnerBranch = "SynthesisRunner";
@@ -36,7 +36,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             ISolutionFileLocator solutionFileLocator,
             IProvideRepositoryCheckouts repoCheckouts)
         {
-            _Build = build;
+            _build = build;
             _solutionFileLocator = solutionFileLocator;
             RepoCheckouts = repoCheckouts;
         }
@@ -152,7 +152,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 // Compile to help prep
                 if (compile)
                 {
-                    var compileResp = await _Build.Compile(projPath, cancel, logger);
+                    var compileResp = await _build.Compile(projPath, cancel);
                     logger?.Invoke("Finished compiling");
                     if (compileResp.Failed) return compileResp.BubbleResult(runInfo);
                 }
