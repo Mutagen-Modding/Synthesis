@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.GUI.Modules
                 .InNamespacesOf(
                     typeof(GitPatcherVm),
                     typeof(IPrepareRunnableState),
-                    typeof(IToSolutionRunner))
+                    typeof(ISolutionFilePathFollower))
                 .SingleInstance()
                 .NotInjection()
                 .AsImplementedInterfaces()

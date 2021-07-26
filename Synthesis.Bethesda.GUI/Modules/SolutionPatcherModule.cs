@@ -20,7 +20,7 @@ namespace Synthesis.Bethesda.GUI.Modules
             builder.RegisterAssemblyTypes(typeof(SolutionPatcherVm).Assembly)
                 .InNamespacesOf(
                     typeof(SolutionPatcherVm),
-                    typeof(ToSolutionRunner))
+                    typeof(ISolutionFilePathFollower))
                 .SingleInstance()
                 .NotInjection()
                 .AsImplementedInterfaces()
