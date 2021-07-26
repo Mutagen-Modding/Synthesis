@@ -1,38 +1,34 @@
-using Synthesis.Bethesda.Execution.Patchers;
 using System;
-using System.Collections.Generic;
 using System.Reactive.Subjects;
-using System.Text;
-using Synthesis.Bethesda.Execution.Patchers.Running;
 
 namespace Synthesis.Bethesda.Execution.Reporters
 {
     public class RxReporter<TKey> : IRunReporter<TKey>
     {
         private readonly Subject<Exception> _overall = new();
-        private readonly Subject<(TKey, IPatcherRun, Exception)> _prepProblem = new();
-        private readonly Subject<(TKey, IPatcherRun, Exception)> _runProblem = new();
-        private readonly Subject<(TKey, IPatcherRun, string)> _runSuccessful = new();
-        private readonly Subject<(TKey, IPatcherRun)> _starting = new();
-        private readonly Subject<(TKey Key, IPatcherRun? Run, string String)> _output = new();
-        private readonly Subject<(TKey Key, IPatcherRun? Run, string String)> _error = new();
+        private readonly Subject<(TKey, string, Exception)> _prepProblem = new();
+        private readonly Subject<(TKey, string, Exception)> _runProblem = new();
+        private readonly Subject<(TKey, string, string)> _runSuccessful = new();
+        private readonly Subject<(TKey, string)> _starting = new();
+        private readonly Subject<(TKey Key, string? Run, string String)> _output = new();
+        private readonly Subject<(TKey Key, string? Run, string String)> _error = new();
 
         public IObservable<Exception> Overall => _overall;
-        public IObservable<(TKey Key, IPatcherRun Run, Exception Error)> PrepProblem => _prepProblem;
-        public IObservable<(TKey Key, IPatcherRun Run, Exception Error)> RunProblem => _runProblem;
-        public IObservable<(TKey Key, IPatcherRun Run, string OutputPath)> RunSuccessful => _runSuccessful;
-        public IObservable<(TKey Key, IPatcherRun Run)> Starting => _starting;
-        public IObservable<(TKey Key, IPatcherRun? Run, string String)> Output => _output;
-        public IObservable<(TKey Key, IPatcherRun? Run, string String)> Error => _error;
+        public IObservable<(TKey Key, string Run, Exception Error)> PrepProblem => _prepProblem;
+        public IObservable<(TKey Key, string Run, Exception Error)> RunProblem => _runProblem;
+        public IObservable<(TKey Key, string Run, string OutputPath)> RunSuccessful => _runSuccessful;
+        public IObservable<(TKey Key, string Run)> Starting => _starting;
+        public IObservable<(TKey Key, string? Run, string String)> Output => _output;
+        public IObservable<(TKey Key, string? Run, string String)> Error => _error;
 
-        public void WriteError(TKey key, IPatcherRun? patcher, string str)
+        public void WriteError(TKey key, string? name, string str)
         {
-            _error.OnNext((key, patcher, str));
+            _error.OnNext((key, name, str));
         }
 
-        public void Write(TKey key, IPatcherRun? patcher, string str)
+        public void Write(TKey key, string? name, string str)
         {
-            _output.OnNext((key, patcher, str));
+            _output.OnNext((key, name, str));
         }
 
         public void ReportOverallProblem(Exception ex)
@@ -40,24 +36,24 @@ namespace Synthesis.Bethesda.Execution.Reporters
             _overall.OnNext(ex);
         }
 
-        public void ReportPrepProblem(TKey key, IPatcherRun patcher, Exception ex)
+        public void ReportPrepProblem(TKey key, string name, Exception ex)
         {
-            _prepProblem.OnNext((key, patcher, ex));
+            _prepProblem.OnNext((key, name, ex));
         }
 
-        public void ReportRunProblem(TKey key, IPatcherRun patcher, Exception ex)
+        public void ReportRunProblem(TKey key, string name, Exception ex)
         {
-            _runProblem.OnNext((key, patcher, ex));
+            _runProblem.OnNext((key, name, ex));
         }
 
-        public void ReportRunSuccessful(TKey key, IPatcherRun patcher, string outputPath)
+        public void ReportRunSuccessful(TKey key, string name, string outputPath)
         {
-            _runSuccessful.OnNext((key, patcher, outputPath));
+            _runSuccessful.OnNext((key, name, outputPath));
         }
 
-        public void ReportStartingRun(TKey key, IPatcherRun patcher)
+        public void ReportStartingRun(TKey key, string name)
         {
-            _starting.OnNext((key, patcher));
+            _starting.OnNext((key, name));
         }
     }
 }

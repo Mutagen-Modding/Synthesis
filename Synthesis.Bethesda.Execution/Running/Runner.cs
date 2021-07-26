@@ -173,9 +173,9 @@ namespace Synthesis.Bethesda.Execution.Running
                     try
                     {
                         using var outputSub = patcher.Run.Output
-                            .Subscribe(i => reporter.Write(patcher.Key, patcher.Run, i));
+                            .Subscribe(i => reporter.Write(patcher.Key, patcher.Run.Name, i));
                         using var errorSub = patcher.Run.Error
-                            .Subscribe(i => reporter.WriteError(patcher.Key, patcher.Run, i));
+                            .Subscribe(i => reporter.WriteError(patcher.Key, patcher.Run.Name, i));
                         try
                         {
                             await patcher.Run.Prep(_ReleaseContext.Release, cancellation);
@@ -185,7 +185,7 @@ namespace Synthesis.Bethesda.Execution.Running
                         }
                         catch (Exception ex)
                         {
-                            reporter.ReportPrepProblem(patcher.Key, patcher.Run, ex);
+                            reporter.ReportPrepProblem(patcher.Key, patcher.Run.Name, ex);
                             return ex;
                         }
                     }
@@ -194,7 +194,7 @@ namespace Synthesis.Bethesda.Execution.Running
                     }
                     catch (Exception ex)
                     {
-                        reporter.ReportPrepProblem(patcher.Key, patcher.Run, ex);
+                        reporter.ReportPrepProblem(patcher.Key, patcher.Run.Name, ex);
                         return ex;
                     }
                     return default(Exception?);
@@ -217,14 +217,14 @@ namespace Synthesis.Bethesda.Execution.Running
                     try
                     {
                         using var outputSub = patcher.Run.Output
-                            .Subscribe(i => reporter.Write(patcher.Key, patcher.Run, i));
+                            .Subscribe(i => reporter.Write(patcher.Key, patcher.Run.Name, i));
                         using var errorSub = patcher.Run.Error
-                            .Subscribe(i => reporter.WriteError(patcher.Key, patcher.Run, i));
+                            .Subscribe(i => reporter.WriteError(patcher.Key, patcher.Run.Name, i));
 
                         try
                         {
                             // Start run
-                            reporter.ReportStartingRun(patcher.Key, patcher.Run);
+                            reporter.ReportStartingRun(patcher.Key, patcher.Run.Name);
                             await patcher.Run.Run(new RunSynthesisPatcher()
                             {
                                 SourcePath = prevPath?.Path,
@@ -242,7 +242,7 @@ namespace Synthesis.Bethesda.Execution.Running
                         }
                         catch (Exception ex)
                         {
-                            reporter.ReportRunProblem(patcher.Key, patcher.Run, ex);
+                            reporter.ReportRunProblem(patcher.Key, patcher.Run.Name, ex);
                             return false;
                         }
                     }
@@ -252,16 +252,16 @@ namespace Synthesis.Bethesda.Execution.Running
                     }
                     catch (Exception ex)
                     {
-                        reporter.ReportRunProblem(patcher.Key, patcher.Run, ex);
+                        reporter.ReportRunProblem(patcher.Key, patcher.Run.Name, ex);
                         return false;
                     }
                     if (cancellation.IsCancellationRequested) return false;
                     if (!_FileSystem.File.Exists(nextPath))
                     {
-                        reporter.ReportRunProblem(patcher.Key, patcher.Run, new ArgumentException($"Patcher {patcher.Run.Name} did not produce output file."));
+                        reporter.ReportRunProblem(patcher.Key, patcher.Run.Name, new ArgumentException($"Patcher {patcher.Run.Name} did not produce output file."));
                         return false;
                     }
-                    reporter.ReportRunSuccessful(patcher.Key, patcher.Run, nextPath);
+                    reporter.ReportRunSuccessful(patcher.Key, patcher.Run.Name, nextPath);
                     prevPath = nextPath;
                 }
                 if (_FileSystem.File.Exists(outputPath))

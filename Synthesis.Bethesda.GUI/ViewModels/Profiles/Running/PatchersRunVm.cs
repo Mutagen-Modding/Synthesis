@@ -110,7 +110,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     vm.State = GetResponse<RunState>.Fail(RunState.Error, i.data.Error);
                     SelectedPatcher = vm;
                     logger
-                        .ForContext(nameof(IPatcherNameVm.Name), i.data.Run.Name)
+                        .ForContext(nameof(IPatcherNameVm.Name), i.data.Run)
                         .Error(i.data.Error, $"Error while {i.type}");
                 })
                 .DisposeWith(this);
@@ -121,7 +121,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     var vm = Patchers.Get(i.Key);
                     vm.State = GetResponse<RunState>.Succeed(RunState.Started);
                     logger
-                        .ForContext(nameof(IPatcherNameVm.Name), i.Run.Name)
+                        .ForContext(nameof(IPatcherNameVm.Name), i.Run)
                         .Information($"Starting");
 
                     // Handle automatic selection advancement
@@ -140,7 +140,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     var vm = Patchers.Get(i.Key);
                     vm.State = GetResponse<RunState>.Succeed(RunState.Finished);
                     logger
-                        .ForContext(nameof(IPatcherNameVm.Name), i.Run.Name)
+                        .ForContext(nameof(IPatcherNameVm.Name), i.Run)
                         .Information("Finished {RunTime}", vm.RunTime);
                 })
                 .DisposeWith(this);
@@ -148,7 +148,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .Subscribe(s =>
                 {
                     logger
-                        .ForContextIfNotNull(nameof(IPatcherNameVm.Name), s.Run?.Name)
+                        .ForContextIfNotNull(nameof(IPatcherNameVm.Name), s.Run)
                         .Information(s.String);
                 })
                 .DisposeWith(this);
@@ -156,7 +156,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .Subscribe(s =>
                 {
                     logger
-                        .ForContextIfNotNull(nameof(IPatcherNameVm.Name), s.Run?.Name)
+                        .ForContextIfNotNull(nameof(IPatcherNameVm.Name), s.Run)
                         .Error(s.String);
                 })
                 .DisposeWith(this);
@@ -176,7 +176,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 
         public async Task Run()
         {
-            _Logger.Information("Starting patcher run.");
+            _Logger.Information("Starting patcher run");
             await Observable.Return(Unit.Default)
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .DoTask(async (_) =>
@@ -196,7 +196,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                         if (!madePatch) return;
                         var dataFolderPath = Path.Combine(RunningProfile.DataFolder, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
                         File.Copy(output, dataFolderPath, overwrite: true);
-                        _Logger.Information($"Exported patch to: {dataFolderPath}");
+                        _Logger.Information("Exported patch to: {DataFolderPath}", dataFolderPath);
                     }
                     catch (TaskCanceledException)
                     {
@@ -211,7 +211,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 {
                     Running = false;
                 });
-            _Logger.Information("Finished patcher run.");
+            _Logger.Information("Finished patcher run");
         }
 
         private async Task Cancel()

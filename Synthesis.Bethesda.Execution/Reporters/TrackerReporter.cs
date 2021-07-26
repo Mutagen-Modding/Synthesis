@@ -1,9 +1,6 @@
 using Noggog;
-using Synthesis.Bethesda.Execution.Patchers;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Synthesis.Bethesda.Execution.Patchers.Running;
 
 namespace Synthesis.Bethesda.Execution.Reporters
 {
@@ -16,15 +13,15 @@ namespace Synthesis.Bethesda.Execution.Reporters
 
         public Exception? Overall { get; private set; }
 
-        private readonly List<(IPatcherRun Patcher, Exception Exception)> _prepProblems = new();
-        public IReadOnlyList<(IPatcherRun Patcher, Exception Exception)> PrepProblems => _prepProblems;
+        private readonly List<(string Patcher, Exception Exception)> _prepProblems = new();
+        public IReadOnlyList<(string Patcher, Exception Exception)> PrepProblems => _prepProblems;
 
-        public IPatcherRun? StartingRun { get; private set; }
+        public string? StartingRun { get; private set; }
 
-        public (IPatcherRun Patcher, Exception Exception)? RunProblem { get; private set; }
+        public (string Patcher, Exception Exception)? RunProblem { get; private set; }
 
-        private readonly List<(IPatcherRun Patcher, FilePath OutputPath)> _patcherComplete = new();
-        public IReadOnlyList<(IPatcherRun Patcher, FilePath OutputPath)> PatcherComplete => _patcherComplete;
+        private readonly List<(string Patcher, FilePath OutputPath)> _patcherComplete = new();
+        public IReadOnlyList<(string Patcher, FilePath OutputPath)> PatcherComplete => _patcherComplete;
 
         public void ReportOverallProblem(Exception ex)
         {
@@ -35,35 +32,35 @@ namespace Synthesis.Bethesda.Execution.Reporters
             Overall = ex;
         }
 
-        public void ReportPrepProblem(object? key, IPatcherRun patcher, Exception ex)
+        public void ReportPrepProblem(object? key, string name, Exception ex)
         {
-            _prepProblems.Add((patcher, ex));
+            _prepProblems.Add((name, ex));
         }
 
-        public void ReportRunProblem(object? key, IPatcherRun patcher, Exception ex)
+        public void ReportRunProblem(object? key, string name, Exception ex)
         {
             if (RunProblem != null)
             {
-                throw new ArgumentException("Reported two patcher run exceptions.");
+                throw new ArgumentException("Reported two name run exceptions.");
             }
-            RunProblem = (patcher, ex);
+            RunProblem = (name, ex);
         }
 
-        public void ReportStartingRun(object? key, IPatcherRun patcher)
+        public void ReportStartingRun(object? key, string name)
         {
-            StartingRun = patcher;
+            StartingRun = name;
         }
 
-        public void ReportRunSuccessful(object? key, IPatcherRun patcher, string outputPath)
+        public void ReportRunSuccessful(object? key, string name, string outputPath)
         {
-            _patcherComplete.Add((patcher, outputPath));
+            _patcherComplete.Add((name, outputPath));
         }
 
-        public void Write(object? key, IPatcherRun? patcher, string str)
+        public void Write(object? key, string? name, string str)
         {
         }
 
-        public void WriteError(object? key, IPatcherRun? patcher, string str)
+        public void WriteError(object? key, string? name, string str)
         {
         }
     }

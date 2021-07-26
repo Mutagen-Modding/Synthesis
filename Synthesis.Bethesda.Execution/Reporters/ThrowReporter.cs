@@ -1,5 +1,4 @@
 using System;
-using Synthesis.Bethesda.Execution.Patchers.Running;
 
 namespace Synthesis.Bethesda.Execution.Reporters
 {
@@ -16,29 +15,29 @@ namespace Synthesis.Bethesda.Execution.Reporters
             throw ex;
         }
 
-        public void ReportPrepProblem(object? key, IPatcherRun patcher, Exception ex)
+        public void ReportPrepProblem(object? key, string name, Exception ex)
         {
             throw ex;
         }
 
-        public void ReportRunProblem(object? key, IPatcherRun patcher, Exception ex)
+        public void ReportRunProblem(object? key, string name, Exception ex)
         {
             throw ex;
         }
 
-        public void ReportStartingRun(object? key, IPatcherRun patcher)
+        public void ReportStartingRun(object? key, string name)
         {
         }
 
-        public void ReportRunSuccessful(object? key, IPatcherRun patcher, string outputPath)
+        public void ReportRunSuccessful(object? key, string name, string outputPath)
         {
         }
 
-        public void Write(object? key, IPatcherRun? patcher, string str)
+        public void Write(object? key, string? name, string str)
         {
         }
 
-        public void WriteError(object? key, IPatcherRun? patcher, string str)
+        public void WriteError(object? key, string? name, string str)
         {
         }
     }

@@ -1,6 +1,5 @@
 using Noggog;
 using System;
-using Synthesis.Bethesda.Execution.Patchers.Running;
 
 namespace Synthesis.Bethesda.Execution.Reporters
 {
@@ -12,36 +11,36 @@ namespace Synthesis.Bethesda.Execution.Reporters
             System.Console.Error.WriteLine(ex);
         }
 
-        public void ReportPrepProblem(object? key, IPatcherRun patcher, Exception ex)
+        public void ReportPrepProblem(object? key, string name, Exception ex)
         {
-            System.Console.Error.WriteLine($"[{patcher.Name}] Preparation error:");
+            System.Console.Error.WriteLine($"[{name}] Preparation error:");
             System.Console.Error.WriteLine(ex);
         }
 
-        public void ReportRunProblem(object? key, IPatcherRun patcher, Exception ex)
+        public void ReportRunProblem(object? key, string name, Exception ex)
         {
-            System.Console.Error.WriteLine($"[{patcher.Name}] Run error:");
+            System.Console.Error.WriteLine($"[{name}] Run error:");
             System.Console.Error.WriteLine(ex);
         }
 
-        public void ReportRunSuccessful(object? key, IPatcherRun patcher, string outputPath)
+        public void ReportRunSuccessful(object? key, string name, string outputPath)
         {
-            System.Console.WriteLine($"[{patcher.Name}] Run successful.");
+            System.Console.WriteLine($"[{name}] Run successful.");
         }
 
-        public void ReportStartingRun(object? key, IPatcherRun patcher)
+        public void ReportStartingRun(object? key, string name)
         {
-            System.Console.WriteLine($"[{patcher.Name}] Starting run.");
+            System.Console.WriteLine($"[{name}] Starting run.");
         }
 
-        public void Write(object? key, IPatcherRun? patcher, string str)
+        public void Write(object? key, string? name, string str)
         {
-            System.Console.WriteLine($"{patcher?.Name.Decorate(x => $"[{x}] ")}{str}");
+            System.Console.WriteLine($"{name?.Decorate(x => $"[{x}] ")}{str}");
         }
 
-        public void WriteError(object? key, IPatcherRun? patcher, string str)
+        public void WriteError(object? key, string? name, string str)
         {
-            System.Console.Error.WriteLine($"{patcher?.Name.Decorate(x => $"[{x}] ")}{str}");
+            System.Console.Error.WriteLine($"{name?.Decorate(x => $"[{x}] ")}{str}");
         }
     }
 }

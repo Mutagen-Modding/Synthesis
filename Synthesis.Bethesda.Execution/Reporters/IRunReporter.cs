@@ -10,11 +10,11 @@ namespace Synthesis.Bethesda.Execution.Reporters
     public interface IRunReporter<TKey>
     {
         void ReportOverallProblem(Exception ex);
-        void ReportPrepProblem(TKey key, IPatcherRun patcher, Exception ex);
-        void ReportRunProblem(TKey key, IPatcherRun patcher, Exception ex);
-        void ReportStartingRun(TKey key, IPatcherRun patcher);
-        void ReportRunSuccessful(TKey key, IPatcherRun patcher, string outputPath);
-        void Write(TKey key, IPatcherRun? patcher, string str);
-        void WriteError(TKey key, IPatcherRun? patcher, string str);
+        void ReportPrepProblem(TKey key, string name, Exception ex);
+        void ReportRunProblem(TKey key, string name, Exception ex);
+        void ReportStartingRun(TKey key, string name);
+        void ReportRunSuccessful(TKey key, string name, string outputPath);
+        void Write(TKey key, string? name, string str);
+        void WriteError(TKey key, string? name, string str);
     }
 }
