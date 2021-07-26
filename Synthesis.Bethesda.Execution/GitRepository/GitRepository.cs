@@ -5,7 +5,7 @@ using System.Linq;
 using LibGit2Sharp;
 using Noggog;
 
-namespace Synthesis.Bethesda.Execution.GitRespository
+namespace Synthesis.Bethesda.Execution.GitRepository
 {
     public interface IGitRepository : IDisposable
     {

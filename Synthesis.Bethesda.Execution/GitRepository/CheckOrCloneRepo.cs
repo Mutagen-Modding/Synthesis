@@ -4,7 +4,7 @@ using LibGit2Sharp;
 using Noggog;
 using Serilog;
 
-namespace Synthesis.Bethesda.Execution.GitRespository
+namespace Synthesis.Bethesda.Execution.GitRepository
 {
     public interface ICheckOrCloneRepo
     {

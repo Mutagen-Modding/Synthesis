@@ -11,7 +11,7 @@ using Noggog.WPF;
 using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;

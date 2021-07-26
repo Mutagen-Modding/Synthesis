@@ -3,7 +3,7 @@ using AutoFixture;
 using FluentAssertions;
 using Noggog;
 using Serilog;
-using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 

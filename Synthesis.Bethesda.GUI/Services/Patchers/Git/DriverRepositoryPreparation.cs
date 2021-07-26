@@ -5,7 +5,7 @@ using System.Reactive.Linq;
 using Noggog;
 using Noggog.Reactive;
 using Serilog;
-using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Logging;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running;

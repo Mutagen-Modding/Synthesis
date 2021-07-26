@@ -21,7 +21,7 @@ using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 

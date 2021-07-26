@@ -2,7 +2,7 @@
 using System.Reactive.Disposables;
 using FluentAssertions;
 using NSubstitute;
-using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.GitRepository;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository

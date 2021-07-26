@@ -12,7 +12,7 @@ using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using NuGet.Versioning;
 using Serilog;
-using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 

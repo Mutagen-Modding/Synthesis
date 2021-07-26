@@ -6,7 +6,7 @@ using AutoFixture.Kernel;
 using Noggog.Reactive;
 using NSubstitute;
 using Serilog;
-using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.GitRepository;
 
 namespace Synthesis.Bethesda.UnitTests
 {

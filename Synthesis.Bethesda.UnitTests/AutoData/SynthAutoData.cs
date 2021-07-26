@@ -3,7 +3,7 @@ using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using Noggog.Testing.AutoFixture;
 using Serilog;
-using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.GitRepository;
 using Xunit;
 using GameRelease = Mutagen.Bethesda.GameRelease;
 

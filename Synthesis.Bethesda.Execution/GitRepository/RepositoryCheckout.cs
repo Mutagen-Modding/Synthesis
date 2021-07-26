@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Synthesis.Bethesda.Execution.GitRespository
+namespace Synthesis.Bethesda.Execution.GitRepository
 {
     public class RepositoryCheckout : IDisposable
     {

@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using Serilog;
-using Synthesis.Bethesda.Execution.GitRespository;
 using Xunit;
 using AutoFixture;
 using FluentAssertions;
@@ -10,6 +9,7 @@ using LibGit2Sharp;
 using Noggog;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
                 nameof(DeleteOldRepoTests),
                 out var remote, out var local,
                 createPatcherFiles: false);
-            using var repo = new Bethesda.Execution.GitRespository.GitRepository(new Repository(local));
+            using var repo = new Bethesda.Execution.GitRepository.GitRepository(new Repository(local));
             sut.IsRepositoryUndesirable(repo)
                 .Should().BeFalse();
         }

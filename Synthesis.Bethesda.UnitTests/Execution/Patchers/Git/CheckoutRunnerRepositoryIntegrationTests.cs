@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using NSubstitute;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.Execution.GitRespository;
+using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Xunit;
 
