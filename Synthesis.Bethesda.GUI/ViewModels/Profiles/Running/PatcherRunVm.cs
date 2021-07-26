@@ -6,9 +6,7 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.Running;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
@@ -40,6 +38,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 
         [Reactive]
         public bool AutoScrolling { get; set; }
+
+        public delegate PatcherRunVm Factory(PatchersRunVm parent, PatcherVm config);
 
         public PatcherRunVm(PatchersRunVm parent, PatcherVm config, IPatcherRun run)
         {

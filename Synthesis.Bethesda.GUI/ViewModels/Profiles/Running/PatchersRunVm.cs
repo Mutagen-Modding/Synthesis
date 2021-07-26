@@ -60,6 +60,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
         public PatchersRunVm(
             ConfigurationVm configuration,
             ILogger logger,
+            IPatcherRunnerFactory runnerFactory,
             IActivePanelControllerVm activePanelController,
             ProfileVm profile,
             IRunner runner)
@@ -70,7 +71,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
             RunningProfile = profile;
             Patchers.AddOrUpdate(RunningProfile.Patchers.Items
                 .Where(x => x.IsOn)
-                .Select(p => p.ToRunner(this)));
+                .Select(p => runnerFactory.ToRunner(this, p)));
             PatchersDisplay = Patchers.Connect()
                 .ToObservableCollection(this);
             if (profile.SelectedPatcher != null

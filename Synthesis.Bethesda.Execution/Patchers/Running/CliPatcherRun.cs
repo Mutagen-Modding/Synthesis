@@ -36,8 +36,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
         private readonly IPatcherNameProvider _Name;
         private readonly IPatcherExtraDataPathProvider _ExtraDataPathProvider;
 
-        public delegate ICliPatcherRun Factory(string nickname, string pathToExecutable, string? pathToExtra);
-
         public CliPatcherRun(
             IProcessFactory processFactory,
             IPatcherNameProvider name,

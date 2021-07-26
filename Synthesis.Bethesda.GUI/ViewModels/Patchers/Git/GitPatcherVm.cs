@@ -28,7 +28,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
     public class GitPatcherVm : PatcherVm, IPathToProjProvider, IPathToSolutionFileProvider
     {
         private readonly ILogger _Logger;
-        private readonly ILifetimeScope _Scope;
         public override bool IsNameEditable => false;
 
         public ISelectedProjectInputVm SelectedProjectInput { get; }
@@ -109,10 +108,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IAttemptedCheckout attemptedCheckout,
             PatcherSettingsVm.Factory settingsVmFactory,
             GithubPatcherSettings? settings = null)
-            : base(nameVm, remove, selPatcher, confirmation, settings)
+            : base(scope, nameVm, remove, selPatcher, confirmation, settings)
         {
             _Logger = logger;
-            _Scope = scope;
             SelectedProjectInput = selectedProjectInput;
             RemoteRepoPathInput = remoteRepoPathInputVm;
             Locking = lockToCurrentVersioning;
@@ -269,13 +267,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             this.LastSuccessfulRun = settings.LastSuccessfulRun;
         }
 
-        public override PatcherRunVm ToRunner(PatchersRunVm parent)
+        public override void PrepForRun()
         {
+            base.PrepForRun();
             PatcherSettings.Persist();
-            return new PatcherRunVm(
-                parent,
-                this,
-                _Scope.Resolve<ISolutionPatcherRun>());
         }
 
         public override void Delete()

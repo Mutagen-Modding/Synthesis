@@ -80,6 +80,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             .Transform(x => x.ModKey);
 
         public SolutionPatcherVm(
+            ILifetimeScope scope,
             IPatcherNameVm nameVm,
             IProfileLoadOrder loadOrder,
             IRemovePatcherFromProfile remove,
@@ -91,10 +92,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             PatcherSettingsVm.Factory settingsVmFactory,
             IAvailableProjects availableProjects,
             ISolutionMetaFileSync metaFileSync,
-            ILifetimeScope scope,
             INavigateTo navigateTo,
             SolutionPatcherSettings? settings = null)
-            : base(nameVm, remove, profileDisplay, confirmation, settings)
+            : base(scope, nameVm, remove, profileDisplay, confirmation, settings)
         {
             SolutionPathInput = solutionPathInput;
             SelectedProjectInput = selectedProjectInput;
@@ -174,13 +174,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             this.SelectedProjectInput.ProjectSubpath = settings.ProjectSubpath;
         }
 
-        public override PatcherRunVm ToRunner(PatchersRunVm parent)
+        public override void PrepForRun()
         {
+            base.PrepForRun();
             PatcherSettings.Persist();
-            return new PatcherRunVm(
-                parent,
-                this,
-                _Scope.Resolve<ISolutionPatcherRun>());
         }
 
         public void SetRequiredMods(IEnumerable<ModKey> modKeys)

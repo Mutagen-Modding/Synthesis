@@ -2,6 +2,8 @@ using System;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Windows.Input;
+using Autofac;
+using Autofac.Core;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -17,6 +19,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
 {
     public abstract class PatcherVm : ViewModel
     {
+        public ILifetimeScope Scope { get; }
         public IPatcherNameVm NameVm { get; }
         private readonly IRemovePatcherFromProfile _Remove;
 
@@ -48,12 +51,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         public virtual bool IsNameEditable => true;
 
         public PatcherVm(
+            ILifetimeScope scope,
             IPatcherNameVm nameVm,
             IRemovePatcherFromProfile remove,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             PatcherSettings? settings)
         {
+            Scope = scope;
+            Scope.DisposeWith(this);
             NameVm = nameVm;
             _Remove = remove;
             DisplayedObject = this;
@@ -110,8 +116,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
             settings.Nickname = NameVm.Name;
         }
 
-        public abstract PatcherRunVm ToRunner(PatchersRunVm parent);
-
         public virtual void Delete()
         {
             _Remove.Remove(this);
@@ -120,6 +124,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         protected ILogger Logger => Log.Logger.ForContext(nameof(PatcherVm.NameVm.Name), NameVm.Name);
 
         public virtual void SuccessfulRunCompleted()
+        {
+        }
+
+        public virtual void PrepForRun()
         {
         }
     }
