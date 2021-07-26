@@ -3,7 +3,7 @@ using System;
 
 namespace Synthesis.Bethesda.Execution.Reporters
 {
-    public class ConsoleReporter : IRunReporter<object?>
+    public class ConsoleReporter : IRunReporter
     {
         public void ReportOverallProblem(Exception ex)
         {

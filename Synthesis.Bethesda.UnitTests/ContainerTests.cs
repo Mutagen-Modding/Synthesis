@@ -6,6 +6,7 @@ using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog;
 using Noggog.Autofac;
 using NSubstitute;
+using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers;
