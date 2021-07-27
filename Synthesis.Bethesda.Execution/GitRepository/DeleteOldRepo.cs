@@ -32,12 +32,12 @@ namespace Synthesis.Bethesda.Execution.GitRepository
         {
             if (!localDir.Exists)
             {
-                _Logger.Information("No local repository exists at {LocalDirectory}.  No cleaning to do.", localDir);
+                _Logger.Information("No local repository exists at {LocalDirectory}.  No cleaning to do", localDir);
                 return false;
             }
             if (remoteUrl.Failed)
             {
-                _Logger.Warning("No remote repository.  Deleting local at {LocalDirectory}.", localDir);
+                _Logger.Warning("No remote repository.  Deleting local at {LocalDirectory}", localDir);
                 localDir.DeleteEntireFolder();
                 return false;
             }
@@ -51,13 +51,13 @@ namespace Synthesis.Bethesda.Execution.GitRepository
                 // If it's the same remote repo, don't delete
                 if (repo.MainRemoteUrl?.Equals(remoteUrl.Value) ?? false)
                 {
-                    _Logger.Information("Remote repository target matched local folder's repo at {LocalDirectory}.  Keeping clone.", localDir);
+                    _Logger.Information("Remote repository target matched local folder's repo at {LocalDirectory}.  Keeping clone", localDir);
                     return true;
                 }
             }
             catch (RepositoryNotFoundException)
             {
-                _Logger.Error("Repository corrupted.  Deleting local at {LocalDirectory}.", localDir);
+                _Logger.Error("Repository corrupted.  Deleting local at {LocalDirectory}", localDir);
                 localDir.DeleteEntireFolder();
                 return false;
             }
