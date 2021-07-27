@@ -33,11 +33,17 @@ namespace Synthesis.Bethesda.ImpactTester
                     var tester = builder.Build().Resolve<Tester>();
                     if (args.Length == 2)
                     {
-                        await tester.DoWork(args[0], args[1], cancel.Token);
+                        await tester.DoWork(
+                            new NugetVersionPair(
+                                args[0],
+                                args[1]), 
+                            cancel.Token);
                     }
                     else
                     {
-                        await tester.DoWork(null, null, cancel.Token);
+                        await tester.DoWork(
+                            new NugetVersionPair(null, null), 
+                            cancel.Token);
                     }
                 }),
                 Task.Run(() =>

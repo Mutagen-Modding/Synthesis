@@ -20,5 +20,12 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             logger.Information("Mutagen Nuget: {Versioning} {Version}", Mutagen.Versioning, Mutagen.Version);
             logger.Information("Synthesis Nuget: {Versioning} {Version}", Synthesis.Versioning, Synthesis.Version);
         }
+        
+        public NugetVersionPair ReturnIfMatch(NugetVersionPair pair)
+        {
+            return new NugetVersionPair(
+                Mutagen: Mutagen.Versioning == NugetVersioningEnum.Match ? pair.Mutagen : Mutagen.Version,
+                Synthesis: Synthesis.Versioning == NugetVersioningEnum.Match ? pair.Synthesis : Synthesis.Version);
+        }
     }
 }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Xml.Linq;
-using Mutagen.Bethesda;
-using Mutagen.Bethesda.Synthesis.Versioning;
-using Noggog;
 using NuGet.Versioning;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
@@ -16,10 +11,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject
         void Modify(
             string solutionPath,
             string drivingProjSubPath,
-            string? mutagenVersion,
-            out string? listedMutagenVersion,
-            string? synthesisVersion,
-            out string? listedSynthesisVersion);
+            NugetVersionPair versions,
+            out NugetVersionPair listedVersions);
     }
 
     public class ModifyRunnerProjects : IModifyRunnerProjects
@@ -65,13 +58,10 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject
         public void Modify(
             string solutionPath,
             string drivingProjSubPath,
-            string? mutagenVersion,
-            out string? listedMutagenVersion,
-            string? synthesisVersion,
-            out string? listedSynthesisVersion)
+            NugetVersionPair versions,
+            out NugetVersionPair listedVersions)
         {
-            listedMutagenVersion = null;
-            listedSynthesisVersion = null;
+            listedVersions = new NugetVersionPair(null, null);
 
             string? TrimVersion(string? version)
             {
@@ -81,27 +71,25 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject
                 return version.Substring(0, index);
             }
 
-            var trimmedMutagenVersion = TrimVersion(mutagenVersion);
-            var trimmedsynthesisVersion = TrimVersion(synthesisVersion);
+            var trimmedMutagenVersion = TrimVersion(versions.Mutagen);
+            var trimmedSynthesisVersion = TrimVersion(versions.Synthesis);
             foreach (var subProj in _availableProjectsRetriever.Get(solutionPath))
             {
                 var proj = Path.Combine(Path.GetDirectoryName(solutionPath)!, subProj);
                 var projXml = XElement.Parse(File.ReadAllText(proj));
                 _swapDesiredVersions.Swap(
                     projXml,
-                    mutagenVersion: mutagenVersion,
-                    listedMutagenVersion: out var curListedMutagenVersion,
-                    synthesisVersion: synthesisVersion,
-                    listedSynthesisVersion: out var curListedSynthesisVersion);
+                    versions,
+                    out var curListedVersions);
                 _turnOffNullability.TurnOff(projXml);
                 _removeGitInfo.Remove(projXml);
                 _swapOffNetCore.Swap(projXml);
                 _turnOffWindowsSpec.TurnOff(projXml);
-                System.Version.TryParse(curListedMutagenVersion, out var mutaVersion);
-                System.Version.TryParse(curListedSynthesisVersion, out var synthVersion);
+                System.Version.TryParse(curListedVersions.Mutagen, out var mutaVersion);
+                System.Version.TryParse(curListedVersions.Synthesis, out var synthVersion);
                 _addNewtonsoftToOldSetups.Add(projXml, mutaVersion, synthVersion);
                 System.Version.TryParse(trimmedMutagenVersion, out var targetMutaVersion);
-                System.Version.TryParse(trimmedsynthesisVersion, out var targetSynthesisVersion);
+                System.Version.TryParse(trimmedSynthesisVersion, out var targetSynthesisVersion);
                 if ((targetMutaVersion != null
                     && targetMutaVersion >= NewtonSoftRemoveMutaVersion)
                     || (targetSynthesisVersion != null
@@ -121,8 +109,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject
 
                 if (drivingProjSubPath.Equals(subProj))
                 {
-                    listedMutagenVersion = curListedMutagenVersion;
-                    listedSynthesisVersion = curListedSynthesisVersion;
+                    listedVersions = curListedVersions;
                 }
             }
             foreach (var item in Directory.EnumerateFiles(Path.GetDirectoryName(solutionPath)!, "Directory.Build.*"))

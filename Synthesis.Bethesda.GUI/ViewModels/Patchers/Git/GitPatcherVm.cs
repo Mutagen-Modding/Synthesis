@@ -184,9 +184,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 compliationProvider.State.Select(c =>
                     {
                         if (c.RunnableState.Failed) return (c.RunnableState.BubbleFailure<FilePath>(), null);
-                        return (GetResponse<FilePath>.Succeed(c.Item.ProjPath), c.Item.TargetSynthesisVersion);
+                        return (GetResponse<FilePath>.Succeed(c.Item.ProjPath), c.Item.TargetVersions.Synthesis);
                     })
-                    .DistinctUntilChanged(x => (x.Item1.Value, x.TargetSynthesisVersion)))
+                    .DistinctUntilChanged(x => (x.Item1.Value, x.Synthesis)))
                 .DisposeWith(this);
 
             _StatusDisplay = gitStatusDisplay.StatusDisplay

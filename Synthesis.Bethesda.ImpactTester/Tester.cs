@@ -32,19 +32,21 @@ namespace Synthesis.Bethesda.ImpactTester
         }
         
         public async Task DoWork(
-            string? mutagenVersion,
-            string? synthesisVersion,
+            NugetVersionPair versions,
             CancellationToken cancel)
         {
             using var temp = TempFolder.Factory();
             var failedDeps = new List<Dependent>();
             var projResults = new List<ProjectResult>();
 
-            mutagenVersion ??= Versions.MutagenVersion;
-            synthesisVersion ??= Versions.SynthesisVersion;
+            versions = versions with
+            {
+                Mutagen = versions.Mutagen ?? Versions.MutagenVersion,
+                Synthesis = versions.Synthesis ?? Versions.SynthesisVersion,
+            };
 
-            System.Console.WriteLine($"Mutagen: {mutagenVersion}");
-            System.Console.WriteLine($"Synthesis: {synthesisVersion}");
+            System.Console.WriteLine($"Mutagen: {versions.Mutagen}");
+            System.Console.WriteLine($"Synthesis: {versions.Synthesis}");
 
             var deps = await GitHubDependents.GitHubDependents.GetDependents(
                     user: RegistryConstants.GithubUser,
@@ -95,9 +97,7 @@ namespace Synthesis.Bethesda.ImpactTester
                         _modifyRunnerProjects.Modify(
                             solutionPath: slnPath,
                             drivingProjSubPath: string.Empty,
-                            mutagenVersion: mutagenVersion,
-                            out var _,
-                            synthesisVersion: synthesisVersion,
+                            versions: versions,
                             out var _);
 
                         foreach (var proj in SolutionPatcherRun.AvailableProjectSubpaths(slnPath))

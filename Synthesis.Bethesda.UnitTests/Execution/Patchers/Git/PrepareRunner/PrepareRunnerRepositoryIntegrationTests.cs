@@ -9,7 +9,6 @@ using LibGit2Sharp;
 using Noggog;
 using NSubstitute;
 using Serilog;
-using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
@@ -27,6 +26,11 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
         {
             var availableProjectsRetriever = new AvailableProjectsRetriever(
                 IFileSystemExt.DefaultFilesystem);
+            var modify = Substitute.For<IModifyRunnerProjects>();
+            modify.WhenForAnyArgs(x => x.Modify(default!, default!, default!, out _)).Do(x =>
+            {
+                x[3] = new NugetVersionPair(null, null);
+            });
             return new PrepareRunnerRepository(
                 Substitute.For<ILogger>(),
                 new CheckoutRunnerBranch(),
@@ -35,7 +39,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
                 new FullProjectPathRetriever(
                     IFileSystemExt.DefaultFilesystem,
                     availableProjectsRetriever),
-                Substitute.For<IModifyRunnerProjects>(),
+                modify,
                 new GetRepoTarget(),
                 new RetrieveCommit(
                     new ShouldFetchIfMissing()),

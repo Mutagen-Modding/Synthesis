@@ -2,6 +2,7 @@
 using System.Xml.Linq;
 using FluentAssertions;
 using Noggog;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
@@ -42,10 +43,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.ModifyProject
             var projXml = XElement.Parse(projStr);
             sut.Swap(
                 projXml,
-                mutagenVersion: "0",
-                listedMutagenVersion: out var _,
-                synthesisVersion: "0",
-                listedSynthesisVersion: out var _,
+                new NugetVersionPair(Mutagen: "0", Synthesis: "0"),
+                out var _,
                 addMissing: false);
             projXml.ToString()
                 .Should()
@@ -61,10 +60,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.ModifyProject
             var projXml = XElement.Parse(projStr);
             sut.Swap(
                 projXml, 
-                mutagenVersion: "2.0",
-                listedMutagenVersion: out var _,
-                synthesisVersion: "3.1",
-                listedSynthesisVersion: out var _,
+                new NugetVersionPair(Mutagen: "2.0", Synthesis: "3.1"),
+                out var _,
                 addMissing: false);
             var swapString = projXml.ToString();
             var expectedString = CreateProj(
@@ -84,10 +81,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.ModifyProject
             var projXml = XElement.Parse(projStr);
             sut.Swap(
                 projXml,
-                mutagenVersion: "2.0",
-                listedMutagenVersion: out var _,
-                synthesisVersion: "3.1",
-                listedSynthesisVersion: out var _,
+                new NugetVersionPair(Mutagen: "2.0", Synthesis: "3.1"),
+                out var _,
                 addMissing: false);
             var swapString = projXml.ToString();
             var expectedString = CreateProj(
@@ -108,10 +103,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.ModifyProject
             var projXml = XElement.Parse(projStr);
             sut.Swap(
                 projXml,
-                mutagenVersion: "2.0", 
-                listedMutagenVersion: out var _,
-                synthesisVersion: "3.1",
-                listedSynthesisVersion: out var _,
+                new NugetVersionPair(Mutagen: "2.0", Synthesis: "3.1"),
+                out var _,
                 addMissing: false);
             var swapString = projXml.ToString();
             var expectedString = CreateProj(
@@ -132,10 +125,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.ModifyProject
             var projXml = XElement.Parse(projStr);
             sut.Swap(
                 projXml,
-                mutagenVersion: "2.0",
-                listedMutagenVersion: out var _,
-                synthesisVersion: "3.1",
-                listedSynthesisVersion: out var _,
+                new NugetVersionPair(Mutagen: "2.0", Synthesis: "3.1"),
+                out var _,
                 addMissing: true);
             var swapString = projXml.ToString();
             var expectedString = CreateProj(
@@ -157,10 +148,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.ModifyProject
             var projXml = XElement.Parse(projStr);
             sut.Swap(
                 projXml,
-                mutagenVersion: null,
-                listedMutagenVersion: out var _,
-                synthesisVersion: null,
-                listedSynthesisVersion: out var _);
+                new NugetVersionPair(null, null),
+                out var _);
             var swapString = projXml.ToString();
             var expectedString = CreateProj(
                 ("Mutagen.Bethesda", "0.0.0"),
@@ -179,10 +168,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.ModifyProject
             var projXml = XElement.Parse(projStr);
             sut.Swap(
                 projXml,
-                mutagenVersion: "0.1.0",
-                listedMutagenVersion: out var _,
-                synthesisVersion: null,
-                listedSynthesisVersion: out var _);
+                new NugetVersionPair(Mutagen: "0.1.0", Synthesis: null),
+                out var _);
             var swapString = projXml.ToString();
             var expectedString = CreateProj(
                 ("Mutagen.Bethesda.Synthesis", "0.3.0"),

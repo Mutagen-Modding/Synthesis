@@ -103,10 +103,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
                 _modifyRunnerProjects.Modify(
                     slnPath,
                     drivingProjSubPath: foundProjSubPath,
-                    mutagenVersion: nugetVersioning.Mutagen.ReturnIfMatch(null),
-                    listedMutagenVersion: out var listedMutagenVersion,
-                    synthesisVersion: nugetVersioning.Synthesis.ReturnIfMatch(null),
-                    listedSynthesisVersion: out var listedSynthesisVersion);
+                    versions: nugetVersioning.ReturnIfMatch(new NugetVersionPair(null, null)),
+                    listedVersions: out var listedVersions);
 
                 var runInfo = new RunnerRepoInfo(
                     SolutionPath: slnPath,
@@ -114,10 +112,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
                     Target: targets.Value.Target,
                     CommitMessage: commit.Value.CommitMessage,
                     CommitDate: commit.Value.CommitDate,
-                    ListedSynthesisVersion: listedSynthesisVersion,
-                    ListedMutagenVersion: listedMutagenVersion,
-                    TargetSynthesisVersion: nugetVersioning.Synthesis.ReturnIfMatch(listedSynthesisVersion),
-                    TargetMutagenVersion: nugetVersioning.Mutagen.ReturnIfMatch(listedMutagenVersion));
+                    ListedVersions: listedVersions,
+                    TargetVersions: nugetVersioning.ReturnIfMatch(listedVersions));
 
                 return GetResponse<RunnerRepoInfo>.Succeed(runInfo);
             }

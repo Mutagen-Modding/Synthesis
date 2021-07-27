@@ -10,8 +10,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         string? Target,
         string CommitMessage,
         DateTime CommitDate,
-        string? ListedMutagenVersion,
-        string? ListedSynthesisVersion,
-        string? TargetMutagenVersion,
-        string? TargetSynthesisVersion);
+        NugetVersionPair ListedVersions,
+        NugetVersionPair TargetVersions);
 }
