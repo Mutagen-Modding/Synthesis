@@ -9,20 +9,20 @@ namespace Synthesis.Bethesda.Execution.GitRepository
 {
     public interface IGitRepository : IDisposable
     {
-        IEnumerable<Branch> Branches { get; }
+        IEnumerable<IBranch> Branches { get; }
         IEnumerable<Tag> Tags { get; }
         string CurrentSha { get; }
-        Branch? MainBranch { get; }
+        IBranch? MainBranch { get; }
         string WorkingDirectory { get; }
         string? MainRemoteUrl { get; }
         void Fetch();
         void ResetHard();
-        void ResetHard(Commit commit);
-        Commit? TryGetCommit(string sha, out bool validSha);
-        Branch TryCreateBranch(string branchName);
-        bool TryGetBranch(string branchName, [MaybeNullWhen(false)] out Branch branch);
+        void ResetHard(ICommit commit);
+        ICommit? TryGetCommit(string sha, out bool validSha);
+        IBranch TryCreateBranch(string branchName);
+        bool TryGetBranch(string branchName, [MaybeNullWhen(false)] out IBranch branch);
         bool TryGetTagSha(string tagName, [MaybeNullWhen(false)] out string sha);
-        void Checkout(Branch branch);
+        void Checkout(IBranch branch);
         void Pull();
         void Stage(string path);
         void Commit(string message, Signature signature);
@@ -33,10 +33,20 @@ namespace Synthesis.Bethesda.Execution.GitRepository
         private static Signature PlaceholderSignature = new("please", "whymustidothis@gmail.com", DateTimeOffset.Now);
         private readonly Repository _Repository;
 
-        public IEnumerable<Branch> Branches => _Repository.Branches;
+        public IEnumerable<IBranch> Branches => _Repository.Branches.Select(x => new BranchWrapper(x));
         public IEnumerable<Tag> Tags => _Repository.Tags;
         public string CurrentSha => _Repository.Head.Tip.Sha;
-        public Branch? MainBranch => _Repository.Branches.FirstOrDefault(b => b.IsCurrentRepositoryHead);
+
+        public IBranch? MainBranch
+        {
+            get
+            {
+                var ret = _Repository.Branches.FirstOrDefault(b => b.IsCurrentRepositoryHead);
+                if (ret == null) return null;
+                return new BranchWrapper(ret);
+            }
+        }
+        
         public string WorkingDirectory => _Repository.Info.WorkingDirectory;
         public string? MainRemoteUrl => _Repository.Network.Remotes.FirstOrDefault()?.Url;
 
@@ -55,27 +65,37 @@ namespace Synthesis.Bethesda.Execution.GitRepository
             _Repository.Reset(ResetMode.Hard);
         }
 
-        public void ResetHard(Commit commit)
+        public void ResetHard(ICommit commit)
         {
-            _Repository.Reset(ResetMode.Hard, commit, new CheckoutOptions());
+            _Repository.Reset(ResetMode.Hard, commit.GetUnderlying(), new CheckoutOptions());
         }
 
-        public Commit? TryGetCommit(string sha, out bool validSha)
+        public ICommit? TryGetCommit(string sha, out bool validSha)
         {
             validSha = ObjectId.TryParse(sha, out var objId);
             if (!validSha) return null;
-            return _Repository.Lookup(objId, ObjectType.Commit) as Commit;
+            var ret = _Repository.Lookup(objId, ObjectType.Commit) as Commit;
+            if (ret == null) return null;
+            return new CommitWrapper(ret);
         }
 
-        public Branch TryCreateBranch(string branchName)
+        public IBranch TryCreateBranch(string branchName)
         {
-            return _Repository.Branches[branchName] ?? _Repository.CreateBranch(branchName);
+            return new BranchWrapper(
+                _Repository.Branches[branchName] ?? _Repository.CreateBranch(branchName));
         }
 
-        public bool TryGetBranch(string branchName, [MaybeNullWhen(false)] out Branch branch)
+        public bool TryGetBranch(string branchName, [MaybeNullWhen(false)] out IBranch branch)
         {
-            branch = _Repository.Branches[branchName];
-            return branch != null;
+            var branchDirect = _Repository.Branches[branchName];
+            if (branchDirect != null)
+            {
+                branch = new BranchWrapper(branchDirect);
+                return true;
+            }
+
+            branch = default;
+            return false;
         }
 
         public bool TryGetTagSha(string tagName, [MaybeNullWhen(false)] out string sha)
@@ -84,9 +104,9 @@ namespace Synthesis.Bethesda.Execution.GitRepository
             return !sha.IsNullOrWhitespace();
         }
 
-        public void Checkout(Branch branch)
+        public void Checkout(IBranch branch)
         {
-            Commands.Checkout(_Repository, branch);
+            Commands.Checkout(_Repository, branch.GetUnderlying());
         }
         
         public void Pull()
