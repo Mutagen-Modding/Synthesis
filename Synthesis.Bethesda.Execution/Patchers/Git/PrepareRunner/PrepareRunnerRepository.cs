@@ -7,46 +7,49 @@ using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
-using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git.CheckoutRunner
+namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
 {
-    public interface ICheckoutRunnerRepository
+    public interface IPrepareRunnerRepository
     {
         Task<ConfigurationState<RunnerRepoInfo>> Checkout(
             string proj,
             DirectoryPath localRepoDir,
             GitPatcherVersioning patcherVersioning,
             NugetVersioningTarget nugetVersioning,
-            CancellationToken cancel,
-            bool compile = true);
+            CancellationToken cancel);
     }
 
-    public class CheckoutRunnerRepository : ICheckoutRunnerRepository
+    public class PrepareRunnerRepository : IPrepareRunnerRepository
     {
         private readonly ILogger _logger;
-        private readonly IBuild _build;
+        private readonly ICheckoutRunnerBranch _checkoutRunnerBranch;
         private readonly ISolutionFileLocator _solutionFileLocator;
         private readonly IFullProjectPathRetriever _fullProjectPathRetriever;
         private readonly IModifyRunnerProjects _modifyRunnerProjects;
+        private readonly IGetRepoTarget _getRepoTarget;
+        private readonly IRetrieveCommit _retrieveCommit;
         public IProvideRepositoryCheckouts RepoCheckouts { get; }
-        public const string RunnerBranch = "SynthesisRunner";
 
-        public CheckoutRunnerRepository(
+        public PrepareRunnerRepository(
             ILogger logger,
-            IBuild build,
+            ICheckoutRunnerBranch checkoutRunnerBranch,
             ISolutionFileLocator solutionFileLocator,
             IFullProjectPathRetriever fullProjectPathRetriever,
             IModifyRunnerProjects modifyRunnerProjects,
+            IGetRepoTarget getRepoTarget,
+            IRetrieveCommit retrieveCommit,
             IProvideRepositoryCheckouts repoCheckouts)
         {
             _logger = logger;
-            _build = build;
+            _checkoutRunnerBranch = checkoutRunnerBranch;
             _solutionFileLocator = solutionFileLocator;
             _fullProjectPathRetriever = fullProjectPathRetriever;
             _modifyRunnerProjects = modifyRunnerProjects;
+            _getRepoTarget = getRepoTarget;
+            _retrieveCommit = retrieveCommit;
             RepoCheckouts = repoCheckouts;
         }
         
@@ -55,8 +58,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.CheckoutRunner
             DirectoryPath localRepoDir,
             GitPatcherVersioning patcherVersioning,
             NugetVersioningTarget nugetVersioning,
-            CancellationToken cancel,
-            bool compile = true)
+            CancellationToken cancel)
         {
             try
             {
@@ -66,72 +68,33 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.CheckoutRunner
 
                 using var repoCheckout = RepoCheckouts.Get(localRepoDir);
                 var repo = repoCheckout.Repository;
-                var runnerBranch = repo.TryCreateBranch(RunnerBranch);
-                repo.ResetHard();
-                repo.Checkout(runnerBranch);
-                string? targetSha;
-                string? target;
-                bool fetchIfMissing = patcherVersioning.Versioning switch
-                {
-                    PatcherVersioningEnum.Commit => true,
-                    _ => false
-                };
-                switch (patcherVersioning.Versioning)
-                {
-                    case PatcherVersioningEnum.Tag:
-                        if (string.IsNullOrWhiteSpace(patcherVersioning.Target)) return GetResponse<RunnerRepoInfo>.Fail("No tag selected");
-                        repo.Fetch();
-                        if (!repo.TryGetTagSha(patcherVersioning.Target, out targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate tag");
-                        target = patcherVersioning.Target;
-                        break;
-                    case PatcherVersioningEnum.Commit:
-                        targetSha = patcherVersioning.Target;
-                        if (string.IsNullOrWhiteSpace(targetSha)) return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit");
-                        target = patcherVersioning.Target;
-                        break;
-                    case PatcherVersioningEnum.Branch:
-                        if (string.IsNullOrWhiteSpace(patcherVersioning.Target)) return GetResponse<RunnerRepoInfo>.Fail($"Target branch had no name.");
-                        repo.Fetch();
-                        if (!repo.TryGetBranch(patcherVersioning.Target, out var targetBranch)) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate branch: {patcherVersioning.Target}");
-                        targetSha = targetBranch.Tip.Sha;
-                        target = patcherVersioning.Target;
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
+                
+                _checkoutRunnerBranch.Checkout(repo);
+                
+                var targets = _getRepoTarget.Get(
+                    repo, 
+                    patcherVersioning);
+                if (targets.Failed) return targets.BubbleFailure<RunnerRepoInfo>();
 
-                var commit = repo.TryGetCommit(targetSha, out var validSha);
-                if (!validSha)
-                {
-                    return GetResponse<RunnerRepoInfo>.Fail("Malformed sha string");
-                }
+                var commit = _retrieveCommit.TryGet(
+                    repo,
+                    targets.Value,
+                    patcherVersioning,
+                    cancel);
+                if (commit.Failed) return commit.BubbleFailure<RunnerRepoInfo>();
 
                 cancel.ThrowIfCancellationRequested();
-                if (commit == null)
-                {
-                    if (!fetchIfMissing)
-                    {
-                        return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit with given sha");
-                    }
-                    repo.Fetch();
-                    commit = repo.TryGetCommit(targetSha, out _);
-                    if (commit == null)
-                    {
-                        return GetResponse<RunnerRepoInfo>.Fail("Could not locate commit with given sha");
-                    }
-                }
-
-                cancel.ThrowIfCancellationRequested();
+                
                 var slnPath = _solutionFileLocator.GetPath(localRepoDir);
                 if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
 
                 var foundProjSubPath = _fullProjectPathRetriever.Get(slnPath, proj);
-
                 if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {proj}.");
 
                 cancel.ThrowIfCancellationRequested();
-                _logger.Information("Checking out {TargetSha}", targetSha);
-                repo.ResetHard(commit);
+                
+                _logger.Information("Checking out {TargetSha}", targets.Value.TargetSha);
+                repo.ResetHard(commit.Value);
 
                 var projPath = Path.Combine(localRepoDir, foundProjSubPath);
 
@@ -149,21 +112,13 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.CheckoutRunner
                 var runInfo = new RunnerRepoInfo(
                     SolutionPath: slnPath,
                     ProjPath: projPath,
-                    Target: target,
-                    CommitMessage: commit.CommitMessage,
-                    CommitDate: commit.CommitDate,
+                    Target: targets.Value.Target,
+                    CommitMessage: commit.Value.CommitMessage,
+                    CommitDate: commit.Value.CommitDate,
                     ListedSynthesisVersion: listedSynthesisVersion,
                     ListedMutagenVersion: listedMutagenVersion,
                     TargetSynthesisVersion: nugetVersioning.SynthesisVersioning == NugetVersioningEnum.Match ? listedSynthesisVersion : nugetVersioning.SynthesisVersion,
                     TargetMutagenVersion: nugetVersioning.MutagenVersioning == NugetVersioningEnum.Match ? listedMutagenVersion : nugetVersioning.MutagenVersion);
-
-                // Compile to help prep
-                if (compile)
-                {
-                    var compileResp = await _build.Compile(projPath, cancel);
-                    _logger.Information("Finished compiling");
-                    if (compileResp.Failed) return compileResp.BubbleResult(runInfo);
-                }
 
                 return GetResponse<RunnerRepoInfo>.Succeed(runInfo);
             }

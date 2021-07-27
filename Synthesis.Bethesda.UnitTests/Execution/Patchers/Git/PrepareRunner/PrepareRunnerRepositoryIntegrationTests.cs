@@ -12,29 +12,32 @@ using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Git.CheckoutRunner;
 using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
+using Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Settings;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
+namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
 {
-    public class CheckoutRunnerRepositoryIntegrationTests : RepoTestUtility
+    public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     {
-        private CheckoutRunnerRepository Get(string local)
+        private PrepareRunnerRepository Get()
         {
             var availableProjectsRetriever = new AvailableProjectsRetriever(
                 IFileSystemExt.DefaultFilesystem);
-            return new CheckoutRunnerRepository(
+            return new PrepareRunnerRepository(
                 Substitute.For<ILogger>(),
-                Substitute.For<IBuild>(),
+                new CheckoutRunnerBranch(),
                 new SolutionFileLocator(
                     IFileSystemExt.DefaultFilesystem),
                 new FullProjectPathRetriever(
                     IFileSystemExt.DefaultFilesystem,
                     availableProjectsRetriever),
                 Substitute.For<IModifyRunnerProjects>(),
+                new GetRepoTarget(),
+                new RetrieveCommit(
+                    new ShouldFetchIfMissing()),
                 new ProvideRepositoryCheckouts(Substitute.For<ILogger>()));
         }
         
@@ -53,7 +56,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
         public GitPatcherVersioning TypicalPatcherVersioning() =>
             new(
                 PatcherVersioningEnum.Branch,
-                target: DefaultBranch);
+                DefaultBranch);
 
         [DebuggerStepThrough]
         public NugetVersioningTarget TypicalNugetVersioning() =>
@@ -71,13 +74,12 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
             cancel.Cancel();
             await Assert.ThrowsAsync<OperationCanceledException>(() =>
             {
-                return Get(string.Empty).Checkout(
+                return Get().Checkout(
                     proj: string.Empty,
                     localRepoDir: string.Empty,
                     patcherVersioning: null!,
                     nugetVersioning: null!,
-                    cancel: cancel.Token,
-                    compile: false);
+                    cancel: cancel.Token);
             });
         }
 
@@ -85,51 +87,48 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
         public async Task CreatesRunnerBranch()
         {
             using var repoPath = GetRepository(
-                nameof(CheckoutRunnerRepositoryIntegrationTests),
+                nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
-            var resp = await Get(local).Checkout(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: TypicalPatcherVersioning(),
                 nugetVersioning: TypicalNugetVersioning(),
-                cancel: CancellationToken.None,
-                compile: false);
+                cancel: CancellationToken.None);
             using var repo = new Repository(local);
-            repo.Branches.Select(x => x.FriendlyName).Should().Contain(CheckoutRunnerRepository.RunnerBranch);
+            repo.Branches.Select(x => x.FriendlyName).Should().Contain(CheckoutRunnerBranch.RunnerBranch);
         }
 
         [Fact]
-        public async Task NonExistantProjPath()
+        public async Task NonExistentProjPath()
         {
             using var repoPath = GetRepository(
-                nameof(CheckoutRunnerRepositoryIntegrationTests),
+                nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
-            var resp = await Get(local).Checkout(
+            var resp = await Get().Checkout(
                 proj: string.Empty,
                 localRepoDir: local,
                 patcherVersioning: TypicalPatcherVersioning(),
                 nugetVersioning: TypicalNugetVersioning(),
-                cancel: CancellationToken.None,
-                compile: false);
+                cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeTrue();
             resp.RunnableState.Succeeded.Should().BeFalse();
             resp.RunnableState.Reason.Should().Contain("Could not locate target project file");
         }
 
         [Fact]
-        public async Task NonExistantSlnPath()
+        public async Task NonExistentSlnPath()
         {
             using var repoPath = GetRepository(
-                nameof(CheckoutRunnerRepositoryIntegrationTests),
+                nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local,
                 createPatcherFiles: false);
-            var resp = await Get(local).Checkout(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: TypicalPatcherVersioning(),
                 nugetVersioning: TypicalNugetVersioning(),
-                cancel: CancellationToken.None,
-                compile: false);
+                cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeTrue();
             resp.RunnableState.Succeeded.Should().BeFalse();
             resp.RunnableState.Reason.Should().Contain("Could not locate solution");
@@ -139,16 +138,15 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
         public async Task UnknownSha()
         {
             using var repoPath = GetRepository(
-                nameof(CheckoutRunnerRepositoryIntegrationTests),
+                nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, "46c207318c1531de7dc2f8e8c2a91aced183bc30");
-            var resp = await Get(local).Checkout(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                cancel: CancellationToken.None,
-                compile: false);
+                cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeTrue();
             resp.RunnableState.Succeeded.Should().BeFalse();
             resp.RunnableState.Reason.Should().Contain("Could not locate commit with given sha");
@@ -158,16 +156,15 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
         public async Task MalformedSha()
         {
             using var repoPath = GetRepository(
-                nameof(CheckoutRunnerRepositoryIntegrationTests),
+                nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, "derp");
-            var resp = await Get(local).Checkout(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                cancel: CancellationToken.None,
-                compile: false);
+                cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeTrue();
             resp.RunnableState.Succeeded.Should().BeFalse();
             resp.RunnableState.Reason.Should().Contain("Malformed sha string");
@@ -177,31 +174,30 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
         public async Task TagTarget()
         {
             using var repoPath = GetRepository(
-                nameof(CheckoutRunnerRepositoryIntegrationTests),
+                nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
             var tagStr = "1.3.4";
             using var repo = new Repository(local);
             var tipSha = repo.Head.Tip.Sha;
             repo.Tags.Add(tagStr, tipSha);
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tagStr);
-            var resp = await Get(local).Checkout(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                cancel: CancellationToken.None,
-                compile: false);
+                cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
-            repo.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
+            repo.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
         }
 
         [Fact]
         public async Task TagTargetNoLocal()
         {
             using var repoPath = GetRepository(
-                nameof(CheckoutRunnerRepositoryIntegrationTests),
+                nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
             var tagStr = "1.3.4";
             string tipSha;
@@ -219,24 +215,23 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
             using var clone = new Repository(Repository.Clone(remote, clonePath));
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tagStr);
-            var resp = await Get(local).Checkout(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                cancel: CancellationToken.None,
-                compile: false);
+                cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             clone.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
-            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
+            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
         }
 
         [Fact]
         public async Task TagTargetJumpback()
         {
             using var repoPath = GetRepository(
-                nameof(CheckoutRunnerRepositoryIntegrationTests),
+                nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
             var tag = "1.3.4";
             using var repo = new Repository(local);
@@ -247,24 +242,23 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
             repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tag);
-            var resp = await Get(local).Checkout(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                cancel: CancellationToken.None,
-                compile: false);
+                cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
-            repo.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
+            repo.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
         }
 
         [Fact]
         public async Task TagTargetNewContent()
         {
             using var repoPath = GetRepository(
-                nameof(CheckoutRunnerRepositoryIntegrationTests),
+                nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
 
             var clonePath = Path.Combine(repoPath.Dir.Path, "Clone");
@@ -281,24 +275,23 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
             }
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tagStr);
-            var resp = await Get(local).Checkout(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                cancel: CancellationToken.None,
-                compile: false);
+                cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             clone.Head.Tip.Sha.Should().BeEquivalentTo(commitSha);
-            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
+            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
         }
 
         [Fact]
         public async Task CommitTargetJumpback()
         {
             using var repoPath = GetRepository(
-                nameof(CheckoutRunnerRepositoryIntegrationTests),
+                nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
             using var repo = new Repository(local);
             var tipSha = repo.Head.Tip.Sha;
@@ -307,24 +300,23 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
             repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, tipSha);
-            var resp = await Get(local).Checkout(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                cancel: CancellationToken.None,
-                compile: false);
+                cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
-            repo.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
+            repo.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
         }
 
         [Fact]
         public async Task CommitTargetNoLocal()
         {
             using var repoPath = GetRepository(
-                nameof(CheckoutRunnerRepositoryIntegrationTests),
+                nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
             string tipSha;
             {
@@ -339,24 +331,23 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
             using var clone = new Repository(Repository.Clone(remote, clonePath));
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, tipSha);
-            var resp = await Get(local).Checkout(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                cancel: CancellationToken.None,
-                compile: false);
+                cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             clone.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
-            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
+            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
         }
 
         [Fact]
         public async Task CommitTargetNewContent()
         {
             using var repoPath = GetRepository(
-                nameof(CheckoutRunnerRepositoryIntegrationTests),
+                nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
 
             var clonePath = Path.Combine(repoPath.Dir.Path, "Clone");
@@ -372,24 +363,23 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
             }
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, commitSha);
-            var resp = await Get(local).Checkout(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                cancel: CancellationToken.None,
-                compile: false);
+                cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             clone.Head.Tip.Sha.Should().BeEquivalentTo(commitSha);
-            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
+            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
         }
 
         [Fact]
         public async Task BranchTargetJumpback()
         {
             using var repoPath = GetRepository(
-                nameof(CheckoutRunnerRepositoryIntegrationTests),
+                nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
             using var repo = new Repository(local);
             var tipSha = repo.Head.Tip.Sha;
@@ -405,17 +395,16 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
             repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, jbName);
-            var resp = await Get(local).Checkout(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: local,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                cancel: CancellationToken.None,
-                compile: false);
+                cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
-            repo.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
+            repo.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
             repo.Branches[jbName].Tip.Sha.Should().BeEquivalentTo(tipSha);
             repo.Branches[DefaultBranch].Tip.Sha.Should().BeEquivalentTo(commit.Sha);
         }
@@ -424,7 +413,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
         public async Task BranchTargetNoLocal()
         {
             using var repoPath = GetRepository(
-                nameof(CheckoutRunnerRepositoryIntegrationTests),
+                nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
             var jbName = "Jumpback";
             string tipSha;
@@ -449,17 +438,16 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
             using var clone = new Repository(Repository.Clone(remote, clonePath));
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, $"origin/{jbName}");
-            var resp = await Get(local).Checkout(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                cancel: CancellationToken.None,
-                compile: false);
+                cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             clone.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
-            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
+            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
             clone.Branches[jbName].Should().BeNull();
             clone.Branches[DefaultBranch].Tip.Sha.Should().BeEquivalentTo(commitSha);
         }
@@ -468,7 +456,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
         public async Task BranchNewContent()
         {
             using var repoPath = GetRepository(
-                nameof(CheckoutRunnerRepositoryIntegrationTests),
+                nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
             string tipSha;
             string commitSha;
@@ -484,17 +472,16 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
             }
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, $"origin/{DefaultBranch}");
-            var resp = await Get(local).Checkout(
+            var resp = await Get().Checkout(
                 proj: ProjPath,
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                cancel: CancellationToken.None,
-                compile: false);
+                cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
             clone.Head.Tip.Sha.Should().BeEquivalentTo(commitSha);
-            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerRepository.RunnerBranch);
+            clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
             clone.Branches[DefaultBranch].Tip.Sha.Should().BeEquivalentTo(tipSha);
         }
         #endregion

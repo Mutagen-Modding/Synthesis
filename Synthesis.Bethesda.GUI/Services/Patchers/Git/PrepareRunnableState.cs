@@ -3,7 +3,7 @@ using System.Reactive.Linq;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Git.CheckoutRunner;
+using Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
@@ -15,18 +15,18 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
     public class PrepareRunnableState : IPrepareRunnableState
     {
-        private readonly ICheckoutRunnerRepository _checkoutRunner;
+        private readonly IPrepareRunnerRepository _prepareRunner;
         private readonly IRunnerRepoDirectoryProvider _runnerRepoDirectoryProvider;
         private readonly CopyOverExtraData.Factory _copyOverFactory;
         public ILogger Logger { get; }
 
         public PrepareRunnableState(
             ILogger logger,
-            ICheckoutRunnerRepository checkoutRunner,
+            IPrepareRunnerRepository prepareRunner,
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             CopyOverExtraData.Factory copyOverFactory)
         {
-            _checkoutRunner = checkoutRunner;
+            _prepareRunner = prepareRunner;
             _runnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
             _copyOverFactory = copyOverFactory;
             Logger = logger;
@@ -62,22 +62,21 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                         IsHaltingError = false,
                     });
 
-                    var runInfo = await _checkoutRunner.Checkout(
+                    var runInfo = await _prepareRunner.Checkout(
                         proj: checkoutInput.Proj.Value,
                         localRepoDir: _runnerRepoDirectoryProvider.Path,
                         patcherVersioning: checkoutInput.PatcherVersioning,
                         nugetVersioning: checkoutInput.LibraryNugets.Value,
-                        cancel: cancel,
-                        compile: false);
+                        cancel: cancel);
 
                     if (runInfo.RunnableState.Failed)
                     {
-                        Logger.Error($"Checking out runner repository failed: {runInfo.RunnableState.Reason}");
+                        Logger.Error("Checking out runner repository failed: {Reason}", runInfo.RunnableState.Reason);
                         observer.OnNext(runInfo);
                         return;
                     }
 
-                    Logger.Error($"Checking out runner repository succeeded");
+                    Logger.Error("Checking out runner repository succeeded");
 
                     _copyOverFactory(
                         new DefaultDataPathProvider(
@@ -88,9 +87,8 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                 }
                 catch (Exception ex)
                 {
-                    var str = $"Error checking out runner repository: {ex}";
-                    Logger.Error(str);
-                    observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
+                    Logger.Error(ex, "Error checking out runner repository");
+                    observer.OnNext(ErrorResponse.Fail($"Error checking out runner repository: {ex}").BubbleFailure<RunnerRepoInfo>());
                 }
 
                 observer.OnCompleted();
