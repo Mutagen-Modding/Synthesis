@@ -11,6 +11,8 @@ using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using Noggog.Utility;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
@@ -18,10 +20,14 @@ namespace Synthesis.Bethesda.ImpactTester
 {
     public class Tester
     {
+        private readonly IModifyRunnerProjects _modifyRunnerProjects;
         private readonly IBuild _build;
 
-        public Tester(IBuild build)
+        public Tester(
+            IModifyRunnerProjects modifyRunnerProjects,
+            IBuild build)
         {
+            _modifyRunnerProjects = modifyRunnerProjects;
             _build = build;
         }
         
@@ -86,7 +92,7 @@ namespace Synthesis.Bethesda.ImpactTester
                             return;
                         }
 
-                        GitPatcherRun.ModifyProject(
+                        _modifyRunnerProjects.Modify(
                             solutionPath: slnPath,
                             drivingProjSubPath: string.Empty,
                             mutagenVersion: mutagenVersion,

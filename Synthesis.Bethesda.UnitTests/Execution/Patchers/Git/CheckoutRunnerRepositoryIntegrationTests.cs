@@ -1,31 +1,40 @@
-using FluentAssertions;
-using LibGit2Sharp;
-using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
+using LibGit2Sharp;
+using Noggog;
 using NSubstitute;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRepository;
+using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Git.CheckoutRunner;
+using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
+using Synthesis.Bethesda.Execution.Settings;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests
+namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
 {
     public class CheckoutRunnerRepositoryIntegrationTests : RepoTestUtility
     {
         private CheckoutRunnerRepository Get(string local)
         {
+            var availableProjectsRetriever = new AvailableProjectsRetriever(
+                IFileSystemExt.DefaultFilesystem);
             return new CheckoutRunnerRepository(
+                Substitute.For<ILogger>(),
                 Substitute.For<IBuild>(),
                 new SolutionFileLocator(
-                    new FileSystem()),
+                    IFileSystemExt.DefaultFilesystem),
+                new FullProjectPathRetriever(
+                    IFileSystemExt.DefaultFilesystem,
+                    availableProjectsRetriever),
+                Substitute.For<IModifyRunnerProjects>(),
                 new ProvideRepositoryCheckouts(Substitute.For<ILogger>()));
         }
         
@@ -67,7 +76,6 @@ namespace Synthesis.Bethesda.UnitTests
                     localRepoDir: string.Empty,
                     patcherVersioning: null!,
                     nugetVersioning: null!,
-                    logger: null,
                     cancel: cancel.Token,
                     compile: false);
             });
@@ -84,7 +92,6 @@ namespace Synthesis.Bethesda.UnitTests
                 localRepoDir: local,
                 patcherVersioning: TypicalPatcherVersioning(),
                 nugetVersioning: TypicalNugetVersioning(),
-                logger: null,
                 cancel: CancellationToken.None,
                 compile: false);
             using var repo = new Repository(local);
@@ -102,7 +109,6 @@ namespace Synthesis.Bethesda.UnitTests
                 localRepoDir: local,
                 patcherVersioning: TypicalPatcherVersioning(),
                 nugetVersioning: TypicalNugetVersioning(),
-                logger: null,
                 cancel: CancellationToken.None,
                 compile: false);
             resp.IsHaltingError.Should().BeTrue();
@@ -122,7 +128,6 @@ namespace Synthesis.Bethesda.UnitTests
                 localRepoDir: local,
                 patcherVersioning: TypicalPatcherVersioning(),
                 nugetVersioning: TypicalNugetVersioning(),
-                logger: null,
                 cancel: CancellationToken.None,
                 compile: false);
             resp.IsHaltingError.Should().BeTrue();
@@ -142,7 +147,6 @@ namespace Synthesis.Bethesda.UnitTests
                 localRepoDir: local,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                logger: null,
                 cancel: CancellationToken.None,
                 compile: false);
             resp.IsHaltingError.Should().BeTrue();
@@ -162,7 +166,6 @@ namespace Synthesis.Bethesda.UnitTests
                 localRepoDir: local,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                logger: null,
                 cancel: CancellationToken.None,
                 compile: false);
             resp.IsHaltingError.Should().BeTrue();
@@ -186,7 +189,6 @@ namespace Synthesis.Bethesda.UnitTests
                 localRepoDir: local,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                logger: null,
                 cancel: CancellationToken.None,
                 compile: false);
             resp.IsHaltingError.Should().BeFalse();
@@ -222,7 +224,6 @@ namespace Synthesis.Bethesda.UnitTests
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                logger: null,
                 cancel: CancellationToken.None,
                 compile: false);
             resp.IsHaltingError.Should().BeFalse();
@@ -251,7 +252,6 @@ namespace Synthesis.Bethesda.UnitTests
                 localRepoDir: local,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                logger: null,
                 cancel: CancellationToken.None,
                 compile: false);
             resp.IsHaltingError.Should().BeFalse();
@@ -286,7 +286,6 @@ namespace Synthesis.Bethesda.UnitTests
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                logger: null,
                 cancel: CancellationToken.None,
                 compile: false);
             resp.IsHaltingError.Should().BeFalse();
@@ -313,7 +312,6 @@ namespace Synthesis.Bethesda.UnitTests
                 localRepoDir: local,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                logger: null,
                 cancel: CancellationToken.None,
                 compile: false);
             resp.IsHaltingError.Should().BeFalse();
@@ -346,7 +344,6 @@ namespace Synthesis.Bethesda.UnitTests
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                logger: null,
                 cancel: CancellationToken.None,
                 compile: false);
             resp.IsHaltingError.Should().BeFalse();
@@ -380,7 +377,6 @@ namespace Synthesis.Bethesda.UnitTests
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                logger: null,
                 cancel: CancellationToken.None,
                 compile: false);
             resp.IsHaltingError.Should().BeFalse();
@@ -414,7 +410,6 @@ namespace Synthesis.Bethesda.UnitTests
                 localRepoDir: local,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                logger: null,
                 cancel: CancellationToken.None,
                 compile: false);
             resp.IsHaltingError.Should().BeFalse();
@@ -459,7 +454,6 @@ namespace Synthesis.Bethesda.UnitTests
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                logger: null,
                 cancel: CancellationToken.None,
                 compile: false);
             resp.IsHaltingError.Should().BeFalse();
@@ -495,7 +489,6 @@ namespace Synthesis.Bethesda.UnitTests
                 localRepoDir: clonePath,
                 patcherVersioning: versioning,
                 nugetVersioning: TypicalNugetVersioning(),
-                logger: null,
                 cancel: CancellationToken.None,
                 compile: false);
             resp.IsHaltingError.Should().BeFalse();

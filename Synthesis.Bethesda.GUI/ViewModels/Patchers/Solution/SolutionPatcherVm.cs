@@ -89,7 +89,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             ISolutionPathInputVm solutionPathInput,
             ISelectedProjectInputVm selectedProjectInput,
             PatcherSettingsVm.Factory settingsVmFactory,
-            IAvailableProjects availableProjects,
+            IAvailableProjectsFollower availableProjectsFollower,
             ISolutionMetaFileSync metaFileSync,
             INavigateTo navigateTo,
             IPatcherIdProvider idProvider,
@@ -102,8 +102,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             _Scope = scope;
             CopyInSettings(settings);
 
-            AvailableProjects = availableProjects.Process(
-                this.WhenAnyValue(x => x.SolutionPathInput.Picker.TargetPath))
+            AvailableProjects = availableProjectsFollower.Process(
+                this.WhenAnyValue(x => x.SolutionPathInput.Picker.TargetPath).Select(x => new FilePath(x)))
                 .ObserveOnGui()
                 .ToObservableCollection(this);
 

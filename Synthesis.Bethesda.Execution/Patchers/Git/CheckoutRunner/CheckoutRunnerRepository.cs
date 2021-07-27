@@ -2,51 +2,59 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using LibGit2Sharp;
 using Noggog;
+using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRepository;
+using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git
+namespace Synthesis.Bethesda.Execution.Patchers.Git.CheckoutRunner
 {
     public interface ICheckoutRunnerRepository
     {
         Task<ConfigurationState<RunnerRepoInfo>> Checkout(
             string proj,
-            string localRepoDir,
+            DirectoryPath localRepoDir,
             GitPatcherVersioning patcherVersioning,
             NugetVersioningTarget nugetVersioning,
-            Action<string>? logger,
             CancellationToken cancel,
             bool compile = true);
     }
 
     public class CheckoutRunnerRepository : ICheckoutRunnerRepository
     {
+        private readonly ILogger _logger;
         private readonly IBuild _build;
         private readonly ISolutionFileLocator _solutionFileLocator;
+        private readonly IFullProjectPathRetriever _fullProjectPathRetriever;
+        private readonly IModifyRunnerProjects _modifyRunnerProjects;
         public IProvideRepositoryCheckouts RepoCheckouts { get; }
         public const string RunnerBranch = "SynthesisRunner";
 
         public CheckoutRunnerRepository(
+            ILogger logger,
             IBuild build,
             ISolutionFileLocator solutionFileLocator,
+            IFullProjectPathRetriever fullProjectPathRetriever,
+            IModifyRunnerProjects modifyRunnerProjects,
             IProvideRepositoryCheckouts repoCheckouts)
         {
+            _logger = logger;
             _build = build;
             _solutionFileLocator = solutionFileLocator;
+            _fullProjectPathRetriever = fullProjectPathRetriever;
+            _modifyRunnerProjects = modifyRunnerProjects;
             RepoCheckouts = repoCheckouts;
         }
         
         public async Task<ConfigurationState<RunnerRepoInfo>> Checkout(
             string proj,
-            string localRepoDir,
+            DirectoryPath localRepoDir,
             GitPatcherVersioning patcherVersioning,
             NugetVersioningTarget nugetVersioning,
-            Action<string>? logger,
             CancellationToken cancel,
             bool compile = true)
         {
@@ -54,7 +62,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             {
                 cancel.ThrowIfCancellationRequested();
 
-                logger?.Invoke($"Targeting {patcherVersioning}");
+                _logger.Information("Targeting {PatcherVersioning}", patcherVersioning);
 
                 using var repoCheckout = RepoCheckouts.Get(localRepoDir);
                 var repo = repoCheckout.Repository;
@@ -117,20 +125,20 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 var slnPath = _solutionFileLocator.GetPath(localRepoDir);
                 if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
 
-                var foundProjSubPath = SolutionPatcherRun.AvailableProject(slnPath, proj);
+                var foundProjSubPath = _fullProjectPathRetriever.Get(slnPath, proj);
 
                 if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {proj}.");
 
                 cancel.ThrowIfCancellationRequested();
-                logger?.Invoke($"Checking out {targetSha}");
+                _logger.Information("Checking out {TargetSha}", targetSha);
                 repo.ResetHard(commit);
 
                 var projPath = Path.Combine(localRepoDir, foundProjSubPath);
 
                 cancel.ThrowIfCancellationRequested();
-                logger?.Invoke($"Mutagen Nuget: {nugetVersioning.MutagenVersioning} {nugetVersioning.MutagenVersion}");
-                logger?.Invoke($"Synthesis Nuget: {nugetVersioning.SynthesisVersioning} {nugetVersioning.SynthesisVersion}");
-                GitPatcherRun.ModifyProject(
+                _logger.Information("Mutagen Nuget: {Versioning} {Version}", nugetVersioning.MutagenVersioning, nugetVersioning.MutagenVersion);
+                _logger.Information("Synthesis Nuget: {Versioning} {Version}", nugetVersioning.SynthesisVersioning, nugetVersioning.SynthesisVersion);
+                _modifyRunnerProjects.Modify(
                     slnPath,
                     drivingProjSubPath: foundProjSubPath,
                     mutagenVersion: nugetVersioning.MutagenVersioning == NugetVersioningEnum.Match ? null : nugetVersioning.MutagenVersion,
@@ -153,7 +161,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
                 if (compile)
                 {
                     var compileResp = await _build.Compile(projPath, cancel);
-                    logger?.Invoke("Finished compiling");
+                    _logger.Information("Finished compiling");
                     if (compileResp.Failed) return compileResp.BubbleResult(runInfo);
                 }
 

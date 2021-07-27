@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Git.CheckoutRunner;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
@@ -66,7 +67,6 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                         localRepoDir: _runnerRepoDirectoryProvider.Path,
                         patcherVersioning: checkoutInput.PatcherVersioning,
                         nugetVersioning: checkoutInput.LibraryNugets.Value,
-                        logger: (s) => Logger.Information(s),
                         cancel: cancel,
                         compile: false);
 

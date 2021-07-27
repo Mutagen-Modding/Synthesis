@@ -1,17 +1,14 @@
+﻿using System.Linq;
+using System.Xml.Linq;
 using FluentAssertions;
 using Noggog;
-using Synthesis.Bethesda.Execution.Patchers.Git;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Linq;
-using Synthesis.Bethesda.Execution.Patchers.Running;
+using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
+using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests
+namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.ModifyProject
 {
-    public class VersionSwapInTests
+    public class SwapInDesiredVersionsForProjectStringTests
     {
         private static void CreateProj(out XElement root, out XElement refs)
         {
@@ -37,32 +34,32 @@ namespace Synthesis.Bethesda.UnitTests
             }
             return root.ToString();
         }
-
-        [Fact]
-        public void None()
+        
+        [Theory, SynthAutoData]
+        public void None(SwapInDesiredVersionsForProjectString sut)
         {
             var projStr = CreateProj();
             var projXml = XElement.Parse(projStr);
-            GitPatcherRun.SwapInDesiredVersionsForProjectString(
-                    projXml,
-                    mutagenVersion: "0",
-                    listedMutagenVersion: out var _,
-                    synthesisVersion: "0",
-                    listedSynthesisVersion: out var _,
-                    addMissing: false);
+            sut.Swap(
+                projXml,
+                mutagenVersion: "0",
+                listedMutagenVersion: out var _,
+                synthesisVersion: "0",
+                listedSynthesisVersion: out var _,
+                addMissing: false);
             projXml.ToString()
                 .Should()
                 .BeEquivalentTo(projStr);
         }
 
-        [Fact]
-        public void NoUpgrade()
+        [Theory, SynthAutoData]
+        public void NoUpgrade(SwapInDesiredVersionsForProjectString sut)
         {
             var projStr = CreateProj(
                 ("Mutagen.Bethesda", "2.0"),
             ("Mutagen.Bethesda.Synthesis", "3.1"));
             var projXml = XElement.Parse(projStr);
-            GitPatcherRun.SwapInDesiredVersionsForProjectString(
+            sut.Swap(
                 projXml, 
                 mutagenVersion: "2.0",
                 listedMutagenVersion: out var _,
@@ -78,14 +75,14 @@ namespace Synthesis.Bethesda.UnitTests
                 .BeEquivalentTo(expectedString);
         }
 
-        [Fact]
-        public void TypicalUpgrade()
+        [Theory, SynthAutoData]
+        public void TypicalUpgrade(SwapInDesiredVersionsForProjectString sut)
         {
             var projStr = CreateProj(
                 ("Mutagen.Bethesda", "0.0.0"),
                 ("Mutagen.Bethesda.Synthesis", "0.1.0"));
             var projXml = XElement.Parse(projStr);
-            GitPatcherRun.SwapInDesiredVersionsForProjectString(
+            sut.Swap(
                 projXml,
                 mutagenVersion: "2.0",
                 listedMutagenVersion: out var _,
@@ -101,15 +98,15 @@ namespace Synthesis.Bethesda.UnitTests
                 .BeEquivalentTo(expectedString);
         }
 
-        [Fact]
-        public void MultipleUpgrade()
+        [Theory, SynthAutoData]
+        public void MultipleUpgrade(SwapInDesiredVersionsForProjectString sut)
         {
             var projStr = CreateProj(
                 ("Mutagen.Bethesda", "0.0.0"),
                 ("Mutagen.Bethesda.Oblivion", "0.1.0"),
                 ("Mutagen.Bethesda.Synthesis", "0.1.0"));
             var projXml = XElement.Parse(projStr);
-            GitPatcherRun.SwapInDesiredVersionsForProjectString(
+            sut.Swap(
                 projXml,
                 mutagenVersion: "2.0", 
                 listedMutagenVersion: out var _,
@@ -126,14 +123,14 @@ namespace Synthesis.Bethesda.UnitTests
                 .BeEquivalentTo(expectedString);
         }
 
-        [Fact]
-        public void AddMissingMutagen()
+        [Theory, SynthAutoData]
+        public void AddMissingMutagen(SwapInDesiredVersionsForProjectString sut)
         {
             var projStr = CreateProj(
                 ("Mutagen.Bethesda.Synthesis", "0.1.0"),
                 ("Mutagen.Bethesda.Oblivion", "0.1.0"));
             var projXml = XElement.Parse(projStr);
-            GitPatcherRun.SwapInDesiredVersionsForProjectString(
+            sut.Swap(
                 projXml,
                 mutagenVersion: "2.0",
                 listedMutagenVersion: out var _,
@@ -143,44 +140,22 @@ namespace Synthesis.Bethesda.UnitTests
             var swapString = projXml.ToString();
             var expectedString = CreateProj(
                 ("Mutagen.Bethesda.Synthesis", "3.1").AsEnumerable()
-                    .And(GitPatcherRun.MutagenLibraries.Select(x => (x, "2.0")))
+                    .And(SwapInDesiredVersionsForProjectString.MutagenLibraries.Select(x => (x, "2.0")))
                     .ToArray());
             swapString
                 .Should()
                 .BeEquivalentTo(expectedString);
         }
 
-        [Fact]
-        public void RemoveWarning()
-        {
-            var elem = new XElement("WarningsAsErrors", "nullable");
-            var root = new XElement("Project",
-                new XElement("PropertyGroup",
-                    elem));
-            GitPatcherRun.TurnOffNullability(root);
-            elem.Value.Should().BeEquivalentTo(string.Empty);
-        }
-
-        [Fact]
-        public void RemoveWarningFromMany()
-        {
-            var elem = new XElement("WarningsAsErrors", "nullable,other");
-            var root = new XElement("Project",
-                new XElement("PropertyGroup",
-                    elem));
-            GitPatcherRun.TurnOffNullability(root);
-            elem.Value.Should().BeEquivalentTo("other");
-        }
-
-        [Fact]
-        public void Match()
+        [Theory, SynthAutoData]
+        public void Match(SwapInDesiredVersionsForProjectString sut)
         {
             var projStr = CreateProj(
                 ("Mutagen.Bethesda", "0.0.0"),
                 ("Mutagen.Bethesda.Oblivion", "0.1.0"),
                 ("Mutagen.Bethesda.Synthesis", "0.3.0"));
             var projXml = XElement.Parse(projStr);
-            GitPatcherRun.SwapInDesiredVersionsForProjectString(
+            sut.Swap(
                 projXml,
                 mutagenVersion: null,
                 listedMutagenVersion: out var _,
@@ -196,13 +171,13 @@ namespace Synthesis.Bethesda.UnitTests
                 .BeEquivalentTo(expectedString);
         }
 
-        [Fact]
-        public void NoMutagen()
+        [Theory, SynthAutoData]
+        public void NoMutagen(SwapInDesiredVersionsForProjectString sut)
         {
             var projStr = CreateProj(
                 ("Mutagen.Bethesda.Synthesis", "0.3.0"));
             var projXml = XElement.Parse(projStr);
-            GitPatcherRun.SwapInDesiredVersionsForProjectString(
+            sut.Swap(
                 projXml,
                 mutagenVersion: "0.1.0",
                 listedMutagenVersion: out var _,
