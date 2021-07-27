@@ -16,6 +16,7 @@ using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
 using Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
@@ -68,18 +69,16 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
                 synthesisVersioning: NugetVersioningEnum.Match);
 
         #region Checkout Runner
-        [Fact]
-        public async Task ThrowsIfCancelled()
+        [Theory, SynthAutoData]
+        public async Task ThrowsIfCancelled(
+            CheckoutInput checkoutInput,
+            CancellationToken cancelledToken)
         {
-            CancellationTokenSource cancel = new();
-            cancel.Cancel();
             await Assert.ThrowsAsync<OperationCanceledException>(() =>
             {
                 return Get(string.Empty).Checkout(
-                    proj: string.Empty,
-                    patcherVersioning: null!,
-                    nugetVersioning: null!,
-                    cancel: cancel.Token);
+                    checkoutInput,
+                    cancel: cancelledToken);
             });
         }
 
@@ -90,9 +89,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
                 nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
             var resp = await Get(local).Checkout(
-                proj: ProjPath,
-                patcherVersioning: TypicalPatcherVersioning(),
-                nugetVersioning: TypicalNugetVersioning(),
+                new CheckoutInput(
+                    ProjPath,
+                    TypicalPatcherVersioning(),
+                    TypicalNugetVersioning()),
                 cancel: CancellationToken.None);
             using var repo = new Repository(local);
             repo.Branches.Select(x => x.FriendlyName).Should().Contain(CheckoutRunnerBranch.RunnerBranch);
@@ -105,9 +105,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
                 nameof(PrepareRunnerRepositoryIntegrationTests),
                 out var remote, out var local);
             var resp = await Get(local).Checkout(
-                proj: string.Empty,
-                patcherVersioning: TypicalPatcherVersioning(),
-                nugetVersioning: TypicalNugetVersioning(),
+                new CheckoutInput(
+                    string.Empty,
+                    TypicalPatcherVersioning(),
+                    TypicalNugetVersioning()),
                 cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeTrue();
             resp.RunnableState.Succeeded.Should().BeFalse();
@@ -122,9 +123,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
                 out var remote, out var local,
                 createPatcherFiles: false);
             var resp = await Get(local).Checkout(
-                proj: ProjPath,
-                patcherVersioning: TypicalPatcherVersioning(),
-                nugetVersioning: TypicalNugetVersioning(),
+                new CheckoutInput(
+                    ProjPath,
+                    TypicalPatcherVersioning(),
+                    TypicalNugetVersioning()),
                 cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeTrue();
             resp.RunnableState.Succeeded.Should().BeFalse();
@@ -139,9 +141,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
                 out var remote, out var local);
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, "46c207318c1531de7dc2f8e8c2a91aced183bc30");
             var resp = await Get(local).Checkout(
-                proj: ProjPath,
-                patcherVersioning: versioning,
-                nugetVersioning: TypicalNugetVersioning(),
+                new CheckoutInput(
+                    ProjPath,
+                    versioning,
+                    TypicalNugetVersioning()),
                 cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeTrue();
             resp.RunnableState.Succeeded.Should().BeFalse();
@@ -156,9 +159,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
                 out var remote, out var local);
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, "derp");
             var resp = await Get(local).Checkout(
-                proj: ProjPath,
-                patcherVersioning: versioning,
-                nugetVersioning: TypicalNugetVersioning(),
+                new CheckoutInput(
+                    ProjPath,
+                    versioning,
+                    TypicalNugetVersioning()),
                 cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeTrue();
             resp.RunnableState.Succeeded.Should().BeFalse();
@@ -177,9 +181,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
             repo.Tags.Add(tagStr, tipSha);
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tagStr);
             var resp = await Get(local).Checkout(
-                proj: ProjPath,
-                patcherVersioning: versioning,
-                nugetVersioning: TypicalNugetVersioning(),
+                new CheckoutInput(
+                    ProjPath,
+                    versioning,
+                    TypicalNugetVersioning()),
                 cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
@@ -210,9 +215,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tagStr);
             var resp = await Get(clonePath).Checkout(
-                proj: ProjPath,
-                patcherVersioning: versioning,
-                nugetVersioning: TypicalNugetVersioning(),
+                new CheckoutInput(
+                    ProjPath,
+                    versioning,
+                    TypicalNugetVersioning()),
                 cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
@@ -236,9 +242,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tag);
             var resp = await Get(local).Checkout(
-                proj: ProjPath,
-                patcherVersioning: versioning,
-                nugetVersioning: TypicalNugetVersioning(),
+                new CheckoutInput(
+                    ProjPath,
+                    versioning,
+                    TypicalNugetVersioning()),
                 cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
@@ -268,9 +275,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tagStr);
             var resp = await Get(clonePath).Checkout(
-                proj: ProjPath,
-                patcherVersioning: versioning,
-                nugetVersioning: TypicalNugetVersioning(),
+                new CheckoutInput(
+                    ProjPath,
+                    versioning,
+                    TypicalNugetVersioning()),
                 cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
@@ -292,9 +300,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, tipSha);
             var resp = await Get(local).Checkout(
-                proj: ProjPath,
-                patcherVersioning: versioning,
-                nugetVersioning: TypicalNugetVersioning(),
+                new CheckoutInput(
+                    ProjPath,
+                    versioning,
+                    TypicalNugetVersioning()),
                 cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
@@ -322,9 +331,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, tipSha);
             var resp = await Get(clonePath).Checkout(
-                proj: ProjPath,
-                patcherVersioning: versioning,
-                nugetVersioning: TypicalNugetVersioning(),
+                new CheckoutInput(
+                    ProjPath,
+                    versioning,
+                    TypicalNugetVersioning()),
                 cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
@@ -353,9 +363,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, commitSha);
             var resp = await Get(clonePath).Checkout(
-                proj: ProjPath,
-                patcherVersioning: versioning,
-                nugetVersioning: TypicalNugetVersioning(),
+                new CheckoutInput(
+                    ProjPath,
+                    versioning,
+                    TypicalNugetVersioning()),
                 cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
@@ -384,9 +395,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, jbName);
             var resp = await Get(local).Checkout(
-                proj: ProjPath,
-                patcherVersioning: versioning,
-                nugetVersioning: TypicalNugetVersioning(),
+                new CheckoutInput(
+                    ProjPath,
+                    versioning,
+                    TypicalNugetVersioning()),
                 cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
@@ -426,9 +438,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, $"origin/{jbName}");
             var resp = await Get(clonePath).Checkout(
-                proj: ProjPath,
-                patcherVersioning: versioning,
-                nugetVersioning: TypicalNugetVersioning(),
+                new CheckoutInput(
+                    ProjPath,
+                    versioning,
+                    TypicalNugetVersioning()),
                 cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();
@@ -459,9 +472,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
 
             var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, $"origin/{DefaultBranch}");
             var resp = await Get(clonePath).Checkout(
-                proj: ProjPath,
-                patcherVersioning: versioning,
-                nugetVersioning: TypicalNugetVersioning(),
+                new CheckoutInput(
+                    ProjPath,
+                    versioning,
+                    TypicalNugetVersioning()),
                 cancel: CancellationToken.None);
             resp.IsHaltingError.Should().BeFalse();
             resp.RunnableState.Succeeded.Should().BeTrue();

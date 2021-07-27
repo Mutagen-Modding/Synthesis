@@ -10,7 +10,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
     public interface IPrepareRunnableState
     {
-        IObservable<ConfigurationState<RunnerRepoInfo>> Prepare(CheckoutInput checkoutInput);
+        IObservable<ConfigurationState<RunnerRepoInfo>> Prepare(PotentialCheckoutInput checkoutInput);
     }
 
     public class PrepareRunnableState : IPrepareRunnableState
@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             Logger = logger;
         }
         
-        public IObservable<ConfigurationState<RunnerRepoInfo>> Prepare(CheckoutInput checkoutInput)
+        public IObservable<ConfigurationState<RunnerRepoInfo>> Prepare(PotentialCheckoutInput checkoutInput)
         {
             return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
             {
@@ -60,9 +60,10 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                     });
 
                     var runInfo = await _prepareRunner.Checkout(
-                        proj: checkoutInput.Proj.Value,
-                        patcherVersioning: checkoutInput.PatcherVersioning,
-                        nugetVersioning: checkoutInput.LibraryNugets.Value,
+                        new CheckoutInput(
+                            checkoutInput.Proj.Value,
+                            checkoutInput.PatcherVersioning,
+                            checkoutInput.LibraryNugets.Value),
                         cancel: cancel);
 
                     if (runInfo.RunnableState.Failed)

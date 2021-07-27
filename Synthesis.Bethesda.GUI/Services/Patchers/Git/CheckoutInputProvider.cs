@@ -7,12 +7,12 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
     public interface ICheckoutInputProvider
     {
-        IObservable<CheckoutInput> Input { get; }
+        IObservable<PotentialCheckoutInput> Input { get; }
     }
 
     public class CheckoutInputProvider : ICheckoutInputProvider
     {
-        public IObservable<CheckoutInput> Input { get; }
+        public IObservable<PotentialCheckoutInput> Input { get; }
 
         public CheckoutInputProvider(
             IRunnerRepositoryPreparation runnerRepositoryState,
@@ -26,7 +26,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                         .Select(x => x.Succeeded ? x : GetResponse<string>.Fail("No patcher project selected.")),
                     patcherTargeting.ActivePatcherVersion,
                     nugetTargeting.ActiveNugetVersion,
-                    (runnerState, proj, patcherVersioning, libraryNugets) => new CheckoutInput(
+                    (runnerState, proj, patcherVersioning, libraryNugets) => new PotentialCheckoutInput(
                         runnerState,
                         proj,
                         patcherVersioning,

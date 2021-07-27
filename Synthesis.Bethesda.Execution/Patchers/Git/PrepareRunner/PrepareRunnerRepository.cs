@@ -15,9 +15,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
     public interface IPrepareRunnerRepository
     {
         Task<ConfigurationState<RunnerRepoInfo>> Checkout(
-            string proj,
-            GitPatcherVersioning patcherVersioning,
-            NugetVersioningTarget nugetVersioning,
+            CheckoutInput checkoutInput,
             CancellationToken cancel);
     }
 
@@ -56,18 +54,16 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
         }
         
         public async Task<ConfigurationState<RunnerRepoInfo>> Checkout(
-            string proj,
-            GitPatcherVersioning patcherVersioning,
-            NugetVersioningTarget nugetVersioning,
+            CheckoutInput checkoutInput,
             CancellationToken cancel)
         {
             try
             {
                 var localRepoDir = _runnerRepoDirectoryProvider.Path;
-
+                
                 cancel.ThrowIfCancellationRequested();
 
-                _logger.Information("Targeting {PatcherVersioning}", patcherVersioning);
+                _logger.Information("Targeting {PatcherVersioning}", checkoutInput.PatcherVersioning);
 
                 using var repoCheckout = RepoCheckouts.Get(localRepoDir);
                 var repo = repoCheckout.Repository;
@@ -76,13 +72,13 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
                 
                 var targets = _getRepoTarget.Get(
                     repo, 
-                    patcherVersioning);
+                    checkoutInput.PatcherVersioning);
                 if (targets.Failed) return targets.BubbleFailure<RunnerRepoInfo>();
 
                 var commit = _retrieveCommit.TryGet(
                     repo,
                     targets.Value,
-                    patcherVersioning,
+                    checkoutInput.PatcherVersioning,
                     cancel);
                 if (commit.Failed) return commit.BubbleFailure<RunnerRepoInfo>();
 
@@ -91,8 +87,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
                 var slnPath = _solutionFileLocator.GetPath(localRepoDir);
                 if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
 
-                var foundProjSubPath = _fullProjectPathRetriever.Get(slnPath, proj);
-                if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {proj}.");
+                var foundProjSubPath = _fullProjectPathRetriever.Get(slnPath, checkoutInput.Proj);
+                if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {checkoutInput.Proj}.");
 
                 cancel.ThrowIfCancellationRequested();
                 
@@ -102,8 +98,10 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
                 var projPath = Path.Combine(localRepoDir, foundProjSubPath);
 
                 cancel.ThrowIfCancellationRequested();
-                _logger.Information("Mutagen Nuget: {Versioning} {Version}", nugetVersioning.MutagenVersioning, nugetVersioning.MutagenVersion);
-                _logger.Information("Synthesis Nuget: {Versioning} {Version}", nugetVersioning.SynthesisVersioning, nugetVersioning.SynthesisVersion);
+
+                var nugetVersioning = checkoutInput.LibraryNugets;
+                nugetVersioning.Log(_logger);
+                
                 _modifyRunnerProjects.Modify(
                     slnPath,
                     drivingProjSubPath: foundProjSubPath,

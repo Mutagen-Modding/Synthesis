@@ -1,7 +1,6 @@
 using Synthesis.Bethesda.Execution.Settings;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using Serilog;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
@@ -41,6 +40,14 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         public override int GetHashCode()
         {
             return HashCode.Combine(MutagenVersion, MutagenVersioning, SynthesisVersion, SynthesisVersioning);
+        }
+
+        public void Log(ILogger logger)
+        {
+            logger.Information("Mutagen Nuget: {Versioning} {Version}", MutagenVersioning,
+                MutagenVersion);
+            logger.Information("Synthesis Nuget: {Versioning} {Version}", SynthesisVersioning,
+                SynthesisVersion);
         }
     }
 }

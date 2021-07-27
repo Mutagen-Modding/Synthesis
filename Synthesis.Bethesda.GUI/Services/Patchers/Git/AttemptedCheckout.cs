@@ -2,12 +2,12 @@
 {
     public interface IAttemptedCheckout
     {
-        bool Attempted(CheckoutInput input);
+        bool Attempted(PotentialCheckoutInput input);
     }
 
     public class AttemptedCheckout : IAttemptedCheckout
     {
-        public bool Attempted(CheckoutInput input)
+        public bool Attempted(PotentialCheckoutInput input)
         {
             return input.RunnerState.RunnableState.Succeeded
                    && input.Proj.Succeeded
