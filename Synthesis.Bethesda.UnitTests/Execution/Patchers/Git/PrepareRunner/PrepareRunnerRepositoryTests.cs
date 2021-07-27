@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Noggog;
@@ -12,16 +13,17 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
     public class PrepareRunnerRepositoryTests
     {
         [Theory, SynthAutoData]
-        public async Task CancellationDoesNotThrow(
+        public async Task CancellationRethrows(
             string proj,
-            DirectoryPath localRepoDir,
             GitPatcherVersioning patcherVersioning,
             NugetVersioningTarget nugetVersioning,
             CancellationToken cancelledToken,
             PrepareRunnerRepository sut)
         {
-            (await sut.Checkout(proj, localRepoDir, patcherVersioning, nugetVersioning, cancelledToken))
-                .RunnableState.Succeeded.Should().BeFalse();
+            await Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            {
+                await sut.Checkout(proj, patcherVersioning, nugetVersioning, cancelledToken);
+            });
         }
     }
 }

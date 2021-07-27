@@ -16,7 +16,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
     {
         Task<ConfigurationState<RunnerRepoInfo>> Checkout(
             string proj,
-            DirectoryPath localRepoDir,
             GitPatcherVersioning patcherVersioning,
             NugetVersioningTarget nugetVersioning,
             CancellationToken cancel);
@@ -31,6 +30,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
         private readonly IModifyRunnerProjects _modifyRunnerProjects;
         private readonly IGetRepoTarget _getRepoTarget;
         private readonly IRetrieveCommit _retrieveCommit;
+        private readonly IRunnerRepoDirectoryProvider _runnerRepoDirectoryProvider;
         public IProvideRepositoryCheckouts RepoCheckouts { get; }
 
         public PrepareRunnerRepository(
@@ -41,6 +41,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
             IModifyRunnerProjects modifyRunnerProjects,
             IGetRepoTarget getRepoTarget,
             IRetrieveCommit retrieveCommit,
+            IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             IProvideRepositoryCheckouts repoCheckouts)
         {
             _logger = logger;
@@ -50,18 +51,20 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
             _modifyRunnerProjects = modifyRunnerProjects;
             _getRepoTarget = getRepoTarget;
             _retrieveCommit = retrieveCommit;
+            _runnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
             RepoCheckouts = repoCheckouts;
         }
         
         public async Task<ConfigurationState<RunnerRepoInfo>> Checkout(
             string proj,
-            DirectoryPath localRepoDir,
             GitPatcherVersioning patcherVersioning,
             NugetVersioningTarget nugetVersioning,
             CancellationToken cancel)
         {
             try
             {
+                var localRepoDir = _runnerRepoDirectoryProvider.Path;
+
                 cancel.ThrowIfCancellationRequested();
 
                 _logger.Information("Targeting {PatcherVersioning}", patcherVersioning);

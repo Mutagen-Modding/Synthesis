@@ -16,18 +16,15 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
     public class PrepareRunnableState : IPrepareRunnableState
     {
         private readonly IPrepareRunnerRepository _prepareRunner;
-        private readonly IRunnerRepoDirectoryProvider _runnerRepoDirectoryProvider;
         private readonly CopyOverExtraData.Factory _copyOverFactory;
         public ILogger Logger { get; }
 
         public PrepareRunnableState(
             ILogger logger,
             IPrepareRunnerRepository prepareRunner,
-            IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             CopyOverExtraData.Factory copyOverFactory)
         {
             _prepareRunner = prepareRunner;
-            _runnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
             _copyOverFactory = copyOverFactory;
             Logger = logger;
         }
@@ -64,7 +61,6 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
                     var runInfo = await _prepareRunner.Checkout(
                         proj: checkoutInput.Proj.Value,
-                        localRepoDir: _runnerRepoDirectoryProvider.Path,
                         patcherVersioning: checkoutInput.PatcherVersioning,
                         nugetVersioning: checkoutInput.LibraryNugets.Value,
                         cancel: cancel);

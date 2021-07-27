@@ -20,4 +20,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
             _baseRepoDir = baseRepoDir;
         }
     }
+
+    public record RunnerRepoDirectoryInjection(DirectoryPath Path) : IRunnerRepoDirectoryProvider;
 }
