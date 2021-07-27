@@ -3,5 +3,5 @@
     public record CheckoutInput(
         string Proj,
         GitPatcherVersioning PatcherVersioning,
-        NugetVersioningTarget LibraryNugets);
+        NugetsVersioningTarget LibraryNugets);
 }

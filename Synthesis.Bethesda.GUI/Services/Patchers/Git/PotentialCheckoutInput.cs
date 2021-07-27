@@ -7,5 +7,5 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
         ConfigurationState RunnerState,
         GetResponse<string> Proj,
         GitPatcherVersioning PatcherVersioning,
-        GetResponse<NugetVersioningTarget> LibraryNugets);
+        GetResponse<NugetsVersioningTarget> LibraryNugets);
 }

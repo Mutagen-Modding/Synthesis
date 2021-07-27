@@ -61,12 +61,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
                 DefaultBranch);
 
         [DebuggerStepThrough]
-        public NugetVersioningTarget TypicalNugetVersioning() =>
+        public NugetsVersioningTarget TypicalNugetVersioning() =>
             new(
-                mutagenVersion: null,
-                mutagenVersioning: NugetVersioningEnum.Match,
-                synthesisVersion: null,
-                synthesisVersioning: NugetVersioningEnum.Match);
+                new NugetVersioningTarget(null, NugetVersioningEnum.Match),
+                new NugetVersioningTarget(null, NugetVersioningEnum.Match));
 
         #region Checkout Runner
         [Theory, SynthAutoData]

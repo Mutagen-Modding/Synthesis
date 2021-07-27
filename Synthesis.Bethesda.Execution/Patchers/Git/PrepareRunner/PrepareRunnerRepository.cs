@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Noggog;
 using Serilog;
-using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
@@ -66,17 +65,16 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
                 _logger.Information("Targeting {PatcherVersioning}", checkoutInput.PatcherVersioning);
 
                 using var repoCheckout = RepoCheckouts.Get(localRepoDir);
-                var repo = repoCheckout.Repository;
                 
-                _checkoutRunnerBranch.Checkout(repo);
+                _checkoutRunnerBranch.Checkout(repoCheckout.Repository);
                 
                 var targets = _getRepoTarget.Get(
-                    repo, 
+                    repoCheckout.Repository, 
                     checkoutInput.PatcherVersioning);
                 if (targets.Failed) return targets.BubbleFailure<RunnerRepoInfo>();
 
                 var commit = _retrieveCommit.TryGet(
-                    repo,
+                    repoCheckout.Repository,
                     targets.Value,
                     checkoutInput.PatcherVersioning,
                     cancel);
@@ -93,7 +91,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
                 cancel.ThrowIfCancellationRequested();
                 
                 _logger.Information("Checking out {TargetSha}", targets.Value.TargetSha);
-                repo.ResetHard(commit.Value);
+                repoCheckout.Repository.ResetHard(commit.Value);
 
                 var projPath = Path.Combine(localRepoDir, foundProjSubPath);
 
@@ -105,9 +103,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
                 _modifyRunnerProjects.Modify(
                     slnPath,
                     drivingProjSubPath: foundProjSubPath,
-                    mutagenVersion: nugetVersioning.MutagenVersioning == NugetVersioningEnum.Match ? null : nugetVersioning.MutagenVersion,
+                    mutagenVersion: nugetVersioning.Mutagen.ReturnIfMatch(null),
                     listedMutagenVersion: out var listedMutagenVersion,
-                    synthesisVersion: nugetVersioning.SynthesisVersioning == NugetVersioningEnum.Match ? null : nugetVersioning.SynthesisVersion,
+                    synthesisVersion: nugetVersioning.Synthesis.ReturnIfMatch(null),
                     listedSynthesisVersion: out var listedSynthesisVersion);
 
                 var runInfo = new RunnerRepoInfo(
@@ -118,8 +116,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
                     CommitDate: commit.Value.CommitDate,
                     ListedSynthesisVersion: listedSynthesisVersion,
                     ListedMutagenVersion: listedMutagenVersion,
-                    TargetSynthesisVersion: nugetVersioning.SynthesisVersioning == NugetVersioningEnum.Match ? listedSynthesisVersion : nugetVersioning.SynthesisVersion,
-                    TargetMutagenVersion: nugetVersioning.MutagenVersioning == NugetVersioningEnum.Match ? listedMutagenVersion : nugetVersioning.MutagenVersion);
+                    TargetSynthesisVersion: nugetVersioning.Synthesis.ReturnIfMatch(listedSynthesisVersion),
+                    TargetMutagenVersion: nugetVersioning.Mutagen.ReturnIfMatch(listedMutagenVersion));
 
                 return GetResponse<RunnerRepoInfo>.Succeed(runInfo);
             }

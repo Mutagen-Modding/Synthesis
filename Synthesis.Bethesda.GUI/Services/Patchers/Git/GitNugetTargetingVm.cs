@@ -17,7 +17,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
     public interface INugetVersioningFollower
     {
-        IObservable<GetResponse<NugetVersioningTarget>> ActiveNugetVersion { get; }
+        IObservable<GetResponse<NugetsVersioningTarget>> ActiveNugetVersion { get; }
     }
     
     public interface IGitNugetTargetingVm : INugetVersioningFollower
@@ -46,7 +46,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
         public ReactiveCommand<Unit, Unit> UpdateSynthesisManualToLatestCommand { get; }
 
-        public IObservable<GetResponse<NugetVersioningTarget>> ActiveNugetVersion { get; }
+        public IObservable<GetResponse<NugetsVersioningTarget>> ActiveNugetVersion { get; }
 
         public GitNugetTargetingVm(
             ILogger logger,
@@ -119,8 +119,8 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
                         logger.Information(sb.ToString());
                         return new SynthesisNugetVersioning(
-                            mutagen: mutagen,
-                            synthesis: synthesis);
+                            Mutagen: mutagen,
+                            Synthesis: synthesis);
                     })
                 .Select(nuget => nuget.TryGetTarget())
                 .Replay(1)
