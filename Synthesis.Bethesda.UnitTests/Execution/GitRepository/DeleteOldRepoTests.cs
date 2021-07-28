@@ -28,7 +28,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
                 .Should().BeFalse();
         }
 
-        [Theory, SynthAutoData]
+        [Theory, SynthAutoData(UseMockRepositoryProvider: true)]
         public void Keep(DeleteOldRepo sut)
         {
             using var repoPath = GetRepository(

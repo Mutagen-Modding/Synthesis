@@ -15,7 +15,7 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
             bool ConfigureMembers = false, 
             bool UseMockFileSystem = true,
             bool GenerateDelegates = false,
-            bool UseMockRepositoryProvider = true)
+            bool UseMockRepositoryProvider = false)
             : base(() =>
             {
                 return new AutoFixture.Fixture()
@@ -46,7 +46,7 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
             bool ConfigureMembers = false, 
             bool UseMockFileSystem = true,
             bool GenerateDelegates = false,
-            bool UseMockRepositoryProvider = true,
+            bool UseMockRepositoryProvider = false,
             params object[] ExtraParameters)
             : base(
                 new InlineDataAttribute(ExtraParameters), 

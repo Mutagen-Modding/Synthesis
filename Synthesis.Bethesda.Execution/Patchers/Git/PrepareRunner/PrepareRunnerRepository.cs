@@ -7,7 +7,6 @@ using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
-using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
 {
@@ -21,34 +20,28 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
     public class PrepareRunnerRepository : IPrepareRunnerRepository
     {
         private readonly ILogger _logger;
-        private readonly ICheckoutRunnerBranch _checkoutRunnerBranch;
+        public IResetToTarget ResetToTarget { get; }
         private readonly ISolutionFileLocator _solutionFileLocator;
         private readonly IFullProjectPathRetriever _fullProjectPathRetriever;
         private readonly IModifyRunnerProjects _modifyRunnerProjects;
-        private readonly IGetRepoTarget _getRepoTarget;
-        private readonly IRetrieveCommit _retrieveCommit;
-        private readonly IRunnerRepoDirectoryProvider _runnerRepoDirectoryProvider;
+        public IRunnerRepoDirectoryProvider RunnerRepoDirectoryProvider { get; }
         public IProvideRepositoryCheckouts RepoCheckouts { get; }
 
         public PrepareRunnerRepository(
             ILogger logger,
-            ICheckoutRunnerBranch checkoutRunnerBranch,
             ISolutionFileLocator solutionFileLocator,
             IFullProjectPathRetriever fullProjectPathRetriever,
             IModifyRunnerProjects modifyRunnerProjects,
-            IGetRepoTarget getRepoTarget,
-            IRetrieveCommit retrieveCommit,
+            IResetToTarget resetToTarget,
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             IProvideRepositoryCheckouts repoCheckouts)
         {
             _logger = logger;
-            _checkoutRunnerBranch = checkoutRunnerBranch;
+            ResetToTarget = resetToTarget;
             _solutionFileLocator = solutionFileLocator;
             _fullProjectPathRetriever = fullProjectPathRetriever;
             _modifyRunnerProjects = modifyRunnerProjects;
-            _getRepoTarget = getRepoTarget;
-            _retrieveCommit = retrieveCommit;
-            _runnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
+            RunnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
             RepoCheckouts = repoCheckouts;
         }
         
@@ -58,31 +51,20 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
         {
             try
             {
-                var localRepoDir = _runnerRepoDirectoryProvider.Path;
-                
                 cancel.ThrowIfCancellationRequested();
 
                 _logger.Information("Targeting {PatcherVersioning}", checkoutInput.PatcherVersioning);
 
-                using var repoCheckout = RepoCheckouts.Get(localRepoDir);
-                
-                _checkoutRunnerBranch.Checkout(repoCheckout.Repository);
-                
-                var targets = _getRepoTarget.Get(
-                    repoCheckout.Repository, 
-                    checkoutInput.PatcherVersioning);
-                if (targets.Failed) return targets.BubbleFailure<RunnerRepoInfo>();
+                using var repoCheckout = RepoCheckouts.Get(RunnerRepoDirectoryProvider.Path);
 
-                var commit = _retrieveCommit.TryGet(
-                    repoCheckout.Repository,
-                    targets.Value,
-                    checkoutInput.PatcherVersioning,
-                    cancel);
-                if (commit.Failed) return commit.BubbleFailure<RunnerRepoInfo>();
+                var target = ResetToTarget.Reset(repoCheckout.Repository, checkoutInput.PatcherVersioning, cancel);
+                if (target.Failed) return target.BubbleFailure<RunnerRepoInfo>();
 
                 cancel.ThrowIfCancellationRequested();
+
+                checkoutInput.LibraryNugets.Log(_logger);
                 
-                var slnPath = _solutionFileLocator.GetPath(localRepoDir);
+                var slnPath = _solutionFileLocator.GetPath(RunnerRepoDirectoryProvider.Path);
                 if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
 
                 var foundProjSubPath = _fullProjectPathRetriever.Get(slnPath, checkoutInput.Proj);
@@ -90,30 +72,20 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
 
                 cancel.ThrowIfCancellationRequested();
                 
-                _logger.Information("Checking out {TargetSha}", targets.Value.TargetSha);
-                repoCheckout.Repository.ResetHard(commit.Value);
-
-                var projPath = Path.Combine(localRepoDir, foundProjSubPath);
-
-                cancel.ThrowIfCancellationRequested();
-
-                var nugetVersioning = checkoutInput.LibraryNugets;
-                nugetVersioning.Log(_logger);
-                
                 _modifyRunnerProjects.Modify(
                     slnPath,
                     drivingProjSubPath: foundProjSubPath,
-                    versions: nugetVersioning.ReturnIfMatch(new NugetVersionPair(null, null)),
+                    versions: checkoutInput.LibraryNugets.ReturnIfMatch(new NugetVersionPair(null, null)),
                     listedVersions: out var listedVersions);
 
                 var runInfo = new RunnerRepoInfo(
                     SolutionPath: slnPath,
-                    ProjPath: projPath,
-                    Target: targets.Value.Target,
-                    CommitMessage: commit.Value.CommitMessage,
-                    CommitDate: commit.Value.CommitDate,
+                    ProjPath: Path.Combine(RunnerRepoDirectoryProvider.Path, foundProjSubPath),
+                    Target: target.Value.Target,
+                    CommitMessage: target.Value.CommitMessage,
+                    CommitDate: target.Value.CommitDate,
                     ListedVersions: listedVersions,
-                    TargetVersions: nugetVersioning.ReturnIfMatch(listedVersions));
+                    TargetVersions: checkoutInput.LibraryNugets.ReturnIfMatch(listedVersions));
 
                 return GetResponse<RunnerRepoInfo>.Succeed(runInfo);
             }

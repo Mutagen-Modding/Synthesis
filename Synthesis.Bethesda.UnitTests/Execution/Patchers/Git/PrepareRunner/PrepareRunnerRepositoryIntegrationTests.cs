@@ -33,16 +33,18 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
             });
             return new PrepareRunnerRepository(
                 Substitute.For<ILogger>(),
-                new CheckoutRunnerBranch(),
                 new SolutionFileLocator(
                     IFileSystemExt.DefaultFilesystem),
                 new FullProjectPathRetriever(
                     IFileSystemExt.DefaultFilesystem,
                     availableProjectsRetriever),
                 modify,
-                new GetRepoTarget(),
-                new RetrieveCommit(
-                    new ShouldFetchIfMissing()),
+                new ResetToTarget(
+                    Substitute.For<ILogger>(),
+                    new CheckoutRunnerBranch(),
+                    new GetRepoTarget(),
+                    new RetrieveCommit(
+                        new ShouldFetchIfMissing())),
                 new RunnerRepoDirectoryInjection(local),
                 new ProvideRepositoryCheckouts(Substitute.For<ILogger>()));
         }

@@ -9,7 +9,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
 {
     public interface IProvideRepositoryCheckouts : IDisposable
     {
-        RepositoryCheckout Get(DirectoryPath path);
+        IRepositoryCheckout Get(DirectoryPath path);
     }
 
     public class ProvideRepositoryCheckouts : IProvideRepositoryCheckouts
@@ -27,7 +27,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
             _Logger = logger;
         }
 
-        public RepositoryCheckout Get(DirectoryPath path)
+        public IRepositoryCheckout Get(DirectoryPath path)
         {
             lock (_Lock)
             {

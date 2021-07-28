@@ -1,6 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.IO;
+﻿using System.IO;
 using System.Xml.Linq;
+using Noggog;
 using NuGet.Versioning;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
@@ -9,7 +9,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject
     public interface IModifyRunnerProjects
     {
         void Modify(
-            string solutionPath,
+            FilePath solutionPath,
             string drivingProjSubPath,
             NugetVersionPair versions,
             out NugetVersionPair listedVersions);
@@ -17,9 +17,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject
 
     public class ModifyRunnerProjects : IModifyRunnerProjects
     {
-        public readonly static System.Version NewtonSoftRemoveMutaVersion = new(0, 28);
-        public readonly static System.Version NewtonSoftRemoveSynthVersion = new(0, 17, 5);
-        public readonly static System.Version NamespaceMutaVersion = new(0, 30, 0);
+        public static readonly System.Version NewtonSoftRemoveMutaVersion = new(0, 28);
+        public static readonly System.Version NewtonSoftRemoveSynthVersion = new(0, 17, 5);
+        public static readonly System.Version NamespaceMutaVersion = new(0, 30, 0);
         private readonly IAvailableProjectsRetriever _availableProjectsRetriever;
         private readonly ISwapOffNetCore _swapOffNetCore;
         private readonly IRemoveGitInfo _removeGitInfo;
@@ -56,7 +56,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject
         }
         
         public void Modify(
-            string solutionPath,
+            FilePath solutionPath,
             string drivingProjSubPath,
             NugetVersionPair versions,
             out NugetVersionPair listedVersions)

@@ -2,7 +2,12 @@
 
 namespace Synthesis.Bethesda.Execution.GitRepository
 {
-    public class RepositoryCheckout : IDisposable
+    public interface IRepositoryCheckout : IDisposable
+    {
+        IGitRepository Repository { get; }
+    }
+
+    public class RepositoryCheckout : IRepositoryCheckout
     {
         private Lazy<IGitRepository> _Repository { get; }
         public IGitRepository Repository => _Repository.Value;
