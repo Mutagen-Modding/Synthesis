@@ -74,13 +74,13 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
                 
                 _modifyRunnerProjects.Modify(
                     slnPath,
-                    drivingProjSubPath: foundProjSubPath,
+                    drivingProjSubPath: foundProjSubPath.SubPath,
                     versions: checkoutInput.LibraryNugets.ReturnIfMatch(new NugetVersionPair(null, null)),
                     listedVersions: out var listedVersions);
 
                 var runInfo = new RunnerRepoInfo(
                     SolutionPath: slnPath,
-                    ProjPath: Path.Combine(RunnerRepoDirectoryProvider.Path, foundProjSubPath),
+                    ProjPath: foundProjSubPath.FullPath,
                     Target: target.Value.Target,
                     CommitMessage: target.Value.CommitMessage,
                     CommitDate: target.Value.CommitDate,
