@@ -12,7 +12,7 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
     public class SynthAutoData : AutoDataAttribute
     {
         public SynthAutoData(
-            bool ConfigureMembers = false, 
+            bool ConfigureMembers = true, 
             bool UseMockFileSystem = true,
             bool GenerateDelegates = false,
             bool UseMockRepositoryProvider = false)
@@ -43,7 +43,7 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
     public class SynthCustomInlineData : CompositeDataAttribute
     {
         public SynthCustomInlineData(
-            bool ConfigureMembers = false, 
+            bool ConfigureMembers = true, 
             bool UseMockFileSystem = true,
             bool GenerateDelegates = false,
             bool UseMockRepositoryProvider = false,

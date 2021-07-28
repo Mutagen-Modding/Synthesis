@@ -25,7 +25,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution
             sut.Factory.Received(1).Create(startInfo, cancel);
         }
         
-        [Theory, SynthAutoData]
+        [Theory, SynthAutoData(ConfigureMembers: false)]
         public void PutsOutIntoOut(
             string str,
             [Frozen]ProcessStartInfo startInfo,
@@ -39,7 +39,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution
                 .Result.Out.Should().Equal(str);
         }
         
-        [Theory, SynthAutoData]
+        [Theory, SynthAutoData(ConfigureMembers: false)]
         public void PutsErrIntoErr(
             string str,
             [Frozen]ProcessStartInfo startInfo,
@@ -53,7 +53,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution
                 .Result.Errors.Should().Equal(str);
         }
         
-        [Theory, SynthAutoData]
+        [Theory, SynthAutoData(ConfigureMembers: false)]
         public async Task ReturnsProcessReturn(
             int ret,
             [Frozen]ProcessStartInfo startInfo,
@@ -67,7 +67,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution
                 .Result.Should().Be(ret);
         }
 
-        [Theory, SynthAutoData]
+        [Theory, SynthAutoData(ConfigureMembers: false)]
         public async Task TypicalRun(
             int ret,
             [Frozen]ProcessStartInfo startInfo,

@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel
             sut.TargetConfirmation.Should().BeNull();
         }
         
-        [Theory, SynthAutoData]
+        [Theory, SynthAutoData(ConfigureMembers: false)]
         public void Confirms(
             IConfirmationActionVm confirmVm,
             ConfirmationPanelControllerVm sut)
