@@ -15,7 +15,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
         public bool Valid => _Valid.Value;
 
         public RepoClonesValidStateVm(
-            IDriverRepositoryPreparation driverRepositoryPreparation,
+            IDriverRepositoryPreparationFollower driverRepositoryPreparation,
             IRunnerRepositoryPreparation runnerRepositoryPreparation)
         {
             _Valid = Observable.CombineLatest(

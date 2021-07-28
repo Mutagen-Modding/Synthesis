@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             IRunnableStateProvider runnableStateProvider,
             ICompliationProvider compliationProvider,
             IPatcherRunnabilityCliState runnabilityCliState,
-            IDriverRepositoryPreparation driverRepositoryPreparation)
+            IDriverRepositoryPreparationFollower driverRepositoryPreparation)
         {
             StatusDisplay = Observable.CombineLatest(
                     driverRepositoryPreparation.DriverInfo,

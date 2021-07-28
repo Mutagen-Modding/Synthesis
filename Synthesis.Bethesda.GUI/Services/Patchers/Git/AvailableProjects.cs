@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
         public IObservableCollection<string> Projects { get; }
 
         public AvailableProjects(
-            IDriverRepositoryPreparation driverRepositoryPreparation)
+            IDriverRepositoryPreparationFollower driverRepositoryPreparation)
         {
             Projects = driverRepositoryPreparation.DriverInfo
                 .Select(x => x.Item?.AvailableProjects ?? Enumerable.Empty<string>())

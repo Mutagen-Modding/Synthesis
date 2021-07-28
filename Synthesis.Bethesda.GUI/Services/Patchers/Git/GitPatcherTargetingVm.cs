@@ -54,7 +54,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
         public GitPatcherTargetingVm(
             ILockToCurrentVersioning lockToCurrentVersioning,
-            IDriverRepositoryPreparation driverRepositoryPreparation)
+            IDriverRepositoryPreparationFollower driverRepositoryPreparation)
         {
             var targetOriginBranchName = this.WhenAnyValue(x => x.TargetBranchName)
                 .Select(x => $"origin/{x}")

@@ -21,7 +21,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
         public AvailableTags(
             ISelectedProjectInputVm selectedProjectInput,
-            IDriverRepositoryPreparation driverRepositoryPreparation,
+            IDriverRepositoryPreparationFollower driverRepositoryPreparation,
             IAvailableProjects availableProjects)
         {
             var tagInput = Observable.CombineLatest(

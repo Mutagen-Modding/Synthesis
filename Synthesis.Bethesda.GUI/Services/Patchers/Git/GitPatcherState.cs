@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
         public IObservable<ConfigurationState> State { get; }
 
         public GitPatcherState(
-            IDriverRepositoryPreparation driverRepositoryPreparation,
+            IDriverRepositoryPreparationFollower driverRepositoryPreparation,
             IRunnerRepositoryPreparation runnerRepositoryState,
             IRunnableStateProvider runnableStateProvider,
             IPatcherRunnabilityCliState runnabilityCliState,
