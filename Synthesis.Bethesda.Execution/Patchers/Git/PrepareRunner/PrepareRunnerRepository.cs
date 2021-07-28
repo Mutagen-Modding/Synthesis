@@ -21,9 +21,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
     {
         private readonly ILogger _logger;
         public IResetToTarget ResetToTarget { get; }
-        private readonly ISolutionFileLocator _solutionFileLocator;
-        private readonly IFullProjectPathRetriever _fullProjectPathRetriever;
-        private readonly IModifyRunnerProjects _modifyRunnerProjects;
+        public ISolutionFileLocator SolutionFileLocator { get; }
+        public IFullProjectPathRetriever FullProjectPathRetriever { get; }
+        public IModifyRunnerProjects ModifyRunnerProjects { get; }
         public IRunnerRepoDirectoryProvider RunnerRepoDirectoryProvider { get; }
         public IProvideRepositoryCheckouts RepoCheckouts { get; }
 
@@ -38,9 +38,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
         {
             _logger = logger;
             ResetToTarget = resetToTarget;
-            _solutionFileLocator = solutionFileLocator;
-            _fullProjectPathRetriever = fullProjectPathRetriever;
-            _modifyRunnerProjects = modifyRunnerProjects;
+            SolutionFileLocator = solutionFileLocator;
+            FullProjectPathRetriever = fullProjectPathRetriever;
+            ModifyRunnerProjects = modifyRunnerProjects;
             RunnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
             RepoCheckouts = repoCheckouts;
         }
@@ -64,16 +64,16 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
 
                 checkoutInput.LibraryNugets.Log(_logger);
                 
-                var slnPath = _solutionFileLocator.GetPath(RunnerRepoDirectoryProvider.Path);
+                var slnPath = SolutionFileLocator.GetPath(RunnerRepoDirectoryProvider.Path);
                 if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
 
-                var foundProjSubPath = _fullProjectPathRetriever.Get(slnPath, checkoutInput.Proj);
+                var foundProjSubPath = FullProjectPathRetriever.Get(slnPath.Value, checkoutInput.Proj);
                 if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {checkoutInput.Proj}.");
 
                 cancel.ThrowIfCancellationRequested();
                 
-                _modifyRunnerProjects.Modify(
-                    slnPath,
+                ModifyRunnerProjects.Modify(
+                    slnPath.Value,
                     drivingProjSubPath: foundProjSubPath.SubPath,
                     versions: checkoutInput.LibraryNugets.ReturnIfMatch(new NugetVersionPair(null, null)),
                     listedVersions: out var listedVersions);

@@ -95,7 +95,7 @@ namespace Synthesis.Bethesda.ImpactTester
                         }
 
                         _modifyRunnerProjects.Modify(
-                            solutionPath: slnPath,
+                            solutionPath: slnPath.Value,
                             drivingProjSubPath: string.Empty,
                             versions: versions,
                             out var _);

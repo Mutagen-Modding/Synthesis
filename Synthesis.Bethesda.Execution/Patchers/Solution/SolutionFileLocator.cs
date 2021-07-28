@@ -7,7 +7,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
 {
     public interface ISolutionFileLocator
     {
-        string? GetPath(DirectoryPath repositoryPath);
+        FilePath? GetPath(DirectoryPath repositoryPath);
     }
 
     public class SolutionFileLocator : ISolutionFileLocator
@@ -19,9 +19,11 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
             _fs = fs;
         }
         
-        public string? GetPath(DirectoryPath repositoryPath)
+        public FilePath? GetPath(DirectoryPath repositoryPath)
         {
-            return _fs.Directory.EnumerateFiles(repositoryPath.Path, "*.sln").FirstOrDefault();
+            return _fs.Directory.EnumerateFiles(repositoryPath.Path, "*.sln")
+                .Select<string, FilePath?>(x => new FilePath(x))
+                .FirstOrDefault();
         }
     }
 }

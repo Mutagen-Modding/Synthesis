@@ -77,7 +77,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                             cancel);
                         if (state.Failed)
                         {
-                            _logger.Error($"Failed to check out driver repository: {state.Reason}");
+                            _logger.Error("Failed to check out driver repository: {Reason}", state.Reason);
                             return new ConfigurationState<DriverRepoInfo>(default!, (ErrorResponse) state);
                         }
 
@@ -94,7 +94,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                             var master = repo.MainBranch;
                             if (master == null)
                             {
-                                _logger.Error($"Failed to check out driver repository: Could not locate master branch");
+                                _logger.Error("Failed to check out driver repository: Could not locate master branch");
                                 return new ConfigurationState<DriverRepoInfo>(default!,
                                     ErrorResponse.Fail("Could not locate master branch."));
                             }
@@ -112,7 +112,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                         }
                         catch (Exception ex)
                         {
-                            _logger.Error(ex, $"Failed to check out driver repository");
+                            _logger.Error(ex, "Failed to check out driver repository");
                             return new ConfigurationState<DriverRepoInfo>(default!, ErrorResponse.Fail(ex));
                         }
 
@@ -120,7 +120,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                         var slnPath = _solutionFileLocator.GetPath(driverRepoPath);
                         if (slnPath == null)
                         {
-                            _logger.Error($"Failed to check out driver repository: Could not locate solution to run.");
+                            _logger.Error("Failed to check out driver repository: Could not locate solution to run");
                             return new ConfigurationState<DriverRepoInfo>(default!,
                                 ErrorResponse.Fail("Could not locate solution to run."));
                         }
@@ -128,7 +128,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                         var availableProjs = SolutionPatcherRun.AvailableProjectSubpaths(slnPath).ToList();
                         return new ConfigurationState<DriverRepoInfo>(
                             new DriverRepoInfo(
-                                slnPath: slnPath,
+                                slnPath: slnPath.Value,
                                 masterBranchName: masterBranch,
                                 branchShas: branchShas,
                                 tags: tags,
