@@ -20,13 +20,16 @@ namespace Synthesis.Bethesda.ImpactTester
 {
     public class Tester
     {
+        private readonly IAvailableProjectsRetriever _availableProjectsRetriever;
         private readonly IModifyRunnerProjects _modifyRunnerProjects;
         private readonly IBuild _build;
 
         public Tester(
+            IAvailableProjectsRetriever availableProjectsRetriever,
             IModifyRunnerProjects modifyRunnerProjects,
             IBuild build)
         {
+            _availableProjectsRetriever = availableProjectsRetriever;
             _modifyRunnerProjects = modifyRunnerProjects;
             _build = build;
         }
@@ -100,7 +103,7 @@ namespace Synthesis.Bethesda.ImpactTester
                             versions: versions,
                             out var _);
 
-                        foreach (var proj in SolutionPatcherRun.AvailableProjectSubpaths(slnPath))
+                        foreach (var proj in _availableProjectsRetriever.Get(slnPath.Value))
                         {
                             cancel.ThrowIfCancellationRequested();
                             var path = Path.Combine(repoDir.FullName, proj);

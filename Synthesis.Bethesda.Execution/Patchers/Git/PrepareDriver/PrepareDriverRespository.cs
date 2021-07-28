@@ -21,6 +21,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver
         private readonly ICheckOrCloneRepo _checkOrClone;
         private readonly IProvideRepositoryCheckouts _repoCheckouts;
         private readonly ISolutionFileLocator _solutionFileLocator;
+        private readonly IAvailableProjectsRetriever _availableProjectsRetriever;
         private readonly IDriverRepoDirectoryProvider _driverRepoDirectoryProvider;
 
         public PrepareDriverRespository(
@@ -28,12 +29,14 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver
             ICheckOrCloneRepo checkOrClone,
             IProvideRepositoryCheckouts repoCheckouts,
             ISolutionFileLocator solutionFileLocator,
+            IAvailableProjectsRetriever availableProjectsRetriever,
             IDriverRepoDirectoryProvider driverRepoDirectoryProvider)
         {
             _logger = logger;
             _checkOrClone = checkOrClone;
             _repoCheckouts = repoCheckouts;
             _solutionFileLocator = solutionFileLocator;
+            _availableProjectsRetriever = availableProjectsRetriever;
             _driverRepoDirectoryProvider = driverRepoDirectoryProvider;
         }
 
@@ -94,7 +97,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver
                 return GetResponse<DriverRepoInfo>.Fail("Could not locate solution to run.");
             }
 
-            var availableProjs = SolutionPatcherRun.AvailableProjectSubpaths(slnPath).ToList();
+            var availableProjs = _availableProjectsRetriever.Get(slnPath.Value).ToList();
             
             return new DriverRepoInfo(
                 slnPath: slnPath.Value,

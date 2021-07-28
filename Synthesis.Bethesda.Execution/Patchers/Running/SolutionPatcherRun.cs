@@ -197,22 +197,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
 
             return (true, default);
         }
-
-
-        public static IEnumerable<string> AvailableProjectSubpaths(string solutionPath)
-        {
-            if (!File.Exists(solutionPath)) return Enumerable.Empty<string>();
-            try
-            {
-                var manager = new AnalyzerManager(solutionPath);
-                return manager.Projects.Keys.Select(projPath => projPath.TrimStart($"{Path.GetDirectoryName(solutionPath)}\\"!));
-            }
-            catch (Exception)
-            {
-                return Enumerable.Empty<string>();
-            }
-        }
-
+        
         public override string ToString()
         {
             return Name;

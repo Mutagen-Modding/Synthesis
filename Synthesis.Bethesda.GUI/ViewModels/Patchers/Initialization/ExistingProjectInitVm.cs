@@ -30,7 +30,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
             PathType = PathPickerVM.PathTypeOptions.File,
         };
 
-        public ExistingProjectInitVm(Func<SolutionPatcherVm> patcherFactory)
+        public ExistingProjectInitVm(
+            IAvailableProjectsRetriever availableProjectsRetriever,
+            Func<SolutionPatcherVm> patcherFactory)
         {
             SolutionPath.PathType = PathPickerVM.PathTypeOptions.File;
             SolutionPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
@@ -38,7 +40,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
 
             AvailableProjects = this.WhenAnyValue(x => x.SolutionPath.TargetPath)
                 .ObserveOn(RxApp.TaskpoolScheduler)
-                .Select(x => SolutionPatcherRun.AvailableProjectSubpaths(x))
+                .Select(x => availableProjectsRetriever.Get(x))
                 .Select(x => x.AsObservableChangeSet())
                 .Switch()
                 .ObserveOnGui()
