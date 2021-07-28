@@ -5,9 +5,11 @@ using Serilog;
 
 namespace Synthesis.Bethesda.Execution.GitRepository
 {
+    public record RepoPathPair(string Remote, DirectoryPath Local);
+    
     public interface ICheckOrCloneRepo
     {
-        GetResponse<(string Remote, DirectoryPath Local)> Check(
+        GetResponse<RepoPathPair> Check(
             GetResponse<string> remote,
             DirectoryPath localDir,
             CancellationToken cancel);
@@ -29,7 +31,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
             Delete = delete;
         }
         
-        public GetResponse<(string Remote, DirectoryPath Local)> Check(
+        public GetResponse<RepoPathPair> Check(
             GetResponse<string> remote,
             DirectoryPath localDir,
             CancellationToken cancel)
@@ -40,18 +42,18 @@ namespace Synthesis.Bethesda.Execution.GitRepository
                 if (Delete.CheckIfKeeping(localDir: localDir, remoteUrl: remote))
                 {
                     // Short circuiting deletion
-                    return GetResponse<(string Remote, DirectoryPath Local)>.Succeed((remote.Value, localDir), remote.Reason);
+                    return GetResponse<RepoPathPair>.Succeed(new(remote.Value, localDir), remote.Reason);
                 }
                 cancel.ThrowIfCancellationRequested();
-                if (remote.Failed) return GetResponse<(string Remote, DirectoryPath Local)>.Fail((remote.Value, string.Empty), remote.Reason);
+                if (remote.Failed) return GetResponse<RepoPathPair>.Fail(new(remote.Value, string.Empty), remote.Reason);
                 _logger.Information("Cloning remote {RemotePath}", remote.Value);
                 var clonePath = CloneRepo.Clone(remote.Value, localDir);
-                return GetResponse<(string Remote, DirectoryPath Local)>.Succeed((remote.Value, clonePath), remote.Reason);
+                return GetResponse<RepoPathPair>.Succeed(new(remote.Value, clonePath), remote.Reason);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex, "Failure while checking/cloning repository");
-                return GetResponse<(string Remote, DirectoryPath Local)>.Fail((remote.Value, string.Empty), ex);
+                return GetResponse<RepoPathPair>.Fail(new(remote.Value, string.Empty), ex);
             }
         }
     }

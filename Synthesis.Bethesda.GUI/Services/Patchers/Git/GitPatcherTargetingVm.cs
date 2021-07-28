@@ -104,8 +104,8 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                 .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                 .Subscribe(x =>
                 {
-                    this.TargetTag = x.Name;
-                    this.TargetCommit = x.Sha;
+                    this.TargetTag = x?.Name ?? string.Empty;
+                    this.TargetCommit = x?.Sha ?? string.Empty;
                 })
                 .DisposeWith(this);
 
