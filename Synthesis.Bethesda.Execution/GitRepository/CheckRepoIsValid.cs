@@ -2,7 +2,7 @@
 using LibGit2Sharp;
 using Noggog;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git
+namespace Synthesis.Bethesda.Execution.GitRepository
 {
     public interface ICheckRepoIsValid
     {

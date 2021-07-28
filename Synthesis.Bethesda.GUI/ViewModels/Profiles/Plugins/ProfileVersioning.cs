@@ -18,7 +18,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
         string? ManualMutagenVersion { get; set; }
         NugetVersioningEnum SynthesisVersioning { get; set; }
         string? ManualSynthesisVersion { get; set; }
-        IObservable<SynthesisNugetVersioning> ActiveVersioning { get; }
+        IObservable<ActiveNugetVersioning> ActiveVersioning { get; }
         ReactiveCommand<Unit, Unit> UpdateMutagenManualToLatestCommand { get; }
         ReactiveCommand<Unit, Unit> UpdateSynthesisManualToLatestCommand { get; }
         IReactiveCommand UpdateProfileNugetVersionCommand { get; }
@@ -38,7 +38,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
         [Reactive]
         public string? ManualSynthesisVersion { get; set; }
         
-        public IObservable<SynthesisNugetVersioning> ActiveVersioning { get; }
+        public IObservable<ActiveNugetVersioning> ActiveVersioning { get; }
 
         public ReactiveCommand<Unit, Unit> UpdateMutagenManualToLatestCommand { get; }
 
@@ -60,9 +60,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                     newestLibs.NewestSynthesisVersion,
                     (mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
                     {
-                        return new SynthesisNugetVersioning(
-                            new NugetVersioning("Mutagen", mutaVersioning, mutaManual ?? newestMuta ?? string.Empty, newestMuta),
-                            new NugetVersioning("Synthesis", synthVersioning, synthManual ?? newestSynth ?? string.Empty, newestSynth));
+                        return new ActiveNugetVersioning(
+                            new NugetsToUse("Mutagen", mutaVersioning, mutaManual ?? newestMuta ?? string.Empty, newestMuta),
+                            new NugetsToUse("Synthesis", synthVersioning, synthManual ?? newestSynth ?? string.Empty, newestSynth));
                     })
                 .Do(x => logger.Information("Swapped profile {Nickname} to {Versioning}", ident.Name, x))
                 .ObserveOnGui()

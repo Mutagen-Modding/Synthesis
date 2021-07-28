@@ -9,6 +9,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
     public class ConstructName : IConstructName
     {
+        public const string FallbackName = "Mutagen Git Patcher";
+        
         public string Construct(string path)
         {
             try

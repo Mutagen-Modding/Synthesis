@@ -4,14 +4,14 @@ using System;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
-    public class NugetVersioning : IEquatable<NugetVersioning>
+    public class NugetsToUse : IEquatable<NugetsToUse>
     {
         public string Nickname { get; }
         public NugetVersioningEnum Versioning { get; }
         public string ManualVersion { get; }
         public string? NewestVersion { get; }
 
-        public NugetVersioning(
+        public NugetsToUse(
             string nickname,
             NugetVersioningEnum versioning,
             string manualVersion,
@@ -25,10 +25,10 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
 
         public override bool Equals(object? obj)
         {
-            return obj is NugetVersioning versioning && Equals(versioning);
+            return obj is NugetsToUse versioning && Equals(versioning);
         }
 
-        public bool Equals(NugetVersioning? other)
+        public bool Equals(NugetsToUse? other)
         {
             return other != null &&
                 Versioning == other.Versioning &&

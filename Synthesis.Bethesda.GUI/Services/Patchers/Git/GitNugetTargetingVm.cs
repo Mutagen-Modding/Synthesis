@@ -92,7 +92,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                     (profile, mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
                     {
                         var sb = new StringBuilder("Switching nuget targets");
-                        NugetVersioning mutagen, synthesis;
+                        NugetsToUse mutagen, synthesis;
                         if (mutaVersioning == PatcherNugetVersioningEnum.Profile)
                         {
                             sb.Append($"  Mutagen following profile: {profile.Mutagen}");
@@ -100,7 +100,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                         }
                         else
                         {
-                            mutagen = new NugetVersioning("Mutagen", mutaVersioning.ToNugetVersioningEnum(), mutaManual,
+                            mutagen = new NugetsToUse("Mutagen", mutaVersioning.ToNugetVersioningEnum(), mutaManual,
                                 newestMuta);
                             sb.Append($"  {mutagen}");
                         }
@@ -112,13 +112,13 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                         }
                         else
                         {
-                            synthesis = new NugetVersioning("Synthesis", synthVersioning.ToNugetVersioningEnum(),
+                            synthesis = new NugetsToUse("Synthesis", synthVersioning.ToNugetVersioningEnum(),
                                 synthManual, newestSynth);
                             sb.Append($"  {synthesis}");
                         }
 
                         logger.Information(sb.ToString());
-                        return new SynthesisNugetVersioning(
+                        return new ActiveNugetVersioning(
                             Mutagen: mutagen,
                             Synthesis: synthesis);
                     })

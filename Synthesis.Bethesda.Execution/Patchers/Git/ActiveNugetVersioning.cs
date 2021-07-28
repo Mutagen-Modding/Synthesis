@@ -3,7 +3,7 @@ using System;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
-    public record SynthesisNugetVersioning(NugetVersioning Mutagen, NugetVersioning Synthesis)
+    public record ActiveNugetVersioning(NugetsToUse Mutagen, NugetsToUse Synthesis)
     {
         public GetResponse<NugetsVersioningTarget> TryGetTarget()
         {
