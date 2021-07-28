@@ -10,7 +10,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
     public interface IGitRepository : IDisposable
     {
         IEnumerable<IBranch> Branches { get; }
-        IEnumerable<Tag> Tags { get; }
+        IEnumerable<ITag> Tags { get; }
         string CurrentSha { get; }
         IBranch? MainBranch { get; }
         string WorkingDirectory { get; }
@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
         private readonly Repository _Repository;
 
         public IEnumerable<IBranch> Branches => _Repository.Branches.Select(x => new BranchWrapper(x));
-        public IEnumerable<Tag> Tags => _Repository.Tags;
+        public IEnumerable<ITag> Tags => _Repository.Tags.Select(x => new TagWrapper(x));
         public string CurrentSha => _Repository.Head.Tip.Sha;
 
         public IBranch? MainBranch

@@ -76,7 +76,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver
                 repo.ResetHard();
                 repo.Checkout(master);
                 repo.Pull();
-                tags = repo.Tags.Select(tag => (tag.FriendlyName, tag.Target.Sha))
+                tags = repo.Tags.Select(tag => (tag.FriendlyName, tag.Sha))
                     .WithIndex()
                     .Select(x => (x.Index, x.Item.FriendlyName, x.Item.Sha))
                     .ToList();
