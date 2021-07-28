@@ -13,21 +13,29 @@ namespace Synthesis.Bethesda.Execution.Utility
         Task<ProcessRunReturn> RunAndCapture(
             ProcessStartInfo startInfo,
             CancellationToken cancel);
+        
         Task<int> Run(
             ProcessStartInfo startInfo,
+            CancellationToken cancel,
+            bool logOutput = true);
+
+        Task<int> Run(
+            ProcessStartInfo startInfo,
+            Action<string> outputCallback,
+            Action<string> errorCallback,
             CancellationToken cancel);
     }
 
     public class ProcessRunner : IProcessRunner
     {
-        private readonly ILogger _logger;
+        public ILogger Logger { get; }
         public IProcessFactory Factory { get; }
 
         public ProcessRunner(
             ILogger logger,
             IProcessFactory processFactory)
         {
-            _logger = logger;
+            Logger = logger;
             Factory = processFactory;
         }
         
@@ -35,29 +43,55 @@ namespace Synthesis.Bethesda.Execution.Utility
             ProcessStartInfo startInfo,
             CancellationToken cancel)
         {
-            using var proc = Factory.Create(
-                startInfo,
-                cancel: cancel);
-            _logger.Information("({WorkingDirectory}): {FileName} {Args}",
-                startInfo.WorkingDirectory,
-                startInfo.FileName,
-                startInfo.Arguments);
             var outs = new List<string>();
-            using var outp = proc.Output.Subscribe(o => outs.Add(o));
             var errs = new List<string>();
-            using var errp = proc.Error.Subscribe(o => errs.Add(o));
-            return new(await proc.Run(), outs, errs);
+            var ret = await Run(
+                startInfo,
+                i => outs.Add(i),
+                i => errs.Add(i),
+                cancel);
+            return new(ret, outs, errs);
         }
 
-        public async Task<int> Run(ProcessStartInfo startInfo, CancellationToken cancel)
+        private async Task<int> RunNoLog(ProcessStartInfo startInfo, CancellationToken cancel)
         {
             using var proc = Factory.Create(
                 startInfo,
                 cancel: cancel);
-            _logger.Information("({WorkingDirectory}): {FileName} {Args}",
+            Logger.Information("({WorkingDirectory}): {FileName} {Args}",
                 startInfo.WorkingDirectory,
                 startInfo.FileName,
                 startInfo.Arguments);
+            return await proc.Run();
+        }
+
+        public async Task<int> Run(ProcessStartInfo startInfo, CancellationToken cancel, bool logOutput)
+        {
+            if (logOutput)
+            {
+                return await Run(startInfo, Logger.Information, Logger.Error, cancel);
+            }
+            else
+            {
+                return await RunNoLog(startInfo, cancel);
+            }
+        }
+
+        public async Task<int> Run(
+            ProcessStartInfo startInfo,
+            Action<string> outputCallback, 
+            Action<string> errorCallback, 
+            CancellationToken cancel)
+        {
+            using var proc = Factory.Create(
+                startInfo,
+                cancel: cancel);
+            Logger.Information("({WorkingDirectory}): {FileName} {Args}",
+                startInfo.WorkingDirectory,
+                startInfo.FileName,
+                startInfo.Arguments);
+            using var outSub = proc.Output.Subscribe(outputCallback);
+            using var errSub = proc.Error.Subscribe(errorCallback);
             return await proc.Run();
         }
     }

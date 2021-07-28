@@ -3,17 +3,18 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reactive.Disposables;
-using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog.Utility;
+using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Cli;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
+using Synthesis.Bethesda.Execution.Utility;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Running
+namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
 {
     public interface ICliPatcherRun : IPatcherRun
     {
@@ -23,29 +24,29 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
     {
         private readonly CompositeDisposable _disposable = new();
 
-        public string Name => _Name.Name;
+        public string Name => _name.Name;
+        public IProcessRunner ProcessRunner { get; }
         public IPathToExecutableInputProvider ExePath { get; }
 
-        private readonly Subject<string> _output = new();
-        public IObservable<string> Output => _output;
-
-        private readonly Subject<string> _error = new();
-        public IObservable<string> Error => _error;
-
-        private readonly IProcessFactory _ProcessFactory;
-        private readonly IPatcherNameProvider _Name;
-        private readonly IPatcherExtraDataPathProvider _ExtraDataPathProvider;
+        public ILogger Logger { get; }
+        private readonly IPatcherNameProvider _name;
+        public IGenericSettingsToMutagenSettings GenericToMutagenSettings { get; }
+        public IFormatCommandLine Format { get; }
 
         public CliPatcherRun(
-            IProcessFactory processFactory,
+            ILogger logger,
+            IProcessRunner processRunner,
             IPatcherNameProvider name,
             IPathToExecutableInputProvider exePath,
-            IPatcherExtraDataPathProvider extraDataPathProvider)
+            IGenericSettingsToMutagenSettings genericToMutagenSettings,
+            IFormatCommandLine format)
         {
+            ProcessRunner = processRunner;
             ExePath = exePath;
-            _ProcessFactory = processFactory;
-            _Name = name;
-            _ExtraDataPathProvider = extraDataPathProvider;
+            Logger = logger;
+            _name = name;
+            GenericToMutagenSettings = genericToMutagenSettings;
+            Format = format;
         }
 
         public void AddForDisposal(IDisposable disposable)
@@ -66,26 +67,22 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
         {
             if (cancel.IsCancellationRequested) return;
 
-            var internalSettings = RunSynthesisMutagenPatcher.Factory(settings);
-            internalSettings.ExtraDataFolder = _ExtraDataPathProvider.Path;
-
-            var args = Parser.Default.FormatCommandLine(internalSettings);
+            var internalSettings = GenericToMutagenSettings.Convert(settings);
+            var args = Format.Format(internalSettings);
+            
             try
             {
-                using var process = _ProcessFactory.Create(
+                var result = await ProcessRunner.Run(
                     new ProcessStartInfo(ExePath.Path, args)
                     {
-                        WorkingDirectory = Path.GetDirectoryName(ExePath.Path)!
+                        WorkingDirectory = ExePath.Path.Directory!
                     },
                     cancel);
-                using var outputSub = process.Output.Subscribe(_output);
-                using var errSub = process.Error.Subscribe(_error);
-                var result = await process.Run();
                 if (result != 0)
                 {
                     throw new CliUnsuccessfulRunException(
                         result,
-                        $"Process exited in failure: {process.StartInfo.FileName} {internalSettings}");
+                        $"Process exited in failure: {ExePath.Path} {internalSettings}");
                 }
             }
             catch (Win32Exception ex)

@@ -141,8 +141,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
                 process.StartInfo.WorkingDirectory,
                 process.StartInfo.FileName,
                 process.StartInfo.Arguments);
-            using var outputSub = process.Output.Subscribe(x => _logger.Information(x));
-            using var errSub = process.Error.Subscribe(x => _logger.Error(x));
+            using var outputSub = process.Output.Subscribe(_logger.Information);
+            using var errSub = process.Error.Subscribe(_logger.Error);
             var result = await process.Run().ConfigureAwait(false);
             if (result != 0)
             {

@@ -49,19 +49,5 @@ namespace Mutagen.Bethesda.Synthesis.CLI
                 + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
                 + $"  {nameof(PatcherName)} => {this.PatcherName}";
         }
-
-        public static RunSynthesisMutagenPatcher Factory(RunSynthesisPatcher settings)
-        {
-            return new RunSynthesisMutagenPatcher()
-            {
-                DataFolderPath = settings.DataFolderPath,
-                GameRelease = settings.GameRelease,
-                LoadOrderFilePath = settings.LoadOrderFilePath,
-                OutputPath = settings.OutputPath,
-                SourcePath = settings.SourcePath,
-                PersistencePath = settings.PersistencePath,
-                PatcherName = settings.PatcherName
-            };
-        }
     }
 }
