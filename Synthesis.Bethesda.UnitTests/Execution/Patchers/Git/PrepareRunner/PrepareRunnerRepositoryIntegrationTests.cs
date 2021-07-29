@@ -31,12 +31,14 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
             {
                 x[3] = new NugetVersionPair(null, null);
             });
+            var runnerRepoDirectoryInjection = new RunnerRepoDirectoryInjection(local);
             return new PrepareRunnerRepository(
                 Substitute.For<ILogger>(),
                 new SolutionFileLocator(
                     IFileSystemExt.DefaultFilesystem),
                 new FullProjectPathRetriever(
                     IFileSystemExt.DefaultFilesystem,
+                    runnerRepoDirectoryInjection,
                     availableProjectsRetriever),
                 modify,
                 new ResetToTarget(
@@ -45,7 +47,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
                     new GetRepoTarget(),
                     new RetrieveCommit(
                         new ShouldFetchIfMissing())),
-                new RunnerRepoDirectoryInjection(local),
+                runnerRepoDirectoryInjection,
                 new ProvideRepositoryCheckouts(Substitute.For<ILogger>()));
         }
         

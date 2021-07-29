@@ -1,6 +1,8 @@
-﻿using System.IO.Abstractions;
+﻿using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using Noggog;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Solution
 {
@@ -14,13 +16,16 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
     public class FullProjectPathRetriever : IFullProjectPathRetriever
     {
         private readonly IFileSystem _fileSystem;
+        private readonly IRunnerRepoDirectoryProvider _runnerRepoDirectoryProvider;
         private readonly IAvailableProjectsRetriever _AvailableProjectsRetriever;
 
         public FullProjectPathRetriever(
             IFileSystem fileSystem,
+            IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             IAvailableProjectsRetriever availableProjectsRetriever)
         {
             _fileSystem = fileSystem;
+            _runnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
             _AvailableProjectsRetriever = availableProjectsRetriever;
         }
         
@@ -30,7 +35,10 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
             var str = _AvailableProjectsRetriever.Get(solutionPath)
                 .FirstOrDefault(av => _fileSystem.Path.GetFileName(av).Equals(projName));
             if (str == null) return null;
-            return new ProjectPaths(new FilePath(str), str);
+            return new ProjectPaths(
+                new FilePath(
+                    Path.Combine(_runnerRepoDirectoryProvider.Path, str)),
+                str);
         }
     }
 }
