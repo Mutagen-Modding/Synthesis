@@ -29,6 +29,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             IProfileLoadOrder loadOrder,
             IProfileIdentifier profileIdent,
             ICheckRunnability checkRunnability,
+            IProvideTemporaryLoadOrder provideTemporaryLoadOrder,
             ILogger logger)
         {
             Runnable = Observable.CombineLatest(
@@ -58,13 +59,14 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
                         try
                         {
+                            using var tmpLoadOrder = provideTemporaryLoadOrder.Get(
+                                i.loadOrder.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                             var runnability = await checkRunnability.Check(
                                 path: i.comp.Item.ProjPath,
                                 directExe: false,
-                                release: profileIdent.Release,
                                 dataFolder: i.data,
                                 cancel: cancel,
-                                loadOrder: i.loadOrder.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
+                                loadOrderPath: tmpLoadOrder.File);
                             if (runnability.Failed)
                             {
                                 logger.Information($"Checking runnability failed: {runnability.Reason}");

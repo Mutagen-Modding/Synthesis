@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog.Utility;
 using Synthesis.Bethesda.Execution.Placement;
@@ -14,7 +15,6 @@ namespace Synthesis.Bethesda.Execution.CLI
         Task<int> Open(
             string path,
             bool directExe,
-            GameRelease release,
             string dataFolderPath,
             IEnumerable<IModListingGetter> loadOrder,
             CancellationToken cancel);
@@ -22,17 +22,20 @@ namespace Synthesis.Bethesda.Execution.CLI
 
     public class OpenForSettings : IOpenForSettings
     {
+        private readonly IGameReleaseContext _gameReleaseContext;
         private readonly IProvideTemporaryLoadOrder _LoadOrder;
         private readonly IProcessFactory _ProcessFactory;
         private readonly IProvideDotNetRunProcessInfo _runProcessInfo;
         private readonly IWindowPlacement _WindowPlacement;
 
         public OpenForSettings(
+            IGameReleaseContext gameReleaseContext,
             IProvideTemporaryLoadOrder loadOrder,
             IProcessFactory processFactory,
             IProvideDotNetRunProcessInfo runProcessInfo,
             IWindowPlacement windowPlacement)
         {
+            _gameReleaseContext = gameReleaseContext;
             _LoadOrder = loadOrder;
             _ProcessFactory = processFactory;
             _runProcessInfo = runProcessInfo;
@@ -42,12 +45,11 @@ namespace Synthesis.Bethesda.Execution.CLI
         public async Task<int> Open(
             string path,
             bool directExe,
-            GameRelease release,
             string dataFolderPath,
             IEnumerable<IModListingGetter> loadOrder,
             CancellationToken cancel)
         {
-            using var loadOrderFile = _LoadOrder.Get(release, loadOrder);
+            using var loadOrderFile = _LoadOrder.Get(loadOrder);
 
             using var proc = _ProcessFactory.Create(
                 _runProcessInfo.GetStart(path, directExe, new Synthesis.Bethesda.OpenForSettings()
@@ -58,7 +60,7 @@ namespace Synthesis.Bethesda.Execution.CLI
                     Width = (int)_WindowPlacement.Width,
                     LoadOrderFilePath = loadOrderFile.File.Path,
                     DataFolderPath = dataFolderPath,
-                    GameRelease = release,
+                    GameRelease = _gameReleaseContext.Release,
                 }),
                 cancel: cancel,
                 hookOntoOutput: false);

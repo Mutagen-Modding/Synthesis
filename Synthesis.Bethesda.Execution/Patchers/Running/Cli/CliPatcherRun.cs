@@ -5,10 +5,7 @@ using System.IO;
 using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
-using CommandLine;
 using Mutagen.Bethesda;
-using Mutagen.Bethesda.Synthesis.CLI;
-using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Cli;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
@@ -59,7 +56,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
             _disposable.Dispose();
         }
 
-        public async Task Prep(GameRelease release, CancellationToken cancel)
+        public async Task Prep(CancellationToken cancel)
         {
         }
 

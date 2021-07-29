@@ -77,7 +77,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             _RepositoryCheckouts = repositoryCheckouts;
         }
 
-        public async Task Prep(GameRelease release, CancellationToken cancel)
+        public async Task Prep(CancellationToken cancel)
         {
             await Task.WhenAll(
                 Task.Run(async () =>
@@ -108,7 +108,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             var runnability = await _CheckRunnability.Check(
                 _pathToProjProvider.Path,
                 directExe: false,
-                release: settings.GameRelease,
                 dataFolder: settings.DataFolderPath,
                 loadOrderPath: settings.LoadOrderFilePath,
                 cancel: cancel);

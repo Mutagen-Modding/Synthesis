@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
 using Noggog.Utility;
@@ -15,15 +16,6 @@ namespace Synthesis.Bethesda.Execution.CLI
         Task<ErrorResponse> Check(
             string path,
             bool directExe,
-            GameRelease release,
-            string dataFolder,
-            IEnumerable<IModListingGetter> loadOrder,
-            CancellationToken cancel);
-
-        Task<ErrorResponse> Check(
-            string path,
-            bool directExe,
-            GameRelease release,
             string dataFolder,
             string loadOrderPath,
             CancellationToken cancel);
@@ -32,45 +24,25 @@ namespace Synthesis.Bethesda.Execution.CLI
     public class CheckRunnability : ICheckRunnability
     {
         private readonly ILogger _Logger;
+        private readonly IGameReleaseContext _gameReleaseContext;
         private readonly IProcessFactory _processFactory;
-        private readonly IProvideTemporaryLoadOrder _loadOrder;
         private readonly IProvideDotNetRunProcessInfo _runProcessInfo;
 
         public CheckRunnability(
             ILogger logger,
+            IGameReleaseContext gameReleaseContext,
             IProcessFactory processFactory,
-            IProvideTemporaryLoadOrder loadOrder,
             IProvideDotNetRunProcessInfo runProcessInfo)
         {
             _Logger = logger;
+            _gameReleaseContext = gameReleaseContext;
             _processFactory = processFactory;
-            _loadOrder = loadOrder;
             _runProcessInfo = runProcessInfo;
         }
-        
-        public async Task<ErrorResponse> Check(
-            string path,
-            bool directExe,
-            GameRelease release,
-            string dataFolder,
-            IEnumerable<IModListingGetter> loadOrder,
-            CancellationToken cancel)
-        {
-            using var loadOrderFile = _loadOrder.Get(release, loadOrder);
-
-            return await Check(
-                path,
-                directExe: directExe,
-                release: release,
-                dataFolder: dataFolder,
-                loadOrderPath: loadOrderFile.File.Path,
-                cancel: cancel);
-        }
 
         public async Task<ErrorResponse> Check(
             string path,
             bool directExe,
-            GameRelease release,
             string dataFolder,
             string loadOrderPath,
             CancellationToken cancel)
@@ -78,7 +50,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             var checkState = new Synthesis.Bethesda.CheckRunnability()
             {
                 DataFolderPath = dataFolder,
-                GameRelease = release,
+                GameRelease = _gameReleaseContext.Release,
                 LoadOrderFilePath = loadOrderPath
             };
 

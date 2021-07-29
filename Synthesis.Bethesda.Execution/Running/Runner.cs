@@ -170,7 +170,7 @@ namespace Synthesis.Bethesda.Execution.Running
                     {
                         try
                         {
-                            await patcher.Run.Prep(_ReleaseContext.Release, cancellation);
+                            await patcher.Run.Prep(cancellation);
                         }
                         catch (TaskCanceledException)
                         {

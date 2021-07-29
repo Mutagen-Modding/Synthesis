@@ -109,7 +109,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
                             o.Proj.Value,
                             directExe: false,
                             cancel: CancellationToken.None,
-                            release: ident.Release,
                             dataFolderPath: dataFolder.Path,
                             loadOrder: loadOrder.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                     }
@@ -118,7 +117,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
                         await openSettingsHost.Open(
                             path: o.Proj.Value,
                             cancel: CancellationToken.None,
-                            release: ident.Release,
                             dataFolderPath: dataFolder.Path,
                             loadOrder: loadOrder.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                     }

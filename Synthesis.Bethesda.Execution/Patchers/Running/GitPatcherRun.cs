@@ -59,7 +59,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             _disposable.Dispose();
         }
 
-        public async Task Prep(GameRelease release, CancellationToken cancel)
+        public async Task Prep(CancellationToken cancel)
         {
             _logger.Information("Cloning repository");
             var cloneResult = _checkOrClone.Check(

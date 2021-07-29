@@ -336,7 +336,7 @@ namespace Synthesis.Bethesda.UnitTests
                 WasDisposed = true;
             }
 
-            public async Task Prep(GameRelease release, CancellationToken cancel)
+            public async Task Prep(CancellationToken cancel)
             {
                 WasPrepped = true;
                 if (ThrowInPrep)
