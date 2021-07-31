@@ -44,28 +44,44 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="BuildFailure.txt">
+    <None Update="Files\le_test.esp">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="BuildSuccess.txt">
+    <None Update="Files\le_override.esp">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="BuildSuccessNonEnglish.txt">
+    <None Update="Files\BuildSuccessNonEnglish.txt">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="le_override.esp">
+    <None Update="Files\BuildSuccess.txt">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="le_test.esp">
+    <None Update="Files\BuildFailure.txt">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="oblivion_override.esp">
+    <None Update="Files\oblivion_override.esp">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="oblivion_test.esp">
+    <None Update="Files\oblivion_test.esp">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Plugins.txt">
+    <None Update="Files\Plugins.txt">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

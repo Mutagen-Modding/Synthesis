@@ -26,14 +26,14 @@ namespace Synthesis.Bethesda.UnitTests
         public static readonly string OverrideFileName = "override.esp";
         public static readonly string OtherFileName = "other.esp";
         public static readonly string Other2FileName = "other2.esp";
-        public static readonly string OblivionPathToTestFile = "oblivion_test.esp";
-        public static readonly string OblivionPathToOverrideFile = "oblivion_override.esp";
-        public static readonly string LePathToTestFile = "le_test.esp";
-        public static readonly string LePathToOverrideFile = "le_override.esp";
-        public static readonly string PluginFileName = "Plugins.txt";
-        public static readonly string BuildFailureFile = "BuildFailure.txt";
-        public static readonly string BuildSuccessFile = "BuildSuccess.txt";
-        public static readonly string BuildSuccessNonEnglishFile = "BuildSuccessNonEnglish.txt";
+        public static readonly string OblivionPathToTestFile = "Files/oblivion_test.esp";
+        public static readonly string OblivionPathToOverrideFile = "Files/oblivion_override.esp";
+        public static readonly string LePathToTestFile = "Files/le_test.esp";
+        public static readonly string LePathToOverrideFile = "Files/le_override.esp";
+        public static readonly FilePath PluginPath = "Files/Plugins.txt";
+        public static readonly string BuildFailureFile = "Files/BuildFailure.txt";
+        public static readonly string BuildSuccessFile = "Files/BuildSuccess.txt";
+        public static readonly string BuildSuccessNonEnglishFile = "Files/BuildSuccessNonEnglish.txt";
         public static readonly ModKey RandomModKey = new("Random", ModType.Plugin);
 
         public static TempFolder GetTempFolder(string folderName, [CallerMemberName] string? testName = null)
@@ -49,7 +49,7 @@ namespace Synthesis.Bethesda.UnitTests
         {
             var baseFolder = new DirectoryPath(BaseFolder);
             var dataFolder = new DirectoryPath($"{BaseFolder}/DataFolder");
-            var pluginPath = Path.Combine(BaseFolder, PluginFileName);
+            var pluginPath = Path.Combine(BaseFolder, PluginPath);
             string testPath, overridePath;
             switch (release)
             {
@@ -70,7 +70,7 @@ namespace Synthesis.Bethesda.UnitTests
             {
                 { Path.Combine(dataFolder.Path, TestFileName), new MockFileData(File.ReadAllBytes(testPath)) },
                 { Path.Combine(dataFolder.Path, OverrideFileName), new MockFileData(File.ReadAllBytes(overridePath)) },
-                { pluginPath, new MockFileData(File.ReadAllBytes(PluginFileName)) },
+                { pluginPath, new MockFileData(File.ReadAllBytes(PluginPath)) },
             });
 
             return new TestEnvironment(

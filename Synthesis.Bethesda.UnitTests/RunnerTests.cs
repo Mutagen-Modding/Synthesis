@@ -265,7 +265,7 @@ namespace Synthesis.Bethesda.UnitTests
                 {
                     Utility.TestModKey.FileName,
                     Utility.OverrideModKey.FileName,
-                }, env.FileSystem.File.ReadAllLines(Path.Combine(workingDir, Utility.PluginFileName)));
+                }, env.FileSystem.File.ReadAllLines(Path.Combine(workingDir, Utility.PluginPath.Name)));
         }
 
         [Fact]
@@ -303,7 +303,7 @@ namespace Synthesis.Bethesda.UnitTests
                     Utility.TestModKey.FileName,
                     Utility.OverrideModKey.FileName,
                     Constants.SynthesisModKey.FileName,
-                }, env.FileSystem.File.ReadAllLines(Path.Combine(workingDir, Utility.PluginFileName)));
+                }, env.FileSystem.File.ReadAllLines(Path.Combine(workingDir, Utility.PluginPath.Name)));
         }
 
         public class DummyPatcher : IPatcherRun
