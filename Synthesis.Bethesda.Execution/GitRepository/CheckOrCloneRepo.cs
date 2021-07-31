@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Noggog;
+using Noggog.IO;
 using Serilog;
 
 namespace Synthesis.Bethesda.Execution.GitRepository
@@ -19,16 +20,19 @@ namespace Synthesis.Bethesda.Execution.GitRepository
     {
         private readonly ILogger _logger;
         public ICloneRepo CloneRepo { get; }
-        public IDeleteOldRepo Delete { get; }
+        public IDeleteEntireDirectory DeleteEntireDirectory { get; }
+        public ICheckIfKeeping ShouldKeep { get; }
 
         public CheckOrCloneRepo(
             ILogger logger,
             ICloneRepo cloneRepo,
-            IDeleteOldRepo delete)
+            IDeleteEntireDirectory deleteEntireDirectory,
+            ICheckIfKeeping shouldKeep)
         {
             _logger = logger;
             CloneRepo = cloneRepo;
-            Delete = delete;
+            DeleteEntireDirectory = deleteEntireDirectory;
+            ShouldKeep = shouldKeep;
         }
         
         public GetResponse<RepoPathPair> Check(
@@ -39,12 +43,15 @@ namespace Synthesis.Bethesda.Execution.GitRepository
             try
             {
                 cancel.ThrowIfCancellationRequested();
-                if (Delete.CheckIfKeeping(localDir: localDir, remoteUrl: remote))
+                if (ShouldKeep.ShouldKeep(localDir: localDir, remoteUrl: remote))
                 {
-                    // Short circuiting deletion
                     return GetResponse<RepoPathPair>.Succeed(new(remote.Value, localDir), remote.Reason);
                 }
                 cancel.ThrowIfCancellationRequested();
+                
+                DeleteEntireDirectory.DeleteEntireFolder(localDir);
+                cancel.ThrowIfCancellationRequested();
+                
                 if (remote.Failed) return GetResponse<RepoPathPair>.Fail(new(remote.Value, string.Empty), remote.Reason);
                 _logger.Information("Cloning remote {RemotePath}", remote.Value);
                 var clonePath = CloneRepo.Clone(remote.Value, localDir);

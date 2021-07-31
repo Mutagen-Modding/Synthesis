@@ -195,5 +195,24 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.NugetListing
                 .Should().Equal(
                     new NugetListingQuery(package, requested, resolved, latest));
         }
+
+        [Theory, SynthAutoData]
+        public async Task LineParserSkipRespected(
+            string line1,
+            string line2,
+            FilePath projPath,
+            CancellationToken cancel,
+            QueryNugetListing sut)
+        {
+            sut.ProcessRunner.RunAndCapture(default!, default).ReturnsForAnyArgs(
+                new ProcessRunReturn(0, new() { line1, QueryNugetListing.Delimeter, line2 }, new()));
+            sut.LineParser.TryParse(line2, out _, out _, out _, out _).Returns(
+                _ =>
+                {
+                    return false;
+                });
+            (await sut.Query(projPath, default, default, cancel))
+                .Should().BeEmpty();
+        }
     }
 }

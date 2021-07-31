@@ -11,6 +11,7 @@ using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using Noggog.Utility;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.DotNet.Builder;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
 using Synthesis.Bethesda.Execution.Patchers.Running;
@@ -20,15 +21,18 @@ namespace Synthesis.Bethesda.ImpactTester
 {
     public class Tester
     {
+        private readonly IPrintErrorMessage _printErrorMessage;
         private readonly IAvailableProjectsRetriever _availableProjectsRetriever;
         private readonly IModifyRunnerProjects _modifyRunnerProjects;
         private readonly IBuild _build;
 
         public Tester(
+            IPrintErrorMessage printErrorMessage,
             IAvailableProjectsRetriever availableProjectsRetriever,
             IModifyRunnerProjects modifyRunnerProjects,
             IBuild build)
         {
+            _printErrorMessage = printErrorMessage;
             _availableProjectsRetriever = availableProjectsRetriever;
             _modifyRunnerProjects = modifyRunnerProjects;
             _build = build;
@@ -163,7 +167,7 @@ namespace Synthesis.Bethesda.ImpactTester
                     .CreateOrderedEnumerable(d => d.ProjSubPath, null, true))
                 {
                     System.Console.WriteLine($"{f.Dependent}: {f.ProjSubPath}");
-                    DotNetCommands.PrintErrorMessage(f.Compile.Reason, f.SolutionFolderPath, (s, _) =>
+                    _printErrorMessage.Print(f.Compile.Reason, f.SolutionFolderPath, (s, _) =>
                     {
                         Console.WriteLine(s.ToString());
                     });

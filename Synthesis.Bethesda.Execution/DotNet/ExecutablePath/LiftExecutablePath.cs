@@ -11,16 +11,17 @@ namespace Synthesis.Bethesda.Execution.DotNet.ExecutablePath
 
     public class LiftExecutablePath : ILiftExecutablePath
     {
+        public const string Delimiter = " -> ";
+        
         public bool TryGet(IEnumerable<string> lines, [MaybeNullWhen(false)] out string output)
         {
             foreach (var line in lines)
             {
                 var trimmed = line.Trim();
-                if (!trimmed.EndsWith(".dll")) continue;
-                const string delimiter = " -> ";
-                var index = trimmed.IndexOf(delimiter, StringComparison.Ordinal);
+                if (!trimmed.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)) continue;
+                var index = trimmed.IndexOf(Delimiter, StringComparison.Ordinal);
                 if (index == -1) continue;
-                output = trimmed.Substring(index + delimiter.Length).Trim();
+                output = trimmed.Substring(index + Delimiter.Length).Trim();
                 return true;
             }
             output = null;

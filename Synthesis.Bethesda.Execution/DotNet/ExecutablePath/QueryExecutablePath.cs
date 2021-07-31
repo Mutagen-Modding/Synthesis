@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Noggog;
 using Serilog;
+using Synthesis.Bethesda.Execution.DotNet.Builder;
 using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.DotNet.ExecutablePath
@@ -17,18 +18,18 @@ namespace Synthesis.Bethesda.Execution.DotNet.ExecutablePath
         private readonly ILogger _Logger;
         public IProcessRunner Runner { get; }
         public IRetrieveExecutablePath RetrievePath { get; }
-        public IBuildStartProvider StartProvider { get; }
+        public IBuildStartInfoProvider StartInfoProvider { get; }
 
         public QueryExecutablePath(
             ILogger logger,
             IProcessRunner processRunner,
             IRetrieveExecutablePath retrieveExecutablePath,
-            IBuildStartProvider buildStartProvider)
+            IBuildStartInfoProvider buildStartInfoProvider)
         {
             _Logger = logger;
             Runner = processRunner;
             RetrievePath = retrieveExecutablePath;
-            StartProvider = buildStartProvider;
+            StartInfoProvider = buildStartInfoProvider;
         }
         
         public async Task<GetResponse<string>> Query(FilePath projectPath, CancellationToken cancel)
@@ -37,7 +38,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.ExecutablePath
             // Tried using Buildalyzer, but it has a lot of bad side effects like clearing build outputs when
             // locating information like this.
             var result = await Runner.RunAndCapture(
-                StartProvider.Construct(projectPath),
+                StartInfoProvider.Construct(projectPath),
                 cancel: cancel);
             if (result.Errors.Count > 0)
             {

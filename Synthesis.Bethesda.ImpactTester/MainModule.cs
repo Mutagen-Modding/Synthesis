@@ -1,8 +1,10 @@
 using System;
 using Autofac;
+using Noggog.Autofac;
 using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.ImpactTester
 {
@@ -13,8 +15,10 @@ namespace Synthesis.Bethesda.ImpactTester
             builder.RegisterInstance(Log.Logger).As<ILogger>();
             builder.RegisterType<ProcessFactory>().As<IProcessFactory>();
             
-            builder.RegisterAssemblyTypes(typeof(IBuild).Assembly)
-                .InNamespaceOf<IBuild>()
+            builder.RegisterAssemblyTypes(typeof(DotNetVersion).Assembly)
+                .InNamespacesOf(
+                    typeof(DotNetVersion),
+                    typeof(IProcessRunner))
                 .AsImplementedInterfaces();
         }
     }

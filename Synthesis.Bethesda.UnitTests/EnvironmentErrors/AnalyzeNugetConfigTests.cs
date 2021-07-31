@@ -95,5 +95,21 @@ namespace Synthesis.Bethesda.UnitTests.EnvironmentErrors
             sut.Analyze(path)
                 .Should().BeOfType<MissingNugetOrgError>();
         }
+
+        [Theory, SynthAutoData]
+        public void LocatedNugetEntryReturnsNull(
+            FilePath path,
+            [Frozen]MockFileSystem fs,
+            AnalyzeNugetConfig sut)
+        {
+            fs.File.WriteAllText(path, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                                       "<configuration>" +
+                                       "<packageSources>" +
+                                       "<add key=\"nuget.org\" value=\"https://api.nuget.org/v3/index.json\" />" +
+                                       "</packageSources>" +
+                                       "</configuration>");
+            sut.Analyze(path)
+                .Should().BeNull();
+        }
     }
 }

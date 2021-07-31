@@ -19,10 +19,24 @@ namespace Synthesis.Bethesda.UnitTests.EnvironmentErrors
             MissingNugetOrgError sut)
         {
             fs.File.WriteAllText(path, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                                    "<configuration>" +
-                                    "<packageSources>" +
-                                    "</packageSources>" +
-                                    "</configuration>");
+                                       "<configuration>" +
+                                       "<packageSources>" +
+                                       "</packageSources>" +
+                                       "</configuration>");
+            sut.RunFix(path);
+            var doc = XDocument.Load(fs.FileStream.Create(path, FileMode.Open, FileAccess.Read));
+            doc.Should().BeEquivalentTo(NotExistsError.TypicalFile());
+        }
+        
+        [Theory, SynthAutoData]
+        public void MissingPackageSourcesFix(
+            FilePath path,
+            [Frozen]MockFileSystem fs,
+            MissingNugetOrgError sut)
+        {
+            fs.File.WriteAllText(path, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                                       "<configuration>" +
+                                       "</configuration>");
             sut.RunFix(path);
             var doc = XDocument.Load(fs.FileStream.Create(path, FileMode.Open, FileAccess.Read));
             doc.Should().BeEquivalentTo(NotExistsError.TypicalFile());
@@ -58,17 +72,21 @@ namespace Synthesis.Bethesda.UnitTests.EnvironmentErrors
         }
         
         [Theory, SynthAutoData]
-        public void MissingPackageSourcesFix(
+        public void NugetExistsDoesNothing(
             FilePath path,
             [Frozen]MockFileSystem fs,
             MissingNugetOrgError sut)
         {
-            fs.File.WriteAllText(path, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                                    "<configuration>" +
-                                    "</configuration>");
+            var txt = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                      "<configuration>" +
+                      "<packageSources>" +
+                      "<add key=\"nuget.org\" value=\"https://api.nuget.org/v3/index.json\" />" +
+                      "</packageSources>" +
+                      "</configuration>";
+            fs.File.WriteAllText(path, txt);
             sut.RunFix(path);
-            var doc = XDocument.Load(fs.FileStream.Create(path, FileMode.Open, FileAccess.Read));
-            doc.Should().BeEquivalentTo(NotExistsError.TypicalFile());
+            fs.File.ReadAllText(path)
+                .Should().Be(txt);
         }
     }
 }

@@ -18,12 +18,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
             DirectoryPath local,
             CheckOrCloneRepo sut)
         {
-            sut.Delete.CheckIfKeeping(default, default).ReturnsForAnyArgs(true);
-            var ret = sut.Check(
-                remote,
-                local,
-                CancellationToken.None);
-            sut.Delete.Received().CheckIfKeeping(local, remote);
+            sut.ShouldKeep.ShouldKeep(default, default).ReturnsForAnyArgs(true);
+            var ret = sut.Check(remote, local, CancellationToken.None);
+            sut.ShouldKeep.Received().ShouldKeep(local, remote);
             ret.Succeeded.Should().BeTrue();
             ret.Value.Remote.Should().Be(remote.Value);
             ret.Value.Local.Should().Be(local);
@@ -33,16 +30,25 @@ namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
         [Theory, SynthAutoData]
         public void RemoteFailed(
             DirectoryPath local,
+            GetResponse<string> failedRemote,
             CheckOrCloneRepo sut)
         {
-            sut.Delete.CheckIfKeeping(default, default).ReturnsForAnyArgs(false);
-            var remote = GetResponse<string>.Fail("Fail string");
-            var ret = sut.Check(
-                remote,
-                local,
-                CancellationToken.None);
+            sut.ShouldKeep.ShouldKeep(default, default).ReturnsForAnyArgs(false);
+            var ret = sut.Check(failedRemote, local, CancellationToken.None);
             ret.Succeeded.Should().BeFalse();
-            ret.Reason.Should().Be(remote.Reason);
+            ret.Reason.Should().Be(failedRemote.Reason);
+        }
+
+        [Theory, SynthAutoData]
+        public void DeleteCalledIfRemoteFailed(
+            DirectoryPath local,
+            GetResponse<string> failedRemote,
+            CheckOrCloneRepo sut)
+        {
+            sut.ShouldKeep.ShouldKeep(default, default).ReturnsForAnyArgs(false);
+            sut.Check(failedRemote, local, CancellationToken.None);
+            sut.DeleteEntireDirectory.Received(1).DeleteEntireFolder(
+                local, deleteFolderItself: true, disableReadOnly: true);
         }
 
         [Theory, SynthAutoData]
@@ -51,12 +57,21 @@ namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
             GetResponse<string> remote,
             CheckOrCloneRepo sut)
         {
-            sut.Delete.CheckIfKeeping(default, default).ThrowsForAnyArgs<NotImplementedException>();
-            var ret = sut.Check(
-                remote,
-                local,
-                CancellationToken.None);
+            sut.ShouldKeep.ShouldKeep(default, default).ThrowsForAnyArgs<NotImplementedException>();
+            var ret = sut.Check(remote, local, CancellationToken.None);
             ret.Succeeded.Should().BeFalse();
+        }
+
+        [Theory, SynthAutoData]
+        public void DeleteCalledIfNotKeeping(
+            DirectoryPath local,
+            GetResponse<string> remote,
+            CheckOrCloneRepo sut)
+        {
+            sut.ShouldKeep.ShouldKeep(default, default).Returns(false);
+            sut.Check(remote, local, CancellationToken.None);
+            sut.DeleteEntireDirectory.Received(1).DeleteEntireFolder(
+                local, disableReadOnly: true, deleteFolderItself: true);
         }
 
         [Theory, SynthAutoData]
@@ -65,12 +80,29 @@ namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
             GetResponse<string> remote,
             CheckOrCloneRepo sut)
         {
-            sut.Delete.CheckIfKeeping(default, default).Returns(false);
-            var ret = sut.Check(
-                remote,
-                local,
-                CancellationToken.None);
+            sut.ShouldKeep.ShouldKeep(default, default).Returns(false);
+            sut.Check(remote, local, CancellationToken.None);
             sut.CloneRepo.Received(1).Clone(remote.Value, local);
+        }
+
+        [Theory, SynthAutoData]
+        public void DeleteCalledBeforeReclone(
+            DirectoryPath local,
+            GetResponse<string> remote,
+            CheckOrCloneRepo sut)
+        {
+            sut.ShouldKeep.ShouldKeep(default, default).Returns(false);
+            sut.Check(remote, local, CancellationToken.None);
+            Received.InOrder(() =>
+            {
+                sut.DeleteEntireDirectory.DeleteEntireFolder(
+                    Arg.Any<DirectoryPath>(),
+                    Arg.Any<bool>(),
+                    Arg.Any<bool>());
+                sut.CloneRepo.Clone(
+                    Arg.Any<string>(), 
+                    Arg.Any<DirectoryPath>());
+            });
         }
 
         [Theory, SynthAutoData]
@@ -80,9 +112,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
             DirectoryPath clonePath,
             CheckOrCloneRepo sut)
         {
-            sut.Delete.CheckIfKeeping(default, default).Returns(false);
+            sut.ShouldKeep.ShouldKeep(default, default).Returns(false);
             sut.CloneRepo.Clone(default!, default).ReturnsForAnyArgs(clonePath);
-            var ret = sut.Check(
+            sut.Check(
                 remote,
                 local,
                 CancellationToken.None);

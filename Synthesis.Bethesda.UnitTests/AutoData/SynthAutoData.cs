@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System;
+using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using Noggog.Testing.AutoFixture;
@@ -18,14 +19,27 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
             bool UseMockRepositoryProvider = false)
             : base(() =>
             {
-                return new AutoFixture.Fixture()
-                    .Customize(new SynthAutoDataCustomization(
-                        useMockFilesystem: UseMockFileSystem,
-                        configureMembers: ConfigureMembers,
-                        generateDelegates: GenerateDelegates,
-                        useMockRepositoryProvider: UseMockRepositoryProvider));
+                return Factory(
+                    UseMockFileSystem: UseMockFileSystem,
+                    ConfigureMembers: ConfigureMembers,
+                    GenerateDelegates: GenerateDelegates,
+                    UseMockRepositoryProvider: UseMockRepositoryProvider);
             })
         {
+        }
+
+        public static AutoFixture.IFixture Factory(
+            bool ConfigureMembers = true, 
+            bool UseMockFileSystem = true,
+            bool GenerateDelegates = false,
+            bool UseMockRepositoryProvider = false)
+        {
+            return new AutoFixture.Fixture()
+                .Customize(new SynthAutoDataCustomization(
+                    useMockFilesystem: UseMockFileSystem,
+                    configureMembers: ConfigureMembers,
+                    generateDelegates: GenerateDelegates,
+                    useMockRepositoryProvider: UseMockRepositoryProvider));
         }
     }
     
@@ -36,6 +50,17 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
             : base(
                 new InlineDataAttribute(ExtraParameters), 
                 new SynthAutoData())
+        {
+        }
+    }
+    
+    public class SynthMemberData : MemberAutoDataImprovedAttribute
+    {
+        public SynthMemberData(string memberName, params object[] parameters)
+            : base(memberName: memberName, parameters, () =>
+            {
+                return SynthAutoData.Factory();
+            })
         {
         }
     }
@@ -91,6 +116,7 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
             fixture.Customizations.Add(new SchedulerBuilder());
             fixture.Customizations.Add(new PathBuilder());
             fixture.Customizations.Add(new ProcessBuilder());
+            fixture.Customizations.Add(new ErrorResponseBuilder());
             fixture.Customizations.Add(new CancellationBuilder());
             fixture.Behaviors.Add(new ObservableEmptyBehavior());
             if (_useMockRepositoryProvider)

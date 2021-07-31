@@ -2,18 +2,18 @@
 using FluentAssertions;
 using Noggog;
 using NSubstitute;
-using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.DotNet.Builder;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
+namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.Builder
 {
-    public class BuildStartProviderTests
+    public class BuildStartInfoProviderTests
     {
         [Theory, SynthAutoData]
         public void PassesBuildToConstructor(
             FilePath path,
-            BuildStartProvider sut)
+            BuildStartInfoProvider sut)
         {
             sut.Construct(path);
             sut.StartConstructor.Received(1).Construct("build", path);
@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
         public void ReturnsStartConstructorResults(
             ProcessStartInfo startInfo,
             FilePath path,
-            BuildStartProvider sut)
+            BuildStartInfoProvider sut)
         {
             sut.StartConstructor.Construct(default!, default).ReturnsForAnyArgs(startInfo);
             sut.Construct(path)

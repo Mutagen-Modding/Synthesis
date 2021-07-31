@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.ExecutablePath
             QueryExecutablePath sut)
         {
             sut.Query(projPath, cancel);
-            sut.StartProvider.Received(1).Construct(projPath);
+            sut.StartInfoProvider.Received(1).Construct(projPath);
         }
         
         [Theory, SynthAutoData]
@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.ExecutablePath
             [Frozen]ProcessStartInfo startInfo,
             QueryExecutablePath sut)
         {
-            sut.StartProvider.Construct(default).ReturnsForAnyArgs(startInfo);
+            sut.StartInfoProvider.Construct(default).ReturnsForAnyArgs(startInfo);
             sut.Query(projPath, cancel);
             sut.Runner.Received(1).RunAndCapture(startInfo.ArgIsSame(), cancel);
         }

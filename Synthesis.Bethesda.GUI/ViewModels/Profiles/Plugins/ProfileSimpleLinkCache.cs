@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
         public ProfileSimpleLinkCache(
             ILogger logger,
             IProfileLoadOrder loadOrder,
-            IProfileDataFolder dataFolder,
+            IProfileDataFolderVm dataFolder,
             IProfileIdentifier ident)
         {
             SimpleLinkCache = Observable.CombineLatest(

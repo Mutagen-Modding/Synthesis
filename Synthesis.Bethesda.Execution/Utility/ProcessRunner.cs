@@ -19,10 +19,15 @@ namespace Synthesis.Bethesda.Execution.Utility
             CancellationToken cancel,
             bool logOutput = true);
 
-        Task<int> Run(
+        Task<int> RunWithCallback(
             ProcessStartInfo startInfo,
             Action<string> outputCallback,
             Action<string> errorCallback,
+            CancellationToken cancel);
+
+        Task<int> RunWithCallback(
+            ProcessStartInfo startInfo,
+            Action<string> callback,
             CancellationToken cancel);
     }
 
@@ -45,7 +50,7 @@ namespace Synthesis.Bethesda.Execution.Utility
         {
             var outs = new List<string>();
             var errs = new List<string>();
-            var ret = await Run(
+            var ret = await RunWithCallback(
                 startInfo,
                 i => outs.Add(i),
                 i => errs.Add(i),
@@ -69,7 +74,7 @@ namespace Synthesis.Bethesda.Execution.Utility
         {
             if (logOutput)
             {
-                return await Run(startInfo, Logger.Information, Logger.Error, cancel);
+                return await RunWithCallback(startInfo, Logger.Information, Logger.Error, cancel);
             }
             else
             {
@@ -77,7 +82,7 @@ namespace Synthesis.Bethesda.Execution.Utility
             }
         }
 
-        public async Task<int> Run(
+        public async Task<int> RunWithCallback(
             ProcessStartInfo startInfo,
             Action<string> outputCallback, 
             Action<string> errorCallback, 
@@ -93,6 +98,18 @@ namespace Synthesis.Bethesda.Execution.Utility
             using var outSub = proc.Output.Subscribe(outputCallback);
             using var errSub = proc.Error.Subscribe(errorCallback);
             return await proc.Run();
+        }
+
+        public async Task<int> RunWithCallback(
+            ProcessStartInfo startInfo,
+            Action<string> callback, 
+            CancellationToken cancel)
+        {
+            return await RunWithCallback(
+                startInfo,
+                callback,
+                callback,
+                cancel);
         }
     }
 }

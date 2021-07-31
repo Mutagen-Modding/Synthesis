@@ -60,7 +60,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         public string ProfileDirectory { get; }
         public string WorkingDirectory { get; }
 
-        public IProfileDataFolder DataFolderOverride { get; }
+        public IProfileDataFolderVm DataFolderOverride { get; }
         public IProfileVersioning Versioning { get; }
 
         private readonly ObservableAsPropertyHelper<DirectoryPath> _DataFolder;
@@ -103,7 +103,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             ILifetimeScope scope,
             IRunFactory runFactory,
             IProfilePatchersList patchersList,
-            IProfileDataFolder dataFolder,
+            IProfileDataFolderVm dataFolder,
             IPatcherInitializationFactoryVm init,
             IProfileIdentifier ident,
             IProfileLoadOrder loadOrder,

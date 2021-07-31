@@ -7,7 +7,7 @@ using System.Text;
 namespace Synthesis.Bethesda
 {
     [Verb("open-for-settings", HelpText = "Informs the patcher to open in settings mode")]
-    public class OpenForSettings
+    public record OpenForSettings
     {
         [Option('y', "Top", Required = false, HelpText = "Top location to consider when positioning")]
         public int Top { get; set; }

@@ -5,6 +5,7 @@ using Mutagen.Bethesda.Synthesis.Projects;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Mutagen.Bethesda.Synthesis.WPF;
 using Noggog.Autofac;
+using Noggog.IO;
 using Noggog.Reactive;
 using Noggog.Utility;
 using Noggog.WPF;
@@ -44,7 +45,13 @@ namespace Synthesis.Bethesda.GUI.Modules
         {
             builder.RegisterType<FileSystem>().As<IFileSystem>()
                 .SingleInstance();
+            builder.RegisterType<TempFileProvider>().As<ITempFileProvider>()
+                .SingleInstance();
+            builder.RegisterType<TempFolderProvider>().As<ITempFolderProvider>()
+                .SingleInstance();
             builder.RegisterType<ProcessFactory>().As<IProcessFactory>()
+                .SingleInstance();
+            builder.RegisterType<DeleteEntireDirectory>().As<IDeleteEntireDirectory>()
                 .SingleInstance();
             builder.RegisterInstance(Log.Logger).As<ILogger>();
 
@@ -77,15 +84,11 @@ namespace Synthesis.Bethesda.GUI.Modules
                 .InNamespacesOf(
                     typeof(ICheckOrCloneRepo),
                     typeof(IQueryNewestLibraryVersions),
-                    typeof(IInstalledSdkFollower),
-                    typeof(IProcessRunner))
-                .AsMatchingInterface()
-                .SingleInstance();
-            builder.RegisterAssemblyTypes(typeof(ICheckOrCloneRepo).Assembly)
-                .InNamespacesOf(
+                    typeof(IProcessRunner),
                     typeof(IWorkingDirectorySubPaths),
                     typeof(IPatcherRun),
-                    typeof(ICheckRunnability))
+                    typeof(IInstalledSdkFollower),
+                    typeof(IExecuteRunnabilityCheck))
                 .Except<ProvideWorkingDirectory>()
                 .AsMatchingInterface();
 

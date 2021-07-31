@@ -1,17 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Noggog;
-using Synthesis.Bethesda.Execution;
-using System;
-using System.Collections.Generic;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests
+namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
 {
-    public class ErrorHandlingTests
+    public class IsApplicableErrorLineTests
     {
-        [Fact]
-        public void IsApplicableErrorLine_Typical()
+        [Theory, SynthAutoData]
+        public void Typical(IsApplicableErrorLine sut)
         {
             var rawMessage = @"Unknown Error: Microsoft (R) Build Engine version 16.9.0+57a23d249 for .NET
 Copyright (C) Microsoft Corporation. All rights reserved.
@@ -38,7 +38,7 @@ C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisR
             List<string> lines = new();
             foreach (var line in rawMessage.AsSpan().SplitLines())
             {
-                if (DotNetCommands.IsApplicableErrorLine(line.Line))
+                if (sut.IsApplicable(line.Line))
                 {
                     lines.Add(line.Line.ToString());
                 }
@@ -49,60 +49,6 @@ C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisR
                     @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\ArmorAnalyzer.cs(151,49): error CS0029: Cannot implicitly convert type 'Mutagen.Bethesda.FormKey' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>' [C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\HalgarisRPGLoot.csproj]",
                     @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\ArmorAnalyzer.cs(158,50): error CS0266: Cannot implicitly convert type 'Mutagen.Bethesda.Skyrim.LeveledItem' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>'. An explicit conversion exists (are you missing a cast?) [C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\HalgarisRPGLoot.csproj]"
                 });
-        }
-
-        [Fact]
-        public void TrimErrorMessage_Typical()
-        {
-            var rawMessage = @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\ArmorAnalyzer.cs(151,49): error CS0029: Cannot implicitly convert type 'Mutagen.Bethesda.FormKey' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>' [C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\HalgarisRPGLoot.csproj]";
-            var relativePath = @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\";
-            var expectedResult = @"HalgarisRPGLoot\ArmorAnalyzer.cs(151,49): error CS0029: Cannot implicitly convert type 'Mutagen.Bethesda.FormKey' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>'";
-            Assert.Equal(expectedResult, DotNetCommands.TrimErrorMessage(rawMessage, relativePath).ToString());
-        }
-
-        [Fact]
-        public void TrimErrorMessage_MismatchedPath()
-        {
-            var rawMessage = @"C:\Users\Levia\AppDataz\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\ArmorAnalyzer.cs(151,49): error CS0029: Cannot implicitly convert type 'Mutagen.Bethesda.FormKey' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>' [C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\HalgarisRPGLoot.csproj]";
-            var relativePath = @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\";
-            var expectedResult = @"C:\Users\Levia\AppDataz\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\ArmorAnalyzer.cs(151,49): error CS0029: Cannot implicitly convert type 'Mutagen.Bethesda.FormKey' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>'";
-            Assert.Equal(expectedResult, DotNetCommands.TrimErrorMessage(rawMessage, relativePath).ToString());
-        }
-
-        [Fact]
-        public void TrimErrorMessage_NoEndProj()
-        {
-            var rawMessage = @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\ArmorAnalyzer.cs(151,49): error CS0029: Cannot implicitly convert type 'Mutagen.Bethesda.FormKey' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>' ";
-            var relativePath = @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\";
-            var expectedResult = @"HalgarisRPGLoot\ArmorAnalyzer.cs(151,49): error CS0029: Cannot implicitly convert type 'Mutagen.Bethesda.FormKey' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>'";
-            Assert.Equal(expectedResult, DotNetCommands.TrimErrorMessage(rawMessage, relativePath).ToString());
-        }
-
-        [Fact]
-        public void TrimErrorMessage_EndsWithDelimiter()
-        {
-            var rawMessage = @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\ArmorAnalyzer.cs(151,49): error CS0029: Cannot implicitly convert type 'Mutagen.Bethesda.FormKey' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>' [";
-            var relativePath = @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\";
-            var expectedResult = @"HalgarisRPGLoot\ArmorAnalyzer.cs(151,49): error CS0029: Cannot implicitly convert type 'Mutagen.Bethesda.FormKey' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>' [";
-            Assert.Equal(expectedResult, DotNetCommands.TrimErrorMessage(rawMessage, relativePath).ToString());
-        }
-
-        [Fact]
-        public void TrimErrorMessage_HasDelimiter()
-        {
-            var rawMessage = @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\ArmorAnalyzer.cs(151,49): error CS0029: Cannot implicitly c[onvert type 'Mutagen.Bethesda.FormKey' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>' [C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\HalgarisRPGLoot.csproj]";
-            var relativePath = @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\";
-            var expectedResult = @"HalgarisRPGLoot\ArmorAnalyzer.cs(151,49): error CS0029: Cannot implicitly c[onvert type 'Mutagen.Bethesda.FormKey' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>'";
-            Assert.Equal(expectedResult, DotNetCommands.TrimErrorMessage(rawMessage, relativePath).ToString());
-        }
-
-        [Fact]
-        public void TrimErrorMessage_OddTrim()
-        {
-            var rawMessage = @"C:\\Users\\Levia\\AppData\\Local\\Temp\\tqhereth.tgq\\3ndos\\AddNewRecipes\\AddNewRecipes\\Program.cs(702,82): error CS0266: Cannot implicitly convert type 'System.Collections.Generic.IReadOnlyList<Mutagen.Bethesda.IFormLinkGetter<Mutagen.Bethesda.Skyrim.IKeywordGetter>>' to 'System.Collections.Generic.IReadOnlyList<Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IKeywordGetter>>'. An explicit conversion exists (are you missing a cast?) [C:\\Users\\Levia\\AppData\\Local\\Temp\\tqhereth.tgq\\3ndos\\AddNewRecipes\\AddNewRecipes\\AddNewRecipes.csproj]";
-            var relativePath = @"C:\\Users\\Levia\\AppData\\Local\\Temp\\tqhereth.tgq\\3ndos\\AddNewRecipes\\3ndos\\";
-            var expectedResult = @"C:\\Users\\Levia\\AppData\\Local\\Temp\\tqhereth.tgq\\3ndos\\AddNewRecipes\\AddNewRecipes\\Program.cs(702,82): error CS0266: Cannot implicitly convert type 'System.Collections.Generic.IReadOnlyList<Mutagen.Bethesda.IFormLinkGetter<Mutagen.Bethesda.Skyrim.IKeywordGetter>>' to 'System.Collections.Generic.IReadOnlyList<Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IKeywordGetter>>'. An explicit conversion exists (are you missing a cast?) [C:\\Users\\Levia\\AppData\\Local\\Temp\\tqhereth.tgq\\3ndos\\AddNewRecipes\\AddNewRecipes\\AddNewRecipes.csproj]";
-            Assert.Equal(expectedResult, DotNetCommands.TrimErrorMessage(rawMessage, relativePath).ToString());
         }
     }
 }

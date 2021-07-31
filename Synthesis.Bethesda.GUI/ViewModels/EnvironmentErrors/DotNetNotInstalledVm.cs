@@ -39,7 +39,7 @@ namespace Synthesis.Bethesda.GUI
                     }
                     else
                     {
-                        return $"While an SDK was found, it was not an acceptable version.  You had {x.Version}, but it must be at least {DotNetCommands.MinVersion}";
+                        return $"While an SDK was found, it was not an acceptable version.  You had {x.Version}, but it must be at least {ParseNugetVersionString.MinVersion}";
                     }
                 })
                 .ToGuiProperty(this, nameof(CustomDisplayString), string.Empty);

@@ -7,7 +7,7 @@ using System.Text;
 namespace Synthesis.Bethesda
 {
     [Verb("check-runnability", HelpText = "Check the current state and see if the patcher thinks it can run")]
-    public class CheckRunnability
+    public record CheckRunnability
     {
         [Option('g', "GameRelease", Required = true, HelpText = "GameRelease data folder is related to.")]
         public GameRelease GameRelease { get; set; }

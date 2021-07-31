@@ -27,9 +27,9 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles
         [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false)]
         public async Task HasDataPathOverride(
             Utility.Return r,
-            ProfileDataFolder sut)
+            DirectoryPath folder,
+            ProfileDataFolderVm sut)
         {
-            var folder = new DirectoryPath("SomeFolder");
             sut.FileSystem.Directory.Exists(folder.Path).Returns(r);
             sut.DataPathOverride = folder;
                 
@@ -51,7 +51,7 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles
         [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false)]
         public void GameLocation(
             Utility.Return r,
-            ProfileDataFolder sut)
+            ProfileDataFolderVm sut)
         {
             sut.FileSystem.Directory.Exists(Arg.Any<string>()).Returns(true);
             sut.GameLocator.TryGet(Arg.Any<GameRelease>(), out Arg.Any<DirectoryPath>())
@@ -89,7 +89,7 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles
             [Frozen]IFileSystem fs,
             [Frozen]IProfileIdentifier ident,
             [Frozen]IGameDirectoryLookup lookup,
-            Func<ProfileDataFolder> sutF)
+            Func<ProfileDataFolderVm> sutF)
         {
             lookup.TryGet(ident.Release, out Arg.Any<DirectoryPath>())
                 .Returns(x =>

@@ -41,5 +41,18 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.NugetListing
             resolved.Should().Be("0.10.7");
             latest.Should().Be("0.10.8.1");
         }
+
+        [Theory, SynthAutoData]
+        public void NoArrowDelimiterReturnsFalse(
+            NugetListingParser sut)
+        {
+            sut.TryParse(
+                    "  Mutagen.Bethesda.Synthesis      0.10.7.0    0.10.7 (D)   0.10.8.1",
+                    out _,
+                    out _,
+                    out _,
+                    out _)
+                .Should().BeFalse();
+        }
     }
 }

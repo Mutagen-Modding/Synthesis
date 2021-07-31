@@ -30,7 +30,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
         public ProfileLoadOrder(
             ILogger logger,
             IProfileIdentifier ident,
-            IProfileDataFolder dataFolder)
+            IProfileDataFolderVm dataFolder)
         {
             var loadOrderResult = dataFolder.WhenAnyValue(x => x.DataFolderResult)
                 .ObserveOn(RxApp.TaskpoolScheduler)

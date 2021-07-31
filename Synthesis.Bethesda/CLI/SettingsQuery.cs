@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Synthesis.Bethesda
 {
     [Verb("settings-query", HelpText = "Query to check what style of settings the patcher supports.")]
-    public class SettingsQuery
+    public record SettingsQuery
     {
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using FluentAssertions;
+using Noggog;
 using Synthesis.Bethesda.Execution.DotNet.ExecutablePath;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
@@ -32,6 +33,34 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.ExecutablePath
             var lines = File.ReadAllLines(Utility.BuildFailureFile);
             sut.TryGet(lines, out var _)
                 .Should().BeFalse();
+        }
+
+        [Theory, SynthInlineData("dll"), SynthInlineData("DLL")]
+        public void SkipsLineWithoutDllExtension(
+            string ext,
+            LiftExecutablePath sut)
+        {
+            sut.TryGet(new string[]
+                {
+                    $"Text {LiftExecutablePath.Delimiter} Path",
+                    $"Text {LiftExecutablePath.Delimiter} SomePath.{ext}"
+                }, out var result)
+                .Should().BeTrue();
+            result.Should().Be($"SomePath.{ext}");
+        }
+
+        [Theory, SynthInlineData("dll"), SynthInlineData("DLL")]
+        public void SkipsLineWithoutDelimiter(
+            string ext,
+            LiftExecutablePath sut)
+        {
+            sut.TryGet(new string[]
+                {
+                    $"Text Path.{ext}",
+                    $"Text {LiftExecutablePath.Delimiter} SomePath.{ext}"
+                }, out var result)
+                .Should().BeTrue();
+            result.Should().Be($"SomePath.{ext}");
         }
     }
 }

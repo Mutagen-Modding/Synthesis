@@ -9,7 +9,6 @@ using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
@@ -25,11 +24,10 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
         public PatcherRunnabilityCliState(
             ICompliationProvider compliationProvider,
-            IProfileDataFolder dataFolder,
+            IProfileDataFolderVm dataFolder,
             IProfileLoadOrder loadOrder,
-            IProfileIdentifier profileIdent,
-            ICheckRunnability checkRunnability,
-            IProvideTemporaryLoadOrder provideTemporaryLoadOrder,
+            IExecuteRunnabilityCheck checkRunnability,
+            ITemporaryLoadOrderProvider temporaryLoadOrderProvider,
             ILogger logger)
         {
             Runnable = Observable.CombineLatest(
@@ -59,12 +57,11 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
                         try
                         {
-                            using var tmpLoadOrder = provideTemporaryLoadOrder.Get(
+                            using var tmpLoadOrder = temporaryLoadOrderProvider.Get(
                                 i.loadOrder.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                             var runnability = await checkRunnability.Check(
                                 path: i.comp.Item.ProjPath,
                                 directExe: false,
-                                dataFolder: i.data,
                                 cancel: cancel,
                                 loadOrderPath: tmpLoadOrder.File);
                             if (runnability.Failed)

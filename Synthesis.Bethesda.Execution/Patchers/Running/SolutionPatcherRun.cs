@@ -21,6 +21,7 @@ using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.DotNet.Builder;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
@@ -42,7 +43,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
         private readonly IPathToProjProvider _pathToProjProvider;
         private readonly IBuild _build;
         private readonly ILogger _logger;
-        private readonly ICheckRunnability _CheckRunnability;
+        private readonly IExecuteRunnabilityCheck _CheckRunnability;
         private readonly IProcessFactory _ProcessFactory;
         private readonly IDotNetCommandStartConstructor _commandStartConstructor;
         private readonly IDefaultDataPathProvider _defaultDataPathProvider;
@@ -57,7 +58,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             IPathToProjProvider pathToProjProvider,
             IBuild build,
             ILogger logger,
-            ICheckRunnability checkRunnability,
+            IExecuteRunnabilityCheck checkRunnability,
             IProcessFactory processFactory,
             IDotNetCommandStartConstructor commandStartConstructor,
             IDefaultDataPathProvider defaultDataPathProvider,
@@ -108,7 +109,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
             var runnability = await _CheckRunnability.Check(
                 _pathToProjProvider.Path,
                 directExe: false,
-                dataFolder: settings.DataFolderPath,
                 loadOrderPath: settings.LoadOrderFilePath,
                 cancel: cancel);
 

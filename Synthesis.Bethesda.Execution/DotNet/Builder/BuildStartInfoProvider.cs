@@ -1,18 +1,18 @@
 ﻿using System.Diagnostics;
 using Noggog;
 
-namespace Synthesis.Bethesda.Execution.DotNet
+namespace Synthesis.Bethesda.Execution.DotNet.Builder
 {
-    public interface IBuildStartProvider
+    public interface IBuildStartInfoProvider
     {
         ProcessStartInfo Construct(FilePath path);
     }
 
-    public class BuildStartProvider : IBuildStartProvider
+    public class BuildStartInfoProvider : IBuildStartInfoProvider
     {
         public IDotNetCommandStartConstructor StartConstructor { get; }
 
-        public BuildStartProvider(
+        public BuildStartInfoProvider(
             IDotNetCommandStartConstructor startConstructor)
         {
             StartConstructor = startConstructor;

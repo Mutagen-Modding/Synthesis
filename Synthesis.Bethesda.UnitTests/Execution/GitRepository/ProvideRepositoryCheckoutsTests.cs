@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Noggog;
@@ -55,6 +56,18 @@ namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
             waited.Should().BeTrue();
             await t;
             sut.IsShutdown.Should().BeTrue();
+        }
+
+        [Theory, SynthAutoData]
+        public async Task RequestAfterShutdownThrows(
+            DirectoryPath dir,
+            ProvideRepositoryCheckouts sut)
+        {
+            sut.Dispose();
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                sut.Get(dir);
+            });
         }
     }
 }

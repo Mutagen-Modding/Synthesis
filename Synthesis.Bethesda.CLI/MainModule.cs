@@ -30,7 +30,7 @@ namespace Synthesis.Bethesda.CLI
             builder.RegisterType<FileSystem>().As<IFileSystem>();
             builder.RegisterType<ProcessFactory>().As<IProcessFactory>();
             builder.RegisterInstance(Log.Logger).As<ILogger>();
-            builder.RegisterAssemblyTypes(typeof(ICheckRunnability).Assembly)
+            builder.RegisterAssemblyTypes(typeof(IExecuteRunnabilityCheck).Assembly)
                 .AsMatchingInterface();
             
             builder.Register(_ => CancellationToken.None).AsSelf();

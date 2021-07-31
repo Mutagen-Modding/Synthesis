@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.DotNet.Builder;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
@@ -25,6 +26,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
         public CompilationProvider(
             IBuild build,
             ILogger logger,
+            IPrintErrorMessage printErrorMessage,
             IRunnableStateProvider runnableStateProvider)
         {
             _build = build;
@@ -56,9 +58,9 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                             var compileResp = await _build.Compile(state.Item.ProjPath, cancel);
                             if (compileResp.Failed)
                             {
-                                _logger.Information($"Compiling failed: {compileResp.Reason}");
+                                _logger.Information("Compiling failed: {Reason}", compileResp.Reason);
                                 var errs = new List<string>();
-                                DotNetCommands.PrintErrorMessage(compileResp.Reason,
+                                printErrorMessage.Print(compileResp.Reason,
                                     $"{Path.GetDirectoryName(state.Item.ProjPath)}\\", (s, _) =>
                                     {
                                         errs.Add(s.ToString());

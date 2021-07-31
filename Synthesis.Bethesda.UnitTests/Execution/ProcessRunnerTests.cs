@@ -111,7 +111,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution
             Action<string> callback,
             ProcessRunner sut)
         {
-            await sut.Run(startInfo, callback, callback, cancel);
+            await sut.RunWithCallback(startInfo, callback, callback, cancel);
             sut.Factory.Received(1).Create(startInfo, cancel);
         }
         
@@ -127,7 +127,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution
             process.Output.Returns(Observable.Return(str));
             sut.Factory.Create(default!).ReturnsForAnyArgs(process);
             var received = new List<string>();
-            await sut.Run(startInfo, received.Add, errCb, cancel);
+            await sut.RunWithCallback(startInfo, received.Add, errCb, cancel);
             received.Should().Equal(str);
         }
         
@@ -143,7 +143,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution
             process.Error.Returns(Observable.Return(str));
             sut.Factory.Create(default!).ReturnsForAnyArgs(process);
             var received = new List<string>();
-            await sut.Run(startInfo, outCb, received.Add, cancel);
+            await sut.RunWithCallback(startInfo, outCb, received.Add, cancel);
             received.Should().Equal(str);
         }
         
@@ -159,7 +159,68 @@ namespace Synthesis.Bethesda.UnitTests.Execution
         {
             process.Run().Returns(Task.FromResult(ret));
             sut.Factory.Create(default!).ReturnsForAnyArgs(process);
-            (await sut.Run(startInfo, outCb, errCb, cancel))
+            (await sut.RunWithCallback(startInfo, outCb, errCb, cancel))
+                .Should().Be(ret);
+        }
+
+        #endregion
+
+        #region RunWithCallback
+
+
+        [Theory, SynthAutoData]
+        public async Task RunWithCallback_CallsFactory(
+            ProcessStartInfo startInfo,
+            CancellationToken cancel,
+            Action<string> callback,
+            ProcessRunner sut)
+        {
+            await sut.RunWithCallback(startInfo, callback, cancel);
+            sut.Factory.Received(1).Create(startInfo, cancel);
+        }
+        
+        [Theory, SynthAutoData(ConfigureMembers: false)]
+        public async Task RunWithCallback_CallsOutCallback(
+            string str,
+            [Frozen]ProcessStartInfo startInfo,
+            IProcessWrapper process,
+            CancellationToken cancel,
+            ProcessRunner sut)
+        {
+            process.Output.Returns(Observable.Return(str));
+            sut.Factory.Create(default!).ReturnsForAnyArgs(process);
+            var received = new List<string>();
+            await sut.RunWithCallback(startInfo, received.Add, cancel);
+            received.Should().Equal(str);
+        }
+        
+        [Theory, SynthAutoData(ConfigureMembers: false)]
+        public async Task RunWithCallback_PutsErrIntoCallback(
+            string str,
+            [Frozen]ProcessStartInfo startInfo,
+            IProcessWrapper process,
+            CancellationToken cancel,
+            ProcessRunner sut)
+        {
+            process.Error.Returns(Observable.Return(str));
+            sut.Factory.Create(default!).ReturnsForAnyArgs(process);
+            var received = new List<string>();
+            await sut.RunWithCallback(startInfo, received.Add, cancel);
+            received.Should().Equal(str);
+        }
+        
+        [Theory, SynthAutoData(ConfigureMembers: false)]
+        public async Task RunWithCallback_ReturnsProcessReturn(
+            int ret,
+            [Frozen]ProcessStartInfo startInfo,
+            IProcessWrapper process,
+            Action<string> callback,
+            CancellationToken cancel,
+            ProcessRunner sut)
+        {
+            process.Run().Returns(Task.FromResult(ret));
+            sut.Factory.Create(default!).ReturnsForAnyArgs(process);
+            (await sut.RunWithCallback(startInfo, callback, cancel))
                 .Should().Be(ret);
         }
 

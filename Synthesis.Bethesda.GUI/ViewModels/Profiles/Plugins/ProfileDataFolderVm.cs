@@ -13,14 +13,14 @@ using Synthesis.Bethesda.Execution.Profile;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 {
-    public interface IProfileDataFolder
+    public interface IProfileDataFolderVm
     {
         string? DataPathOverride { get; set; }
         GetResponse<DirectoryPath> DataFolderResult { get; }
         DirectoryPath Path { get; }
     }
 
-    public class ProfileDataFolder : ViewModel, IProfileDataFolder, IDataDirectoryProvider
+    public class ProfileDataFolderVm : ViewModel, IProfileDataFolderVm, IDataDirectoryProvider
     {
         public IFileSystem FileSystem { get; }
         public IGameDirectoryLookup GameLocator { get; }
@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
         private readonly ObservableAsPropertyHelper<DirectoryPath> _Path;
         public DirectoryPath Path => _Path.Value;
 
-        public ProfileDataFolder(
+        public ProfileDataFolderVm(
             ILogger logger,
             ISchedulerProvider schedulerProvider,
             IWatchDirectory watchDirectory,

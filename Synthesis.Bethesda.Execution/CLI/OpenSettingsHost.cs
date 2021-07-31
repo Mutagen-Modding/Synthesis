@@ -4,18 +4,19 @@ using System.Threading.Tasks;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Order;
+using Noggog;
 using Noggog.Utility;
 using Synthesis.Bethesda.Execution.Patchers;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Placement;
+using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.CLI
 {
     public interface IOpenSettingsHost
     {
         Task<int> Open(
-            string path,
-            string dataFolderPath,
+            FilePath path,
             IEnumerable<IModListingGetter> loadOrder,
             CancellationToken cancel);
     }
@@ -24,52 +25,51 @@ namespace Synthesis.Bethesda.Execution.CLI
     {
         private readonly IGameReleaseContext _gameReleaseContext;
         private readonly IPatcherNameProvider _nameProvider;
-        private readonly IProvideTemporaryLoadOrder _LoadOrder;
-        private readonly IProcessFactory _ProcessFactory;
-        private readonly IProvideDotNetRunProcessInfo _runProcessInfo;
-        private readonly IWindowPlacement _WindowPlacement;
+        private readonly ITemporaryLoadOrderProvider _loadOrderProvider;
+        private readonly IProcessRunner _processRunner;
+        private readonly IDataDirectoryProvider _dataDirectoryProvider;
+        private readonly IRunProcessStartInfoProvider _runProcessStartInfoProvider;
+        private readonly IWindowPlacement _windowPlacement;
 
         public OpenSettingsHost(
             IGameReleaseContext gameReleaseContext,
             IPatcherNameProvider nameProvider,
-            IProvideTemporaryLoadOrder loadOrder,
-            IProcessFactory processFactory,
-            IProvideDotNetRunProcessInfo runProcessInfo,
+            ITemporaryLoadOrderProvider loadOrderProvider,
+            IProcessRunner processRunner,
+            IDataDirectoryProvider dataDirectoryProvider,
+            IRunProcessStartInfoProvider runProcessStartInfoProvider,
             IWindowPlacement windowPlacement)
         {
             _gameReleaseContext = gameReleaseContext;
             _nameProvider = nameProvider;
-            _LoadOrder = loadOrder;
-            _ProcessFactory = processFactory;
-            _runProcessInfo = runProcessInfo;
-            _WindowPlacement = windowPlacement;
+            _loadOrderProvider = loadOrderProvider;
+            _processRunner = processRunner;
+            _dataDirectoryProvider = dataDirectoryProvider;
+            _runProcessStartInfoProvider = runProcessStartInfoProvider;
+            _windowPlacement = windowPlacement;
         }
         
         public async Task<int> Open(
-            string path,
-            string dataFolderPath,
+            FilePath path,
             IEnumerable<IModListingGetter> loadOrder,
             CancellationToken cancel)
         {
-            using var loadOrderFile = _LoadOrder.Get(loadOrder);
+            using var loadOrderFile = _loadOrderProvider.Get(loadOrder);
 
-            using var proc = _ProcessFactory.Create(
-                _runProcessInfo.GetStart("SettingsHost/Synthesis.Bethesda.SettingsHost.exe", directExe: true, new Synthesis.Bethesda.HostSettings()
+            return await _processRunner.Run(
+                _runProcessStartInfoProvider.GetStart("SettingsHost/Synthesis.Bethesda.SettingsHost.exe", directExe: true, new Synthesis.Bethesda.HostSettings()
                 {
                     PatcherName = _nameProvider.Name,
                     PatcherPath = path,
-                    Left = (int)_WindowPlacement.Left,
-                    Top = (int)_WindowPlacement.Top,
-                    Height = (int)_WindowPlacement.Height,
-                    Width = (int)_WindowPlacement.Width,
+                    Left = (int)_windowPlacement.Left,
+                    Top = (int)_windowPlacement.Top,
+                    Height = (int)_windowPlacement.Height,
+                    Width = (int)_windowPlacement.Width,
                     LoadOrderFilePath = loadOrderFile.File.Path,
-                    DataFolderPath = dataFolderPath,
+                    DataFolderPath = _dataDirectoryProvider.Path,
                     GameRelease = _gameReleaseContext.Release,
                 }),
-                cancel: cancel,
-                hookOntoOutput: false);
-
-            return await proc.Run();
+                cancel: cancel);
         }
     }
 }
