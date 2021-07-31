@@ -1,12 +1,10 @@
-﻿using System;
-using AutoFixture;
+﻿using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using Noggog.Testing.AutoFixture;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Xunit;
-using GameRelease = Mutagen.Bethesda.GameRelease;
 
 namespace Synthesis.Bethesda.UnitTests.AutoData
 {
@@ -112,13 +110,7 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
             };
             fixture.Customize(autoMock);
             fixture.OmitAutoProperties = true;
-            fixture.Customizations.Add(new FileSystemBuilder(_useMockFilesystem));
-            fixture.Customizations.Add(new SchedulerBuilder());
-            fixture.Customizations.Add(new PathBuilder());
-            fixture.Customizations.Add(new ProcessBuilder());
-            fixture.Customizations.Add(new ErrorResponseBuilder());
-            fixture.Customizations.Add(new CancellationBuilder());
-            fixture.Behaviors.Add(new ObservableEmptyBehavior());
+            fixture.Customize(new DefaultCustomization(_useMockFilesystem));
             if (_useMockRepositoryProvider)
             {
                 fixture.Register<IProvideRepositoryCheckouts>(
