@@ -15,13 +15,15 @@ namespace Synthesis.Bethesda.Execution.DotNet.Builder
 
     public class BuildResultsProcessor : IBuildResultsProcessor
     {
+        public const string TargetPathSuffix = " : ";
+        
         public ErrorResponse GetResults(
             FilePath targetPath,
             CancellationToken cancel,
             IBuildOutputAccumulator accumulator)
         {
             var firstError = accumulator.FirstError;
-            firstError = firstError?.TrimStart($"{targetPath} : ");
+            firstError = firstError?.TrimStart($"{targetPath}{TargetPathSuffix}");
             if (firstError == null && cancel.IsCancellationRequested)
             {
                 firstError = "Cancelled";

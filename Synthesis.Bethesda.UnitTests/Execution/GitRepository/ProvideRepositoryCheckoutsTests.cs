@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Noggog;
+using NSubstitute;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -10,26 +11,43 @@ using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
 {
-    public class ProvideRepositoryCheckoutsTests : RepoTestUtility
+    public class ProvideRepositoryCheckoutsTests
     {
         [Theory, SynthAutoData]
-        public void TypicalGet(ProvideRepositoryCheckouts sut)
+        public void PassesPathToFactory(
+            DirectoryPath local,
+            ProvideRepositoryCheckouts sut)
         {
-            using var repoPath = GetRepository(
-                nameof(ProvideRepositoryCheckoutsTests),
-                out var remote, out var local,
-                createPatcherFiles: false);
             using var checkout = sut.Get(local);
-            new DirectoryPath(checkout.Repository.WorkingDirectory).Should().BeEquivalentTo(local);
+            var repo = checkout.Repository;
+            sut.RepositoryFactory.Received(1).Get(local);
+        }
+        
+        [Theory, SynthAutoData]
+        public void ReturnsFactoryResults(
+            DirectoryPath local,
+            IGitRepository repo,
+            ProvideRepositoryCheckouts sut)
+        {
+            sut.RepositoryFactory.Get(local).Returns(repo);
+            using var checkout = sut.Get(local);
+            checkout.Repository.Should().BeSameAs(repo);
+        }
+        
+        [Theory, SynthAutoData]
+        public void CheckoutIsLazy(
+            DirectoryPath local,
+            ProvideRepositoryCheckouts sut)
+        {
+            using var checkout = sut.Get(local);
+            sut.RepositoryFactory.DidNotReceiveWithAnyArgs().Get(default);
         }
 
         [Theory, SynthAutoData]
-        public void CleanShutdown(ProvideRepositoryCheckouts sut)
+        public void CleanShutdown(
+            DirectoryPath local,
+            ProvideRepositoryCheckouts sut)
         {
-            using var repoPath = GetRepository(
-                nameof(ProvideRepositoryCheckoutsTests),
-                out var remote, out var local,
-                createPatcherFiles: false);
             sut.Get(local).Dispose();
             sut.Dispose();
             sut.IsShutdownRequested.Should().BeTrue();
@@ -37,12 +55,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
         }
 
         [Theory, SynthAutoData]
-        public async Task BlockedShutdown(ProvideRepositoryCheckouts sut)
+        public async Task BlockedShutdown(
+            DirectoryPath local,
+            ProvideRepositoryCheckouts sut)
         {
-            using var repoPath = GetRepository(
-                nameof(ProvideRepositoryCheckoutsTests),
-                out var remote, out var local,
-                createPatcherFiles: false);
             var checkout = sut.Get(local);
             var waited = false;
             var t = Task.Run(async () =>

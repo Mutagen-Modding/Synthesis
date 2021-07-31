@@ -48,7 +48,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
                     new RetrieveCommit(
                         new ShouldFetchIfMissing())),
                 runnerRepoDirectoryInjection,
-                new ProvideRepositoryCheckouts(Substitute.For<ILogger>()));
+                new ProvideRepositoryCheckouts(
+                    Substitute.For<ILogger>(),
+                    new GitRepositoryFactory()));
         }
         
         public Commit AddACommit(string path)

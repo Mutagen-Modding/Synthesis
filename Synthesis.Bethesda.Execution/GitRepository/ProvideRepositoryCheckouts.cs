@@ -14,7 +14,9 @@ namespace Synthesis.Bethesda.Execution.GitRepository
 
     public class ProvideRepositoryCheckouts : IProvideRepositoryCheckouts
     {
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
+        public IGitRepositoryFactory RepositoryFactory { get; }
+        
         private readonly TaskCompletionSource _shutdown = new();
         private int _numInFlight;
         private object _Lock = new();
@@ -22,9 +24,12 @@ namespace Synthesis.Bethesda.Execution.GitRepository
         public bool IsShutdownRequested { get; private set; }
         public bool IsShutdown { get; private set; }
 
-        public ProvideRepositoryCheckouts(ILogger logger)
+        public ProvideRepositoryCheckouts(
+            ILogger logger,
+            IGitRepositoryFactory repositoryFactory)
         {
-            _Logger = logger;
+            _logger = logger;
+            RepositoryFactory = repositoryFactory;
         }
 
         public IRepositoryCheckout Get(DirectoryPath path)
@@ -38,7 +43,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
 
                 _numInFlight++;
                 return new RepositoryCheckout(
-                    new Lazy<IGitRepository>(() => new GitRepository(new Repository(path))),
+                    new Lazy<IGitRepository>(() => RepositoryFactory.Get(path)),
                     Disposable.Create(Cleanup));
             }
         }
@@ -63,7 +68,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
 
         public void Dispose()
         {
-            _Logger.Information("Disposing repository jobs");
+            _logger.Information("Disposing repository jobs");
             lock (_Lock)
             {
                 IsShutdownRequested = true;
@@ -71,7 +76,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
                 {
                     IsShutdown = true;
                 }
-                _Logger.Information("{NumInFlight} in flight repository jobs", _numInFlight == 0 ? "No" : _numInFlight);
+                _logger.Information("{NumInFlight} in flight repository jobs", _numInFlight == 0 ? "No" : _numInFlight);
             }
 
             if (IsShutdown)
@@ -80,7 +85,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
             }
 
             _shutdown.Task.Wait();
-            _Logger.Information("Finished disposing repository jobs");
+            _logger.Information("Finished disposing repository jobs");
         }
     }
 }

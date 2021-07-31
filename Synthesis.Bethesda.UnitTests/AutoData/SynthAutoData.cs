@@ -122,7 +122,9 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
             if (_useMockRepositoryProvider)
             {
                 fixture.Register<IProvideRepositoryCheckouts>(
-                    () => new ProvideRepositoryCheckouts(fixture.Create<ILogger>()));
+                    () => new ProvideRepositoryCheckouts(
+                        fixture.Create<ILogger>(),
+                        new GitRepositoryFactory()));
             }
         }
     }

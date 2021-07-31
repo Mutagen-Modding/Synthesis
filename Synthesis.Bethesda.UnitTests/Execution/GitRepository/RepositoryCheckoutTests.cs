@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
 {
-    public class RepositoryCheckoutTests: RepoTestUtility
+    public class RepositoryCheckoutTests
     {
         [Fact]
         public void DoesCleanupCall()
