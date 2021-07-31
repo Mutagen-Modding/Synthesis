@@ -5,9 +5,8 @@ using Mutagen.Bethesda.Synthesis.Projects;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Mutagen.Bethesda.Synthesis.WPF;
 using Noggog.Autofac;
-using Noggog.IO;
+using Noggog.Autofac.Modules;
 using Noggog.Reactive;
-using Noggog.Utility;
 using Noggog.WPF;
 using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
@@ -45,14 +44,7 @@ namespace Synthesis.Bethesda.GUI.Modules
         {
             builder.RegisterType<FileSystem>().As<IFileSystem>()
                 .SingleInstance();
-            builder.RegisterType<TempFileProvider>().As<ITempFileProvider>()
-                .SingleInstance();
-            builder.RegisterType<TempFolderProvider>().As<ITempFolderProvider>()
-                .SingleInstance();
-            builder.RegisterType<ProcessFactory>().As<IProcessFactory>()
-                .SingleInstance();
-            builder.RegisterType<DeleteEntireDirectory>().As<IDeleteEntireDirectory>()
-                .SingleInstance();
+            builder.RegisterModule<NoggogModule>();
             builder.RegisterInstance(Log.Logger).As<ILogger>();
 
             // Noggog

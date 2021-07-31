@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO.Abstractions;
 using Noggog;
+using Noggog.IO;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 
@@ -15,35 +16,37 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
     {
         private readonly IFileSystem _fileSystem;
         private readonly ILogger _logger;
-        private readonly IDefaultDataPathProvider _defaultDataPathProvider;
-        private readonly IPatcherExtraDataPathProvider _userExtraData;
+        public IDeepCopyDirectory DeepCopy { get; }
+        public IDefaultDataPathProvider DefaultDataPathProvider { get; }
+        public IPatcherExtraDataPathProvider UserExtraData { get; }
 
         public delegate ICopyOverExtraData Factory(IDefaultDataPathProvider defaultDataPathProvider);
 
         public CopyOverExtraData(
             IFileSystem fileSystem,
             ILogger logger,
+            IDeepCopyDirectory deepCopyDirectory,
             IDefaultDataPathProvider defaultDataPathProvider,
             IPatcherExtraDataPathProvider userExtraData)
         {
             _fileSystem = fileSystem;
             _logger = logger;
-            _defaultDataPathProvider = defaultDataPathProvider;
-            _userExtraData = userExtraData;
+            DeepCopy = deepCopyDirectory;
+            DefaultDataPathProvider = defaultDataPathProvider;
+            UserExtraData = userExtraData;
         }
         
         public void Copy()
         {
-            var inputExtraData = _defaultDataPathProvider.Path;
-            if (!_fileSystem.File.Exists(inputExtraData))
+            var inputExtraData = DefaultDataPathProvider.Path;
+            if (!_fileSystem.Directory.Exists(inputExtraData))
             {
                 _logger.Information("No extra data to consider");
                 return;
             }
 
-
-            var outputExtraData = _userExtraData.Path;
-            if (_fileSystem.File.Exists(outputExtraData))
+            var outputExtraData = UserExtraData.Path;
+            if (_fileSystem.Directory.Exists(outputExtraData))
             {
                 _logger.Information("Extra data folder already exists. Leaving as is: {OutputExtraData}", outputExtraData);
                 return;
@@ -52,7 +55,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
             _logger.Information("Copying extra data folder");
             _logger.Information("  From: {InputExtraData}", inputExtraData);
             _logger.Information("  To: {OutputExtraData}", outputExtraData);
-            _fileSystem.Directory.DeepCopy(inputExtraData, outputExtraData);
+            DeepCopy.DeepCopy(inputExtraData, outputExtraData);
         }
     }
 }

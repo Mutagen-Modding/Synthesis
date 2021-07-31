@@ -1,7 +1,6 @@
-using System;
 using Autofac;
 using Noggog.Autofac;
-using Noggog.Utility;
+using Noggog.Autofac.Modules;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Utility;
@@ -13,7 +12,7 @@ namespace Synthesis.Bethesda.ImpactTester
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterInstance(Log.Logger).As<ILogger>();
-            builder.RegisterType<ProcessFactory>().As<IProcessFactory>();
+            builder.RegisterModule<NoggogModule>();
             
             builder.RegisterAssemblyTypes(typeof(DotNetVersion).Assembly)
                 .InNamespacesOf(

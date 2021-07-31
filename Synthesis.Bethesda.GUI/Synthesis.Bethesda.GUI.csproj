@@ -46,6 +46,7 @@
     <PackageReference Include="Loqui.Generation" Version="2.25.0.1-dev" />
     <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.30.7.1-dev" />
     <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.30.7.1-dev" />
+    <PackageReference Include="Noggog.Autofac" Version="2.25.0.1-dev" />
     <PackageReference Include="Noggog.CSharpExt" Version="2.25.0.1-dev" />
     <PackageReference Include="Noggog.WPF" Version="2.25.0.1-dev" />
     <PackageReference Include="NuGetizer" Version="0.7.0">

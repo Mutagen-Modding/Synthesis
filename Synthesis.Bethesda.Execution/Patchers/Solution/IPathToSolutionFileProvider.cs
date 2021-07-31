@@ -1,4 +1,5 @@
-﻿using Noggog;
+﻿using System.Diagnostics.CodeAnalysis;
+using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Solution
 {
@@ -7,7 +8,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
         FilePath Path { get; }
     }
 
-    public class PathToSolutionFileProvider : IPathToSolutionFileProvider
+    [ExcludeFromCodeCoverage]
+    public class PathToSolutionFileInjection : IPathToSolutionFileProvider
     {
         public FilePath Path { get; init; }
     }

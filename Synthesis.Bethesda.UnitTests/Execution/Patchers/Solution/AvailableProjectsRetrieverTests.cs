@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System.IO.Abstractions;
+using AutoFixture.Xunit2;
+using FluentAssertions;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
@@ -9,12 +11,13 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Solution
 {
     public class AvailableProjectsRetrieverTests
     {
-        [Theory, SynthAutoData]
+        [Theory, SynthAutoData(UseMockFileSystem: false)]
         public void PathDoesNotExistReturnsEmpty(
+            [Frozen]IFileSystem fs,
             FilePath solutionPath,
             AvailableProjectsRetriever sut)
         {
-            sut.FileSystem.File.Exists(default).ReturnsForAnyArgs(false);
+            fs.File.Exists(default).ReturnsForAnyArgs(false);
             sut.Get(solutionPath)
                 .Should().BeEmpty();
         }

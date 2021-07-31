@@ -9,14 +9,14 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
 
     public class DefaultDataPathProvider : IDefaultDataPathProvider
     {
-        private readonly IPathToProjProvider _pathToProjProvider;
+        public IPathToProjProvider PathToProjProvider { get; }
 
-        public DirectoryPath Path => System.IO.Path.Combine(System.IO.Path.GetDirectoryName(_pathToProjProvider.Path)!, "Data");
+        public DirectoryPath Path => System.IO.Path.Combine(System.IO.Path.GetDirectoryName(PathToProjProvider.Path)!, "Data");
         
         public DefaultDataPathProvider(
             IPathToProjProvider pathToProjProvider)
         {
-            _pathToProjProvider = pathToProjProvider;
+            PathToProjProvider = pathToProjProvider;
         }
     }
 }

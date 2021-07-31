@@ -110,7 +110,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
             sut.SolutionFileLocator.GetPath(default).ReturnsForAnyArgs(sln);
             
             await sut.Checkout(checkoutInput, cancel);
-            sut.FullProjectPathRetriever.Received(1).Get(sln, checkoutInput.Proj);
+            sut.RunnerRepoProjectPathRetriever.Received(1).Get(sln, checkoutInput.Proj);
         }
         
         [Theory, SynthAutoData]
@@ -122,7 +122,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
             sut.ResetToTarget.Reset(default!, default!, default)
                 .ReturnsForAnyArgs(GetResponse<ResetResults>.Succeed(default!));
             sut.SolutionFileLocator.GetPath(default).ReturnsForAnyArgs(new FilePath());
-            sut.FullProjectPathRetriever.Get(default, default!).ReturnsForAnyArgs(default(ProjectPaths?));
+            sut.RunnerRepoProjectPathRetriever.Get(default, default!).ReturnsForAnyArgs(default(ProjectPaths?));
             
             var resp = await sut.Checkout(checkoutInput, cancel);
             resp.RunnableState.Succeeded.Should().BeFalse();
@@ -140,7 +140,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
             sut.ResetToTarget.Reset(default!, default!, default)
                 .ReturnsForAnyArgs(GetResponse<ResetResults>.Succeed(default!));
             sut.SolutionFileLocator.GetPath(default).ReturnsForAnyArgs(sln);
-            sut.FullProjectPathRetriever.Get(default, default!).ReturnsForAnyArgs(proj);
+            sut.RunnerRepoProjectPathRetriever.Get(default, default!).ReturnsForAnyArgs(proj);
             
             await sut.Checkout(checkoutInput, cancel);
             sut.ModifyRunnerProjects
@@ -160,7 +160,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
             sut.ResetToTarget.Reset(default!, default!, default)
                 .ReturnsForAnyArgs(GetResponse<ResetResults>.Succeed(default!));
             sut.SolutionFileLocator.GetPath(default).ReturnsForAnyArgs(new FilePath());
-            sut.FullProjectPathRetriever.Get(default, default!).ReturnsForAnyArgs(proj);
+            sut.RunnerRepoProjectPathRetriever.Get(default, default!).ReturnsForAnyArgs(proj);
             checkoutInput = checkoutInput with
             {
                 LibraryNugets = new NugetsVersioningTarget(
@@ -190,7 +190,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
             sut.ResetToTarget.Reset(default!, default!, default)
                 .ReturnsForAnyArgs(GetResponse<ResetResults>.Succeed(default!));
             sut.SolutionFileLocator.GetPath(default).ReturnsForAnyArgs(new FilePath());
-            sut.FullProjectPathRetriever.Get(default, default!).ReturnsForAnyArgs(proj);
+            sut.RunnerRepoProjectPathRetriever.Get(default, default!).ReturnsForAnyArgs(proj);
             checkoutInput = checkoutInput with
             {
                 LibraryNugets = new NugetsVersioningTarget(
@@ -223,7 +223,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
             sut.ResetToTarget.Reset(default!, default!, default)
                 .ReturnsForAnyArgs(GetResponse<ResetResults>.Succeed(resetResults));
             sut.SolutionFileLocator.GetPath(default).ReturnsForAnyArgs(sln);
-            sut.FullProjectPathRetriever.Get(default, default!).ReturnsForAnyArgs(proj);
+            sut.RunnerRepoProjectPathRetriever.Get(default, default!).ReturnsForAnyArgs(proj);
             checkoutInput = checkoutInput with
             {
                 LibraryNugets = new NugetsVersioningTarget(
@@ -252,7 +252,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
                 .ReturnsForAnyArgs(GetResponse<ResetResults>.Succeed(default!));
             sut.SolutionFileLocator.GetPath(default)
                 .ReturnsForAnyArgs(new FilePath());
-            sut.FullProjectPathRetriever.Get(default, default!)
+            sut.RunnerRepoProjectPathRetriever.Get(default, default!)
                 .ReturnsForAnyArgs(proj);
             await sut.Checkout(checkoutInput, cancel);
             
@@ -263,9 +263,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
                     Arg.Any<IGitRepository>(),
                     Arg.Any<GitPatcherVersioning>(),
                     Arg.Any<CancellationToken>());
-                sut.FullProjectPathRetriever.Get(
+                sut.RunnerRepoProjectPathRetriever.Get(
                     Arg.Any<FilePath>(), 
-                    Arg.Any<string>());
+                    Arg.Any<FilePath>());
                 sut.ModifyRunnerProjects.Modify(
                     Arg.Any<FilePath>(),
                     Arg.Any<string>(),

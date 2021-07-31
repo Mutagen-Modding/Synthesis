@@ -36,7 +36,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
                 Substitute.For<ILogger>(),
                 new SolutionFileLocator(
                     IFileSystemExt.DefaultFilesystem),
-                new FullProjectPathRetriever(
+                new RunnerRepoProjectPathRetriever(
                     IFileSystemExt.DefaultFilesystem,
                     runnerRepoDirectoryInjection,
                     availableProjectsRetriever),

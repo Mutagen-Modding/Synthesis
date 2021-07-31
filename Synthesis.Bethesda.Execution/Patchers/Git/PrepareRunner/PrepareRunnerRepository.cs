@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
         private readonly ILogger _logger;
         public IResetToTarget ResetToTarget { get; }
         public ISolutionFileLocator SolutionFileLocator { get; }
-        public IFullProjectPathRetriever FullProjectPathRetriever { get; }
+        public IRunnerRepoProjectPathRetriever RunnerRepoProjectPathRetriever { get; }
         public IModifyRunnerProjects ModifyRunnerProjects { get; }
         public IRunnerRepoDirectoryProvider RunnerRepoDirectoryProvider { get; }
         public IProvideRepositoryCheckouts RepoCheckouts { get; }
@@ -30,7 +30,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
         public PrepareRunnerRepository(
             ILogger logger,
             ISolutionFileLocator solutionFileLocator,
-            IFullProjectPathRetriever fullProjectPathRetriever,
+            IRunnerRepoProjectPathRetriever runnerRepoProjectPathRetriever,
             IModifyRunnerProjects modifyRunnerProjects,
             IResetToTarget resetToTarget,
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
@@ -39,7 +39,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
             _logger = logger;
             ResetToTarget = resetToTarget;
             SolutionFileLocator = solutionFileLocator;
-            FullProjectPathRetriever = fullProjectPathRetriever;
+            RunnerRepoProjectPathRetriever = runnerRepoProjectPathRetriever;
             ModifyRunnerProjects = modifyRunnerProjects;
             RunnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
             RepoCheckouts = repoCheckouts;
@@ -67,7 +67,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
                 var slnPath = SolutionFileLocator.GetPath(RunnerRepoDirectoryProvider.Path);
                 if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
 
-                var foundProjSubPath = FullProjectPathRetriever.Get(slnPath.Value, checkoutInput.Proj);
+                var foundProjSubPath = RunnerRepoProjectPathRetriever.Get(slnPath.Value, checkoutInput.Proj);
                 if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {checkoutInput.Proj}.");
 
                 cancel.ThrowIfCancellationRequested();

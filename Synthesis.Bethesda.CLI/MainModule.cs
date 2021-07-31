@@ -5,7 +5,7 @@ using Mutagen.Bethesda.Autofac;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog.Autofac;
-using Noggog.Utility; 
+using Noggog.Autofac.Modules;
 using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -28,7 +28,7 @@ namespace Synthesis.Bethesda.CLI
         {
             builder.RegisterModule<MutagenModule>();
             builder.RegisterType<FileSystem>().As<IFileSystem>();
-            builder.RegisterType<ProcessFactory>().As<IProcessFactory>();
+            builder.RegisterModule<NoggogModule>();
             builder.RegisterInstance(Log.Logger).As<ILogger>();
             builder.RegisterAssemblyTypes(typeof(IExecuteRunnabilityCheck).Assembly)
                 .AsMatchingInterface();
