@@ -95,10 +95,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
         [Reactive]
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
-        
+
+        public ILifetimeScope Scope { get; }
         public IPatcherInitializationFactoryVm Init { get; }
         
         public ProfileVm(
+            ILifetimeScope scope,
             IRunFactory runFactory,
             IProfilePatchersList patchersList,
             IProfileDataFolder dataFolder,
@@ -116,6 +118,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             IGuiSettingsPath guiPaths,
             ILogger logger)
         {
+            Scope = scope;
             Init = init;
             DataFolderOverride = dataFolder;
             Versioning = versioning;

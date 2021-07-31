@@ -74,7 +74,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             INewestLibraryVersions newestLibVersions,
             IActivePanelControllerVm activePanelControllerVm,
             IProfileFactory profileFactory,
-            ILifetimeScope scope,
             ILogger logger)
         {
             logger.Information("Creating MainVM");
@@ -111,7 +110,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 
             OpenProfilesPageCommand = ReactiveCommand.Create(() =>
             {
-                activePanelControllerVm.ActivePanel = new ProfilesDisplayVm(scope, Configuration, profileFactory, activePanelControllerVm, ActivePanel);
+                activePanelControllerVm.ActivePanel = new ProfilesDisplayVm(Configuration, profileFactory, activePanelControllerVm, ActivePanel);
             },
             canExecute: Observable.CombineLatest(
                     this.WhenAnyFallback(x => x.Configuration.CurrentRun!.Running, fallback: false),

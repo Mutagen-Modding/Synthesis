@@ -30,7 +30,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         public object? DisplayObject { get; set; } = null;
 
         public ProfilesDisplayVm(
-            ILifetimeScope scope,
             ConfigurationVm parent,
             IProfileFactory profileFactory, 
             IActivePanelControllerVm activePanelController,
@@ -50,9 +49,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 DisplayedProfile = null;
             });
 
-            var factory = scope.Resolve<ProfileDisplayVm.Factory>();
             ProfilesDisplay = parent.Profiles.Connect()
-                .Transform(x => factory(this, x))
+                .Transform(x =>
+                {
+                    var factory = x.Scope.Resolve<ProfileDisplayVm.Factory>();
+                    return factory(this, x);
+                })
                 // Select the currently active profile during initial display
                 .OnItemAdded(p =>
                 {
