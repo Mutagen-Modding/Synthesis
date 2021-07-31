@@ -1,4 +1,5 @@
-﻿using LibGit2Sharp;
+﻿using System.Diagnostics.CodeAnalysis;
+using LibGit2Sharp;
 using Noggog;
 
 namespace Synthesis.Bethesda.Execution.GitRepository
@@ -8,6 +9,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
         DirectoryPath Clone(string repoPath, DirectoryPath localDir);
     }
 
+    [ExcludeFromCodeCoverage]
     public class CloneRepo : ICloneRepo
     {
         public DirectoryPath Clone(string repoPath, DirectoryPath localDir)

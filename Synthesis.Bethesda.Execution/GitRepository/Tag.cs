@@ -1,4 +1,5 @@
-﻿using LibGit2Sharp;
+﻿using System.Diagnostics.CodeAnalysis;
+using LibGit2Sharp;
 
 namespace Synthesis.Bethesda.Execution.GitRepository
 {
@@ -8,6 +9,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
         string Sha { get; }
     }
 
+    [ExcludeFromCodeCoverage]
     public class TagWrapper : ITag
     {
         private readonly Tag _tag;

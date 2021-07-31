@@ -1,10 +1,12 @@
-﻿using System.Threading;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using Noggog;
 using Synthesis.Bethesda.Execution.DotNet.NugetListing;
 
 namespace Synthesis.Bethesda.Execution.DotNet
 {
+    [ExcludeFromCodeCoverage]
     public record LibraryVersions(string? MutagenVersion, string? SynthesisVersion);
     
     public interface IQueryLibraryVersions

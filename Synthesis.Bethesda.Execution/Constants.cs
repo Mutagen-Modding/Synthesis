@@ -2,10 +2,12 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace Synthesis.Bethesda.Execution
 {
+    [ExcludeFromCodeCoverage]
     public static class Constants
     {
         public static readonly JsonSerializerSettings JsonSettings = new()

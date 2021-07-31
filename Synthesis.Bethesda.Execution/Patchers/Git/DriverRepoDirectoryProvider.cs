@@ -1,4 +1,5 @@
-﻿using Noggog;
+﻿using System.Diagnostics.CodeAnalysis;
+using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
@@ -7,6 +8,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         DirectoryPath Path { get; }
     }
 
+    [ExcludeFromCodeCoverage]
     public class DriverRepoDirectoryProvider : IDriverRepoDirectoryProvider
     {
         private readonly IBaseRepoDirectoryProvider _baseRepo;
@@ -20,5 +22,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         }
     }
 
+    [ExcludeFromCodeCoverage]
     public record DriverRepoDirectoryInjection(DirectoryPath Path) : IDriverRepoDirectoryProvider;
 }

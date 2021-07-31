@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver
 {
+    [ExcludeFromCodeCoverage]
     public record DriverPaths(FilePath SolutionPath, List<string> AvailableProjects);
 
     public interface IGetDriverPaths

@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reactive.Disposables;
 using System.Threading;
@@ -46,16 +47,12 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
             Format = format;
         }
 
-        public void AddForDisposal(IDisposable disposable)
-        {
-            _disposable.Add(disposable);
-        }
-
         public void Dispose()
         {
             _disposable.Dispose();
         }
 
+        [ExcludeFromCodeCoverage]
         public async Task Prep(CancellationToken cancel)
         {
         }

@@ -1,4 +1,5 @@
-﻿using Synthesis.Bethesda.Execution.Settings;
+﻿using System.Diagnostics.CodeAnalysis;
+using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
 {
@@ -7,6 +8,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
         bool Should(GitPatcherVersioning patcherVersioning);
     }
 
+    [ExcludeFromCodeCoverage]
     public class ShouldFetchIfMissing : IShouldFetchIfMissing
     {
         public bool Should(GitPatcherVersioning patcherVersioning)

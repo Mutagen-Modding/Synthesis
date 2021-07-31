@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using LibGit2Sharp;
 using Noggog;
 
@@ -9,6 +10,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
         bool IsValidRepository(string path);
     }
 
+    [ExcludeFromCodeCoverage]
     public class CheckRepoIsValid : ICheckRepoIsValid
     {
         public bool IsValidRepository(string path)

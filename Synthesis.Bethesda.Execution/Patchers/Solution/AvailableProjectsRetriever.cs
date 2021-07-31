@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -13,19 +14,20 @@ namespace Synthesis.Bethesda.Execution.Patchers.Solution
         IEnumerable<string> Get(FilePath solutionPath);
     }
 
+    [ExcludeFromCodeCoverage]
     public class AvailableProjectsRetriever : IAvailableProjectsRetriever
     {
-        private readonly IFileSystem _fileSystem;
+        public IFileSystem FileSystem { get; }
 
         public AvailableProjectsRetriever(
             IFileSystem fileSystem)
         {
-            _fileSystem = fileSystem;
+            FileSystem = fileSystem;
         }
         
         public IEnumerable<string> Get(FilePath solutionPath)
         {
-            if (!_fileSystem.File.Exists(solutionPath)) return Enumerable.Empty<string>();
+            if (!FileSystem.File.Exists(solutionPath)) return Enumerable.Empty<string>();
             try
             {
                 var manager = new AnalyzerManager(solutionPath);

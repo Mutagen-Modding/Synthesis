@@ -9,6 +9,7 @@ using Noggog;
 using Noggog.Utility;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Patchers.Running.Cli;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
@@ -109,6 +110,19 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Running.Cli
             process.Run().ThrowsForAnyArgs(_ => new Win32Exception());
             await Assert.ThrowsAsync<FileNotFoundException>(async () =>
             {
+                await sut.Run(runSettings, cancel);
+            });
+        }
+
+        [Theory, SynthAutoData]
+        public async Task BadResultThrows(
+            RunSynthesisPatcher runSettings,
+            CancellationToken cancel,
+            CliPatcherRun sut)
+        {
+            await Assert.ThrowsAsync<CliUnsuccessfulRunException>(async () =>
+            {
+                sut.ProcessRunner.Run(default!, default).ReturnsForAnyArgs(-1);
                 await sut.Run(runSettings, cancel);
             });
         }

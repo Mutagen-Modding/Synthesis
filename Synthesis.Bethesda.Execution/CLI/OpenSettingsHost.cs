@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda;
@@ -21,6 +22,7 @@ namespace Synthesis.Bethesda.Execution.CLI
             CancellationToken cancel);
     }
 
+    [ExcludeFromCodeCoverage]
     public class OpenSettingsHost : IOpenSettingsHost
     {
         private readonly IGameReleaseContext _gameReleaseContext;

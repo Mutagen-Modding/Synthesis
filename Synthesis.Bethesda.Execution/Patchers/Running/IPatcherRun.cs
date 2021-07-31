@@ -10,6 +10,5 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running
         string Name { get; }
         Task Prep(CancellationToken cancel);
         Task Run(RunSynthesisPatcher settings, CancellationToken cancel);
-        public void AddForDisposal(IDisposable disposable);
     }
 }

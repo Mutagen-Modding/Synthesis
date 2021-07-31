@@ -1,4 +1,5 @@
-﻿using LibGit2Sharp;
+﻿using System.Diagnostics.CodeAnalysis;
+using LibGit2Sharp;
 
 namespace Synthesis.Bethesda.Execution.GitRepository
 {
@@ -10,6 +11,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
         Branch GetUnderlying();
     }
 
+    [ExcludeFromCodeCoverage]
     public class BranchWrapper : IBranch
     {
         private readonly Branch _branch;

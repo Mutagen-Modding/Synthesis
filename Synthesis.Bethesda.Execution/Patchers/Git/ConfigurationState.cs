@@ -1,6 +1,7 @@
 using Noggog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Text;
 
@@ -26,6 +27,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         }
     }
 
+    [ExcludeFromCodeCoverage]
     public class ConfigurationState<T>
     {
         public bool IsHaltingError { get; set; }

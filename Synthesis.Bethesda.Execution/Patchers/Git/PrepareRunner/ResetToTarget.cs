@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Noggog;
 using Serilog;
@@ -14,6 +15,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
             CancellationToken cancel);
     }
 
+    [ExcludeFromCodeCoverage]
     public record ResetResults(string? Target, string CommitMessage, DateTime CommitDate);
 
     public class ResetToTarget : IResetToTarget

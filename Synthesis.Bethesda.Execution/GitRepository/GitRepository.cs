@@ -28,6 +28,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
         void Commit(string message, Signature signature);
     }
 
+    [ExcludeFromCodeCoverage]
     public class GitRepository : IGitRepository
     {
         private static Signature PlaceholderSignature = new("please", "whymustidothis@gmail.com", DateTimeOffset.Now);

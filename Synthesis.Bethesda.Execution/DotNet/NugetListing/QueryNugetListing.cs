@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Noggog;
@@ -8,6 +9,7 @@ using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.DotNet.NugetListing
 {
+    [ExcludeFromCodeCoverage]
     public record NugetListingQuery(string Package, string Requested, string Resolved, string Latest);
     
     public interface IQueryNugetListing

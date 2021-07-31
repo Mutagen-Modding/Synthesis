@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Noggog;
 using Noggog.IO;
@@ -6,6 +7,7 @@ using Serilog;
 
 namespace Synthesis.Bethesda.Execution.GitRepository
 {
+    [ExcludeFromCodeCoverage]
     public record RepoPathPair(string Remote, DirectoryPath Local);
     
     public interface ICheckOrCloneRepo

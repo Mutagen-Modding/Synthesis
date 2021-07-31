@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Noggog;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
 {
+    [ExcludeFromCodeCoverage]
     public record RepoTarget(string TargetSha, string Target);
 
     public interface IGetRepoTarget

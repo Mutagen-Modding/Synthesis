@@ -1,6 +1,5 @@
-﻿using Noggog;
-using Synthesis.Bethesda.Execution.Pathing;
-using Synthesis.Bethesda.Execution.Profile;
+﻿using System.Diagnostics.CodeAnalysis;
+using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
@@ -9,6 +8,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         DirectoryPath Path { get; }
     }
 
+    [ExcludeFromCodeCoverage]
     public class RunnerRepoDirectoryProvider : IRunnerRepoDirectoryProvider
     {
         private readonly IBaseRepoDirectoryProvider _baseRepoDir;
@@ -21,5 +21,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         }
     }
 
+    [ExcludeFromCodeCoverage]
     public record RunnerRepoDirectoryInjection(DirectoryPath Path) : IRunnerRepoDirectoryProvider;
 }
