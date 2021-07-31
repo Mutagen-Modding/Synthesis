@@ -1,6 +1,6 @@
-﻿using AutoFixture.Xunit2;
+﻿using System;
+using AutoFixture.Xunit2;
 using FluentAssertions;
-using LibGit2Sharp;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -42,6 +42,17 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
         {
             sut.Get(repo, new GitPatcherVersioning(PatcherVersioningEnum.Tag, target));
             repo.Received(1).TryGetTagSha(target, out Arg.Any<string?>());
+        }
+
+        [Theory, SynthAutoData]
+        public void TryGetTagFailsReturnsFail(
+            [Frozen]IGitRepository repo,
+            string target,
+            GetRepoTarget sut)
+        {
+            repo.TryGetTagSha(default!, out _).ReturnsForAnyArgs(false);
+            sut.Get(repo, new GitPatcherVersioning(PatcherVersioningEnum.Tag, target))
+                .Succeeded.Should().BeFalse();
         }
         
         [Theory, SynthAutoData]
@@ -121,6 +132,17 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
         }
         
         [Theory, SynthAutoData]
+        public void TryGetBranchFailsReturnsFail(
+            [Frozen]IGitRepository repo,
+            string target,
+            GetRepoTarget sut)
+        {
+            repo.TryGetBranch(default!, out _).ReturnsForAnyArgs(false);
+            sut.Get(repo, new GitPatcherVersioning(PatcherVersioningEnum.Branch, target))
+                .Succeeded.Should().BeFalse();
+        }
+        
+        [Theory, SynthAutoData]
         public void BranchReturnsRepoTryGetBranchSha(
             [Frozen]IGitRepository repo,
             string target,
@@ -136,6 +158,18 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
             result.Succeeded.Should().BeTrue();
             result.Value.Target.Should().Be(target);
             result.Value.TargetSha.Should().Be(branch.Tip.Sha);
+        }
+        
+        [Theory, SynthAutoData]
+        public void UnknownVersioningThrows(
+            [Frozen]IGitRepository repo,
+            string target,
+            GetRepoTarget sut)
+        {
+            Assert.Throws<NotImplementedException>(() =>
+            {
+                sut.Get(repo, new GitPatcherVersioning((PatcherVersioningEnum)int.MaxValue, target));
+            });
         }
 
         #endregion

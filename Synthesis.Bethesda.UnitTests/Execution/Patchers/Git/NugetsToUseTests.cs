@@ -83,5 +83,19 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git
                 .TryGetVersioning()
                 .Succeeded.Should().BeFalse();
         }
+        
+        [Theory, SynthAutoData]
+        public void EqualsDoesNotConsiderNames(
+            string nickname,
+            string newest)
+        {
+            new NugetsToUse(
+                    nickname,
+                    NugetVersioningEnum.Manual,
+                    string.Empty,
+                    newest)
+                .TryGetVersioning()
+                .Succeeded.Should().BeFalse();
+        }
     }
 }
