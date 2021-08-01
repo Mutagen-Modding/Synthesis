@@ -1,4 +1,5 @@
-﻿using Mutagen.Bethesda;
+﻿using System.Diagnostics.CodeAnalysis;
+using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 
 namespace Synthesis.Bethesda.Execution.Profile
@@ -8,7 +9,8 @@ namespace Synthesis.Bethesda.Execution.Profile
         string ID { get; }
     }
 
-    public class ProfileIdentifier : IProfileIdentifier
+    [ExcludeFromCodeCoverage]
+    public record ProfileIdentifier : IProfileIdentifier
     {
         public string ID { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;

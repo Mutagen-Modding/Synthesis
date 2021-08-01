@@ -1,4 +1,5 @@
-﻿using Noggog;
+﻿using System;
+using Noggog;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.GUI.Settings;
 
@@ -9,9 +10,10 @@ namespace Synthesis.Bethesda.GUI.Services.Main
         public DirectoryPath WorkingDirectory { get; }
         
         public WorkingDirectoryProviderOverride(
+            Func<WorkingDirectoryProvider> workingDir,
             ISettingsSingleton settings)
         {
-            WorkingDirectory = settings.Gui.WorkingDirectory.IsNullOrWhitespace() ? new Execution.Pathing.WorkingDirectoryProvider().WorkingDirectory : settings.Gui.WorkingDirectory;
+            WorkingDirectory = settings.Gui.WorkingDirectory.IsNullOrWhitespace() ? workingDir().WorkingDirectory : settings.Gui.WorkingDirectory;
         }
     }
 }

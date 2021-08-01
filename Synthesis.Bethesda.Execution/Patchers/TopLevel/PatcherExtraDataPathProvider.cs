@@ -10,17 +10,17 @@ namespace Synthesis.Bethesda.Execution.Patchers.TopLevel
 
     public class PatcherExtraDataPathProvider : IPatcherExtraDataPathProvider
     {
-        private readonly IPatcherNameProvider _nameProvider;
-        private readonly IExtraDataPathProvider _extraDataPathProvider;
+        public IPatcherNameProvider NameProvider { get; }
+        public IExtraDataPathProvider ExtraDataPathProvider { get; }
 
         public PatcherExtraDataPathProvider(
             IPatcherNameProvider nameProvider,
             IExtraDataPathProvider extraDataPathProvider)
         {
-            _nameProvider = nameProvider;
-            _extraDataPathProvider = extraDataPathProvider;
+            NameProvider = nameProvider;
+            ExtraDataPathProvider = extraDataPathProvider;
         }
 
-        public DirectoryPath Path => System.IO.Path.Combine(_extraDataPathProvider.Path, _nameProvider.Name);
+        public DirectoryPath Path => System.IO.Path.Combine(ExtraDataPathProvider.Path, NameProvider.Name);
     }
 }

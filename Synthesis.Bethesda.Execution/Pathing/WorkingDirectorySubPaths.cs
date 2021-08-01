@@ -1,25 +1,28 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
+using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Pathing
 {
     public interface IWorkingDirectorySubPaths
     {
-        string LoadingFolder { get; }
-        string ProfileWorkingDirectory(string id);
+        DirectoryPath LoadingFolder { get; }
+        DirectoryPath ProfileWorkingDirectory(string id);
     }
 
+    [ExcludeFromCodeCoverage]
     public class WorkingDirectorySubPaths : IWorkingDirectorySubPaths
     {
-        private readonly IWorkingDirectoryProvider _WorkingDir;
-        public string LoadingFolder => Path.Combine(_WorkingDir.WorkingDirectory, "Loading");
-        public string ProfileWorkingDirectory(string id) => Path.Combine(_WorkingDir.WorkingDirectory, id, "Workspace");
+        public IWorkingDirectoryProvider WorkingDir { get; }
+        public DirectoryPath LoadingFolder => Path.Combine(WorkingDir.WorkingDirectory, "Loading");
+        public DirectoryPath ProfileWorkingDirectory(string id) => Path.Combine(WorkingDir.WorkingDirectory, id, "Workspace");
 
         public WorkingDirectorySubPaths(
             IWorkingDirectoryProvider workingDir)
         {
-            _WorkingDir = workingDir;
+            WorkingDir = workingDir;
         }
     }
 }

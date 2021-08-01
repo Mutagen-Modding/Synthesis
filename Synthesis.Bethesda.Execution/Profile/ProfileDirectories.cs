@@ -11,16 +11,21 @@ namespace Synthesis.Bethesda.Execution.Profile
 
     public class ProfileDirectories : IProfileDirectories
     {
-        public string ProfileDirectory { get; }
-        public string WorkingDirectory { get; }
+        public IWorkingDirectoryProvider Paths { get; }
+        public IWorkingDirectorySubPaths WorkingDirectorySubPaths { get; }
+        public IProfileIdentifier Ident { get; }
+
+        public string ProfileDirectory => Path.Combine(Paths.WorkingDirectory, Ident.ID);
+        public string WorkingDirectory => WorkingDirectorySubPaths.ProfileWorkingDirectory(Ident.ID);
 
         public ProfileDirectories(
             IWorkingDirectoryProvider paths,
             IWorkingDirectorySubPaths workingDirectorySubPaths,
             IProfileIdentifier ident)
         {
-            ProfileDirectory = Path.Combine(paths.WorkingDirectory, ident.ID);
-            WorkingDirectory = workingDirectorySubPaths.ProfileWorkingDirectory(ident.ID);
+            Paths = paths;
+            WorkingDirectorySubPaths = workingDirectorySubPaths;
+            Ident = ident;
         }
     }
 }
