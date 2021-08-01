@@ -15,7 +15,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.ExecutablePath
         {
             sut.FileSystem.File.Exists(default).ReturnsForAnyArgs(true);
             sut.Process(default, default);
-            var w = sut.WorkingDirectory.DidNotReceiveWithAnyArgs().WorkingDirectory;
+            var w = sut.WorkingDirectoryProvider.DidNotReceiveWithAnyArgs().WorkingDirectory;
         }
         
         [Theory, SynthAutoData(UseMockFileSystem: false)]
@@ -26,7 +26,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.ExecutablePath
             ProcessExecutablePath sut)
         {
             sut.FileSystem.File.Exists(default).ReturnsForAnyArgs(false);
-            sut.WorkingDirectory.WorkingDirectory.Returns(missingFolder);
+            sut.WorkingDirectoryProvider.WorkingDirectory.Returns(missingFolder);
             sut.Process(projPath, exePath)
                 .Should().Be(exePath);
         }
@@ -40,7 +40,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.ExecutablePath
             var junkPath = @"C:\Users\junk\AppData\Local\Temp\Synthesis\Loading\ugqvnbdg.i1q\bin\Debug\net5.0\win-x64\FaceFixer.dll";
             var actualPath = @"C:\Users\actual\AppData\Local\Temp\Synthesis\Loading\ugqvnbdg.i1q\bin\Debug\net5.0\win-x64\FaceFixer.dll";
             sut.FileSystem.File.Exists(default).ReturnsForAnyArgs(false);
-            sut.WorkingDirectory.WorkingDirectory.Returns(new DirectoryPath(workingDir));
+            sut.WorkingDirectoryProvider.WorkingDirectory.Returns(new DirectoryPath(workingDir));
             sut.Process(projPath, junkPath)
                 .Should().Be(actualPath);
         }

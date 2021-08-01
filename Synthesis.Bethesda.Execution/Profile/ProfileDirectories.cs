@@ -15,7 +15,7 @@ namespace Synthesis.Bethesda.Execution.Profile
         public string WorkingDirectory { get; }
 
         public ProfileDirectories(
-            IProvideWorkingDirectory paths,
+            IWorkingDirectoryProvider paths,
             IWorkingDirectorySubPaths workingDirectorySubPaths,
             IProfileIdentifier ident)
         {

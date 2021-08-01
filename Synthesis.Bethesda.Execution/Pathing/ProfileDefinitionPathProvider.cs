@@ -1,4 +1,5 @@
-﻿using Noggog;
+﻿using System.Diagnostics.CodeAnalysis;
+using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Pathing
 {
@@ -7,6 +8,7 @@ namespace Synthesis.Bethesda.Execution.Pathing
         FilePath Path { get; }
     }
 
+    [ExcludeFromCodeCoverage]
     public class ProfileDefinitionPathInjection : IProfileDefinitionPathProvider
     {
         public FilePath Path { get; init; }

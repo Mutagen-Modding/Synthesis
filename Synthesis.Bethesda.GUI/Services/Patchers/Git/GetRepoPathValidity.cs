@@ -15,17 +15,17 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
     public class GetRepoPathValidity : IGetRepoPathValidity
     {
         private readonly IRemoteRepoPathFollower _remoteRepoPathFollower;
-        private readonly ICheckRepoIsValid _checkRepoIsValid;
+        private readonly ICheckOriginRepoIsValid _checkOriginRepoIsValid;
         private readonly ISchedulerProvider _schedulerProvider;
         public IObservable<ConfigurationState<string>> RepoPath { get; }
 
         public GetRepoPathValidity(
             IRemoteRepoPathFollower remoteRepoPathFollower,
-            ICheckRepoIsValid checkRepoIsValid,
+            ICheckOriginRepoIsValid checkOriginRepoIsValid,
             ISchedulerProvider schedulerProvider)
         {
             _remoteRepoPathFollower = remoteRepoPathFollower;
-            _checkRepoIsValid = checkRepoIsValid;
+            _checkOriginRepoIsValid = checkOriginRepoIsValid;
             _schedulerProvider = schedulerProvider;
             
             
@@ -48,7 +48,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                     .ObserveOn(_schedulerProvider.TaskPool)
                     .Select(p =>
                     {
-                        if (_checkRepoIsValid.IsValidRepository(p))
+                        if (_checkOriginRepoIsValid.IsValidRepository(p))
                         {
                             return new ConfigurationState<string>(p);
                         }

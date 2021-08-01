@@ -18,12 +18,12 @@ namespace Synthesis.Bethesda.Execution.CLI
         public ITempFileProvider TempFileProvider { get; }
         public ILoadOrderWriter LoadOrderWriter { get; }
         public IRandomFileNameProvider RandomFileNameProvider { get; }
-        public IProvideWorkingDirectory Paths { get; }
+        public IWorkingDirectoryProvider Paths { get; }
 
         public TemporaryLoadOrderProvider(
             ITempFileProvider tempFileProvider,
             ILoadOrderWriter loadOrderWriter,
-            IProvideWorkingDirectory paths,
+            IWorkingDirectoryProvider paths,
             IRandomFileNameProvider randomFileNameProvider)
         {
             TempFileProvider = tempFileProvider;

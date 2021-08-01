@@ -129,5 +129,9 @@
     </Compile>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Execution\Running" />
+  </ItemGroup>
+
 
 </Project>

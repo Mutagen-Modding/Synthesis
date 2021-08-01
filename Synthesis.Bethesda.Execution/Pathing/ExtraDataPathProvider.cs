@@ -1,5 +1,6 @@
 ﻿using System;
 using Noggog;
+using Noggog.IO;
 
 namespace Synthesis.Bethesda.Execution.Pathing
 {
@@ -10,7 +11,14 @@ namespace Synthesis.Bethesda.Execution.Pathing
 
     public class ExtraDataPathProvider : IExtraDataPathProvider
     {
-        public DirectoryPath Path => System.IO.Path.Combine(Environment.CurrentDirectory, "Data");
+        private readonly ICurrentDirectoryProvider _currentDirectoryProvider;
+
+        public ExtraDataPathProvider(ICurrentDirectoryProvider currentDirectoryProvider)
+        {
+            _currentDirectoryProvider = currentDirectoryProvider;
+        }
+    
+        public DirectoryPath Path => System.IO.Path.Combine(_currentDirectoryProvider.CurrentDirectory, "Data");
     }
 
     public class ExtraDataPathInjection : IExtraDataPathProvider

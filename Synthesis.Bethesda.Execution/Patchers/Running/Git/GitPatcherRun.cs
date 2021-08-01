@@ -1,28 +1,24 @@
 using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Reactive.Disposables;
-using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using Mutagen.Bethesda;
-using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
-using NuGet.Versioning;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Running
+namespace Synthesis.Bethesda.Execution.Patchers.Running.Git
 {
     public interface IGitPatcherRun : IPatcherRun
     {
     }
 
+    [ExcludeFromCodeCoverage]
     public class GitPatcherRun : IGitPatcherRun
     {
         public string Name { get; }

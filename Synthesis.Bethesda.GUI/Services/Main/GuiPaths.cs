@@ -13,9 +13,9 @@ namespace Synthesis.Bethesda.GUI.Services.Main
         public string RegistryFolder { get; }
 
         public GuiPaths(
-            IProvideWorkingDirectory workingDirectory)
+            IWorkingDirectoryProvider workingDirectoryProvider)
         {
-            RegistryFolder = Path.Combine(workingDirectory.WorkingDirectory, "Registry");
+            RegistryFolder = Path.Combine(workingDirectoryProvider.WorkingDirectory, "Registry");
         }
     }
 }

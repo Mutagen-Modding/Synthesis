@@ -3,12 +3,12 @@ using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Pathing
 {
-    public interface IProvideWorkingDirectory
+    public interface IWorkingDirectoryProvider
     {
         DirectoryPath WorkingDirectory { get; }
     }
 
-    public class ProvideWorkingDirectory : IProvideWorkingDirectory
+    public class WorkingDirectoryProvider : IWorkingDirectoryProvider
     {
         public DirectoryPath WorkingDirectory => Path.Combine(Path.GetTempPath(), "Synthesis")!;
     }

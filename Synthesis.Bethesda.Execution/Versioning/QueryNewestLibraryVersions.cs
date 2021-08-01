@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.Execution.Versioning
     {
         private readonly IFileSystem _FileSystem;
         private readonly ILogger _Logger;
-        private readonly IProvideWorkingDirectory _Paths;
+        private readonly IWorkingDirectoryProvider _Paths;
         private readonly IProvideCurrentVersions _CurrentVersions;
         private readonly IQueryLibraryVersions _QueryLibraryVersions;
         private readonly ICreateSolutionFile _CreateSolutionFile;
@@ -33,7 +33,7 @@ namespace Synthesis.Bethesda.Execution.Versioning
         public QueryNewestLibraryVersions(
             IFileSystem fileSystem,
             ILogger logger,
-            IProvideWorkingDirectory paths,
+            IWorkingDirectoryProvider paths,
             IProvideCurrentVersions currentVersions,
             IQueryLibraryVersions queryLibraryVersions,
             ICreateSolutionFile createSolutionFile,

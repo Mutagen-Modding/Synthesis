@@ -5,13 +5,13 @@ using Noggog;
 
 namespace Synthesis.Bethesda.Execution.GitRepository
 {
-    public interface ICheckRepoIsValid
+    public interface ICheckOriginRepoIsValid
     {
         bool IsValidRepository(string path);
     }
 
     [ExcludeFromCodeCoverage]
-    public class CheckRepoIsValid : ICheckRepoIsValid
+    public class CheckOriginRepoIsValid : ICheckOriginRepoIsValid
     {
         public bool IsValidRepository(string path)
         {

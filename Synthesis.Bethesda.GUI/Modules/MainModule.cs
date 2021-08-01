@@ -81,7 +81,7 @@ namespace Synthesis.Bethesda.GUI.Modules
                     typeof(IPatcherRun),
                     typeof(IInstalledSdkFollower),
                     typeof(IExecuteRunnabilityCheck))
-                .Except<ProvideWorkingDirectory>()
+                .Except<WorkingDirectoryProvider>()
                 .AsMatchingInterface();
 
             // Top Level

@@ -16,16 +16,16 @@ namespace Synthesis.Bethesda.Execution.DotNet.ExecutablePath
     {
         public IFileSystem FileSystem { get; }
         private readonly ILogger _logger;
-        public IProvideWorkingDirectory WorkingDirectory { get; }
+        public IWorkingDirectoryProvider WorkingDirectoryProvider { get; }
 
         public ProcessExecutablePath(
             IFileSystem fileSystem,
             ILogger logger,
-            IProvideWorkingDirectory workingDirectory)
+            IWorkingDirectoryProvider workingDirectoryProvider)
         {
             FileSystem = fileSystem;
             _logger = logger;
-            WorkingDirectory = workingDirectory;
+            WorkingDirectoryProvider = workingDirectoryProvider;
         }
         
         public string Process(
@@ -33,7 +33,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.ExecutablePath
             FilePath execPath)
         {
             if (FileSystem.File.Exists(execPath)) return execPath;
-            var workingDir = WorkingDirectory.WorkingDirectory;
+            var workingDir = WorkingDirectoryProvider.WorkingDirectory;
             if (!projPath.IsUnderneath(workingDir))
             {
                 _logger.Warning("Locating executable path unexpectedly was not under working directory. " +
