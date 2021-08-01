@@ -1,9 +1,11 @@
 using Noggog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Synthesis.Bethesda.Execution.Reporters
 {
+    [ExcludeFromCodeCoverage]
     public class TrackerReporter : IRunReporter
     {
         public bool Success => Overall == null

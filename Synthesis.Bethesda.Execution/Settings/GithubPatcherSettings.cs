@@ -1,10 +1,12 @@
 using Noggog;
 using Synthesis.Bethesda.Execution.Reporters;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
+    [ExcludeFromCodeCoverage]
     public record GithubPatcherLastRunState(
         string TargetRepo,
         string ProjectSubpath,
@@ -12,6 +14,7 @@ namespace Synthesis.Bethesda.Execution.Settings
         string MutagenVersion,
         string SynthesisVersion);
 
+    [ExcludeFromCodeCoverage]
     public class GithubPatcherSettings : PatcherSettings, IGithubPatcherIdentifier
     {
         public string ID = string.Empty;

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using CommandLine;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution.Settings;
@@ -5,6 +6,7 @@ using Synthesis.Bethesda.Execution.Settings;
 namespace Synthesis.Bethesda.Execution.Running
 {
     [Verb("run-patcher", HelpText = "Run the patcher")]
+    [ExcludeFromCodeCoverage]
     public class RunPatcherPipelineInstructions
     {
         [Option('s', "SourcePath", Required = false, HelpText = "Optional path pointing to the previous patcher result to build onto.")]

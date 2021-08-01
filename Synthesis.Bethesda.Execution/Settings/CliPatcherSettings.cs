@@ -1,11 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using Noggog;
 using Synthesis.Bethesda.Execution.Reporters;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
+    [ExcludeFromCodeCoverage]
     public class CliPatcherSettings : PatcherSettings
     {
         public string PathToExecutable { get; set; } = string.Empty;

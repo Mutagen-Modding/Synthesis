@@ -1,5 +1,6 @@
 using Mutagen.Bethesda;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
@@ -19,6 +20,7 @@ namespace Synthesis.Bethesda.Execution.Settings
         PersistenceMode Persistence { get; set; }
     }
 
+    [ExcludeFromCodeCoverage]
     public class SynthesisProfile : ISynthesisProfile
     {
         public string Nickname { get; set; } = string.Empty;

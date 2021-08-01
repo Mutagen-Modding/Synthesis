@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Synthesis.Bethesda.Execution.Reporters
 {
+    [ExcludeFromCodeCoverage]
     public class ThrowReporter : IRunReporter
     {
         public static ThrowReporter Instance = new();

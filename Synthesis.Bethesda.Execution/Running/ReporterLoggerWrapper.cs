@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Subjects;
 using Serilog;
 using Serilog.Events;
@@ -13,6 +14,7 @@ namespace Synthesis.Bethesda.Execution.Running
         IObservable<LogEvent> Events { get; }
     }
 
+    [ExcludeFromCodeCoverage]
     public class ReporterLoggerWrapper : ILogger, IReporterLoggerWrapper
     {
         private readonly IPatcherNameProvider _NameProvider;

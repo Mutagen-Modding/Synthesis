@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Subjects;
 
 namespace Synthesis.Bethesda.Execution.Reporters
 {
+    [ExcludeFromCodeCoverage]
     public class RxReporter<TKey> : IRunReporter<TKey>
     {
         private readonly Subject<Exception> _overall = new();
