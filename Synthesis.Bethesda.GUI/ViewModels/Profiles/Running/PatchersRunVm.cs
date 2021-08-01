@@ -47,7 +47,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 
         public ReactiveCommand<Unit, Unit> ShowOverallErrorCommand { get; } = ReactiveCommand.Create(ActionExt.Nothing);
 
-        public RxReporter<int> Reporter { get; } = new();
+        public RxReporter Reporter { get; } = new();
 
         private readonly ObservableAsPropertyHelper<object?> _DetailDisplay;
         public object? DetailDisplay => _DetailDisplay.Value;
@@ -184,10 +184,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     {
                         Running = true;
                         var output = Path.Combine(RunningProfile.WorkingDirectory, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
-                        var madePatch = await _Runner.Run<int>(
-                            workingDirectory: RunningProfile.WorkingDirectory,
+                        var madePatch = await _Runner.Run(
                             outputPath: output,
-                            cancellation: _cancel.Token,
+                            cancel: _cancel.Token,
                             reporter: Reporter,
                             patchers: Patchers.Items.Select(vm => (vm.Config.InternalID, vm.Run)),
                             persistenceMode: RunningProfile.SelectedPersistenceMode,

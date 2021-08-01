@@ -28,20 +28,17 @@ namespace Synthesis.Bethesda.Execution.Running
 
     public class RunPatcherPipeline : IRunPatcherPipeline
     {
-        private readonly IWorkingDirectorySubPaths _Paths;
         private readonly IRunProfileProvider _profileProvider;
         private readonly IRunner _Runner;
         public CancellationToken Cancel { get; }
         public IRunReporter? Reporter { get; }
 
         public RunPatcherPipeline(
-            IWorkingDirectorySubPaths paths,
             IRunProfileProvider profileProvider,
             IRunner runner,
             CancellationToken cancel, 
             IRunReporter? reporter)
         {
-            _Paths = paths;
             _profileProvider = profileProvider;
             _Runner = runner;
             Cancel = cancel;
@@ -68,7 +65,7 @@ namespace Synthesis.Bethesda.Execution.Running
                     run.LoadOrderFilePath = PluginListings.GetListingsPath(run.GameRelease);
                 }
 
-                Reporter?.Write(null, default, "Patchers to run:");
+                Reporter?.Write(default(int), default, "Patchers to run:");
                 var patchers = _profileProvider.Profile.Patchers
                     .Where(p => p.On)
                     .Select(patcherSettings =>
@@ -86,11 +83,10 @@ namespace Synthesis.Bethesda.Execution.Running
 
                 await _Runner
                     .Run(
-                    workingDirectory: _Paths.ProfileWorkingDirectory(_profileProvider.Profile.ID),
                     outputPath: run.OutputPath,
-                    patchers: patchers,
+                    patchers: patchers.Select((p, i) => (i + 1, p)),
                     sourcePath: run.SourcePath == null ? default : ModPath.FromPath(run.SourcePath),
-                    reporter: Reporter,
+                    reporter: Reporter ?? ThrowReporter.Instance,
                     cancel: Cancel,
                     persistenceMode: run.PersistenceMode ?? PersistenceMode.Text,
                     persistencePath: run.PersistencePath);

@@ -10,6 +10,8 @@ using Mutagen.Bethesda.Plugins.Allocators;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Running;
+using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
 using Path = System.IO.Path;
@@ -20,21 +22,10 @@ namespace Synthesis.Bethesda.Execution.Running
     public interface IRunner
     {
         Task<bool> Run(
-            string workingDirectory,
             ModPath outputPath,
-            IEnumerable<IPatcherRun> patchers,
+            IEnumerable<(int Key, IPatcherRun Run)> patchers,
+            IRunReporter reporter,
             CancellationToken cancel,
-            ModPath? sourcePath = null,
-            IRunReporter? reporter = null,
-            PersistenceMode persistenceMode = PersistenceMode.None,
-            string? persistencePath = null);
-
-        Task<bool> Run<TKey>(
-            string workingDirectory,
-            ModPath outputPath,
-            IEnumerable<(TKey Key, IPatcherRun Run)> patchers,
-            IRunReporter<TKey> reporter,
-            CancellationToken cancellation,
             ModPath? sourcePath = null,
             PersistenceMode persistenceMode = PersistenceMode.None,
             string? persistencePath = null);
@@ -44,6 +35,7 @@ namespace Synthesis.Bethesda.Execution.Running
     {
         private readonly IFileSystem _FileSystem;
         private readonly IGameReleaseContext _ReleaseContext;
+        private readonly IProfileDirectories _profileDirectories;
         private readonly IDataDirectoryProvider _DataDirectoryProvider;
         private readonly ILoadOrderListingsProvider _LoadOrderListingsProvider;
         private readonly ILoadOrderWriter _LoadOrderWriter;
@@ -51,43 +43,23 @@ namespace Synthesis.Bethesda.Execution.Running
         public Runner(
             IFileSystem fileSystem,
             IGameReleaseContext releaseContext,
+            IProfileDirectories profileDirectories,
             IDataDirectoryProvider dataDirectoryProvider,
             ILoadOrderListingsProvider loadOrderListingsProvider,
             ILoadOrderWriter loadOrderWriter)
         {
             _FileSystem = fileSystem;
             _ReleaseContext = releaseContext;
+            _profileDirectories = profileDirectories;
             _DataDirectoryProvider = dataDirectoryProvider;
             _LoadOrderListingsProvider = loadOrderListingsProvider;
             _LoadOrderWriter = loadOrderWriter;
         }
         
         public async Task<bool> Run(
-            string workingDirectory,
             ModPath outputPath,
-            IEnumerable<IPatcherRun> patchers,
-            CancellationToken cancel,
-            ModPath? sourcePath = null,
-            IRunReporter? reporter = null,
-            PersistenceMode persistenceMode = PersistenceMode.None,
-            string? persistencePath = null)
-        {
-            return await Run<object?>(
-                workingDirectory: workingDirectory,
-                outputPath: outputPath,
-                patchers: patchers.Select(p => (default(object?), p)),
-                reporter: reporter ?? ThrowReporter.Instance,
-                sourcePath: sourcePath,
-                cancellation: cancel,
-                persistenceMode: persistenceMode,
-                persistencePath: persistencePath);
-        }
-
-        public async Task<bool> Run<TKey>(
-            string workingDirectory,
-            ModPath outputPath,
-            IEnumerable<(TKey Key, IPatcherRun Run)> patchers,
-            IRunReporter<TKey> reporter,
+            IEnumerable<(int Key, IPatcherRun Run)> patchers,
+            IRunReporter reporter,
             CancellationToken cancellation,
             ModPath? sourcePath = null,
             PersistenceMode persistenceMode = PersistenceMode.None,
@@ -104,6 +76,7 @@ namespace Synthesis.Bethesda.Execution.Running
                     }
                 }
 
+                var workingDirectory = _profileDirectories.WorkingDirectory;
                 _FileSystem.Directory.DeleteEntireFolder(workingDirectory);
                 _FileSystem.Directory.CreateDirectory(workingDirectory);
 
@@ -119,8 +92,8 @@ namespace Synthesis.Bethesda.Execution.Running
                 {
                     loadOrderList.RemoveToCount(synthIndex);
                 }
-                reporter.Write(default(TKey)!, default, "Load Order:");
-                loadOrderList.WithIndex().ForEach(i => reporter.Write(default(TKey)!, default, $" [{i.Index,3}] {i.Item}"));
+                reporter.Write(default(int), default, "Load Order:");
+                loadOrderList.WithIndex().ForEach(i => reporter.Write(default(int), default, $" [{i.Index,3}] {i.Item}"));
                 string loadOrderPath = Path.Combine(workingDirectory, "Plugins.txt");
 
                 var writeLoadOrder = Task.Run(() =>

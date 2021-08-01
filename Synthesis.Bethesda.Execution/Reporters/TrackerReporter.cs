@@ -34,12 +34,12 @@ namespace Synthesis.Bethesda.Execution.Reporters
             Overall = ex;
         }
 
-        public void ReportPrepProblem(object? key, string name, Exception ex)
+        public void ReportPrepProblem(int key, string name, Exception ex)
         {
             _prepProblems.Add((name, ex));
         }
 
-        public void ReportRunProblem(object? key, string name, Exception ex)
+        public void ReportRunProblem(int key, string name, Exception ex)
         {
             if (RunProblem != null)
             {
@@ -48,21 +48,21 @@ namespace Synthesis.Bethesda.Execution.Reporters
             RunProblem = (name, ex);
         }
 
-        public void ReportStartingRun(object? key, string name)
+        public void ReportStartingRun(int key, string name)
         {
             StartingRun = name;
         }
 
-        public void ReportRunSuccessful(object? key, string name, string outputPath)
+        public void ReportRunSuccessful(int key, string name, string outputPath)
         {
             _patcherComplete.Add((name, outputPath));
         }
 
-        public void Write(object? key, string? name, string str)
+        public void Write(int key, string? name, string str)
         {
         }
 
-        public void WriteError(object? key, string? name, string str)
+        public void WriteError(int key, string? name, string str)
         {
         }
     }

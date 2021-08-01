@@ -19,14 +19,14 @@ namespace Synthesis.Bethesda.Execution.Running
     {
         private readonly IPatcherNameProvider _NameProvider;
         private readonly IPatcherIdProvider _IdProvider;
-        private readonly IRunReporter<int> _Reporter;
+        private readonly IRunReporter _Reporter;
         private readonly Subject<LogEvent> _events = new();
         public IObservable<LogEvent> Events => _events;
 
         public ReporterLoggerWrapper(
             IPatcherNameProvider nameProvider,
             IPatcherIdProvider idProvider,
-            IRunReporter<int> reporter)
+            IRunReporter reporter)
         {
             _NameProvider = nameProvider;
             _IdProvider = idProvider;

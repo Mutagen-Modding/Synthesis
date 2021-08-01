@@ -11,7 +11,7 @@ namespace Synthesis.Bethesda.Execution.Settings
 
         public override void Print(IRunReporter logger)
         {
-            logger.Write(null, default, $"[CLI] {Nickname.Decorate(x => $"{x} => ")}{PathToExecutable}");
+            logger.Write(default(int), default, $"[CLI] {Nickname.Decorate(x => $"{x} => ")}{PathToExecutable}");
         }
     }
 }

@@ -40,7 +40,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
             var scope = patcherVm.Scope.BeginLifetimeScope(c =>
             {
                 c.RegisterType<T>().As<IPatcherRun>();
-                c.RegisterInstance(parent.Reporter).As<IRunReporter<int>>();
+                c.RegisterInstance(parent.Reporter).As<IRunReporter>();
                 c.RegisterType<ReporterLoggerWrapper>()
                     .AsImplementedInterfaces()
                     .SingleInstance();
