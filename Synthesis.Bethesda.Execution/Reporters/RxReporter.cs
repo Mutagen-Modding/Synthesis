@@ -4,8 +4,19 @@ using System.Reactive.Subjects;
 
 namespace Synthesis.Bethesda.Execution.Reporters
 {
+    public interface IRunReporterWatcher
+    {       
+        public IObservable<Exception> Overall { get; }
+        public IObservable<(int Key, string Run, Exception Error)> PrepProblem { get; }
+        public IObservable<(int Key, string Run, Exception Error)> RunProblem { get; }
+        public IObservable<(int Key, string Run, string OutputPath)> RunSuccessful { get; }
+        public IObservable<(int Key, string Run)> Starting { get; }
+        public IObservable<(int Key, string? Run, string String)> Output { get; }
+        public IObservable<(int Key, string? Run, string String)> Error { get; }
+    }
+    
     [ExcludeFromCodeCoverage]
-    public class RxReporter : IRunReporter
+    public class RxReporter : IRunReporter, IRunReporterWatcher
     {
         private readonly Subject<Exception> _overall = new();
         private readonly Subject<(int, string, Exception)> _prepProblem = new();

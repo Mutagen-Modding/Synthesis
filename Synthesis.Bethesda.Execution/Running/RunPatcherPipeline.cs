@@ -86,7 +86,6 @@ namespace Synthesis.Bethesda.Execution.Running
                     outputPath: run.OutputPath,
                     patchers: patchers.Select((p, i) => (i + 1, p)),
                     sourcePath: run.SourcePath == null ? default : ModPath.FromPath(run.SourcePath),
-                    reporter: Reporter ?? ThrowReporter.Instance,
                     cancel: Cancel,
                     persistenceMode: run.PersistenceMode ?? PersistenceMode.Text,
                     persistencePath: run.PersistencePath);

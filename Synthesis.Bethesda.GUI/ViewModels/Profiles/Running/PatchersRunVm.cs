@@ -23,6 +23,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
     public class PatchersRunVm : ViewModel
     {
         private readonly ILogger _Logger;
+        public IRunReporter Reporter { get; }
         private readonly IRunner _Runner;
         public ConfigurationVm Config { get; }
 
@@ -47,8 +48,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 
         public ReactiveCommand<Unit, Unit> ShowOverallErrorCommand { get; } = ReactiveCommand.Create(ActionExt.Nothing);
 
-        public RxReporter Reporter { get; } = new();
-
         private readonly ObservableAsPropertyHelper<object?> _DetailDisplay;
         public object? DetailDisplay => _DetailDisplay.Value;
 
@@ -61,10 +60,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
             ILogger logger,
             IPatcherRunnerFactory runnerFactory,
             IActivePanelControllerVm activePanelController,
+            IRunReporterWatcher reporterWatcher,
+            IRunReporter reporter,
             ProfileVm profile,
             IRunner runner)
         {
             _Logger = logger;
+            Reporter = reporter;
             _Runner = runner;
             Config = configuration;
             RunningProfile = profile;
@@ -90,7 +92,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 execute: Cancel,
                 canExecute: this.WhenAnyValue(x => x.Running));
 
-            Reporter.Overall
+            reporterWatcher.Overall
                 .ObserveOnGui()
                 .Subscribe(ex =>
                 {
@@ -98,9 +100,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     ResultError = ex;
                 })
                 .DisposeWith(this);
-            Reporter.PrepProblem
+            reporterWatcher.PrepProblem
                 .Select(data => (data, type: "prepping"))
-                .Merge(Reporter.RunProblem
+                .Merge(reporterWatcher.RunProblem
                     .Select(data => (data, type: "running")))
                 .ObserveOnGui()
                 .Subscribe(i =>
@@ -113,7 +115,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                         .Error(i.data.Error, $"Error while {i.type}");
                 })
                 .DisposeWith(this);
-            Reporter.Starting
+            reporterWatcher.Starting
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
@@ -132,7 +134,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     _previousPatcher = vm;
                 })
                 .DisposeWith(this);
-            Reporter.RunSuccessful
+            reporterWatcher.RunSuccessful
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
@@ -143,7 +145,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                         .Information("Finished {RunTime}", vm.RunTime);
                 })
                 .DisposeWith(this);
-            Reporter.Output
+            reporterWatcher.Output
                 .Subscribe(s =>
                 {
                     logger
@@ -151,7 +153,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                         .Information(s.String);
                 })
                 .DisposeWith(this);
-            Reporter.Error
+            reporterWatcher.Error
                 .Subscribe(s =>
                 {
                     logger
@@ -187,7 +189,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                         var madePatch = await _Runner.Run(
                             outputPath: output,
                             cancel: _cancel.Token,
-                            reporter: Reporter,
                             patchers: Patchers.Items.Select(vm => (vm.Config.InternalID, vm.Run)),
                             persistenceMode: RunningProfile.SelectedPersistenceMode,
                             persistencePath: Path.Combine(RunningProfile.ProfileDirectory, "Persistence"));

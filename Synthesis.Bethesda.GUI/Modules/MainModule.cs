@@ -15,6 +15,7 @@ using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
+using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.Execution.Versioning;
@@ -122,6 +123,9 @@ namespace Synthesis.Bethesda.GUI.Modules
                 .InNamespacesOf(
                     typeof(IRunner))
                 .AsMatchingInterface();
+            builder.RegisterType<RxReporter>()
+                .InstancePerMatchingLifetimeScope(RunNickname)
+                .AsImplementedInterfaces();
         }
     }
 }

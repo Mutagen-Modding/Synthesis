@@ -24,7 +24,6 @@ namespace Synthesis.Bethesda.Execution.Running
         Task<bool> Run(
             ModPath outputPath,
             IEnumerable<(int Key, IPatcherRun Run)> patchers,
-            IRunReporter reporter,
             CancellationToken cancel,
             ModPath? sourcePath = null,
             PersistenceMode persistenceMode = PersistenceMode.None,
@@ -37,6 +36,7 @@ namespace Synthesis.Bethesda.Execution.Running
         private readonly IGameReleaseContext _ReleaseContext;
         private readonly IProfileDirectories _profileDirectories;
         private readonly IDataDirectoryProvider _DataDirectoryProvider;
+        private readonly IRunReporter _reporter;
         private readonly ILoadOrderListingsProvider _LoadOrderListingsProvider;
         private readonly ILoadOrderWriter _LoadOrderWriter;
 
@@ -45,6 +45,7 @@ namespace Synthesis.Bethesda.Execution.Running
             IGameReleaseContext releaseContext,
             IProfileDirectories profileDirectories,
             IDataDirectoryProvider dataDirectoryProvider,
+            IRunReporter reporter,
             ILoadOrderListingsProvider loadOrderListingsProvider,
             ILoadOrderWriter loadOrderWriter)
         {
@@ -52,6 +53,7 @@ namespace Synthesis.Bethesda.Execution.Running
             _ReleaseContext = releaseContext;
             _profileDirectories = profileDirectories;
             _DataDirectoryProvider = dataDirectoryProvider;
+            _reporter = reporter;
             _LoadOrderListingsProvider = loadOrderListingsProvider;
             _LoadOrderWriter = loadOrderWriter;
         }
@@ -59,7 +61,6 @@ namespace Synthesis.Bethesda.Execution.Running
         public async Task<bool> Run(
             ModPath outputPath,
             IEnumerable<(int Key, IPatcherRun Run)> patchers,
-            IRunReporter reporter,
             CancellationToken cancellation,
             ModPath? sourcePath = null,
             PersistenceMode persistenceMode = PersistenceMode.None,
@@ -71,7 +72,7 @@ namespace Synthesis.Bethesda.Execution.Running
                 {
                     if (!_FileSystem.File.Exists(sourcePath))
                     {
-                        reporter.ReportOverallProblem(new FileNotFoundException($"Source path did not exist: {sourcePath}"));
+                        _reporter.ReportOverallProblem(new FileNotFoundException($"Source path did not exist: {sourcePath}"));
                         return false;
                     }
                 }
@@ -92,8 +93,8 @@ namespace Synthesis.Bethesda.Execution.Running
                 {
                     loadOrderList.RemoveToCount(synthIndex);
                 }
-                reporter.Write(default(int), default, "Load Order:");
-                loadOrderList.WithIndex().ForEach(i => reporter.Write(default(int), default, $" [{i.Index,3}] {i.Item}"));
+                _reporter.Write(default(int), default, "Load Order:");
+                loadOrderList.WithIndex().ForEach(i => _reporter.Write(default(int), default, $" [{i.Index,3}] {i.Item}"));
                 string loadOrderPath = Path.Combine(workingDirectory, "Plugins.txt");
 
                 var writeLoadOrder = Task.Run(() =>
@@ -107,7 +108,7 @@ namespace Synthesis.Bethesda.Execution.Running
                     }
                     catch (Exception ex)
                     {
-                        reporter.ReportOverallProblem(ex);
+                        _reporter.ReportOverallProblem(ex);
                         problem = true;
                     }
                 });
@@ -131,7 +132,7 @@ namespace Synthesis.Bethesda.Execution.Running
                     }
                     catch (Exception ex)
                     {
-                        reporter.ReportOverallProblem(ex);
+                        _reporter.ReportOverallProblem(ex);
                         problem = true;
                     }
                 });
@@ -150,7 +151,7 @@ namespace Synthesis.Bethesda.Execution.Running
                         }
                         catch (Exception ex)
                         {
-                            reporter.ReportPrepProblem(patcher.Key, patcher.Run.Name, ex);
+                            _reporter.ReportPrepProblem(patcher.Key, patcher.Run.Name, ex);
                             return ex;
                         }
                     }
@@ -159,7 +160,7 @@ namespace Synthesis.Bethesda.Execution.Running
                     }
                     catch (Exception ex)
                     {
-                        reporter.ReportPrepProblem(patcher.Key, patcher.Run.Name, ex);
+                        _reporter.ReportPrepProblem(patcher.Key, patcher.Run.Name, ex);
                         return ex;
                     }
                     return default(Exception?);
@@ -184,7 +185,7 @@ namespace Synthesis.Bethesda.Execution.Running
                         try
                         {
                             // Start run
-                            reporter.ReportStartingRun(patcher.Key, patcher.Run.Name);
+                            _reporter.ReportStartingRun(patcher.Key, patcher.Run.Name);
                             await patcher.Run.Run(new RunSynthesisPatcher()
                             {
                                 SourcePath = prevPath?.Path,
@@ -202,7 +203,7 @@ namespace Synthesis.Bethesda.Execution.Running
                         }
                         catch (Exception ex)
                         {
-                            reporter.ReportRunProblem(patcher.Key, patcher.Run.Name, ex);
+                            _reporter.ReportRunProblem(patcher.Key, patcher.Run.Name, ex);
                             return false;
                         }
                     }
@@ -212,16 +213,16 @@ namespace Synthesis.Bethesda.Execution.Running
                     }
                     catch (Exception ex)
                     {
-                        reporter.ReportRunProblem(patcher.Key, patcher.Run.Name, ex);
+                        _reporter.ReportRunProblem(patcher.Key, patcher.Run.Name, ex);
                         return false;
                     }
                     if (cancellation.IsCancellationRequested) return false;
                     if (!_FileSystem.File.Exists(nextPath))
                     {
-                        reporter.ReportRunProblem(patcher.Key, patcher.Run.Name, new ArgumentException($"Patcher {patcher.Run.Name} did not produce output file."));
+                        _reporter.ReportRunProblem(patcher.Key, patcher.Run.Name, new ArgumentException($"Patcher {patcher.Run.Name} did not produce output file."));
                         return false;
                     }
-                    reporter.ReportRunSuccessful(patcher.Key, patcher.Run.Name, nextPath);
+                    _reporter.ReportRunSuccessful(patcher.Key, patcher.Run.Name, nextPath);
                     prevPath = nextPath;
                 }
                 if (_FileSystem.File.Exists(outputPath))
@@ -229,12 +230,12 @@ namespace Synthesis.Bethesda.Execution.Running
                     _FileSystem.File.Delete(outputPath);
                 }
                 _FileSystem.File.Copy(prevPath!.Path, outputPath);
-                reporter.Write(default!, default, $"Exported patch to: {outputPath}");
+                _reporter.Write(default!, default, $"Exported patch to: {outputPath}");
                 return true;
             }
             catch (Exception ex)
             {
-                reporter.ReportOverallProblem(ex);
+                _reporter.ReportOverallProblem(ex);
                 return false;
             }
         }
