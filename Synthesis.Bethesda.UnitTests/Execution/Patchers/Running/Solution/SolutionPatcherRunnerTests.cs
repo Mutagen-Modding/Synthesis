@@ -50,12 +50,11 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Running.Solution
             sut.PathToProjProvider.Path.Returns(projPath);
             sut.Formatter.Format<RunSynthesisMutagenPatcher>(default!).ReturnsForAnyArgs(formattedArgs);
             await sut.Run(settings, cancel);
-            sut.CommandStartConstructor.Received(1)
-                .Construct(
-                    "run --project",
+            sut.ProcessRunStartInfoProvider.Received(1)
+                .GetStart(
                     projPath,
-                    "--no-build",
-                    formattedArgs);
+                    formattedArgs,
+                    build: false);
         }
         
         [Theory, SynthAutoData]
@@ -66,7 +65,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Running.Solution
             SolutionPatcherRunner sut)
         {
             sut.ProcessRunner.Run(default!, default).ReturnsForAnyArgs(0);
-            sut.CommandStartConstructor.Construct(default!, default, default!)
+            sut.ProcessRunStartInfoProvider.GetStart(default!, default!)
                 .ReturnsForAnyArgs(startInfo);
             await sut.Run(settings, cancel);
             await sut.ProcessRunner.Received(1).Run(startInfo, cancel);
