@@ -4,6 +4,7 @@ using System.Threading;
 using Noggog;
 using Noggog.Reactive;
 using Serilog;
+using Synthesis.Bethesda.Execution.DotNet.Dto;
 
 namespace Synthesis.Bethesda.Execution.DotNet
 {

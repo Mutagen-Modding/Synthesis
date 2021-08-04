@@ -7,6 +7,7 @@ using FluentAssertions;
 using Noggog;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Synthesis.Bethesda.Execution.DotNet.Dto;
 using Synthesis.Bethesda.Execution.DotNet.NugetListing;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.UnitTests.AutoData;

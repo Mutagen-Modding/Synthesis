@@ -6,6 +6,7 @@ using FluentAssertions;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.DotNet.Dto;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;

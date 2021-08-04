@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading;
-using Noggog;
 
 namespace Synthesis.Bethesda.Execution.DotNet.Builder
 {

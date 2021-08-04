@@ -5,13 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Noggog;
 using Noggog.Utility;
+using Synthesis.Bethesda.Execution.DotNet.Dto;
 using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.DotNet.NugetListing
 {
-    [ExcludeFromCodeCoverage]
-    public record NugetListingQuery(string Package, string Requested, string Resolved, string Latest);
-    
     public interface IQueryNugetListing
     {
         Task<IEnumerable<NugetListingQuery>> Query(

@@ -25,9 +25,15 @@ namespace Synthesis.Bethesda.Execution.Modules
                     typeof(IPatcherRun),
                     typeof(IInstalledSdkFollower),
                     typeof(IConsiderPrereleasePreference),
-                    typeof(IPatcherNameSanitizer))
-                .NotInNamespacesOf(typeof(IBuild))
+                    typeof(IPatcherNameSanitizer),
+                    typeof(IBuild))
+                .NotInNamespacesOf(typeof(IInstalledSdkFollower))
                 .Except<IBuildOutputAccumulator>()
+                .AsMatchingInterface();
+            
+            builder.RegisterAssemblyTypes(typeof(ICheckOrCloneRepo).Assembly)
+                .InNamespacesOf(
+                    typeof(IInstalledSdkFollower))
                 .SingleInstance()
                 .AsMatchingInterface();
 
