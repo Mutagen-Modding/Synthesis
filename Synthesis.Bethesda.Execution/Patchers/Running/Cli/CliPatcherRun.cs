@@ -31,6 +31,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
         public IGenericSettingsToMutagenSettings GenericToMutagenSettings { get; }
         public IFormatCommandLine Format { get; }
 
+        [ExcludeFromCodeCoverage]
         public CliPatcherRun(
             ILogger logger,
             IProcessRunner processRunner,

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Noggog;
 using Synthesis.Bethesda.Execution.Pathing;
 
@@ -19,6 +20,7 @@ namespace Synthesis.Bethesda.Execution.Profile
         public DirectoryPath ProfileDirectory => Path.Combine(Paths.WorkingDirectory, Ident.ID);
         public DirectoryPath WorkingDirectory => WorkingDirectorySubPaths.ProfileWorkingDirectory(Ident.ID);
 
+        [ExcludeFromCodeCoverage]
         public ProfileDirectories(
             IWorkingDirectoryProvider paths,
             IWorkingDirectorySubPaths workingDirectorySubPaths,

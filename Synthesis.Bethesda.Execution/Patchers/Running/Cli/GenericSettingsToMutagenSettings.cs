@@ -1,4 +1,5 @@
-﻿using Mutagen.Bethesda.Synthesis.CLI;
+﻿using System.Diagnostics.CodeAnalysis;
+using Mutagen.Bethesda.Synthesis.CLI;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
@@ -12,6 +13,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
     {
         public IPatcherExtraDataPathProvider ExtraDataPathProvider { get; }
 
+        [ExcludeFromCodeCoverage]
         public GenericSettingsToMutagenSettings(
             IPatcherExtraDataPathProvider extraDataPathProvider)
         {

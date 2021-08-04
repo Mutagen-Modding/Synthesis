@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Environments.DI;
@@ -27,6 +28,7 @@ namespace Synthesis.Bethesda.Execution.CLI
         public IRunProcessStartInfoProvider RunProcessStartInfoProvider { get; }
         public IWindowPlacement WindowPlacement { get; }
 
+        [ExcludeFromCodeCoverage]
         public ExecuteOpenForSettings(
             IGameReleaseContext gameReleaseContext,
             IDataDirectoryProvider dataDirectoryProvider,
