@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using Synthesis.Bethesda.Execution.Versioning;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git
 {

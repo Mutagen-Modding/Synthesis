@@ -1,13 +1,14 @@
 ﻿using System.IO;
 using System.IO.Abstractions;
 using Loqui;
+using Noggog;
 
 namespace Mutagen.Bethesda.Synthesis.Projects
 {
     public interface ICreateSolutionFile
     {
         string[] Create(
-            string solutionPath);
+            FilePath solutionPath);
     }
 
     public class CreateSolutionFile : ICreateSolutionFile
@@ -19,10 +20,10 @@ namespace Mutagen.Bethesda.Synthesis.Projects
             _FileSystem = fileSystem;
         }
         
-        public string[] Create(string solutionPath)
+        public string[] Create(FilePath solutionPath)
         {
             var slnDir = Path.GetDirectoryName(solutionPath)!;
-            _FileSystem.Directory.CreateDirectory(slnDir);
+            _FileSystem.Directory.CreateDirectory(solutionPath.Directory);
 
             // Create solution
             FileGeneration fg = new();

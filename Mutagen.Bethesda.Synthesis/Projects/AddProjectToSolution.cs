@@ -7,8 +7,8 @@ namespace Mutagen.Bethesda.Synthesis.Projects
     public interface IAddProjectToSolution
     {
         void Add(
-            string solutionpath,
-            string projPath);
+            FilePath solutionpath,
+            FilePath projPath);
     }
 
     public class AddProjectToSolution : IAddProjectToSolution
@@ -22,8 +22,8 @@ namespace Mutagen.Bethesda.Synthesis.Projects
         }
         
         public void Add(
-            string solutionpath,
-            string projPath)
+            FilePath solutionpath,
+            FilePath projPath)
         {
             var projName = Path.GetFileNameWithoutExtension(projPath);
             _FileSystem.File.AppendAllLines(solutionpath,

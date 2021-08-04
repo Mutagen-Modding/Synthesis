@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Mutagen.Bethesda;
 using Noggog;
+using Synthesis.Bethesda.Execution.Versioning;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject
 {

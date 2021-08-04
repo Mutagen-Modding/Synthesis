@@ -30,8 +30,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
             var queryNuget = GetNugetQuery();
             var queryLibs = new QueryLibraryVersions(queryNuget);
             var libVersions = await queryLibs.Query(default, true, false, CancellationToken.None);
-            libVersions.MutagenVersion.Should().Be("0.14.0");
-            libVersions.SynthesisVersion.Should().Be("0.0.3");
+            libVersions.Mutagen.Should().Be("0.14.0");
+            libVersions.Synthesis.Should().Be("0.0.3");
         }
         
         [Fact]
@@ -40,8 +40,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
             var queryNuget = GetNugetQuery();
             var queryLibs = new QueryLibraryVersions(queryNuget);
             var libVersions = await queryLibs.Query(default, false, false, CancellationToken.None);
-            libVersions.MutagenVersion.Should().Be("0.30.3");
-            libVersions.SynthesisVersion.Should().Be("0.19.1");
+            libVersions.Mutagen.Should().Be("0.30.3");
+            libVersions.Synthesis.Should().Be("0.19.1");
         }
         
         [Fact]
@@ -56,8 +56,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
                 });
             var queryLibs = new QueryLibraryVersions(queryNuget);
             var libVersions = await queryLibs.Query(string.Empty, false, false, CancellationToken.None);
-            libVersions.MutagenVersion.Should().BeNull();
-            libVersions.SynthesisVersion.Should().Be("0.19.1");
+            libVersions.Mutagen.Should().BeNull();
+            libVersions.Synthesis.Should().Be("0.19.1");
         }
         
         [Fact]
@@ -72,8 +72,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
                 });
             var queryLibs = new QueryLibraryVersions(queryNuget);
             var libVersions = await queryLibs.Query(string.Empty, false, false, CancellationToken.None);
-            libVersions.MutagenVersion.Should().Be("0.30.3");
-            libVersions.SynthesisVersion.Should().BeNull();
+            libVersions.Mutagen.Should().Be("0.30.3");
+            libVersions.Synthesis.Should().BeNull();
         }
     }
 }

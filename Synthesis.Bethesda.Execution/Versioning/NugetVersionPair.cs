@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Serilog;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git
+namespace Synthesis.Bethesda.Execution.Versioning
 {
     [ExcludeFromCodeCoverage]
     public record NugetVersionPair(string? Mutagen, string? Synthesis);

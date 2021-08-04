@@ -1,5 +1,6 @@
 using Synthesis.Bethesda.Execution.Settings;
 using Serilog;
+using Synthesis.Bethesda.Execution.Versioning;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git
 {

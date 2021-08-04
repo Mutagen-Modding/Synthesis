@@ -16,6 +16,7 @@ using Mutagen.Bethesda.Synthesis.Versioning;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
+using Synthesis.Bethesda.Execution.Versioning;
 
 namespace Synthesis.Bethesda.ImpactTester
 {

@@ -9,6 +9,7 @@ using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Versioning;
+using Synthesis.Bethesda.GUI.Services.Versioning;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 {

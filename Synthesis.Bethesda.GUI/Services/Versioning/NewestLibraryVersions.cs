@@ -2,11 +2,14 @@
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.Versioning;
+using Synthesis.Bethesda.Execution.Versioning.Query;
 
-namespace Synthesis.Bethesda.Execution.Versioning
+namespace Synthesis.Bethesda.GUI.Services.Versioning
 {
     public interface INewestLibraryVersions
     {
@@ -42,21 +45,20 @@ namespace Synthesis.Bethesda.Execution.Versioning
                     {
                         if (!x.Acceptable)
                         {
-                            logger.Error("Can not query for latest nuget versions as there is no acceptable dotnet SDK installed.");
-                            return (Normal: (MutagenVersion: default(string?), SynthesisVersion: default(string?)), Prerelease: (MutagenVersion: default(string?), SynthesisVersion: default(string?)));
+                            logger.Error("Can not query for latest nuget versions as there is no acceptable dotnet SDK installed");
+                            return new NugetVersionOptions(
+                                new NugetVersionPair(null, null),
+                                new NugetVersionPair(null, null));
                         }
 
-                        var projPath = queryNewest.PrepLatestVersionProject();
-                    
-                        logger.Information("Querying for latest published library versions");
-                        var normalUpdate = await queryNewest.GetLatestVersions(includePrerelease: false, projPath);
-                        var prereleaseUpdate = await queryNewest.GetLatestVersions(includePrerelease: true, projPath);
-                        return (Normal: normalUpdate, Prerelease: prereleaseUpdate);
+                        return await queryNewest.GetLatestVersions(CancellationToken.None);
                     }
                     catch (Exception e)
                     {
-                        logger.Error($"Error querying for versions: {e}");
-                        return (Normal: (MutagenVersion: default(string?), SynthesisVersion: default(string?)), Prerelease: (MutagenVersion: default(string?), SynthesisVersion: default(string?)));
+                        logger.Error(e, "Error querying for versions");
+                        return new NugetVersionOptions(
+                            new NugetVersionPair(null, null),
+                            new NugetVersionPair(null, null));
                     }
                 })
                 .Replay(1)
@@ -64,13 +66,13 @@ namespace Synthesis.Bethesda.Execution.Versioning
             NewestMutagenVersion = Observable.CombineLatest(
                     latestVersions,
                     considerPrerelease.ConsiderPrereleases,
-                    (vers, prereleases) => prereleases ? vers.Prerelease.MutagenVersion : vers.Normal.MutagenVersion)
+                    (vers, prereleases) => prereleases ? vers.Prerelease.Mutagen : vers.Normal.Mutagen)
                 .Replay(1)
                 .RefCount();
             NewestSynthesisVersion = Observable.CombineLatest(
                     latestVersions,
                     considerPrerelease.ConsiderPrereleases,
-                    (vers, prereleases) => prereleases ? vers.Prerelease.SynthesisVersion : vers.Normal.SynthesisVersion)
+                    (vers, prereleases) => prereleases ? vers.Prerelease.Synthesis : vers.Normal.Synthesis)
                 .Replay(1)
                 .RefCount();
         }

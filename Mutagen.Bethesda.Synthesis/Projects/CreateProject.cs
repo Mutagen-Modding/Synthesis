@@ -2,6 +2,7 @@
 using System.IO.Abstractions;
 using Loqui;
 using Mutagen.Bethesda.Synthesis.Versioning;
+using Noggog;
 
 namespace Mutagen.Bethesda.Synthesis.Projects
 {
@@ -9,7 +10,7 @@ namespace Mutagen.Bethesda.Synthesis.Projects
     {
         string[] Create(
             GameCategory category,
-            string projPath,
+            FilePath projPath,
             bool insertOldVersion = false);
     }
 
@@ -25,11 +26,11 @@ namespace Mutagen.Bethesda.Synthesis.Projects
         
         public string[] Create(
             GameCategory category,
-            string projPath,
+            FilePath projPath,
             bool insertOldVersion = false)
         {
-            _FileSystem.Directory.CreateDirectory(Path.GetDirectoryName(projPath)!);
-            var projName = Path.GetFileNameWithoutExtension(projPath);
+            _FileSystem.Directory.CreateDirectory(projPath.Directory);
+            var projName = projPath.NameWithoutExtension;
 
             // Generate Project File
             FileGeneration fg = new();

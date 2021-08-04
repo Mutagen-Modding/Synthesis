@@ -22,8 +22,10 @@ using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.Execution.Versioning;
+using Synthesis.Bethesda.Execution.Versioning.Query;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Startup;
+using Synthesis.Bethesda.GUI.Services.Versioning;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
@@ -85,6 +87,7 @@ namespace Synthesis.Bethesda.GUI.Modules
                     typeof(IPatcherRun),
                     typeof(IInstalledSdkFollower),
                     typeof(IExecuteRunnabilityCheck),
+                    typeof(IConsiderPrereleasePreference),
                     typeof(IPatcherNameSanitizer))
                 .AsMatchingInterface();
 
@@ -96,6 +99,7 @@ namespace Synthesis.Bethesda.GUI.Modules
                     typeof(MainVm),
                     typeof(INavigateTo),
                     typeof(IStartup),
+                    typeof(INewestLibraryVersions),
                     typeof(ISynthesisGuiSettings))
                 .AsImplementedInterfaces()
                 .AsSelf()

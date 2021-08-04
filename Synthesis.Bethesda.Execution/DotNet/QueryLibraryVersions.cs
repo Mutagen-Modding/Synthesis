@@ -3,15 +3,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using Noggog;
 using Synthesis.Bethesda.Execution.DotNet.NugetListing;
+using Synthesis.Bethesda.Execution.Versioning;
 
 namespace Synthesis.Bethesda.Execution.DotNet
 {
-    [ExcludeFromCodeCoverage]
-    public record LibraryVersions(string? MutagenVersion, string? SynthesisVersion);
-    
     public interface IQueryLibraryVersions
     {
-        Task<LibraryVersions> Query(FilePath projectPath, bool current, bool includePrerelease, CancellationToken cancel);
+        Task<NugetVersionPair> Query(
+            FilePath projectPath,
+            bool current,
+            bool includePrerelease,
+            CancellationToken cancel);
     }
 
     public class QueryLibraryVersions : IQueryLibraryVersions
@@ -23,7 +25,7 @@ namespace Synthesis.Bethesda.Execution.DotNet
             _QueryNuget = queryNuget;
         }
         
-        public async Task<LibraryVersions> Query(
+        public async Task<NugetVersionPair> Query(
             FilePath projectPath, bool current, bool includePrerelease, CancellationToken cancel)
         {
             string? mutagenVersion = null, synthesisVersion = null;
