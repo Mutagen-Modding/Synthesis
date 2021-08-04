@@ -14,14 +14,16 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
             bool ConfigureMembers = true, 
             bool UseMockFileSystem = true,
             bool GenerateDelegates = false,
-            bool UseMockRepositoryProvider = false)
+            bool UseMockRepositoryProvider = false,
+            bool OmitAutoProperties = false)
             : base(() =>
             {
                 return Factory(
                     UseMockFileSystem: UseMockFileSystem,
                     ConfigureMembers: ConfigureMembers,
                     GenerateDelegates: GenerateDelegates,
-                    UseMockRepositoryProvider: UseMockRepositoryProvider);
+                    UseMockRepositoryProvider: UseMockRepositoryProvider,
+                    OmitAutoProperties: OmitAutoProperties);
             })
         {
         }
@@ -30,14 +32,16 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
             bool ConfigureMembers = true, 
             bool UseMockFileSystem = true,
             bool GenerateDelegates = false,
-            bool UseMockRepositoryProvider = false)
+            bool UseMockRepositoryProvider = false,
+            bool OmitAutoProperties = false)
         {
             return new AutoFixture.Fixture()
                 .Customize(new SynthAutoDataCustomization(
                     useMockFilesystem: UseMockFileSystem,
                     configureMembers: ConfigureMembers,
                     generateDelegates: GenerateDelegates,
-                    useMockRepositoryProvider: UseMockRepositoryProvider));
+                    useMockRepositoryProvider: UseMockRepositoryProvider,
+                    omitAutoProperties: OmitAutoProperties));
         }
     }
     
@@ -70,6 +74,7 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
             bool UseMockFileSystem = true,
             bool GenerateDelegates = false,
             bool UseMockRepositoryProvider = false,
+            bool OmitAutoProperties = false,
             params object[] ExtraParameters)
             : base(
                 new InlineDataAttribute(ExtraParameters), 
@@ -77,7 +82,8 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
                     ConfigureMembers: ConfigureMembers, 
                     UseMockFileSystem: UseMockFileSystem,
                     GenerateDelegates: GenerateDelegates,
-                    UseMockRepositoryProvider: UseMockRepositoryProvider))
+                    UseMockRepositoryProvider: UseMockRepositoryProvider,
+                    OmitAutoProperties: OmitAutoProperties))
         {
         }
     }
@@ -87,17 +93,20 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
         private readonly bool _useMockFilesystem;
         private readonly bool _generateDelegates;
         private readonly bool _useMockRepositoryProvider;
+        private readonly bool _omitAutoProperties;
         private readonly bool _configureMembers;
 
         public SynthAutoDataCustomization(
             bool configureMembers, 
             bool useMockFilesystem,
             bool generateDelegates,
-            bool useMockRepositoryProvider)
+            bool useMockRepositoryProvider,
+            bool omitAutoProperties)
         {
             _useMockFilesystem = useMockFilesystem;
             _generateDelegates = generateDelegates;
             _useMockRepositoryProvider = useMockRepositoryProvider;
+            _omitAutoProperties = omitAutoProperties;
             _configureMembers = configureMembers;
         }
         
@@ -109,7 +118,7 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
                 GenerateDelegates = _generateDelegates
             };
             fixture.Customize(autoMock);
-            fixture.OmitAutoProperties = true;
+            fixture.OmitAutoProperties = _omitAutoProperties;
             fixture.Customize(new DefaultCustomization(_useMockFilesystem));
             if (_useMockRepositoryProvider)
             {

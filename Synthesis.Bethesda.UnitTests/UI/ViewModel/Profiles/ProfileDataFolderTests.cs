@@ -46,9 +46,9 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles
         }
 
         [Theory]
-        [SynthCustomInlineData(ExtraParameters: Utility.Return.True, UseMockFileSystem: false)]
-        [SynthCustomInlineData(ExtraParameters: Utility.Return.False, UseMockFileSystem: false)]
-        [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false)]
+        [SynthCustomInlineData(ExtraParameters: Utility.Return.True, UseMockFileSystem: false, OmitAutoProperties: true)]
+        [SynthCustomInlineData(ExtraParameters: Utility.Return.False, UseMockFileSystem: false, OmitAutoProperties: true)]
+        [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false, OmitAutoProperties: true)]
         public void GameLocation(
             Utility.Return r,
             ProfileDataFolderVm sut)
@@ -80,9 +80,9 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles
         }
 
         [Theory]
-        [SynthCustomInlineData(ExtraParameters: Utility.Return.True, UseMockFileSystem: false)]
-        [SynthCustomInlineData(ExtraParameters: Utility.Return.False, UseMockFileSystem: false)]
-        [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false)]
+        [SynthCustomInlineData(ExtraParameters: Utility.Return.True, UseMockFileSystem: false, OmitAutoProperties: true)]
+        [SynthCustomInlineData(ExtraParameters: Utility.Return.False, UseMockFileSystem: false, OmitAutoProperties: true)]
+        [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false, OmitAutoProperties: true)]
         public void WatchesForFileExistence(
             Utility.Return r,
             DirectoryPath folder,
