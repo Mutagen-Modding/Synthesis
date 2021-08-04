@@ -26,7 +26,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 {
     public class GitPatcherVm : PatcherVm, IPathToProjProvider, IPathToSolutionFileProvider
     {
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
         public override bool IsNameEditable => false;
 
         public ISelectedProjectInputVm SelectedProjectInput { get; }
@@ -110,7 +110,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             GithubPatcherSettings? settings = null)
             : base(scope, nameVm, remove, selPatcher, confirmation, idProvider, settings)
         {
-            _Logger = logger;
+            _logger = logger;
             SelectedProjectInput = selectedProjectInput;
             RemoteRepoPathInput = remoteRepoPathInputVm;
             Locking = lockToCurrentVersioning;
@@ -173,14 +173,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error("Error opening Git webpage", ex);
+                        _logger.Error("Error opening Git webpage", ex);
                     }
                 });
 
             NavigateToInternalFilesCommand = ReactiveCommand.Create(() => navigate.Navigate(baseRepoDir.Path));
 
             PatcherSettings = settingsVmFactory(
-                Logger, false, 
+                false, 
                 compliationProvider.State.Select(c =>
                     {
                         if (c.RunnableState.Failed) return (c.RunnableState.BubbleFailure<FilePath>(), null);
@@ -283,7 +283,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             }
             catch (Exception ex)
             {
-                _Logger.Error(ex, $"Failure deleting git repo: {this.LocalDriverRepoDirectory}");
+                _logger.Error(ex, $"Failure deleting git repo: {this.LocalDriverRepoDirectory}");
             }
             try
             {
@@ -292,7 +292,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             }
             catch (Exception ex)
             {
-                _Logger.Error(ex, $"Failure deleting git repo: {this.LocalRunnerRepoDirectory}");
+                _logger.Error(ex, $"Failure deleting git repo: {this.LocalRunnerRepoDirectory}");
             }
         }
 

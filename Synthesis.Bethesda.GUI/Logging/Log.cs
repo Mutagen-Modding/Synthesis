@@ -6,13 +6,11 @@ namespace Synthesis.Bethesda.GUI
     public static class Log
     {
         public static readonly ILogger Logger;
-        public static readonly string LogPath;
         public static readonly DateTime StartTime;
 
         static Log()
         {
             StartTime = DateTime.Now;
-            LogPath = "logs/log-.txt";
             Serilog.Log.Logger = GetLoggerConfig()
                 .WriteToFile()
                 .CreateLogger();

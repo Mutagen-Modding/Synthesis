@@ -122,8 +122,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
             _Remove.Remove(this);
         }
 
-        protected ILogger Logger => Log.Logger.ForContext(nameof(PatcherVm.NameVm.Name), NameVm.Name);
-
         public virtual void SuccessfulRunCompleted()
         {
         }

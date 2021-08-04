@@ -21,13 +21,13 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
 
     public class Startup : IStartup
     {
-        private readonly ILogger _Logger;
-        private readonly IClearLoading _Loading;
-        private readonly Lazy<ISettingsSingleton> _Settings;
-        private readonly Lazy<MainVm> _MainVm;
-        private readonly IMainWindow _Window;
-        private readonly IStartupTracker _Tracker;
-        private readonly IShutdown _Shutdown;
+        private readonly ILogger _logger;
+        private readonly IClearLoading _loading;
+        private readonly Lazy<ISettingsSingleton> _settings;
+        private readonly Lazy<MainVm> _mainVm;
+        private readonly IMainWindow _window;
+        private readonly IStartupTracker _tracker;
+        private readonly IShutdown _shutdown;
 
         public Startup(
             ILogger logger,
@@ -38,28 +38,28 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             IStartupTracker tracker,
             IShutdown shutdown)
         {
-            _Logger = logger;
-            _Loading = loading;
-            _Settings = settings;
-            _MainVm = mainVm;
-            _Window = window;
-            _Tracker = tracker;
-            _Shutdown = shutdown;
+            _logger = logger;
+            _loading = loading;
+            _settings = settings;
+            _mainVm = mainVm;
+            _window = window;
+            _tracker = tracker;
+            _shutdown = shutdown;
         }
         
         public async void Initialize()
         {
             AppDomain.CurrentDomain.UnhandledException += (o, e) =>
             {
-                Log.Logger.Error(e.ExceptionObject as Exception, "Crashing");
+                _logger.Error(e.ExceptionObject as Exception, "Crashing");
             };
 
             var versionLine = $"============== Opening Synthesis v{Versions.SynthesisVersion} ==============";
             var bars = new string('=', versionLine.Length);
-            Log.Logger.Information(bars);
-            Log.Logger.Information(versionLine);
-            Log.Logger.Information(bars);
-            Log.Logger.Information(DateTime.Now.ToString());
+            _logger.Information(bars);
+            _logger.Information(versionLine);
+            _logger.Information(bars);
+            _logger.Information(DateTime.Now.ToString());
             
             try
             {
@@ -69,31 +69,31 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
                         await Task.WhenAll(
                             Task.Run(() =>
                             {
-                                _Loading.Do();
+                                _loading.Do();
                             }),
                             Task.Run(() =>
                             {
-                                _Settings.Value.GetType();
+                                _settings.Value.GetType();
                             })).ConfigureAwait(false);
                     })
                     .ObserveOn(RxApp.MainThreadScheduler)
                     .Do(_ =>
                     {
-                        var mainVM = _MainVm.Value;
+                        var mainVM = _mainVm.Value;
                         mainVM.Load();
 
-                        _Window.DataContext = mainVM;
+                        _window.DataContext = mainVM;
                         mainVM.Init();
                     });
-                _Tracker.Initialized = true;
+                _tracker.Initialized = true;
             }
             catch (Exception e)
             {
-                _Logger.Error(e, "Error initializing app");
+                _logger.Error(e, "Error initializing app");
                 Application.Current.Shutdown();
             }
             
-            _Shutdown.Prepare();
+            _shutdown.Prepare();
         }
     }
 }
