@@ -2,13 +2,13 @@
 
 namespace Synthesis.Bethesda.Execution.DotNet
 {
-    public interface IStandardParameters
+    public interface IExecutionParameters
     {
         string Parameters { get; }
     }
 
     [ExcludeFromCodeCoverage]
-    public class StandardParameters : IStandardParameters
+    public class ExecutionParameters : IExecutionParameters
     {
         public string Parameters => "--runtime win-x64 -c Release";
     }

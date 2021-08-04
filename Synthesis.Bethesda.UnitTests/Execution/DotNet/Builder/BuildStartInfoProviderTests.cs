@@ -16,7 +16,19 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.Builder
             BuildStartInfoProvider sut)
         {
             sut.Construct(path);
-            sut.StartConstructor.Received(1).Construct("build", path);
+            sut.StartConstructor.Received(1).Construct("build", path, Arg.Any<string[]>());
+        }
+        
+        [Theory, SynthAutoData]
+        public void PassesExecutionParametersToConstructor(
+            FilePath path,
+            string execArgs,
+            BuildStartInfoProvider sut)
+        {
+            sut.ExecutionParameters.Parameters.Returns(execArgs);
+            sut.Construct(path);
+            sut.StartConstructor.Received(1).Construct(
+                Arg.Any<string>(), Arg.Any<FilePath>(), execArgs);
         }
         
         [Theory, SynthAutoData]

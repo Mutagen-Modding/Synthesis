@@ -33,6 +33,22 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Cli
                     Arg.Is<string[]>(x => x.Contains(args)));
         }
         
+        [Theory, SynthAutoData]
+        public void PassesExecutionParametersToArgs(
+            string path,
+            string executionArgs,
+            string args,
+            ProjectRunProcessStartInfoProvider sut)
+        {
+            sut.ExecutionParameters.Parameters.Returns(executionArgs);
+            sut.GetStart(path, args);
+            sut.CmdStartConstructor.Received(1)
+                .Construct(
+                    Arg.Any<string>(), 
+                    Arg.Any<FilePath>(),
+                    Arg.Is<string[]>(x => x.Contains(executionArgs)));
+        }
+        
         [Theory]
         [SynthInlineData(true)]
         [SynthInlineData(false)]
