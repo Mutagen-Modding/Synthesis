@@ -1,8 +1,6 @@
 using CommandLine;
 using Mutagen.Bethesda;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Noggog;
 
 namespace Synthesis.Bethesda
 {
@@ -10,19 +8,19 @@ namespace Synthesis.Bethesda
     public class RunSynthesisPatcher
     {
         [Option('s', "SourcePath", Required = false, HelpText = "Optional path pointing to the previous patcher result to build onto.  File name must in ModKey format")]
-        public string? SourcePath { get; set; }
+        public FilePath? SourcePath { get; set; }
 
         [Option('o', "OutputPath", Required = true, HelpText = "Path where the patcher should place its resulting file.  File name must in ModKey format")]
-        public string OutputPath { get; set; } = string.Empty;
+        public FilePath OutputPath { get; set; } = string.Empty;
 
         [Option('g', "GameRelease", Required = true, HelpText = "GameRelease data folder is related to.")]
         public GameRelease GameRelease { get; set; }
 
         [Option('d', "DataFolderPath", Required = true, HelpText = "Path to the data folder.")]
-        public string DataFolderPath { get; set; } = string.Empty;
+        public DirectoryPath DataFolderPath { get; set; } = string.Empty;
 
         [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.  This is typically plugins.txt.  This should be the file that the game will use to read in its load order.")]
-        public string LoadOrderFilePath { get; set; } = string.Empty;
+        public FilePath LoadOrderFilePath { get; set; } = string.Empty;
 
         [Option('r', "PersistencePath", Required = false, HelpText = "Path to the shared FormKey allocation state")]
         public string? PersistencePath { get; set; }

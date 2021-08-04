@@ -18,6 +18,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
     <PackageReference Include="Mutagen.Bethesda" Version="0.30.7.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.Testing" Version="0.30.7.1-dev" />
     <PackageReference Include="Noggog.Autofac" Version="2.25.0.1-dev" />
     <PackageReference Include="Noggog.CSharpExt" Version="2.25.0.1-dev" />
     <PackageReference Include="Noggog.Testing" Version="2.25.0.1-dev" />

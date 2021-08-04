@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Noggog;
 using NSubstitute;
-using Synthesis.Bethesda.Execution.Patchers.TopLevel;
+using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 

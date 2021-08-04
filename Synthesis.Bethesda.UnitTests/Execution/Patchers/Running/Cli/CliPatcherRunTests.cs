@@ -126,5 +126,15 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Running.Cli
                 await sut.Run(runSettings, cancel);
             });
         }
+
+        [Theory, SynthAutoData]
+        public async Task CancelledDoesNotThrow(
+            RunSynthesisPatcher runSettings,
+            CancellationToken cancelled,
+            CliPatcherRun sut)
+        {
+            sut.ProcessRunner.Run(default!, default).ReturnsForAnyArgs(0);
+            await sut.Run(runSettings, cancelled);
+        }
     }
 }

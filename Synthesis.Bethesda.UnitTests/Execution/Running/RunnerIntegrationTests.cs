@@ -1,25 +1,11 @@
-using Noggog;
 using System;
 using System.IO.Abstractions;
-using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
-using Mutagen.Bethesda;
-using System.Reactive.Linq;
-using Mutagen.Bethesda.Environments.DI;
-using Synthesis.Bethesda.Execution.Reporters;
-using Mutagen.Bethesda.Plugins.Order;
-using Mutagen.Bethesda.Plugins;
-using Mutagen.Bethesda.Plugins.Implicit.DI;
-using Mutagen.Bethesda.Plugins.Order.DI;
-using NSubstitute;
 using Synthesis.Bethesda.Execution.Patchers.Running;
-using Synthesis.Bethesda.Execution.Running;
-using Path = System.IO.Path;
-using FileNotFoundException = System.IO.FileNotFoundException;
 
-namespace Synthesis.Bethesda.UnitTests
+namespace Synthesis.Bethesda.UnitTests.Execution.Running
 {
     public class RunnerTests
     {

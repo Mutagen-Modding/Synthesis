@@ -1,6 +1,6 @@
 ﻿using Noggog.WPF;
 using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.Execution.Patchers.TopLevel;
+using Synthesis.Bethesda.Execution.Patchers.Common;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
 {

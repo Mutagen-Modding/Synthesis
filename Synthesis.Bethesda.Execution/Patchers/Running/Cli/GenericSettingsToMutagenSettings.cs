@@ -1,5 +1,5 @@
 ﻿using Mutagen.Bethesda.Synthesis.CLI;
-using Synthesis.Bethesda.Execution.Patchers.TopLevel;
+using Synthesis.Bethesda.Execution.Patchers.Common;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
 {

@@ -1,22 +1,13 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Autofac;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
-using Noggog.Utility;
-using Synthesis.Bethesda.Execution.CLI;
-using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.Execution.Patchers;
-using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running;
-using Synthesis.Bethesda.Execution.Patchers.Solution;
-using Synthesis.Bethesda.Execution.Patchers.TopLevel;
-using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Reporters;
+using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Running
@@ -29,18 +20,18 @@ namespace Synthesis.Bethesda.Execution.Running
     public class RunPatcherPipeline : IRunPatcherPipeline
     {
         private readonly IRunProfileProvider _profileProvider;
-        private readonly IRunner _Runner;
+        private readonly IExecuteRun _executeRun;
         public CancellationToken Cancel { get; }
         public IRunReporter? Reporter { get; }
 
         public RunPatcherPipeline(
             IRunProfileProvider profileProvider,
-            IRunner runner,
+            IExecuteRun executeRun,
             CancellationToken cancel, 
             IRunReporter? reporter)
         {
             _profileProvider = profileProvider;
-            _Runner = runner;
+            _executeRun = executeRun;
             Cancel = cancel;
             Reporter = reporter;
         }
@@ -81,14 +72,14 @@ namespace Synthesis.Bethesda.Execution.Running
                     })
                     .ToList();
 
-                await _Runner
+                await _executeRun
                     .Run(
-                    outputPath: run.OutputPath,
-                    patchers: patchers.Select((p, i) => (i + 1, p)),
-                    sourcePath: run.SourcePath == null ? default : ModPath.FromPath(run.SourcePath),
-                    cancel: Cancel,
-                    persistenceMode: run.PersistenceMode ?? PersistenceMode.Text,
-                    persistencePath: run.PersistencePath);
+                        outputPath: run.OutputPath,
+                        patchers: patchers.Select((p, i) => (i + 1, p)).ToArray(),
+                        sourcePath: run.SourcePath == null ? default : new FilePath(run.SourcePath),
+                        cancel: Cancel,
+                        persistenceMode: run.PersistenceMode ?? PersistenceMode.Text,
+                        persistencePath: run.PersistencePath);
             }
             catch (Exception ex)
             when (Reporter != null)
@@ -96,6 +87,5 @@ namespace Synthesis.Bethesda.Execution.Running
                 Reporter.ReportOverallProblem(ex);
             }
         }
-
     }
 }

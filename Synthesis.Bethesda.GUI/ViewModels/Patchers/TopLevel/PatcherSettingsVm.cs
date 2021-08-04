@@ -15,7 +15,6 @@ using Serilog;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.GitRepository;
-using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 

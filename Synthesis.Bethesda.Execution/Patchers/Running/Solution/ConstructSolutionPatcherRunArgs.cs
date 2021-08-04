@@ -1,7 +1,7 @@
 ﻿using System.IO.Abstractions;
 using Mutagen.Bethesda.Synthesis.CLI;
+using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
-using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
 {

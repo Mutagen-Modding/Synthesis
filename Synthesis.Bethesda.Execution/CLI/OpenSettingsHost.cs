@@ -8,7 +8,7 @@ using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
 using Noggog.Utility;
 using Synthesis.Bethesda.Execution.Patchers;
-using Synthesis.Bethesda.Execution.Patchers.TopLevel;
+using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.Execution.Utility;
 

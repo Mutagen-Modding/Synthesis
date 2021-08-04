@@ -1,12 +1,13 @@
 ﻿using System.IO;
+using Noggog;
 using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Synthesis.Bethesda.Execution.Profile
 {
     public interface IProfileDirectories
     {
-        string ProfileDirectory { get; }
-        string WorkingDirectory { get; }
+        DirectoryPath ProfileDirectory { get; }
+        DirectoryPath WorkingDirectory { get; }
     }
 
     public class ProfileDirectories : IProfileDirectories
@@ -15,8 +16,8 @@ namespace Synthesis.Bethesda.Execution.Profile
         public IWorkingDirectorySubPaths WorkingDirectorySubPaths { get; }
         public IProfileIdentifier Ident { get; }
 
-        public string ProfileDirectory => Path.Combine(Paths.WorkingDirectory, Ident.ID);
-        public string WorkingDirectory => WorkingDirectorySubPaths.ProfileWorkingDirectory(Ident.ID);
+        public DirectoryPath ProfileDirectory => Path.Combine(Paths.WorkingDirectory, Ident.ID);
+        public DirectoryPath WorkingDirectory => WorkingDirectorySubPaths.ProfileWorkingDirectory(Ident.ID);
 
         public ProfileDirectories(
             IWorkingDirectoryProvider paths,

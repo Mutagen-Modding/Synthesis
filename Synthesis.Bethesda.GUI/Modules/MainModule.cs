@@ -12,11 +12,14 @@ using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.GitRepository;
+using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Running;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Running;
+using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services.Main;
@@ -81,7 +84,8 @@ namespace Synthesis.Bethesda.GUI.Modules
                     typeof(IWorkingDirectorySubPaths),
                     typeof(IPatcherRun),
                     typeof(IInstalledSdkFollower),
-                    typeof(IExecuteRunnabilityCheck))
+                    typeof(IExecuteRunnabilityCheck),
+                    typeof(IPatcherNameSanitizer))
                 .AsMatchingInterface();
 
             builder.RegisterType<WorkingDirectoryProvider>().AsSelf();
@@ -114,14 +118,14 @@ namespace Synthesis.Bethesda.GUI.Modules
                 .AsSelf();
 
             // Execution lib
-            builder.RegisterAssemblyTypes(typeof(IRunner).Assembly)
+            builder.RegisterAssemblyTypes(typeof(IExecuteRun).Assembly)
                 .InNamespacesOf(
                     typeof(IProfileDirectories))
                 .InstancePerMatchingLifetimeScope(ProfileNickname)
                 .AsMatchingInterface();
-            builder.RegisterAssemblyTypes(typeof(IRunner).Assembly)
+            builder.RegisterAssemblyTypes(typeof(IExecuteRun).Assembly)
                 .InNamespacesOf(
-                    typeof(IRunner))
+                    typeof(IExecuteRun))
                 .AsMatchingInterface();
             builder.RegisterType<RxReporter>()
                 .InstancePerMatchingLifetimeScope(RunNickname)

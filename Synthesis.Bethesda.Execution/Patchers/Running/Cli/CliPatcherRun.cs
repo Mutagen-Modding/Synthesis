@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Mutagen.Bethesda;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Cli;
-using Synthesis.Bethesda.Execution.Patchers.TopLevel;
+using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli

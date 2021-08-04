@@ -2,7 +2,7 @@
 using System.Reactive.Disposables;
 using System.Threading;
 using Autofac;
-using Synthesis.Bethesda.Execution.Patchers.TopLevel;
+using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.Services.Patchers;

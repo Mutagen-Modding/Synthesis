@@ -1,6 +1,8 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
+using Mutagen.Bethesda;
+using Mutagen.Bethesda.Testing.AutoData;
 using Noggog.Testing.AutoFixture;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;
@@ -119,6 +121,8 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
             };
             fixture.Customize(autoMock);
             fixture.OmitAutoProperties = _omitAutoProperties;
+            fixture.Customize(new MutagenBaseCustomization());
+            fixture.Customize(new MutagenReleaseCustomization(GameRelease.SkyrimSE));
             fixture.Customize(new DefaultCustomization(_useMockFilesystem));
             if (_useMockRepositoryProvider)
             {

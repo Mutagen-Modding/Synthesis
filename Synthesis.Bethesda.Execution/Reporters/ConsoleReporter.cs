@@ -13,6 +13,16 @@ namespace Synthesis.Bethesda.Execution.Reporters
             System.Console.Error.WriteLine(ex);
         }
 
+        public void WriteOverall(string str)
+        {
+            Write(default, default, str);
+        }
+
+        public void WriteErrorOverall(string str)
+        {
+            WriteError(default, default, str);
+        }
+
         public void ReportPrepProblem(int key, string name, Exception ex)
         {
             System.Console.Error.WriteLine($"[{name}] Preparation error:");

@@ -65,5 +65,15 @@ namespace Synthesis.Bethesda.Execution.Reporters
         public void WriteError(int key, string? name, string str)
         {
         }
+
+        public void WriteOverall(string str)
+        {
+            Write(default, default, str);
+        }
+
+        public void WriteErrorOverall(string str)
+        {
+            WriteError(default, default, str);
+        }
     }
 }

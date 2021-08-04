@@ -3,7 +3,7 @@ using System.IO.Abstractions;
 using Noggog;
 using Noggog.IO;
 using Serilog;
-using Synthesis.Bethesda.Execution.Patchers.TopLevel;
+using Synthesis.Bethesda.Execution.Patchers.Common;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Solution
 {

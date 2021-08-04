@@ -15,6 +15,7 @@ using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Running;
+using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
@@ -24,7 +25,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
     {
         private readonly ILogger _Logger;
         public IRunReporter Reporter { get; }
-        private readonly IRunner _Runner;
+        private readonly IExecuteRun _executeRun;
         public ConfigurationVm Config { get; }
 
         public ProfileVm RunningProfile { get; }
@@ -63,11 +64,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
             IRunReporterWatcher reporterWatcher,
             IRunReporter reporter,
             ProfileVm profile,
-            IRunner runner)
+            IExecuteRun executeRun)
         {
             _Logger = logger;
             Reporter = reporter;
-            _Runner = runner;
+            _executeRun = executeRun;
             Config = configuration;
             RunningProfile = profile;
             Patchers.AddOrUpdate(RunningProfile.Patchers.Items
@@ -186,10 +187,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     {
                         Running = true;
                         var output = Path.Combine(RunningProfile.WorkingDirectory, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
-                        var madePatch = await _Runner.Run(
+                        var madePatch = await _executeRun.Run(
                             outputPath: output,
                             cancel: _cancel.Token,
-                            patchers: Patchers.Items.Select(vm => (vm.Config.InternalID, vm.Run)),
+                            patchers: Patchers.Items.Select(vm => (vm.Config.InternalID, vm.Run)).ToArray(),
                             persistenceMode: RunningProfile.SelectedPersistenceMode,
                             persistencePath: Path.Combine(RunningProfile.ProfileDirectory, "Persistence"));
                         if (!madePatch) return;
