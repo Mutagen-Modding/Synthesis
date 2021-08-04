@@ -2,6 +2,7 @@
 using System.Reactive.Disposables;
 using System.Threading;
 using Autofac;
+using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Modules;
@@ -57,7 +58,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
 
         public GitPatcherVm GetGitPatcher(GithubPatcherSettings? settings = null)
         {
-            var patcherScope = _scope.BeginLifetimeScope(MainModule.PatcherNickname, c =>
+            var patcherScope = _scope.BeginLifetimeScope(LifetimeScopes.PatcherNickname, c =>
             {
                 RegisterId(c);
                 c.RegisterModule<GitPatcherModule>();
@@ -73,7 +74,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
 
         public SolutionPatcherVm GetSolutionPatcher(SolutionPatcherSettings? settings = null)
         {
-            var patcherScope = _scope.BeginLifetimeScope(MainModule.PatcherNickname, c =>
+            var patcherScope = _scope.BeginLifetimeScope(LifetimeScopes.PatcherNickname, c =>
             {
                 RegisterId(c);
                 c.RegisterModule<SolutionPatcherModule>();
@@ -91,7 +92,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
 
         public CliPatcherVm GetCliPatcher(CliPatcherSettings? settings = null)
         {
-            var patcherScope = _scope.BeginLifetimeScope(MainModule.PatcherNickname, c =>
+            var patcherScope = _scope.BeginLifetimeScope(LifetimeScopes.PatcherNickname, c =>
             {
                 RegisterId(c);
                 c.RegisterModule<CliPatcherModule>();

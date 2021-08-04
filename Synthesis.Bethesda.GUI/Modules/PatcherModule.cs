@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Noggog.Autofac;
+using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
@@ -16,14 +17,14 @@ namespace Synthesis.Bethesda.GUI.Modules
                     typeof(PatcherVm),
                     typeof(PatcherInitVm))
                 .NotInjection()
-                .InstancePerMatchingLifetimeScope(MainModule.PatcherNickname)
+                .InstancePerMatchingLifetimeScope(LifetimeScopes.PatcherNickname)
                 .AsImplementedInterfaces()
                 .AsSelf();
             builder.RegisterAssemblyTypes(typeof(IPatcherNameProvider).Assembly)
                 .InNamespacesOf(
                     typeof(IPatcherNameProvider))
                 .NotInjection()
-                .InstancePerMatchingLifetimeScope(MainModule.PatcherNickname)
+                .InstancePerMatchingLifetimeScope(LifetimeScopes.PatcherNickname)
                 .AsImplementedInterfaces();
             builder.RegisterAssemblyTypes(typeof(IPatcherNameProvider).Assembly)
                 .InNamespacesOf(

@@ -13,6 +13,8 @@ namespace Synthesis.Bethesda.ImpactTester
         {
             builder.RegisterInstance(Log.Logger).As<ILogger>();
             builder.RegisterModule<NoggogModule>();
+
+            builder.RegisterModule<Synthesis.Bethesda.Execution.Modules.MainModule>();
             
             builder.RegisterAssemblyTypes(typeof(DotNetVersion).Assembly)
                 .InNamespacesOf(

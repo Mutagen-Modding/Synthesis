@@ -2,6 +2,7 @@
 using Autofac;
 using Noggog.WPF;
 using ReactiveUI;
+using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
@@ -46,7 +47,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization
             where TInit : PatcherInitVm
             where TModule : Autofac.Module, new()
         {
-            var initScope = _scope.BeginLifetimeScope(MainModule.PatcherNickname, c =>
+            var initScope = _scope.BeginLifetimeScope(LifetimeScopes.PatcherNickname, c =>
             {
                 c.RegisterModule<TModule>();
             });

@@ -6,13 +6,14 @@ using DynamicData;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Serilog;
+using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
+using MainModule = Synthesis.Bethesda.GUI.Modules.MainModule;
 
 namespace Synthesis.Bethesda.GUI.Services.Main
 {
@@ -39,7 +40,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
         {
             _Logger.Information("Loading {Release} Profile {Nickname} with ID {ID}", settings.TargetRelease, settings.Nickname, settings.ID);
             var scope = _Scope.BeginLifetimeScope(
-                MainModule.ProfileNickname, 
+                LifetimeScopes.ProfileNickname, 
                 cfg =>
                 {
                     cfg.RegisterInstance(new ProfileIdentifier()
@@ -72,7 +73,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
         {
             _Logger.Information("Creating {Release} Profile {Nickname} with ID {ID}", release, nickname, id);
             var scope = _Scope.BeginLifetimeScope(
-                MainModule.ProfileNickname,
+                LifetimeScopes.ProfileNickname,
                 cfg =>
                 {
                     cfg.RegisterInstance(new ProfileIdentifier()
