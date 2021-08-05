@@ -1,7 +1,6 @@
 ﻿using System.Reactive.Disposables;
 using Autofac;
 using Synthesis.Bethesda.Execution.Modules;
-using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles

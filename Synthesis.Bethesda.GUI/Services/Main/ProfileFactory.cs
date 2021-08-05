@@ -51,6 +51,10 @@ namespace Synthesis.Bethesda.GUI.Services.Main
                         })
                         .As<IProfileIdentifier>()
                         .As<IGameReleaseContext>();
+                    
+                    cfg.RegisterType<ProfileLogDecorator>()
+                        .AsImplementedInterfaces()
+                        .SingleInstance();
                 });
             var profile = scope.Resolve<ProfileVm>();
             

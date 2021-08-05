@@ -73,7 +73,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                         return;
                     }
 
-                    Logger.Error("Checking out runner repository succeeded");
+                    Logger.Information("Checking out runner repository succeeded");
 
                     _copyOverFactory(
                         new DefaultDataPathProvider(

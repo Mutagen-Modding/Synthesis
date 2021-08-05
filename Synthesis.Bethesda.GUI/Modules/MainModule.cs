@@ -21,6 +21,7 @@ using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
+using Log = Synthesis.Bethesda.GUI.Logging.Log;
 
 namespace Synthesis.Bethesda.GUI.Modules
 {

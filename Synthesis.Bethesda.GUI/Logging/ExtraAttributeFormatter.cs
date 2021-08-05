@@ -1,28 +1,30 @@
-using Serilog.Events;
-using Serilog.Formatting;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using Serilog.Events;
+using Serilog.Formatting;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.Logging
 {
     public class ExtraAttributeFormatter : ITextFormatter
     {
+        private readonly HashSet<string> _propertiesToOmit;
+
+        public ExtraAttributeFormatter(params string[] propertiesToOmit)
+        {
+            _propertiesToOmit = propertiesToOmit.ToHashSet();
+        }
+        
         public void Format(LogEvent logEvent, TextWriter output)
         {
             try
             {
-                var timeSpan = DateTime.Now - Log.StartTime;
-                output.Write("[");
-                output.Write((int)timeSpan.TotalSeconds);
-                output.Write(".");
-                output.Write(timeSpan.Milliseconds / 100);
-                output.Write("]");
+                TimeFormatter.Print(output);
 
                 foreach (var prop in logEvent.Properties)
                 {
+                    if (_propertiesToOmit.Contains(prop.Key)) continue;
                     if (EventUsingProperty(logEvent, prop.Key)) continue;
                     output.Write("[");
                     WriteProperty(prop.Value, output);

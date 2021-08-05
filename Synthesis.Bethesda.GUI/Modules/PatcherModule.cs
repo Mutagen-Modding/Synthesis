@@ -1,8 +1,10 @@
 ﻿using Autofac;
 using Noggog.Autofac;
+using Serilog;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Running;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
@@ -30,6 +32,9 @@ namespace Synthesis.Bethesda.GUI.Modules
                 .InNamespacesOf(
                     typeof(IPatcherRun))
                 .AsImplementedInterfaces();
+            builder.RegisterType<PatcherLogDecorator>()
+                .AsImplementedInterfaces()
+                .SingleInstance();
         }
     }
 }
