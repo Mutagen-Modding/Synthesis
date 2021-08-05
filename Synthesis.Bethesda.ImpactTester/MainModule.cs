@@ -2,7 +2,6 @@ using Autofac;
 using Noggog.Autofac;
 using Noggog.Autofac.Modules;
 using Serilog;
-using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.DotNet.Dto;
 using Synthesis.Bethesda.Execution.Utility;
 

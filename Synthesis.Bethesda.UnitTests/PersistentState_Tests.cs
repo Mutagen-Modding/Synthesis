@@ -11,7 +11,7 @@ using Path = System.IO.Path;
 
 namespace Synthesis.Bethesda.UnitTests
 {
-    public class PersistentState_Tests
+    public class PersistentState_Tests : IClassFixture<LoquiUse>
     {
         protected static readonly string AddAwesomeNPCName = "AddAwesomeNPC";
 
