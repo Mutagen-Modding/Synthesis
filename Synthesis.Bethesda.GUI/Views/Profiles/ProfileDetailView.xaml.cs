@@ -23,7 +23,8 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.BindStrict(this.ViewModel, vm => vm.Profile!.Nickname, view => view.ProfileDetailName.Text)
+                this.WhenAnyValue(x => x.ViewModel!.Profile.Nickname)
+                    .BindToStrict(this, view => view.ProfileDetailName.Text)
                     .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.DeleteCommand)
