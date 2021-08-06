@@ -16,11 +16,10 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.DTO;
-using Synthesis.Bethesda.Execution.GitRepository;
+using Synthesis.Bethesda.Execution.Patchers.Git.Registry;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
@@ -67,9 +66,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             ILogger logger,
             IPatcherFactory patcherFactory,
             INavigateTo navigateTo, 
-            IProvideRepositoryCheckouts repositoryCheckouts,
-            ICheckOrCloneRepo checkOrClone,
-            IGuiPaths guiPaths)
+            IRegistryFolderProvider registryFolderProvider,
+            IPrepRegistryRepository prepRegistryRepository)
             : base(init)
         {
             _PatcherFactory = patcherFactory;
@@ -85,35 +83,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
                 {
                     try
                     {
-                        var localRepoPath = checkOrClone.Check(
-                            GetResponse<string>.Succeed("https://github.com/Mutagen-Modding/Synthesis.Registry"),
-                            guiPaths.RegistryFolder,
-                            CancellationToken.None);
-                        if (localRepoPath.Failed)
+                        var prepResp = prepRegistryRepository.Prep(CancellationToken.None);
+                        if (prepResp.Failed)
                         {
-                            Error = localRepoPath;
+                            Error = prepResp;
                             return Observable.Empty<IChangeSet<PatcherStoreListingVm>>();
                         }
-                        using var repoCheckout = repositoryCheckouts.Get(localRepoPath.Value.Local);
-                        var repo = repoCheckout.Repository;
-                        repo.Fetch();
 
-                        var master = repo.MainBranch;
-                        if (master == null)
-                        {
-                            Error = ErrorResponse.Fail("Could not find master branch");
-                            logger.Error(Error.Reason);
-                            return Observable.Empty<IChangeSet<PatcherStoreListingVm>>();
-                        }
-                        if (!repo.TryGetBranch($"{master.RemoteName}/{master.FriendlyName}", out var originBranch))
-                        {
-                            Error = ErrorResponse.Fail("Could not find remote master branch");
-                            logger.Error(Error.Reason);
-                            return Observable.Empty<IChangeSet<PatcherStoreListingVm>>();
-                        }
-                        repo.ResetHard(originBranch.Tip);
-
-                        var listingPath = Path.Combine(repo.WorkingDirectory, Constants.AutomaticListingFileName);
+                        var listingPath = Path.Combine(registryFolderProvider.RegistryFolder, Constants.AutomaticListingFileName);
                         if (!File.Exists(listingPath))
                         {
                             Error = ErrorResponse.Fail("Could not locate listing file");
