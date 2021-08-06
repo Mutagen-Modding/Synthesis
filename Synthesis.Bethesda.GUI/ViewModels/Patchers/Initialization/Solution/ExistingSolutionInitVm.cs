@@ -11,7 +11,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
 {
     public class ExistingSolutionInitVm : ASolutionInitializer
     {

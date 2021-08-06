@@ -5,7 +5,7 @@ using Noggog;
 using Noggog.WPF;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
 {
     public abstract class ASolutionInitializer : ViewModel
     {

@@ -6,14 +6,12 @@
     xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
-    xmlns:patchers="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers"
     xmlns:solution="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution"
-    xmlns:initialization="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization"
     xmlns:git="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git"
     xmlns:initialization1="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization"
     xmlns:patchers1="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Git"
     xmlns:cli="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli"
+    xmlns:initialization11="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -40,7 +38,7 @@
                     Kind="Visualstudio"
                     ToolTip="Mutagen Solution Patcher" />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type initialization1:SolutionPatcherInitVm}">
+            <DataTemplate DataType="{x:Type initialization11:SolutionPatcherInitVm}">
                 <icon:PackIconModern
                     Width="35"
                     Height="35"

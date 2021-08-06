@@ -8,23 +8,22 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
-using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
 {
     public class ExistingProjectInitVm : ASolutionInitializer
     {
         public override IObservable<GetResponse<InitializerCall>> InitializationCall { get; }
 
-        public PathPickerVM SolutionPath { get; } = new PathPickerVM();
+        public PathPickerVM SolutionPath { get; } = new();
 
         public IObservableCollection<string> AvailableProjects { get; }
 
-        public SourceList<string> SelectedProjects { get; } = new SourceList<string>();
+        public SourceList<string> SelectedProjects { get; } = new();
 
-        public PathPickerVM SelectedProjectPath { get; } = new PathPickerVM()
+        public PathPickerVM SelectedProjectPath { get; } = new()
         {
             ExistCheckOption = PathPickerVM.CheckOptions.On,
             PathType = PathPickerVM.PathTypeOptions.File,
@@ -49,7 +48,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
             InitializationCall = SelectedProjects.Connect()
                 .Transform(subPath =>
                 {
-                    if (subPath == null || this.SolutionPath.TargetPath == null) return string.Empty;
+                    if (SolutionPath.TargetPath.IsNullOrWhitespace()) return string.Empty;
                     try
                     {
                         return Path.Combine(Path.GetDirectoryName(SolutionPath.TargetPath)!, subPath);
