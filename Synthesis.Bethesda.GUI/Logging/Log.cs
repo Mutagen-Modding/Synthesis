@@ -10,6 +10,7 @@ namespace Synthesis.Bethesda.GUI.Logging
     {
         public static readonly ILogger Logger;
         public static readonly DateTime StartTime;
+        public const string OverviewLogName = "--- Overview.txt";
 
         static Log()
         {
@@ -64,7 +65,7 @@ namespace Synthesis.Bethesda.GUI.Logging
                                                 Path.Combine(prefixToUse, $"{run}.txt"));
                                             finalWrite.File(
                                                 formatter: new ExtraAttributeFormatter(FunnelNames.Profile),
-                                                Path.Combine(prefixToUse, $"Overview.txt"),
+                                                Path.Combine(prefixToUse, OverviewLogName),
                                                 restrictedToMinimumLevel: LogEventLevel.Warning);
                                         }
                                         else if (patcherName != null)
@@ -74,14 +75,14 @@ namespace Synthesis.Bethesda.GUI.Logging
                                                 Path.Combine(prefixToUse, $"{patcherName}.txt"));
                                             finalWrite.File(
                                                 formatter: new ExtraAttributeFormatter(FunnelNames.Profile),
-                                                Path.Combine(prefixToUse, $"Overview.txt"),
+                                                Path.Combine(prefixToUse, OverviewLogName),
                                                 restrictedToMinimumLevel: LogEventLevel.Warning);
                                         }
                                         else if (profileName != null)
                                         {
                                             finalWrite.File(
                                                 formatter: new ExtraAttributeFormatter(FunnelNames.Profile),
-                                                Path.Combine(prefixToUse, $"Overview.txt"));
+                                                Path.Combine(prefixToUse, OverviewLogName));
                                         }
                                     });
                             });

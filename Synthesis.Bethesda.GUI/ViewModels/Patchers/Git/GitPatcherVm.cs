@@ -250,7 +250,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         private void CopyInSettings(GithubPatcherSettings? settings)
         {
             if (settings == null) return;
-            RemoteRepoPathInput.RemoteRepoPath = settings.RemoteRepoPath;
             this.ID = settings.ID;
             this.SelectedProjectInput.ProjectSubpath = settings.SelectedProjectSubpath;
             this.PatcherTargeting.PatcherVersioning = settings.PatcherVersioning;

@@ -72,6 +72,7 @@ namespace Synthesis.Bethesda.UnitTests
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
             builder.RegisterMock<IPatcherIdProvider>();
+            builder.RegisterMock<GithubPatcherSettings>();
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
                 .As<IProfileNameProvider>()
@@ -91,6 +92,7 @@ namespace Synthesis.Bethesda.UnitTests
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
             builder.RegisterMock<IPatcherIdProvider>();
+            builder.RegisterMock<GithubPatcherSettings>();
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
                 .As<IProfileNameProvider>()
@@ -116,7 +118,25 @@ namespace Synthesis.Bethesda.UnitTests
                 .As<IGameReleaseContext>();
             var cont = builder.Build();
             cont.Validate(
-                typeof(SolutionPatcherVm),
+                typeof(SolutionPatcherVm));
+        }
+        
+        [Fact]
+        public void SolutionPatcherInitVm()
+        {
+            var builder = new ContainerBuilder();
+            builder.RegisterModule<SolutionPatcherModule>();
+            builder.RegisterModule<MainModule>();
+            builder.RegisterMock<IMainWindow>();
+            builder.RegisterMock<IWindowPlacement>();
+            builder.RegisterMock<IGithubPatcherIdentifier>();
+            builder.RegisterMock<IPatcherIdProvider>();
+            builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
+                .As<IProfileIdentifier>()
+                .As<IProfileNameProvider>()
+                .As<IGameReleaseContext>();
+            var cont = builder.Build();
+            cont.Validate(
                 typeof(SolutionPatcherInitVm));
         }
         

@@ -15,5 +15,13 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Solution
             sut.Construct("C:/SolutionDir/SolutionPath.sln", "SubPath")
                 .Should().Be(new FilePath("C:/SolutionDir/SubPath"));
         }
+        
+        [Theory, SynthAutoData]
+        public void ErrorReturnsDefault(
+            ProjectPathConstructor sut)
+        {
+            sut.Construct("C:/SolutionDir/SolutionPath.sln", null!)
+                .Should().Be(new FilePath());
+        }
     }
 }
