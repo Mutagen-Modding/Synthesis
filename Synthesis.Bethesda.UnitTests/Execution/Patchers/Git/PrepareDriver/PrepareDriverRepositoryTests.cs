@@ -63,7 +63,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareDriver
             sut.CheckOrClone.Check(default, default, default)
                 .ReturnsForAnyArgs(GetResponse<RepoPathPair>.Succeed(repoPathPair));
             sut.Prepare(remotePath, cancel);
-            sut.GetToLatestMaster.Received(1).TryGet(checkout.Repository, out Arg.Any<string?>());
+            sut.ResetToLatestMain.Received(1).TryReset(checkout.Repository);
         }
         
         [Theory, SynthAutoData]
@@ -73,7 +73,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareDriver
             CancellationToken cancel,
             PrepareDriverRespository sut)
         {
-            sut.GetToLatestMaster.TryGet(default!, out _).ReturnsForAnyArgs(false);
+            sut.ResetToLatestMain.TryReset(default!).ReturnsForAnyArgs(GetResponse<IBranch>.Failure);
             sut.CheckOrClone.Check(default, default, default)
                 .ReturnsForAnyArgs(GetResponse<RepoPathPair>.Succeed(repoPathPair));
             sut.Prepare(remotePath, cancel)
@@ -87,7 +87,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareDriver
             CancellationToken cancel,
             PrepareDriverRespository sut)
         {
-            sut.GetToLatestMaster.TryGet(default!, out _).ThrowsForAnyArgs<NotImplementedException>();
+            sut.ResetToLatestMain.TryReset(default!).ThrowsForAnyArgs<NotImplementedException>();
             sut.CheckOrClone.Check(default, default, default)
                 .ReturnsForAnyArgs(GetResponse<RepoPathPair>.Succeed(repoPathPair));
             sut.Prepare(remotePath, cancel)
@@ -148,7 +148,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareDriver
         [Theory, SynthAutoData]
         public void ExpectedReturn(
             RepoPathPair repoPathPair,
-            string masterBranch,
+            IBranch masterBranch,
             FilePath slnPath,
             List<string> availableProjs,
             GetResponse<string> remotePath,
@@ -157,12 +157,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareDriver
             CancellationToken cancel,
             PrepareDriverRespository sut)
         {
-            sut.GetToLatestMaster.TryGet(default!, out _)
-                .ReturnsForAnyArgs(x =>
-                {
-                    x[1] = masterBranch;
-                    return true;
-                });
+            sut.ResetToLatestMain.TryReset(default!)
+                .ReturnsForAnyArgs(GetResponse<IBranch>.Succeed(masterBranch));
             sut.RetrieveRepoVersioningPoints.When(x => x.Retrieve(
                     Arg.Any<IGitRepository>(),
                     out Arg.Any<List<DriverTag>>(),
@@ -183,7 +179,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareDriver
             ret.Value.AvailableProjects.Should().Equal(availableProjs);
             ret.Value.BranchShas.Should().BeEquivalentTo(branchShas);
             ret.Value.SolutionPath.Should().Be(slnPath);
-            ret.Value.MasterBranchName.Should().Be(masterBranch);
+            ret.Value.MasterBranchName.Should().Be(masterBranch.FriendlyName);
         }
         
         [Theory, SynthAutoData]
@@ -203,9 +199,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareDriver
                     Arg.Any<DirectoryPath>(),
                     Arg.Any<CancellationToken>());
                 sut.RepoCheckouts.Get(Arg.Any<DirectoryPath>());
-                sut.GetToLatestMaster.TryGet(
-                    Arg.Any<IGitRepository>(), 
-                    out Arg.Any<string?>());
+                sut.ResetToLatestMain.TryReset(
+                    Arg.Any<IGitRepository>());
                 sut.RetrieveRepoVersioningPoints.Retrieve(
                     Arg.Any<IGitRepository>(),
                     out Arg.Any<List<DriverTag>>(), 
@@ -214,9 +209,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareDriver
             });
             Received.InOrder(() =>
             {
-                sut.GetToLatestMaster.TryGet(
-                    Arg.Any<IGitRepository>(), 
-                    out Arg.Any<string?>());
+                sut.ResetToLatestMain.TryReset(
+                    Arg.Any<IGitRepository>());
                 sut.RetrieveRepoVersioningPoints.Retrieve(
                     Arg.Any<IGitRepository>(),
                     out Arg.Any<List<DriverTag>>(), 
@@ -224,9 +218,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareDriver
             });
             Received.InOrder(() =>
             {
-                sut.GetToLatestMaster.TryGet(
-                    Arg.Any<IGitRepository>(), 
-                    out Arg.Any<string?>());
+                sut.ResetToLatestMain.TryReset(
+                    Arg.Any<IGitRepository>());
                 sut.GetDriverPaths.Get();
             });
         }

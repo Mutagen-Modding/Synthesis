@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;
-using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver
 {
@@ -18,7 +16,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver
     {
         private readonly ILogger _logger;
         public ICheckOrCloneRepo CheckOrClone { get; }
-        public IGetToLatestMaster GetToLatestMaster { get; }
+        public IResetToLatestMain ResetToLatestMain { get; }
         public IProvideRepositoryCheckouts RepoCheckouts { get; }
         public IGetDriverPaths GetDriverPaths { get; }
         public IRetrieveRepoVersioningPoints RetrieveRepoVersioningPoints { get; }
@@ -27,7 +25,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver
         public PrepareDriverRespository(
             ILogger logger,
             ICheckOrCloneRepo checkOrClone,
-            IGetToLatestMaster getToLatestMaster,
+            IResetToLatestMain resetToLatestMain,
             IProvideRepositoryCheckouts repoCheckouts,
             IGetDriverPaths getDriverPaths,
             IRetrieveRepoVersioningPoints retrieveRepoVersioningPoints,
@@ -35,7 +33,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver
         {
             _logger = logger;
             CheckOrClone = checkOrClone;
-            GetToLatestMaster = getToLatestMaster;
+            ResetToLatestMain = resetToLatestMain;
             RepoCheckouts = repoCheckouts;
             GetDriverPaths = getDriverPaths;
             RetrieveRepoVersioningPoints = retrieveRepoVersioningPoints;
@@ -60,16 +58,19 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver
             // Grab all the interesting metadata
             List<DriverTag> tags;
             Dictionary<string, string> branchShas;
-            string masterBranch;
+            IBranch masterBranch;
             try
             {
                 using var repoCheckout = RepoCheckouts.Get(DriverRepoDirectoryProvider.Path);
 
-                if (!GetToLatestMaster.TryGet(repoCheckout.Repository, out masterBranch!))
+                var masterBranchGet = ResetToLatestMain.TryReset(repoCheckout.Repository);
+                if (masterBranchGet.Failed)
                 {
-                    _logger.Error("Failed to check out driver repository: Could not locate master branch");
-                    return GetResponse<DriverRepoInfo>.Fail("Could not locate master branch.");
+                    _logger.Error("Failed to check out driver repository: {Reason}", masterBranchGet.Reason);
+                    return masterBranchGet.BubbleFailure<DriverRepoInfo>();
                 }
+
+                masterBranch = masterBranchGet.Value;
                 
                 RetrieveRepoVersioningPoints.Retrieve(repoCheckout.Repository, out tags, out branchShas);
             }
@@ -88,7 +89,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver
             
             return new DriverRepoInfo(
                 SolutionPath: paths.Value.SolutionPath,
-                MasterBranchName: masterBranch,
+                MasterBranchName: masterBranch.FriendlyName,
                 BranchShas: branchShas,
                 Tags: tags,
                 AvailableProjects: paths.Value.AvailableProjects);

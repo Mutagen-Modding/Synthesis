@@ -1,57 +1,54 @@
 ﻿using FluentAssertions;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.GitRepository;
-using Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareDriver
+namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
 {
-    public class GetToLatestMasterTests
+    public class ResetToLatestMainTests
     {
         [Theory, SynthAutoData]
         public void MainBranchNullFails(
             IGitRepository repo,
-            GetToLatestMaster sut)
+            ResetToLatestMain sut)
         {
             repo.MainBranch.Returns(default(IBranch?));
-            sut.TryGet(repo, out _)
-                .Should().BeFalse();
+            sut.TryReset(repo)
+                .Succeeded.Should().BeFalse();
         }
         
         [Theory, SynthAutoData]
-        public void ReturnsMainBranchName(
-            string name,
+        public void ReturnsMainBranch(
+            IBranch branch,
             IGitRepository repo,
-            GetToLatestMaster sut)
+            ResetToLatestMain sut)
         {
-            var branch = Substitute.For<IBranch>();
-            branch.FriendlyName.Returns(name);
             repo.MainBranch.Returns(branch);
-            sut.TryGet(repo, out var outName)
-                .Should().BeTrue();
-            outName.Should().Be(name);
+            var resp = sut.TryReset(repo);
+            resp.Succeeded.Should().BeTrue();
+            resp.Value.Should().Be(branch);
         }
         
         [Theory, SynthAutoData]
         public void ChecksOutMainBranch(
             IGitRepository repo,
-            GetToLatestMaster sut)
+            ResetToLatestMain sut)
         {
             var branch = Substitute.For<IBranch>();
             repo.MainBranch.Returns(branch);
-            sut.TryGet(repo, out _);
+            sut.TryReset(repo);
             repo.Received(1).Checkout(branch);
         }
         
         [Theory, SynthAutoData]
         public void GeneralPipelineOrder(
             IGitRepository repo,
-            GetToLatestMaster sut)
+            ResetToLatestMain sut)
         {
             var branch = Substitute.For<IBranch>();
             repo.MainBranch.Returns(branch);
-            sut.TryGet(repo, out _);
+            sut.TryReset(repo);
             Received.InOrder(() =>
             {
                 repo.ResetHard();

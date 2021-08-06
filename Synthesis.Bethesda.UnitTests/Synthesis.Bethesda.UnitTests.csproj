@@ -19,9 +19,9 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
     <PackageReference Include="Mutagen.Bethesda" Version="0.30.7.1-dev" />
     <PackageReference Include="Mutagen.Bethesda.Testing" Version="0.30.7.1-dev" />
-    <PackageReference Include="Noggog.Autofac" Version="2.26.0" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.26.0" />
-    <PackageReference Include="Noggog.Testing" Version="2.26.0" />
+    <PackageReference Include="Noggog.Autofac" Version="2.26.0.1-dev" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.26.0.1-dev" />
+    <PackageReference Include="Noggog.Testing" Version="2.26.0.1-dev" />
     <PackageReference Include="NSubstitute" Version="4.2.2" />
     <PackageReference Include="NuGetizer" Version="0.7.0">
       <PrivateAssets>all</PrivateAssets>
@@ -129,6 +129,11 @@
       <BuildAction>Compile</BuildAction>
     </Compile>
     <Compile Update="Execution\Running\RunnerIntegrationTests.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Execution\GitRepository\ResetToLatestMainTests.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
