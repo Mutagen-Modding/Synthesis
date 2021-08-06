@@ -8,7 +8,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class InitializationViewBase : NoggogUserControl<PatcherInitVm> { }
+    public class InitializationViewBase : NoggogUserControl<IPatcherInitVm> { }
 
     /// <summary>
     /// Interaction logic for InitializationView.xaml

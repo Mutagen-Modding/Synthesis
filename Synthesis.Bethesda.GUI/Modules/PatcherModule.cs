@@ -17,7 +17,7 @@ namespace Synthesis.Bethesda.GUI.Modules
             builder.RegisterAssemblyTypes(typeof(PatcherVm).Assembly)
                 .InNamespacesOf(
                     typeof(PatcherVm),
-                    typeof(PatcherInitVm))
+                    typeof(IPatcherInitVm))
                 .NotInjection()
                 .InstancePerMatchingLifetimeScope(LifetimeScopes.PatcherNickname)
                 .AsImplementedInterfaces()

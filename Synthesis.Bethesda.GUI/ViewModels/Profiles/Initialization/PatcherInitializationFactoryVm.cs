@@ -1,4 +1,4 @@
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using Autofac;
 using Noggog;
 using ReactiveUI;
@@ -45,7 +45,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization
         }
 
         private TInit Resolve<TInit, TModule>()
-            where TInit : PatcherInitVm
+            where TInit : IPatcherInitVm
             where TModule : Autofac.Module, new()
         {
             var initScope = _scope.BeginLifetimeScope(LifetimeScopes.PatcherNickname, c =>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows.Input;
 using DynamicData.Binding;
 using Noggog;
 using Noggog.WPF;
@@ -15,19 +16,23 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
 {
-    public class SolutionPatcherInitVm : PatcherInitVm
+    public class SolutionPatcherInitVm : ViewModel, IPatcherInitVm
     {
         public IShowHelpSetting ShowHelpSetting { get; }
         private readonly ISettingsSingleton _SettingsSingleton;
         private readonly IOpenIde _OpenIde;
         private readonly ILogger _Logger;
+        private readonly IPatcherInitializationVm _init;
 
         public ExistingSolutionInitVm ExistingSolution { get; }
         public NewSolutionInitVm New { get; }
         public ExistingProjectInitVm ExistingProject { get; }
+        
+        public ICommand CompleteConfiguration => _init.CompleteConfiguration;
+        public ICommand CancelConfiguration => _init.CancelConfiguration;
 
         private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
-        public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
+        public ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
 
         [Reactive]
         public int SelectedIndex { get; set; }
@@ -52,7 +57,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
             NewSolutionInitVm newSolutionInit,
             ExistingProjectInitVm existingProjectInit,
             IPatcherInitializationVm init)
-            : base(init)
         {
             ShowHelpSetting = showHelpSetting;
             IdeOptions.AddRange(EnumExt.GetValues<IDE>());
@@ -62,6 +66,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
             _SettingsSingleton = settingsSingleton;
             _OpenIde = openIde;
             _Logger = logger;
+            _init = init;
             OpenCodeAfter = _SettingsSingleton.Gui.OpenIdeAfterCreating;
             New.ParentDirPath.TargetPath = _SettingsSingleton.Gui.MainRepositoryFolder;
             Ide = _SettingsSingleton.Gui.Ide;
@@ -97,7 +102,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
             _SettingsSingleton.Gui.Ide = Ide;
         }
 
-        public override async IAsyncEnumerable<PatcherVm> Construct()
+        public async IAsyncEnumerable<PatcherVm> Construct()
         {
             if (TargetSolutionInitializer == null) yield break;
             var ret = (await TargetSolutionInitializer()).ToList();
@@ -117,6 +122,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
                     _Logger.Error(ex, "Error opening IDE");
                 }
             }
+        }
+
+        public void Cancel()
+        {
         }
 
         public enum SolutionInitType

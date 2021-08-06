@@ -22,11 +22,16 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
 {
-    public class GitPatcherInitVm : PatcherInitVm
+    public class GitPatcherInitVm : ViewModel, IPatcherInitVm
     {
+        private readonly IPatcherInitializationVm _init;
         private readonly IPatcherFactory _PatcherFactory;
+        
+        public ICommand CompleteConfiguration => _init.CompleteConfiguration;
+        public ICommand CancelConfiguration => _init.CancelConfiguration;
+        
         private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
-        public override ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
+        public ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
 
         public GitPatcherVm Patcher { get; }
 
@@ -65,8 +70,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             INavigateTo navigateTo, 
             PatcherStoreListingVm.Factory listingVmFactory,
             IRegistryListingsProvider listingsProvider)
-            : base(init)
         {
+            _init = init;
             _PatcherFactory = patcherFactory;
             Patcher = patcherFactory.GetGitPatcher();
 
@@ -138,15 +143,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             ClearSearchCommand = ReactiveCommand.Create(() => Search = string.Empty);
         }
 
-        public override async IAsyncEnumerable<PatcherVm> Construct()
+        public async IAsyncEnumerable<PatcherVm> Construct()
         {
             _wasAdded = true;
             yield return Patcher;
         }
 
-        public override void Cancel()
+        public void Cancel()
         {
-            base.Cancel();
             Patcher.Delete();
         }
 
@@ -155,7 +159,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             var patcher = _PatcherFactory.GetGitPatcher();
             patcher.RemoteRepoPathInput.RemoteRepoPath = listing.RepoPath;
             patcher.SelectedProjectInput.ProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\');
-            Init.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
+            _init.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
         }
 
         public override void Dispose()
