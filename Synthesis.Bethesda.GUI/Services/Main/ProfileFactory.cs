@@ -1,6 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Reactive.Disposables;
+﻿using System.Linq;
+using Noggog;
 using Autofac;
 using DynamicData;
 using Mutagen.Bethesda;
@@ -9,11 +8,8 @@ using Serilog;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
-using MainModule = Synthesis.Bethesda.GUI.Modules.MainModule;
 
 namespace Synthesis.Bethesda.GUI.Services.Main
 {

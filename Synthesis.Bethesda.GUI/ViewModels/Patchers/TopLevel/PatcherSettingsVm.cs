@@ -115,7 +115,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
                             loadOrder: loadOrder.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                     }
                 },
-                disposable: this.CompositeDisposable);
+                disposable: this);
 
             _SettingsOpen = OpenSettingsCommand.IsExecuting
                 .ToGuiProperty(this, nameof(SettingsOpen));

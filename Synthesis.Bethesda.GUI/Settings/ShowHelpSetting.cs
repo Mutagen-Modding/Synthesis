@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
+using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

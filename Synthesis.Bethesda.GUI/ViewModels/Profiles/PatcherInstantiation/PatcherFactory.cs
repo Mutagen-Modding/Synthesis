@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Reactive.Disposables;
 using System.Threading;
 using Autofac;
-using Serilog;
+using Noggog;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Patchers.Common;
-using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli;

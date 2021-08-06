@@ -1,6 +1,6 @@
-﻿using System.Windows.Input;
+using System.Windows.Input;
 using Autofac;
-using Noggog.WPF;
+using Noggog;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.GUI.Modules;

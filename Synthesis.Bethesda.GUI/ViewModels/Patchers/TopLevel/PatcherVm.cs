@@ -2,6 +2,7 @@ using System;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using Autofac;
+using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -35,7 +36,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
             objectSource: this.WhenAnyValue(x => x.State.RunnableState),
             canExecute: x => x.Failed,
             execute: x => DisplayedObject = ErrorVM,
-            disposable: this.CompositeDisposable);
+            disposable: this);
 
         public abstract ConfigurationState State { get; }
 

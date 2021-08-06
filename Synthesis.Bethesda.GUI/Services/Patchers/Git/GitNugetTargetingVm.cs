@@ -66,7 +66,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                 execute: v => ManualMutagenVersion = v ?? string.Empty,
                 extraCanExecute: this.WhenAnyValue(x => x.MutagenVersioning)
                     .Select(vers => vers == PatcherNugetVersioningEnum.Manual),
-                disposable: this.CompositeDisposable);
+                disposable: this);
             UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
                 objectSource: newest.NewestSynthesisVersion,
                 canExecute: v =>
@@ -79,7 +79,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                 execute: v => ManualSynthesisVersion = v ?? string.Empty,
                 extraCanExecute: this.WhenAnyValue(x => x.SynthesisVersioning)
                     .Select(vers => vers == PatcherNugetVersioningEnum.Manual),
-                disposable: this.CompositeDisposable);
+                disposable: this);
 
             ActiveNugetVersion = Observable.CombineLatest(
                     versioning.WhenAnyValue(x => x.ActiveVersioning)

@@ -1,6 +1,6 @@
 ﻿using System;
 using Autofac;
-using Noggog.WPF;
+using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Running.Cli;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;

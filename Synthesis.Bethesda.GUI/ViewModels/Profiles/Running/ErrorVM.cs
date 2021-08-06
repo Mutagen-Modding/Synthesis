@@ -32,7 +32,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 {
                     x?.Invoke();
                 },
-                disposable: this.CompositeDisposable);
+                disposable: this);
 
             // Go back automatically if things no longer apply
             this.WhenAnyValue(x => x.String)

@@ -30,7 +30,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 {
                     TargetConfirmation = null;
                 },
-                disposable: this.CompositeDisposable);
+                disposable: this);
             ConfirmActionCommand = NoggogCommand.CreateFromObject(
                 objectSource: this.WhenAnyFallback(x => x.TargetConfirmation!.ToDo),
                 canExecute: toDo => toDo != null,
@@ -39,7 +39,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                     toDo?.Invoke();
                     TargetConfirmation = null;
                 },
-                disposable: this.CompositeDisposable);
+                disposable: this);
         }
     }
 }

@@ -254,7 +254,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                         DisplayController.SelectedObject = OverallErrorVm;
                     }
                 },
-                disposable: this.CompositeDisposable);
+                disposable: this);
 
             // Forward overall errors into VM
             this.WhenAnyValue(x => x.LargeOverallError)

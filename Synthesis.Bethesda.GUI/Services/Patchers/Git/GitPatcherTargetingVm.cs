@@ -155,7 +155,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                 extraCanExecute: this.WhenAnyValue(x => x.PatcherVersioning)
                     .Select(vers => vers == PatcherVersioningEnum.Branch),
                 execute: o => { this.TargetCommit = o.BranchSha!; },
-                this.CompositeDisposable);
+                this);
 
             UpdateToTagCommand = NoggogCommand.CreateFromObject(
                 objectSource: Observable.CombineLatest(
@@ -174,7 +174,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                     this.TargetTag = o.Tag!;
                     this.TargetCommit = o.TagSha!;
                 },
-                this.CompositeDisposable);
+                this);
 
             ActivePatcherVersion = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.PatcherVersioning),

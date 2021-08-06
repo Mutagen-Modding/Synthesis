@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -107,7 +108,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                         .ObserveOnGui();
                 },
                 execute: v => ManualMutagenVersion = v ?? string.Empty,
-                disposable: this.CompositeDisposable);
+                disposable: this);
             UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
                 objectSource: newestLibs.NewestSynthesisVersion
                     .ObserveOnGui(),
@@ -125,7 +126,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                         .ObserveOnGui();
                 },
                 execute: v => ManualSynthesisVersion = v ?? string.Empty,
-                disposable: this.CompositeDisposable);
+                disposable: this);
 
             UpdateProfileNugetVersionCommand = CommandExt.CreateCombinedAny(
                 this.UpdateMutagenManualToLatestCommand,
