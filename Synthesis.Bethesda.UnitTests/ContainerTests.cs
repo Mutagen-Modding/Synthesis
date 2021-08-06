@@ -117,7 +117,25 @@ namespace Synthesis.Bethesda.UnitTests
                 .As<IGameReleaseContext>();
             var cont = builder.Build();
             cont.Validate(
-                typeof(CliPatcherVm),
+                typeof(CliPatcherVm));
+        }
+        
+        [Fact]
+        public void CliPatcherInitVm()
+        {
+            var builder = new ContainerBuilder();
+            builder.RegisterModule<CliPatcherModule>();
+            builder.RegisterModule<MainModule>();
+            builder.RegisterMock<IMainWindow>();
+            builder.RegisterMock<IWindowPlacement>();
+            builder.RegisterMock<IGithubPatcherIdentifier>();
+            builder.RegisterMock<IPatcherIdProvider>();
+            builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
+                .As<IProfileIdentifier>()
+                .As<IProfileNameProvider>()
+                .As<IGameReleaseContext>();
+            var cont = builder.Build();
+            cont.Validate(
                 typeof(CliPatcherInitVm));
         }
         

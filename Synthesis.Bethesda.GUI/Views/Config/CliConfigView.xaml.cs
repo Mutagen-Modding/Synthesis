@@ -1,14 +1,11 @@
 using Noggog.WPF;
-using System;
 using ReactiveUI;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli;
+using Synthesis.Bethesda.GUI.Services.Patchers.Cli;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class CliConfigViewBase : NoggogUserControl<CliPatcherVm> { }
+    public class CliConfigViewBase : NoggogUserControl<ICliInputSourceVm> { }
 
     /// <summary>
     /// Interaction logic for CliConfigView.xaml

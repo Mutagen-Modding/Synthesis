@@ -1,13 +1,11 @@
 using System.Reactive.Linq;
 using Autofac;
 using Noggog;
-using Noggog.Utility;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.GUI.Services.Patchers;
 using Synthesis.Bethesda.GUI.Services.Patchers.Cli;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
@@ -17,12 +15,9 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
 {
-    public class CliPatcherVm : PatcherVm
+    public class CliPatcherVm : PatcherVm, ICliInputSourceVm
     {
         public IPathToExecutableInputVm ExecutableInput { get; }
-        private readonly ILifetimeScope _Scope;
-        private readonly IPatcherExtraDataPathProvider _ExtraDataPathProvider;
-        private readonly IProcessFactory _ProcessFactory;
         public IShowHelpSetting ShowHelpSetting { get; }
 
         private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
@@ -37,15 +32,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
             IConfirmationPanelControllerVm confirmation,
             IShowHelpSetting showHelpSetting,
             ILifetimeScope scope,
-            IPatcherExtraDataPathProvider extraDataPathProvider,
-            IProcessFactory processFactory,
             CliPatcherSettings? settings = null)
             : base(scope, nameVm, remove, selPatcher, confirmation, idProvider, settings)
         {
             ExecutableInput = pathToExecutableInputVm;
-            _Scope = scope;
-            _ExtraDataPathProvider = extraDataPathProvider;
-            _ProcessFactory = processFactory;
             ShowHelpSetting = showHelpSetting;
             CopyInSettings(settings);
 

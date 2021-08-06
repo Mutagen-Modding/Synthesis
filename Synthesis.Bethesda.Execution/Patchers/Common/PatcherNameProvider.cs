@@ -4,7 +4,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Common
 {
     public interface IPatcherNameProvider
     {
-        string Name { get; }
+        public string Name { get; }
     }
 
     [ExcludeFromCodeCoverage]

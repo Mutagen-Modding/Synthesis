@@ -1,21 +1,9 @@
 using Noggog.WPF;
 using ReactiveUI;
-using System;
-using System.Collections.Generic;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Noggog;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -31,7 +19,13 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.BindStrict(this.ViewModel, vm => vm.DisplayName, view => view.PatcherDetailName.Text)
+                this.WhenAnyValue(x => x.ViewModel!.NameVm.Name)
+                    .Select(x => x.IsNullOrWhitespace() ? "Patcher Name" : x)
+                    .BindToStrict(this, view => view.PatcherDetailName.Text)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.NameVm.Name)
+                    .Select(x => x.IsNullOrWhitespace() ? 0.6d : 1d)
+                    .BindToStrict(this, view => view.PatcherDetailName.Opacity)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel)
                     .BindToStrict(this, x => x.PatcherIconDisplay.DataContext)
