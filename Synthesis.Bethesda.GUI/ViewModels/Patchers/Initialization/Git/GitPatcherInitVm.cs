@@ -63,6 +63,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             ILogger logger,
             IPatcherFactory patcherFactory,
             INavigateTo navigateTo, 
+            PatcherStoreListingVm.Factory listingVmFactory,
             IRegistryListingsProvider listingsProvider)
             : base(init)
         {
@@ -86,11 +87,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
                         return customization.Value
                             .SelectMany(repo =>
                             {
-                                var repoVM = new RepositoryStoreListingVm(repo);
                                 return repo.Patchers
                                     .Select(p =>
                                     {
-                                        return new PatcherStoreListingVm(this, p, repoVM, navigateTo);
+                                        return listingVmFactory(this, p, repo);
                                     });
                             })
                             .AsObservableChangeSet();

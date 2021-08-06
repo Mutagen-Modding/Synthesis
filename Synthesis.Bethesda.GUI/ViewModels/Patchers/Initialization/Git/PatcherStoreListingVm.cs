@@ -24,13 +24,18 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
 
         public string RepoPath => $"https://github.com/{Repository.Raw.User}/{Repository.Raw.Repository}";
 
+        public delegate PatcherStoreListingVm Factory(
+            GitPatcherInitVm gitInit,
+            PatcherListing listing,
+            RepositoryListing repositoryListing);
+        
         public PatcherStoreListingVm(
             GitPatcherInitVm gitInit,
             PatcherListing listing,
-            RepositoryStoreListingVm repo,
+            RepositoryListing repositoryListing,
             INavigateTo navigate)
         {
-            Repository = repo;
+            Repository = new RepositoryStoreListingVm(repositoryListing);
             Raw = listing;
             try
             {
