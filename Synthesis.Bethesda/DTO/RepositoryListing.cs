@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Synthesis.Bethesda.DTO
 {
-    public class RepositoryListing
+    [ExcludeFromCodeCoverage]
+    public record RepositoryListing
     {
         public PatcherListing[] Patchers { get; set; } = Array.Empty<PatcherListing>();
         public string? AvatarURL { get; set; }

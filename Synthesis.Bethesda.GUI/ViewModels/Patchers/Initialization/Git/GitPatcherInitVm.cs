@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Windows.Input;
 using DynamicData;
@@ -66,8 +63,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             ILogger logger,
             IPatcherFactory patcherFactory,
             INavigateTo navigateTo, 
-            IRegistryFolderProvider registryFolderProvider,
-            IPrepRegistryRepository prepRegistryRepository)
+            IRegistryListingsProvider listingsProvider)
             : base(init)
         {
             _PatcherFactory = patcherFactory;
@@ -83,25 +79,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
                 {
                     try
                     {
-                        var prepResp = prepRegistryRepository.Prep(CancellationToken.None);
-                        if (prepResp.Failed)
-                        {
-                            Error = prepResp;
-                            return Observable.Empty<IChangeSet<PatcherStoreListingVm>>();
-                        }
-
-                        var listingPath = Path.Combine(registryFolderProvider.RegistryFolder, Constants.AutomaticListingFileName);
-                        if (!File.Exists(listingPath))
-                        {
-                            Error = ErrorResponse.Fail("Could not locate listing file");
-                            logger.Error(Error.Reason);
-                            return Observable.Empty<IChangeSet<PatcherStoreListingVm>>();
-                        }
-                        var settings = new JsonSerializerOptions();
-                        settings.Converters.Add(new JsonStringEnumConverter());
-                        var customization = JsonSerializer.Deserialize<MutagenPatchersListing>(File.ReadAllText(listingPath), settings)!;
-                        return customization.Repositories
-                            .NotNull()
+                        var customization = listingsProvider.Get(CancellationToken.None);
+                        
+                        if (customization.Failed) return Observable.Empty<IChangeSet<PatcherStoreListingVm>>();
+                        
+                        return customization.Value
                             .SelectMany(repo =>
                             {
                                 var repoVM = new RepositoryStoreListingVm(repo);
