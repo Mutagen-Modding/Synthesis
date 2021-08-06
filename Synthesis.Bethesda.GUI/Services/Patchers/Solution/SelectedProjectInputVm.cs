@@ -37,6 +37,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
             
             this.WhenAnyValue(x => x.ProjectSubpath)
                 // Need to throttle, as bindings flip to null quickly, which we want to skip
+                .NotNull()
                 .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                 .DistinctUntilChanged()
                 .CombineLatest(solutionFilePathFollower.Path.DistinctUntilChanged(),
