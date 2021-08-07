@@ -8,6 +8,7 @@ using Serilog;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.Services.Profile;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 
@@ -39,14 +40,9 @@ namespace Synthesis.Bethesda.GUI.Services.Main
                 LifetimeScopes.ProfileNickname, 
                 cfg =>
                 {
-                    cfg.RegisterInstance(new ProfileIdentifier()
-                        {
-                            ID = settings.ID,
-                            Release = settings.TargetRelease,
-                            Name = settings.Nickname
-                        })
-                        .As<IProfileIdentifier>()
-                        .As<IGameReleaseContext>();
+                    cfg.RegisterInstance(settings)
+                        .AsSelf()
+                        .AsImplementedInterfaces();
                     
                     cfg.RegisterType<ProfileLogDecorator>()
                         .AsImplementedInterfaces()
@@ -76,14 +72,14 @@ namespace Synthesis.Bethesda.GUI.Services.Main
                 LifetimeScopes.ProfileNickname,
                 cfg =>
                 {
-                    cfg.RegisterInstance(new ProfileIdentifier()
-                        {
-                            ID = id,
-                            Release = release,
-                            Name = nickname
-                        })
-                        .As<IProfileIdentifier>()
-                        .As<IGameReleaseContext>();
+                    cfg.RegisterInstance(
+                            new SynthesisProfile()
+                            {
+                                Nickname = nickname,
+                                ID = id,
+                                TargetRelease = release
+                            })
+                        .AsImplementedInterfaces();
                 });
             var ret = scope.Resolve<ProfileVm>();
             scope.DisposeWith(ret);

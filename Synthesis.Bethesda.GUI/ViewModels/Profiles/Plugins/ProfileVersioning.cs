@@ -49,7 +49,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 
         public ProfileVersioning(
             ILogger logger,
-            IProfileIdentifier ident,
+            IProfileNameProvider nameProvider,
             INewestLibraryVersions newestLibs)
         {
             ActiveVersioning = Observable.CombineLatest(
@@ -65,7 +65,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                             new NugetsToUse("Mutagen", mutaVersioning, mutaManual ?? newestMuta ?? string.Empty, newestMuta),
                             new NugetsToUse("Synthesis", synthVersioning, synthManual ?? newestSynth ?? string.Empty, newestSynth));
                     })
-                .Do(x => logger.Information("Swapped profile {Nickname} to {Versioning}", ident.Name, x))
+                .Do(x => logger.Information("Swapped profile {Nickname} to {Versioning}", nameProvider.Name, x))
                 .ObserveOnGui()
                 .Replay(1)
                 .RefCount();

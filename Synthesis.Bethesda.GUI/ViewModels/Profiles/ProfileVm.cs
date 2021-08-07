@@ -106,6 +106,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             IProfileDataFolderVm dataFolder,
             IPatcherInitializationFactoryVm init,
             IProfileIdentifier ident,
+            IProfileNameProvider nameProvider,
             IProfileLoadOrder loadOrder,
             IProfileDirectories dirs,
             IProfileVersioning versioning,
@@ -131,7 +132,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             _PipelinePaths = pipelineSettingsPath;
             _GuiPaths = guiPaths;
             _Logger = logger;
-            Nickname = ident.Name;
+            Nickname = nameProvider.Name;
             ID = ident.ID;
             Release = ident.Release;
 

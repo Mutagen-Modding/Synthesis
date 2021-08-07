@@ -11,12 +11,12 @@ namespace Synthesis.Bethesda.Execution.Patchers.TopLevel
         private readonly ILogger _logger;
 
         public PatcherLogDecorator(
-            IProfileIdentifier profileIdentifier,
+            IProfileNameProvider profileNameProvider,
             IPatcherNameProvider nameProvider)
         {
             _logger = Log.Logger
                 .ForContext(FunnelNames.Patcher, nameProvider.Name)
-                .ForContext(FunnelNames.Profile, profileIdentifier.Name);
+                .ForContext(FunnelNames.Profile, profileNameProvider.Name);
         }
         
         public void Write(LogEvent logEvent)

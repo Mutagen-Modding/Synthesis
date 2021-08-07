@@ -1,10 +1,12 @@
 using Mutagen.Bethesda;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Mutagen.Bethesda.Environments.DI;
+using Synthesis.Bethesda.Execution.Profile;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
-    public interface ISynthesisProfileSettings
+    public interface ISynthesisProfileSettings : IProfileIdentifier
     {
         string Nickname { get; set; }
         string ID { get; set; }
@@ -35,5 +37,7 @@ namespace Synthesis.Bethesda.Execution.Settings
         public bool ConsiderPrereleaseNugets { get; set; }
         public bool LockToCurrentVersioning { get; set; }
         public PersistenceMode Persistence { get; set; } = PersistenceMode.None;
+
+        GameRelease IGameReleaseContext.Release => TargetRelease;
     }
 }
