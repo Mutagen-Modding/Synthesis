@@ -15,7 +15,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
 {
     public interface IProfileFactory
     {
-        ProfileVm Get(ISynthesisProfile settings);
+        ProfileVm Get(ISynthesisProfileSettings settings);
         ProfileVm Get(GameRelease release, string id, string nickname);
     }
 
@@ -32,7 +32,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
             _Logger = logger;
         }
         
-        public ProfileVm Get(ISynthesisProfile settings)
+        public ProfileVm Get(ISynthesisProfileSettings settings)
         {
             _Logger.Information("Loading {Release} Profile {Nickname} with ID {ID}", settings.TargetRelease, settings.Nickname, settings.ID);
             var scope = _Scope.BeginLifetimeScope(

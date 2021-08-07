@@ -119,7 +119,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         private void Save(SynthesisGuiSettings guiSettings, PipelineSettings pipeSettings)
         {
             guiSettings.SelectedProfile = SelectedProfile?.ID ?? string.Empty;
-            pipeSettings.Profiles = Profiles.Items.Select(p => p.Save()).ToList<ISynthesisProfile>();
+            pipeSettings.Profiles = Profiles.Items.Select(p => p.Save()).ToList<ISynthesisProfileSettings>();
         }
 
         public override void Dispose()

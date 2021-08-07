@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
-    public interface ISynthesisProfile
+    public interface ISynthesisProfileSettings
     {
         string Nickname { get; set; }
         string ID { get; set; }
@@ -21,7 +21,7 @@ namespace Synthesis.Bethesda.Execution.Settings
     }
 
     [ExcludeFromCodeCoverage]
-    public class SynthesisProfile : ISynthesisProfile
+    public class SynthesisProfile : ISynthesisProfileSettings
     {
         public string Nickname { get; set; } = string.Empty;
         public string ID { get; set; } = string.Empty;

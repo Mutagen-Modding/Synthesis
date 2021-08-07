@@ -8,12 +8,12 @@ namespace Synthesis.Bethesda.Execution.Settings
 {
     public interface IPipelineSettings
     {
-        List<ISynthesisProfile> Profiles { get; set; }
+        List<ISynthesisProfileSettings> Profiles { get; set; }
     }
 
     [ExcludeFromCodeCoverage]
     public class PipelineSettings : IPipelineSettings
     {
-        public List<ISynthesisProfile> Profiles { get; set; } = new();
+        public List<ISynthesisProfileSettings> Profiles { get; set; } = new();
     }
 }

@@ -10,23 +10,23 @@ namespace Synthesis.Bethesda.Execution.Running
 {
     public interface IRunProfileProvider
     {
-        ISynthesisProfile Profile { get; }
+        ISynthesisProfileSettings Profile { get; }
     }
 
     public class RunProfileProvider : IRunProfileProvider
     {
-        private readonly Lazy<ISynthesisProfile> _profile;
+        private readonly Lazy<ISynthesisProfileSettings> _profile;
 
-        public ISynthesisProfile Profile => _profile.Value;
+        public ISynthesisProfileSettings Profile => _profile.Value;
         
         public RunProfileProvider(
             IFileSystem fileSystem,
             IProfileNameProvider profileNameProvider,
             IProfileDefinitionPathProvider profileDefinitionPathProvider)
         {
-            _profile = new Lazy<ISynthesisProfile>(() =>
+            _profile = new Lazy<ISynthesisProfileSettings>(() =>
             {
-                ISynthesisProfile? profile;
+                ISynthesisProfileSettings? profile;
                 if (string.IsNullOrWhiteSpace(profileNameProvider.Name))
                 {
                     profile = JsonConvert.DeserializeObject<SynthesisProfile>(

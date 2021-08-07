@@ -17,7 +17,7 @@ namespace Synthesis.Bethesda.Execution
             Converters =
             {
                 new StringEnumConverter(),
-                new AbstractConverter<SynthesisProfile, ISynthesisProfile>(),
+                new AbstractConverter<SynthesisProfile, ISynthesisProfileSettings>(),
             }
         };
 
