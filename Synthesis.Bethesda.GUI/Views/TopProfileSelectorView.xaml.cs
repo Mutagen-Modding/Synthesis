@@ -31,7 +31,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Nickname, string.Empty)
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.NameVm.Name, string.Empty)
                     .BindToStrict(this, x => x.ProfileNameBlock.Text)
                     .DisposeWith(dispose);
 

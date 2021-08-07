@@ -1,6 +1,6 @@
-﻿using Mutagen.Bethesda;
-using Noggog.WPF;
+﻿using Noggog.WPF;
 using ReactiveUI;
+using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
@@ -19,7 +19,8 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-                this.WhenAnyFallback(x => x.ViewModel!.Profile!.Nickname, fallback: string.Empty)
+                this.WhenAnyFallback(x => x.ViewModel!.Profile!.NameVm.Name, fallback: string.Empty)
+                    .Select(x => x)
                     .BindToStrict(this, x => x.NameBlock.Text)
                     .DisposeWith(dispose);
 

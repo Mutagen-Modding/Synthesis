@@ -1,4 +1,5 @@
-﻿using ReactiveUI.Fody.Helpers;
+﻿using Noggog.WPF;
+using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 
@@ -9,7 +10,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         string Name { get; set; }
     }
 
-    public class ProfileNameVm : IProfileNameProvider, IProfileNameVm
+    public class ProfileNameVm : ViewModel, IProfileNameProvider, IProfileNameVm
     {
         [Reactive]
         public string Name { get; set; }

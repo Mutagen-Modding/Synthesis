@@ -24,7 +24,6 @@ using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
@@ -54,8 +53,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         public ReactiveCommand<Unit, Unit> UpdateAllPatchersCommand { get; }
 
         public string ID { get; private set; }
-
-        public string Nickname { get; }
 
         public string ProfileDirectory { get; }
         public string WorkingDirectory { get; }
@@ -99,6 +96,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         public ILifetimeScope Scope { get; }
         public IPatcherInitializationFactoryVm Init { get; }
         
+        public IProfileNameVm NameVm { get; }
+
         public ProfileVm(
             ILifetimeScope scope,
             IRunFactory runFactory,
@@ -106,7 +105,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             IProfileDataFolderVm dataFolder,
             IPatcherInitializationFactoryVm init,
             IProfileIdentifier ident,
-            IProfileNameProvider nameProvider,
+            IProfileNameVm nameProvider,
             IProfileLoadOrder loadOrder,
             IProfileDirectories dirs,
             IProfileVersioning versioning,
@@ -121,6 +120,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         {
             Scope = scope;
             Init = init;
+            NameVm = nameProvider;
             DataFolderOverride = dataFolder;
             Versioning = versioning;
             Patchers = patchersList.Patchers;
@@ -132,7 +132,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             _PipelinePaths = pipelineSettingsPath;
             _GuiPaths = guiPaths;
             _Logger = logger;
-            Nickname = nameProvider.Name;
             ID = ident.ID;
             Release = ident.Release;
 
@@ -375,7 +374,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             {
                 Patchers = Patchers.Items.Select(p => p.Save()).ToList(),
                 ID = ID,
-                Nickname = Nickname,
+                Nickname = NameVm.Name,
                 TargetRelease = Release,
                 MutagenManualVersion = Versioning.ManualMutagenVersion,
                 SynthesisManualVersion = Versioning.ManualSynthesisVersion,

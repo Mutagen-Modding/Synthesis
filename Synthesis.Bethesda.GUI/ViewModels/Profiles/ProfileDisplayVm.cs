@@ -57,7 +57,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                     if (profile.IsActive) return;
                     confirmation.TargetConfirmation = new ConfirmationActionVm(
                         "Confirm",
-                        $"Are you sure you want to delete {profile.Nickname}?",
+                        $"Are you sure you want to delete {profile.NameVm.Name}?",
                         () =>
                         {
                             parent.Config.Profiles.Remove(profile);
