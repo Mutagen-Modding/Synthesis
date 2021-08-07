@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows.Input;
 using Noggog;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;

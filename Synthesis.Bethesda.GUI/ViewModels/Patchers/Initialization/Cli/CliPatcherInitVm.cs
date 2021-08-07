@@ -10,7 +10,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Cli
 {
     public class CliPatcherInitVm : ViewModel, ICliInputSourceVm, IPatcherInitVm
     {

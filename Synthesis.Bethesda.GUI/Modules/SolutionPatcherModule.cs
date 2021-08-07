@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Noggog.Autofac;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
+using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
@@ -25,6 +26,10 @@ namespace Synthesis.Bethesda.GUI.Modules
                 .NotInjection()
                 .AsImplementedInterfaces()
                 .AsSelf();
+            
+            builder.RegisterType<PatcherLogDecorator>()
+                .AsImplementedInterfaces()
+                .SingleInstance();
             
             base.Load(builder);
         }

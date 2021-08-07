@@ -32,9 +32,6 @@ namespace Synthesis.Bethesda.GUI.Modules
                 .InNamespacesOf(
                     typeof(IPatcherRun))
                 .AsImplementedInterfaces();
-            builder.RegisterType<PatcherLogDecorator>()
-                .AsImplementedInterfaces()
-                .SingleInstance();
         }
     }
 }

@@ -6,6 +6,7 @@ using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Cli;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Top;

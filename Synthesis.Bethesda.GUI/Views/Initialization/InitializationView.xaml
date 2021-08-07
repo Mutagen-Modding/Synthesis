@@ -8,6 +8,7 @@
     xmlns:git="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git"
     xmlns:initialization1="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization"
     xmlns:solution="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution"
+    xmlns:cli="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Cli"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -19,7 +20,7 @@
             <DataTemplate DataType="{x:Type solution:SolutionPatcherInitVm}">
                 <local:SolutionInitView />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type initialization1:CliPatcherInitVm}">
+            <DataTemplate DataType="{x:Type cli:CliPatcherInitVm}">
                 <local:CliInitView />
             </DataTemplate>
         </ContentControl.Resources>

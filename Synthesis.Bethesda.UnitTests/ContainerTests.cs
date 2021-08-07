@@ -23,6 +23,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Cli;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
@@ -66,8 +67,8 @@ namespace Synthesis.Bethesda.UnitTests
         public void GitPatcherVm()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterModule<GitPatcherModule>();
             builder.RegisterModule<MainModule>();
+            builder.RegisterModule<GitPatcherModule>();
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
@@ -86,8 +87,8 @@ namespace Synthesis.Bethesda.UnitTests
         public void GitInitPatcherVm()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterModule<GitPatcherModule>();
             builder.RegisterModule<MainModule>();
+            builder.RegisterModule<GitPatcherModule>();
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
@@ -106,8 +107,8 @@ namespace Synthesis.Bethesda.UnitTests
         public void SolutionPatcherVm()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterModule<SolutionPatcherModule>();
             builder.RegisterModule<MainModule>();
+            builder.RegisterModule<SolutionPatcherModule>();
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
@@ -125,8 +126,8 @@ namespace Synthesis.Bethesda.UnitTests
         public void SolutionPatcherInitVm()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterModule<SolutionPatcherModule>();
             builder.RegisterModule<MainModule>();
+            builder.RegisterModule<SolutionPatcherModule>();
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
@@ -144,8 +145,8 @@ namespace Synthesis.Bethesda.UnitTests
         public void CliPatcherVm()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterModule<CliPatcherModule>();
             builder.RegisterModule<MainModule>();
+            builder.RegisterModule<CliPatcherModule>();
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
@@ -164,8 +165,8 @@ namespace Synthesis.Bethesda.UnitTests
         public void CliPatcherInitVm()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterModule<CliPatcherModule>();
             builder.RegisterModule<MainModule>();
+            builder.RegisterModule<CliModule>();
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
