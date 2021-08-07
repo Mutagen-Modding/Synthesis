@@ -150,6 +150,7 @@ namespace Synthesis.Bethesda.UnitTests
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
             builder.RegisterMock<IPatcherIdProvider>();
+            builder.RegisterMock<CliPatcherSettings>();
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
                 .As<IProfileNameProvider>()
@@ -169,6 +170,7 @@ namespace Synthesis.Bethesda.UnitTests
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
             builder.RegisterMock<IPatcherIdProvider>();
+            builder.RegisterMock<CliPatcherSettings>();
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
                 .As<IProfileNameProvider>()

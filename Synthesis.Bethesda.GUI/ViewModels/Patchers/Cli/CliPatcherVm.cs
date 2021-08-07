@@ -37,7 +37,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
         {
             ExecutableInput = pathToExecutableInputVm;
             ShowHelpSetting = showHelpSetting;
-            CopyInSettings(settings);
 
             _State = pathToExecutableInputVm.WhenAnyValue(x => x.Picker.ErrorState)
                 .Select(e =>
@@ -52,12 +51,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
                 {
                     IsHaltingError = false
                 });
-        }
-        
-        private void CopyInSettings(CliPatcherSettings? settings)
-        {
-            if (settings == null) return;
-            ExecutableInput.Picker.TargetPath = settings.PathToExecutable;
         }
 
         public override PatcherSettings Save()

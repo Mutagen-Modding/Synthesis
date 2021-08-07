@@ -1,6 +1,7 @@
 ﻿using Noggog;
 using Noggog.WPF;
 using Synthesis.Bethesda.Execution.Patchers.Cli;
+using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Cli
 {
@@ -18,5 +19,11 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Cli
         };
 
         public FilePath Path => Picker.TargetPath;
+
+        public PathToExecutableInputVm(
+            CliPatcherSettings settings)
+        {
+            Picker.TargetPath = settings.PathToExecutable;
+        }
     }
 }
