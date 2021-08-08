@@ -29,22 +29,19 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
         };
 
         public SelectedProjectInputVm(
-            ILogger logger,
             IProjectPathConstructor pathConstructor,
             ISolutionFilePathFollower solutionFilePathFollower)
         {
             Picker.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
             
             this.WhenAnyValue(x => x.ProjectSubpath)
-                // Need to throttle, as bindings flip to null quickly, which we want to skip
+                // Need to filter nulls, as bindings flip to null temporarily, which we want to skip
                 .NotNull()
-                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                 .DistinctUntilChanged()
                 .CombineLatest(solutionFilePathFollower.Path.DistinctUntilChanged(),
                     (subPath, slnPath) => pathConstructor.Construct(slnPath, subPath))
                 .Subscribe(p =>
                 {
-                    logger.Information($"Setting target project path to: {p}");
                     Picker.TargetPath = p;
                 })
                 .DisposeWith(this);
