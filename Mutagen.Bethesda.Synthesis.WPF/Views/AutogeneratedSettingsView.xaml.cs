@@ -21,30 +21,30 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             {
                 this.WhenAnyFallback(x => x.ViewModel!.SettingsLoading)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.ProcessingRingGrid.Visibility)
+                    .BindTo(this, x => x.ProcessingRingGrid.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.SettingsLoading)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.ProcessingRing.Visibility)
+                    .BindTo(this, x => x.ProcessingRing.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.Bundle!.Settings)
-                    .BindToStrict(this, x => x.ReflectionSettingTabs.ItemsSource)
+                    .BindTo(this, x => x.ReflectionSettingTabs.ItemsSource)
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.Bundle!.Settings!.Count)
                     .Select(x => x > 0 ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.ReflectionSettingTabs.Visibility)
+                    .BindTo(this, x => x.ReflectionSettingTabs.Visibility)
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.SelectedSettings, view => view.ReflectionSettingTabs.SelectedItem)
+                this.Bind(this.ViewModel, vm => vm.SelectedSettings, view => view.ReflectionSettingTabs.SelectedItem)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
                         this.WhenAnyFallback(x => x.ViewModel!.Error),
                         this.WhenAnyFallback(x => x.ViewModel!.SettingsLoading),
                         (err, loading) => !loading && err.Failed)
                     .Select(failed => failed ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.ErrorPanel.Visibility)
+                    .BindTo(this, x => x.ErrorPanel.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.Error.Reason)
-                    .BindToStrict(this, x => x.ErrorBox.Text)
+                    .BindTo(this, x => x.ErrorBox.Text)
                     .DisposeWith(disposable);
             });
         }

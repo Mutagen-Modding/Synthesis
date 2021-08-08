@@ -31,10 +31,10 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated(disposable =>
             {
                 this.WhenAnyFallback(x => x.ViewModel!.Title)
-                    .BindToStrict(this, x => x.TitleBlock.Text)
+                    .BindTo(this, x => x.TitleBlock.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.String)
-                    .BindToStrict(this, x => x.ErrorOutputBox.Text)
+                    .BindTo(this, x => x.ErrorOutputBox.Text)
                     .DisposeWith(disposable);
             });
         }

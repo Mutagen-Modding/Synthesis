@@ -38,7 +38,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
         public ISolutionPathInputVm SolutionPathInput { get; }
         public ISelectedProjectInputVm SelectedProjectInput { get; }
         private readonly IProfileLoadOrder _LoadOrder;
-        private readonly ILifetimeScope _Scope;
 
         public IObservableCollection<string> AvailableProjects { get; }
 
@@ -99,7 +98,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             SolutionPathInput = solutionPathInput;
             SelectedProjectInput = selectedProjectInput;
             _LoadOrder = loadOrder;
-            _Scope = scope;
             CopyInSettings(settings);
 
             AvailableProjects = availableProjectsFollower.Process(

@@ -21,11 +21,11 @@ namespace Synthesis.Bethesda.GUI.Views
             {
                 this.WhenAnyFallback(x => x.ViewModel!.Profile!.NameVm.Name, fallback: string.Empty)
                     .Select(x => x)
-                    .BindToStrict(this, x => x.NameBlock.Text)
+                    .BindTo(this, x => x.NameBlock.Text)
                     .DisposeWith(dispose);
 
                 this.WhenAnyValue(x => x.ViewModel!.SwitchToCommand)
-                    .BindToStrict(this, x => x.SelectButton.Command)
+                    .BindTo(this, x => x.SelectButton.Command)
                     .DisposeWith(dispose);
             });
         }

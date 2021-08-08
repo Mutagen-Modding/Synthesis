@@ -15,14 +15,14 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated(dispose =>
             {
                 this.WhenAnyFallback(x => x.ViewModel!.Error!.RunFix)
-                    .BindToStrict(this, x => x.AttemptFixButton.Command)
+                    .BindTo(this, x => x.AttemptFixButton.Command)
                     .DisposeWith(dispose);
                 this.WhenAnyFallback(x => x.ViewModel!.Error!.ErrorText)
-                    .BindToStrict(this, x => x.CustomTextBlock.Text)
+                    .BindTo(this, x => x.CustomTextBlock.Text)
                     .DisposeWith(dispose);
                 this.WhenAnyFallback(x => x.ViewModel!.NugetConfigPath)
                     .Select(x => x.Path)
-                    .BindToStrict(this, x => x.ConfigPathBlock.Text)
+                    .BindTo(this, x => x.ConfigPathBlock.Text)
                     .DisposeWith(dispose);
             });
         }

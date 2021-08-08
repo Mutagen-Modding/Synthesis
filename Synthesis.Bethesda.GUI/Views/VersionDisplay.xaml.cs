@@ -24,23 +24,23 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated(dispose =>
             {
                 this.WhenAnyValue(x => x.ViewModel!.SynthesisVersion)
-                    .BindToStrict(this, v => v.VersionButton.Content)
+                    .BindTo(this, v => v.VersionButton.Content)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.SynthesisVersion)
-                    .BindToStrict(this, v => v.CurrentSynthesisVersionText.Text)
+                    .BindTo(this, v => v.CurrentSynthesisVersionText.Text)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.NewestSynthesisVersion)
                     .Select(x => x ?? "[Unknown]")
                     .StartWith("[Querying]")
-                    .BindToStrict(this, v => v.LatestSynthesisVersionText.Text)
+                    .BindTo(this, v => v.LatestSynthesisVersionText.Text)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.MutagenVersion)
-                    .BindToStrict(this, v => v.CurrentMutagenVersionText.Text)
+                    .BindTo(this, v => v.CurrentMutagenVersionText.Text)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.NewestMutagenVersion)
                     .Select(x => x ?? "[Unknown]")
                     .StartWith("[Querying]")
-                    .BindToStrict(this, v => v.LatestMutagenVersionText.Text)
+                    .BindTo(this, v => v.LatestMutagenVersionText.Text)
                     .DisposeWith(dispose);
                 this.VersionButton.Events()
                     .PreviewMouseLeftButtonUp
@@ -62,9 +62,9 @@ namespace Synthesis.Bethesda.GUI.Views
                         (cur, next) => string.Equals(cur, next) ? Visibility.Collapsed : Visibility.Visible)
                     .Replay(1)
                     .RefCount();
-                newSynthVis.BindToStrict(this, x => x.LatestSynthesisVersionText.Visibility)
+                newSynthVis.BindTo(this, x => x.LatestSynthesisVersionText.Visibility)
                     .DisposeWith(dispose);
-                newSynthVis.BindToStrict(this, x => x.SynthesisArrow.Visibility)
+                newSynthVis.BindTo(this, x => x.SynthesisArrow.Visibility)
                     .DisposeWith(dispose);
                 var newMutagenVis = Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.MutagenVersion),
@@ -72,9 +72,9 @@ namespace Synthesis.Bethesda.GUI.Views
                         (cur, next) => string.Equals(cur, next) ? Visibility.Collapsed : Visibility.Visible)
                     .Replay(1)
                     .RefCount();
-                newMutagenVis.BindToStrict(this, x => x.LatestMutagenVersionText.Visibility)
+                newMutagenVis.BindTo(this, x => x.LatestMutagenVersionText.Visibility)
                     .DisposeWith(dispose);
-                newMutagenVis.BindToStrict(this, x => x.MutagenArrow.Visibility)
+                newMutagenVis.BindTo(this, x => x.MutagenArrow.Visibility)
                     .DisposeWith(dispose);
             });
         }

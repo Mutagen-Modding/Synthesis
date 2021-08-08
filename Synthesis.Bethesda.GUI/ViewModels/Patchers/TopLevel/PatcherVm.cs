@@ -126,5 +126,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         public virtual void PrepForRun()
         {
         }
+
+        public override string ToString()
+        {
+            return NameVm.Name;
+        }
     }
 }

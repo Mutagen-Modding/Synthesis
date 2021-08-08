@@ -26,11 +26,11 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.WhenAnyValue(x => x.ViewModel!.ActivePanel),
                         this.WhenAnyValue(x => x.ViewModel!.EnvironmentErrors.ActiveError),
                         (active, err) => ((object?)err) ?? active)
-                    .BindToStrict(this, x => x.ContentPane.Content)
+                    .BindTo(this, x => x.ContentPane.Content)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.ActiveConfirmation)
                     .Select(x => x == null ? Visibility.Collapsed : Visibility.Visible)
-                    .BindToStrict(this, x => x.ConfirmationOverlay.Visibility)
+                    .BindTo(this, x => x.ConfirmationOverlay.Visibility)
                     .DisposeWith(disposable);
             });
         }

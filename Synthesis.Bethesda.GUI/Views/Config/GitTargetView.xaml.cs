@@ -41,7 +41,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.BindStrict(this.ViewModel, vm => vm.RemoteRepoPathInput.RemoteRepoPath, view => view.RepositoryPath.Text)
+                this.Bind(this.ViewModel, vm => vm.RemoteRepoPathInput.RemoteRepoPath, view => view.RepositoryPath.Text)
                     .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.RepoValidity)
@@ -55,25 +55,25 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 processing
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.CloningRing.Visibility)
+                    .BindTo(this, x => x.CloningRing.Visibility)
                     .DisposeWith(disposable);
 
                 // Bind project picker
-                this.BindStrict(this.ViewModel, vm => vm.SelectedProjectInput.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
+                this.Bind(this.ViewModel, vm => vm.SelectedProjectInput.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
                     .DisposeWith(disposable);
-                this.OneWayBindStrict(this.ViewModel, vm => vm.AvailableProjects, view => view.ProjectsPickerBox.ItemsSource)
+                this.OneWayBind(this.ViewModel, vm => vm.AvailableProjects, view => view.ProjectsPickerBox.ItemsSource)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid.Valid)
-                    .BindToStrict(this, view => view.ProjectsPickerBox.IsEnabled)
+                    .BindTo(this, view => view.ProjectsPickerBox.IsEnabled)
                     .DisposeWith(disposable);
 
                 // Bind git open commands
                 this.WhenAnyValue(x => x.ViewModel!.OpenGitPageCommand)
-                    .BindToStrict(this, x => x.OpenGitButton.Command)
+                    .BindTo(this, x => x.OpenGitButton.Command)
                     .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.NavigateToInternalFilesCommand)
-                    .BindToStrict(this, x => x.OpenPatcherInternalFilesButton.Command)
+                    .BindTo(this, x => x.OpenPatcherInternalFilesButton.Command)
                     .DisposeWith(disposable);
 
                 #region Versioning Lock
@@ -81,13 +81,13 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.WhenAnyValue(x => x.ViewModel!.Locking.Lock),
                         this.WhenAnyValue(x => x.RespectLocking),
                         (locked, respect) => !locked || !respect)
-                    .BindToStrict(this, x => x.RepositoryPath.IsEnabled)
+                    .BindTo(this, x => x.RepositoryPath.IsEnabled)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.Locking.Lock),
                         this.WhenAnyValue(x => x.RespectLocking),
                         (locked, respect) => !locked || !respect)
-                    .BindToStrict(this, x => x.ProjectsPickerBox.IsEnabled)
+                    .BindTo(this, x => x.ProjectsPickerBox.IsEnabled)
                     .DisposeWith(disposable);
                 #endregion
             });

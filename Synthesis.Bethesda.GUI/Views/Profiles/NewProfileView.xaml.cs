@@ -17,13 +17,13 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-                this.BindStrict(this.ViewModel, vm => vm.Nickname, view => view.PatcherDetailName.Text)
+                this.Bind(this.ViewModel, vm => vm.Nickname, view => view.PatcherDetailName.Text)
                     .DisposeWith(dispose);
 
                 this.WhenAnyFallback(x => x.ViewModel!.ReleaseOptions, fallback: default)
-                    .BindToStrict(this, x => x.GameReleaseOptionsControl.ItemsSource)
+                    .BindTo(this, x => x.GameReleaseOptionsControl.ItemsSource)
                     .DisposeWith(dispose);
-                this.BindStrict(this.ViewModel, vm => vm.SelectedGame, view => view.GameReleaseOptionsControl.SelectedItem)
+                this.Bind(this.ViewModel, vm => vm.SelectedGame, view => view.GameReleaseOptionsControl.SelectedItem)
                     .DisposeWith(dispose);
             });
         }

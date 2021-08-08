@@ -41,6 +41,7 @@ namespace Mutagen.Bethesda.Synthesis
         {
             var lo = Plugins.Order.LoadOrder.Import<TModGetter>(DataFolderPath, LoadOrder.ListedOrder, GameRelease);
             return new GameEnvironmentState<TModSetter, TModGetter>(
+                gameRelease: GameRelease,
                 dataFolderPath: DataFolderPath,
                 loadOrderFilePath: LoadOrderFilePath,
                 creationClubListingsFilePath: null,
