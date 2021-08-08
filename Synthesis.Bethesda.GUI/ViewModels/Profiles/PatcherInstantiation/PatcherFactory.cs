@@ -17,8 +17,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
     {
         PatcherVm Get(PatcherSettings settings);
         GitPatcherVm GetGitPatcher(GithubPatcherSettings? settings = null);
-        SolutionPatcherVm GetSolutionPatcher(SolutionPatcherSettings? settings = null);
-        CliPatcherVm GetCliPatcher(CliPatcherSettings? settings = null);
+        SolutionPatcherVm GetSolutionPatcher(SolutionPatcherSettings settings);
+        CliPatcherVm GetCliPatcher(CliPatcherSettings settings);
     }
     
     public class PatcherFactory : IPatcherFactory
@@ -71,36 +71,30 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
             return patcher;
         }
 
-        public SolutionPatcherVm GetSolutionPatcher(SolutionPatcherSettings? settings = null)
+        public SolutionPatcherVm GetSolutionPatcher(SolutionPatcherSettings settings)
         {
             var patcherScope = _scope.BeginLifetimeScope(LifetimeScopes.PatcherNickname, c =>
             {
                 RegisterId(c);
                 c.RegisterModule<SolutionPatcherModule>();
-                if (settings != null)
-                {
-                    c.RegisterInstance(settings)
-                        .AsSelf()
-                        .AsImplementedInterfaces();
-                }
+                c.RegisterInstance(settings)
+                    .AsSelf()
+                    .AsImplementedInterfaces();
             });
             var patcher = patcherScope.Resolve<SolutionPatcherVm>();
             patcherScope.DisposeWith(patcher);
             return patcher;
         }
 
-        public CliPatcherVm GetCliPatcher(CliPatcherSettings? settings = null)
+        public CliPatcherVm GetCliPatcher(CliPatcherSettings settings)
         {
             var patcherScope = _scope.BeginLifetimeScope(LifetimeScopes.PatcherNickname, c =>
             {
                 RegisterId(c);
                 c.RegisterModule<CliPatcherModule>();
-                if (settings != null)
-                {
-                    c.RegisterInstance(settings)
-                        .AsSelf()
-                        .AsImplementedInterfaces();
-                }
+                c.RegisterInstance(settings)
+                    .AsSelf()
+                    .AsImplementedInterfaces();
             });
             var patcher = patcherScope.Resolve<CliPatcherVm>();
             patcherScope.DisposeWith(patcher);

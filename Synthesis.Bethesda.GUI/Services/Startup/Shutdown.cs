@@ -120,7 +120,6 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
                 {
                     _Logger.Information("Disposing container");
                     _Scope.Dispose();
-                    _Logger.Information("Disposed container");
                 }
                 catch (Exception e)
                 {

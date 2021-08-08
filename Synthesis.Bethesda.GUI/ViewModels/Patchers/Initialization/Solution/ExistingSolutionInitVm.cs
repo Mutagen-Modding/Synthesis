@@ -9,7 +9,8 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
+using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
 {
@@ -27,7 +28,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
 
         public ExistingSolutionInitVm(
             IGameCategoryContext gameCategoryContext,
-            Func<SolutionPatcherVm> patcherFactory, 
+            IPatcherFactory patcherFactory,
             IValidateProjectPath validateProjectPath,
             ICreateProject createProject,
             IAddProjectToSolution addProjectToSolution)
@@ -54,11 +55,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
                     if (!i.validation.Succeeded) return i.validation.BubbleFailure<InitializerCall>();
                     return GetResponse<InitializerCall>.Succeed(async () =>
                     {
-                        var patcher = patcherFactory();
                         createProject.Create(gameCategoryContext.Category, i.validation.Value);
                         addProjectToSolution.Add(i.sln.Value, i.validation.Value);
-                        patcher.SolutionPathInput.Picker.TargetPath = i.sln.Value;
-                        patcher.SelectedProjectInput.ProjectSubpath = Path.Combine(i.proj, $"{i.proj}.csproj");
+                        var patcher = patcherFactory.GetSolutionPatcher(new SolutionPatcherSettings()
+                        {
+                            SolutionPath = i.sln.Value,
+                            ProjectSubpath = Path.Combine(i.proj, $"{i.proj}.csproj"),
+                        });
                         return patcher.AsEnumerable();
                     });
                 });

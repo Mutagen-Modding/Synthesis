@@ -7,7 +7,8 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
+using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
 {
@@ -34,7 +35,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
 
         public NewSolutionInitVm(
             IGameCategoryContext gameCategoryContext,
-            Func<SolutionPatcherVm> patcherFactory,
+            IPatcherFactory patcherFactory,
             IValidateProjectPath validateProjectPath,
             ICreateSolutionFile createSolutionFile,
             ICreateProject createProject,
@@ -104,14 +105,16 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
                     if (i.validation.Failed) return i.validation.BubbleFailure<InitializerCall>();
                     return GetResponse<InitializerCall>.Succeed(async () =>
                     {
-                        var patcher = patcherFactory();
+                        var projName = Path.GetFileNameWithoutExtension(i.validation.Value);
                         createSolutionFile.Create(i.sln.Value);
                         createProject.Create(gameCategoryContext.Category, i.validation.Value);
                         addProjectToSolution.Add(i.sln.Value, i.validation.Value);
                         gitIgnore.Generate(Path.GetDirectoryName(i.sln.Value)!);
-                        patcher.SolutionPathInput.Picker.TargetPath = i.sln.Value;
-                        var projName = Path.GetFileNameWithoutExtension(i.validation.Value);
-                        patcher.SelectedProjectInput.ProjectSubpath = Path.Combine(projName, $"{projName}.csproj");
+                        var patcher = patcherFactory.GetSolutionPatcher(new SolutionPatcherSettings()
+                        {
+                            SolutionPath = i.sln.Value,
+                            ProjectSubpath = Path.Combine(projName, $"{projName}.csproj")
+                        });
                         return patcher.AsEnumerable();
                     });
                 });

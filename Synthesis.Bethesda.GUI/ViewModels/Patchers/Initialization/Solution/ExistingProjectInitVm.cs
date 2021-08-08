@@ -9,7 +9,9 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
+using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
 {
@@ -31,7 +33,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
 
         public ExistingProjectInitVm(
             IAvailableProjectsRetriever availableProjectsRetriever,
-            Func<SolutionPatcherVm> patcherFactory)
+            IPatcherFactory patcherFactory)
         {
             SolutionPath.PathType = PathPickerVM.PathTypeOptions.File;
             SolutionPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
@@ -83,9 +85,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
                     {
                         return q.Select(i =>
                         {
-                            var patcher = patcherFactory();
-                            patcher.SolutionPathInput.Picker.TargetPath = SolutionPath.TargetPath;
-                            patcher.SelectedProjectInput.ProjectSubpath = i.TargetPath.TrimStart($"{Path.GetDirectoryName(SolutionPath.TargetPath)}\\"!);
+                            var patcher = patcherFactory.GetSolutionPatcher(new SolutionPatcherSettings()
+                            {
+                                SolutionPath = SolutionPath.TargetPath,
+                                ProjectSubpath =  i.TargetPath.TrimStart($"{Path.GetDirectoryName(SolutionPath.TargetPath)}\\"!)
+                            });
                             return patcher;
                         });
                     });
