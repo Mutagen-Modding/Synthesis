@@ -69,7 +69,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
 
             _IsSelected = selPatcher.WhenAnyValue(x => x.SelectedObject)
                 .Select(x => x == this)
-                .ToGuiProperty(this, nameof(IsSelected));
+                // Not GuiProperty, as it interacts with drag/drop oddly
+                .ToProperty(this, nameof(IsSelected));
 
             // Set to settings
             IsOn = settings?.On ?? false;

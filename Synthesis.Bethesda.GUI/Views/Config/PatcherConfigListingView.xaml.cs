@@ -29,6 +29,7 @@ namespace Synthesis.Bethesda.GUI.Views
             {
                 this.WhenAnyFallback(x => x.ViewModel!.IsSelected)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .ObserveOnGui()
                     .BindTo(this, x => x.SelectedGlow.Visibility)
                     .DisposeWith(disposable);
                 this.Bind(this.ViewModel, vm => vm.IsOn, view => view.OnToggle.IsChecked)
