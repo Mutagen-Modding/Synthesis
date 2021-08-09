@@ -1,13 +1,23 @@
 using System.Diagnostics.CodeAnalysis;
 using CommandLine;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Plugins.Order.DI;
+using Noggog;
+using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Running
 {
     [Verb("run-patcher", HelpText = "Run the patcher")]
     [ExcludeFromCodeCoverage]
-    public class RunPatcherPipelineInstructions
+    public class RunPatcherPipelineInstructions :
+        IGameReleaseContext,
+        IDataDirectoryProvider,
+        IPluginListingsPathProvider,
+        IProfileDefinitionPathProvider,
+        IProfileNameProvider
     {
         [Option('s', "SourcePath", Required = false, HelpText = "Optional path pointing to the previous patcher result to build onto.")]
         public string? SourcePath { get; set; }
@@ -53,5 +63,11 @@ namespace Synthesis.Bethesda.Execution.Running
                 + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
                 + $"  {nameof(PersistenceMode)} => {this.PersistenceMode}";
         }
+
+        GameRelease IGameReleaseContext.Release => GameRelease;
+        DirectoryPath IDataDirectoryProvider.Path => DataFolderPath;
+        FilePath IPluginListingsPathProvider.Path => LoadOrderFilePath;
+        FilePath IProfileDefinitionPathProvider.Path => ProfileDefinitionPath;
+        string IProfileNameProvider.Name => ProfileName;
     }
 }

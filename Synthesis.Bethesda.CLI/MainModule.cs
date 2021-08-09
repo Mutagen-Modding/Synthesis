@@ -37,16 +37,8 @@ namespace Synthesis.Bethesda.CLI
             builder.RegisterInstance(new ConsoleReporter()).As<IRunReporter>();
             
             // Settings
-            builder.RegisterInstance(new GameReleaseInjection(Settings.GameRelease))
-                .As<IGameReleaseContext>();
-            builder.RegisterInstance(new DataDirectoryInjection(Settings.DataFolderPath))
-                .As<IDataDirectoryProvider>();
-            builder.RegisterInstance(new PluginListingsPathInjection(Settings.LoadOrderFilePath))
-                .As<IPluginListingsPathProvider>();
-            builder.RegisterInstance(new ProfileDefinitionPathInjection { Path = Settings.ProfileDefinitionPath })
-                .As<IProfileDefinitionPathProvider>();
-            builder.RegisterInstance(new ProfileNameInjection { Name = Settings.ProfileName })
-                .As<IProfileNameProvider>();
+            builder.RegisterInstance(Settings)
+                .AsImplementedInterfaces();
         }
     }
 }
