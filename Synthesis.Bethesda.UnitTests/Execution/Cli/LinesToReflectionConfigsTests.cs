@@ -11,7 +11,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Cli
     {
         [Theory, SynthAutoData]
         public void Typical(
-            LinesToReflectionConfigs sut)
+            LinesToReflectionConfigsParser sut)
         {
             var ret = sut.Parse(new string[]
             {
@@ -27,7 +27,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Cli
         
         [Theory, SynthAutoData]
         public void Multiple(
-            LinesToReflectionConfigs sut)
+            LinesToReflectionConfigsParser sut)
         {
             var ret = sut.Parse(new string[]
             {

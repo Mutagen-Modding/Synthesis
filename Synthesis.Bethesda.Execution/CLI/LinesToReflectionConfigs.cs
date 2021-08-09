@@ -5,12 +5,12 @@ using Synthesis.Bethesda.DTO;
 
 namespace Synthesis.Bethesda.Execution.CLI
 {
-    public interface ILinesToReflectionConfigs
+    public interface ILinesToReflectionConfigsParser
     {
         ReflectionSettingsConfigs Parse(IEnumerable<string> lines);
     }
 
-    public class LinesToReflectionConfigs : ILinesToReflectionConfigs
+    public class LinesToReflectionConfigsParser : ILinesToReflectionConfigsParser
     {
         public ReflectionSettingsConfigs Parse(IEnumerable<string> lines)
         {
