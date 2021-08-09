@@ -1,3 +1,5 @@
+using System;
+using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Synthesis.Bethesda.Execution.CLI;
@@ -12,6 +14,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
 
     public class SolutionPatcherRun : ISolutionPatcherRun
     {
+        private readonly CompositeDisposable _disposable = new();
+        
         public IPatcherNameProvider NameProvider { get; }
         public IPathToProjProvider PathToProjProvider { get; }
         public ISolutionPatcherRunner SolutionPatcherRunner { get; }
@@ -61,6 +65,12 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
 
         public void Dispose()
         {
+            _disposable.Dispose();
+        }
+
+        public void Add(IDisposable disposable)
+        {
+            _disposable.Add(disposable);
         }
 
         public override string ToString() => Name;

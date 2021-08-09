@@ -2,10 +2,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda;
+using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running
 {
-    public interface IPatcherRun : IDisposable
+    public interface IPatcherRun : IDisposableDropoff
     {
         string Name { get; }
         Task Prep(CancellationToken cancel);

@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -49,6 +50,11 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
         public void Dispose()
         {
             _disposable.Dispose();
+        }
+
+        public void Add(IDisposable disposable)
+        {
+            _disposable.Add(disposable);
         }
 
         [ExcludeFromCodeCoverage]

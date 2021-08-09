@@ -44,15 +44,15 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Git
             _checkOrClone = checkOrClone;
             Name = $"{settings.Nickname.Decorate(x => $"{x} => ")}{settings.RemoteRepoPath} => {Path.GetFileNameWithoutExtension(settings.SelectedProjectSubpath)}";
         }
-
-        public void AddForDisposal(IDisposable disposable)
-        {
-            _disposable.Add(disposable);
-        }
-
+        
         public void Dispose()
         {
             _disposable.Dispose();
+        }
+
+        public void Add(IDisposable disposable)
+        {
+            _disposable.Add(disposable);
         }
 
         public async Task Prep(CancellationToken cancel)

@@ -319,6 +319,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running
                 WasDisposed = true;
             }
 
+            public void Add(IDisposable disposable)
+            {
+            }
+
             public async Task Prep(CancellationToken cancel)
             {
                 WasPrepped = true;
