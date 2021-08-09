@@ -155,13 +155,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 execute: () => navigate.Navigate(RemoteRepoPathInput.RemoteRepoPath));
 
             OpenGitPageToVersionCommand = ReactiveCommand.Create(
-                canExecute: this.WhenAnyValue(x => x.RunnableData)
+                canExecute: this.WhenAnyFallback(x => x.RunnableData)
                     .Select(x => x != null),
                 execute: () =>
                 {
                     try
                     {
-                        if (!RunnableData.TryGet(out var runnable)) return;
+                        if (RunnableData is not {} runnable) return;
                         if (runnable.Target == null)
                         {
                             navigate.Navigate(RemoteRepoPathInput.RemoteRepoPath);

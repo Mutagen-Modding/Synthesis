@@ -236,7 +236,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 canExecute: o => o.Failed,
                 execute: o =>
                 {
-                    if (o.Value.TryGet(out var patcher))
+                    if (o.Value is {} patcher)
                     {
                         DisplayController.SelectedObject = patcher;
                     }
