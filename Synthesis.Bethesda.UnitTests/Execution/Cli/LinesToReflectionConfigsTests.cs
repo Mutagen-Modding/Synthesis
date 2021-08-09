@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.CLI;
+using Synthesis.Bethesda.Execution.Json;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 

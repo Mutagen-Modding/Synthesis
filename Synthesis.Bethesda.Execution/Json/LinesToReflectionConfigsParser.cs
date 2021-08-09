@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Synthesis.Bethesda.DTO;
 
-namespace Synthesis.Bethesda.Execution.CLI
+namespace Synthesis.Bethesda.Execution.Json
 {
     public interface ILinesToReflectionConfigsParser
     {

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.DTO;
+using Synthesis.Bethesda.Execution.Json;
 using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.CLI

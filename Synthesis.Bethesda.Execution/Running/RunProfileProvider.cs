@@ -2,6 +2,7 @@
 using System.IO.Abstractions;
 using System.Linq;
 using Newtonsoft.Json;
+using Synthesis.Bethesda.Execution.Json;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
@@ -20,8 +21,9 @@ namespace Synthesis.Bethesda.Execution.Running
         public ISynthesisProfileSettings Profile => _profile.Value;
         
         public RunProfileProvider(
-            IFileSystem fileSystem,
             IProfileNameProvider profileNameProvider,
+            IPipelineSettingsImporter pipelineSettingsImporter,
+            ISynthesisProfileImporter synthProfileImporter,
             IProfileDefinitionPathProvider profileDefinitionPathProvider)
         {
             _profile = new Lazy<ISynthesisProfileSettings>(() =>
@@ -29,15 +31,11 @@ namespace Synthesis.Bethesda.Execution.Running
                 ISynthesisProfileSettings? profile;
                 if (string.IsNullOrWhiteSpace(profileNameProvider.Name))
                 {
-                    profile = JsonConvert.DeserializeObject<SynthesisProfile>(
-                        fileSystem.File.ReadAllText(profileDefinitionPathProvider.Path),
-                        Constants.JsonSettings)!;
+                    profile = synthProfileImporter.Import(profileDefinitionPathProvider.Path);
                 }
                 else
                 {
-                    var settings = JsonConvert.DeserializeObject<PipelineSettings>(
-                        fileSystem.File.ReadAllText(profileDefinitionPathProvider.Path), 
-                        Constants.JsonSettings)!;
+                    var settings = pipelineSettingsImporter.Import(profileDefinitionPathProvider.Path);
                     profile = settings.Profiles.FirstOrDefault(profile =>
                     {
                         if (profileNameProvider.Name.Equals(profile.Nickname)) return true;

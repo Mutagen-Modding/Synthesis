@@ -3,6 +3,7 @@ using Noggog.Autofac;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
 using Synthesis.Bethesda.Execution.GitRepository;
+using Synthesis.Bethesda.Execution.Json;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -26,6 +27,7 @@ namespace Synthesis.Bethesda.Execution.Modules
                     typeof(IInstalledSdkFollower),
                     typeof(IConsiderPrereleasePreference),
                     typeof(IPatcherNameSanitizer),
+                    typeof(ILinesToReflectionConfigsParser),
                     typeof(IBuild))
                 .NotInNamespacesOf(typeof(IInstalledSdkFollower))
                 .Except<IBuildOutputAccumulator>()
