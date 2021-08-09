@@ -93,8 +93,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
                 RegisterId(c);
                 c.RegisterModule<GuiCliPatcherModule>();
                 c.RegisterInstance(settings)
-                    .AsSelf()
-                    .AsImplementedInterfaces();
+                    .AsSelf();
             });
             var patcher = patcherScope.Resolve<CliPatcherVm>();
             patcherScope.DisposeWith(patcher);

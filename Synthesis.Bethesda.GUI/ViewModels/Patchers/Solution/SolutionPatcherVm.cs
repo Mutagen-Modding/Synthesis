@@ -19,7 +19,6 @@ using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
@@ -32,7 +31,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 {
     public class SolutionPatcherVm : PatcherVm, 
         IProvidePatcherMetaPath, 
-        IPathToProjProvider,
         ISolutionPatcherSettingsVm
     {
         public ISolutionPathInputVm SolutionPathInput { get; }
@@ -183,7 +181,5 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             RequiredMods.SetTo(modKeys
                 .Select(m => new ModKeyItemViewModel(m)));
         }
-
-        FilePath IPathToProjProvider.Path => SelectedProjectInput.Picker.TargetPath;
     }
 }

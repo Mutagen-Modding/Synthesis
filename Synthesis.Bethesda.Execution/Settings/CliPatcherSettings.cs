@@ -1,11 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using Noggog;
 using Serilog;
+using Synthesis.Bethesda.Execution.Patchers.Cli;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
     [ExcludeFromCodeCoverage]
-    public class CliPatcherSettings : PatcherSettings
+    public class CliPatcherSettings : PatcherSettings, IPathToExecutableInputProvider
     {
         public string PathToExecutable { get; set; } = string.Empty;
 
@@ -13,5 +14,7 @@ namespace Synthesis.Bethesda.Execution.Settings
         {
             logger.Information($"[CLI] {Nickname.Decorate(x => $"{x} => ")}{PathToExecutable}");
         }
+
+        FilePath IPathToExecutableInputProvider.Path => PathToExecutable;
     }
 }

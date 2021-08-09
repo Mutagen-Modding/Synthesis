@@ -10,7 +10,7 @@ namespace Synthesis.Bethesda.GUI.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterModule<CliModule>();
+            builder.RegisterModule<GuiCliModule>();
             
             builder.RegisterAssemblyTypes(typeof(CliPatcherVm).Assembly)
                 .InNamespacesOf(typeof(CliPatcherVm))

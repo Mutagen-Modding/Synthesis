@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using Noggog.Autofac;
-using Synthesis.Bethesda.Execution.Patchers.Solution;
-using Synthesis.Bethesda.Execution.Patchers.TopLevel;
+using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.GUI.Services.Patchers;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
@@ -13,12 +12,7 @@ namespace Synthesis.Bethesda.GUI.Modules
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterModule<PatcherModule>();
-            builder.RegisterAssemblyTypes(typeof(IPathToProjProvider).Assembly)
-                .InNamespacesOf(
-                    typeof(IPathToProjProvider))
-                .SingleInstance()
-                .NotInjection()
-                .AsImplementedInterfaces();
+            builder.RegisterModule<SolutionModule>();
             builder.RegisterAssemblyTypes(typeof(SolutionPatcherVm).Assembly)
                 .InNamespacesOf(
                     typeof(SolutionPatcherVm),

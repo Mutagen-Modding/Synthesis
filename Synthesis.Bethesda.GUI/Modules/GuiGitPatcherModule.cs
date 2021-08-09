@@ -2,7 +2,6 @@
 using Noggog.Autofac;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
-using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.Services.Patchers;
 using Synthesis.Bethesda.GUI.Services.Patchers.Git;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;

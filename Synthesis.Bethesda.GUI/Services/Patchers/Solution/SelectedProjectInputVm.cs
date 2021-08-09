@@ -6,18 +6,19 @@ using System;
 using System.Reactive.Linq;
 using Noggog;
 using ReactiveUI.Fody.Helpers;
-using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
 {
-    public interface ISelectedProjectInputVm
+    public interface ISelectedProjectInputVm : IProjectSubpathProvider
     {
-        string ProjectSubpath { get; set; }
+        new string ProjectSubpath { get; set; }
         PathPickerVM Picker { get; }
     }
 
-    public class SelectedProjectInputVm : ViewModel, ISelectedProjectInputVm
+    public class SelectedProjectInputVm : ViewModel, 
+        ISelectedProjectInputVm,
+        IPathToProjProvider
     {
         [Reactive]
         public string ProjectSubpath { get; set; } = string.Empty;
@@ -46,5 +47,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
                 })
                 .DisposeWith(this);
         }
+
+        FilePath IPathToProjProvider.Path => Picker.TargetPath;
     }
 }

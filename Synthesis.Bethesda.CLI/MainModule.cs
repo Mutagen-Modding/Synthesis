@@ -2,14 +2,10 @@
 using System.Threading;
 using Autofac;
 using Mutagen.Bethesda.Autofac;
-using Mutagen.Bethesda.Environments.DI;
-using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog.Autofac;
 using Noggog.Autofac.Modules;
 using Serilog;
 using Synthesis.Bethesda.Execution.CLI;
-using Synthesis.Bethesda.Execution.Pathing;
-using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Running;
 
