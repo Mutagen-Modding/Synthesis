@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using Newtonsoft.Json;
@@ -21,6 +22,7 @@ namespace Synthesis.Bethesda.Execution.Running
         public ISynthesisProfileSettings Profile => _profile.Value;
         
         public RunProfileProvider(
+            IFileSystem fileSystem,
             IProfileNameProvider profileNameProvider,
             IPipelineSettingsImporter pipelineSettingsImporter,
             ISynthesisProfileImporter synthProfileImporter,
@@ -28,6 +30,12 @@ namespace Synthesis.Bethesda.Execution.Running
         {
             _profile = new Lazy<ISynthesisProfileSettings>(() =>
             {
+                // Locate profile
+                if (!fileSystem.File.Exists(profileDefinitionPathProvider.Path))
+                {
+                    throw new FileNotFoundException("Could not locate profile to run", profileDefinitionPathProvider.Path);
+                }
+                
                 ISynthesisProfileSettings? profile;
                 if (string.IsNullOrWhiteSpace(profileNameProvider.Name))
                 {

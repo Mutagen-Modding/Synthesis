@@ -37,12 +37,6 @@ namespace Synthesis.Bethesda.Execution.Running
         
         public async Task Run(RunPatcherPipelineInstructions run)
         {
-            // Locate profile
-            if (string.IsNullOrWhiteSpace(run.ProfileDefinitionPath))
-            {
-                throw new ArgumentNullException("Profile", "Could not locate profile to run");
-            }
-
             if (_profileProvider.Profile.TargetRelease != run.GameRelease)
             {
                 throw new ArgumentException($"Target game release did not match profile's: {run.GameRelease} != {_profileProvider.Profile.TargetRelease}");
