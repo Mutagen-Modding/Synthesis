@@ -1,41 +1,29 @@
 ﻿using Autofac;
 using Noggog.Autofac;
-using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.Services.Patchers;
-using Synthesis.Bethesda.GUI.Services.Patchers.Git;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Modules
 {
-    public class GitPatcherModule : Autofac.Module
+    public class GuiSolutionPatcherModule : Autofac.Module
     {
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterModule<PatcherModule>();
-            builder.RegisterAssemblyTypes(typeof(IGithubPatcherIdentifier).Assembly)
+            builder.RegisterAssemblyTypes(typeof(IPathToProjProvider).Assembly)
                 .InNamespacesOf(
-                    typeof(IGithubPatcherIdentifier),
                     typeof(IPathToProjProvider))
                 .SingleInstance()
                 .NotInjection()
                 .AsImplementedInterfaces();
-            builder.RegisterAssemblyTypes(typeof(GitPatcherVm).Assembly)
+            builder.RegisterAssemblyTypes(typeof(SolutionPatcherVm).Assembly)
                 .InNamespacesOf(
-                    typeof(GitPatcherVm),
-                    typeof(IPrepareRunnableState),
+                    typeof(SolutionPatcherVm),
                     typeof(ISolutionFilePathFollower))
                 .SingleInstance()
-                .NotInjection()
-                .AsImplementedInterfaces()
-                .AsSelf();
-            
-            builder.RegisterAssemblyTypes(typeof(GitPatcherVm).Assembly)
-                .InNamespacesOf(
-                    typeof(GitPatcherInitVm))
                 .NotInjection()
                 .AsImplementedInterfaces()
                 .AsSelf();

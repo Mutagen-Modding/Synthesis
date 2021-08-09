@@ -68,7 +68,7 @@ namespace Synthesis.Bethesda.UnitTests
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MainModule>();
-            builder.RegisterModule<GitPatcherModule>();
+            builder.RegisterModule<GuiGitPatcherModule>();
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
@@ -88,7 +88,7 @@ namespace Synthesis.Bethesda.UnitTests
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MainModule>();
-            builder.RegisterModule<GitPatcherModule>();
+            builder.RegisterModule<GuiGitPatcherModule>();
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
@@ -108,7 +108,7 @@ namespace Synthesis.Bethesda.UnitTests
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MainModule>();
-            builder.RegisterModule<SolutionPatcherModule>();
+            builder.RegisterModule<GuiSolutionPatcherModule>();
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
@@ -127,7 +127,7 @@ namespace Synthesis.Bethesda.UnitTests
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MainModule>();
-            builder.RegisterModule<SolutionPatcherModule>();
+            builder.RegisterModule<GuiSolutionPatcherModule>();
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
@@ -146,7 +146,7 @@ namespace Synthesis.Bethesda.UnitTests
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MainModule>();
-            builder.RegisterModule<CliPatcherModule>();
+            builder.RegisterModule<GuiCliPatcherModule>();
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();

@@ -34,15 +34,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization
             _scope = scope;
             AddGitPatcherCommand = ReactiveCommand.Create(() =>
             {
-                initializationVm.NewPatcher = Resolve<GitPatcherInitVm, GitPatcherModule, GithubPatcherSettings>();
+                initializationVm.NewPatcher = Resolve<GitPatcherInitVm, GuiGitPatcherModule, GithubPatcherSettings>();
             });
             AddSolutionPatcherCommand = ReactiveCommand.Create(() =>
             {
-                initializationVm.NewPatcher = Resolve<SolutionPatcherInitVm, SolutionPatcherModule, SolutionPatcherSettings>();
+                initializationVm.NewPatcher = Resolve<SolutionPatcherInitVm, GuiSolutionPatcherModule, SolutionPatcherSettings>();
             });
             AddCliPatcherCommand = ReactiveCommand.Create(() =>
             {
-                initializationVm.NewPatcher = Resolve<CliPatcherInitVm, CliPatcherModule, CliPatcherSettings>();
+                initializationVm.NewPatcher = Resolve<CliPatcherInitVm, GuiCliPatcherModule, CliPatcherSettings>();
             });
         }
 

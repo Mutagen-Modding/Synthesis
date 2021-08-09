@@ -60,7 +60,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
             var patcherScope = _scope.BeginLifetimeScope(LifetimeScopes.PatcherNickname, c =>
             {
                 RegisterId(c);
-                c.RegisterModule<GitPatcherModule>();
+                c.RegisterModule<GuiGitPatcherModule>();
                 settings = _gitSettingsInitializer.Get(settings);
                 c.RegisterInstance(settings)
                     .AsSelf()
@@ -76,7 +76,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
             var patcherScope = _scope.BeginLifetimeScope(LifetimeScopes.PatcherNickname, c =>
             {
                 RegisterId(c);
-                c.RegisterModule<SolutionPatcherModule>();
+                c.RegisterModule<GuiSolutionPatcherModule>();
                 c.RegisterInstance(settings)
                     .AsSelf()
                     .AsImplementedInterfaces();
@@ -91,7 +91,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
             var patcherScope = _scope.BeginLifetimeScope(LifetimeScopes.PatcherNickname, c =>
             {
                 RegisterId(c);
-                c.RegisterModule<CliPatcherModule>();
+                c.RegisterModule<GuiCliPatcherModule>();
                 c.RegisterInstance(settings)
                     .AsSelf()
                     .AsImplementedInterfaces();
