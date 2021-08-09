@@ -4,7 +4,6 @@ using System.Reactive.Subjects;
 using Serilog;
 using Serilog.Events;
 using Synthesis.Bethesda.Execution.Patchers.Common;
-using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Reporters;
 
 namespace Synthesis.Bethesda.Execution.Running

@@ -1,7 +1,7 @@
 using Noggog;
-using Synthesis.Bethesda.Execution.Reporters;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Synthesis.Bethesda.Execution.Settings
@@ -35,9 +35,9 @@ namespace Synthesis.Bethesda.Execution.Settings
         public string ManualSynthesisVersion = string.Empty;
         public GithubPatcherLastRunState? LastSuccessfulRun;
 
-        public override void Print(IRunReporter logger)
+        public override void Print(ILogger logger)
         {
-            logger.Write(default(int), default, $"[Git] {Nickname.Decorate(x => $"{x} => ")}{RemoteRepoPath}/{SelectedProjectSubpath} {PatcherVersioningString()}");
+            logger.Information($"[Git] {Nickname.Decorate(x => $"{x} => ")}{RemoteRepoPath}/{SelectedProjectSubpath} {PatcherVersioningString()}");
         }
 
         public string PatcherVersioningString()

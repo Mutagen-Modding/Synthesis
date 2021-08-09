@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins;
 using Synthesis.Bethesda.Execution.Settings;
 

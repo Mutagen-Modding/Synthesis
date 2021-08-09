@@ -1,9 +1,6 @@
 using Noggog;
-using Synthesis.Bethesda.Execution.Reporters;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
+using Serilog;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
@@ -13,9 +10,9 @@ namespace Synthesis.Bethesda.Execution.Settings
         public string SolutionPath = string.Empty;
         public string ProjectSubpath = string.Empty;
 
-        public override void Print(IRunReporter logger)
+        public override void Print(ILogger logger)
         {
-            logger.Write(default(int), default, $"[Solution] {Nickname.Decorate(x => $"{x} => ")}{SolutionPath} => {ProjectSubpath}");
+            logger.Information($"[Solution] {Nickname.Decorate(x => $"{x} => ")}{SolutionPath} => {ProjectSubpath}");
         }
     }
 }

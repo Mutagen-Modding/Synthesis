@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.IO.Abstractions;
-using Mutagen.Bethesda.Plugins;
 using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner

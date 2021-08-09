@@ -1,13 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.IO.Abstractions;
 using System.Threading;
 using System.Threading.Tasks;
-using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Running;
-using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Reporters;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner

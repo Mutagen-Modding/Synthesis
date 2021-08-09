@@ -1,5 +1,4 @@
 ﻿using System.IO.Abstractions;
-using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Synthesis.Bethesda.Execution.Reporters;
 

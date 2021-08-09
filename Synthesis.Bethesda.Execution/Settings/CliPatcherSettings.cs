@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Noggog;
-using Synthesis.Bethesda.Execution.Reporters;
+using Serilog;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
@@ -9,9 +9,9 @@ namespace Synthesis.Bethesda.Execution.Settings
     {
         public string PathToExecutable { get; set; } = string.Empty;
 
-        public override void Print(IRunReporter logger)
+        public override void Print(ILogger logger)
         {
-            logger.Write(default(int), default, $"[CLI] {Nickname.Decorate(x => $"{x} => ")}{PathToExecutable}");
+            logger.Information($"[CLI] {Nickname.Decorate(x => $"{x} => ")}{PathToExecutable}");
         }
     }
 }
