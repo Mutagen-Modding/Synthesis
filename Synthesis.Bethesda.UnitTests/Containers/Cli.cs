@@ -11,6 +11,8 @@ using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Running;
+using Synthesis.Bethesda.Execution.Running.Cli;
+using Synthesis.Bethesda.Execution.Running.Cli.Settings;
 using Synthesis.Bethesda.Execution.Settings;
 using Xunit;
 
@@ -48,7 +50,7 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             builder.RegisterModule(
                 new Synthesis.Bethesda.CLI.MainModule(
                     new RunPatcherPipelineInstructions()));
-            builder.RegisterModule(new CliModule());
+            builder.RegisterModule<PatcherModule>();
             builder.RegisterMock<IProfileIdentifier>();
             builder.RegisterMock<CliPatcherSettings>()
                 .As<IPathToExecutableInputProvider>()
@@ -64,6 +66,7 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             builder.RegisterModule(
                 new Synthesis.Bethesda.CLI.MainModule(
                     new RunPatcherPipelineInstructions()));
+            builder.RegisterModule<PatcherModule>();
             builder.RegisterMock<IProfileIdentifier>();
             builder.RegisterMock<SolutionPatcherSettings>()
                 .As<IPatcherNameProvider>()
@@ -80,6 +83,7 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             builder.RegisterModule(
                 new Synthesis.Bethesda.CLI.MainModule(
                     new RunPatcherPipelineInstructions()));
+            builder.RegisterModule<PatcherModule>();
             builder.RegisterMock<IProfileIdentifier>();
             builder.RegisterMock<GithubPatcherSettings>()
                 .As<IGithubPatcherIdentifier>()

@@ -2,12 +2,10 @@
 using System.Threading;
 using Autofac;
 using Mutagen.Bethesda.Autofac;
-using Noggog.Autofac;
 using Noggog.Autofac.Modules;
 using Serilog;
-using Synthesis.Bethesda.Execution.CLI;
 using Synthesis.Bethesda.Execution.Reporters;
-using Synthesis.Bethesda.Execution.Running;
+using Synthesis.Bethesda.Execution.Running.Cli.Settings;
 
 namespace Synthesis.Bethesda.CLI
 {
@@ -26,14 +24,15 @@ namespace Synthesis.Bethesda.CLI
             builder.RegisterType<FileSystem>().As<IFileSystem>();
             builder.RegisterModule<NoggogModule>();
             builder.RegisterInstance(Log.Logger).As<ILogger>();
-            builder.RegisterAssemblyTypes(typeof(IExecuteRunnabilityCheck).Assembly)
-                .AsMatchingInterface();
+            builder.RegisterModule<Execution.Modules.MainModule>();
+            builder.RegisterModule<Execution.Modules.ProfileModule>();
             
             builder.Register(_ => CancellationToken.None).AsSelf();
             builder.RegisterInstance(new ConsoleReporter()).As<IRunReporter>();
             
             // Settings
             builder.RegisterInstance(Settings)
+                .AsSelf()
                 .AsImplementedInterfaces();
         }
     }

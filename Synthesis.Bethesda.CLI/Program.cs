@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Autofac;
 using Mutagen.Bethesda.Installs;
 using Synthesis.Bethesda.Execution.Running;
+using Synthesis.Bethesda.Execution.Running.Cli;
+using Synthesis.Bethesda.Execution.Running.Cli.Settings;
 
 namespace Synthesis.Bethesda.CLI
 {
@@ -18,22 +20,22 @@ namespace Synthesis.Bethesda.CLI
                     {
                         try
                         {
-                            // Locate data folder
-                            if (string.IsNullOrWhiteSpace(settings.DataFolderPath))
-                            {
-                                if (!GameLocations.TryGetGameFolder(settings.GameRelease, out var gameFolder))
-                                {
-                                    throw new DirectoryNotFoundException("Could not find game folder automatically");
-                                }
-                                settings.DataFolderPath = Path.Combine(gameFolder, "Data");
-                            }
-
                             var builder = new ContainerBuilder();
                             builder.RegisterModule(
                                 new MainModule(settings));
-                            await builder.Build()
+                            var container = builder.Build();
+
+                            var profile = container.Resolve<IRunProfileProvider>();
+
+                            using var runScope = container.BeginLifetimeScope(c =>
+                            {
+                                c.RegisterInstance(profile.Profile)
+                                    .AsImplementedInterfaces();
+                            });
+                            
+                            await runScope
                                 .Resolve<IRunPatcherPipeline>()
-                                .Run(settings);
+                                .Run();
                         }
                         catch (Exception ex)
                         {
