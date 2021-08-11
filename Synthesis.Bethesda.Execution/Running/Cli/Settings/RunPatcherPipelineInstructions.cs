@@ -2,46 +2,44 @@ using System.Diagnostics.CodeAnalysis;
 using CommandLine;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
-using Mutagen.Bethesda.Plugins.Order.DI;
+using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.Execution.Running
+namespace Synthesis.Bethesda.Execution.Running.Cli.Settings
 {
-    [Verb("run-patcher", HelpText = "Run the patcher")]
+    [Verb("run-pipeline", HelpText = "Run the patcher pipeline")]
     [ExcludeFromCodeCoverage]
     public class RunPatcherPipelineInstructions :
         IGameReleaseContext,
-        IDataDirectoryProvider,
-        IPluginListingsPathProvider,
         IProfileDefinitionPathProvider,
         IProfileNameProvider
     {
         [Option('s', "SourcePath", Required = false, HelpText = "Optional path pointing to the previous patcher result to build onto.")]
-        public string? SourcePath { get; set; }
+        public FilePath? SourcePath { get; set; }
 
         [Option('o', "OutputPath", Required = true, HelpText = "Path where the patcher should place its resulting file.")]
-        public string OutputPath { get; set; } = string.Empty;
+        public ModPath OutputPath { get; set; } = ModPath.Empty;
 
         [Option('g', "GameRelease", Required = true, HelpText = "GameRelease data folder is related to.")]
         public GameRelease GameRelease { get; set; }
 
         [Option('d', "DataFolderPath", Required = false, HelpText = "Path to the data folder.")]
-        public string DataFolderPath { get; set; } = string.Empty;
+        public DirectoryPath DataFolderPath { get; set; } = string.Empty;
 
         [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
-        public string LoadOrderFilePath { get; set; } = string.Empty;
+        public FilePath LoadOrderFilePath { get; set; } = string.Empty;
 
         [Option('p', "ProfileDefinitionPath", Required = true, HelpText = "Path to a specific profile or settings definition to run")]
-        public string ProfileDefinitionPath { get; set; } = string.Empty;
+        public FilePath ProfileDefinitionPath { get; set; } = string.Empty;
 
         [Option('n', "ProfileName", Required = false, HelpText = "Nickname/GUID of profile to run if path is to a settings file with multiple profiles")]
         public string ProfileName { get; set; } = string.Empty;
 
         [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to where top level extra patcher data should be stored/read from.  Default is next to the exe")]
-        public string? ExtraDataFolder { get; set; }
+        public DirectoryPath? ExtraDataFolder { get; set; }
 
         [Option('r', "PersistencePath", Required = false, HelpText = "Path to the shared FormKey allocation state")]
         public string? PersistencePath { get; internal set; }
@@ -65,8 +63,6 @@ namespace Synthesis.Bethesda.Execution.Running
         }
 
         GameRelease IGameReleaseContext.Release => GameRelease;
-        DirectoryPath IDataDirectoryProvider.Path => DataFolderPath;
-        FilePath IPluginListingsPathProvider.Path => LoadOrderFilePath;
         FilePath IProfileDefinitionPathProvider.Path => ProfileDefinitionPath;
         string IProfileNameProvider.Name => ProfileName;
     }

@@ -10,7 +10,6 @@ using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Profile;
-using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.Execution.Running.Cli;
 using Synthesis.Bethesda.Execution.Running.Cli.Settings;
 using Synthesis.Bethesda.Execution.Settings;
