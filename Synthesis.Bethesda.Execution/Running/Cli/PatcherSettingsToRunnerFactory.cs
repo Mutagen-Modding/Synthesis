@@ -31,6 +31,7 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
                 {
                     var scope = _scope.BeginLifetimeScope(c =>
                     {
+                        c.RegisterModule<PatcherModule>();
                         c.RegisterInstance(cliPatcherSettings)
                             .AsSelf()
                             .AsImplementedInterfaces();
@@ -41,6 +42,7 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
                 {
                     var scope = _scope.BeginLifetimeScope(c =>
                     {
+                        c.RegisterModule<GitPatcherModule>();
                         c.RegisterInstance(githubPatcherSettings)
                             .AsSelf()
                             .AsImplementedInterfaces();
@@ -51,6 +53,7 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
                 {
                     var scope = _scope.BeginLifetimeScope(c =>
                     {
+                        c.RegisterModule<SolutionPatcherModule>();
                         c.RegisterInstance(solutionPatcherSettings)
                             .AsSelf()
                             .AsImplementedInterfaces();

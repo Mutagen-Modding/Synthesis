@@ -36,7 +36,6 @@ namespace Synthesis.Bethesda.Execution.Modules
                     typeof(IProjectRunProcessStartInfoProvider),
                     typeof(IBuild))
                 .NotInNamespacesOf(typeof(IInstalledSdkFollower))
-                .Except<IBuildOutputAccumulator>()
                 .TypicalRegistrations();
             
             builder.RegisterAssemblyTypes(typeof(ICheckOrCloneRepo).Assembly)
@@ -44,10 +43,6 @@ namespace Synthesis.Bethesda.Execution.Modules
                     typeof(IInstalledSdkFollower))
                 .SingleInstance()
                 .AsMatchingInterface();
-
-            builder.RegisterType<BuildOutputAccumulator>()
-                .AsImplementedInterfaces()
-                .InstancePerRequest();
         }
     }
 }

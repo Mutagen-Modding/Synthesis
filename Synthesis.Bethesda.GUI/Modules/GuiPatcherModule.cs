@@ -8,11 +8,11 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.GUI.Modules
 {
-    public class PatcherModule : Autofac.Module
+    public class GuiPatcherModule : Autofac.Module
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterModule<Synthesis.Bethesda.Execution.Modules.PatcherModule>();
+            builder.RegisterModule<PatcherModule>();
             builder.RegisterAssemblyTypes(typeof(PatcherVm).Assembly)
                 .InNamespacesOf(
                     typeof(PatcherVm),

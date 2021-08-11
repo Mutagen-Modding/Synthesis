@@ -50,6 +50,7 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             builder.RegisterModule(
                 new Synthesis.Bethesda.CLI.MainModule(
                     new RunPatcherPipelineInstructions()));
+            builder.RegisterModule<PatcherModule>();
             builder.RegisterMock<IProfileIdentifier>();
             builder.RegisterMock<CliPatcherSettings>()
                 .As<IPathToExecutableInputProvider>()
@@ -65,6 +66,7 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             builder.RegisterModule(
                 new Synthesis.Bethesda.CLI.MainModule(
                     new RunPatcherPipelineInstructions()));
+            builder.RegisterModule<SolutionPatcherModule>();
             builder.RegisterMock<IProfileIdentifier>();
             builder.RegisterMock<SolutionPatcherSettings>()
                 .As<IPatcherNameProvider>()
@@ -81,10 +83,12 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             builder.RegisterModule(
                 new Synthesis.Bethesda.CLI.MainModule(
                     new RunPatcherPipelineInstructions()));
+            builder.RegisterModule<GitPatcherModule>();
             builder.RegisterMock<IProfileIdentifier>();
             builder.RegisterMock<GithubPatcherSettings>()
                 .As<IGithubPatcherIdentifier>()
-                .As<IPatcherNameProvider>();
+                .As<IPatcherNameProvider>()
+                .As<IProjectSubpathProvider>();
             var cont = builder.Build();
             cont.Validate(typeof(IGitPatcherRun));
         }

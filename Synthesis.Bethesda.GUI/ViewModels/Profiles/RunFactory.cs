@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using Noggog;
-using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 

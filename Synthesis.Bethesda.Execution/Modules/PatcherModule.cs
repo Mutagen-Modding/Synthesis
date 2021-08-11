@@ -2,10 +2,7 @@
 using Noggog.Autofac;
 using Synthesis.Bethesda.Execution.Patchers.Cli;
 using Synthesis.Bethesda.Execution.Patchers.Common;
-using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Patchers.Running.Cli;
-using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 
 namespace Synthesis.Bethesda.Execution.Modules
@@ -14,16 +11,13 @@ namespace Synthesis.Bethesda.Execution.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            var build = builder.RegisterAssemblyTypes(typeof(IPatcherNameProvider).Assembly)
+            builder.RegisterAssemblyTypes(typeof(IPatcherNameProvider).Assembly)
                 .InNamespacesOf(
                     typeof(IPatcherIdProvider),
                     typeof(ICliPatcherRun),
                     typeof(ICliNameConverter),
                     typeof(IPatcherNameProvider),
-                    typeof(IPathToProjProvider),
-                    typeof(IPrintShaIfApplicable),
-                    typeof(IGithubPatcherIdentifier),
-                    typeof(IGitPatcherRun))
+                    typeof(IPrintShaIfApplicable))
                 .NotInjection()
                 .AsImplementedInterfaces();
         }

@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
@@ -15,7 +16,7 @@ namespace Synthesis.Bethesda.Execution.Settings
         string SynthesisVersion);
 
     [ExcludeFromCodeCoverage]
-    public class GithubPatcherSettings : PatcherSettings, IGithubPatcherIdentifier
+    public class GithubPatcherSettings : PatcherSettings, IGithubPatcherIdentifier, IProjectSubpathProvider
     {
         public string ID = string.Empty;
         string IGithubPatcherIdentifier.Id => ID;
@@ -68,5 +69,7 @@ namespace Synthesis.Bethesda.Execution.Settings
                     throw new NotImplementedException();
             }
         }
+
+        string IProjectSubpathProvider.ProjectSubpath => SelectedProjectSubpath;
     }
 }
