@@ -37,7 +37,7 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
                     patchers: GetPatcherRunners.Get(),
                     sourcePath: Instructions.SourcePath,
                     cancel: cancel,
-                    persistenceMode: Instructions.PersistenceMode ?? PersistenceMode.Text,
+                    persistenceMode: Instructions.PersistenceMode ?? PersistenceMode.None,
                     persistencePath: Instructions.PersistencePath);
         }
     }

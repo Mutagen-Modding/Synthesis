@@ -43,7 +43,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
         }
         
         [Theory, SynthAutoData]
-        public async Task NullPersistenceModeFallsBackToText(
+        public async Task NullPersistenceModeFallsBackToNone(
             CancellationToken cancel,
             RunPatcherPipeline sut)
         {
@@ -51,7 +51,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
             await sut.Run(cancel);
             await sut.ExecuteRun.Run(
                 Arg.Any<ModPath>(), Arg.Any<(int Key, IPatcherRun Run)[]>(), Arg.Any<CancellationToken>(),
-                Arg.Any<FilePath?>(), PersistenceMode.Text, Arg.Any<string?>());
+                Arg.Any<FilePath?>(), PersistenceMode.None, Arg.Any<string?>());
         }
     }
 }
