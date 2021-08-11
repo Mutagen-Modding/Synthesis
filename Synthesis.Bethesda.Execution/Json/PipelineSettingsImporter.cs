@@ -7,7 +7,7 @@ namespace Synthesis.Bethesda.Execution.Json
 {
     public interface IPipelineSettingsImporter
     {
-        PipelineSettings Import(FilePath path);
+        IPipelineSettings Import(FilePath path);
     }
 
     public class PipelineSettingsImporter : IPipelineSettingsImporter
@@ -20,7 +20,7 @@ namespace Synthesis.Bethesda.Execution.Json
             _fileSystem = fileSystem;
         }
 
-        public PipelineSettings Import(FilePath path)
+        public IPipelineSettings Import(FilePath path)
         {
             return JsonConvert.DeserializeObject<PipelineSettings>(
                 _fileSystem.File.ReadAllText(path),

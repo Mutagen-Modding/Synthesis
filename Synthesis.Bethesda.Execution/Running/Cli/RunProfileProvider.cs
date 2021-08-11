@@ -1,9 +1,6 @@
 ﻿using System;
-using System.IO;
-using System.IO.Abstractions;
 using System.Linq;
-using Synthesis.Bethesda.Execution.Json;
-using Synthesis.Bethesda.Execution.Pathing;
+using Noggog;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 
@@ -17,52 +14,45 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
     public class RunProfileProvider : IRunProfileProvider
     {
         public IProfileNameProvider ProfileNameProvider { get; }
-        public IPipelineSettingsImporter PipelineSettingsImporter { get; }
-        public ISynthesisProfileImporter SynthProfileImporter { get; }
-        public IProfileDefinitionPathProvider ProfileDefinitionPathProvider { get; }
-        private readonly IFileSystem _fileSystem;
+        public IPipelineProfilesProvider PipelineProfilesProvider { get; }
 
         public RunProfileProvider(
-            IFileSystem fileSystem,
             IProfileNameProvider profileNameProvider,
-            IPipelineSettingsImporter pipelineSettingsImporter,
-            ISynthesisProfileImporter synthProfileImporter,
-            IProfileDefinitionPathProvider profileDefinitionPathProvider)
+            IPipelineProfilesProvider pipelineProfilesProvider)
         {
             ProfileNameProvider = profileNameProvider;
-            PipelineSettingsImporter = pipelineSettingsImporter;
-            SynthProfileImporter = synthProfileImporter;
-            ProfileDefinitionPathProvider = profileDefinitionPathProvider;
-            _fileSystem = fileSystem;
+            PipelineProfilesProvider = pipelineProfilesProvider;
         }
 
         public ISynthesisProfileSettings Get()
         {
-            // Locate profile
-            if (!_fileSystem.File.Exists(ProfileDefinitionPathProvider.Path))
+            var profiles = PipelineProfilesProvider.Get().ToArray();
+
+            var targetName = ProfileNameProvider.Name;
+
+            ISynthesisProfileSettings? profile = null;
+            if (!targetName.IsNullOrWhitespace())
             {
-                throw new FileNotFoundException("Could not locate profile to run", ProfileDefinitionPathProvider.Path);
-            }
-                
-            ISynthesisProfileSettings? profile;
-            if (string.IsNullOrWhiteSpace(ProfileNameProvider.Name))
-            {
-                profile = SynthProfileImporter.Import(ProfileDefinitionPathProvider.Path);
-            }
-            else
-            {
-                var settings = PipelineSettingsImporter.Import(ProfileDefinitionPathProvider.Path);
-                profile = settings.Profiles.FirstOrDefault(profile =>
+                profile = profiles.FirstOrDefault(profile =>
                 {
-                    if (ProfileNameProvider.Name.Equals(profile.Nickname)) return true;
-                    if (ProfileNameProvider.Name.Equals(profile.ID)) return true;
+                    if (targetName.Equals(profile.Nickname)) return true;
+                    if (targetName.Equals(profile.ID)) return true;
                     return false;
                 });
             }
-
-            if (string.IsNullOrWhiteSpace(profile?.ID))
+            else if (profiles.Length == 1)
             {
-                throw new ArgumentException("File did not point to a valid profile");
+                profile = profiles[0];
+            }
+
+            if (profile == null)
+            {
+                throw new ArgumentException("File and target name did not point to a valid profile");
+            }
+
+            if (string.IsNullOrWhiteSpace(profile.ID))
+            {
+                throw new ArgumentException("Profile had empty ID");
             }
 
             return profile;
