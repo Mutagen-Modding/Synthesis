@@ -1,16 +1,12 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Synthesis.Bethesda.Execution.Settings
+namespace Synthesis.Bethesda.Execution.Settings.V2
 {
-    public interface IPipelineSettings
-    {
-        IList<ISynthesisProfileSettings> Profiles { get; set; }
-    }
-
     [ExcludeFromCodeCoverage]
     public record PipelineSettings : IPipelineSettings
     {
+        public int Version => 2; 
         public IList<ISynthesisProfileSettings> Profiles { get; set; } = new List<ISynthesisProfileSettings>();
     }
 }

@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using Synthesis.Bethesda.DTO;
-using Synthesis.Bethesda.Execution.Json;
+using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 

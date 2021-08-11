@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using FluentAssertions;
 using Noggog;
 using NSubstitute;
-using NSubstitute.Extensions;
 using Synthesis.Bethesda.Execution.Running.Cli;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.UnitTests.AutoData;

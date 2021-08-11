@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Synthesis.Bethesda.DTO;
-using Synthesis.Bethesda.Execution.Json;
+using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.PatcherCommands

@@ -6,6 +6,7 @@ using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Running.Cli;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 

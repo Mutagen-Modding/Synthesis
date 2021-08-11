@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Noggog;
 using Synthesis.Bethesda.DTO;
 
-namespace Synthesis.Bethesda.Execution.Json
+namespace Synthesis.Bethesda.Execution.Settings.Json
 {
     public interface IPatcherCustomizationImporter
     {

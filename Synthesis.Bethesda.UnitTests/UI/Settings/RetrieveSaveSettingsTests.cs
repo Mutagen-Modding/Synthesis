@@ -4,6 +4,7 @@ using System;
 using FluentAssertions;
 using AutoFixture;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
 namespace Synthesis.Bethesda.UnitTests.UI.Settings

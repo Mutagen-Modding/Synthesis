@@ -3,6 +3,7 @@ using System.Linq;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Settings.V2;
 
 namespace Synthesis.Bethesda.Execution.Running.Cli
 {

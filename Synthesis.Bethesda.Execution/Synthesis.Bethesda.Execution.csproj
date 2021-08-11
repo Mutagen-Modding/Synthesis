@@ -66,6 +66,44 @@
     <ProjectReference Include="..\Synthesis.Bethesda\Synthesis.Bethesda.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Json\PipelineSettings\PipelineSettingsImporter.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Json\PipelineSettings\PipelineSettingsExporter.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Settings\V1\SynthesisProfile.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Settings\V1\PipelineSettings.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Settings\V2\PipelineSettings.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Settings\V2\SynthesisProfile.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Settings\Json\Pipeline\V1\PipelineSettingsV1Reader.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+  </ItemGroup>
+
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Condition="'$(IsWindows)'=='true'" Command="RD /S /Q &quot;%25USERPROFILE%25\.nuget\packages\synthesis.bethesda.execution&quot;" />
     <Exec Condition="'$(IsLinux)'=='true'" Command="rm -rf &quot;%25USERPROFILE%25\.nuget\packages\synthesis.bethesda.execution&quot;" />

@@ -4,7 +4,7 @@ using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Linq;
 using Synthesis.Bethesda.DTO;
-using Synthesis.Bethesda.Execution.Json;
+using Synthesis.Bethesda.Execution.Settings.Json;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {

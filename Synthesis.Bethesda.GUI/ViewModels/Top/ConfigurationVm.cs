@@ -9,6 +9,7 @@ using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;

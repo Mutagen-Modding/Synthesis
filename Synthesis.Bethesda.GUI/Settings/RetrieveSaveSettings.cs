@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reactive.Subjects;
-using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Settings.V2;
 
 namespace Synthesis.Bethesda.GUI.Settings
 {
