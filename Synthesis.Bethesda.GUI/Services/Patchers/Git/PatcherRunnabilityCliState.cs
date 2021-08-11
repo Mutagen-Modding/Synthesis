@@ -7,7 +7,7 @@ using Mutagen.Bethesda.WPF.Plugins.Order;
 using Noggog;
 using ReactiveUI;
 using Serilog;
-using Synthesis.Bethesda.Execution.CLI;
+using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 

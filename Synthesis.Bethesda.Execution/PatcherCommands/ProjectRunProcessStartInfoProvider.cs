@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Synthesis.Bethesda.Execution.DotNet;
 
-namespace Synthesis.Bethesda.Execution.CLI
+namespace Synthesis.Bethesda.Execution.PatcherCommands
 {
     public interface IProjectRunProcessStartInfoProvider
     {

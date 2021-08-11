@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Noggog.Utility;
-using Serilog;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.Json;
 using Synthesis.Bethesda.Execution.Utility;
 
-namespace Synthesis.Bethesda.Execution.CLI
+namespace Synthesis.Bethesda.Execution.PatcherCommands
 {
     public interface IGetSettingsStyle
     {

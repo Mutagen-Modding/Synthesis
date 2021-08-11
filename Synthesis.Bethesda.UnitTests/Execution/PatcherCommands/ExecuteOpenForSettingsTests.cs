@@ -6,11 +6,11 @@ using FluentAssertions;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog.Utility;
 using NSubstitute;
-using Synthesis.Bethesda.Execution.CLI;
+using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Execution.Cli
+namespace Synthesis.Bethesda.UnitTests.Execution.PatcherCommands
 {
     public class ExecuteOpenForSettingsTests
     {

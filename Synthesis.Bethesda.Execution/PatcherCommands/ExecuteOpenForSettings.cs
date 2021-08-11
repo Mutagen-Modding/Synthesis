@@ -4,11 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Order;
-using Noggog.Utility;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.Execution.Utility;
 
-namespace Synthesis.Bethesda.Execution.CLI
+namespace Synthesis.Bethesda.Execution.PatcherCommands
 {
     public interface IExecuteOpenForSettings
     {

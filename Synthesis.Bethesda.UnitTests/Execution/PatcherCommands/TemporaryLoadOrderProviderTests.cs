@@ -3,11 +3,11 @@ using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
 using Noggog.Utility;
 using NSubstitute;
-using Synthesis.Bethesda.Execution.CLI;
+using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Execution.Cli
+namespace Synthesis.Bethesda.UnitTests.Execution.PatcherCommands
 {
     public class TemporaryLoadOrderProviderTests
     {
@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Cli
             sut.TempFileProvider.Received(1)
                 .Create(System.IO.Path.Combine(
                     sut.Paths.WorkingDirectory,
-                    "RunnabilityChecks",
+                    TemporaryLoadOrderProvider.Folder,
                     randomFileName));
         }
         

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Synthesis.Bethesda.Execution.Utility;
 
-namespace Synthesis.Bethesda.Execution.CLI
+namespace Synthesis.Bethesda.Execution.PatcherCommands
 {
     public interface IRunProcessStartInfoProvider
     {
