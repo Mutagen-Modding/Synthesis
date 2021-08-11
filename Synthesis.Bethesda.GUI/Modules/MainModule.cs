@@ -14,6 +14,7 @@ using Synthesis.Bethesda.Execution.DotNet.Builder;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Services.Versioning;
@@ -102,6 +103,10 @@ namespace Synthesis.Bethesda.GUI.Modules
                 .InNamespaceOf<PatchersRunVm>()
                 .AsImplementedInterfaces()
                 .AsSelf();
+            
+            builder.RegisterType<RxReporter>()
+                .InstancePerMatchingLifetimeScope(LifetimeScopes.RunNickname)
+                .AsImplementedInterfaces();
 
             builder.RegisterModule<Synthesis.Bethesda.Execution.Modules.ProfileModule>();
         }

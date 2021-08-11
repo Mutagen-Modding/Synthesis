@@ -13,15 +13,11 @@ namespace Synthesis.Bethesda.Execution.Modules
             builder.RegisterAssemblyTypes(typeof(IExecuteRun).Assembly)
                 .InNamespacesOf(
                     typeof(IProfileDirectories))
-                .InstancePerMatchingLifetimeScope(LifetimeScopes.ProfileNickname)
                 .AsMatchingInterface();
             builder.RegisterAssemblyTypes(typeof(IExecuteRun).Assembly)
                 .InNamespacesOf(
                     typeof(IExecuteRun))
                 .AsMatchingInterface();
-            builder.RegisterType<RxReporter>()
-                .InstancePerMatchingLifetimeScope(LifetimeScopes.RunNickname)
-                .AsImplementedInterfaces();
         }
     }
 }

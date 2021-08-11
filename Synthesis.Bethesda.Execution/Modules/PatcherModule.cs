@@ -14,7 +14,7 @@ namespace Synthesis.Bethesda.Execution.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterAssemblyTypes(typeof(IPatcherNameProvider).Assembly)
+            var build = builder.RegisterAssemblyTypes(typeof(IPatcherNameProvider).Assembly)
                 .InNamespacesOf(
                     typeof(IPatcherIdProvider),
                     typeof(ICliPatcherRun),
@@ -25,7 +25,6 @@ namespace Synthesis.Bethesda.Execution.Modules
                     typeof(IGithubPatcherIdentifier),
                     typeof(IGitPatcherRun))
                 .NotInjection()
-                .InstancePerMatchingLifetimeScope(LifetimeScopes.PatcherNickname)
                 .AsImplementedInterfaces();
         }
     }

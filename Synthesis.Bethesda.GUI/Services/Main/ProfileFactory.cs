@@ -8,6 +8,7 @@ using Serilog;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.Services.Profile;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;

@@ -26,6 +26,7 @@ namespace Synthesis.Bethesda.CLI
             builder.RegisterInstance(Log.Logger).As<ILogger>();
             builder.RegisterModule<Execution.Modules.MainModule>();
             builder.RegisterModule<Execution.Modules.ProfileModule>();
+            builder.RegisterModule<Execution.Modules.PatcherModule>();
             
             builder.Register(_ => CancellationToken.None).AsSelf();
             builder.RegisterInstance(new ConsoleReporter()).As<IRunReporter>();

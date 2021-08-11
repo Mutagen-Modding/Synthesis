@@ -1,4 +1,4 @@
-﻿namespace Synthesis.Bethesda.Execution.Modules
+﻿namespace Synthesis.Bethesda.GUI.Modules
 {
     public class LifetimeScopes
     {

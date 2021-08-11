@@ -38,6 +38,7 @@ namespace Synthesis.Bethesda.UnitTests.Containers
                 new Synthesis.Bethesda.CLI.MainModule(
                     new RunPatcherPipelineInstructions()));
             builder.RegisterMock<IProfileIdentifier>();
+            builder.RegisterMock<ISynthesisProfileSettings>();
             var cont = builder.Build();
             cont.Validate(typeof(IRunPatcherPipeline));
         }
