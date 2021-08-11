@@ -7,8 +7,9 @@ using System.Windows;
 using Autofac;
 using Newtonsoft.Json;
 using Serilog;
-using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.Json;
 using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.GUI.Json;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.Views;
@@ -29,14 +30,15 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
 
     public class Shutdown : IShutdown
     {
-        private readonly ILifetimeScope _Scope;
-        private readonly ILogger _Logger;
-        private readonly IStartupTracker _Init;
-        private readonly IPipelineSettingsPath _PipelineSettingsPath;
-        private readonly IGuiSettingsPath _GuiPaths;
-        private readonly IRetrieveSaveSettings _Save;
-        private readonly IDotNetCommandPathProvider _dotNetCommandPathProvider;
-        private readonly IMainWindow _Window;
+        private readonly ILifetimeScope _scope;
+        private readonly ILogger _logger;
+        private readonly IStartupTracker _init;
+        private readonly IPipelineSettingsPath _pipelineSettingsPath;
+        private readonly IGuiSettingsPath _guiPaths;
+        private readonly IRetrieveSaveSettings _save;
+        private readonly IGuiSettingsExporter _guiSettingsExporter;
+        private readonly IPipelineSettingsExporter _pipelineSettingsExporter;
+        private readonly IMainWindow _window;
         
         public bool IsShutdown { get; private set; }
 
@@ -47,24 +49,26 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             IPipelineSettingsPath paths,
             IGuiSettingsPath guiPaths,
             IRetrieveSaveSettings save,
-            IDotNetCommandPathProvider dotNetCommandPathProvider,
+            IGuiSettingsExporter guiSettingsExporter,
+            IPipelineSettingsExporter pipelineSettingsExporter,
             IMainWindow window)
         {
-            _Scope = scope;
-            _Logger = logger;
-            _Init = init;
-            _PipelineSettingsPath = paths;
-            _GuiPaths = guiPaths;
-            _Save = save;
-            _dotNetCommandPathProvider = dotNetCommandPathProvider;
-            _Window = window;
+            _scope = scope;
+            _logger = logger;
+            _init = init;
+            _pipelineSettingsPath = paths;
+            _guiPaths = guiPaths;
+            _save = save;
+            _guiSettingsExporter = guiSettingsExporter;
+            _pipelineSettingsExporter = pipelineSettingsExporter;
+            _window = window;
         }
 
         public void Prepare()
         {
-            _Window.Closing += (_, b) =>
+            _window.Closing += (_, b) =>
             {
-                _Window.Visibility = Visibility.Collapsed;
+                _window.Visibility = Visibility.Collapsed;
                 Closing(b);
             };
         }
@@ -75,23 +79,21 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
 
             await Task.Run(() =>
             {
-                if (!_Init.Initialized)
+                if (!_init.Initialized)
                 {
-                    _Logger.Information("App was unable to start up.  Not saving settings.");
+                    _logger.Information("App was unable to start up.  Not saving settings.");
                     return;
                 }
 
                 try
                 {
-                    _Save.Retrieve(out var gui, out var pipe);
-                    File.WriteAllText(_PipelineSettingsPath.Path,
-                        JsonConvert.SerializeObject(pipe, Formatting.Indented, Execution.Constants.JsonSettings));
-                    File.WriteAllText(_GuiPaths.Path,
-                        JsonConvert.SerializeObject(gui, Formatting.Indented, Execution.Constants.JsonSettings));
+                    _save.Retrieve(out var gui, out var pipe);
+                    _pipelineSettingsExporter.Write(_pipelineSettingsPath.Path, pipe);
+                    _guiSettingsExporter.Write(_guiPaths.Path, gui);
                 }
                 catch (Exception e)
                 {
-                    _Logger.Error("Error saving settings", e);
+                    _logger.Error("Error saving settings", e);
                 }
             });
             
@@ -118,12 +120,12 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             {
                 try
                 {
-                    _Logger.Information("Disposing container");
-                    _Scope.Dispose();
+                    _logger.Information("Disposing container");
+                    _scope.Dispose();
                 }
                 catch (Exception e)
                 {
-                    _Logger.Error("Error shutting down container actions", e);
+                    _logger.Error("Error shutting down container actions", e);
                 }
             }));
             await Task.WhenAll(toDo);

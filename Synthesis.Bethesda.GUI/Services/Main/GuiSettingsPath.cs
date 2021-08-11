@@ -1,12 +1,14 @@
-﻿namespace Synthesis.Bethesda.GUI.Services.Main
+﻿using Noggog;
+
+namespace Synthesis.Bethesda.GUI.Services.Main
 {
     public interface IGuiSettingsPath
     {
-        string Path { get; }
+        FilePath Path { get; }
     }
 
     public class GuiSettingsPath : IGuiSettingsPath
     {
-        public string Path { get; } = "GuiSettings.json";
+        public FilePath Path { get; } = "GuiSettings.json";
     }
 }

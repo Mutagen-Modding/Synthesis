@@ -1,15 +1,16 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Pathing
 {
     public interface IPipelineSettingsPath
     {
-        string Path { get; }
+        FilePath Path { get; }
     }
 
     [ExcludeFromCodeCoverage]
     public class PipelineSettingsPath : IPipelineSettingsPath
     {
-        public string Path => "PipelineSettings.json";
+        public FilePath Path => "PipelineSettings.json";
     }
 }

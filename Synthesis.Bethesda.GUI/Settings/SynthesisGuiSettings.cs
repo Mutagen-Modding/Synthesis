@@ -10,7 +10,7 @@ namespace Synthesis.Bethesda.GUI.Settings
         string WorkingDirectory { get; set; }
     }
 
-    public class SynthesisGuiSettings : ISynthesisGuiSettings
+    public record SynthesisGuiSettings : ISynthesisGuiSettings
     {
         public bool ShowHelp { get; set; } = true;
         public bool OpenIdeAfterCreating { get; set; } = true;

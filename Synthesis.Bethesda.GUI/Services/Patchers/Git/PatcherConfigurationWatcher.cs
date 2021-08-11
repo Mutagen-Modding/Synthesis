@@ -3,8 +3,8 @@ using Path = System.IO.Path;
 using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Linq;
-using Newtonsoft.Json;
 using Synthesis.Bethesda.DTO;
+using Synthesis.Bethesda.Execution.Json;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
@@ -21,6 +21,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
         public PatcherConfigurationWatcher(
             IFileSystem fileSystem,
+            IPatcherCustomizationImporter customizationImporter,
             IRunnableStateProvider runnableStateProvider)
         {
             _runnableStateProvider = runnableStateProvider;
@@ -36,9 +37,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                             try
                             {
                                 if (!fileSystem.File.Exists(confPath)) return default;
-                                return JsonConvert.DeserializeObject<PatcherCustomization>(
-                                    fileSystem.File.ReadAllText(confPath),
-                                    Execution.Constants.JsonSettings);
+                                return customizationImporter.Import(confPath);
                             }
                             catch (Exception)
                             {

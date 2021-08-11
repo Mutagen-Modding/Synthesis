@@ -3,7 +3,6 @@ using Newtonsoft.Json.Converters;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 
 namespace Synthesis.Bethesda.Execution
 {

@@ -1,10 +1,9 @@
-﻿using System.IO;
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using Synthesis.Bethesda.Execution.Json;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.GUI.Services;
+using Synthesis.Bethesda.GUI.Json;
 using Synthesis.Bethesda.GUI.Services.Main;
 
 namespace Synthesis.Bethesda.GUI.Settings
@@ -23,28 +22,30 @@ namespace Synthesis.Bethesda.GUI.Settings
         public SettingsSingleton(
             IFileSystem fileSystem,
             IGuiSettingsPath guiPaths,
+            IGuiSettingsImporter guiSettingsImporter,
+            IPipelineSettingsImporter pipelineSettingsImporter,
             IPipelineSettingsPath paths)
         {
-            SynthesisGuiSettings? guiSettings = null;
-            PipelineSettings? pipeSettings = null;
+            ISynthesisGuiSettings? guiSettings = null;
+            IPipelineSettings? pipeSettings = null;
             Task.WhenAll(
                 Task.Run(async () =>
                 {
                     if (fileSystem.File.Exists(guiPaths.Path))
                     {
-                        guiSettings = JsonConvert.DeserializeObject<SynthesisGuiSettings>(await fileSystem.File.ReadAllTextAsync(guiPaths.Path), Execution.Constants.JsonSettings)!;
+                        guiSettings = guiSettingsImporter.Import(guiPaths.Path);
                     }
                 }),
                 Task.Run(async () =>
                 {
                     if (fileSystem.File.Exists(paths.Path))
                     {
-                        pipeSettings = JsonConvert.DeserializeObject<PipelineSettings>(await fileSystem.File.ReadAllTextAsync(paths.Path), Execution.Constants.JsonSettings)!;
+                        pipeSettings = pipelineSettingsImporter.Import(paths.Path);
                     }
                 })
             ).Wait();
-            Gui = guiSettings ?? new();
-            Pipeline = pipeSettings ?? new();
+            Gui = guiSettings ?? new SynthesisGuiSettings();
+            Pipeline = pipeSettings ?? new PipelineSettings();
         }
     }
 }

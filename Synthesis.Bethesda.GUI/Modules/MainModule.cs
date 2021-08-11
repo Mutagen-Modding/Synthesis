@@ -15,6 +15,7 @@ using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Reporters;
+using Synthesis.Bethesda.GUI.Json;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Services.Versioning;
@@ -82,6 +83,7 @@ namespace Synthesis.Bethesda.GUI.Modules
                     typeof(MainVm),
                     typeof(INavigateTo),
                     typeof(IStartup),
+                    typeof(IGuiSettingsImporter),
                     typeof(INewestLibraryVersions),
                     typeof(ISynthesisGuiSettings))
                 .AsImplementedInterfaces()
