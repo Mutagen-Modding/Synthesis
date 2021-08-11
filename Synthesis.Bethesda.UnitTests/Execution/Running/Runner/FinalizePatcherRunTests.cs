@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Mutagen.Bethesda.Plugins;
 using Synthesis.Bethesda.Execution.Patchers.Running;
@@ -12,7 +13,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
     {
         [Theory, SynthAutoData]
         public async Task OutputFileMissingReturnsNull(
-            int key,
+            Guid key,
             IPatcherRun patcher,
             ModPath missingOutput,
             FinalizePatcherRun sut)
@@ -23,7 +24,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task OutputFileExistsReturnsOutputPath(
-            int key,
+            Guid key,
             IPatcherRun patcher,
             ModPath existingOutput,
             FinalizePatcherRun sut)

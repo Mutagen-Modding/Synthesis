@@ -10,7 +10,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     {
         FilePath? Finalize(
             IPatcherRun patcher,
-            int key,
+            Guid key,
             FilePath outputPath);
     }
 
@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         
         public FilePath? Finalize(
             IPatcherRun patcher,
-            int key,
+            Guid key,
             FilePath outputPath)
         {
             if (!_fileSystem.File.Exists(outputPath))

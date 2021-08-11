@@ -18,7 +18,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public async Task PrepExceptionReturnsNull(
             ModKey outputKey,
-            int key,
+            Guid key,
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
@@ -39,7 +39,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public async Task CancelledReturnsNull(
             ModKey outputKey,
-            int key,
+            Guid key,
             IPatcherRun patcher,
             CancellationToken cancelled,
             FilePath? sourcePath,
@@ -60,7 +60,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public async Task RetrievesArgs(
             ModKey outputKey,
-            int key,
+            Guid key,
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
@@ -89,7 +89,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public async Task PassesArgsToRun(
             ModKey outputKey,
-            int key,
+            Guid key,
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
@@ -115,7 +115,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public async Task GetArgsThrowsReturnsNull(
             ModKey outputKey,
-            int key,
+            Guid key,
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
@@ -137,7 +137,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public async Task RunThrowsReturnsNull(
             ModKey outputKey,
-            int key,
+            Guid key,
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
@@ -159,7 +159,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public async Task PassesArgsToFinalize(
             ModKey outputKey,
-            int key,
+            Guid key,
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
@@ -186,7 +186,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public async Task ReturnsFinalizedResults(
             ModKey outputKey,
-            int key,
+            Guid key,
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,

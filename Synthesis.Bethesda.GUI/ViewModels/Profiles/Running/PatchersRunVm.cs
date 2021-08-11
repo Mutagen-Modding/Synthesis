@@ -38,7 +38,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
         [Reactive]
         public bool Running { get; private set; } = true;
 
-        public SourceCache<PatcherRunVm, int> Patchers { get; } = new SourceCache<PatcherRunVm, int>(p => p.Config.InternalID);
+        public SourceCache<PatcherRunVm, Guid> Patchers { get; } = new(p => p.Config.InternalID);
         public IObservableCollection<PatcherRunVm> PatchersDisplay { get; }
 
         [Reactive]

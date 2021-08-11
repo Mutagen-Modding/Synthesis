@@ -11,7 +11,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     public interface IPrepPatchersForRun
     {
         Task<Exception?>[] PrepPatchers(
-            IEnumerable<(int Key, IPatcherRun Run)> patchers,
+            IEnumerable<(Guid Key, IPatcherRun Run)> patchers,
             CancellationToken cancellation);
     }
 
@@ -25,7 +25,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         }
         
         public Task<Exception?>[] PrepPatchers(
-            IEnumerable<(int Key, IPatcherRun Run)> patchers,
+            IEnumerable<(Guid Key, IPatcherRun Run)> patchers,
             CancellationToken cancellation)
         {
             return patchers.Select(patcher => Task.Run(async () =>

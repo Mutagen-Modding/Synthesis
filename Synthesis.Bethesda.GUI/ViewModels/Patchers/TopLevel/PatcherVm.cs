@@ -25,7 +25,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         private readonly ObservableAsPropertyHelper<bool> _IsSelected;
         public bool IsSelected => _IsSelected.Value;
 
-        public int InternalID { get; }
+        public Guid InternalID { get; }
 
         [Reactive]
         public bool IsOn { get; set; } = true;

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Threading;
 using Autofac;
 using Noggog;
-using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Modules;
@@ -26,8 +24,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
         private readonly ILifetimeScope _scope;
         private readonly IGitSettingsInitializer _gitSettingsInitializer;
 
-        private static int NextID;
-
         public PatcherFactory(
             ILifetimeScope scope,
             IGitSettingsInitializer gitSettingsInitializer)
@@ -49,7 +45,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
 
         private void RegisterId(ContainerBuilder c)
         {
-            var inject = new PatcherIdInjection(Interlocked.Increment(ref NextID));
+            var inject = new PatcherIdInjection(Guid.NewGuid());
             c.RegisterInstance(inject)
                 .AsSelf()
                 .AsImplementedInterfaces();

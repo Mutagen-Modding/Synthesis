@@ -27,29 +27,29 @@ namespace Synthesis.Bethesda.Execution.Reporters
             WriteError(default, default, str);
         }
 
-        public void ReportPrepProblem(int key, string name, Exception ex)
+        public void ReportPrepProblem(Guid key, string name, Exception ex)
         {
             throw ex;
         }
 
-        public void ReportRunProblem(int key, string name, Exception ex)
+        public void ReportRunProblem(Guid key, string name, Exception ex)
         {
             throw ex;
         }
 
-        public void ReportStartingRun(int key, string name)
+        public void ReportStartingRun(Guid key, string name)
         {
         }
 
-        public void ReportRunSuccessful(int key, string name, string outputPath)
+        public void ReportRunSuccessful(Guid key, string name, string outputPath)
         {
         }
 
-        public void Write(int key, string? name, string str)
+        public void Write(Guid key, string? name, string str)
         {
         }
 
-        public void WriteError(int key, string? name, string str)
+        public void WriteError(Guid key, string? name, string str)
         {
         }
     }

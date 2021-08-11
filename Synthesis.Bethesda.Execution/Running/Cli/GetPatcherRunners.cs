@@ -1,15 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.Execution.Settings.V2;
 
 namespace Synthesis.Bethesda.Execution.Running.Cli
 {
     public interface IGetPatcherRunners
     {
-        (int Key, IPatcherRun Run)[] Get();
+        (Guid Key, IPatcherRun Run)[] Get();
     }
 
     public class GetPatcherRunners : IGetPatcherRunners
@@ -28,7 +27,7 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
             Profile = profile;
         }
         
-        public (int Key, IPatcherRun Run)[] Get()
+        public (Guid Key, IPatcherRun Run)[] Get()
         {
             _logger.Information("Patchers to run:");
             return Profile.Patchers
@@ -39,7 +38,7 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
                     
                     return PatcherSettingsToRunnerFactory.Convert(patcherSettings);
                 })
-                .Select((p, i) => (i + 1, p))
+                .Select((p) => (Guid.NewGuid(), p))
                 .ToArray();
         }
     }

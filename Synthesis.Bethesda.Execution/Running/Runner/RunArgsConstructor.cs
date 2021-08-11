@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
@@ -12,7 +13,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     {
         RunSynthesisPatcher GetArgs(
             IPatcherRun patcher,
-            int key,
+            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath);
@@ -42,7 +43,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         
         public RunSynthesisPatcher GetArgs(
             IPatcherRun patcher,
-            int key,
+            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath)

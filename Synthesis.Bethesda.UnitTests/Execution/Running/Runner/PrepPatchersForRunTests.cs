@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
     {
         [Theory, SynthAutoData]
         public async Task RunsPrepOnEachPatcher(
-            IEnumerable<(int Key, IPatcherRun Run)> patchers,
+            IEnumerable<(Guid Key, IPatcherRun Run)> patchers,
             CancellationToken cancellation,
             PrepPatchersForRun sut)
         {
@@ -31,7 +31,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task ProperlyPreppedPatchersReturnNull(
-            IEnumerable<(int Key, IPatcherRun Run)> patchers,
+            IEnumerable<(Guid Key, IPatcherRun Run)> patchers,
             CancellationToken cancellation,
             PrepPatchersForRun sut)
         {
@@ -44,7 +44,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task ThrowingPatchersReturnException(
-            IEnumerable<(int Key, IPatcherRun Run)> patchers,
+            IEnumerable<(Guid Key, IPatcherRun Run)> patchers,
             CancellationToken cancellation,
             PrepPatchersForRun sut)
         {
@@ -61,7 +61,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task ThrowingPatchersReports(
-            IEnumerable<(int Key, IPatcherRun Run)> patchers,
+            IEnumerable<(Guid Key, IPatcherRun Run)> patchers,
             CancellationToken cancellation,
             PrepPatchersForRun sut)
         {
@@ -76,7 +76,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task CancellationReturnsNullExceptions(
-            IEnumerable<(int Key, IPatcherRun Run)> patchers,
+            IEnumerable<(Guid Key, IPatcherRun Run)> patchers,
             CancellationToken cancelled,
             PrepPatchersForRun sut)
         {

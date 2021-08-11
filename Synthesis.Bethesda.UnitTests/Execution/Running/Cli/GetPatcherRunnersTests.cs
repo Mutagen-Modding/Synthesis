@@ -57,21 +57,5 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
                 .Select(x => x.Run)
                 .Should().Equal(patcherRuns);
         }
-        
-        [Theory, SynthAutoData]
-        public void ReturnsNonZeroKeys(
-            List<PatcherSettings> settings,
-            IPatcherRun[] patcherRuns,
-            GetPatcherRunners sut)
-        {
-            settings.ForEach(x => x.On = true);
-            sut.Profile.Patchers.Returns(settings);
-            sut.PatcherSettingsToRunnerFactory.Convert(default!)
-                .ReturnsSeriallyForAnyArgs(patcherRuns);
-            var expectedKeys = patcherRuns.Select((_, i) => i + 1);
-            sut.Get()
-                .Select(x => x.Key)
-                .Should().Equal(expectedKeys);
-        }
     }
 }

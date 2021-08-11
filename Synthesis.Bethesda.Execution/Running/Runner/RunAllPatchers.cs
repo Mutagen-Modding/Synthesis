@@ -11,7 +11,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     {
         Task<FilePath?> Run(
             ModKey outputKey,
-            (int Key, IPatcherRun Run)[] patchers,
+            (Guid Key, IPatcherRun Run)[] patchers,
             Task<Exception?>[] patcherPreps,
             CancellationToken cancellation,
             FilePath? sourcePath = null,
@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 
         public async Task<FilePath?> Run(
             ModKey outputKey,
-            (int Key, IPatcherRun Run)[] patchers,
+            (Guid Key, IPatcherRun Run)[] patchers,
             Task<Exception?>[] patcherPreps,
             CancellationToken cancellation,
             FilePath? sourcePath = null,

@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
@@ -15,7 +16,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public void PassesPatcherNameToSanitizer(
             IPatcherRun patcher,
-            int key,
+            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath,
@@ -28,7 +29,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public void OutputPathUnderWorkingDirectory(
             IPatcherRun patcher,
-            int key,
+            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath,
@@ -42,7 +43,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public void OutputPathShouldContainKey(
             IPatcherRun patcher,
-            int key,
+            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath,
@@ -55,7 +56,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public void OutputPathShouldContainsSanitizedName(
             IPatcherRun patcher,
-            int key,
+            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath,
@@ -70,7 +71,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public void PatcherNameShouldBeSanitizedName(
             IPatcherRun patcher,
-            int key,
+            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath,
@@ -85,7 +86,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public void OutputPathShouldNotContainOriginalName(
             IPatcherRun patcher,
-            int key,
+            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath,
@@ -100,7 +101,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public void TypicalPassalong(
             IPatcherRun patcher,
-            int key,
+            Guid key,
             ModKey outputKey,
             FilePath sourcePath,
             string? persistencePath,

@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins;
@@ -11,7 +12,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     {
         Task<bool> Run(
             ModPath outputPath,
-            (int Key, IPatcherRun Run)[] patchers,
+            (Guid Key, IPatcherRun Run)[] patchers,
             CancellationToken cancel,
             FilePath? sourcePath = null,
             PersistenceMode persistenceMode = PersistenceMode.None,
@@ -45,7 +46,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 
         public async Task<bool> Run(
             ModPath outputPath,
-            (int Key, IPatcherRun Run)[] patchers,
+            (Guid Key, IPatcherRun Run)[] patchers,
             CancellationToken cancellation,
             FilePath? sourcePath = null,
             PersistenceMode persistenceMode = PersistenceMode.None,

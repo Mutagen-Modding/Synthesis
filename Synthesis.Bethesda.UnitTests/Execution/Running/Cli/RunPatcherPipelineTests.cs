@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
@@ -15,7 +16,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
     {
         [Theory, SynthAutoData]
         public async Task PassesGetPatcherRunnersToRun(
-            (int Key, IPatcherRun Run)[] patchers,
+            (Guid Key, IPatcherRun Run)[] patchers,
             CancellationToken cancel,
             RunPatcherPipeline sut)
         {
@@ -35,7 +36,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
             await sut.Run(cancel);
             await sut.ExecuteRun.Run(
                 outputPath: sut.Instructions.OutputPath, 
-                Arg.Any<(int Key, IPatcherRun Run)[]>(),
+                Arg.Any<(Guid Key, IPatcherRun Run)[]>(),
                 Arg.Any<CancellationToken>(),
                 sourcePath: sut.Instructions.SourcePath,
                 persistenceMode: sut.Instructions.PersistenceMode.Value, 
@@ -50,7 +51,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
             sut.Instructions.PersistenceMode = null;
             await sut.Run(cancel);
             await sut.ExecuteRun.Run(
-                Arg.Any<ModPath>(), Arg.Any<(int Key, IPatcherRun Run)[]>(), Arg.Any<CancellationToken>(),
+                Arg.Any<ModPath>(), Arg.Any<(Guid Key, IPatcherRun Run)[]>(), Arg.Any<CancellationToken>(),
                 Arg.Any<FilePath?>(), PersistenceMode.None, Arg.Any<string?>());
         }
     }

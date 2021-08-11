@@ -20,7 +20,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public async Task PassesEachPatcherToRunComponent(
             ModKey outputKey,
-            (int Key, IPatcherRun Run)[] patchers,
+            (Guid Key, IPatcherRun Run)[] patchers,
             Task<Exception?>[] patcherPreps,
             CancellationToken cancellation,
             FilePath? sourcePath,
@@ -54,6 +54,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task PassesPreviousPathToNext(
+            Guid guid1,
+            Guid guid2,
             ModKey outputKey,
             ModPath return1,
             ModPath return2,
@@ -62,10 +64,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             string? persistencePath,
             RunAllPatchers sut)
         {
-            (int Key, IPatcherRun Run)[] patchers = new[]
+            (Guid Key, IPatcherRun Run)[] patchers = new[]
             {
-                (1, Substitute.For<IPatcherRun>()),
-                (2, Substitute.For<IPatcherRun>()),
+                (guid1, Substitute.For<IPatcherRun>()),
+                (guid2, Substitute.For<IPatcherRun>()),
             };
             Task<Exception?>[] patcherPreps = new Task<Exception?>[]
             {
@@ -75,7 +77,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
-                    1,
+                    guid1,
                     Arg.Any<IPatcherRun>(),
                     Arg.Any<Task<Exception?>>(), 
                     Arg.Any<CancellationToken>(),
@@ -85,7 +87,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
-                    2,
+                    guid2,
                     Arg.Any<IPatcherRun>(),
                     Arg.Any<Task<Exception?>>(), 
                     Arg.Any<CancellationToken>(),
@@ -104,7 +106,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             await sut.RunAPatcher.Received(1)
                 .Run(
                     Arg.Any<ModKey>(),
-                    1,
+                    guid1,
                     Arg.Any<IPatcherRun>(),
                     Arg.Any<Task<Exception?>>(),
                     Arg.Any<CancellationToken>(),
@@ -114,7 +116,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             await sut.RunAPatcher.Received(1)
                 .Run(
                     Arg.Any<ModKey>(),
-                    2,
+                    guid2,
                     Arg.Any<IPatcherRun>(),
                     Arg.Any<Task<Exception?>>(),
                     Arg.Any<CancellationToken>(),
@@ -124,6 +126,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task ReturnsFinalPatcherReturn(
+            Guid guid1,
+            Guid guid2,
             ModKey outputKey,
             FilePath return1,
             FilePath return2,
@@ -132,10 +136,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             string? persistencePath,
             RunAllPatchers sut)
         {
-            (int Key, IPatcherRun Run)[] patchers = new[]
+            (Guid Key, IPatcherRun Run)[] patchers = new[]
             {
-                (1, Substitute.For<IPatcherRun>()),
-                (2, Substitute.For<IPatcherRun>()),
+                (guid1, Substitute.For<IPatcherRun>()),
+                (guid2, Substitute.For<IPatcherRun>()),
             };
             Task<Exception?>[] patcherPreps = new Task<Exception?>[]
             {
@@ -145,7 +149,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
-                    1,
+                    guid1,
                     Arg.Any<IPatcherRun>(),
                     Arg.Any<Task<Exception?>>(), 
                     Arg.Any<CancellationToken>(),
@@ -155,7 +159,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
-                    2,
+                    guid2,
                     Arg.Any<IPatcherRun>(),
                     Arg.Any<Task<Exception?>>(), 
                     Arg.Any<CancellationToken>(),
@@ -175,6 +179,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task PatcherNullReturnDoesNotRunAnyMore(
+            Guid guid1,
+            Guid guid2,
             ModKey outputKey,
             ModPath return2,
             CancellationToken cancellation,
@@ -182,10 +188,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             string? persistencePath,
             RunAllPatchers sut)
         {
-            (int Key, IPatcherRun Run)[] patchers = new[]
+            (Guid Key, IPatcherRun Run)[] patchers = new[]
             {
-                (1, Substitute.For<IPatcherRun>()),
-                (2, Substitute.For<IPatcherRun>()),
+                (guid1, Substitute.For<IPatcherRun>()),
+                (guid2, Substitute.For<IPatcherRun>()),
             };
             Task<Exception?>[] patcherPreps = new Task<Exception?>[]
             {
@@ -195,7 +201,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
-                    1,
+                    guid1,
                     Arg.Any<IPatcherRun>(),
                     Arg.Any<Task<Exception?>>(), 
                     Arg.Any<CancellationToken>(),
@@ -205,7 +211,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
-                    2,
+                    guid2,
                     Arg.Any<IPatcherRun>(),
                     Arg.Any<Task<Exception?>>(), 
                     Arg.Any<CancellationToken>(),
@@ -224,7 +230,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             await sut.RunAPatcher.DidNotReceive()
                 .Run(
                     Arg.Any<ModKey>(),
-                    2,
+                    guid2,
                     Arg.Any<IPatcherRun>(),
                     Arg.Any<Task<Exception?>>(),
                     Arg.Any<CancellationToken>(),
@@ -234,6 +240,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task ThrowingPatcherRethrows(
+            Guid guid1,
+            Guid guid2,
             ModKey outputKey,
             ModPath return2,
             CancellationToken cancellation,
@@ -241,10 +249,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             string? persistencePath,
             RunAllPatchers sut)
         {
-            (int Key, IPatcherRun Run)[] patchers = new[]
+            (Guid Key, IPatcherRun Run)[] patchers = new[]
             {
-                (1, Substitute.For<IPatcherRun>()),
-                (2, Substitute.For<IPatcherRun>()),
+                (guid1, Substitute.For<IPatcherRun>()),
+                (guid2, Substitute.For<IPatcherRun>()),
             };
             Task<Exception?>[] patcherPreps = new Task<Exception?>[]
             {
@@ -254,7 +262,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
 
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
-                    1,
+                    guid1,
                     Arg.Any<IPatcherRun>(),
                     Arg.Any<Task<Exception?>>(),
                     Arg.Any<CancellationToken>(),
@@ -264,7 +272,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
-                    2,
+                    guid2,
                     Arg.Any<IPatcherRun>(),
                     Arg.Any<Task<Exception?>>(), 
                     Arg.Any<CancellationToken>(),
@@ -286,7 +294,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             await sut.RunAPatcher.DidNotReceive()
                 .Run(
                     Arg.Any<ModKey>(),
-                    2,
+                    guid2,
                     Arg.Any<IPatcherRun>(),
                     Arg.Any<Task<Exception?>>(),
                     Arg.Any<CancellationToken>(),
