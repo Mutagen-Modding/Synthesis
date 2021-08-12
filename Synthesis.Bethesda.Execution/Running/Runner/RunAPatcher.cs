@@ -23,20 +23,17 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 
     public class RunAPatcher : IRunAPatcher
     {
-        private readonly IFileSystem _fileSystem;
         private readonly IRunReporter _reporter;
-        private readonly IFinalizePatcherRun _finalize;
+        public IFinalizePatcherRun FinalizePatcherRun { get; }
         public IRunArgsConstructor GetRunArgs { get; }
 
         public RunAPatcher(
-            IFileSystem fileSystem,
             IRunReporter reporter,
-            IFinalizePatcherRun finalize,
+            IFinalizePatcherRun finalizePatcherRun,
             IRunArgsConstructor getRunArgs)
         {
-            _fileSystem = fileSystem;
             _reporter = reporter;
-            _finalize = finalize;
+            FinalizePatcherRun = finalizePatcherRun;
             GetRunArgs = getRunArgs;
         }
 
@@ -67,16 +64,8 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                     cancel: cancellation);
                 
                 if (cancellation.IsCancellationRequested) return null;
-            
-                if (!_fileSystem.File.Exists(args.OutputPath))
-                {
-                    _reporter.ReportRunProblem(key, patcher.Name,
-                        new ArgumentException($"Patcher {patcher.Name} did not produce output file."));
-                    return null;
-                }
 
-                _reporter.ReportRunSuccessful(key, patcher.Name, args.OutputPath);
-                return args.OutputPath;
+                return FinalizePatcherRun.Finalize(patcher, key, args.OutputPath);
             }
             catch (TaskCanceledException)
             {

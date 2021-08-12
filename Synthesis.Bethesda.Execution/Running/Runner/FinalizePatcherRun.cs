@@ -8,7 +8,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 {
     public interface IFinalizePatcherRun
     {
-        bool Finalize(
+        FilePath? Finalize(
             IPatcherRun patcher,
             int key,
             FilePath outputPath);
@@ -27,7 +27,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             _reporter = reporter;
         }
         
-        public bool Finalize(
+        public FilePath? Finalize(
             IPatcherRun patcher,
             int key,
             FilePath outputPath)
@@ -36,11 +36,11 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             {
                 _reporter.ReportRunProblem(key, patcher.Name,
                     new ArgumentException($"Patcher {patcher.Name} did not produce output file."));
-                return false;
+                return null;
             }
 
             _reporter.ReportRunSuccessful(key, patcher.Name, outputPath);
-            return true;
+            return outputPath;
         }
     }
 }

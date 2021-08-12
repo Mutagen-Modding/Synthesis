@@ -65,7 +65,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             CancellationToken cancellation,
             FilePath? sourcePath,
             string? persistencePath,
-            FilePath test,
             RunSynthesisPatcher args,
             RunAPatcher sut)
         {
@@ -156,53 +155,56 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 sourcePath,
                 persistencePath)).Should().BeNull();
         }
-        
+
         [Theory, SynthAutoData]
-        public async Task OutputFileMissingReturnsNull(
+        public async Task PassesArgsToFinalize(
             ModKey outputKey,
             int key,
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            ModPath missingOutput,
             string? persistencePath,
             RunSynthesisPatcher args,
+            FilePath outputPath,
             RunAPatcher sut)
         {
-            args.OutputPath = missingOutput;
-            (await sut.Run(
-                outputKey,
-                key,
-                patcher,
-                Task.FromResult<Exception?>(null),
-                cancellation,
-                sourcePath,
-                persistencePath)).Should().BeNull();
-        }
-        
-        [Theory, SynthAutoData]
-        public async Task OutputFileExistsReturnsOutputPath(
-            ModKey outputKey,
-            int key,
-            IPatcherRun patcher,
-            CancellationToken cancellation,
-            FilePath? sourcePath,
-            FilePath existingOutput,
-            string? persistencePath,
-            RunSynthesisPatcher args,
-            RunAPatcher sut)
-        {
-            args.OutputPath = existingOutput;
             sut.GetRunArgs.GetArgs(default!, default, default, default, default)
                 .ReturnsForAnyArgs(args);
-            (await sut.Run(
+            args.OutputPath = outputPath;
+            await sut.Run(
                 outputKey,
                 key,
                 patcher,
                 Task.FromResult<Exception?>(null),
                 cancellation,
                 sourcePath,
-                persistencePath)).Should().Be(existingOutput);
+                persistencePath);
+            sut.FinalizePatcherRun.Received(1)
+                .Finalize(patcher, key, args.OutputPath);
+        }
+
+        [Theory, SynthAutoData]
+        public async Task ReturnsFinalizedResults(
+            ModKey outputKey,
+            int key,
+            IPatcherRun patcher,
+            CancellationToken cancellation,
+            FilePath? sourcePath,
+            string? persistencePath,
+            FilePath ret,
+            RunAPatcher sut)
+        {
+            sut.FinalizePatcherRun.Finalize(default!, default, default)
+                .ReturnsForAnyArgs(ret);
+            (await sut.Run(
+                    outputKey,
+                    key,
+                    patcher,
+                    Task.FromResult<Exception?>(null),
+                    cancellation,
+                    sourcePath,
+                    persistencePath))
+                .Should().Be(ret);
         }
     }
 }
