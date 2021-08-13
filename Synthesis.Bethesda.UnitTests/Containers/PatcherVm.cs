@@ -5,6 +5,7 @@ using Noggog.Autofac;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
@@ -51,6 +52,7 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             builder.RegisterMock<IGithubPatcherIdentifier>();
             builder.RegisterMock<IPatcherIdProvider>();
             builder.RegisterMock<ISynthesisProfileSettings>();
+            builder.RegisterMock<IProjectSubpathDefaultSettings>();
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
                 .As<IGameReleaseContext>();

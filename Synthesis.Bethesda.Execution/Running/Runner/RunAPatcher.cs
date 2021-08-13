@@ -13,8 +13,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     {
         Task<FilePath?> Run(
             ModKey outputKey,
-            IPatcherRun patcher,
-            Task<Exception?> patcherPrep,
+            PatcherPrepBundle prepBundle,
             CancellationToken cancellation,
             FilePath? sourcePath,
             string? persistencePath);
@@ -38,8 +37,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 
         public async Task<FilePath?> Run(
             ModKey outputKey,
-            IPatcherRun patcher,
-            Task<Exception?> patcherPrep,
+            PatcherPrepBundle prepBundle,
             CancellationToken cancellation,
             FilePath? sourcePath,
             string? persistencePath)
@@ -47,22 +45,22 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             try
             {
                 // Finish waiting for prep, if it didn't finish
-                var prepException = await patcherPrep;
+                var prepException = await prepBundle.Prep;
                 if (prepException != null) return null;
                 
                 var args = GetRunArgs.GetArgs(
-                    patcher,
+                    prepBundle.Run,
                     outputKey,
                     sourcePath,
                     persistencePath);
                 
-                _reporter.ReportStartingRun(patcher.Key, patcher.Name);
-                await patcher.Run(args,
+                _reporter.ReportStartingRun(prepBundle.Run.Key, prepBundle.Run.Name);
+                await prepBundle.Run.Run(args,
                     cancel: cancellation);
                 
                 if (cancellation.IsCancellationRequested) return null;
 
-                return FinalizePatcherRun.Finalize(patcher, args.OutputPath);
+                return FinalizePatcherRun.Finalize(prepBundle.Run, args.OutputPath);
             }
             catch (TaskCanceledException)
             {
@@ -70,7 +68,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             }
             catch (Exception ex)
             {
-                _reporter.ReportRunProblem(patcher.Key, patcher.Name, ex);
+                _reporter.ReportRunProblem(prepBundle.Run.Key, prepBundle.Run.Name, ex);
                 return null;
             }
         }

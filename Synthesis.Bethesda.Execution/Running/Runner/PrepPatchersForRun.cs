@@ -10,7 +10,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 {
     public interface IPrepPatchersForRun
     {
-        Task<Exception?>[] PrepPatchers(
+        PatcherPrepBundle[] PrepPatchers(
             IEnumerable<IPatcherRun> patchers,
             CancellationToken cancellation);
     }
@@ -24,26 +24,28 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             Reporter = reporter;
         }
         
-        public Task<Exception?>[] PrepPatchers(
+        public PatcherPrepBundle[] PrepPatchers(
             IEnumerable<IPatcherRun> patchers,
             CancellationToken cancellation)
         {
-            return patchers.Select(patcher => Task.Run(async () =>
-            {
-                try
+            return patchers.Select(patcher => new PatcherPrepBundle(
+                patcher,
+                Task.Run(async () =>
                 {
-                    await patcher.Prep(cancellation);
-                }
-                catch (TaskCanceledException)
-                {
-                }
-                catch (Exception ex)
-                {
-                    Reporter.ReportPrepProblem(patcher.Key, patcher.Name, ex);
-                    return ex;
-                }
-                return default(Exception?);
-            })).ToArray();
+                    try
+                    {
+                        await patcher.Prep(cancellation);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                    }
+                    catch (Exception ex)
+                    {
+                        Reporter.ReportPrepProblem(patcher.Key, patcher.Name, ex);
+                        return ex;
+                    }
+                    return default(Exception?);
+                }))).ToArray();
         }
     }
 }

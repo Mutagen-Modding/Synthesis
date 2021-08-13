@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -21,7 +22,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             PrepPatchersForRun sut)
         {
             await Task.WhenAll(
-                sut.PrepPatchers(patchers, cancellation));
+                sut.PrepPatchers(patchers, cancellation).Select(x => x.Prep));
 
             foreach (var patcher in patchers)
             {
@@ -38,7 +39,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             var results = sut.PrepPatchers(patchers, cancellation);
             foreach (var result in results)
             {
-                (await result).Should().BeNull();
+                (await result.Prep).Should().BeNull();
             }
         }
         
@@ -55,7 +56,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             var results = sut.PrepPatchers(patchers, cancellation);
             foreach (var result in results)
             {
-                (await result).Should().NotBeNull();
+                (await result.Prep).Should().NotBeNull();
             }
         }
         
@@ -70,7 +71,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 item.Prep(default!).ThrowsForAnyArgs<NotImplementedException>();
             }
             var results = sut.PrepPatchers(patchers, cancellation);
-            await Task.WhenAll(results);
+            await Task.WhenAll(results.Select(x => x.Prep));
             sut.Reporter.ReceivedWithAnyArgs().ReportPrepProblem(default, default!, default!);
         }
         
@@ -83,7 +84,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             var results = sut.PrepPatchers(patchers, cancelled);
             foreach (var result in results)
             {
-                (await result).Should().BeNull();
+                (await result.Prep).Should().BeNull();
             }
         }
     }

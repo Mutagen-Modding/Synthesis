@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.Execution.Settings
         string SynthesisVersion);
 
     [ExcludeFromCodeCoverage]
-    public class GithubPatcherSettings : PatcherSettings, IGithubPatcherIdentifier, IProjectSubpathProvider
+    public class GithubPatcherSettings : PatcherSettings, IGithubPatcherIdentifier, IProjectSubpathDefaultSettings
     {
         public string ID = string.Empty;
         string IGithubPatcherIdentifier.Id => ID;

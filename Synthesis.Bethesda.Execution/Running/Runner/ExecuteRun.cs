@@ -69,7 +69,6 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 
             var finalPatch = await RunAllPatchers.Run(
                 outputPath.ModKey,
-                patchers,
                 patcherPreps,
                 cancellation,
                 sourcePath,

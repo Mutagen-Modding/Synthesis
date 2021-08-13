@@ -6,7 +6,7 @@ using Synthesis.Bethesda.Execution.Patchers.Solution;
 namespace Synthesis.Bethesda.Execution.Settings
 {
     [ExcludeFromCodeCoverage]
-    public class SolutionPatcherSettings : PatcherSettings, IPathToSolutionFileProvider, IProjectSubpathProvider
+    public class SolutionPatcherSettings : PatcherSettings, IPathToSolutionFileProvider, IProjectSubpathDefaultSettings
     {
         public FilePath SolutionPath { get; set; } = string.Empty;
         public string ProjectSubpath { get; set; } = string.Empty;

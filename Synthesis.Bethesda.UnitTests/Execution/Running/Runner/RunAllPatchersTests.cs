@@ -20,8 +20,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public async Task PassesEachPatcherToRunComponent(
             ModKey outputKey,
-            IPatcherRun[] patchers,
-            Task<Exception?>[] patcherPreps,
+            PatcherPrepBundle[] patchers,
             CancellationToken cancellation,
             FilePath? sourcePath,
             string? persistencePath,
@@ -30,21 +29,19 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             await sut.Run(
                 outputKey,
                 patchers,
-                patcherPreps,
                 cancellation,
                 sourcePath,
                 persistencePath);
 
             await sut.RunAPatcher.ReceivedWithAnyArgs().Run(
                 default, default!, default!,
-                default!, default, default);
+                default!, default);
 
             for (int i = 0; i < patchers.Length; i++)
             {
                 await sut.RunAPatcher.Received(1)
                     .Run(outputKey,
                         patchers[i],
-                        patcherPreps[i],
                         cancellation,
                         Arg.Any<FilePath?>(),
                         persistencePath);
@@ -61,21 +58,19 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             string? persistencePath,
             RunAllPatchers sut)
         {
-            IPatcherRun[] patchers = new[]
+            PatcherPrepBundle[] patchers = new[]
             {
-                Substitute.For<IPatcherRun>(),
-                Substitute.For<IPatcherRun>(),
-            };
-            Task<Exception?>[] patcherPreps = new Task<Exception?>[]
-            {
-                Task.FromResult<Exception?>(null),
-                Task.FromResult<Exception?>(null),
+                new PatcherPrepBundle(
+                    Substitute.For<IPatcherRun>(),
+                    Task.FromResult<Exception?>(null)),
+                new PatcherPrepBundle(
+                    Substitute.For<IPatcherRun>(),
+                    Task.FromResult<Exception?>(null)),
             };
             
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
                     patchers[0],
-                    Arg.Any<Task<Exception?>>(), 
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
                     Arg.Any<string?>())
@@ -84,7 +79,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
                     patchers[1],
-                    Arg.Any<Task<Exception?>>(), 
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
                     Arg.Any<string?>())
@@ -93,7 +87,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             await sut.Run(
                 outputKey,
                 patchers,
-                patcherPreps,
                 cancellation,
                 sourcePath,
                 persistencePath);
@@ -102,7 +95,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .Run(
                     Arg.Any<ModKey>(),
                     patchers[0],
-                    Arg.Any<Task<Exception?>>(),
                     Arg.Any<CancellationToken>(),
                     sourcePath,
                     Arg.Any<string?>());
@@ -111,7 +103,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .Run(
                     Arg.Any<ModKey>(),
                     patchers[1],
-                    Arg.Any<Task<Exception?>>(),
                     Arg.Any<CancellationToken>(),
                     return1,
                     Arg.Any<string?>());
@@ -127,21 +118,19 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             string? persistencePath,
             RunAllPatchers sut)
         {
-            IPatcherRun[] patchers = new[]
+            PatcherPrepBundle[] patchers = new[]
             {
-                Substitute.For<IPatcherRun>(),
-                Substitute.For<IPatcherRun>(),
-            };
-            Task<Exception?>[] patcherPreps = new Task<Exception?>[]
-            {
-                Task.FromResult<Exception?>(null),
-                Task.FromResult<Exception?>(null),
+                new PatcherPrepBundle(
+                    Substitute.For<IPatcherRun>(),
+                    Task.FromResult<Exception?>(null)),
+                new PatcherPrepBundle(
+                    Substitute.For<IPatcherRun>(),
+                    Task.FromResult<Exception?>(null)),
             };
             
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
                     patchers[0],
-                    Arg.Any<Task<Exception?>>(), 
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
                     Arg.Any<string?>())
@@ -150,7 +139,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
                     patchers[1],
-                    Arg.Any<Task<Exception?>>(), 
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
                     Arg.Any<string?>())
@@ -159,7 +147,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             (await sut.Run(
                     outputKey,
                     patchers,
-                    patcherPreps,
                     cancellation,
                     sourcePath,
                     persistencePath))
@@ -175,21 +162,19 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             string? persistencePath,
             RunAllPatchers sut)
         {
-            IPatcherRun[] patchers = new[]
+            PatcherPrepBundle[] patchers = new[]
             {
-                Substitute.For<IPatcherRun>(),
-                Substitute.For<IPatcherRun>(),
-            };
-            Task<Exception?>[] patcherPreps = new Task<Exception?>[]
-            {
-                Task.FromResult<Exception?>(null),
-                Task.FromResult<Exception?>(null),
+                new PatcherPrepBundle(
+                    Substitute.For<IPatcherRun>(),
+                    Task.FromResult<Exception?>(null)),
+                new PatcherPrepBundle(
+                    Substitute.For<IPatcherRun>(),
+                    Task.FromResult<Exception?>(null)),
             };
             
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
                     patchers[0],
-                    Arg.Any<Task<Exception?>>(), 
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
                     Arg.Any<string?>())
@@ -198,7 +183,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
                     patchers[1],
-                    Arg.Any<Task<Exception?>>(), 
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
                     Arg.Any<string?>())
@@ -207,7 +191,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             await sut.Run(
                 outputKey,
                 patchers,
-                patcherPreps,
                 cancellation,
                 sourcePath,
                 persistencePath);
@@ -216,7 +199,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .Run(
                     Arg.Any<ModKey>(),
                     patchers[1],
-                    Arg.Any<Task<Exception?>>(),
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
                     Arg.Any<string?>());
@@ -231,21 +213,19 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             string? persistencePath,
             RunAllPatchers sut)
         {
-            IPatcherRun[] patchers = new[]
+            PatcherPrepBundle[] patchers = new[]
             {
-                Substitute.For<IPatcherRun>(),
-                Substitute.For<IPatcherRun>(),
-            };
-            Task<Exception?>[] patcherPreps = new Task<Exception?>[]
-            {
-                Task.FromResult<Exception?>(null),
-                Task.FromResult<Exception?>(null),
+                new PatcherPrepBundle(
+                    Substitute.For<IPatcherRun>(),
+                    Task.FromResult<Exception?>(null)),
+                new PatcherPrepBundle(
+                    Substitute.For<IPatcherRun>(),
+                    Task.FromResult<Exception?>(null)),
             };
 
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
                     patchers[0],
-                    Arg.Any<Task<Exception?>>(),
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
                     Arg.Any<string?>())
@@ -254,7 +234,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             sut.RunAPatcher.Run(
                     Arg.Any<ModKey>(),
                     patchers[1],
-                    Arg.Any<Task<Exception?>>(), 
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
                     Arg.Any<string?>())
@@ -265,7 +244,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 await sut.Run(
                     outputKey,
                     patchers,
-                    patcherPreps,
                     cancellation,
                     sourcePath,
                     persistencePath);
@@ -275,7 +253,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .Run(
                     Arg.Any<ModKey>(),
                     patchers[1],
-                    Arg.Any<Task<Exception?>>(),
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
                     Arg.Any<string?>());

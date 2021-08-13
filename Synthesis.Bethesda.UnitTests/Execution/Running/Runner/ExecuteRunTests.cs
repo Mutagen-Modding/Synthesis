@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms.VisualStyles;
@@ -207,9 +208,11 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             ExecuteRun sut)
         {
             sut.PrepPatchersForRun.PrepPatchers(default!, default)
-                .ReturnsForAnyArgs(new Task<Exception?>[]
+                .ReturnsForAnyArgs(new PatcherPrepBundle[]
                 {
-                    Task.FromResult<Exception?>(new NotImplementedException())
+                    new PatcherPrepBundle(
+                        patchers[0],
+                        Task.FromResult<Exception?>(new NotImplementedException()))
                 });
 
             await sut.Run(
@@ -229,7 +232,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             FilePath? sourcePath,
             PersistenceMode persistenceMode,
             string? persistencePath,
-            Task<Exception?>[] patcherPreps,
+            PatcherPrepBundle[] patcherPreps,
             ExecuteRun sut)
         {
             sut.PrepPatchersForRun.PrepPatchers(default!, default)
@@ -246,39 +249,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             await sut.RunAllPatchers.Received(1)
                 .Run(
                     Arg.Any<ModKey>(),
-                    Arg.Any<IPatcherRun[]>(),
                     patcherPreps,
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
                     Arg.Any<string?>());
-        }
-        
-        [Theory, SynthAutoData]
-        public async Task PassesOtherExpectedArgsToRun(
-            ModPath outputPath,
-            IPatcherRun[] patchers,
-            CancellationToken cancellation,
-            FilePath? sourcePath,
-            PersistenceMode persistenceMode,
-            string? persistencePath,
-            ExecuteRun sut)
-        {
-            await sut.Run(
-                outputPath,
-                patchers,
-                cancellation,
-                sourcePath,
-                persistenceMode,
-                persistencePath);
-
-            await sut.RunAllPatchers.Received(1)
-                .Run(
-                    outputPath.ModKey,
-                    patchers,
-                    Arg.Any<Task<Exception?>[]>(),
-                    cancellation,
-                    sourcePath,
-                    persistencePath);
         }
         
         [Theory, SynthAutoData]
@@ -292,7 +266,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             ExecuteRun sut)
         {
             sut.RunAllPatchers.Run(
-                    Arg.Any<ModKey>(), Arg.Any<IPatcherRun[]>(), Arg.Any<Task<Exception?>[]>(), 
+                    Arg.Any<ModKey>(), Arg.Any<PatcherPrepBundle[]>(),
                     Arg.Any<CancellationToken>(), Arg.Any<FilePath?>(), Arg.Any<string?>())
                 .ReturnsForAnyArgs(Task.FromResult(default(FilePath?)));
 
@@ -318,7 +292,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             ExecuteRun sut)
         {
             sut.RunAllPatchers.Run(
-                    Arg.Any<ModKey>(), Arg.Any<IPatcherRun[]>(), Arg.Any<Task<Exception?>[]>(), 
+                    Arg.Any<ModKey>(), Arg.Any<PatcherPrepBundle[]>(),
                     Arg.Any<CancellationToken>(), Arg.Any<FilePath?>(), Arg.Any<string?>())
                 .Returns(Task.FromResult<FilePath?>(finalPatch));
 
@@ -346,7 +320,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             ExecuteRun sut)
         {
             sut.RunAllPatchers.Run(
-                    Arg.Any<ModKey>(), Arg.Any<IPatcherRun[]>(), Arg.Any<Task<Exception?>[]>(), 
+                    Arg.Any<ModKey>(), Arg.Any<PatcherPrepBundle[]>(),
                     Arg.Any<CancellationToken>(), Arg.Any<FilePath?>(), Arg.Any<string?>())
                 .ReturnsForAnyArgs(Task.FromResult<FilePath?>(finalPatch));
 
@@ -451,7 +425,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 sut.OverallRunPreparer.Prepare(
                     Arg.Any<ModPath>(), Arg.Any<PersistenceMode>(), Arg.Any<string?>());
                 sut.RunAllPatchers.Run(
-                    Arg.Any<ModKey>(), Arg.Any<IPatcherRun[]>(), Arg.Any<Task<Exception?>[]>(),
+                    Arg.Any<ModKey>(), Arg.Any<PatcherPrepBundle[]>(),
                     Arg.Any<CancellationToken>(), Arg.Any<FilePath?>(), Arg.Any<string?>());
             });
             
@@ -460,7 +434,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 sut.PrepPatchersForRun.PrepPatchers(
                     Arg.Any<IEnumerable<IPatcherRun>>(), Arg.Any<CancellationToken>());
                 sut.RunAllPatchers.Run(
-                    Arg.Any<ModKey>(), Arg.Any<IPatcherRun[]>(), Arg.Any<Task<Exception?>[]>(),
+                    Arg.Any<ModKey>(), Arg.Any<PatcherPrepBundle[]>(),
                     Arg.Any<CancellationToken>(), Arg.Any<FilePath?>(), Arg.Any<string?>());
             });
         }
@@ -486,7 +460,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             Received.InOrder(() =>
             {
                 sut.RunAllPatchers.Run(
-                    Arg.Any<ModKey>(), Arg.Any<IPatcherRun[]>(), Arg.Any<Task<Exception?>[]>(),
+                    Arg.Any<ModKey>(), Arg.Any<PatcherPrepBundle[]>(),
                     Arg.Any<CancellationToken>(), Arg.Any<FilePath?>(), Arg.Any<string?>());
                 sut.MoveFinalResults.Move(
                     Arg.Any<FilePath>(), Arg.Any<FilePath>());

@@ -7,7 +7,7 @@ namespace Synthesis.Bethesda.Execution.Settings
     public interface ISynthesisProfileSettings : IProfileIdentifier
     {
         string Nickname { get; set; }
-        string ID { get; set; }
+        new string ID { get; set; }
         GameRelease TargetRelease { get; set; }
         public List<PatcherSettings> Patchers { get; set; }
         NugetVersioningEnum MutagenVersioning { get; set; }

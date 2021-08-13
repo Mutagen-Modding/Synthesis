@@ -26,8 +26,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         {
             (await sut.Run(
                     outputKey,
-                    patcher,
-                    Task.FromResult<Exception?>(new NotImplementedException()),
+                    new PatcherPrepBundle(
+                        patcher,
+                        Task.FromResult<Exception?>(new NotImplementedException())),
                     cancellation,
                     sourcePath,
                     persistencePath))
@@ -45,8 +46,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         {
             (await sut.Run(
                     outputKey,
-                    patcher,
-                    Task.FromResult<Exception?>(new NotImplementedException()),
+                    new PatcherPrepBundle(
+                        patcher,
+                        Task.FromResult<Exception?>(new NotImplementedException())),
                     cancelled,
                     sourcePath,
                     persistencePath))
@@ -67,8 +69,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .ReturnsForAnyArgs(args);
             await sut.Run(
                 outputKey,
-                patcher,
-                Task.FromResult<Exception?>(null),
+                new PatcherPrepBundle(
+                    patcher,
+                    Task.FromResult<Exception?>(null)),
                 cancellation,
                 sourcePath,
                 persistencePath);
@@ -95,8 +98,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .ReturnsForAnyArgs(args);
             await sut.Run(
                 outputKey,
-                patcher,
-                Task.FromResult<Exception?>(null),
+                new PatcherPrepBundle(
+                    patcher,
+                    Task.FromResult<Exception?>(null)),
                 cancellation,
                 sourcePath,
                 persistencePath);
@@ -116,8 +120,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .ThrowsForAnyArgs<NotImplementedException>();
             (await sut.Run(
                 outputKey,
-                patcher,
-                Task.FromResult<Exception?>(null),
+                new PatcherPrepBundle(
+                    patcher,
+                    Task.FromResult<Exception?>(null)),
                 cancellation,
                 sourcePath,
                 persistencePath)).Should().BeNull();
@@ -136,8 +141,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .ThrowsForAnyArgs<NotImplementedException>();
             (await sut.Run(
                 outputKey,
-                patcher,
-                Task.FromResult<Exception?>(null),
+                new PatcherPrepBundle(
+                    patcher,
+                    Task.FromResult<Exception?>(null)),
                 cancellation,
                 sourcePath,
                 persistencePath)).Should().BeNull();
@@ -159,8 +165,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             args.OutputPath = outputPath;
             await sut.Run(
                 outputKey,
-                patcher,
-                Task.FromResult<Exception?>(null),
+                new PatcherPrepBundle(
+                    patcher,
+                    Task.FromResult<Exception?>(null)),
                 cancellation,
                 sourcePath,
                 persistencePath);
@@ -182,8 +189,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .ReturnsForAnyArgs(ret);
             (await sut.Run(
                     outputKey,
-                    patcher,
-                    Task.FromResult<Exception?>(null),
+                    new PatcherPrepBundle(
+                        patcher,
+                        Task.FromResult<Exception?>(null)),
                     cancellation,
                     sourcePath,
                     persistencePath))
