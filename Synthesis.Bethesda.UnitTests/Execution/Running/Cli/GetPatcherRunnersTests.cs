@@ -53,9 +53,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
             sut.Profile.Patchers.Returns(settings);
             sut.PatcherSettingsToRunnerFactory.Convert(default!)
                 .ReturnsSeriallyForAnyArgs(patcherRuns);
-            sut.Get()
-                .Select(x => x.Run)
-                .Should().Equal(patcherRuns);
+            sut.Get().Should().Equal(patcherRuns);
         }
     }
 }

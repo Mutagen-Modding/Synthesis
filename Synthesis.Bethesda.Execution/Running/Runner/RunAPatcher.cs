@@ -13,7 +13,6 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     {
         Task<FilePath?> Run(
             ModKey outputKey,
-            Guid key,
             IPatcherRun patcher,
             Task<Exception?> patcherPrep,
             CancellationToken cancellation,
@@ -39,7 +38,6 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 
         public async Task<FilePath?> Run(
             ModKey outputKey,
-            Guid key,
             IPatcherRun patcher,
             Task<Exception?> patcherPrep,
             CancellationToken cancellation,
@@ -54,18 +52,17 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 
                 var args = GetRunArgs.GetArgs(
                     patcher,
-                    key,
                     outputKey,
                     sourcePath,
                     persistencePath);
                 
-                _reporter.ReportStartingRun(key, patcher.Name);
+                _reporter.ReportStartingRun(patcher.Key, patcher.Name);
                 await patcher.Run(args,
                     cancel: cancellation);
                 
                 if (cancellation.IsCancellationRequested) return null;
 
-                return FinalizePatcherRun.Finalize(patcher, key, args.OutputPath);
+                return FinalizePatcherRun.Finalize(patcher, args.OutputPath);
             }
             catch (TaskCanceledException)
             {
@@ -73,7 +70,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             }
             catch (Exception ex)
             {
-                _reporter.ReportRunProblem(key, patcher.Name, ex);
+                _reporter.ReportRunProblem(patcher.Key, patcher.Name, ex);
                 return null;
             }
         }

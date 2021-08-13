@@ -13,7 +13,6 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     {
         RunSynthesisPatcher GetArgs(
             IPatcherRun patcher,
-            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath);
@@ -43,14 +42,13 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         
         public RunSynthesisPatcher GetArgs(
             IPatcherRun patcher,
-            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath)
         {
             var fileName = PatcherNameSanitizer.Sanitize(patcher.Name);
             var nextPath = new ModPath(outputKey,
-                Path.Combine(ProfileDirectories.WorkingDirectory, $"{key} - {fileName}"));
+                Path.Combine(ProfileDirectories.WorkingDirectory, $"{patcher.Index} - {fileName}"));
 
             return new RunSynthesisPatcher()
             {

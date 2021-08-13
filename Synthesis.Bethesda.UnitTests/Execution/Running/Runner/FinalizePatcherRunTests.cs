@@ -13,23 +13,21 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
     {
         [Theory, SynthAutoData]
         public async Task OutputFileMissingReturnsNull(
-            Guid key,
             IPatcherRun patcher,
             ModPath missingOutput,
             FinalizePatcherRun sut)
         {
-            sut.Finalize(patcher, key, missingOutput)
+            sut.Finalize(patcher, missingOutput)
                 .Should().BeNull();
         }
         
         [Theory, SynthAutoData]
         public async Task OutputFileExistsReturnsOutputPath(
-            Guid key,
             IPatcherRun patcher,
             ModPath existingOutput,
             FinalizePatcherRun sut)
         {
-            sut.Finalize(patcher, key, existingOutput)
+            sut.Finalize(patcher, existingOutput)
                 .Should().Be(existingOutput.Path);
         }
     }

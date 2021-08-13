@@ -292,6 +292,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running
         public class DummyPatcher : IPatcherRun
         {
             private readonly IFileSystem _FileSystem;
+            public Guid Key { get; }
+            public int Index { get; }
             public string Name => "Dummy";
 
             public bool WasDisposed;

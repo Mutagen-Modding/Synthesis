@@ -190,7 +190,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                         var madePatch = await _executeRun.Run(
                             outputPath: output,
                             cancel: _cancel.Token,
-                            patchers: Patchers.Items.Select(vm => (vm.Config.InternalID, vm.Run)).ToArray(),
+                            patchers: Patchers.Items.Select(vm => vm.Run).ToArray(),
                             persistenceMode: RunningProfile.SelectedPersistenceMode,
                             persistencePath: Path.Combine(RunningProfile.ProfileDirectory, "Persistence"));
                         if (!madePatch) return;

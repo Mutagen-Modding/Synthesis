@@ -10,7 +10,6 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     {
         FilePath? Finalize(
             IPatcherRun patcher,
-            Guid key,
             FilePath outputPath);
     }
 
@@ -29,17 +28,16 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         
         public FilePath? Finalize(
             IPatcherRun patcher,
-            Guid key,
             FilePath outputPath)
         {
             if (!_fileSystem.File.Exists(outputPath))
             {
-                _reporter.ReportRunProblem(key, patcher.Name,
+                _reporter.ReportRunProblem(patcher.Key, patcher.Name,
                     new ArgumentException($"Patcher {patcher.Name} did not produce output file."));
                 return null;
             }
 
-            _reporter.ReportRunSuccessful(key, patcher.Name, outputPath);
+            _reporter.ReportRunSuccessful(patcher.Key, patcher.Name, outputPath);
             return outputPath;
         }
     }

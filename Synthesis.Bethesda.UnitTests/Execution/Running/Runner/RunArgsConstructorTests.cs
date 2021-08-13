@@ -16,47 +16,45 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public void PassesPatcherNameToSanitizer(
             IPatcherRun patcher,
-            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath,
             RunArgsConstructor sut)
         {
-            sut.GetArgs(patcher, key, outputKey, sourcePath, persistencePath);
+            sut.GetArgs(patcher, outputKey, sourcePath, persistencePath);
             sut.PatcherNameSanitizer.Received(1).Sanitize(patcher.Name);
         }
         
         [Theory, SynthAutoData]
         public void OutputPathUnderWorkingDirectory(
             IPatcherRun patcher,
-            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath,
             RunArgsConstructor sut)
         {
-            var result = sut.GetArgs(patcher, key, outputKey, sourcePath, persistencePath);
+            var result = sut.GetArgs(patcher, outputKey, sourcePath, persistencePath);
             result.OutputPath.IsUnderneath(sut.ProfileDirectories.WorkingDirectory)
                 .Should().BeTrue();
         }
         
         [Theory, SynthAutoData]
-        public void OutputPathShouldContainKey(
+        public void OutputPathShouldContainIndex(
             IPatcherRun patcher,
-            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath,
             RunArgsConstructor sut)
         {
-            var result = sut.GetArgs(patcher, key, outputKey, sourcePath, persistencePath);
-            result.OutputPath.Name.String.Should().Contain(key.ToString());
+            var index = 5;
+            patcher.Index.Returns(index);
+            var result = sut.GetArgs(patcher, outputKey, sourcePath, persistencePath);
+            result.OutputPath.Name.String.Should().Contain(index.ToString());
         }
         
         [Theory, SynthAutoData]
         public void OutputPathShouldContainsSanitizedName(
             IPatcherRun patcher,
-            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath,
@@ -64,14 +62,13 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             RunArgsConstructor sut)
         {
             sut.PatcherNameSanitizer.Sanitize(default!).ReturnsForAnyArgs(sanitize);
-            var result = sut.GetArgs(patcher, key, outputKey, sourcePath, persistencePath);
+            var result = sut.GetArgs(patcher, outputKey, sourcePath, persistencePath);
             result.OutputPath.Name.String.Should().Contain(sanitize);
         }
         
         [Theory, SynthAutoData]
         public void PatcherNameShouldBeSanitizedName(
             IPatcherRun patcher,
-            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath,
@@ -79,14 +76,13 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             RunArgsConstructor sut)
         {
             sut.PatcherNameSanitizer.Sanitize(default!).ReturnsForAnyArgs(sanitize);
-            var result = sut.GetArgs(patcher, key, outputKey, sourcePath, persistencePath);
+            var result = sut.GetArgs(patcher, outputKey, sourcePath, persistencePath);
             result.PatcherName.Should().Be(sanitize);
         }
         
         [Theory, SynthAutoData]
         public void OutputPathShouldNotContainOriginalName(
             IPatcherRun patcher,
-            Guid key,
             ModKey outputKey,
             FilePath? sourcePath,
             string? persistencePath,
@@ -94,14 +90,13 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             RunArgsConstructor sut)
         {
             sut.PatcherNameSanitizer.Sanitize(default!).ReturnsForAnyArgs(sanitize);
-            var result = sut.GetArgs(patcher, key, outputKey, sourcePath, persistencePath);
+            var result = sut.GetArgs(patcher, outputKey, sourcePath, persistencePath);
             result.OutputPath.Name.String.Should().NotContain(patcher.Name);
         }
         
         [Theory, SynthAutoData]
         public void TypicalPassalong(
             IPatcherRun patcher,
-            Guid key,
             ModKey outputKey,
             FilePath sourcePath,
             string? persistencePath,
@@ -113,7 +108,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             sut.DataDirectoryProvider.Path.Returns(dataDir);
             sut.ReleaseContext.Release.Returns(release);
             sut.RunLoadOrderPathProvider.Path.Returns(loadOrderPath);
-            var result = sut.GetArgs(patcher, key, outputKey, sourcePath, persistencePath);
+            var result = sut.GetArgs(patcher, outputKey, sourcePath, persistencePath);
             result.SourcePath.Should().Be(sourcePath);
             result.DataFolderPath.Should().Be(dataDir);
             result.LoadOrderFilePath.Should().Be(loadOrderPath);

@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;
+using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
+using Synthesis.Bethesda.Execution.Running.Cli;
 using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Git
@@ -21,7 +23,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Git
     public class GitPatcherRun : IGitPatcherRun
     {
         private readonly CompositeDisposable _disposable = new();
-        
+
+        public Guid Key { get; }
+        public int Index { get; }
         public string Name { get; }
         
         private readonly GithubPatcherSettings _settings;
@@ -33,15 +37,19 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Git
         public GitPatcherRun(
             GithubPatcherSettings settings,
             ILogger logger,
+            IPatcherIdProvider idProvider,
+            IIndexDisseminator indexDisseminator,
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             ISolutionPatcherRun solutionPatcherRun,
             ICheckOrCloneRepo checkOrClone)
         {
+            Key = idProvider.InternalId;
             SolutionPatcherRun = solutionPatcherRun;
             _settings = settings;
             _logger = logger;
             _runnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
             _checkOrClone = checkOrClone;
+            Index = indexDisseminator.GetNext();
             Name = $"{settings.Nickname.Decorate(x => $"{x} => ")}{settings.RemoteRepoPath} => {Path.GetFileNameWithoutExtension(settings.SelectedProjectSubpath)}";
         }
         

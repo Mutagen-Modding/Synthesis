@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
     {
         [Theory, SynthAutoData]
         public async Task PassesGetPatcherRunnersToRun(
-            (Guid Key, IPatcherRun Run)[] patchers,
+            IPatcherRun[] patchers,
             CancellationToken cancel,
             RunPatcherPipeline sut)
         {
@@ -36,7 +36,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
             await sut.Run(cancel);
             await sut.ExecuteRun.Run(
                 outputPath: sut.Instructions.OutputPath, 
-                Arg.Any<(Guid Key, IPatcherRun Run)[]>(),
+                Arg.Any<IPatcherRun[]>(),
                 Arg.Any<CancellationToken>(),
                 sourcePath: sut.Instructions.SourcePath,
                 persistenceMode: sut.Instructions.PersistenceMode.Value, 
@@ -51,7 +51,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
             sut.Instructions.PersistenceMode = null;
             await sut.Run(cancel);
             await sut.ExecuteRun.Run(
-                Arg.Any<ModPath>(), Arg.Any<(Guid Key, IPatcherRun Run)[]>(), Arg.Any<CancellationToken>(),
+                Arg.Any<ModPath>(), Arg.Any<IPatcherRun[]>(), Arg.Any<CancellationToken>(),
                 Arg.Any<FilePath?>(), PersistenceMode.None, Arg.Any<string?>());
         }
     }

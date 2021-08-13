@@ -8,7 +8,7 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
 {
     public interface IGetPatcherRunners
     {
-        (Guid Key, IPatcherRun Run)[] Get();
+        IPatcherRun[] Get();
     }
 
     public class GetPatcherRunners : IGetPatcherRunners
@@ -27,7 +27,7 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
             Profile = profile;
         }
         
-        public (Guid Key, IPatcherRun Run)[] Get()
+        public IPatcherRun[] Get()
         {
             _logger.Information("Patchers to run:");
             return Profile.Patchers
@@ -38,7 +38,6 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
                     
                     return PatcherSettingsToRunnerFactory.Convert(patcherSettings);
                 })
-                .Select((p) => (Guid.NewGuid(), p))
                 .ToArray();
         }
     }

@@ -16,9 +16,9 @@ namespace Synthesis.Bethesda.Execution.Running
     [ExcludeFromCodeCoverage]
     public class ReporterLoggerWrapper : ILogger, IReporterLoggerWrapper
     {
-        private readonly IPatcherNameProvider _NameProvider;
-        private readonly IPatcherIdProvider _IdProvider;
-        private readonly IRunReporter _Reporter;
+        private readonly IPatcherNameProvider _nameProvider;
+        private readonly IPatcherIdProvider _idProvider;
+        private readonly IRunReporter _reporter;
         private readonly Subject<LogEvent> _events = new();
         public IObservable<LogEvent> Events => _events;
 
@@ -27,9 +27,9 @@ namespace Synthesis.Bethesda.Execution.Running
             IPatcherIdProvider idProvider,
             IRunReporter reporter)
         {
-            _NameProvider = nameProvider;
-            _IdProvider = idProvider;
-            _Reporter = reporter;
+            _nameProvider = nameProvider;
+            _idProvider = idProvider;
+            _reporter = reporter;
         }
 
         public void Write(LogEvent logEvent)
@@ -39,10 +39,10 @@ namespace Synthesis.Bethesda.Execution.Running
             {
                 case LogEventLevel.Error:
                 case LogEventLevel.Fatal:
-                    _Reporter.WriteError(_IdProvider.InternalId, _NameProvider.Name, logEvent.RenderMessage());
+                    _reporter.WriteError(_idProvider.InternalId, _nameProvider.Name, logEvent.RenderMessage());
                     break;
                 default:
-                    _Reporter.Write(_IdProvider.InternalId, _NameProvider.Name, logEvent.RenderMessage());
+                    _reporter.Write(_idProvider.InternalId, _nameProvider.Name, logEvent.RenderMessage());
                     break;
             }
         }

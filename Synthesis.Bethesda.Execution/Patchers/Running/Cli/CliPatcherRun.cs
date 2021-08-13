@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Cli;
 using Synthesis.Bethesda.Execution.Patchers.Common;
+using Synthesis.Bethesda.Execution.Running.Cli;
 using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
@@ -21,6 +22,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
     {
         private readonly CompositeDisposable _disposable = new();
 
+        public Guid Key { get; }
+        public int Index { get; }
         public string Name => _name.Name;
         public IProcessRunner ProcessRunner { get; }
         public IPathToExecutableInputProvider ExePath { get; }
@@ -34,17 +37,21 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
         public CliPatcherRun(
             ILogger logger,
             IProcessRunner processRunner,
+            IPatcherIdProvider idProvider,
             IPatcherNameProvider name,
             IPathToExecutableInputProvider exePath,
+            IIndexDisseminator indexDisseminator,
             IGenericSettingsToMutagenSettings genericToMutagenSettings,
             IFormatCommandLine format)
         {
+            Key = idProvider.InternalId;
             ProcessRunner = processRunner;
             ExePath = exePath;
             Logger = logger;
             _name = name;
             GenericToMutagenSettings = genericToMutagenSettings;
             Format = format;
+            Index = indexDisseminator.GetNext();
         }
 
         public void Dispose()

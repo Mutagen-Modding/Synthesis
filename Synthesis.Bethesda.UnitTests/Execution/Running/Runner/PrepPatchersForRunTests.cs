@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
     {
         [Theory, SynthAutoData]
         public async Task RunsPrepOnEachPatcher(
-            IEnumerable<(Guid Key, IPatcherRun Run)> patchers,
+            IEnumerable<IPatcherRun> patchers,
             CancellationToken cancellation,
             PrepPatchersForRun sut)
         {
@@ -25,13 +25,13 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
 
             foreach (var patcher in patchers)
             {
-                await patcher.Run.Received(1).Prep(cancellation);
+                await patcher.Received(1).Prep(cancellation);
             }
         }
         
         [Theory, SynthAutoData]
         public async Task ProperlyPreppedPatchersReturnNull(
-            IEnumerable<(Guid Key, IPatcherRun Run)> patchers,
+            IEnumerable<IPatcherRun> patchers,
             CancellationToken cancellation,
             PrepPatchersForRun sut)
         {
@@ -44,13 +44,13 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task ThrowingPatchersReturnException(
-            IEnumerable<(Guid Key, IPatcherRun Run)> patchers,
+            IEnumerable<IPatcherRun> patchers,
             CancellationToken cancellation,
             PrepPatchersForRun sut)
         {
             foreach (var item in patchers)
             {
-                item.Run.Prep(default!).ThrowsForAnyArgs<NotImplementedException>();
+                item.Prep(default!).ThrowsForAnyArgs<NotImplementedException>();
             }
             var results = sut.PrepPatchers(patchers, cancellation);
             foreach (var result in results)
@@ -61,13 +61,13 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task ThrowingPatchersReports(
-            IEnumerable<(Guid Key, IPatcherRun Run)> patchers,
+            IEnumerable<IPatcherRun> patchers,
             CancellationToken cancellation,
             PrepPatchersForRun sut)
         {
             foreach (var item in patchers)
             {
-                item.Run.Prep(default!).ThrowsForAnyArgs<NotImplementedException>();
+                item.Prep(default!).ThrowsForAnyArgs<NotImplementedException>();
             }
             var results = sut.PrepPatchers(patchers, cancellation);
             await Task.WhenAll(results);
@@ -76,7 +76,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task CancellationReturnsNullExceptions(
-            IEnumerable<(Guid Key, IPatcherRun Run)> patchers,
+            IEnumerable<IPatcherRun> patchers,
             CancellationToken cancelled,
             PrepPatchersForRun sut)
         {

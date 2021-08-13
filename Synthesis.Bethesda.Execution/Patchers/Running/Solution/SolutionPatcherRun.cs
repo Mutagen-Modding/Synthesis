@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
+using Synthesis.Bethesda.Execution.Running.Cli;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
 {
@@ -16,6 +17,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
     {
         private readonly CompositeDisposable _disposable = new();
         
+        public Guid Key { get; }
+        public int Index { get; }
         public IPatcherNameProvider NameProvider { get; }
         public IPathToProjProvider PathToProjProvider { get; }
         public ISolutionPatcherRunner SolutionPatcherRunner { get; }
@@ -28,16 +31,20 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
             IPatcherNameProvider nameProvider,
             IPathToProjProvider pathToProjProvider,
             ISolutionPatcherRunner solutionPatcherRunner,
+            IPatcherIdProvider idProvider,
             ISolutionPatcherPrep prep,
+            IIndexDisseminator indexDisseminator,
             IExecuteRunnabilityCheck checkRunnability,
             IPrintShaIfApplicable printShaIfApplicable)
         {
+            Key = idProvider.InternalId;
             NameProvider = nameProvider;
             PathToProjProvider = pathToProjProvider;
             SolutionPatcherRunner = solutionPatcherRunner;
             PrepService = prep;
             CheckRunnability = checkRunnability;
             PrintShaIfApplicable = printShaIfApplicable;
+            Index = indexDisseminator.GetNext();
         }
 
         public Task Prep(CancellationToken cancel)
