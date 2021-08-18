@@ -152,6 +152,7 @@ namespace Synthesis.Bethesda.GUI
                 vm.Persist(logger);
                 if (!Repository.IsValid(vm.SettingsFolder))
                 {
+                    logger($"Repository not valid at {vm.SettingsFolder}.  Initializing");
                     Repository.Init(vm.SettingsFolder);
                 }
                 using var repo = new Repository(vm.SettingsFolder);

@@ -42,9 +42,16 @@ namespace Mutagen.Bethesda.Synthesis.WPF
 
         public void Persist(Action<string> logger)
         {
+            logger($"Reflection settings folder: {SettingsFolder}");
+            logger($"Reflection settings subpath: {SettingsSubPath}");
             var doc = new JObject();
             ObjVM.Persist(doc, logger);
-            Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
+            if (!Directory.Exists(SettingsFolder))
+            {
+                logger($"Creating reflection settings directory");
+                Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
+            }
+            logger($"Writing reflection settings to: {SettingsPath}");
             File.WriteAllText(SettingsPath, doc.ToString());
         }
     }
