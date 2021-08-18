@@ -38,7 +38,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             string? persistencePath,
             OverallRunPreparer sut)
         {
-            sut.RunLoadOrderPreparer.When(x => x.Write(Arg.Any<ModPath>()))
+            sut.RunLoadOrderPreparer.When(x => x.Write(outputPath))
                 .Do(_ => throw new NotImplementedException());
             await Assert.ThrowsAsync<NotImplementedException>(async () =>
             {

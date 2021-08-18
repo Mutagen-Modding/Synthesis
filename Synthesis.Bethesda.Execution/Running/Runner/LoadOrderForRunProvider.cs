@@ -9,7 +9,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 {
     public interface ILoadOrderForRunProvider
     {
-        IList<IModListingGetter> Get(ModPath outputPath);
+        IList<IModListingGetter> Get(ModKey modKey);
     }
 
     public class LoadOrderForRunProvider : ILoadOrderForRunProvider
@@ -22,11 +22,11 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             LoadOrderListingsProvider = loadOrderListingsProvider;
         }
         
-        public IList<IModListingGetter> Get(ModPath outputPath)
+        public IList<IModListingGetter> Get(ModKey modKey)
         {
             // Copy plugins text to working directory, trimming synthesis and anything after
             var loadOrderList = LoadOrderListingsProvider.Get().ToList();
-            var trimIndex = loadOrderList.IndexOf(outputPath.ModKey, (listing, key) => listing.ModKey == key);
+            var trimIndex = loadOrderList.IndexOf(modKey, (listing, key) => listing.ModKey == key);
             if (trimIndex != -1)
             {
                 loadOrderList.RemoveToCount(trimIndex);

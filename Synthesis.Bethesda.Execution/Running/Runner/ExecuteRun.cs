@@ -60,7 +60,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             cancellation.ThrowIfCancellationRequested();
             EnsureSourcePathExists.Ensure(sourcePath);
 
-            var overallPrep = OverallRunPreparer.Prepare(outputPath, persistenceMode, persistencePath);
+            var overallPrep = OverallRunPreparer.Prepare(outputPath.ModKey, persistenceMode, persistencePath);
 
             var patcherPreps = PrepPatchersForRun.PrepPatchers(patchers, cancellation);
 

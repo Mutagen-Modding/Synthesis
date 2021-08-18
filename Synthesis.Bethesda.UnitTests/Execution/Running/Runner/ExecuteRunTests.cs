@@ -356,7 +356,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             {
                 sut.ResetWorkingDirectory.Reset();
                 sut.OverallRunPreparer.Prepare(
-                    Arg.Any<ModPath>(), Arg.Any<PersistenceMode>(), Arg.Any<string?>());
+                    Arg.Any<ModKey>(), Arg.Any<PersistenceMode>(), Arg.Any<string?>());
             });
             
             Received.InOrder(() =>
@@ -390,7 +390,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 sut.EnsureSourcePathExists.Ensure(
                     Arg.Any<FilePath?>());
                 sut.OverallRunPreparer.Prepare(
-                    Arg.Any<ModPath>(), Arg.Any<PersistenceMode>(), Arg.Any<string?>());
+                    Arg.Any<ModKey>(), Arg.Any<PersistenceMode>(), Arg.Any<string?>());
             });
             
             Received.InOrder(() =>
@@ -423,7 +423,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             Received.InOrder(() =>
             {
                 sut.OverallRunPreparer.Prepare(
-                    Arg.Any<ModPath>(), Arg.Any<PersistenceMode>(), Arg.Any<string?>());
+                    Arg.Any<ModKey>(), Arg.Any<PersistenceMode>(), Arg.Any<string?>());
                 sut.RunAllPatchers.Run(
                     Arg.Any<ModKey>(), Arg.Any<PatcherPrepBundle[]>(),
                     Arg.Any<CancellationToken>(), Arg.Any<FilePath?>(), Arg.Any<string?>());

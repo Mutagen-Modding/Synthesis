@@ -5,7 +5,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 {
     public interface IRunLoadOrderPreparer
     {
-        void Write(ModPath outputPath);
+        void Write(ModKey modKey);
     }
 
     public class RunLoadOrderPreparer : IRunLoadOrderPreparer
@@ -27,9 +27,9 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             LoadOrderWriter = loadOrderWriter;
         }
 
-        public void Write(ModPath outputPath)
+        public void Write(ModKey modKey)
         {
-            var loadOrderList = LoadOrderForRunProvider.Get(outputPath);
+            var loadOrderList = LoadOrderForRunProvider.Get(modKey);
             
             Printer.Print(loadOrderList);
             

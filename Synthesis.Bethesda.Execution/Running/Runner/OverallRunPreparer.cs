@@ -7,7 +7,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     public interface IOverallRunPreparer
     {
         Task Prepare(
-            ModPath outputPath,
+            ModKey modKey,
             PersistenceMode persistenceMode = PersistenceMode.None,
             string? persistencePath = null);
     }
@@ -26,14 +26,14 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         }
         
         public async Task Prepare(
-            ModPath outputPath,
+            ModKey modKey,
             PersistenceMode persistenceMode = PersistenceMode.None,
             string? persistencePath = null)
         {
             await Task.WhenAll(
                 Task.Run(() =>
                 {
-                    RunLoadOrderPreparer.Write(outputPath);
+                    RunLoadOrderPreparer.Write(modKey);
                 }), 
                 Task.Run(() =>
                 {
