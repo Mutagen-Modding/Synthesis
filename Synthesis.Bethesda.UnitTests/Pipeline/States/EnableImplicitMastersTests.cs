@@ -103,7 +103,7 @@ namespace Synthesis.Bethesda.UnitTests.Pipeline.States
             };
             adder.Add(list);
             list.Should().HaveCount(3);
-            list.Select(x => x.Enabled).ToArray().Should().BeEquivalentTo(
+            list.Select(x => x.Enabled).ToArray().Should().Equal(
                 true, false, true);
         }
         

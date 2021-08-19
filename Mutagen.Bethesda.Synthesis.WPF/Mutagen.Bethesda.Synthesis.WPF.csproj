@@ -45,8 +45,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="reactiveui" Version="14.2.1" />
-    <PackageReference Include="ReactiveUI.Fody" Version="14.2.1" />
+    <PackageReference Include="reactiveui" Version="14.3.10" />
+    <PackageReference Include="ReactiveUI.Fody" Version="14.3.10" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
   </ItemGroup>
 
