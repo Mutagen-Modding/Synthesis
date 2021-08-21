@@ -22,6 +22,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
 {
     public class PatcherSettingsVm : ViewModel
     {
+        private readonly ILogger _logger;
         private readonly IProvideRepositoryCheckouts _RepoCheckouts;
 
         public ReactiveCommand<Unit, Unit> OpenSettingsCommand { get; }
@@ -60,6 +61,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
             IExecuteOpenForSettings executeOpenForSettings,
             IOpenSettingsHost openSettingsHost)
         {
+            _logger = logger;
             _RepoCheckouts = repoCheckouts;
             _SettingsConfiguration = source
                 .Select(i =>
@@ -148,6 +150,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
                 vm.Persist();
                 if (!Repository.IsValid(vm.SettingsFolder))
                 {
+                    _logger.Information($"Repository not valid at {vm.SettingsFolder}.  Initializing");
                     Repository.Init(vm.SettingsFolder);
                 }
                 using var repo = _RepoCheckouts.Get(vm.SettingsFolder);
