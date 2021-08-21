@@ -31,14 +31,14 @@ namespace Synthesis.Bethesda.GUI.Views
             {
                 this.WhenAnyFallback(x => x.ViewModel!.NewPatcher)
                     .Select(x => x == null ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.Patchers.Visibility)
+                    .BindTo(this, x => x.Patchers.Visibility)
                     .DisposeWith(dispose);
                 this.WhenAnyFallback(x => x.ViewModel!.NewPatcher)
                     .Select(x => x == null ? Visibility.Collapsed : Visibility.Visible)
-                    .BindToStrict(this, x => x.Initialization.Visibility)
+                    .BindTo(this, x => x.Initialization.Visibility)
                     .DisposeWith(dispose);
                 this.WhenAnyFallback(x => x.ViewModel!.NewPatcher)
-                    .BindToStrict(this, x => x.Initialization.ViewModel)
+                    .BindTo(this, x => x.Initialization.ViewModel)
                     .DisposeWith(dispose);
             });
         }

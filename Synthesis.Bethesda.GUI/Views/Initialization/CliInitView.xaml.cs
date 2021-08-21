@@ -29,18 +29,18 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.BindStrict(this.ViewModel, vm => vm.DisplayName, view => view.PatcherDetailName.Text)
+                this.Bind(this.ViewModel, vm => vm.DisplayName, view => view.PatcherDetailName.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel)
-                    .BindToStrict(this, x => x.PatcherIconDisplay.DataContext)
+                    .BindTo(this, x => x.PatcherIconDisplay.DataContext)
                     .DisposeWith(disposable);
 
                 // Set up discard/confirm clicks
                 this.WhenAnyValue(x => x.ViewModel!.Profile.Config.CancelConfiguration)
-                    .BindToStrict(this, x => x.CancelAdditionButton.Command)
+                    .BindTo(this, x => x.CancelAdditionButton.Command)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.Profile.Config.CompleteConfiguration)
-                    .BindToStrict(this, x => x.ConfirmButton.ConfirmAdditionButton.Command)
+                    .BindTo(this, x => x.ConfirmButton.ConfirmAdditionButton.Command)
                     .DisposeWith(disposable);
             });
         }

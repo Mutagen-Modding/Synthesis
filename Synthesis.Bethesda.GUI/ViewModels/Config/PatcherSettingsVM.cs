@@ -116,7 +116,7 @@ namespace Synthesis.Bethesda.GUI
                             loadOrder: parent.Profile.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                     }
                 },
-                disposable: this.CompositeDisposable);
+                disposable: this        );
 
             _SettingsOpen = OpenSettingsCommand.IsExecuting
                 .ToGuiProperty(this, nameof(SettingsOpen));

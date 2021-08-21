@@ -39,7 +39,7 @@ namespace Synthesis.Bethesda.GUI
             objectSource: this.WhenAnyValue(x => x.State.RunnableState),
             canExecute: x => x.Failed,
             execute: x => DisplayedObject = ErrorVM,
-            disposable: this.CompositeDisposable);
+            disposable: this);
 
         public abstract ConfigurationState State { get; }
 

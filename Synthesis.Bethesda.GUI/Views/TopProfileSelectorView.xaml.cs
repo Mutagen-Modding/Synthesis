@@ -31,7 +31,7 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated(dispose =>
             {
                 this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.Nickname, string.Empty)
-                    .BindToStrict(this, x => x.ProfileNameBlock.Text)
+                    .BindTo(this, x => x.ProfileNameBlock.Text)
                     .DisposeWith(dispose);
 
                 this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.Release, GameRelease.SkyrimSE)
@@ -41,16 +41,16 @@ namespace Synthesis.Bethesda.GUI.Views
                         return ImageUtility.BitmapImageFromResource(ResourceConstants.AssemblyName, ResourceConstants.GetIcon(gameRelease));
                     })
                     .ObserveOnGui()
-                    .BindToStrict(this, x => x.GameIconImage.Source)
+                    .BindTo(this, x => x.GameIconImage.Source)
                     .DisposeWith(dispose);
 
                 this.WhenAnyValue(x => x.ViewModel!.OpenProfilesPageCommand)
-                    .BindToStrict(this, x => x.OpenProfilesPageButton.Command)
+                    .BindTo(this, x => x.OpenProfilesPageButton.Command)
                     .DisposeWith(dispose);
 
                 this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.UpdateProfileNugetVersionCommand)
                     .Select(x => x as ICommand)
-                    .BindToStrict(this, x => x.UpdateButton.Command)
+                    .BindTo(this, x => x.UpdateButton.Command)
                     .DisposeWith(dispose);
                 Observable.CombineLatest(
                         this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.UpdateProfileNugetVersionCommand)
@@ -59,12 +59,12 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.LockUpgrades),
                         (hasUpdate, locked) => hasUpdate && !locked)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.UpdateButton.Visibility)
+                    .BindTo(this, x => x.UpdateButton.Visibility)
                     .DisposeWith(dispose);
 
                 this.WhenAnyValue(x => x.ViewModel!.InModal)
                     .Select(x => !x)
-                    .BindToStrict(this, x => x.IsEnabled)
+                    .BindTo(this, x => x.IsEnabled)
                     .DisposeWith(dispose);
             });
         }

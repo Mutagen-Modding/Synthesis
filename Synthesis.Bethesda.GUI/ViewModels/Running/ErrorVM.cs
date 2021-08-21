@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     x?.Invoke();
                 },
-                disposable: this.CompositeDisposable);
+                disposable: this);
 
             // Go back automatically if things no longer apply
             this.WhenAnyValue(x => x.String)

@@ -20,34 +20,34 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated(dispose =>
             {
                 this.WhenAnyValue(x => x.ViewModel!.PatcherRepos)
-                    .BindToStrict(this, x => x.PatcherReposListBox.ItemsSource)
+                    .BindTo(this, x => x.PatcherReposListBox.ItemsSource)
                     .DisposeWith(dispose);
-                this.BindStrict(this.ViewModel, vm => vm.SelectedPatcher, v => v.PatcherReposListBox.SelectedItem)
+                this.Bind(this.ViewModel, vm => vm.SelectedPatcher, v => v.PatcherReposListBox.SelectedItem)
                     .DisposeWith(dispose);
-                this.BindStrict(this.ViewModel, vm => vm.Search, v => v.SearchBox.Text)
+                this.Bind(this.ViewModel, vm => vm.Search, v => v.SearchBox.Text)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.Search)
                     .Select(s => string.IsNullOrWhiteSpace(s) ? Visibility.Collapsed : Visibility.Visible)
                     .DistinctUntilChanged()
-                    .BindToStrict(this, x => x.ClearSearchButton.Visibility)
+                    .BindTo(this, x => x.ClearSearchButton.Visibility)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.ClearSearchCommand)
-                    .BindToStrict(this, x => x.ClearSearchButton.Command)
+                    .BindTo(this, x => x.ClearSearchButton.Command)
                     .DisposeWith(dispose);
 
                 this.WhenAnyValue(x => x.ViewModel!.OpenPopulationInfoCommand)
-                    .BindToStrict(this, view => view.SearchHelp.Command)
+                    .BindTo(this, view => view.SearchHelp.Command)
                     .DisposeWith(dispose);
 
                 this.WhenAnyValue(x => x.ViewModel!.SelectedPatcher)
-                    .BindToStrict(this, v => v.DetailView.DataContext)
+                    .BindTo(this, v => v.DetailView.DataContext)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.SelectedPatcher)
                     .Select(x => x == null ? Visibility.Hidden : Visibility.Visible)
-                    .BindToStrict(this, v => v.DetailView.Visibility)
+                    .BindTo(this, v => v.DetailView.Visibility)
                     .DisposeWith(dispose);
 
-                this.BindStrict(this.ViewModel, vm => vm.ShowAll, v => v.ShowAllCheckbox.IsChecked)
+                this.Bind(this.ViewModel, vm => vm.ShowAll, v => v.ShowAllCheckbox.IsChecked)
                     .DisposeWith(dispose);
 
             });

@@ -310,7 +310,7 @@ namespace Synthesis.Bethesda.GUI
                 canExecute: o => o.Failed,
                 execute: o =>
                 {
-                    if (o.Value.TryGet(out var patcher))
+                    if (o.Value is {} patcher)
                     {
                         DisplayedObject = patcher;
                     }
@@ -328,7 +328,7 @@ namespace Synthesis.Bethesda.GUI
                         DisplayedObject = OverallErrorVM;
                     }
                 },
-                disposable: this.CompositeDisposable);
+                disposable: this);
 
             // Forward overall errors into VM
             this.WhenAnyValue(x => x.LargeOverallError)
@@ -417,7 +417,7 @@ namespace Synthesis.Bethesda.GUI
                         .ObserveOnGui();
                 },
                 execute: v => ManualMutagenVersion = v ?? string.Empty,
-                disposable: this.CompositeDisposable);
+                disposable: this);
             UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
                 objectSource: parent.MainVM.NewestSynthesisVersion
                     .ObserveOnGui(),
@@ -435,7 +435,7 @@ namespace Synthesis.Bethesda.GUI
                         .ObserveOnGui();
                 },
                 execute: v => ManualSynthesisVersion = v ?? string.Empty,
-                disposable: this.CompositeDisposable);
+                disposable: this);
 
             UpdateProfileNugetVersionCommand = CommandExt.CreateCombinedAny(
                 this.UpdateMutagenManualToLatestCommand,

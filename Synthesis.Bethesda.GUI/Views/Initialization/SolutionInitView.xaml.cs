@@ -28,14 +28,14 @@ namespace Synthesis.Bethesda.GUI.Views
                 UtilityBindings.HelpWiring(this.ViewModel!.Profile.Config, this.HelpButton, this.HelpText)
                     .DisposeWith(dispose);
 
-                this.BindStrict(this.ViewModel, vm => vm.SelectedIndex, view => view.TopTab.SelectedIndex)
+                this.Bind(this.ViewModel, vm => vm.SelectedIndex, view => view.TopTab.SelectedIndex)
                     .DisposeWith(dispose);
 
                 // Bind solution existing pane
                 this.WhenAnyValue(x => x.ViewModel!.ExistingSolution.SolutionPath)
-                    .BindToStrict(this, x => x.SolutionPathPicker.PickerVM)
+                    .BindTo(this, x => x.SolutionPathPicker.PickerVM)
                     .DisposeWith(dispose);
-                this.BindStrict(this.ViewModel, vm => vm.ExistingSolution.ProjectName, view => view.ExistingProjectNameBox.Text)
+                this.Bind(this.ViewModel, vm => vm.ExistingSolution.ProjectName, view => view.ExistingProjectNameBox.Text)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.ExistingSolution.ProjectError)
                     .BindError(this.ExistingProjectNameBox)
@@ -43,11 +43,11 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 // Bind new pane
                 this.WhenAnyValue(x => x.ViewModel!.New.ParentDirPath)
-                    .BindToStrict(this, x => x.ParentDirPicker.PickerVM)
+                    .BindTo(this, x => x.ParentDirPicker.PickerVM)
                     .DisposeWith(dispose);
-                this.BindStrict(this.ViewModel, vm => vm.New.SolutionName, view => view.SolutionNameBox.Text)
+                this.Bind(this.ViewModel, vm => vm.New.SolutionName, view => view.SolutionNameBox.Text)
                     .DisposeWith(dispose);
-                this.BindStrict(this.ViewModel, vm => vm.New.ProjectName, view => view.NewProjectNameBox.Text)
+                this.Bind(this.ViewModel, vm => vm.New.ProjectName, view => view.NewProjectNameBox.Text)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.New.SolutionPath)
                     .BindError(this.SolutionNameBox)
@@ -58,16 +58,16 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 // Bind both existing pane
                 this.WhenAnyValue(x => x.ViewModel!.ExistingProject.SolutionPath)
-                    .BindToStrict(this, x => x.BothExistingSolutionPathPicker.PickerVM)
+                    .BindTo(this, x => x.BothExistingSolutionPathPicker.PickerVM)
                     .DisposeWith(dispose);
                 var vis = this.WhenAnyValue(x => x.ViewModel!.ExistingProject.SolutionPath.ErrorState)
                     .Select(x => x.Succeeded ? Visibility.Visible : Visibility.Collapsed);
-                vis.BindToStrict(this, x => x.AvailableProjects.Visibility)
+                vis.BindTo(this, x => x.AvailableProjects.Visibility)
                     .DisposeWith(dispose);
-                vis.BindToStrict(this, x => x.AvailableProjectsText.Visibility)
+                vis.BindTo(this, x => x.AvailableProjectsText.Visibility)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.ExistingProject.AvailableProjects)
-                    .BindToStrict(this, x => x.AvailableProjects.ItemsSource)
+                    .BindTo(this, x => x.AvailableProjects.ItemsSource)
                     .DisposeWith(dispose);
                 this.AvailableProjects.Events().SelectionChanged
                     .Throttle(TimeSpan.FromMilliseconds(300), RxApp.MainThreadScheduler)
@@ -82,20 +82,20 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(dispose);
 
                 // Bind open after checkbox
-                this.BindStrict(this.ViewModel, vm => vm.OpenCodeAfter, view => view.OpenCodeAfter.IsChecked)
+                this.Bind(this.ViewModel, vm => vm.OpenCodeAfter, view => view.OpenCodeAfter.IsChecked)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.MVM.IdeOptions)
-                    .BindToStrict(this, view => view.OpenWithComboBox.ItemsSource)
+                    .BindTo(this, view => view.OpenWithComboBox.ItemsSource)
                     .DisposeWith(dispose);
-                this.BindStrict(ViewModel, vm => vm.MVM.Ide, view => view.OpenWithComboBox.SelectedValue)
+                this.Bind(ViewModel, vm => vm.MVM.Ide, view => view.OpenWithComboBox.SelectedValue)
                     .DisposeWith(dispose);
 
                 // Set up discard/confirm clicks
                 this.WhenAnyValue(x => x.ViewModel!.Profile.Config.CancelConfiguration)
-                    .BindToStrict(this, x => x.CancelAdditionButton.Command)
+                    .BindTo(this, x => x.CancelAdditionButton.Command)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.Profile.Config.CompleteConfiguration)
-                    .BindToStrict(this, x => x.ConfirmButton.ConfirmAdditionButton.Command)
+                    .BindTo(this, x => x.ConfirmButton.ConfirmAdditionButton.Command)
                     .DisposeWith(dispose);
             });
         }

@@ -108,7 +108,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     TargetConfirmation = null;
                 },
-                disposable: this.CompositeDisposable);
+                disposable: this);
             ConfirmActionCommand = NoggogCommand.CreateFromObject(
                 objectSource: this.WhenAnyFallback(x => x.TargetConfirmation!.ToDo),
                 canExecute: toDo => toDo != null,
@@ -117,7 +117,7 @@ namespace Synthesis.Bethesda.GUI
                     toDo?.Invoke();
                     TargetConfirmation = null;
                 },
-                disposable: this.CompositeDisposable);
+                disposable: this);
 
             _Hot = this.WhenAnyValue(x => x.ActivePanel)
                 .Select(x =>

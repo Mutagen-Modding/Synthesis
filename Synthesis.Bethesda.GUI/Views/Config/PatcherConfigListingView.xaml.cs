@@ -26,18 +26,18 @@ namespace Synthesis.Bethesda.GUI.Views
             {
                 this.WhenAnyFallback(x => x.ViewModel!.IsSelected)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.SelectedGlow.Visibility)
+                    .BindTo(this, x => x.SelectedGlow.Visibility)
                     .DisposeWith(disposable);
-                this.BindStrict(this.ViewModel, vm => vm.IsOn, view => view.OnToggle.IsChecked)
+                this.Bind(this.ViewModel, vm => vm.IsOn, view => view.OnToggle.IsChecked)
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.DisplayName)
-                    .BindToStrict(this, x => x.NameBlock.Text)
+                    .BindTo(this, x => x.NameBlock.Text)
                     .DisposeWith(disposable);
 
                 // Set up tooltip display
                 this.WhenAnyFallback(x => x.ViewModel!.State.RunnableState.Succeeded)
                     .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
-                    .BindToStrict(this, x => x.BlockingIssueDisplayCircle.Visibility)
+                    .BindTo(this, x => x.BlockingIssueDisplayCircle.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.State.RunnableState.Reason)
                     .Select(s =>
@@ -45,7 +45,7 @@ namespace Synthesis.Bethesda.GUI.Views
                         if (s.IsNullOrWhitespace()) return s;
                         return s.Split(Environment.NewLine).FirstOrDefault();
                     })
-                    .BindToStrict(this, x => x.TooltipErrorText.Text)
+                    .BindTo(this, x => x.TooltipErrorText.Text)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
                     this.WhenAnyValue(x => x.IsMouseOver),
@@ -58,19 +58,19 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.State.IsHaltingError)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.ErrorIcon.Visibility)
+                    .BindTo(this, x => x.ErrorIcon.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.State)
                     .Select(x => !x.IsHaltingError && x.RunnableState.Failed ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.ProcessingRing.Visibility)
+                    .BindTo(this, x => x.ProcessingRing.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.State)
                     .Select(x => x.RunnableState.Succeeded ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.SuccessIcon.Visibility)
+                    .BindTo(this, x => x.SuccessIcon.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.State.RunnableState.Succeeded)
                     .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
-                    .BindToStrict(this, x => x.TooltipErrorText.Visibility)
+                    .BindTo(this, x => x.TooltipErrorText.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.State)
                     .Select(x =>
@@ -79,18 +79,18 @@ namespace Synthesis.Bethesda.GUI.Views
                         if (x.RunnableState.Failed) return "Processing";
                         return "Ready";
                     })
-                    .BindToStrict(this, x => x.StatusTypeText.Text)
+                    .BindTo(this, x => x.StatusTypeText.Text)
                     .DisposeWith(disposable);
 
                 // ContextMenu
                 this.WhenAnyFallback(x => x.ViewModel!.DeleteCommand)
-                    .BindToStrict(this, x => x.DeleteContextMenuButton.Command)
+                    .BindTo(this, x => x.DeleteContextMenuButton.Command)
                     .DisposeWith(disposable);
 
                 // Update button
                 this.WhenAnyFallback(x => x.ViewModel)
                     .Select(patcher => (patcher as GitPatcherVM)?.UpdateAllCommand)
-                    .BindToStrict(this, x => x.UpdateButton.Command)
+                    .BindTo(this, x => x.UpdateButton.Command)
                     .DisposeWith(disposable);
                 var hasAnyUpdateCmd = Observable.CombineLatest(
                         this.WhenAnyFallback(x => x.ViewModel)
@@ -102,11 +102,11 @@ namespace Synthesis.Bethesda.GUI.Views
                     .RefCount();
                 hasAnyUpdateCmd
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.UpdateButton.Visibility)
+                    .BindTo(this, x => x.UpdateButton.Visibility)
                     .DisposeWith(disposable);
                 hasAnyUpdateCmd
                     .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
-                    .BindToStrict(this, x => x.PatcherTypeIcon.Visibility)
+                    .BindTo(this, x => x.PatcherTypeIcon.Visibility)
                     .DisposeWith(disposable);
             });
         }

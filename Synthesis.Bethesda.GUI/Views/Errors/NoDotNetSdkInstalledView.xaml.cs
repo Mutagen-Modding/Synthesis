@@ -18,10 +18,10 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated(dispose =>
             {
                 this.WhenAnyValue(x => x.ViewModel!.DownloadCommand)
-                    .BindToStrict(this, x => x.DownloadButton.Command)
+                    .BindTo(this, x => x.DownloadButton.Command)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.CustomDisplayString)
-                    .BindToStrict(this, x => x.CustomTextBlock.Text)
+                    .BindTo(this, x => x.CustomTextBlock.Text)
                     .DisposeWith(dispose);
             });
         }

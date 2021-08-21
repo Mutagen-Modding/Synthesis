@@ -16,17 +16,17 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-                this.BindStrict(this.ViewModel, vm => vm.SelectedTab, view => view.TabControl.SelectedIndex,
+                this.Bind(this.ViewModel, vm => vm.SelectedTab, view => view.TabControl.SelectedIndex,
                         vmToViewConverter: (e) => (int)e,
                         viewToVmConverter: (i) => (GitPatcherInitVM.TabType)i)
                     .DisposeWith(dispose);
 
                 // Set up discard/confirm clicks
                 this.WhenAnyValue(x => x.ViewModel!.Profile.Config.CancelConfiguration)
-                    .BindToStrict(this, x => x.CancelAdditionButton.Command)
+                    .BindTo(this, x => x.CancelAdditionButton.Command)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.Profile.Config.CompleteConfiguration)
-                    .BindToStrict(this, x => x.ConfirmButton.ConfirmAdditionButton.Command)
+                    .BindTo(this, x => x.ConfirmButton.ConfirmAdditionButton.Command)
                     .DisposeWith(dispose);
             });
         }

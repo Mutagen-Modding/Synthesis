@@ -21,7 +21,7 @@ namespace Synthesis.Bethesda.GUI.Views
             {
                 this.WhenAnyValue(x => x.ConfirmAdditionButton.IsMouseOver)
                     .Select(over => over ? Visibility.Visible : Visibility.Hidden)
-                    .BindToStrict(this, x => x.ConfirmAdditionText.Visibility)
+                    .BindTo(this, x => x.ConfirmAdditionText.Visibility)
                     .DisposeWith(dispose);
             });
         }

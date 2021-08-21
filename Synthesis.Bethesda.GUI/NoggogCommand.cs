@@ -70,7 +70,7 @@ namespace Synthesis.Bethesda.GUI
             IObservable<TObject> objectSource,
             Func<TObject, bool> canExecute,
             Action<TObject> execute,
-            CompositeDisposable disposable)
+            IDisposableDropoff disposable)
         {
             TObject latest = default!;
             objectSource
@@ -88,7 +88,7 @@ namespace Synthesis.Bethesda.GUI
             IObservable<TObject> objectSource,
             Func<TObject, bool> canExecute,
             Func<TObject, Task> execute,
-            CompositeDisposable disposable)
+            IDisposableDropoff disposable)
         {
             TObject latest = default!;
             objectSource
@@ -107,7 +107,7 @@ namespace Synthesis.Bethesda.GUI
             Func<TObject, bool> canExecute,
             IObservable<bool> extraCanExecute,
             Action<TObject> execute,
-            CompositeDisposable disposable)
+            IDisposableDropoff disposable)
         {
             TObject latest = default!;
             objectSource
@@ -129,7 +129,7 @@ namespace Synthesis.Bethesda.GUI
             Func<TObject, bool> canExecute,
             IObservable<bool> extraCanExecute,
             Func<TObject, Task> execute,
-            CompositeDisposable disposable)
+            IDisposableDropoff disposable)
         {
             TObject latest = default!;
             objectSource
@@ -150,7 +150,7 @@ namespace Synthesis.Bethesda.GUI
             IObservable<TObject> objectSource,
             Func<IObservable<TObject>, IObservable<bool>> canExecute,
             Action<TObject> execute,
-            CompositeDisposable disposable)
+            IDisposableDropoff disposable)
         {
             TObject latest = default!;
             objectSource
@@ -169,7 +169,7 @@ namespace Synthesis.Bethesda.GUI
             Func<IObservable<TObject>, IObservable<bool>> canExecute,
             IObservable<bool> extraCanExecute,
             Action<TObject> execute,
-            CompositeDisposable disposable)
+            IDisposableDropoff disposable)
         {
             TObject latest = default!;
             objectSource

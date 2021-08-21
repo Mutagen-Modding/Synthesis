@@ -21,10 +21,10 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated(disposable =>
             {
                 this.WhenAnyValue(x => x.ViewModel!.Config.DisplayName)
-                    .BindToStrict(this, x => x.PatcherDetailName.Text)
+                    .BindTo(this, x => x.PatcherDetailName.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.Config)
-                    .BindToStrict(this, x => x.PatcherIconDisplay.DataContext)
+                    .BindTo(this, x => x.PatcherIconDisplay.DataContext)
                     .DisposeWith(disposable);
 
                 // Set state subheader
@@ -40,16 +40,16 @@ namespace Synthesis.Bethesda.GUI.Views
                             _ => throw new NotImplementedException()
                         };
                     })
-                    .BindToStrict(this, x => x.StatusBlock.Text)
+                    .BindTo(this, x => x.StatusBlock.Text)
                     .DisposeWith(disposable);
 
                 // Set up text output
                 this.WhenAnyValue(x => x.ViewModel!.OutputDisplay)
-                    .BindToStrict(this, x => x.OutputBox.Document)
+                    .BindTo(this, x => x.OutputBox.Document)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.OutputDisplay.TextLength)
                     .Select(count => count > 0 ? Visibility.Visible : Visibility.Hidden)
-                    .BindToStrict(this, x => x.OutputBox.Visibility)
+                    .BindTo(this, x => x.OutputBox.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.OutputDisplay)
                     .ObserveOnGui()

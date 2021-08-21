@@ -22,17 +22,17 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated(disposable =>
             {
                 this.WhenAnyValue(x => x.ViewModel!.DisplayName)
-                    .BindToStrict(this, x => x.PatcherDetailName.Text)
+                    .BindTo(this, x => x.PatcherDetailName.Text)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel)
-                    .BindToStrict(this, x => x.PatcherIconDisplay.DataContext)
+                    .BindTo(this, x => x.PatcherIconDisplay.DataContext)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.DisplayedObject)
-                    .BindToStrict(this, x => x.ConfigDetailPane.Content)
+                    .BindTo(this, x => x.ConfigDetailPane.Content)
                     .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.DeleteCommand)
-                    .BindToStrict(this, x => x.DeleteButton.Command)
+                    .BindTo(this, x => x.DeleteButton.Command)
                     .DisposeWith(disposable);
 
                 // Hacky setup to edit nickname when focused, but display display name when not
@@ -42,7 +42,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .FilterSwitch(this.WhenAnyValue(x => x.PatcherDetailName.IsFocused))
                     .Subscribe(x =>
                     {
-                        if (this.ViewModel.TryGet(out var vm))
+                        if (this.ViewModel is {} vm)
                         {
                             vm.Nickname = x;
                         }
@@ -73,22 +73,22 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Replay(1)
                     .RefCount();
                 errorDisp
-                    .BindToStrict(this, x => x.ErrorButton.Visibility)
+                    .BindTo(this, x => x.ErrorButton.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.GoToErrorCommand)
-                    .BindToStrict(this, x => x.ErrorButton.Command)
+                    .BindTo(this, x => x.ErrorButton.Command)
                     .DisposeWith(disposable);
                 errorDisp
-                    .BindToStrict(this, x => x.ErrorGlow.Visibility)
+                    .BindTo(this, x => x.ErrorGlow.Visibility)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.State)
                     .Select(x => x.RunnableState.Reason)
                     .Select(x => x.Split(Environment.NewLine).FirstOrDefault())
-                    .BindToStrict(this, x => x.ErrorTextBlock.Text)
+                    .BindTo(this, x => x.ErrorTextBlock.Text)
                     .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.IsNameEditable)
-                    .BindToStrict(this, x => x.PatcherDetailName.IsHitTestVisible)
+                    .BindTo(this, x => x.PatcherDetailName.IsHitTestVisible)
                     .DisposeWith(disposable);
             });
         }
