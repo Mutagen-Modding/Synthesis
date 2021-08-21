@@ -107,17 +107,17 @@ namespace Synthesis.Bethesda.Execution.GitRepository
 
         public void Checkout(IBranch branch)
         {
-            Commands.Checkout(_Repository, branch.GetUnderlying());
+            LibGit2Sharp.Commands.Checkout(_Repository, branch.GetUnderlying());
         }
         
         public void Pull()
         {
-            Commands.Pull(_Repository, PlaceholderSignature, null);
+            LibGit2Sharp.Commands.Pull(_Repository, PlaceholderSignature, null);
         }
 
         public void Stage(string path)
         {
-            Commands.Stage(_Repository, path);
+            LibGit2Sharp.Commands.Stage(_Repository, path);
         }
 
         public void Commit(string message, Signature signature)

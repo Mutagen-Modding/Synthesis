@@ -1,5 +1,6 @@
 ﻿using System.IO.Abstractions;
 using Mutagen.Bethesda.Synthesis.CLI;
+using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 

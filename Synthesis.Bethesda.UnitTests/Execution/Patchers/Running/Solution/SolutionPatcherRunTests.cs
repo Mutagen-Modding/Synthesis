@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Noggog;
 using NSubstitute;
+using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.UnitTests.AutoData;

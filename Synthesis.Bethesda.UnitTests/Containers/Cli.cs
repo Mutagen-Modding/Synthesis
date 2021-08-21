@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Noggog;
 using Noggog.Autofac;
+using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Patchers.Cli;
 using Synthesis.Bethesda.Execution.Patchers.Common;
@@ -11,9 +12,7 @@ using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Running.Cli;
-using Synthesis.Bethesda.Execution.Running.Cli.Settings;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.Execution.Settings.V2;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Containers

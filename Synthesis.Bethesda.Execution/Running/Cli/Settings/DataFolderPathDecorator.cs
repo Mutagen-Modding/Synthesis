@@ -1,5 +1,6 @@
 ﻿using Mutagen.Bethesda.Environments.DI;
 using Noggog;
+using Synthesis.Bethesda.Execution.Commands;
 
 namespace Synthesis.Bethesda.Execution.Running.Cli.Settings
 {

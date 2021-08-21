@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
+using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.Execution.Utility;
@@ -56,7 +57,7 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
             using var loadOrderFile = _loadOrderProvider.Get(loadOrder);
 
             return await _processRunner.Run(
-                _runProcessStartInfoProvider.GetStart("SettingsHost/Synthesis.Bethesda.SettingsHost.exe", directExe: true, new Synthesis.Bethesda.HostSettings()
+                _runProcessStartInfoProvider.GetStart("SettingsHost/Synthesis.Bethesda.SettingsHost.exe", directExe: true, new HostSettings()
                 {
                     PatcherName = _nameProvider.Name,
                     PatcherPath = path,

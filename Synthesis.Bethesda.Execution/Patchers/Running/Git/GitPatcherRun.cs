@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Noggog;
 using Serilog;
+using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;

@@ -3,8 +3,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using LibGit2Sharp;
 using Mutagen.Bethesda;
-using Mutagen.Bethesda.Environments.DI;
-using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.Projects;
 using Noggog;
 using Noggog.Utility;
@@ -36,7 +34,7 @@ namespace Synthesis.Bethesda.UnitTests
             Directory.CreateDirectory(local);
             using var localRepo = new Repository(local);
             File.AppendAllText(Path.Combine(local, AFile), "Hello there");
-            Commands.Stage(localRepo, AFile);
+            LibGit2Sharp.Commands.Stage(localRepo, AFile);
             var sig = Signature;
             localRepo.Commit("Initial commit", sig, sig);
 
@@ -47,7 +45,7 @@ namespace Synthesis.Bethesda.UnitTests
                 new AddProjectToSolution(IFileSystemExt.DefaultFilesystem).Add(Path.Combine(local, SlnPath), Path.Combine(local, ProjPath));
                 foreach (var path in files)
                 {
-                    Commands.Stage(localRepo, path);
+                    LibGit2Sharp.Commands.Stage(localRepo, path);
                 }
                 localRepo.Commit("Added solution", sig, sig);
             }

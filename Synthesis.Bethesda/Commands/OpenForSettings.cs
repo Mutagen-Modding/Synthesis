@@ -1,22 +1,11 @@
 using CommandLine;
 using Mutagen.Bethesda;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Synthesis.Bethesda
+namespace Synthesis.Bethesda.Commands
 {
-    [Verb("host-settings", HelpText = "Instructs Synthesis setting host project to display a patcher's settings")]
-    public class HostSettings
+    [Verb("open-for-settings", HelpText = "Informs the patcher to open in settings mode")]
+    public record OpenForSettings
     {
-        [Option('p', "PatcherPath", Required = true, HelpText = "Path to the patcher exe")]
-        public string PatcherPath { get; set; } = string.Empty;
-
-        [Option('n', "PatcherName", Required = true, HelpText = "Pather name")]
-        public string PatcherName { get; set; } = string.Empty;
-
         [Option('y', "Top", Required = false, HelpText = "Top location to consider when positioning")]
         public int Top { get; set; }
 
@@ -37,5 +26,17 @@ namespace Synthesis.Bethesda
 
         [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
         public string LoadOrderFilePath { get; set; } = string.Empty;
+
+        public override string ToString()
+        {
+            return $"{nameof(OpenForSettings)} => \n"
+                + $"  {nameof(Top)} => {this.Top} \n"
+                + $"  {nameof(Left)} => {this.Left} \n"
+                + $"  {nameof(Width)} => {this.Width} \n"
+                + $"  {nameof(Height)} => {this.Height} \n"
+                + $"  {nameof(GameRelease)} => {this.GameRelease} \n"
+                + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
+                + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}";
+        }
     }
 }

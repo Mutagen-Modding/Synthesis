@@ -4,8 +4,8 @@ using Autofac;
 using Mutagen.Bethesda.Autofac;
 using Noggog.Autofac.Modules;
 using Serilog;
+using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Reporters;
-using Synthesis.Bethesda.Execution.Running.Cli.Settings;
 
 namespace Synthesis.Bethesda.CLI
 {

@@ -1,10 +1,7 @@
 using CommandLine;
 using Mutagen.Bethesda;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Synthesis.Bethesda
+namespace Synthesis.Bethesda.Commands
 {
     [Verb("check-runnability", HelpText = "Check the current state and see if the patcher thinks it can run")]
     public record CheckRunnability

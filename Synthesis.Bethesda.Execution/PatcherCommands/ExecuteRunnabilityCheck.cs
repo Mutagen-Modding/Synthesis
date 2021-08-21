@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Environments.DI;
 using Noggog;
+using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.PatcherCommands
@@ -53,7 +54,7 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
                 }
             }
 
-            var checkState = new Synthesis.Bethesda.CheckRunnability()
+            var checkState = new CheckRunnability()
             {
                 DataFolderPath = DataDirectoryProvider.Path,
                 GameRelease = GameReleaseContext.Release,

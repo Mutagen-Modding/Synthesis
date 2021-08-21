@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Order;
+using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.Execution.Utility;
 
@@ -53,7 +54,7 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
             using var loadOrderFile = LoadOrderProvider.Get(loadOrder);
 
             return await ProcessRunner.Run(
-                RunProcessStartInfoProvider.GetStart(path, directExe, new Synthesis.Bethesda.OpenForSettings()
+                RunProcessStartInfoProvider.GetStart(path, directExe, new OpenForSettings()
                 {
                     Left = (int)WindowPlacement.Left,
                     Top = (int)WindowPlacement.Top,

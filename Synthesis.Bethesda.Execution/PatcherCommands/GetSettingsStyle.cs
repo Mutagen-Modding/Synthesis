@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.Execution.Utility;
@@ -39,7 +40,7 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
             bool build)
         {
             var result = await ProcessRunner.RunAndCapture(
-                GetRunProcessStartInfoProvider.GetStart(path, directExe, new Synthesis.Bethesda.SettingsQuery(), build: build),
+                GetRunProcessStartInfoProvider.GetStart(path, directExe, new SettingsQuery(), build: build),
                 cancel: cancel);
             
             switch ((Codes)result.Result)

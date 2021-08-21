@@ -4,11 +4,12 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
+using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.Execution.Running.Cli.Settings
+namespace Synthesis.Bethesda.Execution.Commands
 {
     [Verb("run-pipeline", HelpText = "Run the patcher pipeline")]
     [ExcludeFromCodeCoverage]

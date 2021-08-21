@@ -2,7 +2,7 @@ using CommandLine;
 using Mutagen.Bethesda;
 using Noggog;
 
-namespace Synthesis.Bethesda
+namespace Synthesis.Bethesda.Commands
 {
     [Verb("run-patcher", HelpText = "Run the patcher")]
     public class RunSynthesisPatcher

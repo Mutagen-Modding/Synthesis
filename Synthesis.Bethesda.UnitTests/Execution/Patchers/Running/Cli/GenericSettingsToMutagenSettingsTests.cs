@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Running.Cli;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;

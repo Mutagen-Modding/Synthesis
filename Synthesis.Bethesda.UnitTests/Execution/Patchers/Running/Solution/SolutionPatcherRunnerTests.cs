@@ -5,6 +5,7 @@ using FluentAssertions;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using NSubstitute;
+using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.UnitTests.AutoData;

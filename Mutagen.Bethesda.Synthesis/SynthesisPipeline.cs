@@ -25,6 +25,7 @@ using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Mutagen.Bethesda.Synthesis.States;
 using Mutagen.Bethesda.Synthesis.States.DI;
+using Synthesis.Bethesda.Commands;
 
 namespace Mutagen.Bethesda.Synthesis
 {

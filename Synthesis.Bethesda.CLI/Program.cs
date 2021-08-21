@@ -3,8 +3,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Running.Cli;
-using Synthesis.Bethesda.Execution.Running.Cli.Settings;
 
 namespace Synthesis.Bethesda.CLI
 {

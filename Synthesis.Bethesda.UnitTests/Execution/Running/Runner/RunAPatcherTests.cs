@@ -6,6 +6,7 @@ using Mutagen.Bethesda.Plugins;
 using Noggog;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.UnitTests.AutoData;

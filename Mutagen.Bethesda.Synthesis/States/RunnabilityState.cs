@@ -3,6 +3,7 @@ using Mutagen.Bethesda.Plugins.Records;
 using Noggog;
 using Synthesis.Bethesda;
 using Mutagen.Bethesda.Environments;
+using Synthesis.Bethesda.Commands;
 
 namespace Mutagen.Bethesda.Synthesis
 {

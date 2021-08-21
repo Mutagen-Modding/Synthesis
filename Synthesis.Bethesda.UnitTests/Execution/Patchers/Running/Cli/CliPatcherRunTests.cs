@@ -9,6 +9,7 @@ using Noggog;
 using Noggog.Utility;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Patchers.Running.Cli;
 using Synthesis.Bethesda.UnitTests.AutoData;

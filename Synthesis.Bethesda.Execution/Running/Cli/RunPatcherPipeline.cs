@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
-using Synthesis.Bethesda.Execution.Running.Cli.Settings;
+using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
 

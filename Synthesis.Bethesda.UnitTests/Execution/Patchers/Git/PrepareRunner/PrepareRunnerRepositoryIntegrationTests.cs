@@ -58,7 +58,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
         {
             File.AppendAllText(Path.Combine(path, AFile), "Hello there");
             using var repo = new Repository(path);
-            Commands.Stage(repo, AFile);
+            LibGit2Sharp.Commands.Stage(repo, AFile);
             var sig = Signature;
             var commit = repo.Commit("A commit", sig, sig);
             repo.Network.Push(repo.Head);
