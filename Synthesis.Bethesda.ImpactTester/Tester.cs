@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using LibGit2Sharp;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
+using Noggog.IO;
 using Noggog.Utility;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
@@ -22,17 +24,26 @@ namespace Synthesis.Bethesda.ImpactTester
 {
     public class Tester
     {
+        private readonly IFileSystem _fileSystem;
+        private readonly IEnvironmentTemporaryDirectoryProvider _temporaryDirectoryProvider;
+        private readonly ITempFolderProvider _tempFolderProvider;
         private readonly IPrintErrorMessage _printErrorMessage;
         private readonly IAvailableProjectsRetriever _availableProjectsRetriever;
         private readonly IModifyRunnerProjects _modifyRunnerProjects;
         private readonly IBuild _build;
 
         public Tester(
+            IFileSystem fileSystem,
+            IEnvironmentTemporaryDirectoryProvider temporaryDirectoryProvider,
+            ITempFolderProvider tempFolderProvider,
             IPrintErrorMessage printErrorMessage,
             IAvailableProjectsRetriever availableProjectsRetriever,
             IModifyRunnerProjects modifyRunnerProjects,
             IBuild build)
         {
+            _fileSystem = fileSystem;
+            _temporaryDirectoryProvider = temporaryDirectoryProvider;
+            _tempFolderProvider = tempFolderProvider;
             _printErrorMessage = printErrorMessage;
             _availableProjectsRetriever = availableProjectsRetriever;
             _modifyRunnerProjects = modifyRunnerProjects;
@@ -43,7 +54,13 @@ namespace Synthesis.Bethesda.ImpactTester
             NugetVersionPair versions,
             CancellationToken cancel)
         {
-            using var temp = TempFolder.Factory();
+            var baseFolder = Path.Combine(
+                _temporaryDirectoryProvider.Path,
+                "SynthesisUnitTests",
+                "Impact");
+            _fileSystem.Directory.DeleteEntireFolder(baseFolder);
+            
+            using var temp = _tempFolderProvider.Create(baseFolder, deleteAfter: true);
             var failedDeps = new List<Dependent>();
             var projResults = new List<ProjectResult>();
 
@@ -63,7 +80,7 @@ namespace Synthesis.Bethesda.ImpactTester
                     pages: byte.MaxValue)
                 .ToArrayAsync();
 
-            bool doThreading = true;
+            bool doThreading = false;
 
             await Task.WhenAll(deps.GroupBy(x => x.User).Select(group => TaskExt.Run(doThreading, async() =>
             {

@@ -1,6 +1,6 @@
 ﻿using Autofac;
 using Noggog.Autofac;
-using Synthesis.Bethesda.Execution.DotNet.Builder;
+using Synthesis.Bethesda.ImpactTester;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Containers
@@ -13,7 +13,7 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             var builder = new ContainerBuilder();
             builder.RegisterModule<Synthesis.Bethesda.ImpactTester.MainModule>();
             var cont = builder.Build();
-            cont.Validate(typeof(IBuild));
+            cont.Validate(typeof(Tester));
         }
     }
 }
