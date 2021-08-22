@@ -147,8 +147,7 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             var regis = category.ToModRegistration();
             var method = typeof(Utility).GetMethods()
                 .Where(m => m.Name == nameof(ToState))
-                .Where(m => m.ContainsGenericParameters)
-                .First()
+                .First(m => m.ContainsGenericParameters)
                 .MakeGenericMethod(regis.SetterType, regis.GetterType);
             return (IPatcherState)method.Invoke(null, new object[]
             {
@@ -163,7 +162,9 @@ namespace Mutagen.Bethesda.Synthesis.Internal
             HashSet<ModKey> referencedMasters = new();
             foreach (var item in loadOrderListing.OnlyEnabled())
             {
-                MasterReferenceReader reader = MasterReferenceReader.FromPath(Path.Combine(settings.DataFolderPath, item.ModKey.FileName), settings.GameRelease);
+                var path = Path.Combine(settings.DataFolderPath, item.ModKey.FileName);
+                if (!File.Exists(Path.Combine(settings.DataFolderPath, item.ModKey.FileName))) continue;
+                MasterReferenceReader reader = MasterReferenceReader.FromPath(path, settings.GameRelease);
                 referencedMasters.Add(reader.Masters.Select(m => m.Master));
             }
             for (int i = 0; i < loadOrderListing.Count; i++)
