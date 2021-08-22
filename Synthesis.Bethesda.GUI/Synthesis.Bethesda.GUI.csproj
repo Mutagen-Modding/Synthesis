@@ -96,8 +96,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="reactiveui" Version="15.1.1" />
-    <PackageReference Include="ReactiveUI.Fody" Version="15.1.1" />
+    <PackageReference Include="reactiveui" Version="14.3.10" />
+    <PackageReference Include="ReactiveUI.Fody" Version="14.3.10" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
