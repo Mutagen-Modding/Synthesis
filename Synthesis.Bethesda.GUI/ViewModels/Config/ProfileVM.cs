@@ -101,6 +101,9 @@ namespace Synthesis.Bethesda.GUI
         public bool LockUpgrades { get; set; }
 
         [Reactive]
+        public bool IgnoreMissingMods { get; set; }
+
+        [Reactive]
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
 
         public ProfileVM(ConfigurationVM parent, GameRelease release, string id)
@@ -254,12 +257,13 @@ namespace Synthesis.Bethesda.GUI
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<ReadOnlyModListingVM>())
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler),
-                    (dataFolder, loadOrder, enabledPatchers, erroredEnabledPatchers, missingMods) =>
+                    this.WhenAnyValue(x => x.IgnoreMissingMods),
+                    (dataFolder, loadOrder, enabledPatchers, erroredEnabledPatchers, missingMods, ignoreMissingMods) =>
                     {
                         if (enabledPatchers.Count == 0) return GetResponse<PatcherVM>.Fail("There are no enabled patchers to run.");
                         if (!dataFolder.Succeeded) return dataFolder.BubbleFailure<PatcherVM>();
                         if (!loadOrder.Succeeded) return loadOrder.BubbleFailure<PatcherVM>();
-                        if (missingMods.Count > 0)
+                        if (!ignoreMissingMods && missingMods.Count > 0)
                         {
                             return GetResponse<PatcherVM>.Fail($"Load order had mods that were missing:{Environment.NewLine}{string.Join(Environment.NewLine, missingMods.Select(x => x.ModKey))}");
                         }
@@ -533,6 +537,7 @@ namespace Synthesis.Bethesda.GUI
             ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
             LockUpgrades = settings.LockToCurrentVersioning;
             SelectedPersistenceMode = settings.Persistence;
+            IgnoreMissingMods = settings.IgnoreMissingMods;
             Patchers.AddRange(settings.Patchers.Select<PatcherSettings, PatcherVM>(p =>
             {
                 return p switch
@@ -561,6 +566,7 @@ namespace Synthesis.Bethesda.GUI
                 ConsiderPrereleaseNugets = ConsiderPrereleaseNugets,
                 LockToCurrentVersioning = LockUpgrades,
                 Persistence = SelectedPersistenceMode,
+                IgnoreMissingMods = IgnoreMissingMods
             };
         }
 

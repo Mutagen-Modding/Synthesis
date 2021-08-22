@@ -168,6 +168,9 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindTo(this, x => x.ExportButton.Command)
                     .DisposeWith(disposable);
 
+                this.Bind(ViewModel, x => x.Profile!.IgnoreMissingMods, x => x.IgnoreMissingModsCheckbox.IsChecked)
+                    .DisposeWith(disposable);
+
                 //this.WhenAnyValue(x => x.ViewModel!.PersistenceModes)
                 //    .BindTo(this, x => x.PersistenceStyleSelector.ItemsSource)
                 //    .DisposeWith(disposable);
