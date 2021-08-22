@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mutagen.Bethesda.Synthesis.WPF;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests
@@ -36,6 +37,16 @@ namespace Synthesis.Bethesda.UnitTests
             var lines = File.ReadAllLines(Utility.BuildFailureFile);
             DotNetCommands.TryGetExecutablePathFromOutput(lines, out var _)
                 .Should().BeFalse();
+        }
+
+        [Fact]
+        public void CorrectUserFolderTest()
+        {
+            var junkPath = @"C:\Users\junk\AppData\Local\Temp\Synthesis\Loading\ugqvnbdg.i1q\bin\Debug\net5.0\win-x64\FaceFixer.dll";
+            var actualPath = @"C:\Users\actual\AppData\Local\Temp\Synthesis\Loading\ugqvnbdg.i1q\bin\Debug\net5.0\win-x64\FaceFixer.dll";
+            var temp = @"C:\Users\actual\AppData\Local\Temp";
+            var ret = ReflectionUtility.CorrectUserFolder(junkPath, temp);
+            ret.Should().Be(actualPath);
         }
     }
 }

@@ -30,20 +30,20 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated(dispose =>
             {
                 this.WhenAnyValue(x => x.ViewModel!.ProfilesDisplay)
-                    .BindToStrict(this, x => x.ProfilesList.ItemsSource)
+                    .BindTo(this, x => x.ProfilesList.ItemsSource)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.GoBackCommand)
-                    .BindToStrict(this, x => x.BackButton.Command)
+                    .BindTo(this, x => x.BackButton.Command)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.AddCommand)
-                    .BindToStrict(this, x => x.AddButton.Command)
+                    .BindTo(this, x => x.AddButton.Command)
                     .DisposeWith(dispose);
 
-                this.BindStrict(this.ViewModel, vm => vm.DisplayedProfile, view => view.ProfilesList.SelectedItem)
+                this.Bind(this.ViewModel, vm => vm.DisplayedProfile, view => view.ProfilesList.SelectedItem)
                     .DisposeWith(dispose);
 
                 this.WhenAnyValue(x => x.ViewModel!.DisplayObject)
-                    .BindToStrict(this, x => x.ProfileDetail.Content)
+                    .BindTo(this, x => x.ProfileDetail.Content)
                     .DisposeWith(dispose);
 
                 // Set up dimmer
@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.GUI.Views
                         this.WhenAnyValue(x => x.ViewModel!.ProfilesDisplay.Count),
                         (profile, count) => count > 0 && profile == null)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindToStrict(this, x => x.InitialConfigurationDimmer.Visibility)
+                    .BindTo(this, x => x.InitialConfigurationDimmer.Visibility)
                     .DisposeWith(dispose);
             });
         }

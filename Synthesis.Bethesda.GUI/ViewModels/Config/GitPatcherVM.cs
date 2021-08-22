@@ -406,7 +406,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     this.TargetCommit = o.BranchSha!;
                 },
-                this.CompositeDisposable);
+                this);
             UpdateToTagCommand = NoggogCommand.CreateFromObject(
                 objectSource: Observable.CombineLatest(
                     targetTag,
@@ -424,7 +424,7 @@ namespace Synthesis.Bethesda.GUI
                     this.TargetTag = o.Tag!;
                     this.TargetCommit = o.TagSha!;
                 },
-                this.CompositeDisposable);
+                this);
 
             // Get the selected versioning preferences
             var patcherVersioning = Observable.CombineLatest(
@@ -821,7 +821,7 @@ namespace Synthesis.Bethesda.GUI
                 {
                     try
                     {
-                        if (!RunnableData.TryGet(out var runnable)) return;
+                        if (RunnableData is not {} runnable) return;
                         if (runnable.Target == null)
                         {
                             Utility.NavigateToPath(RemoteRepoPath);
@@ -851,7 +851,7 @@ namespace Synthesis.Bethesda.GUI
                 execute: v => ManualMutagenVersion = v ?? string.Empty,
                 extraCanExecute: this.WhenAnyValue(x => x.MutagenVersioning)
                     .Select(vers => vers == PatcherNugetVersioningEnum.Manual),
-                disposable: this.CompositeDisposable);
+                disposable: this);
             UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
                 objectSource: parent.Config.MainVM.NewestSynthesisVersion,
                 canExecute: v =>
@@ -864,7 +864,7 @@ namespace Synthesis.Bethesda.GUI
                 execute: v => ManualSynthesisVersion = v ?? string.Empty,
                 extraCanExecute: this.WhenAnyValue(x => x.SynthesisVersioning)
                     .Select(vers => vers == PatcherNugetVersioningEnum.Manual),
-                disposable: this.CompositeDisposable);
+                disposable: this);
 
             UpdateAllCommand = CommandExt.CreateCombinedAny(
                 UpdateMutagenManualToLatestCommand,

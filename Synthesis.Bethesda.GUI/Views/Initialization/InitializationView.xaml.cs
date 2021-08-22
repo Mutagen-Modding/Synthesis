@@ -19,7 +19,7 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated(disposable =>
             {
                 this.WhenAnyValue(x => x.ViewModel)
-                    .BindToStrict(this, x => x.ConfigDetailPane.Content)
+                    .BindTo(this, x => x.ConfigDetailPane.Content)
                     .DisposeWith(disposable);
             });
         }

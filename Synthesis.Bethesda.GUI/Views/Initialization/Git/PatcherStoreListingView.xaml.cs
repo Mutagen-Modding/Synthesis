@@ -20,29 +20,29 @@ namespace Synthesis.Bethesda.GUI.Views
             this.WhenActivated(dispose =>
             {
                 this.WhenAnyValue(x => x.ViewModel!.Name)
-                    .BindToStrict(this, x => x.Name.Text)
+                    .BindTo(this, x => x.Name.Text)
                     .DisposeWith(dispose);
                 this.WhenAnyFallback(x => x.ViewModel!.Raw.Customization!.OneLineDescription, string.Empty)
-                    .BindToStrict(this, x => x.OneLine.Text)
+                    .BindTo(this, x => x.OneLine.Text)
                     .DisposeWith(dispose);
                 this.WhenAnyFallback(x => x.ViewModel!.Raw.Customization!.OneLineDescription, string.Empty)
                     .Select(s => string.IsNullOrWhiteSpace(s) ? Visibility.Collapsed : Visibility.Visible)
-                    .BindToStrict(this, x => x.OneLine.Visibility)
+                    .BindTo(this, x => x.OneLine.Visibility)
                     .DisposeWith(dispose);
 
                 var hoverVis = this.WhenAnyValue(x => x.TopGrid.IsMouseOver)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .Replay(1)
                     .RefCount();
-                hoverVis.BindToStrict(this, v => v.OpenWebsiteButton.Visibility)
+                hoverVis.BindTo(this, v => v.OpenWebsiteButton.Visibility)
                     .DisposeWith(dispose);
-                hoverVis.BindToStrict(this, v => v.AddButton.Visibility)
+                hoverVis.BindTo(this, v => v.AddButton.Visibility)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.AddCommand)
-                    .BindToStrict(this, v => v.AddButton.Command)
+                    .BindTo(this, v => v.AddButton.Command)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.OpenWebsite)
-                    .BindToStrict(this, v => v.OpenWebsiteButton.Command)
+                    .BindTo(this, v => v.OpenWebsiteButton.Command)
                     .DisposeWith(dispose);
             });
         }
