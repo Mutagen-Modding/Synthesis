@@ -48,7 +48,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.11.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.11.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="3.11.0" />
-    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.30.7-prerelease002" />
+    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.31.0" />
     <PackageReference Include="NuGet.Versioning" Version="5.11.0" />
     <PackageReference Include="NuGetizer" Version="0.7.4">
       <PrivateAssets>all</PrivateAssets>
