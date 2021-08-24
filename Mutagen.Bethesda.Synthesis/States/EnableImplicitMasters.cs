@@ -13,17 +13,17 @@ namespace Mutagen.Bethesda.Synthesis.States
 
     public class EnableImplicitMasters : IEnableImplicitMasters
     {
-        private readonly IFindImplicitlyIncludedMods _FindImplicitlyIncludedMods;
+        private readonly IFindImplicitlyIncludedMods _findImplicitlyIncludedMods;
 
         public EnableImplicitMasters(
             IFindImplicitlyIncludedMods findImplicitlyIncludedMods)
         {
-            _FindImplicitlyIncludedMods = findImplicitlyIncludedMods;
+            _findImplicitlyIncludedMods = findImplicitlyIncludedMods;
         }
 
         public void Add(IList<IModListingGetter> loadOrderListing)
         {
-            var implicitlyAdded = _FindImplicitlyIncludedMods.Find(loadOrderListing)
+            var implicitlyAdded = _findImplicitlyIncludedMods.Find(loadOrderListing, skipMissingMods: true)
                 .ToHashSet();
             for (int i = loadOrderListing.Count - 1; i >= 0; i--)
             {

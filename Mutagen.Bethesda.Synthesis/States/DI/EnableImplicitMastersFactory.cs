@@ -2,7 +2,6 @@
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Masters.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
-using Noggog;
 
 namespace Mutagen.Bethesda.Synthesis.States.DI
 {
@@ -13,21 +12,22 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
 
     public class EnableImplicitMastersFactory : IEnableImplicitMastersFactory
     {
-        private readonly IFileSystem _FileSystem;
+        private readonly IFileSystem _fileSystem;
 
         public EnableImplicitMastersFactory(
             IFileSystem fileSystem)
         {
-            _FileSystem = fileSystem;
+            _fileSystem = fileSystem;
         }
         
         public IEnableImplicitMasters Get(string dataFolder, GameRelease release)
         {
             return new EnableImplicitMasters(
                 new FindImplicitlyIncludedMods(
+                    _fileSystem,
                     new DataDirectoryInjection(dataFolder),
                     new MasterReferenceReaderFactory(
-                        _FileSystem,
+                        _fileSystem,
                         new GameReleaseInjection(release))));
         }
     }
