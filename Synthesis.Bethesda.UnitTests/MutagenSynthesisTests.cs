@@ -272,6 +272,7 @@ namespace Synthesis.Bethesda.UnitTests
             };
             new EnableImplicitMasters(
                     new FindImplicitlyIncludedMods(
+                        env.FileSystem,
                         new DataDirectoryInjection(env.DataFolder),
                         new MasterReferenceReaderFactory(
                             env.FileSystem,

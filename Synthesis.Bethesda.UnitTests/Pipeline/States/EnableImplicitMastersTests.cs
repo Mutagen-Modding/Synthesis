@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using AutoFixture;
 using FluentAssertions;
@@ -10,6 +12,7 @@ using Mutagen.Bethesda.Plugins.Order.DI;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Synthesis.States;
 using NSubstitute;
+using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Pipeline.States
@@ -23,12 +26,16 @@ namespace Synthesis.Bethesda.UnitTests.Pipeline.States
 
         record Listing(string Mod, params string[] Masters);
         
-        private IMasterReferenceReaderFactory GetReaderFactory(params Listing[] listings)
+        private IMasterReferenceReaderFactory GetReaderFactory(
+            MockFileSystem mockFileSystem,
+            IDataDirectoryProvider dataDirectoryProvider,
+            params Listing[] listings)
         {
             var masterReaderFactory = Substitute.For<IMasterReferenceReaderFactory>();
             foreach (var listing in listings)
             {
-                masterReaderFactory.FromPath(listing.Mod)
+                mockFileSystem.File.WriteAllText(Path.Combine(dataDirectoryProvider.Path, listing.Mod), string.Empty);
+                masterReaderFactory.FromPath(Path.Combine(dataDirectoryProvider.Path, listing.Mod))
                     .Returns(_ =>
                     {
                         var reader = Substitute.For<IMasterReferenceReader>();
@@ -48,19 +55,28 @@ namespace Synthesis.Bethesda.UnitTests.Pipeline.States
             return masterReaderFactory;
         }
 
-        private IFindImplicitlyIncludedMods GetImplicitlyIncluded(params Listing[] listings)
+        private IFindImplicitlyIncludedMods GetImplicitlyIncluded(
+            MockFileSystem mockFileSystem,
+            IDataDirectoryProvider dataDirectoryProvider,
+            params Listing[] listings)
         {
             return new FindImplicitlyIncludedMods(
-                Substitute.For<IDataDirectoryProvider>(),
-                GetReaderFactory(listings));
+                mockFileSystem,
+                dataDirectoryProvider,
+                GetReaderFactory(mockFileSystem, dataDirectoryProvider, listings));
         }
 
-        [Fact]
-        public void NothingToDo()
+        [Theory, SynthAutoData]
+        public void NothingToDo(
+            MockFileSystem mockFileSystem,
+            IDataDirectoryProvider dataDirectoryProvider)
         {
             var adder = new EnableImplicitMasters(GetImplicitlyIncluded(
+                mockFileSystem,
+                dataDirectoryProvider,
                 new Listing(ModA),
-                new Listing(ModB, ModA, ModC)));
+                new Listing(ModB, ModA, ModC),
+                new Listing(ModC)));
             var list = new List<IModListingGetter>()
             {
                 new ModListing(ModA, true),
@@ -72,12 +88,17 @@ namespace Synthesis.Bethesda.UnitTests.Pipeline.States
             list.All(x => x.Enabled).Should().BeTrue();
         }
         
-        [Fact]
-        public void EnableOne()
+        [Theory, SynthAutoData]
+        public void EnableOne(
+            MockFileSystem mockFileSystem,
+            IDataDirectoryProvider dataDirectoryProvider)
         {
             var adder = new EnableImplicitMasters(GetImplicitlyIncluded(
+                mockFileSystem,
+                dataDirectoryProvider,
                 new Listing(ModA),
-                new Listing(ModB, ModA, ModC)));
+                new Listing(ModB, ModA, ModC),
+                new Listing(ModC)));
             var list = new List<IModListingGetter>()
             {
                 new ModListing(ModA, true),
@@ -89,10 +110,14 @@ namespace Synthesis.Bethesda.UnitTests.Pipeline.States
             list.All(x => x.Enabled).Should().BeTrue();
         }
         
-        [Fact]
-        public void SkipUnreferenced()
+        [Theory, SynthAutoData]
+        public void SkipUnreferenced(
+            MockFileSystem mockFileSystem,
+            IDataDirectoryProvider dataDirectoryProvider)
         {
             var adder = new EnableImplicitMasters(GetImplicitlyIncluded(
+                mockFileSystem,
+                dataDirectoryProvider,
                 new Listing(ModA),
                 new Listing(ModB, ModA)));
             var list = new List<IModListingGetter>()
@@ -107,13 +132,18 @@ namespace Synthesis.Bethesda.UnitTests.Pipeline.States
                 true, false, true);
         }
         
-        [Fact]
-        public void RecursiveEnable()
+        [Theory, SynthAutoData]
+        public void RecursiveEnable(
+            MockFileSystem mockFileSystem,
+            IDataDirectoryProvider dataDirectoryProvider)
         {
             var adder = new EnableImplicitMasters(GetImplicitlyIncluded(
+                mockFileSystem,
+                dataDirectoryProvider,
                 new Listing(ModA),
                 new Listing(ModB, ModA, ModC),
-                new Listing(ModC, ModD)));
+                new Listing(ModC, ModD),
+                new Listing(ModD)));
             var list = new List<IModListingGetter>()
             {
                 new ModListing(ModA, true),
@@ -126,13 +156,18 @@ namespace Synthesis.Bethesda.UnitTests.Pipeline.States
             list.All(x => x.Enabled).Should().BeTrue();
         }
         
-        [Fact]
-        public void RecursiveEnableBadLo()
+        [Theory, SynthAutoData]
+        public void RecursiveEnableBadLo(
+            MockFileSystem mockFileSystem,
+            IDataDirectoryProvider dataDirectoryProvider)
         {
             var adder = new EnableImplicitMasters(GetImplicitlyIncluded(
+                mockFileSystem,
+                dataDirectoryProvider,
                 new Listing(ModA),
                 new Listing(ModB, ModA, ModC),
-                new Listing(ModC, ModD)));
+                new Listing(ModC, ModD),
+                new Listing(ModD)));
             var list = new List<IModListingGetter>()
             {
                 new ModListing(ModA, true),
