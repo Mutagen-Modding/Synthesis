@@ -17,6 +17,7 @@ using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.GUI.Json;
 using Synthesis.Bethesda.GUI.Services.Main;
+using Synthesis.Bethesda.GUI.Services.Profile.Exporter;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Services.Versioning;
 using Synthesis.Bethesda.GUI.Settings;
@@ -102,7 +103,9 @@ namespace Synthesis.Bethesda.GUI.Modules
                 .AsSelf();
             
             builder.RegisterAssemblyTypes(typeof(ProfileVm).Assembly)
-                .InNamespaceOf<PatchersRunVm>()
+                .InNamespacesOf(
+                    typeof(PatchersRunVm),
+                    typeof(IProfileExporter))
                 .AsImplementedInterfaces()
                 .AsSelf();
             

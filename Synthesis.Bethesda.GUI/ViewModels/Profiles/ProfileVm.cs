@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -12,18 +11,16 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.WPF.Plugins.Order;
-using Newtonsoft.Json;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.V2;
-using Synthesis.Bethesda.GUI.Services.Main;
+using Synthesis.Bethesda.GUI.Services.Profile.Exporter;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
@@ -37,10 +34,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
     public class ProfileVm : ViewModel
     {
         private readonly IRunFactory _RunFactory;
-        private readonly INavigateTo _Navigate;
-        private readonly IRetrieveSaveSettings _RetrieveSaveSettings;
-        private readonly IPipelineSettingsPath _PipelinePaths;
-        private readonly IGuiSettingsPath _GuiPaths;
         private readonly ILogger _Logger;
 
         public GameRelease Release { get; }
@@ -90,6 +83,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         public IObservable<ILinkCache?> SimpleLinkCache { get; }
 
         public ILockToCurrentVersioning LockSetting { get; }
+        public IProfileExporter Exporter { get; }
 
         [Reactive]
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
@@ -113,13 +107,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             IProfileLoadOrder loadOrder,
             IProfileDirectories dirs,
             IProfileVersioning versioning,
-            INavigateTo navigate,
             IProfileDisplayControllerVm profileDisplay,
             ILockToCurrentVersioning lockSetting,
-            IRetrieveSaveSettings retrieveSaveSettings,
             ISelectedProfileControllerVm selProfile,
-            IPipelineSettingsPath pipelineSettingsPath,
-            IGuiSettingsPath guiPaths,
+            IProfileExporter exporter,
             ILogger logger)
         {
             Scope = scope;
@@ -129,12 +120,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             Versioning = versioning;
             Patchers = patchersList.Patchers;
             LockSetting = lockSetting;
+            Exporter = exporter;
             DisplayController = profileDisplay;
             _RunFactory = runFactory;
-            _Navigate = navigate;
-            _RetrieveSaveSettings = retrieveSaveSettings;
-            _PipelinePaths = pipelineSettingsPath;
-            _GuiPaths = guiPaths;
             _Logger = logger;
             ID = ident.ID;
             Release = ident.Release;
@@ -406,34 +394,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         {
             try
             {
-                _RetrieveSaveSettings.Retrieve(out var guiSettings, out var pipeSettings);
-                pipeSettings.Profiles.RemoveWhere(p => p.ID != this.ID);
-                guiSettings.SelectedProfile = this.ID;
-                if (pipeSettings.Profiles.Count != 1)
-                {
-                    throw new ArgumentException("Unexpected number of profiles for export");
-                }
-                var profile = pipeSettings.Profiles[0];
-                profile.LockToCurrentVersioning = true;
-                foreach (var gitPatcher in profile.Patchers.WhereCastable<PatcherSettings, GithubPatcherSettings>())
-                {
-                    gitPatcher.AutoUpdateToBranchTip = false;
-                    gitPatcher.LatestTag = false;
-                }
-                var subDir = "Export";
-                Directory.CreateDirectory(subDir);
-                File.WriteAllText(
-                    Path.Combine(subDir, _PipelinePaths.Path),
-                    JsonConvert.SerializeObject(pipeSettings, Formatting.Indented, Execution.Constants.JsonSettings));
-                File.WriteAllText(
-                    Path.Combine(subDir, _GuiPaths.Path),
-                    JsonConvert.SerializeObject(guiSettings, Formatting.Indented, Execution.Constants.JsonSettings));
-                var dataDir = new DirectoryInfo("Data");
-                if (dataDir.Exists)
-                {
-                    dataDir.DeepCopy(new DirectoryInfo(Path.Combine(subDir, "Data")));
-                }
-                _Navigate.Navigate(subDir);
+                Exporter.Export(ID);
             }
             catch (Exception ex)
             {
