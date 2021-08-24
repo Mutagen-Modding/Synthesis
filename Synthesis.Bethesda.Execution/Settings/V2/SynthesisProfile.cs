@@ -20,6 +20,7 @@ namespace Synthesis.Bethesda.Execution.Settings.V2
         public bool ConsiderPrereleaseNugets { get; set; }
         public bool LockToCurrentVersioning { get; set; }
         public PersistenceMode Persistence { get; set; } = PersistenceMode.None;
+        public bool IgnoreMissingMods { get; set; }
 
         GameRelease IGameReleaseContext.Release => TargetRelease;
     }

@@ -99,6 +99,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         
         public IProfileNameVm NameVm { get; }
 
+        [Reactive]
+        public bool IgnoreMissingMods { get; set; }
+
         public ProfileVm(
             ILifetimeScope scope,
             IRunFactory runFactory,
@@ -181,12 +184,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<ReadOnlyModListingVM>())
                         .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler),
-                    (dataFolder, loadOrder, enabledPatchers, erroredEnabledPatchers, missingMods) =>
+                    this.WhenAnyValue(x => x.IgnoreMissingMods),
+                    (dataFolder, loadOrder, enabledPatchers, erroredEnabledPatchers, missingMods, ignoreMissingMods) =>
                     {
                         if (enabledPatchers.Count == 0) return GetResponse<PatcherVm>.Fail("There are no enabled patchers to run.");
                         if (!dataFolder.Succeeded) return dataFolder.BubbleFailure<PatcherVm>();
                         if (!loadOrder.Succeeded) return loadOrder.BubbleFailure<PatcherVm>();
-                        if (missingMods.Count > 0)
+                        if (!ignoreMissingMods && missingMods.Count > 0)
                         {
                             return GetResponse<PatcherVm>.Fail($"Load order had mods that were missing:{Environment.NewLine}{string.Join(Environment.NewLine, missingMods.Select(x => x.ModKey))}");
                         }
@@ -385,6 +389,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 ConsiderPrereleaseNugets = ConsiderPrereleaseNugets,
                 LockToCurrentVersioning = LockSetting.Lock,
                 Persistence = SelectedPersistenceMode,
+                IgnoreMissingMods = IgnoreMissingMods,
             };
         }
 

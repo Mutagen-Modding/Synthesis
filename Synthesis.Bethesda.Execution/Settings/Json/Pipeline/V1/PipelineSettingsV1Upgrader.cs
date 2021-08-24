@@ -30,6 +30,7 @@ namespace Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V1
                     LockToCurrentVersioning = x.LockToCurrentVersioning,
                     Persistence = x.Persistence,
                     Patchers = x.Patchers,
+                    IgnoreMissingMods = x.IgnoreMissingMods,
                 }).ToList()
             };
         }

@@ -58,6 +58,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
             profile.Versioning.SynthesisVersioning = settings.SynthesisVersioning;
             profile.Versioning.ManualSynthesisVersion = settings.SynthesisManualVersion;
             profile.DataFolderOverride.DataPathOverride = settings.DataPathOverride;
+            profile.IgnoreMissingMods = settings.IgnoreMissingMods;
             profile.ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
             profile.LockSetting.Lock = settings.LockToCurrentVersioning;
             profile.SelectedPersistenceMode = settings.Persistence;

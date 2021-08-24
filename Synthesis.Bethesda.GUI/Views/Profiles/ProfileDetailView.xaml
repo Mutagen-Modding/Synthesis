@@ -46,6 +46,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -160,7 +161,6 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"
                     Margin="0,16,0,0"
@@ -173,7 +173,23 @@
                     ItemsSource="{Binding PersistenceModes}"
                     ToolTip="What type of persistence system to use for keeping FormIDs in sync" />
             </Grid>
-            <Button Grid.Row="5"
+            <Grid Grid.Row="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0"
+                           Margin="0,16,0,0"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           Text="Other" />
+                <CheckBox Grid.Row="1"
+                          x:Name="IgnoreMissingModsCheckbox"
+                          Margin="0,4,0,0"
+                          Content="Ignore Missing Mods"
+                          ToolTip="Whether to allow pipeline execution even if there are missing mods" />
+            </Grid>
+            <Button Grid.Row="6"
                 x:Name="ProfileInternalFilesButton"
                 Margin="0,0,0,10"
                 HorizontalAlignment="Left">
@@ -185,7 +201,7 @@
                     <TextBlock VerticalAlignment="Center" Text="Profile Internal Files" />
                 </StackPanel>
             </Button>
-            <Button Grid.Row="4"
+            <Button Grid.Row="6"
                 x:Name="ExportButton"
                 Margin="0,0,0,10"
                 HorizontalAlignment="Right"

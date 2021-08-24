@@ -18,5 +18,6 @@ namespace Synthesis.Bethesda.Execution.Settings
         bool ConsiderPrereleaseNugets { get; set; }
         bool LockToCurrentVersioning { get; set; }
         PersistenceMode Persistence { get; set; }
+        bool IgnoreMissingMods { get; set; }
     }
 }
