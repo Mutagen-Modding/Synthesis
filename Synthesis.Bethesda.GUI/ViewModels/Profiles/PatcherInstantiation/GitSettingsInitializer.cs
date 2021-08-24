@@ -16,10 +16,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
 
     public class GitSettingsInitializer : IGitSettingsInitializer
     {
-        private readonly IProfilePatchersList _patchersList;
+        private readonly ProfilePatcherEnumerable _patchersList;
 
         public GitSettingsInitializer(
-            IProfilePatchersList patchersList)
+            ProfilePatcherEnumerable patchersList)
         {
             _patchersList = patchersList;
         }
@@ -35,7 +35,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
         {
             bool IsValid(string id)
             {
-                foreach (var patcher in _patchersList.Patchers.Items.WhereCastable<PatcherVm, GitPatcherVm>())
+                foreach (var patcher in _patchersList.Patchers.WhereCastable<PatcherVm, GitPatcherVm>())
                 {
                     if (patcher.ID == id)
                     {

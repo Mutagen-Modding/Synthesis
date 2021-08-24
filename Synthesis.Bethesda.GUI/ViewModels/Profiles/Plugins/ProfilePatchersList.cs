@@ -1,4 +1,5 @@
-﻿using DynamicData;
+﻿using System.Collections.Generic;
+using DynamicData;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
@@ -14,7 +15,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
         SourceList<PatcherVm> Patchers { get; }
     }
 
-    public class ProfilePatchersList : IRemovePatcherFromProfile, IProfilePatchersList
+    public class ProfilePatchersList : IRemovePatcherFromProfile, IProfilePatchersList, IProfilePatcherEnumerable
     {
         public SourceList<PatcherVm> Patchers { get; } = new();
 
@@ -22,5 +23,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
         {
             Patchers.Remove(patcher);
         }
+
+        IEnumerable<PatcherVm> IProfilePatcherEnumerable.Patchers => Patchers.Items;
     }
 }
