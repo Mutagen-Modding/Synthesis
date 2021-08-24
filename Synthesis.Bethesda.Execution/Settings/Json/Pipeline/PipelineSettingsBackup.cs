@@ -21,7 +21,7 @@ namespace Synthesis.Bethesda.Execution.Settings.Json.Pipeline
         public void Backup(int readVersion, FilePath path)
         {
             var outPath = Path.Combine(path.Directory!.Value.Path, $"{path.NameWithoutExtension}.v{readVersion}.json");
-            _fileSystem.File.Copy(path, outPath);
+            _fileSystem.File.Copy(path, outPath, overwrite: true);
         }
     }
 }
