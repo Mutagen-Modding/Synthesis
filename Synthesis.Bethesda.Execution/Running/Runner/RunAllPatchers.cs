@@ -1,53 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
+using Synthesis.Bethesda.Execution.Groups;
+using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner
 {
     public interface IRunAllPatchers
     {
-        Task<FilePath?> Run(
-            ModKey outputKey,
-            IEnumerable<PatcherPrepBundle> patchers,
+        Task Run(
+            IGroupRun[] groups,
             CancellationToken cancellation,
+            DirectoryPath outputDir,
             FilePath? sourcePath = null,
+            PersistenceMode persistenceMode = PersistenceMode.None,
             string? persistencePath = null);
     }
 
     public class RunAllPatchers : IRunAllPatchers
     {
-        public IRunAPatcher RunAPatcher { get; }
+        public IRunAGroup RunAGroup { get; }
 
-        public RunAllPatchers(IRunAPatcher runAPatcher)
+        public RunAllPatchers(IRunAGroup runAGroup)
         {
-            RunAPatcher = runAPatcher;
+            RunAGroup = runAGroup;
         }
 
-        public async Task<FilePath?> Run(
-            ModKey outputKey,
-            IEnumerable<PatcherPrepBundle> patchers,
+        public async Task Run(
+            IGroupRun[] groups,
             CancellationToken cancellation,
+            DirectoryPath outputDir,
             FilePath? sourcePath = null,
+            PersistenceMode persistenceMode = PersistenceMode.None,
             string? persistencePath = null)
         {
-            foreach (var patcher in patchers)
+            for (int i = 0; i < groups.Length; i++)
             {
-                var nextPath = await RunAPatcher.Run(
-                    outputKey: outputKey,
-                    patcher,
+                var group = groups[i];
+
+                var succeeded = await RunAGroup.Run(
+                    group,
                     cancellation,
+                    outputDir,
                     sourcePath,
+                    persistenceMode,
                     persistencePath);
 
-                if (nextPath == null) return null;
-                
-                sourcePath = nextPath;
+                if (!succeeded) break;
             }
-
-            return sourcePath;
         }
     }
 }

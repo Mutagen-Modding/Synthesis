@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Vers1 = Synthesis.Bethesda.Execution.Settings.V1.PipelineSettings;
 using Vers2 = Synthesis.Bethesda.Execution.Settings.V2.PipelineSettings;
@@ -29,8 +30,17 @@ namespace Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V1
                     ConsiderPrereleaseNugets = x.ConsiderPrereleaseNugets,
                     LockToCurrentVersioning = x.LockToCurrentVersioning,
                     Persistence = x.Persistence,
-                    Patchers = x.Patchers,
                     IgnoreMissingMods = x.IgnoreMissingMods,
+                    Groups = new List<PatcherGroupSettings>()
+                    {
+                        new PatcherGroupSettings()
+                        {
+                            Name = "Main Group",
+                            ModKey = Synthesis.Bethesda.Constants.SynthesisName,
+                            On = true,
+                            Patchers = x.Patchers
+                        }
+                    },
                 }).ToList()
             };
         }

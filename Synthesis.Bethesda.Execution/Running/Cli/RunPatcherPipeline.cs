@@ -1,8 +1,7 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Serilog;
 using Synthesis.Bethesda.Execution.Commands;
+using Synthesis.Bethesda.Execution.Running.Cli.Settings;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
 
@@ -15,17 +14,17 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
 
     public class RunPatcherPipeline : IRunPatcherPipeline
     {
-        public IGetPatcherRunners GetPatcherRunners { get; }
         public IExecuteRun ExecuteRun { get; }
+        public IGetGroupRunners GetGroupRunners { get; }
         public RunPatcherPipelineInstructions Instructions { get; }
 
         public RunPatcherPipeline(
             IExecuteRun executeRun,
-            IGetPatcherRunners getPatcherRunners,
+            IGetGroupRunners getGroupRunners,
             RunPatcherPipelineInstructions instructions)
         {
-            GetPatcherRunners = getPatcherRunners;
             ExecuteRun = executeRun;
+            GetGroupRunners = getGroupRunners;
             Instructions = instructions;
         }
         
@@ -33,9 +32,9 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
         {
             await ExecuteRun
                 .Run(
-                    outputPath: Instructions.OutputPath,
-                    patchers: GetPatcherRunners.Get(),
+                    groups: GetGroupRunners.Get(cancel),
                     sourcePath: Instructions.SourcePath,
+                    outputDir: Instructions.OutputDirectory,
                     cancel: cancel,
                     persistenceMode: Instructions.PersistenceMode ?? PersistenceMode.None,
                     persistencePath: Instructions.PersistencePath);

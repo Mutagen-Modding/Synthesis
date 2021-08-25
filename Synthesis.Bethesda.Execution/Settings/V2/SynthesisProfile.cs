@@ -11,7 +11,7 @@ namespace Synthesis.Bethesda.Execution.Settings.V2
         public string Nickname { get; set; } = string.Empty;
         public string ID { get; set; } = string.Empty;
         public GameRelease TargetRelease { get; set; }
-        public List<PatcherSettings> Patchers { get; set; } = new();
+        public List<PatcherGroupSettings> Groups { get; set; } = new();
         public NugetVersioningEnum MutagenVersioning { get; set; } = NugetVersioningEnum.Manual;
         public string? MutagenManualVersion { get; set; }
         public NugetVersioningEnum SynthesisVersioning { get; set; } = NugetVersioningEnum.Manual;

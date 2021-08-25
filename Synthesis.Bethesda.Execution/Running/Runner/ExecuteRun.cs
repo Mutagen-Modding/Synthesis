@@ -1,19 +1,18 @@
-using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Mutagen.Bethesda.Plugins;
 using Noggog;
-using Synthesis.Bethesda.Execution.Patchers.Running;
+using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner
 {
     public interface IExecuteRun
     {
-        Task<bool> Run(
-            ModPath outputPath,
-            IPatcherRun[] patchers,
+        Task Run(
+            IGroupRun[] groups,
             CancellationToken cancel,
+            DirectoryPath outputDir,
             FilePath? sourcePath = null,
             PersistenceMode persistenceMode = PersistenceMode.None,
             string? persistencePath = null);
@@ -21,33 +20,24 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 
     public class ExecuteRun : IExecuteRun
     {
-        public IOverallRunPreparer OverallRunPreparer { get; }
         public IResetWorkingDirectory ResetWorkingDirectory { get; }
-        public IPrepPatchersForRun PrepPatchersForRun { get; }
         public IRunAllPatchers RunAllPatchers { get; }
-        public IMoveFinalResults MoveFinalResults { get; }
         public IEnsureSourcePathExists EnsureSourcePathExists { get; }
 
         public ExecuteRun(
-            IOverallRunPreparer overallRunPreparer,
             IResetWorkingDirectory resetWorkingDirectory,
-            IPrepPatchersForRun prepPatchersForRun,
             IRunAllPatchers runAllPatchers,
-            IMoveFinalResults moveFinalResults,
             IEnsureSourcePathExists ensureSourcePathExists)
         {
-            OverallRunPreparer = overallRunPreparer;
             ResetWorkingDirectory = resetWorkingDirectory;
-            PrepPatchersForRun = prepPatchersForRun;
             RunAllPatchers = runAllPatchers;
-            MoveFinalResults = moveFinalResults;
             EnsureSourcePathExists = ensureSourcePathExists;
         }
 
-        public async Task<bool> Run(
-            ModPath outputPath,
-            IPatcherRun[] patchers,
+        public async Task Run(
+            IGroupRun[] groups,
             CancellationToken cancellation,
+            DirectoryPath outputDir,
             FilePath? sourcePath = null,
             PersistenceMode persistenceMode = PersistenceMode.None,
             string? persistencePath = null)
@@ -55,29 +45,20 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             cancellation.ThrowIfCancellationRequested();
             ResetWorkingDirectory.Reset();
 
-            if (patchers.Length == 0) return false;
+            if (groups.Length == 0) return;
 
             cancellation.ThrowIfCancellationRequested();
             EnsureSourcePathExists.Ensure(sourcePath);
 
-            var overallPrep = OverallRunPreparer.Prepare(outputPath.ModKey, persistenceMode, persistencePath);
-
-            var patcherPreps = PrepPatchersForRun.PrepPatchers(patchers, cancellation);
-
-            await overallPrep;
             cancellation.ThrowIfCancellationRequested();
 
-            var finalPatch = await RunAllPatchers.Run(
-                outputPath.ModKey,
-                patcherPreps,
+            await RunAllPatchers.Run(
+                groups,
                 cancellation,
+                outputDir,
                 sourcePath,
+                persistenceMode,
                 persistencePath);
-            if (finalPatch == null) return false;
-
-            cancellation.ThrowIfCancellationRequested();
-            MoveFinalResults.Move(finalPatch.Value, outputPath);
-            return true;
         }
     }
 }

@@ -4,7 +4,7 @@ using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner
 {
-    public interface IOverallRunPreparer
+    public interface IGroupRunPreparer
     {
         Task Prepare(
             ModKey modKey,
@@ -12,12 +12,12 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             string? persistencePath = null);
     }
 
-    public class OverallRunPreparer : IOverallRunPreparer
+    public class GroupRunPreparer : IGroupRunPreparer
     {
         public IRunLoadOrderPreparer RunLoadOrderPreparer { get; }
         public IRunPersistencePreparer PersistencePreparer { get; }
 
-        public OverallRunPreparer(
+        public GroupRunPreparer(
             IRunLoadOrderPreparer runLoadOrderPreparer,
             IRunPersistencePreparer persistencePreparer)
         {

@@ -186,9 +186,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     try
                     {
                         Running = true;
-                        var output = Path.Combine(RunningProfile.WorkingDirectory, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
                         var madePatch = await _executeRun.Run(
-                            outputPath: output,
                             cancel: _cancel.Token,
                             patchers: Patchers.Items.Select(vm => vm.Run).ToArray(),
                             persistenceMode: RunningProfile.SelectedPersistenceMode,

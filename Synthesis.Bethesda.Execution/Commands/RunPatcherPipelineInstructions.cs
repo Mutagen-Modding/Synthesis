@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using CommandLine;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
-using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -21,8 +20,8 @@ namespace Synthesis.Bethesda.Execution.Commands
         [Option('s', "SourcePath", Required = false, HelpText = "Optional path pointing to the previous patcher result to build onto.")]
         public FilePath? SourcePath { get; set; }
 
-        [Option('o', "OutputPath", Required = true, HelpText = "Path where the patcher should place its resulting file.")]
-        public ModPath OutputPath { get; set; } = ModPath.Empty;
+        [Option('o', "OutputDirectory", Required = true, HelpText = "Path where the patcher should place its resulting file(s).")]
+        public DirectoryPath OutputDirectory { get; set; }
 
         [Option('g', "GameRelease", Required = true, HelpText = "GameRelease data folder is related to.")]
         public GameRelease GameRelease { get; set; }
@@ -52,7 +51,7 @@ namespace Synthesis.Bethesda.Execution.Commands
         {
             return $"\n{nameof(RunSynthesisPatcher)} => \n"
                 + $"  {nameof(SourcePath)} => {this.SourcePath} \n"
-                + $"  {nameof(OutputPath)} => {this.OutputPath} \n"
+                + $"  {nameof(OutputDirectory)} => {this.OutputDirectory} \n"
                 + $"  {nameof(GameRelease)} => {this.GameRelease} \n"
                 + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
                 + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"

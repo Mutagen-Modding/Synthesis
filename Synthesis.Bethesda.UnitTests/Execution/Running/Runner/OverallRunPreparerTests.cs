@@ -14,7 +14,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public async Task PassesOutputToRunLoadOrderPreparer(
             ModPath outputPath,
-            OverallRunPreparer sut)
+            GroupRunPreparer sut)
         {
             await sut.Prepare(outputPath);
             sut.RunLoadOrderPreparer.Received(1).Write(outputPath);
@@ -25,7 +25,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             ModPath outputPath,
             PersistenceMode persistenceMode,
             string? persistencePath,
-            OverallRunPreparer sut)
+            GroupRunPreparer sut)
         {
             await sut.Prepare(outputPath, persistenceMode, persistencePath);
             sut.PersistencePreparer.Received(1).Prepare(persistenceMode, persistencePath);
@@ -36,7 +36,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             ModPath outputPath,
             PersistenceMode persistenceMode,
             string? persistencePath,
-            OverallRunPreparer sut)
+            GroupRunPreparer sut)
         {
             sut.RunLoadOrderPreparer.When(x => x.Write(outputPath))
                 .Do(_ => throw new NotImplementedException());
@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             ModPath outputPath,
             PersistenceMode persistenceMode,
             string? persistencePath,
-            OverallRunPreparer sut)
+            GroupRunPreparer sut)
         {
             sut.PersistencePreparer.When(x => x.Prepare(Arg.Any<PersistenceMode>(), Arg.Any<string?>()))
                 .Do(_ => throw new NotImplementedException());

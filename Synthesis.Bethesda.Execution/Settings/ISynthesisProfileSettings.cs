@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Execution.Profile;
+using Synthesis.Bethesda.Execution.Settings.V2;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
@@ -9,7 +10,7 @@ namespace Synthesis.Bethesda.Execution.Settings
         string Nickname { get; set; }
         new string ID { get; set; }
         GameRelease TargetRelease { get; set; }
-        public List<PatcherSettings> Patchers { get; set; }
+        public List<PatcherGroupSettings> Groups { get; set; }
         NugetVersioningEnum MutagenVersioning { get; set; }
         string? MutagenManualVersion { get; set; }
         NugetVersioningEnum SynthesisVersioning { get; set; }

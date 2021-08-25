@@ -119,7 +119,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 persistenceMode,
                 persistencePath);
             
-            await sut.OverallRunPreparer.Received(1).Prepare(outputPath, persistenceMode, persistencePath);
+            await sut.GroupRunPreparer.Received(1).Prepare(outputPath, persistenceMode, persistencePath);
         }
         
         [Theory, SynthAutoData]
@@ -153,7 +153,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             string? persistencePath,
             ExecuteRun sut)
         {
-            sut.OverallRunPreparer.Prepare(default!)
+            sut.GroupRunPreparer.Prepare(default!)
                 .ThrowsForAnyArgs<NotImplementedException>();
 
             await Assert.ThrowsAsync<NotImplementedException>(async () =>
@@ -355,7 +355,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             Received.InOrder(() =>
             {
                 sut.ResetWorkingDirectory.Reset();
-                sut.OverallRunPreparer.Prepare(
+                sut.GroupRunPreparer.Prepare(
                     Arg.Any<ModKey>(), Arg.Any<PersistenceMode>(), Arg.Any<string?>());
             });
             
@@ -389,7 +389,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             {
                 sut.EnsureSourcePathExists.Ensure(
                     Arg.Any<FilePath?>());
-                sut.OverallRunPreparer.Prepare(
+                sut.GroupRunPreparer.Prepare(
                     Arg.Any<ModKey>(), Arg.Any<PersistenceMode>(), Arg.Any<string?>());
             });
             
@@ -422,7 +422,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             
             Received.InOrder(() =>
             {
-                sut.OverallRunPreparer.Prepare(
+                sut.GroupRunPreparer.Prepare(
                     Arg.Any<ModKey>(), Arg.Any<PersistenceMode>(), Arg.Any<string?>());
                 sut.RunAllPatchers.Run(
                     Arg.Any<ModKey>(), Arg.Any<PatcherPrepBundle[]>(),
