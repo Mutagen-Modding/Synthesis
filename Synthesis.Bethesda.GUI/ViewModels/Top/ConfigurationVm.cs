@@ -26,7 +26,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 
         public SourceCache<ProfileVm, string> Profiles { get; } = new(p => p.ID);
 
-        public IObservableCollection<ProfileVm> ProfilesDisplay { get; }
         public IObservableCollection<PatcherVm> PatchersDisplay { get; }
 
         public ReactiveCommandBase<Unit, Unit> RunPatchers { get; }
@@ -57,7 +56,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _SelectedProfile = _SelectedProfileController.WhenAnyValue(x => x.SelectedProfile)
                 .ToGuiProperty(this, nameof(SelectedProfile), default);
             
-            ProfilesDisplay = Profiles.Connect().ToObservableCollection(this);
             PatchersDisplay = this.WhenAnyValue(x => x.SelectedProfile)
                 .Select(p => p?.Patchers.Connect() ?? Observable.Empty<IChangeSet<PatcherVm>>())
                 .Switch()
