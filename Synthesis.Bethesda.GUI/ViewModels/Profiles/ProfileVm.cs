@@ -24,7 +24,6 @@ using Synthesis.Bethesda.GUI.Services.Profile.Exporter;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
@@ -89,7 +88,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
 
         public ILifetimeScope Scope { get; }
-        public IPatcherInitializationFactoryVm Init { get; }
+        public IPatcherInitializationVm Init { get; }
         
         public IProfileNameVm NameVm { get; }
 
@@ -98,10 +97,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
         public ProfileVm(
             ILifetimeScope scope,
+            IPatcherInitializationVm initVm,
             IRunFactory runFactory,
             IProfilePatchersList patchersList,
             IProfileDataFolderVm dataFolder,
-            IPatcherInitializationFactoryVm init,
             IProfileIdentifier ident,
             IProfileNameVm nameProvider,
             IProfileLoadOrder loadOrder,
@@ -114,7 +113,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             ILogger logger)
         {
             Scope = scope;
-            Init = init;
+            Init = initVm;
             NameVm = nameProvider;
             DataFolderOverride = dataFolder;
             Versioning = versioning;

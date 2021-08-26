@@ -30,15 +30,15 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-                this.WhenAnyFallback(x => x.ViewModel!.Init.NewPatcher)
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Init.NewPatcher)
                     .Select(x => x == null ? Visibility.Visible : Visibility.Collapsed)
                     .BindTo(this, x => x.Patchers.Visibility)
                     .DisposeWith(dispose);
-                this.WhenAnyFallback(x => x.ViewModel!.Init.NewPatcher)
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Init.NewPatcher)
                     .Select(x => x == null ? Visibility.Collapsed : Visibility.Visible)
                     .BindTo(this, x => x.Initialization.Visibility)
                     .DisposeWith(dispose);
-                this.WhenAnyFallback(x => x.ViewModel!.Init.NewPatcher)
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Init.NewPatcher)
                     .BindTo(this, x => x.Initialization.ViewModel)
                     .DisposeWith(dispose);
             });

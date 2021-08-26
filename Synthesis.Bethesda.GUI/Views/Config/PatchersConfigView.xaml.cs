@@ -2,17 +2,9 @@ using Noggog.WPF;
 using Noggog;
 using ReactiveUI;
 using System.Reactive.Disposables;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Reactive.Linq;
-using System.Windows.Media;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Documents;
-using DynamicData;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
@@ -58,7 +50,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Show dimmer if in initial configuration
-                this.WhenAnyValue(x => x.ViewModel!.Init.NewPatcher)
+                this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.Init.NewPatcher)
                     .Select(newPatcher => newPatcher != null ? Visibility.Visible : Visibility.Collapsed)
                     .BindTo(this, x => x.InitialConfigurationDimmer.Visibility)
                     .DisposeWith(disposable);

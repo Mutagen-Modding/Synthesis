@@ -33,16 +33,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         private readonly ObservableAsPropertyHelper<ProfileVm?> _SelectedProfile;
         public ProfileVm? SelectedProfile => _SelectedProfile.Value;
 
-        private readonly ObservableAsPropertyHelper<object?> _DisplayedObject;
-        public object? DisplayedObject => _DisplayedObject.Value;
+        private readonly ObservableAsPropertyHelper<ViewModel?> _DisplayedObject;
+        public ViewModel? DisplayedObject => _DisplayedObject.Value;
 
         private readonly ObservableAsPropertyHelper<PatchersRunVm?> _CurrentRun;
         public PatchersRunVm? CurrentRun => _CurrentRun.Value;
-        
-        public IPatcherInitializationVm Init { get; }
 
         public ConfigurationVm(
-            IPatcherInitializationVm initVm,
             IActivePanelControllerVm activePanelController,
             ISelectedProfileControllerVm selectedProfile,
             ISaveSignal saveSignal,
@@ -50,7 +47,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             ILogger logger)
         {
             logger.Information("Creating ConfigurationVM");
-            Init = initVm;
             _SelectedProfileController = selectedProfile;
             _ProfileFactory = profileFactory;
             _SelectedProfile = _SelectedProfileController.WhenAnyValue(x => x.SelectedProfile)
@@ -61,10 +57,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 .Switch()
                 .ToObservableCollection(this);
 
-            _DisplayedObject = Observable.CombineLatest(
-                    this.WhenAnyValue(x => x.SelectedProfile!.DisplayController.SelectedObject),
-                    initVm.WhenAnyValue(x => x.NewPatcher),
-                    (selected, newConfig) => (newConfig as object) ?? selected)
+            _DisplayedObject = this.WhenAnyValue(x => x.SelectedProfile!.DisplayController.SelectedObject)
                 .ToGuiProperty(this, nameof(DisplayedObject), default);
 
             RunPatchers = NoggogCommand.CreateFromJob(

@@ -2,16 +2,12 @@ using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive;
 using System;
-using Noggog;
 using System.Windows.Controls.Primitives;
 using System.Linq;
 using DynamicData;
 using System.Windows;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Initialization;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
