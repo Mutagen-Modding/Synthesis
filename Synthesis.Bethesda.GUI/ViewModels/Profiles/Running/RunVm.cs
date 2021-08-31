@@ -1,5 +1,6 @@
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -7,26 +8,26 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using DynamicData;
-using DynamicData.Binding;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Reporters;
-using Synthesis.Bethesda.Execution.Running;
-using Synthesis.Bethesda.Execution.Running.Runner;
+using Synthesis.Bethesda.GUI.Services.Profile.Running;
+using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 {
-    public class PatchersRunVm : ViewModel
+    public class RunVm : ViewModel
     {
         private readonly ILogger _Logger;
+        private readonly IExecuteGuiRun _executeRun;
+        public RunDisplayControllerVm RunDisplayControllerVm { get; }
         public IRunReporter Reporter { get; }
-        private readonly IExecuteRun _executeRun;
-        public ConfigurationVm Config { get; }
+        public readonly Dictionary<Guid, PatcherRunVm> _patchers;
 
         public ProfileVm RunningProfile { get; }
 
@@ -38,11 +39,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
         [Reactive]
         public bool Running { get; private set; } = true;
 
-        public SourceCache<PatcherRunVm, Guid> Patchers { get; } = new(p => p.Config.InternalID);
-        public IObservableCollection<PatcherRunVm> PatchersDisplay { get; }
-
-        [Reactive]
-        public PatcherRunVm? SelectedPatcher { get; set; }
+        public ObservableCollection<GroupRunVm> Groups { get; } = new();
 
         public ICommand BackCommand { get; }
         public ICommand CancelCommand { get; }
@@ -54,37 +51,39 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 
         private PatcherRunVm? _previousPatcher;
 
-        public delegate PatchersRunVm Factory(ConfigurationVm configuration, ProfileVm profile);
+        public delegate RunVm Factory(IEnumerable<GroupVm> groups);
         
-        public PatchersRunVm(
+        public RunVm(
             ConfigurationVm configuration,
+            RunDisplayControllerVm runDisplayControllerVm,
             ILogger logger,
-            IPatcherRunnerFactory runnerFactory,
+            IGroupRunVmFactory runVmFactory,
             IActivePanelControllerVm activePanelController,
             IRunReporterWatcher reporterWatcher,
             IRunReporter reporter,
-            ProfileVm profile,
-            IExecuteRun executeRun)
+            IExecuteGuiRun executeRun,
+            IEnumerable<GroupVm> groups,
+            ProfileVm profile)
         {
             _Logger = logger;
-            Reporter = reporter;
             _executeRun = executeRun;
-            Config = configuration;
+            RunDisplayControllerVm = runDisplayControllerVm;
+            Reporter = reporter;
             RunningProfile = profile;
-            Patchers.AddOrUpdate(RunningProfile.Patchers.Items
+            Groups.Add(groups
                 .Where(x => x.IsOn)
-                .Select(p => runnerFactory.ToRunner(this, p)));
-            PatchersDisplay = Patchers.Connect()
-                .ToObservableCollection(this);
+                .Select(p => runVmFactory.ToRunner(p, _cancel.Token)));
+            _patchers = Groups.SelectMany(x => x.Patchers)
+                .ToDictionary(x => x.InternalID, x => x);
             if (profile.SelectedPatcher != null
-                && Patchers.TryGetValue(profile.SelectedPatcher.InternalID, out var run))
+                && _patchers.TryGetValue(profile.SelectedPatcher.InternalID, out var run))
             {
-                SelectedPatcher = run;
+                runDisplayControllerVm.SelectedObject = run;
             }
             
             BackCommand = ReactiveCommand.Create(() =>
             {
-                profile.DisplayController.SelectedObject = SelectedPatcher?.Config;
+                profile.DisplayController.SelectedObject = runDisplayControllerVm.SelectedObject?.SourceVm;
                 activePanelController.ActivePanel = configuration;
             },
             canExecute: this.WhenAnyValue(x => x.Running)
@@ -108,9 +107,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
-                    var vm = Patchers.Get(i.data.Key);
+                    var vm = _patchers[i.data.Key];
                     vm.State = GetResponse<RunState>.Fail(RunState.Error, i.data.Error);
-                    SelectedPatcher = vm;
+                    runDisplayControllerVm.SelectedObject = vm;
                     logger
                         .ForContext(nameof(IPatcherNameVm.Name), i.data.Run)
                         .Error(i.data.Error, $"Error while {i.type}");
@@ -120,17 +119,17 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
-                    var vm = Patchers.Get(i.Key);
+                    var vm = _patchers[i.Key];
                     vm.State = GetResponse<RunState>.Succeed(RunState.Started);
                     logger
                         .ForContext(nameof(IPatcherNameVm.Name), i.Run)
                         .Information($"Starting");
 
                     // Handle automatic selection advancement
-                    if (_previousPatcher == SelectedPatcher
-                        && (SelectedPatcher?.AutoScrolling ?? true))
+                    if (_previousPatcher == runDisplayControllerVm.SelectedObject
+                        && (runDisplayControllerVm.SelectedObject?.AutoScrolling ?? true))
                     {
-                        SelectedPatcher = vm;
+                        runDisplayControllerVm.SelectedObject = vm;
                     }
                     _previousPatcher = vm;
                 })
@@ -139,7 +138,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
-                    var vm = Patchers.Get(i.Key);
+                    var vm = _patchers[i.Key];
                     vm.State = GetResponse<RunState>.Succeed(RunState.Finished);
                     logger
                         .ForContext(nameof(IPatcherNameVm.Name), i.Run)
@@ -165,11 +164,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 
             // Clear selected patcher on showing error
             this.ShowOverallErrorCommand.StartingExecution()
-                .Subscribe(_ => this.SelectedPatcher = null)
+                .Subscribe(_ => runDisplayControllerVm.SelectedObject = null)
                 .DisposeWith(this);
 
             _DetailDisplay = Observable.Merge(
-                    this.WhenAnyValue(x => x.SelectedPatcher)
+                    runDisplayControllerVm.WhenAnyValue(x => x.SelectedObject)
                         .Select(i => i as object),
                     this.ShowOverallErrorCommand.EndingExecution()
                         .Select(_ => ResultError == null ? null : new ErrorVM("Patching Error", ResultError.ToString())))
@@ -180,21 +179,17 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
         {
             _Logger.Information("Starting patcher run");
             await Observable.Return(Unit.Default)
+                .ObserveOnGui()
+                .Do(_ => Running = true)
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .DoTask(async (_) =>
                 {
                     try
                     {
-                        Running = true;
-                        var madePatch = await _executeRun.Run(
-                            cancel: _cancel.Token,
-                            patchers: Patchers.Items.Select(vm => vm.Run).ToArray(),
-                            persistenceMode: RunningProfile.SelectedPersistenceMode,
-                            persistencePath: Path.Combine(RunningProfile.ProfileDirectory, "Persistence"));
-                        if (!madePatch) return;
-                        var dataFolderPath = Path.Combine(RunningProfile.DataFolder, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
-                        File.Copy(output, dataFolderPath, overwrite: true);
-                        _Logger.Information("Exported patch to: {DataFolderPath}", dataFolderPath);
+                        await _executeRun.Run(
+                            Groups.Select(vm => vm.Run),
+                            RunningProfile.SelectedPersistenceMode,
+                            _cancel.Token);
                     }
                     catch (TaskCanceledException)
                     {
@@ -212,13 +207,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
             _Logger.Information("Finished patcher run");
         }
 
-        private async Task Cancel()
+        public async Task Cancel()
         {
             _cancel.Cancel();
             await this.WhenAnyValue(x => x.Running)
                 .Where(x => !x)
                 .FirstAsync();
-            foreach (var p in Patchers.Items)
+            foreach (var p in _patchers.Values)
             {
                 if (p.State.Value == RunState.Started)
                 {

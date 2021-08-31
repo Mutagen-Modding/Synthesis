@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
 {
-    public class RunAllPatchersTests
+    public class RunSomePatchersTests
     {
         [Theory, SynthAutoData]
         public async Task PassesEachPatcherToRunComponent(
@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             CancellationToken cancellation,
             FilePath? sourcePath,
             string? persistencePath,
-            RunAllPatchers sut)
+            RunSomePatchers sut)
         {
             await sut.Run(
                 outputKey,
@@ -56,7 +56,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             CancellationToken cancellation,
             FilePath? sourcePath,
             string? persistencePath,
-            RunAllPatchers sut)
+            RunSomePatchers sut)
         {
             PatcherPrepBundle[] patchers = new[]
             {
@@ -116,7 +116,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             CancellationToken cancellation,
             FilePath? sourcePath,
             string? persistencePath,
-            RunAllPatchers sut)
+            RunSomePatchers sut)
         {
             PatcherPrepBundle[] patchers = new[]
             {
@@ -160,7 +160,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             CancellationToken cancellation,
             FilePath? sourcePath,
             string? persistencePath,
-            RunAllPatchers sut)
+            RunSomePatchers sut)
         {
             PatcherPrepBundle[] patchers = new[]
             {
@@ -211,7 +211,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             CancellationToken cancellation,
             FilePath? sourcePath,
             string? persistencePath,
-            RunAllPatchers sut)
+            RunSomePatchers sut)
         {
             PatcherPrepBundle[] patchers = new[]
             {

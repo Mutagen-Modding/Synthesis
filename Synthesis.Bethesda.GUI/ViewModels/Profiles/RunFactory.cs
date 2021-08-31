@@ -1,13 +1,15 @@
-﻿using Autofac;
+using System.Collections.Generic;
+using Autofac;
 using Noggog;
-using Synthesis.Bethesda.GUI.Modules;
+using Synthesis.Bethesda.Execution.Modules;
+using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
     public interface IRunFactory
     {
-        PatchersRunVm GetRun();
+        RunVm GetRun(IEnumerable<GroupVm> groups);
     }
 
     public class RunFactory : IRunFactory
@@ -20,12 +22,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             _scope = scope;
         }
         
-        public PatchersRunVm GetRun()
+        public RunVm GetRun(IEnumerable<GroupVm> groups)
         {
             var runScope = _scope.BeginLifetimeScope(LifetimeScopes.RunNickname);
-            var runsVm = runScope.Resolve<PatchersRunVm>();
-            runScope.DisposeWith(runsVm);
-            return runsVm;
+            var factory = runScope.Resolve<RunVm.Factory>();
+            var ret = factory(groups);
+            runScope.DisposeWith(ret);
+            return ret;
         }
     }
 }

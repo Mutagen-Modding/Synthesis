@@ -5,7 +5,7 @@ using System.Reactive.Disposables;
 using System.Windows;
 using System.Reactive.Linq;
 using System.Windows.Input;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
+using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views
@@ -31,11 +31,11 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Init.AddCliPatcherCommand, fallback: default(ICommand))
                     .BindTo(this, x => x.AddCliButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.PatchersDisplay)
-                    .BindTo(this, x => x.PatchersList.ItemsSource)
+                this.WhenAnyValue(x => x.ViewModel!.GroupsDisplay)
+                    .BindTo(this, x => x.GroupsList.ItemsSource)
                     .DisposeWith(disposable);
 
-                this.Bind(this.ViewModel, vm => vm.SelectedProfile!.DisplayController.SelectedObject, view => view.PatchersList.SelectedItem)
+                this.Bind(this.ViewModel, vm => vm.SelectedProfile!.DisplayController.SelectedObject, view => view.GroupsList.SelectedValue)
                     .DisposeWith(disposable);
 
                 // Wire up patcher config data context and visibility
@@ -43,8 +43,8 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindTo(this, x => x.DetailControl.Content)
                     .DisposeWith(disposable);
 
-                // Only show help if zero patchers
-                this.WhenAnyValue(x => x.ViewModel!.PatchersDisplay.Count)
+                // Only show help if zero groups
+                this.WhenAnyValue(x => x.ViewModel!.GroupsDisplay.Count)
                     .Select(c => c == 0 ? Visibility.Visible : Visibility.Collapsed)
                     .BindTo(this, x => x.AddSomePatchersHelpGrid.Visibility)
                     .DisposeWith(disposable);
@@ -66,21 +66,21 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.RunPatchers.CanExecute)
                     .Switch()
-                    .CombineLatest(this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LargeOverallError, GetResponse<PatcherVm>.Succeed(null!)),
+                    .CombineLatest(this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.BlockingError, GetResponse<ViewModel>.Succeed(null!)),
                         (can, overall) => !can && overall.Succeeded)
                     .Select(show => show ? Visibility.Visible : Visibility.Collapsed)
                     .BindTo(this, x => x.ProcessingRingAnimation.Visibility)
                     .DisposeWith(disposable);
 
                 // Set up large overall error button
-                var overallErr = this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LargeOverallError, fallback: GetResponse<PatcherVm>.Succeed(null!))
+                var overallErr = this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.BlockingError, fallback: GetResponse<ViewModel>.Succeed(null!))
                     .Replay(1)
                     .RefCount();
                 Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.PatchersDisplay.Count)
+                        this.WhenAnyValue(x => x.ViewModel!.GroupsDisplay.Count)
                             .Select(c => c > 0),
                         overallErr.Select(x => x.Succeeded),
-                        (hasPatchers, succeeded) => hasPatchers && !succeeded)
+                        (hasGroups, succeeded) => hasGroups && !succeeded)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindTo(this, x => x.OverallErrorButton.Visibility)
                     .DisposeWith(disposable);
@@ -91,19 +91,25 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindTo(this, x => x.OverallErrorButton.Command)
                     .DisposeWith(disposable);
 
-                Noggog.WPF.Drag.ListBoxDragDrop<PatcherVm>(this.PatchersList, () => this.ViewModel?.SelectedProfile?.Patchers)
+                Noggog.WPF.Drag.ListBoxDragDrop<GroupVm>(this.GroupsList, () => this.ViewModel?.SelectedProfile?.Groups)
                     .DisposeWith(disposable);
 
                 // Bind top patcher list buttons
-                this.WhenAnyValue(x => x.ViewModel!.PatchersDisplay.Count)
+                this.WhenAnyValue(x => x.ViewModel!.GroupsDisplay.Count)
                     .Select(c => c == 0 ? Visibility.Hidden : Visibility.Visible)
                     .BindTo(this, x => x.TopAllPatchersControls.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.EnableAllPatchersCommand)
-                    .BindTo(this, x => x.EnableAllPatchersButton.Command)
+                this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.EnableAllGroupsCommand)
+                    .BindTo(this, x => x.EnableAllGroupsButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.DisableAllPatchersCommand)
-                    .BindTo(this, x => x.DisableAllPatchersButton.Command)
+                this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.DisableAllGroupsCommand)
+                    .BindTo(this, x => x.DisableAllGroupsButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.ExpandAllGroupsCommand)
+                    .BindTo(this, x => x.ExpandAllGroupsButton.Command)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.CollapseAllGroupsCommand)
+                    .BindTo(this, x => x.CollapseAllGroupsButton.Command)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.UpdateAllPatchersCommand)
                     .BindTo(this, x => x.UpdateAllPatchersButton.Command)

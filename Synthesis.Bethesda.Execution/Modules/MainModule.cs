@@ -32,10 +32,15 @@ namespace Synthesis.Bethesda.Execution.Modules
                     typeof(IPatcherNameSanitizer),
                     typeof(ILinesToReflectionConfigsParser),
                     typeof(IRunProfileProvider),
-                    typeof(IExecuteRun),
                     typeof(IProjectRunProcessStartInfoProvider),
                     typeof(IBuild))
                 .NotInNamespacesOf(typeof(IInstalledSdkFollower))
+                .TypicalRegistrations();
+            
+            builder.RegisterAssemblyTypes(typeof(ICheckOrCloneRepo).Assembly)
+                .InNamespacesOf(
+                    typeof(IExecuteRun))
+                .InstancePerMatchingLifetimeScope(LifetimeScopes.RunNickname)
                 .TypicalRegistrations();
             
             builder.RegisterAssemblyTypes(typeof(ICheckOrCloneRepo).Assembly)

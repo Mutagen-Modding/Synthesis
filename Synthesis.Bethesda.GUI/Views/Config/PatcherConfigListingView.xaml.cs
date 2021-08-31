@@ -2,14 +2,11 @@ using Noggog.WPF;
 using Noggog;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Text;
 using System.Windows;
 using System.Reactive.Disposables;
 using System.Windows.Controls;
 using System.Linq;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
@@ -32,7 +29,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .ObserveOnGui()
                     .BindTo(this, x => x.SelectedGlow.Visibility)
                     .DisposeWith(disposable);
-                this.Bind(this.ViewModel, vm => vm.IsOn, view => view.OnToggle.IsChecked)
+                this.Bind(this.ViewModel, vm => vm.IsOn, view => view.OnToggle.IsOn)
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.NameVm.Name)
                     .BindTo(this, x => x.NameBlock.Text)

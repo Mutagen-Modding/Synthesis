@@ -8,17 +8,16 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Running;
+using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 {
-    public class PatcherRunVm : ViewModel
+    public class PatcherRunVm : ViewModel, IRunItem
     {
+        public Guid InternalID { get; }
         public IPatcherRun Run { get; }
-        public PatcherVm Config { get; }
-
-        private readonly ObservableAsPropertyHelper<bool> _IsSelected;
-        public bool IsSelected => _IsSelected.Value;
+        public ViewModel SourceVm { get; }
 
         [Reactive]
         public GetResponse<RunState> State { get; set; } = GetResponse<RunState>.Succeed(RunState.NotStarted);
@@ -38,18 +37,21 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
         public bool IsErrored => _IsErrored.Value;
 
         [Reactive]
+        public bool IsSelected { get; set; }
+
+        [Reactive]
         public bool AutoScrolling { get; set; }
+        
+        public string Name { get; }
 
-        public delegate PatcherRunVm Factory(PatchersRunVm parent, PatcherVm config);
+        public delegate PatcherRunVm Factory(PatcherVm sourcePatcherVm);
 
-        public PatcherRunVm(PatchersRunVm parent, PatcherVm config, IPatcherRun run, IReporterLoggerWrapper loggerWrapper)
+        public PatcherRunVm(PatcherVm sourcePatcherVm, IPatcherRun run, IReporterLoggerWrapper loggerWrapper)
         {
+            Name = sourcePatcherVm.NameVm.Name;
+            InternalID = sourcePatcherVm.InternalID;
             Run = run;
-            Config = config;
-
-            _IsSelected = parent.WhenAnyValue(x => x.SelectedPatcher)
-                .Select(x => x == this)
-                .ToGuiProperty(this, nameof(IsSelected));
+            SourceVm = sourcePatcherVm;
 
             Observable.Merge(
                     loggerWrapper.Events
@@ -108,7 +110,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 
             this.WhenAnyValue(x => x.State)
                 .Where(x => x.Succeeded && x.Value == RunState.Finished)
-                .Subscribe(_ => config.SuccessfulRunCompleted())
+                .Subscribe(_ => sourcePatcherVm.SuccessfulRunCompleted())
                 .DisposeWith(this);
         }
 

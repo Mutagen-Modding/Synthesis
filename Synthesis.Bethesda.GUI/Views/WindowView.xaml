@@ -18,10 +18,10 @@
                 <DataTemplate DataType="{x:Type top:ConfigurationVm}">
                     <local:ConfigurationView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type profiles:NewProfileVm}">
+                <DataTemplate DataType="{x:Type top:NewProfileVm}">
                     <local:NoProfileView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type running:PatchersRunVm}">
+                <DataTemplate DataType="{x:Type running:RunVm}">
                     <local:MainRunView />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type profiles:ProfilesDisplayVm}">

@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading;
 using Serilog;
 using Synthesis.Bethesda.Execution.Groups;
@@ -17,18 +17,18 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
     {
         private readonly ILogger _logger;
         private readonly IGetPatcherRunners _getPatcherRunners;
-        private readonly IPrepPatchersForRun _prepPatchersForRun;
+        private readonly IPrepPatcherForRun _prepPatcherForRun;
         private readonly ISynthesisProfileSettings _profile;
 
         public GetGroupRunners(
             ILogger logger,
             IGetPatcherRunners getPatcherRunners,
-            IPrepPatchersForRun prepPatchersForRun,
+            IPrepPatcherForRun prepPatcherForRun,
             ISynthesisProfileSettings profile)
         {
             _logger = logger;
             _getPatcherRunners = getPatcherRunners;
-            _prepPatchersForRun = prepPatchersForRun;
+            _prepPatcherForRun = prepPatcherForRun;
             _profile = profile;
         }
         
@@ -40,8 +40,11 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
                 .Select<PatcherGroupSettings, IGroupRun>(settings =>
                 {
                     return new GroupRun(
-                        settings.ModKey,
-                        _prepPatchersForRun.PrepPatchers(_getPatcherRunners.Get(settings.Patchers), cancellation));
+                        settings.Name,
+                        _getPatcherRunners.Get(settings.Patchers).Select(patcher =>
+                        {
+                            return _prepPatcherForRun.Prep(patcher, cancellation);
+                        }).ToArray());
                 })
                 .ToArray();
         }

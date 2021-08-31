@@ -12,10 +12,8 @@ using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
+using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
@@ -26,7 +24,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 
         public SourceCache<ProfileVm, string> Profiles { get; } = new(p => p.ID);
 
-        public IObservableCollection<PatcherVm> PatchersDisplay { get; }
+        public IObservableCollection<GroupVm> GroupsDisplay { get; }
 
         public ReactiveCommandBase<Unit, Unit> RunPatchers { get; }
 
@@ -36,11 +34,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         private readonly ObservableAsPropertyHelper<ViewModel?> _DisplayedObject;
         public ViewModel? DisplayedObject => _DisplayedObject.Value;
 
-        private readonly ObservableAsPropertyHelper<PatchersRunVm?> _CurrentRun;
-        public PatchersRunVm? CurrentRun => _CurrentRun.Value;
-
         public ConfigurationVm(
-            IActivePanelControllerVm activePanelController,
+            ActiveRunVm activeRunVm,
             ISelectedProfileControllerVm selectedProfile,
             ISaveSignal saveSignal,
             IProfileFactory profileFactory,
@@ -52,43 +47,25 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _SelectedProfile = _SelectedProfileController.WhenAnyValue(x => x.SelectedProfile)
                 .ToGuiProperty(this, nameof(SelectedProfile), default);
             
-            PatchersDisplay = this.WhenAnyValue(x => x.SelectedProfile)
-                .Select(p => p?.Patchers.Connect() ?? Observable.Empty<IChangeSet<PatcherVm>>())
+            GroupsDisplay = this.WhenAnyValue(x => x.SelectedProfile)
+                .Select(p => p?.Groups.Connect() ?? Observable.Empty<IChangeSet<GroupVm>>())
                 .Switch()
                 .ToObservableCollection(this);
 
             _DisplayedObject = this.WhenAnyValue(x => x.SelectedProfile!.DisplayController.SelectedObject)
                 .ToGuiProperty(this, nameof(DisplayedObject), default);
 
-            RunPatchers = NoggogCommand.CreateFromJob(
-                extraInput: this.WhenAnyValue(x => x.SelectedProfile),
-                jobCreator: (profile) =>
+            RunPatchers = NoggogCommand.CreateFromObject(
+                objectSource: this.WhenAnyValue(x => x.SelectedProfile),
+                canExecute: (profileObs) => profileObs.Select(profile => profile.WhenAnyValue(x => x!.State))
+                    .Switch()
+                    .Select(err => err.Succeeded),
+                execute: (profile) =>
                 {
-                    if (SelectedProfile == null)
-                    {
-                        return (default(PatchersRunVm?), Observable.Return(Unit.Default));
-                    }
-
-                    var ret = SelectedProfile.GetRun();
-                    var completeSignal = ret.WhenAnyValue(x => x.Running)
-                        .TurnedOff()
-                        .FirstAsync();
-                    return (ret, completeSignal);
+                    if (profile == null) return;
+                    profile.StartRun();
                 },
-                createdJobs: out var createdRuns,
-                canExecute: this.WhenAnyFallback(x => x.SelectedProfile!.BlockingError, fallback: ErrorResponse.Failure)
-                    .Select(err => err.Succeeded))
-                .DisposeWith(this);
-
-            _CurrentRun = createdRuns
-                .ToGuiProperty(this, nameof(CurrentRun), default);
-
-            this.WhenAnyValue(x => x.CurrentRun)
-                .NotNull()
-                .Do(run => activePanelController.ActivePanel = run)
-                .ObserveOn(RxApp.TaskpoolScheduler)
-                .Subscribe(r => r.Run())
-                .DisposeWith(this);
+                disposable: this);
 
             saveSignal.Saving
                 .Subscribe(x => Save(x.Gui, x.Pipe))

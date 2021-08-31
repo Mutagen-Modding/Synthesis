@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Synthesis.Bethesda.Execution.Patchers.Running;
@@ -8,27 +6,23 @@ using Synthesis.Bethesda.Execution.Reporters;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner
 {
-    public interface IPrepPatchersForRun
+    public interface IPrepPatcherForRun
     {
-        PatcherPrepBundle[] PrepPatchers(
-            IEnumerable<IPatcherRun> patchers,
-            CancellationToken cancellation);
+        PatcherPrepBundle Prep(IPatcherRun patcher, CancellationToken cancellation);
     }
 
-    public class PrepPatchersForRun : IPrepPatchersForRun
+    public class PrepPatcherForRun : IPrepPatcherForRun
     {
         public IRunReporter Reporter { get; }
-
-        public PrepPatchersForRun(IRunReporter reporter)
+        
+        public PrepPatcherForRun(IRunReporter reporter)
         {
             Reporter = reporter;
         }
         
-        public PatcherPrepBundle[] PrepPatchers(
-            IEnumerable<IPatcherRun> patchers,
-            CancellationToken cancellation)
+        public PatcherPrepBundle Prep(IPatcherRun patcher, CancellationToken cancellation)
         {
-            return patchers.Select(patcher => new PatcherPrepBundle(
+            return new PatcherPrepBundle(
                 patcher,
                 Task.Run(async () =>
                 {
@@ -44,8 +38,9 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                         Reporter.ReportPrepProblem(patcher.Key, patcher.Name, ex);
                         return ex;
                     }
+
                     return default(Exception?);
-                }))).ToArray();
+                }));
         }
     }
 }

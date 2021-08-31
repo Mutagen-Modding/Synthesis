@@ -17,9 +17,9 @@ using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Patchers.Git;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
@@ -77,9 +77,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         public IUpdateAllCommand UpdateAllCommand { get; }
 
         public GitPatcherVm(
+            GroupVm group,
             IGithubPatcherIdentifier ident,
             IPatcherNameVm nameVm,
-            IRemovePatcherFromProfile remove,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             ISelectedProjectInputVm selectedProjectInput,
@@ -88,7 +88,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IAvailableTags availableTags,
             ILockToCurrentVersioning lockToCurrentVersioning,
             IAvailableProjects availableProjects,
-            ICompliationProvider compliationProvider,
+            ICompliationProvider compilationProvider,
             IBaseRepoDirectoryProvider baseRepoDir,
             IGitStatusDisplay gitStatusDisplay,
             IDriverRepoDirectoryProvider driverRepoDirectoryProvider,
@@ -108,7 +108,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IPatcherIdProvider idProvider,
             PatcherSettingsVm.Factory settingsVmFactory,
             GithubPatcherSettings? settings = null)
-            : base(scope, nameVm, remove, selPatcher, confirmation, idProvider, settings)
+            : base(group,
+                scope, nameVm, selPatcher,
+                confirmation, idProvider, settings)
         {
             _logger = logger;
             SelectedProjectInput = selectedProjectInput;
@@ -181,7 +183,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
             PatcherSettings = settingsVmFactory(
                 false, 
-                compliationProvider.State.Select(c =>
+                compilationProvider.State.Select(c =>
                     {
                         if (c.RunnableState.Failed) return (c.RunnableState.BubbleFailure<FilePath>(), null);
                         return (GetResponse<FilePath>.Succeed(c.Item.ProjPath), c.Item.TargetVersions.Synthesis);

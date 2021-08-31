@@ -1,4 +1,4 @@
-﻿using Noggog.WPF;
+using Noggog.WPF;
 using ReactiveUI.Fody.Helpers;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
@@ -10,7 +10,19 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
     public class ProfileDisplayControllerVm : ViewModel, IProfileDisplayControllerVm
     {
-        [Reactive]
-        public ViewModel? SelectedObject { get; set; }
+        private bool _midSwap;
+
+        private ViewModel? _SelectedObject;
+        public ViewModel? SelectedObject
+        {
+            get => _SelectedObject;
+            set
+            {
+                if (_midSwap) return;
+                _midSwap = true;
+                this.RaiseAndSetIfChanged(ref _SelectedObject, value);
+                _midSwap = false;
+            } 
+        }
     }
 }

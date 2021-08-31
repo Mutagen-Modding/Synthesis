@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     xmlns:profiles="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles"
+    xmlns:top="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Top"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -83,7 +84,7 @@
                 <DataTemplate DataType="{x:Type profiles:ProfileDisplayVm}">
                     <local:ProfileDetailView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type profiles:NewProfileVm}">
+                <DataTemplate DataType="{x:Type top:NewProfileVm}">
                     <local:NewProfileView />
                 </DataTemplate>
             </ContentControl.Resources>

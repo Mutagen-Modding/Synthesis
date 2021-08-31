@@ -9,9 +9,10 @@ using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.GUI.Services.Main;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
+namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
     public class NewProfileVm : ViewModel
     {

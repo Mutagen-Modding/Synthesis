@@ -35,7 +35,7 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             cont.Validate(
                 typeof(IStartup), 
                 typeof(ProfileVm), 
-                typeof(PatchersRunVm));
+                typeof(RunVm));
         }
     }
 }

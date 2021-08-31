@@ -63,6 +63,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         public ProfileVm? SelectedProfile => _SelectedProfile.Value;
 
         public MainVm(
+            ActiveRunVm activeRunVm,
             ConfigurationVm configuration,
             IConfirmationPanelControllerVm confirmationControllerVm,
             IProvideCurrentVersions currentVersions,
@@ -95,8 +96,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                     switch (x)
                     {
                         case ConfigurationVm config:
-                            return config.WhenAnyFallback(x => x.CurrentRun!.Running, fallback: false);
-                        case PatchersRunVm running:
+                            return activeRunVm.WhenAnyFallback(x => x.CurrentRun!.Running, fallback: false);
+                        case RunVm running:
                             return running.WhenAnyValue(x => x.Running);
                         default:
                             break;
@@ -112,7 +113,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 activePanelControllerVm.ActivePanel = new ProfilesDisplayVm(Configuration, profileFactory, activePanelControllerVm, ActivePanel);
             },
             canExecute: Observable.CombineLatest(
-                    this.WhenAnyFallback(x => x.Configuration.CurrentRun!.Running, fallback: false),
+                    activeRunVm.WhenAnyFallback(x => x.CurrentRun!.Running, fallback: false),
                     this.WhenAnyValue(x => x.ActivePanel)
                         .Select(x => x is ProfilesDisplayVm),
                     (running, isProfile) => !running && !isProfile));

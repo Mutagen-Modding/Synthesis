@@ -8,9 +8,9 @@ using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Patchers.Cli;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
@@ -24,16 +24,16 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
         public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
 
         public CliPatcherVm(
+            GroupVm group,
             IPatcherIdProvider idProvider,
             IPatcherNameVm nameVm,
             IPathToExecutableInputVm pathToExecutableInputVm,
-            IRemovePatcherFromProfile remove,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             IShowHelpSetting showHelpSetting,
             ILifetimeScope scope,
             CliPatcherSettings? settings = null)
-            : base(scope, nameVm, remove, selPatcher, confirmation, idProvider, settings)
+            : base(group, scope, nameVm, selPatcher, confirmation, idProvider, settings)
         {
             ExecutableInput = pathToExecutableInputVm;
             ShowHelpSetting = showHelpSetting;

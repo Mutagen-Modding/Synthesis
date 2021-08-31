@@ -89,5 +89,10 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
         {
             return new ConfigurationState<T>(err);
         }
+
+        public override string ToString()
+        {
+            return $"{RunnableState}, Halting: {IsHaltingError}";
+        }
     }
 }

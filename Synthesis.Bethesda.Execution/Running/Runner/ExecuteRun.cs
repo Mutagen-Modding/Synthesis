@@ -21,16 +21,16 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     public class ExecuteRun : IExecuteRun
     {
         public IResetWorkingDirectory ResetWorkingDirectory { get; }
-        public IRunAllPatchers RunAllPatchers { get; }
+        public IRunAllGroups RunAllGroups { get; }
         public IEnsureSourcePathExists EnsureSourcePathExists { get; }
 
         public ExecuteRun(
             IResetWorkingDirectory resetWorkingDirectory,
-            IRunAllPatchers runAllPatchers,
+            IRunAllGroups runAllGroups,
             IEnsureSourcePathExists ensureSourcePathExists)
         {
             ResetWorkingDirectory = resetWorkingDirectory;
-            RunAllPatchers = runAllPatchers;
+            RunAllGroups = runAllGroups;
             EnsureSourcePathExists = ensureSourcePathExists;
         }
 
@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 
             cancellation.ThrowIfCancellationRequested();
 
-            await RunAllPatchers.Run(
+            await RunAllGroups.Run(
                 groups,
                 cancellation,
                 outputDir,

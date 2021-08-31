@@ -1,6 +1,8 @@
 ﻿using System;
 using Autofac;
+using Autofac.Core.Lifetime;
 using Noggog;
+using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Running.Cli;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
@@ -15,38 +17,37 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 {
     public interface IPatcherRunnerFactory
     {
-        PatcherRunVm ToRunner(PatchersRunVm parent, PatcherVm patcherVm);
+        PatcherRunVm ToRunner(PatcherVm patcherVm);
     }
 
     public class PatcherRunnerFactory : IPatcherRunnerFactory
     {
-        public PatcherRunVm ToRunner(PatchersRunVm parent, PatcherVm patcherVm)
+        public PatcherRunVm ToRunner(PatcherVm patcherVm)
         {
             switch (patcherVm)
             {
                 case GitPatcherVm:
                 case SolutionPatcherVm:
-                    return ToRunner<SolutionPatcherRun>(parent, patcherVm);
+                    return ToRunner<SolutionPatcherRun>(patcherVm);
                 case CliPatcherVm:
-                    return ToRunner<CliPatcherRun>(parent, patcherVm);
+                    return ToRunner<CliPatcherRun>(patcherVm);
                 default:
                     throw new NotImplementedException();
             }
         }
         
-        private PatcherRunVm ToRunner<T>(PatchersRunVm parent, PatcherVm patcherVm)
+        private PatcherRunVm ToRunner<T>(PatcherVm patcherVm)
             where T :  IPatcherRun
         {
-            var scope = patcherVm.Scope.BeginLifetimeScope(c =>
+            var scope = patcherVm.Scope.BeginLifetimeScope(LifetimeScopes.RunNickname, c =>
             {
                 c.RegisterType<T>().As<IPatcherRun>();
-                c.RegisterInstance(parent.Reporter).As<IRunReporter>();
                 c.RegisterType<ReporterLoggerWrapper>()
                     .AsImplementedInterfaces()
                     .SingleInstance();
             });
             var runnerFactory = scope.Resolve<PatcherRunVm.Factory>();
-            var ret = runnerFactory(parent, patcherVm);
+            var ret = runnerFactory(patcherVm);
             scope.DisposeWith(ret);
             return ret;
         }

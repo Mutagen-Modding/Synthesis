@@ -42,13 +42,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Humanizer.Core" Version="2.11.10" />
-    <PackageReference Include="Loqui" Version="2.27.0" />
-    <PackageReference Include="Loqui.Generation" Version="2.27.0" />
-    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.31.0.1-dev" />
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.31.0.1-dev" />
-    <PackageReference Include="Noggog.Autofac" Version="2.27.0" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.27.0" />
-    <PackageReference Include="Noggog.WPF" Version="2.27.0" />
+    <PackageReference Include="Loqui" Version="2.27.0.1-dev" />
+    <PackageReference Include="Loqui.Generation" Version="2.27.0.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.31.1.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.31.1.1-dev" />
+    <PackageReference Include="Noggog.Autofac" Version="2.27.0.1-dev" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.27.0.1-dev" />
+    <PackageReference Include="Noggog.WPF" Version="2.27.0.1-dev" />
     <PackageReference Include="NuGetizer" Version="0.7.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -77,59 +77,35 @@
     <Resource Include="Resources\SkyrimSSE.png" />
     <Resource Include="Resources\SkyrimVR.png" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <Compile Update="Services\Patchers\Solution\SelectedProjectInputVm.cs">
+    <Page Update="Views\Run\GroupRunListingView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+    <Page Update="Views\Config\GroupConfigView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="ViewModels\Profiles\SelectedGroupControllerVm.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
-    <Compile Update="ViewModels\Patchers\Solution\SolutionPathInputVm.cs">
+    <Compile Update="ViewModels\Groups\GroupVm.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
-    <Compile Update="Services\Versioning\NewestLibraryVersions.cs">
+    <Compile Update="ViewModels\Top\NewProfileVm.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
-    <Compile Update="ViewModels\Patchers\Initialization\Cli\CliPatcherInitVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Patchers\Initialization\IPatcherInitVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Profiles\ProfileNameVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Services\Profile\ProfileLogDecorator.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Services\Patchers\PatcherLogDecorator.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Modules\LifetimeScopes.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Services\Profile\Exporter\ProfileExporter.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Profiles\PatcherInitializationVm.cs">
+    <Compile Update="Views\Config\GroupConfigView.xaml.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>

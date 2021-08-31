@@ -21,10 +21,10 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel!.Config.NameVm.Name)
+                this.WhenAnyValue(x => x.ViewModel!.Name)
                     .BindTo(this, x => x.PatcherDetailName.Text)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.Config)
+                this.WhenAnyValue(x => x.ViewModel!.SourceVm)
                     .BindTo(this, x => x.PatcherIconDisplay.DataContext)
                     .DisposeWith(disposable);
 

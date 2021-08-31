@@ -110,7 +110,7 @@
                 </Button>
             </Grid>
             <ListBox Grid.Row="1"
-                Name="PatchersList"
+                Name="GroupsList"
                 Margin="8,15,0,0"
                 Background="Transparent"
                 ClipToBounds="False"
@@ -118,7 +118,7 @@
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <local:PatcherRunListingView />
+                        <local:GroupRunListingView />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

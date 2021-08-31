@@ -22,6 +22,7 @@ using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
+using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
@@ -76,10 +77,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             .Transform(x => x.ModKey);
 
         public SolutionPatcherVm(
+            GroupVm group,
             ILifetimeScope scope,
             IPatcherNameVm nameVm,
             IProfileLoadOrder loadOrder,
-            IRemovePatcherFromProfile remove,
             IInstalledSdkFollower dotNetSdkFollowerInstalled,
             IProfileDisplayControllerVm profileDisplay,
             IConfirmationPanelControllerVm confirmation, 
@@ -91,7 +92,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             INavigateTo navigateTo,
             IPatcherIdProvider idProvider,
             SolutionPatcherSettings? settings = null)
-            : base(scope, nameVm, remove, profileDisplay, confirmation, idProvider, settings)
+            : base(group, scope, nameVm, profileDisplay, confirmation, idProvider, settings)
         {
             SolutionPathInput = solutionPathInput;
             SelectedProjectInput = selectedProjectInput;

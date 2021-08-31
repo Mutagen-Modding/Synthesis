@@ -1,4 +1,4 @@
-﻿using System.IO.Abstractions;
+using System.IO.Abstractions;
 using Autofac;
 using Mutagen.Bethesda.Autofac;
 using Mutagen.Bethesda.Synthesis.Projects;
@@ -18,9 +18,11 @@ using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.GUI.Json;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Profile.Exporter;
+using Synthesis.Bethesda.GUI.Services.Profile.Running;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Services.Versioning;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
@@ -97,16 +99,24 @@ namespace Synthesis.Bethesda.GUI.Modules
             builder.RegisterAssemblyTypes(typeof(ProfileVm).Assembly)
                 .InNamespacesOf(
                     typeof(ProfileVm))
-                .NotInNamespacesOf(typeof(PatchersRunVm))
+                .NotInNamespacesOf(typeof(RunVm))
                 .InstancePerMatchingLifetimeScope(LifetimeScopes.ProfileNickname)
                 .AsImplementedInterfaces()
                 .AsSelf();
             
             builder.RegisterAssemblyTypes(typeof(ProfileVm).Assembly)
                 .InNamespacesOf(
-                    typeof(PatchersRunVm),
+                    typeof(GroupVm),
                     typeof(IProfileExporter))
                 .AsImplementedInterfaces()
+                .AsSelf();
+            
+            builder.RegisterAssemblyTypes(typeof(ProfileVm).Assembly)
+                .InNamespacesOf(
+                    typeof(RunVm),
+                    typeof(IExecuteGuiRun))
+                .AsImplementedInterfaces()
+                .InstancePerMatchingLifetimeScope(LifetimeScopes.RunNickname)
                 .AsSelf();
             
             builder.RegisterType<RxReporter>()

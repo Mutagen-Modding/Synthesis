@@ -18,7 +18,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class MainRunViewBase : NoggogUserControl<PatchersRunVm> { }
+    public class MainRunViewBase : NoggogUserControl<RunVm> { }
 
     /// <summary>
     /// Interaction logic for MainRunView.xaml
@@ -30,11 +30,8 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel!.PatchersDisplay)
-                    .BindTo(this, x => x.PatchersList.ItemsSource)
-                    .DisposeWith(disposable);
-
-                this.Bind(this.ViewModel, vm => vm.SelectedPatcher, view => view.PatchersList.SelectedItem)
+                this.WhenAnyValue(x => x.ViewModel!.Groups)
+                    .BindTo(this, x => x.GroupsList.ItemsSource)
                     .DisposeWith(disposable);
 
                 // Wire up patcher config data context and visibility

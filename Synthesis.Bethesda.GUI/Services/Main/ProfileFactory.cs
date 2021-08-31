@@ -1,16 +1,16 @@
-﻿using System.Linq;
+using System;
+using System.Linq;
 using Noggog;
 using Autofac;
 using DynamicData;
 using Mutagen.Bethesda;
-using Mutagen.Bethesda.Environments.DI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Modules;
-using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.Services.Profile;
+using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 
@@ -24,21 +24,21 @@ namespace Synthesis.Bethesda.GUI.Services.Main
 
     public class ProfileFactory : IProfileFactory
     {
-        private readonly ILifetimeScope _Scope;
-        private readonly ILogger _Logger;
+        private readonly ILifetimeScope _scope;
+        private readonly ILogger _logger;
 
         public ProfileFactory(
             ILifetimeScope scope,
             ILogger logger)
         {
-            _Scope = scope;
-            _Logger = logger;
+            _scope = scope;
+            _logger = logger;
         }
         
         public ProfileVm Get(ISynthesisProfileSettings settings)
         {
-            _Logger.Information("Loading {Release} Profile {Nickname} with ID {ID}", settings.TargetRelease, settings.Nickname, settings.ID);
-            var scope = _Scope.BeginLifetimeScope(
+            _logger.Information("Loading {Release} Profile {Nickname} with ID {ID}", settings.TargetRelease, settings.Nickname, settings.ID);
+            var scope = _scope.BeginLifetimeScope(
                 LifetimeScopes.ProfileNickname, 
                 cfg =>
                 {
@@ -51,6 +51,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
                         .SingleInstance();
                 });
             var profile = scope.Resolve<ProfileVm>();
+            var groupFactory = scope.Resolve<Func<GroupVm>>();
             
             scope.DisposeWith(profile);
             profile.Versioning.MutagenVersioning = settings.MutagenVersioning;
@@ -63,15 +64,21 @@ namespace Synthesis.Bethesda.GUI.Services.Main
             profile.LockSetting.Lock = settings.LockToCurrentVersioning;
             profile.SelectedPersistenceMode = settings.Persistence;
 
-            var factory = scope.Resolve<IPatcherFactory>();
-            profile.Patchers.AddRange(settings.Patchers.Select(x => factory.Get(x)));
+            var factory = scope.Resolve<IGroupFactory>();
+            profile.Groups.AddRange(settings.Groups.Select(x => factory.Get(x)));
+
+            if (profile.Groups.Count == 0)
+            {
+                profile.Groups.Add(groupFactory());
+            }
+            
             return profile;
         }
 
         public ProfileVm Get(GameRelease release, string id, string nickname)
         {
-            _Logger.Information("Creating {Release} Profile {Nickname} with ID {ID}", release, nickname, id);
-            var scope = _Scope.BeginLifetimeScope(
+            _logger.Information("Creating {Release} Profile {Nickname} with ID {ID}", release, nickname, id);
+            var scope = _scope.BeginLifetimeScope(
                 LifetimeScopes.ProfileNickname,
                 cfg =>
                 {
@@ -84,9 +91,11 @@ namespace Synthesis.Bethesda.GUI.Services.Main
                             })
                         .AsImplementedInterfaces();
                 });
-            var ret = scope.Resolve<ProfileVm>();
-            scope.DisposeWith(ret);
-            return ret;
+            var profile = scope.Resolve<ProfileVm>();
+            var groupFactory = scope.Resolve<Func<GroupVm>>();
+            scope.DisposeWith(profile);
+            profile.Groups.Add(groupFactory());
+            return profile;
         }
     }
 }

@@ -24,6 +24,7 @@
 
                 <!--  Synthesis Theming  -->
                 <ResourceDictionary Source="pack://application:,,,/Mutagen.Bethesda.Synthesis.WPF;component/Resources.xaml" />
+                <ResourceDictionary Source="Resources.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

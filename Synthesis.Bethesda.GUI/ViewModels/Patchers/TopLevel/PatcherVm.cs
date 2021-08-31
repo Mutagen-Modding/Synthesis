@@ -9,8 +9,8 @@ using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
@@ -20,7 +20,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
     {
         public ILifetimeScope Scope { get; }
         public IPatcherNameVm NameVm { get; }
-        private readonly IRemovePatcherFromProfile _Remove;
 
         private readonly ObservableAsPropertyHelper<bool> _IsSelected;
         public bool IsSelected => _IsSelected.Value;
@@ -46,20 +45,23 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         public ErrorVM ErrorVM { get; }
 
         public virtual bool IsNameEditable => true;
+        
+        [Reactive]
+        public GroupVm Group { get; private set; }
 
         public PatcherVm(
+            GroupVm groupVm,
             ILifetimeScope scope,
             IPatcherNameVm nameVm,
-            IRemovePatcherFromProfile remove,
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             IPatcherIdProvider idProvider,
             PatcherSettings? settings)
         {
+            Group = groupVm;
             Scope = scope;
             Scope.DisposeWith(this);
             NameVm = nameVm;
-            _Remove = remove;
             DisplayedObject = this;
             InternalID = idProvider.InternalId;
             ErrorVM = new ErrorVM("Error", backAction: () =>
@@ -117,7 +119,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
 
         public virtual void Delete()
         {
-            _Remove.Remove(this);
+            Group.Remove(this);
         }
 
         public virtual void SuccessfulRunCompleted()

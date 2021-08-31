@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,17 +22,17 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     public class RunAGroup : IRunAGroup
     {
         public IMoveFinalResults MoveFinalResults { get; }
-        public IRunAPatcher RunPatcher { get; }
         public IGroupRunPreparer GroupRunPreparer { get; }
+        public IRunSomePatchers RunSomePatchers { get; }
 
         public RunAGroup(
             IGroupRunPreparer groupRunPreparer,
-            IRunAPatcher runPatcher,
+            IRunSomePatchers runSomePatchers,
             IMoveFinalResults moveFinalResults)
         {
             GroupRunPreparer = groupRunPreparer;
+            RunSomePatchers = runSomePatchers;
             MoveFinalResults = moveFinalResults;
-            RunPatcher = runPatcher;
         }
         
         public async Task<bool> Run(
@@ -44,22 +44,13 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             string? persistencePath = null)
         {
             await GroupRunPreparer.Prepare(groupRun.ModKey, persistenceMode, persistencePath);
-            
-            for (int i = 0; i < groupRun.Patchers.Length; i++)
-            {
-                var patcher = groupRun.Patchers[i];
 
-                var nextPath = await RunPatcher.Run(
-                    outputKey: groupRun.ModKey,
-                    patcher,
-                    cancellation,
-                    sourcePath,
-                    persistencePath);
-
-                if (nextPath == null) return false;
-                
-                sourcePath = nextPath;
-            }
+            sourcePath = await RunSomePatchers.Run(
+                groupRun.ModKey,
+                groupRun.Patchers,
+                cancellation,
+                sourcePath,
+                persistencePath);
 
             if (sourcePath == null) return false;
 

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using NSubstitute;
+using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Running.Cli;
 using Synthesis.Bethesda.Execution.Settings;
@@ -15,15 +16,15 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
     public class RunPatcherPipelineTests
     {
         [Theory, SynthAutoData]
-        public async Task PassesGetPatcherRunnersToRun(
-            IPatcherRun[] patchers,
+        public async Task PassesGetGroupRunnersToRun(
+            IGroupRun[] groupRuns,
             CancellationToken cancel,
             RunPatcherPipeline sut)
         {
-            sut.GetPatcherRunners.Get().ReturnsForAnyArgs(patchers);
+            sut.GetGroupRunners.Get(cancel).ReturnsForAnyArgs(groupRuns);
             await sut.Run(cancel);
-            await sut.ExecuteRun.Run(
-                Arg.Any<ModPath>(), patchers, Arg.Any<CancellationToken>(),
+            await sut.ExecuteRun.Received(1).Run(
+                groupRuns, Arg.Any<CancellationToken>(), Arg.Any<DirectoryPath>(),
                 Arg.Any<FilePath?>(), Arg.Any<PersistenceMode>(), Arg.Any<string?>());
         }
         
@@ -34,10 +35,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
         {
             sut.Instructions.PersistenceMode = PersistenceMode.None;
             await sut.Run(cancel);
-            await sut.ExecuteRun.Run(
-                outputPath: sut.Instructions.OutputPath, 
-                Arg.Any<IPatcherRun[]>(),
+            await sut.ExecuteRun.Received(1).Run(
+                Arg.Any<IGroupRun[]>(),
                 Arg.Any<CancellationToken>(),
+                outputDir: sut.Instructions.OutputDirectory,
                 sourcePath: sut.Instructions.SourcePath,
                 persistenceMode: sut.Instructions.PersistenceMode.Value, 
                 persistencePath: sut.Instructions.PersistencePath);
@@ -50,8 +51,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
         {
             sut.Instructions.PersistenceMode = null;
             await sut.Run(cancel);
-            await sut.ExecuteRun.Run(
-                Arg.Any<ModPath>(), Arg.Any<IPatcherRun[]>(), Arg.Any<CancellationToken>(),
+            await sut.ExecuteRun.Received(1).Run(
+                Arg.Any<IGroupRun[]>(), Arg.Any<CancellationToken>(), Arg.Any<DirectoryPath>(),
                 Arg.Any<FilePath?>(), PersistenceMode.None, Arg.Any<string?>());
         }
     }

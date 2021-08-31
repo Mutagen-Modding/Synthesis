@@ -3,12 +3,11 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:groups="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Groups"
     xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
-    xmlns:patchers="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers"
     xmlns:running="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
     xmlns:topLevel="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel"
     d:DesignHeight="450"
@@ -36,17 +35,19 @@
             </Grid.RowDefinitions>
             <Grid Grid.Row="0"
                 x:Name="TopAllPatchersControls"
-                Margin="0,3,0,3">
+                Margin="5,3,0,3">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0"
-                    x:Name="DisableAllPatchersButton"
+                    x:Name="DisableAllGroupsButton"
                     Margin="6,0,0,0"
-                    ToolTip="Disable all patchers">
+                    ToolTip="Disable all groups">
                     <Button.Style>
                         <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
                             <Setter Property="Content">
@@ -74,9 +75,9 @@
                     </Button.Style>
                 </Button>
                 <Button Grid.Column="1"
-                    x:Name="EnableAllPatchersButton"
+                    x:Name="EnableAllGroupsButton"
                     Margin="5,0,0,0"
-                    ToolTip="Enable all patchers">
+                    ToolTip="Enable all groups">
                     <Button.Style>
                         <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
                             <Setter Property="Content">
@@ -103,13 +104,79 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <local:UpdateButtonControl Grid.Column="3"
+                <Button Grid.Column="2"
+                    x:Name="CollapseAllGroupsButton"
+                    Margin="6,0,0,0"
+                    ToolTip="Collapse all groups">
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <icon:PackIconBootstrapIcons Height="12" Kind="ChevronContract" />
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <icon:PackIconBootstrapIcons
+                                                Height="12"
+                                                Foreground="{StaticResource Noggog.Brushes.Yellow.Foreground}"
+                                                Kind="ChevronContract">
+                                                <icon:PackIconBootstrapIcons.Effect>
+                                                    <DropShadowEffect
+                                                        BlurRadius="15"
+                                                        ShadowDepth="0"
+                                                        Color="{StaticResource Salmon}" />
+                                                </icon:PackIconBootstrapIcons.Effect>
+                                            </icon:PackIconBootstrapIcons>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Grid.Column="3"
+                    x:Name="ExpandAllGroupsButton"
+                    Margin="6,0,0,0"
+                    ToolTip="Expand all groups">
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <icon:PackIconBootstrapIcons Height="12" Kind="ChevronExpand" />
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <icon:PackIconBootstrapIcons
+                                                Height="12"
+                                                Foreground="{StaticResource Noggog.Brushes.Yellow.Foreground}"
+                                                Kind="ChevronExpand">
+                                                <icon:PackIconBootstrapIcons.Effect>
+                                                    <DropShadowEffect
+                                                        BlurRadius="15"
+                                                        ShadowDepth="0"
+                                                        Color="{StaticResource Salmon}" />
+                                                </icon:PackIconBootstrapIcons.Effect>
+                                            </icon:PackIconBootstrapIcons>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <local:UpdateButtonControl Grid.Column="5"
                     x:Name="UpdateAllPatchersButton"
                     Margin="0,0,4,0"
                     ToolTip="Update all manually controlled patchers:&#x0a; - Mutagen and Synthesis versions used&#x0a; - Patcher code" />
             </Grid>
             <ListBox Grid.Row="1"
-                Name="PatchersList"
+                Name="GroupsList"
                 AllowDrop="True"
                 Background="Transparent"
                 ClipToBounds="False"
@@ -117,7 +184,7 @@
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <local:PatcherConfigListingView />
+                        <local:GroupConfigListingView />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -337,10 +404,13 @@
             x:Name="DetailControl">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type topLevel:PatcherVm}">
-                    <local:PatcherConfigView />
+                    <local:PatcherConfigView Margin="15,15,15,0" />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type running:ErrorVM}">
-                    <local:ErrorView />
+                    <local:ErrorView Margin="15,15,15,0" />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type groups:GroupVm}">
+                    <local:GroupConfigView Margin="9,11,15,0" />
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>

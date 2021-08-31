@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Vers1 = Synthesis.Bethesda.Execution.Settings.V1.PipelineSettings;
@@ -35,8 +35,7 @@ namespace Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V1
                     {
                         new PatcherGroupSettings()
                         {
-                            Name = "Main Group",
-                            ModKey = Synthesis.Bethesda.Constants.SynthesisName,
+                            Name = Synthesis.Bethesda.Constants.SynthesisName,
                             On = true,
                             Patchers = x.Patchers
                         }

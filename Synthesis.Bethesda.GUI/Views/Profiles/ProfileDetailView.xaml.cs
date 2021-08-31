@@ -60,8 +60,14 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 this.Bind(this.ViewModel, vm => vm.Profile!.Versioning.ManualMutagenVersion, view => view.Nugets.Mutagen.ManualVersionBox.Text)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.Profile.Versioning.ManualMutagenVersion)
+                    .Select(x => x.IsNullOrWhitespace())
+                    .BindTo(this, x => x.Nugets.Mutagen.ManualVersionBox.InError);
                 this.Bind(this.ViewModel, vm => vm.Profile!.Versioning.ManualSynthesisVersion, view => view.Nugets.Synthesis.ManualVersionBox.Text)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.Profile.Versioning.ManualSynthesisVersion)
+                    .Select(x => x.IsNullOrWhitespace())
+                    .BindTo(this, x => x.Nugets.Synthesis.ManualVersionBox.InError);
 
                 Nugets.Mutagen.TargetVersionText.Visibility = Visibility.Collapsed;
                 Nugets.Synthesis.TargetVersionText.Visibility = Visibility.Collapsed;

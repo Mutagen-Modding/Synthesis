@@ -140,11 +140,10 @@
                         FontSize="14"
                         FontWeight="Bold"
                         Text="Project Name" />
-                    <TextBox Grid.Row="3"
+                    <noggog:ErroredTextBox Grid.Row="3"
                         x:Name="ExistingProjectNameBox"
-                        noggog:ControlsHelper.ErrorTooltip="{Binding Existing.ProjectError.Reason}"
-                        noggog:ControlsHelper.InError="{Binding Existing.ProjectError.Succeeded, Converter={StaticResource InverseBooleanConverter}}"
-                        Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
+                        ErrorText="{Binding Existing.ProjectError.Reason}"
+                        InError="{Binding Existing.ProjectError.Succeeded, Converter={StaticResource InverseBooleanConverter}}" />
                 </Grid>
             </TabItem>
             <TabItem

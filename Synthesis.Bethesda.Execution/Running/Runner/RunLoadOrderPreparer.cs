@@ -11,18 +11,18 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     public class RunLoadOrderPreparer : IRunLoadOrderPreparer
     {
         public ILoadOrderForRunProvider LoadOrderForRunProvider { get; }
-        public ILoadOrderPrinter Printer { get; }
+        //public ILoadOrderPrinter Printer { get; }
         public IRunLoadOrderPathProvider LoadOrderPathProvider { get; }
         public ILoadOrderWriter LoadOrderWriter { get; }
 
         public RunLoadOrderPreparer(
             ILoadOrderForRunProvider loadOrderForRunProvider,
-            ILoadOrderPrinter printer,
+            //ILoadOrderPrinter printer,
             IRunLoadOrderPathProvider runLoadOrderPathProvider,
             ILoadOrderWriter loadOrderWriter)
         {
             LoadOrderForRunProvider = loadOrderForRunProvider;
-            Printer = printer;
+            //Printer = printer;
             LoadOrderPathProvider = runLoadOrderPathProvider;
             LoadOrderWriter = loadOrderWriter;
         }
@@ -31,7 +31,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         {
             var loadOrderList = LoadOrderForRunProvider.Get(modKey);
             
-            Printer.Print(loadOrderList);
+            //Printer.Print(loadOrderList);
             
             LoadOrderWriter.Write(
                 LoadOrderPathProvider.Path,

@@ -16,10 +16,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
 
     public class GitSettingsInitializer : IGitSettingsInitializer
     {
-        private readonly ProfilePatcherEnumerable _patchersList;
+        private readonly IProfilePatcherEnumerable _patchersList;
 
         public GitSettingsInitializer(
-            ProfilePatcherEnumerable patchersList)
+            IProfilePatcherEnumerable patchersList)
         {
             _patchersList = patchersList;
         }

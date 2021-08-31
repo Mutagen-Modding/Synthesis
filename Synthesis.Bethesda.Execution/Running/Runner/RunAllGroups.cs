@@ -8,7 +8,7 @@ using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner
 {
-    public interface IRunAllPatchers
+    public interface IRunAllGroups
     {
         Task Run(
             IGroupRun[] groups,
@@ -19,11 +19,11 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             string? persistencePath = null);
     }
 
-    public class RunAllPatchers : IRunAllPatchers
+    public class RunAllGroups : IRunAllGroups
     {
         public IRunAGroup RunAGroup { get; }
 
-        public RunAllPatchers(IRunAGroup runAGroup)
+        public RunAllGroups(IRunAGroup runAGroup)
         {
             RunAGroup = runAGroup;
         }

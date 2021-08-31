@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using Noggog.Autofac;
 using Synthesis.Bethesda.Execution.Profile;
-using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Running.Runner;
 
 namespace Synthesis.Bethesda.Execution.Modules

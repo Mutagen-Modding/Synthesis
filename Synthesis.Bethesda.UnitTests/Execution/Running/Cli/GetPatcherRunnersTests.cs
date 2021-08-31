@@ -20,8 +20,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
             GetPatcherRunners sut)
         {
             settings.ForEach(x => x.On = true);
-            sut.Profile.Patchers.Returns(settings);
-            sut.Get();
+            sut.Get(settings);
             foreach (var setting in settings)
             {
                 sut.PatcherSettingsToRunnerFactory.Received(1).Convert(setting);
@@ -35,8 +34,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
         {
             settings.ForEach(x => x.On = true);
             settings[^1].On = false;
-            sut.Profile.Patchers.Returns(settings);
-            sut.Get();
+            sut.Get(settings);
             foreach (var setting in settings.Where(x => x.On))
             {
                 sut.PatcherSettingsToRunnerFactory.Received(1).Convert(setting);
@@ -50,10 +48,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
             GetPatcherRunners sut)
         {
             settings.ForEach(x => x.On = true);
-            sut.Profile.Patchers.Returns(settings);
             sut.PatcherSettingsToRunnerFactory.Convert(default!)
                 .ReturnsSeriallyForAnyArgs(patcherRuns);
-            sut.Get().Should().Equal(patcherRuns);
+            sut.Get(settings).Should().Equal(patcherRuns);
         }
     }
 }

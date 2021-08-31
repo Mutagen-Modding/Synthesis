@@ -1,6 +1,7 @@
 ﻿using System;
 using Autofac;
 using Noggog;
+using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Modules;

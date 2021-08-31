@@ -118,15 +118,14 @@
                         </Grid>
                     </TabItem>
                     <TabItem Header="Commit" ToolTip="Run the patcher from a specific Git commit">
-                        <TextBox
+                        <noggog:ErroredTextBox
                             x:Name="CurrentCommit"
                             Width="155"
                             Margin="0,3"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
                             mahapps:TextBoxHelper.Watermark="Git Sha"
-                            noggog:ControlsHelper.ErrorTooltip="No target Git Sha specified to check out"
-                            Style="{StaticResource Noggog.Styles.TextBox.ErrorState}" />
+                            ErrorText="No target Git Sha specified to check out" />
                     </TabItem>
                 </TabControl>
             </Grid>

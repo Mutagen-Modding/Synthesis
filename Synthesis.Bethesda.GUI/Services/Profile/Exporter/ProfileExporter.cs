@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using Noggog;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -44,7 +45,9 @@ namespace Synthesis.Bethesda.GUI.Services.Profile.Exporter
             }
             var profile = pipeSettings.Profiles[0];
             profile.LockToCurrentVersioning = true;
-            foreach (var gitPatcher in profile.Patchers.WhereCastable<PatcherSettings, GithubPatcherSettings>())
+            foreach (var gitPatcher in profile.Groups
+                .SelectMany(x => x.Patchers)
+                .WhereCastable<PatcherSettings, GithubPatcherSettings>())
             {
                 gitPatcher.AutoUpdateToBranchTip = false;
                 gitPatcher.LatestTag = false;

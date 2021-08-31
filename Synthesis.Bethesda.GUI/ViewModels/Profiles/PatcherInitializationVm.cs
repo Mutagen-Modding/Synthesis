@@ -9,6 +9,7 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
@@ -17,6 +18,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
@@ -34,7 +36,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
     public class PatcherInitializationVm : ViewModel, IPatcherInitializationVm
     {
         private readonly ILifetimeScope _scope;
-        private readonly IProfilePatchersList _patchersList;
+        private readonly ISelectedGroupControllerVm _selectedGroupControllerVm;
         private readonly IProfileDisplayControllerVm _displayControllerVm;
 
         public ICommand AddGitPatcherCommand { get; }
@@ -49,11 +51,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
         public PatcherInitializationVm(
             ILifetimeScope scope,
-            IProfilePatchersList patchersList,
+            ISelectedGroupControllerVm selectedGroupControllerVm,
             IProfileDisplayControllerVm displayControllerVm)
         {
             _scope = scope;
-            _patchersList = patchersList;
+            _selectedGroupControllerVm = selectedGroupControllerVm;
             _displayControllerVm = displayControllerVm;
             AddGitPatcherCommand = ReactiveCommand.Create(() =>
             {
@@ -79,7 +81,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                     {
                         if (patcher == null) return Observable.Return(false);
                         return patcher.WhenAnyValue(x => x.CanCompleteConfiguration)
-                            .Select(e => e.Succeeded);
+                            .Select(e => e.Succeeded)
+                            .CombineLatest(
+                                _selectedGroupControllerVm.WhenAnyValue(x => x.SelectedGroup)
+                                    .Select(x => x != null),
+                                (canComplete, groupExists) => canComplete && groupExists);
                     })
                     .Switch());
 
@@ -102,7 +108,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             NewPatcher = null;
             if (patchersToAdd.Count == 0) return;
             patchersToAdd.ForEach(p => p.IsOn = true);
-            _patchersList.Patchers.AddRange(patchersToAdd);
+            if (_selectedGroupControllerVm.SelectedGroup == null)
+            {
+                throw new ArgumentNullException("Selected group unexpectedly null");
+            }
+            _selectedGroupControllerVm.SelectedGroup.Patchers.AddRange(patchersToAdd);
             _displayControllerVm.SelectedObject = patchersToAdd.First();
         }
 
