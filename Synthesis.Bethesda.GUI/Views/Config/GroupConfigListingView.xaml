@@ -157,7 +157,7 @@
             Fill="#35000000" />
         <ListBox Grid.Row="1"
             Name="PatchersList"
-            Margin="5,0,0,0"
+            Margin="5,2,0,0"
             AllowDrop="True"
             Background="Transparent"
             ClipToBounds="False"

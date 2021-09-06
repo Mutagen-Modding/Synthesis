@@ -78,15 +78,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                 .Select(x => x == this)
                 // Not GuiProperty, as it interacts with drag/drop oddly
                 .ToProperty(this, nameof(IsSelected));
-
-            Patchers.Connect()
-                .OnItemRemoved(p =>
-                {
-                    logger.Information($"Disposing of {p.NameVm.Name} because it was removed.");
-                    p.Dispose();
-                })
-                .Subscribe()
-                .DisposeWith(this);
             
             PatchersDisplay = Patchers.Connect()
                 .ObserveOnGui()

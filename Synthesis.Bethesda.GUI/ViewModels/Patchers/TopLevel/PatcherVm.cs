@@ -120,6 +120,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         public virtual void Delete()
         {
             Group.Remove(this);
+            this.Dispose();
         }
 
         public virtual void SuccessfulRunCompleted()
