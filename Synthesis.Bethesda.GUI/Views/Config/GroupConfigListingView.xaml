@@ -20,6 +20,11 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem x:Name="DeleteContextMenuButton" Header="Delete" />
+            </ContextMenu>
+        </Grid.ContextMenu>
 
         <Grid Grid.Row="0"
             x:Name="TopGrid"

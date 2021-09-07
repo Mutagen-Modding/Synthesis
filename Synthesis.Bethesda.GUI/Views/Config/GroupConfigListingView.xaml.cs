@@ -84,6 +84,11 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(show => show ? Visibility.Visible : Visibility.Collapsed)
                     .BindTo(this, x => x.ProcessingRingAnimation.Visibility)
                     .DisposeWith(disposable);
+
+                // ContextMenu
+                this.WhenAnyFallback(x => x.ViewModel!.DeleteCommand)
+                    .BindTo(this, x => x.DeleteContextMenuButton.Command)
+                    .DisposeWith(disposable);
             });
         }
     }

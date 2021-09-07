@@ -30,6 +30,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x.Reason)
                     .BindTo(this, x => x.GroupDetailName.ErrorText)
                     .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.DeleteCommand)
+                    .BindTo(this, x => x.DeleteButton.Command)
+                    .DisposeWith(disposable);
             });
         }
     }

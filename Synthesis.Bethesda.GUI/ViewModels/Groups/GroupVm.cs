@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
 using Mutagen.Bethesda.Plugins;
@@ -16,6 +17,7 @@ using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Groups
 {
@@ -53,13 +55,19 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
 
         public ReactiveCommand<Unit, Unit> RunPatchersCommand { get; }
 
+        public ICommand DeleteCommand { get; }
+
+        public ProfileVm ProfileVm { get; }
+
         public GroupVm(
             ProfileVm profileVm,
             OverallErrorVm overallErrorVm,
             StartRun startRun,
+            IConfirmationPanelControllerVm confirmation,
             IProfileDisplayControllerVm selPatcher,
             ILogger logger)
         {
+            ProfileVm = profileVm;
             DisplayController = profileVm.DisplayController;
             _ModKey = this.WhenAnyValue(x => x.Name)
                 .Select(x =>
@@ -164,6 +172,24 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                     startRun.Start(this);
                 },
                 canExecute: this.WhenAnyValue(x => x.State).Select(x => x.RunnableState.Succeeded));
+
+            DeleteCommand = ReactiveCommand.Create(() =>
+            {
+                confirmation.TargetConfirmation = new ConfirmationActionVm(
+                    "Confirm",
+                    $"Are you sure you want to delete the entire Group {Name}, with {Patchers.Count} patchers?",
+                    Delete);
+            });
+        }
+
+        public void Delete()
+        {
+            ProfileVm.Groups.Remove(this);
+            foreach (var patcher in Patchers.Items)
+            {
+                patcher.Delete();
+            }
+            Dispose();
         }
 
         public override void Dispose()
