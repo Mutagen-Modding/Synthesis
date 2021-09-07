@@ -29,8 +29,10 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" Grid.ColumnSpan="2"
+            <Border Grid.Column="0" Grid.ColumnSpan="4"
                 Margin="0,0,-15,-15"
                 CornerRadius="15">
                 <Border.Style>
@@ -129,7 +131,7 @@
                     </Style>
                 </Border.Style>
             </Border>
-            <Grid Grid.Column="0" Grid.ColumnSpan="2"
+            <Grid Grid.Column="0" Grid.ColumnSpan="4"
                 x:Name="InnerTopLines">
                 <Rectangle
                     Height="1"
@@ -151,6 +153,62 @@
                 VerticalAlignment="Center"
                 FontWeight="Bold"
                 IsHitTestVisible="False" />
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <TextBlock x:Name="ActiveCountText" VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{StaticResource PaleYellowBrush}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding NumEnabledPatchers}" Value="0">
+                                    <Setter Property="Foreground" Value="Gray" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <TextBlock
+                    x:Name="OutOfSlashText"
+                    Margin="3,0"
+                    VerticalAlignment="Center"
+                    Foreground="Gray"
+                    Text="/" />
+                <TextBlock
+                    x:Name="TotalCountText"
+                    VerticalAlignment="Center"
+                    Foreground="Gray" />
+            </StackPanel>
+            <ToggleButton Grid.Column="3"
+                x:Name="ExpandStateButton"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                Focusable="False">
+                <ToggleButton.Style>
+                    <Style BasedOn="{StaticResource Noggog.Styles.ToggleButton}" TargetType="ToggleButton">
+                        <Setter Property="Content">
+                            <Setter.Value>
+                                <icon:PackIconMaterial
+                                    Width="10"
+                                    Height="10"
+                                    VerticalAlignment="Center"
+                                    Kind="ChevronUp" />
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <icon:PackIconMaterial
+                                            Width="10"
+                                            Height="10"
+                                            VerticalAlignment="Center"
+                                            Kind="ChevronDown" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToggleButton.Style>
+            </ToggleButton>
         </Grid>
         <Rectangle Grid.Row="1"
             Margin="5,0,0,0"
@@ -175,7 +233,6 @@
             Height="25"
             ClipToBounds="True">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -215,63 +272,11 @@
                     </Style>
                 </Border.Style>
             </Border>
-            <ToggleButton Grid.Column="0"
-                x:Name="ExpandStateButton"
-                Margin="10,0,0,0"
-                Background="Transparent"
-                Focusable="False">
-                <ToggleButton.Style>
-                    <Style BasedOn="{StaticResource Noggog.Styles.ToggleButton}" TargetType="ToggleButton">
-                        <Setter Property="Content">
-                            <Setter.Value>
-                                <icon:PackIconMaterial
-                                    Width="10"
-                                    Height="10"
-                                    Margin="0,0,0,1"
-                                    VerticalAlignment="Center"
-                                    Kind="ChevronDown" />
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter Property="Content">
-                                    <Setter.Value>
-                                        <icon:PackIconMaterial
-                                            Width="10"
-                                            Height="10"
-                                            Margin="0,0,0,3"
-                                            VerticalAlignment="Center"
-                                            Kind="ChevronUp" />
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </ToggleButton.Style>
-            </ToggleButton>
-            <TextBlock Grid.Column="1"
-                x:Name="CountTextBox"
-                VerticalAlignment="Center">
-                <Run x:Name="ActiveCountText">
-                    <Run.Style>
-                        <Style TargetType="Run">
-                            <Setter Property="Foreground" Value="{StaticResource PaleYellowBrush}" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding NumEnabledPatchers}" Value="0">
-                                    <Setter Property="Foreground" Value="Gray" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Run.Style>
-                </Run>
-                <Run
-                    x:Name="OutOfSlashText"
-                    Foreground="Gray"
-                    Text="/" />
-                <Run x:Name="TotalCountText" Foreground="Gray" />
-            </TextBlock>
-            <Grid Grid.Column="3" Margin="0,0,3,0">
-                <Button x:Name="GoButton" HorizontalContentAlignment="Stretch">
+            <Grid Grid.Column="2" Margin="0,0,3,0">
+                <Button
+                    x:Name="GoButton"
+                    HorizontalContentAlignment="Stretch"
+                    ToolTip="Run group pipeline">
                     <icon:PackIconMaterial
                         Width="15"
                         Height="15"

@@ -49,8 +49,8 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindTo(this, x => x.TotalCountText.Text)
                     .DisposeWith(disposable);
                 EnabledVsTotal
-                    .Select(x => x.Total == x.NumEnabled ? string.Empty : "/")
-                    .BindTo(this, x => x.OutOfSlashText.Text)
+                    .Select(x => x.Total == x.NumEnabled ? Visibility.Collapsed : Visibility.Visible)
+                    .BindTo(this, x => x.OutOfSlashText.Visibility)
                     .DisposeWith(disposable);
 
                 this.Bind(this.ViewModel, vm => vm!.DisplayController.SelectedObject, view => view.PatchersList.SelectedValue)
