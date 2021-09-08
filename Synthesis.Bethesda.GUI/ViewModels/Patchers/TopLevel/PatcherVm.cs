@@ -45,12 +45,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         public ErrorVM ErrorVM { get; }
 
         public virtual bool IsNameEditable => true;
-        
-        [Reactive]
-        public GroupVm Group { get; private set; }
+
+        [Reactive] 
+        public GroupVm? Group { get; set; } 
 
         public PatcherVm(
-            GroupVm groupVm,
             ILifetimeScope scope,
             IPatcherNameVm nameVm,
             IProfileDisplayControllerVm selPatcher,
@@ -58,7 +57,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
             IPatcherIdProvider idProvider,
             PatcherSettings? settings)
         {
-            Group = groupVm;
             Scope = scope;
             Scope.DisposeWith(this);
             NameVm = nameVm;
@@ -119,7 +117,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
 
         public virtual void Delete()
         {
-            Group.Remove(this);
+            Group?.Remove(this);
             this.Dispose();
         }
 

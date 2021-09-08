@@ -8,6 +8,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
 {
     public interface IGroupFactory
     {
+        GroupVm Get();
         GroupVm Get(PatcherGroupSettings groupSettings);
     }
 
@@ -30,8 +31,17 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
             group.Name = groupSettings.Name;
             group.IsOn = groupSettings.On;
             group.Expanded = groupSettings.Expanded;
-            group.Patchers.AddRange(groupSettings.Patchers.Select(x => _patcherFactory.Get(x)));
+            group.Patchers.AddRange(
+                groupSettings.Patchers
+                    .Select(x =>
+                    {
+                        var ret = _patcherFactory.Get(x);
+                        ret.Group = group;
+                        return ret;
+                    }));
             return group;
         }
+
+        public GroupVm Get() => _groupCreator();
     }
 }

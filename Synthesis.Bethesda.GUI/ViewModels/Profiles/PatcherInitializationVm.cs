@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
@@ -17,8 +17,6 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Cli;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
-using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
@@ -107,11 +105,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         {
             NewPatcher = null;
             if (patchersToAdd.Count == 0) return;
-            patchersToAdd.ForEach(p => p.IsOn = true);
             if (_selectedGroupControllerVm.SelectedGroup == null)
             {
                 throw new ArgumentNullException("Selected group unexpectedly null");
             }
+            patchersToAdd.ForEach(p =>
+            {
+                p.IsOn = true;
+                p.Group = _selectedGroupControllerVm.SelectedGroup;
+            });
             _selectedGroupControllerVm.SelectedGroup.Patchers.AddRange(patchersToAdd);
             _displayControllerVm.SelectedObject = patchersToAdd.First();
         }

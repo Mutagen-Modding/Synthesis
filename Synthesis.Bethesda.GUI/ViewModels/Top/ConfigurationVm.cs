@@ -35,7 +35,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         public ViewModel? DisplayedObject => _DisplayedObject.Value;
 
         public ConfigurationVm(
-            ActiveRunVm activeRunVm,
             ISelectedProfileControllerVm selectedProfile,
             ISaveSignal saveSignal,
             IProfileFactory profileFactory,

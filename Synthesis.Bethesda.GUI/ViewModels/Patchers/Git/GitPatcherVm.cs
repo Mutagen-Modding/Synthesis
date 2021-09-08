@@ -77,7 +77,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         public IUpdateAllCommand UpdateAllCommand { get; }
 
         public GitPatcherVm(
-            GroupVm group,
             IGithubPatcherIdentifier ident,
             IPatcherNameVm nameVm,
             IProfileDisplayControllerVm selPatcher,
@@ -108,7 +107,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IPatcherIdProvider idProvider,
             PatcherSettingsVm.Factory settingsVmFactory,
             GithubPatcherSettings? settings = null)
-            : base(group,
+            : base(
                 scope, nameVm, selPatcher,
                 confirmation, idProvider, settings)
         {

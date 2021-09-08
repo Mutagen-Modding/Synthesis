@@ -51,8 +51,8 @@ namespace Synthesis.Bethesda.GUI.Services.Main
                         .SingleInstance();
                 });
             var profile = scope.Resolve<ProfileVm>();
-            var groupFactory = scope.Resolve<Func<GroupVm>>();
-            
+            var factory = scope.Resolve<IGroupFactory>();
+
             scope.DisposeWith(profile);
             profile.Versioning.MutagenVersioning = settings.MutagenVersioning;
             profile.Versioning.ManualMutagenVersion = settings.MutagenManualVersion;
@@ -64,12 +64,11 @@ namespace Synthesis.Bethesda.GUI.Services.Main
             profile.LockSetting.Lock = settings.LockToCurrentVersioning;
             profile.SelectedPersistenceMode = settings.Persistence;
 
-            var factory = scope.Resolve<IGroupFactory>();
             profile.Groups.AddRange(settings.Groups.Select(x => factory.Get(x)));
 
             if (profile.Groups.Count == 0)
             {
-                profile.Groups.Add(groupFactory());
+                profile.Groups.Add(factory.Get());
             }
             
             return profile;
@@ -92,9 +91,10 @@ namespace Synthesis.Bethesda.GUI.Services.Main
                         .AsImplementedInterfaces();
                 });
             var profile = scope.Resolve<ProfileVm>();
-            var groupFactory = scope.Resolve<Func<GroupVm>>();
+            var factory = scope.Resolve<IGroupFactory>();
+
             scope.DisposeWith(profile);
-            profile.Groups.Add(groupFactory());
+            profile.Groups.Add(factory.Get());
             return profile;
         }
     }

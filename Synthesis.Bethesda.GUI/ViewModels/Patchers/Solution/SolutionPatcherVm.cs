@@ -92,7 +92,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             INavigateTo navigateTo,
             IPatcherIdProvider idProvider,
             SolutionPatcherSettings? settings = null)
-            : base(group, scope, nameVm, profileDisplay, confirmation, idProvider, settings)
+            : base(scope, nameVm, profileDisplay, confirmation, idProvider, settings)
         {
             SolutionPathInput = solutionPathInput;
             SelectedProjectInput = selectedProjectInput;

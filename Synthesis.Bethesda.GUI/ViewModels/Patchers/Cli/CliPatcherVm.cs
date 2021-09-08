@@ -24,7 +24,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
         public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
 
         public CliPatcherVm(
-            GroupVm group,
             IPatcherIdProvider idProvider,
             IPatcherNameVm nameVm,
             IPathToExecutableInputVm pathToExecutableInputVm,
@@ -33,7 +32,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
             IShowHelpSetting showHelpSetting,
             ILifetimeScope scope,
             CliPatcherSettings? settings = null)
-            : base(group, scope, nameVm, selPatcher, confirmation, idProvider, settings)
+            : base(scope, nameVm, selPatcher, confirmation, idProvider, settings)
         {
             ExecutableInput = pathToExecutableInputVm;
             ShowHelpSetting = showHelpSetting;
