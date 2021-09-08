@@ -1,0 +1,61 @@
+{
+  "Profiles": [
+    {
+      "Nickname": "Skyrim Special Edition",
+      "ID": "u2gktfpj.frs",
+      "TargetRelease": "SkyrimSE",
+      "Patchers": [
+        {
+          "$type": "Synthesis.Bethesda.Execution.Settings.GithubPatcherSettings, Synthesis.Bethesda.Execution",
+          "ID": "fctmg5y0.smp",
+          "RemoteRepoPath": "https://github.com/Synthesis-Collective/SynBookSmart",
+          "SelectedProjectSubpath": "BookSmart\\BookSmart.csproj",
+          "PatcherVersioning": "Branch",
+          "TargetTag": null,
+          "TargetCommit": "ce1bdd92334848b31432da1b60ca94364c6ded88",
+          "TargetBranch": "master",
+          "LatestTag": true,
+          "FollowDefaultBranch": true,
+          "AutoUpdateToBranchTip": false,
+          "OverrideNugetVersioning": false,
+          "MutagenVersionType": "Profile",
+          "ManualMutagenVersion": "",
+          "SynthesisVersionType": "Profile",
+          "ManualSynthesisVersion": "",
+          "LastSuccessfulRun": null,
+          "On": true,
+          "Nickname": ""
+        },
+        {
+          "$type": "Synthesis.Bethesda.Execution.Settings.GithubPatcherSettings, Synthesis.Bethesda.Execution",
+          "ID": "sq2duph1.gwv",
+          "RemoteRepoPath": "https://github.com/theSkyseS/Engarde-Synthesis-Patcher",
+          "SelectedProjectSubpath": "Engarde_Synthesis\\Engarde_Synthesis.csproj",
+          "PatcherVersioning": "Branch",
+          "TargetTag": null,
+          "TargetCommit": "d52383374d09c2841bfe0bfab0c7cff2bb52d8f7",
+          "TargetBranch": "master",
+          "LatestTag": true,
+          "FollowDefaultBranch": true,
+          "AutoUpdateToBranchTip": false,
+          "OverrideNugetVersioning": false,
+          "MutagenVersionType": "Profile",
+          "ManualMutagenVersion": "",
+          "SynthesisVersionType": "Profile",
+          "ManualSynthesisVersion": "",
+          "LastSuccessfulRun": null,
+          "On": true,
+          "Nickname": ""
+        }
+      ],
+      "MutagenVersioning": "Manual",
+      "MutagenManualVersion": "0.30.3",
+      "SynthesisVersioning": "Manual",
+      "SynthesisManualVersion": "0.19.1",
+      "DataPathOverride": null,
+      "ConsiderPrereleaseNugets": false,
+      "LockToCurrentVersioning": false,
+      "Persistence": "Text"
+    }
+  ]
+}
