@@ -49,18 +49,25 @@ namespace Synthesis.Bethesda.GUI.Services.Profile.Running
             PersistenceMode persistenceMode,
             CancellationToken cancel)
         {
-            var output = new DirectoryPath(Path.Combine(_profileDirectories.WorkingDirectory, "Output"));
-            _fileSystem.Directory.DeleteEntireFolder(output.Path);
+            var outputDir = new DirectoryPath(Path.Combine(_profileDirectories.WorkingDirectory, "Output"));
+            _fileSystem.Directory.DeleteEntireFolder(outputDir.Path);
             await _executeRun.Run(
                 groups: groupRuns.ToArray(),
                 cancel: cancel,
-                outputDir: output,
+                outputDir: outputDir,
                 persistenceMode: persistenceMode,
                 persistencePath: Path.Combine(_profileDirectories.ProfileDirectory, "Persistence"));
+
+            if (_fileSystem.Directory.Exists(outputDir))
+            {
+                foreach (var patchPath in _fileSystem.Directory.EnumerateFilePaths(outputDir))
+                {
+                    var dataFolderPath = Path.Combine(_dataDirectoryProvider.Path, patchPath.Name);
+                    _fileSystem.File.Copy(patchPath, dataFolderPath, overwrite: true);
+                    _logger.Information("Copied {PatchName} to: {DataFolderPath}", patchPath.Name, dataFolderPath);
+                }
+            }
             
-            var dataFolderPath = Path.Combine(_dataDirectoryProvider.Path, Synthesis.Bethesda.Constants.SynthesisModKey.FileName);
-            _fileSystem.File.Copy(output, dataFolderPath, overwrite: true);
-            _logger.Information("Exported patch to: {DataFolderPath}", dataFolderPath);
         }
     }
 }
