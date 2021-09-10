@@ -61,7 +61,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 
         public ObservableCollectionExtended<VisibilityOptions> VisibilityOptions { get; } = new(EnumExt.GetValues<VisibilityOptions>());
 
-        public ObservableCollection<ModKeyItemViewModel> RequiredMods { get; } = new();
+        public ObservableCollection<ModKey> RequiredMods { get; } = new();
          
         public IObservable<IChangeSet<ModKey>> DetectedMods => _LoadOrder.LoadOrder.Connect().Transform(l => l.ModKey);
 
@@ -73,8 +73,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
         IObservable<string> IProvidePatcherMetaPath.Path => MetaPath;
 
         IObservable<IChangeSet<ModKey>> ISolutionPatcherSettingsVm.RequiredMods => RequiredMods
-            .AsObservableChangeSet()
-            .Transform(x => x.ModKey);
+            .AsObservableChangeSet();
 
         public SolutionPatcherVm(
             GroupVm group,
@@ -179,8 +178,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 
         public void SetRequiredMods(IEnumerable<ModKey> modKeys)
         {
-            RequiredMods.SetTo(modKeys
-                .Select(m => new ModKeyItemViewModel(m)));
+            RequiredMods.SetTo(modKeys);
         }
     }
 }
