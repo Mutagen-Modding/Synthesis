@@ -140,30 +140,36 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
             LoadOrder = loadOrder.LoadOrder;
 
+            var enabledGroups = Groups.Connect()
+                .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
+                .RefCount();
+
+            var enabledGroupModKeys = enabledGroups
+                .Transform(x => x.ModKey)
+                .QueryWhenChanged(q => q.ToHashSet())
+                .Replay(1).RefCount();
+
             _BlockingError = Observable.CombineLatest(
                     dataFolder.WhenAnyValue(x => x.DataFolderResult),
                     loadOrder.WhenAnyValue(x => x.State),
-                    Groups.Connect()
-                        .ObserveOnGui()
-                        .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
+                    enabledGroups
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<GroupVm>()),
-                    Groups.Connect()
-                        .ObserveOnGui()
-                        .FilterOnObservable(g => Observable.CombineLatest(
-                            g.WhenAnyValue(x => x.IsOn),
-                            g.WhenAnyValue(x => x.State),
-                            (on, state) => on && state.IsHaltingError),
-                            scheduler: RxApp.MainThreadScheduler)
+                    enabledGroups
+                        .FilterOnObservable(g => g.WhenAnyValue(x => x.State).Select(x => x.IsHaltingError))
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<GroupVm>()),
                     LoadOrder.Connect()
-                        .Filter(x => x.ModKey != Constants.SynthesisModKey)
-                        .ObserveOnGui()
                         .FilterOnObservable(
-                            x => x.WhenAnyValue(y => y.Exists)
-                                .DistinctUntilChanged()
-                                .Select(x => !x), 
+                            x =>
+                            {
+                                return Observable.CombineLatest(
+                                    x.WhenAnyValue(y => y.Exists)
+                                        .DistinctUntilChanged(),
+                                    enabledGroupModKeys
+                                        .Select(groupModKeys => groupModKeys.Contains(x.ModKey)),
+                                    (exists, isEnabledGroupKey) => !exists && !isEnabledGroupKey);
+                            }, 
                             scheduler: RxApp.MainThreadScheduler)
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<ReadOnlyModListingVM>())
