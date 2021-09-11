@@ -8,7 +8,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
 {
     public interface IGroupFactory
     {
-        GroupVm Get();
         GroupVm Get(PatcherGroupSettings groupSettings);
     }
 
@@ -41,7 +40,5 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
                     }));
             return group;
         }
-
-        public GroupVm Get() => _groupCreator();
     }
 }

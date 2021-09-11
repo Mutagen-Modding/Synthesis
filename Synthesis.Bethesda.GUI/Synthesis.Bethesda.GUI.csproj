@@ -87,6 +87,11 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Page</BuildAction>
     </Page>
+    <Page Update="Views\Config\AddNewItemsView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   
   <ItemGroup>
@@ -109,6 +114,12 @@
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Views\Config\AddNewItemsView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+      <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
 

@@ -16,7 +16,6 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="20" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -27,7 +26,7 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="5*" />
         </Grid.ColumnDefinitions>
-        <Grid Grid.Row="2" Grid.Column="0">
+        <Grid Grid.Row="1" Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -177,6 +176,7 @@
             </Grid>
             <ListBox Grid.Row="1"
                 Name="GroupsList"
+                Margin="0,5,0,0"
                 AllowDrop="True"
                 Background="Transparent"
                 ClipToBounds="False"
@@ -265,7 +265,7 @@
                 </mahapps:ProgressRing>
             </Grid>
         </Grid>
-        <StackPanel Grid.Row="2" Grid.Column="0"
+        <StackPanel Grid.Row="1" Grid.Column="0"
             x:Name="AddSomePatchersHelpGrid"
             Margin="15,4,0,0"
             VerticalAlignment="Top"
@@ -284,123 +284,16 @@
                 Foreground="{StaticResource PaleBlueBrush}"
                 Text="Add Some Patchers" />
         </StackPanel>
-        <TextBlock Grid.Row="1" Grid.Column="0"
-            VerticalAlignment="Center"
-            Foreground="{StaticResource LightBlueBrush}">
-            <TextBlock.Style>
-                <Style TargetType="TextBlock">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddGitButton}" Value="True">
-                            <Setter Property="Margin">
-                                <Setter.Value>
-                                    <Thickness>9,0,0,0</Thickness>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="Text" Value="Git Repository" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddSolutionButton}" Value="True">
-                            <Setter Property="Margin">
-                                <Setter.Value>
-                                    <Thickness>36,0,0,0</Thickness>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="Text" Value="Local Solution" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=AddCliButton}" Value="True">
-                            <Setter Property="Margin">
-                                <Setter.Value>
-                                    <Thickness>56,0,0,0</Thickness>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="Text" Value="External Program" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBlock.Style>
-        </TextBlock>
-        <Border Grid.Row="0" Grid.Column="0"
-            Height="30"
-            Margin="-15,5,0,0"
-            HorizontalAlignment="Left"
-            Background="{StaticResource DarkPurpleBrush}"
-            BorderThickness="1.5"
-            CornerRadius="14">
-            <Border.Style>
-                <Style TargetType="Border">
-                    <Setter Property="BorderBrush">
-                        <Setter.Value>
-                            <LinearGradientBrush StartPoint="0,-0.7" EndPoint="0,1">
-                                <GradientStop Offset="0" Color="{StaticResource DarkPurple}" />
-                                <GradientStop Offset="1" Color="{StaticResource DarkSalmon}" />
-                            </LinearGradientBrush>
-                        </Setter.Value>
-                    </Setter>
-                    <Style.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Effect">
-                                <Setter.Value>
-                                    <DropShadowEffect
-                                        BlurRadius="10"
-                                        ShadowDepth="0"
-                                        Color="{StaticResource Salmon}" />
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="BorderBrush" Value="{StaticResource DarkSalmonBrush}" />
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
-            <Grid VerticalAlignment="Center">
-                <Grid.Resources>
-                    <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
-                        <Setter Property="Margin" Value="1,0" />
-                    </Style>
-                </Grid.Resources>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="20" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="10" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="8" />
-                </Grid.ColumnDefinitions>
-                <icon:PackIconMaterial Grid.Column="1"
-                    Width="12"
-                    Height="12"
-                    Margin="0,0,4,0"
-                    VerticalAlignment="Center"
-                    Foreground="{StaticResource PaleYellowBrush}"
-                    Kind="Plus" />
-                <Rectangle Grid.Column="2"
-                    Width="1"
-                    HorizontalAlignment="Center"
-                    Fill="{StaticResource MahApps.Brushes.Gray8}" />
-                <Button Grid.Column="3"
-                    Name="AddGitButton"
-                    Padding="4">
-                    <icon:PackIconMaterial Margin="0,-5" Kind="Git" />
-                </Button>
-                <Button Grid.Column="4"
-                    Name="AddSolutionButton"
-                    Padding="4">
-                    <icon:PackIconModern Margin="0,-5" Kind="Visualstudio" />
-                </Button>
-                <Button Grid.Column="5"
-                    Name="AddCliButton"
-                    Padding="4">
-                    <icon:PackIconMaterial Margin="0,-5" Kind="ConsoleLine" />
-                </Button>
-            </Grid>
-        </Border>
-        <local:VerticalSlicer Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
+        <local:AddNewItemsView Grid.Row="0" Grid.Column="0"
+            Margin="-15,5,0,0" />
+        <local:VerticalSlicer Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
             Margin="5,0" />
-        <Rectangle Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
+        <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
             Name="InitialConfigurationDimmer"
             Margin="0,0,-4,0"
             Fill="#AA000000"
             Visibility="Collapsed" />
-        <ContentControl Grid.Row="0" Grid.RowSpan="3" Grid.Column="2"
+        <ContentControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"
             x:Name="DetailControl">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type topLevel:PatcherVm}">

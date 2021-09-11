@@ -152,10 +152,12 @@
                 Width="30"
                 HorizontalAlignment="Left"
                 Background="Transparent" />
-            <TextBlock Grid.Column="1"
+            <TextBox Grid.Column="1"
                 x:Name="ExportNameBlock"
-                Margin="10,0,0,0"
+                Margin="2,0,0,0"
                 VerticalAlignment="Center"
+                mahapps:TextBoxHelper.Watermark="Group Name"
+                Background="Transparent"
                 FontWeight="Bold"
                 IsHitTestVisible="False" />
             <StackPanel Grid.Column="2" Orientation="Horizontal">

@@ -17,6 +17,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Cli;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
@@ -25,6 +26,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         ICommand AddGitPatcherCommand { get; }
         ICommand AddSolutionPatcherCommand { get; }
         ICommand AddCliPatcherCommand { get; }
+        ICommand AddGroupCommand { get; }
         ICommand CompleteConfiguration { get; }
         ICommand CancelConfiguration { get; }
         IPatcherInitVm? NewPatcher { get; set; }
@@ -40,15 +42,18 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         public ICommand AddGitPatcherCommand { get; }
         public ICommand AddSolutionPatcherCommand { get; }
         public ICommand AddCliPatcherCommand { get; }
+        public ICommand AddGroupCommand { get; }
         public ICommand CompleteConfiguration { get; }
         
         public ICommand CancelConfiguration { get; }
 
         [Reactive]
         public IPatcherInitVm? NewPatcher { get; set; }
-
+        
         public PatcherInitializationVm(
             ILifetimeScope scope,
+            IProfileGroupsList groupsList,
+            INewGroupCreator groupCreator,
             ISelectedGroupControllerVm selectedGroupControllerVm,
             IProfileDisplayControllerVm displayControllerVm)
         {
@@ -66,6 +71,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             AddCliPatcherCommand = ReactiveCommand.Create(() =>
             {
                 NewPatcher = Resolve<CliPatcherInitVm, GuiCliPatcherModule, CliPatcherSettings>();
+            });
+            AddGroupCommand = ReactiveCommand.Create(() =>
+            {
+                var group = groupCreator.Get();
+                groupsList.Groups.Add(group);
+                displayControllerVm.SelectedObject = group;
             });
             CompleteConfiguration = ReactiveCommand.CreateFromTask(
                 async () =>
