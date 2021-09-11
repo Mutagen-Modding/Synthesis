@@ -237,9 +237,12 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <Grid Grid.Row="2"
+            x:Name="BottomBar"
             Height="25"
+            Background="Transparent"
             ClipToBounds="True">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -279,7 +282,67 @@
                     </Style>
                 </Border.Style>
             </Border>
-            <Grid Grid.Column="2" Margin="0,0,3,0">
+            <Button Grid.Column="0"
+                x:Name="DisableAllPatchersButton"
+                Margin="11,0,0,5"
+                ToolTip="Disable all groups">
+                <Button.Style>
+                    <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
+                        <Setter Property="Content">
+                            <Setter.Value>
+                                <icon:PackIconMaterial Kind="CheckboxBlankCircleOutline" />
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <icon:PackIconMaterial Foreground="{StaticResource Noggog.Brushes.Yellow.Foreground}" Kind="CheckboxBlankCircleOutline">
+                                            <icon:PackIconMaterial.Effect>
+                                                <DropShadowEffect
+                                                    BlurRadius="15"
+                                                    ShadowDepth="0"
+                                                    Color="{StaticResource Salmon}" />
+                                            </icon:PackIconMaterial.Effect>
+                                        </icon:PackIconMaterial>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button Grid.Column="1"
+                x:Name="EnableAllPatchersButton"
+                Margin="5,0,0,5"
+                ToolTip="Enable all groups">
+                <Button.Style>
+                    <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
+                        <Setter Property="Content">
+                            <Setter.Value>
+                                <icon:PackIconMaterial Kind="CheckboxMarkedCircle" />
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <icon:PackIconMaterial Foreground="{StaticResource Noggog.Brushes.Yellow.Foreground}" Kind="CheckboxMarkedCircle">
+                                            <icon:PackIconMaterial.Effect>
+                                                <DropShadowEffect
+                                                    BlurRadius="15"
+                                                    ShadowDepth="0"
+                                                    Color="{StaticResource Salmon}" />
+                                            </icon:PackIconMaterial.Effect>
+                                        </icon:PackIconMaterial>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Grid Grid.Column="3" Margin="0,0,3,2">
                 <Button
                     x:Name="GoButton"
                     HorizontalContentAlignment="Stretch"

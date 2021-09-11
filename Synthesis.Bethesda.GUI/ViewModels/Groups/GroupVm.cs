@@ -57,6 +57,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
 
         public ICommand DeleteCommand { get; }
 
+        public ICommand EnableAllPatchersCommand { get; }
+
+        public ICommand DisableAllPatchersCommand { get; }
+
         public ProfileVm ProfileVm { get; }
 
         public GroupVm(
@@ -179,6 +183,22 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                     "Confirm",
                     $"Are you sure you want to delete the entire Group {Name}, with {Patchers.Count} patchers?",
                     Delete);
+            });
+
+            EnableAllPatchersCommand = ReactiveCommand.Create(() =>
+            {
+                foreach (var patcher in Patchers.Items)
+                {
+                    patcher.IsOn = true;
+                }
+            });
+
+            DisableAllPatchersCommand = ReactiveCommand.Create(() =>
+            {
+                foreach (var patcher in Patchers.Items)
+                {
+                    patcher.IsOn = false;
+                }
             });
         }
 
