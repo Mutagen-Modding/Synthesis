@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -103,31 +104,38 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                 .StartWith(Noggog.ListExt.Empty<PatcherVm>())
                 .Select(x => x.Count)
                 .ToGuiProperty(this, nameof(NumEnabledPatchers));
-            
+
+            var onPatchers = Patchers.Connect()
+                .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
+                .RefCount();
+
             _State = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.NumEnabledPatchers),
-                    Patchers.Connect()
-                        .ObserveOnGui()
-                        .FilterOnObservable(p => Observable.CombineLatest(
-                                p.WhenAnyValue(x => x.IsOn),
-                                p.WhenAnyValue(x => x.State.RunnableState.Failed),
-                                (on, failed) => on && failed),
-                            scheduler: RxApp.MainThreadScheduler)
+                    onPatchers
+                        .FilterOnObservable(p => p.WhenAnyValue(x => x.State)
+                            .Select(x => x.RunnableState.Failed && !x.IsHaltingError))
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<PatcherVm>()),
-                    (numEnabledPatchers, failedPatchers) =>
+                    onPatchers
+                        .FilterOnObservable(p => p.WhenAnyValue(x => x.State)
+                            .Select(x => x.RunnableState.Failed && x.IsHaltingError))
+                        .QueryWhenChanged(q => q)
+                        .StartWith(Noggog.ListExt.Empty<PatcherVm>()),
+                    (numEnabledPatchers, processingPatchers, haltedPatchers) =>
                     {
                         if (numEnabledPatchers == 0)
-                            return GetResponse<ViewModel>.Fail(this, "There are no enabled patchers to run.");
-
-                        if (failedPatchers.Count > 0)
                         {
-                            var errPatcher = failedPatchers.First();
-                            var ret = new ConfigurationState<ViewModel>(errPatcher.State.RunnableState.BubbleResult<ViewModel>(errPatcher))
+                            return GetResponse<ViewModel>.Fail(this, "There are no enabled patchers to run.");
+                        }
+
+                        var failedPatcher = haltedPatchers.FirstOrDefault() ?? processingPatchers.FirstOrDefault();
+                        if (failedPatcher != null)
+                        {
+                            return new ConfigurationState<ViewModel>(
+                                failedPatcher.State.RunnableState.BubbleResult<ViewModel>(failedPatcher))
                             {
-                                IsHaltingError = errPatcher.State.IsHaltingError
+                                IsHaltingError = failedPatcher.State.IsHaltingError
                             };
-                            return ret;
                         }
 
                         return new ConfigurationState<ViewModel>(this);
