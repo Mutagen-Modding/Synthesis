@@ -10,14 +10,14 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class PatchersConfigViewBase : NoggogUserControl<ConfigurationVm> { }
+    public class MainConfigViewBase : NoggogUserControl<ConfigurationVm> { }
 
     /// <summary>
     /// Interaction logic for PatchersConfigurationView.xaml
     /// </summary>
-    public partial class PatchersConfigView : PatchersConfigViewBase
+    public partial class MainConfigView : MainConfigViewBase
     {
-        public PatchersConfigView()
+        public MainConfigView()
         {
             InitializeComponent();
             this.WhenActivated((disposable) =>
