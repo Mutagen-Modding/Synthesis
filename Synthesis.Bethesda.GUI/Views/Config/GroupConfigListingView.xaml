@@ -160,32 +160,9 @@
                 Background="Transparent"
                 FontWeight="Bold"
                 IsHitTestVisible="False" />
-            <StackPanel Grid.Column="2" Orientation="Horizontal">
-                <TextBlock x:Name="ActiveCountText" VerticalAlignment="Center">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Foreground" Value="{StaticResource PaleYellowBrush}" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding NumEnabledPatchers}" Value="0">
-                                    <Setter Property="Foreground" Value="Gray" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-                <TextBlock
-                    x:Name="OutOfSlashText"
-                    Margin="3,0"
-                    VerticalAlignment="Center"
-                    Foreground="Gray"
-                    Text="/" />
-                <TextBlock
-                    x:Name="TotalCountText"
-                    VerticalAlignment="Center"
-                    Foreground="Gray" />
-            </StackPanel>
             <ToggleButton Grid.Column="3"
                 x:Name="ExpandStateButton"
+                Margin="0,0,4,0"
                 VerticalAlignment="Center"
                 Background="Transparent"
                 Focusable="False">
@@ -342,7 +319,34 @@
                     </Style>
                 </Button.Style>
             </Button>
-            <Grid Grid.Column="3" Margin="0,0,3,2">
+            <StackPanel Grid.Column="0" Grid.ColumnSpan="2"
+                x:Name="PatcherCountPanel"
+                Margin="16,0,0,0"
+                Orientation="Horizontal">
+                <TextBlock x:Name="ActiveCountText" VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{StaticResource PaleYellowBrush}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding NumEnabledPatchers}" Value="0">
+                                    <Setter Property="Foreground" Value="Gray" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <TextBlock
+                    x:Name="OutOfSlashText"
+                    Margin="3,0"
+                    VerticalAlignment="Center"
+                    Foreground="Gray"
+                    Text="/" />
+                <TextBlock
+                    x:Name="TotalCountText"
+                    VerticalAlignment="Center"
+                    Foreground="Gray" />
+            </StackPanel>
+            <Grid Grid.Column="3" Margin="0,0,5,2">
                 <Button
                     x:Name="GoButton"
                     HorizontalContentAlignment="Stretch"

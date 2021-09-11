@@ -109,6 +109,11 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.DisableAllPatchersCommand)
                     .BindTo(this, x => x.DisableAllPatchersButton.Command)
                     .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.Expanded)
+                    .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
+                    .BindTo(this, x => x.PatcherCountPanel.Visibility)
+                    .DisposeWith(disposable);
             });
         }
     }
