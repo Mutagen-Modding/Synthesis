@@ -14,7 +14,7 @@
     FocusVisualStyle="{x:Null}"
     ToolTipService.HasDropShadow="True"
     ToolTipService.InitialShowDelay="0"
-    ToolTipService.Placement="Right"
+    ToolTipService.Placement="Left"
     ToolTipService.ShowDuration="120000"
     ToolTipService.VerticalOffset="2"
     mc:Ignorable="d">
@@ -125,48 +125,13 @@
             FontSize="12"
             FontWeight="SemiBold"
             TextTrimming="CharacterEllipsis" />
-        <icon:PackIconMaterial Grid.Column="2"
+        <local:StatusCircle Grid.Column="2"
             x:Name="BlockingIssueDisplayCircle"
             Width="7"
             Height="7"
             Margin="0,2,4,0"
             VerticalAlignment="Center"
-            Kind="Circle">
-            <icon:PackIconMaterial.Style>
-                <Style TargetType="icon:PackIconMaterial">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                    <Setter Property="Foreground" Value="Red" />
-                    <Style.Triggers>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding State.RunnableState.Succeeded}" Value="False" />
-                                <Condition Binding="{Binding State.IsHaltingError}" Value="False" />
-                            </MultiDataTrigger.Conditions>
-                            <MultiDataTrigger.Setters>
-                                <Setter Property="Foreground" Value="{StaticResource LightPurpleBrush}" />
-                            </MultiDataTrigger.Setters>
-                        </MultiDataTrigger>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding State.RunnableState.Succeeded}" Value="False" />
-                                <Condition Binding="{Binding State.IsHaltingError}" Value="True" />
-                            </MultiDataTrigger.Conditions>
-                            <MultiDataTrigger.Setters>
-                                <Setter Property="Foreground" Value="{StaticResource Noggog.Brushes.Red.Foreground}" />
-                                <Setter Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect
-                                            BlurRadius="15"
-                                            ShadowDepth="0"
-                                            Color="Salmon" />
-                                    </Setter.Value>
-                                </Setter>
-                            </MultiDataTrigger.Setters>
-                        </MultiDataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </icon:PackIconMaterial.Style>
-        </icon:PackIconMaterial>
+            DataContext="{Binding State}" />
         <ContentControl Grid.Column="3"
             x:Name="PatcherTypeIcon"
             Margin="0,0,6,0"
@@ -187,7 +152,7 @@
         </ContentControl>
         <local:UpdateButtonControl Grid.Column="3"
             x:Name="UpdateButton"
-            Margin="0,0,4,0"
+            Margin="0,0,5,0"
             ToolTip="Update available for patcher.  Either:&#x0a; - Mutagen and Synthesis versions used&#x0a; - Patcher code"
             Visibility="Collapsed" />
     </Grid>

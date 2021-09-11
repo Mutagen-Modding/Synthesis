@@ -36,8 +36,9 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" Grid.ColumnSpan="4"
+            <Border Grid.Column="0" Grid.ColumnSpan="5"
                 Margin="0,0,-15,-15"
                 CornerRadius="15">
                 <Border.Style>
@@ -136,7 +137,7 @@
                     </Style>
                 </Border.Style>
             </Border>
-            <Grid Grid.Column="0" Grid.ColumnSpan="4"
+            <Grid Grid.Column="0" Grid.ColumnSpan="5"
                 x:Name="InnerTopLines">
                 <Rectangle
                     Height="1"
@@ -160,7 +161,15 @@
                 Background="Transparent"
                 FontWeight="Bold"
                 IsHitTestVisible="False" />
-            <ToggleButton Grid.Column="3"
+            <icon:PackIconMaterial Grid.Column="3"
+                x:Name="ProcessingCircle"
+                Width="7"
+                Height="7"
+                Margin="0,0,2,0"
+                VerticalAlignment="Center"
+                Foreground="{StaticResource LightPurpleBrush}"
+                Kind="Circle" />
+            <ToggleButton Grid.Column="4"
                 x:Name="ExpandStateButton"
                 Margin="0,0,4,0"
                 VerticalAlignment="Center"
@@ -366,21 +375,6 @@
                         VerticalAlignment="Center"
                         Kind="AlertCircle" />
                 </Button>
-                <mahapps:ProgressRing
-                    x:Name="ProcessingRingAnimation"
-                    Width="15"
-                    Height="15"
-                    HorizontalAlignment="Center"
-                    Foreground="{StaticResource LightPurpleBrush}"
-                    Visibility="Collapsed">
-                    <mahapps:ProgressRing.Effect>
-                        <DropShadowEffect
-                            BlurRadius="5"
-                            Opacity="0.3"
-                            ShadowDepth="0"
-                            Color="{StaticResource PaleBlue}" />
-                    </mahapps:ProgressRing.Effect>
-                </mahapps:ProgressRing>
             </Grid>
         </Grid>
     </Grid>

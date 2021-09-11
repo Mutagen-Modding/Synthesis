@@ -72,17 +72,14 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.RunPatchersCommand)
                     .BindTo(this, x => x.GoButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.RunPatchersCommand.CanExecute)
-                    .Switch()
-                    .Select(can => can ? Visibility.Visible : Visibility.Collapsed)
+                this.WhenAnyFallback(x => x.ViewModel!.State, new ConfigurationState<ViewModel>(null!))
+                    .Select(err => !err.IsHaltingError ? Visibility.Visible : Visibility.Collapsed)
                     .BindTo(this, x => x.GoButton.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.RunPatchersCommand.CanExecute)
-                    .Switch()
-                    .CombineLatest(this.WhenAnyFallback(x => x.ViewModel!.State, new ConfigurationState<ViewModel>(null!)),
-                        (can, overall) => !can && !overall.IsHaltingError)
-                    .Select(show => show ? Visibility.Visible : Visibility.Collapsed)
-                    .BindTo(this, x => x.ProcessingRingAnimation.Visibility)
+
+                this.WhenAnyFallback(x => x.ViewModel!.PatchersProcessing)
+                    .Select(processing => processing ? Visibility.Visible : Visibility.Collapsed)
+                    .BindTo(this, x => x.ProcessingCircle.Visibility)
                     .DisposeWith(disposable);
 
                 // ContextMenu

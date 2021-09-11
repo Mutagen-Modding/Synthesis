@@ -4,7 +4,6 @@ using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Windows;
 using System.Reactive.Linq;
-using System.Windows.Input;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
@@ -46,22 +45,6 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindTo(this, x => x.InitialConfigurationDimmer.Visibility)
                     .DisposeWith(disposable);
 
-                // Set up go button
-                this.WhenAnyValue(x => x.ViewModel!.RunPatchers)
-                    .BindTo(this, x => x.GoButton.Command)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.RunPatchers.CanExecute)
-                    .Switch()
-                    .Select(can => can ? Visibility.Visible : Visibility.Collapsed)
-                    .BindTo(this, x => x.GoButton.Visibility)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.RunPatchers.CanExecute)
-                    .Switch()
-                    .CombineLatest(this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.BlockingError, GetResponse<ViewModel>.Succeed(null!)),
-                        (can, overall) => !can && overall.Succeeded)
-                    .Select(show => show ? Visibility.Visible : Visibility.Collapsed)
-                    .BindTo(this, x => x.ProcessingRingAnimation.Visibility)
-                    .DisposeWith(disposable);
 
                 // Set up large overall error button
                 var overallErr = this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.BlockingError, fallback: GetResponse<ViewModel>.Succeed(null!))
@@ -80,6 +63,23 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.GoToErrorCommand)
                     .BindTo(this, x => x.OverallErrorButton.Command)
+                    .DisposeWith(disposable);
+
+                // Set up go button
+                this.WhenAnyValue(x => x.ViewModel!.RunPatchers)
+                    .BindTo(this, x => x.GoButton.Command)
+                    .DisposeWith(disposable);
+                overallErr
+                    .Select(err => err.Succeeded ? Visibility.Visible : Visibility.Collapsed)
+                    .BindTo(this, x => x.GoButton.Visibility)
+                    .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.RunPatchers.CanExecute)
+                    .Switch()
+                    .CombineLatest(this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.BlockingError, GetResponse<ViewModel>.Succeed(null!)),
+                        (can, overall) => !can && overall.Succeeded)
+                    .Select(show => show ? Visibility.Visible : Visibility.Collapsed)
+                    .BindTo(this, x => x.ProcessingCircle.Visibility)
                     .DisposeWith(disposable);
 
                 Noggog.WPF.Drag.ListBoxDragDrop<GroupVm>(this.GroupsList, () => this.ViewModel?.SelectedProfile?.Groups)

@@ -64,6 +64,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
 
         public ProfileVm ProfileVm { get; }
 
+        private readonly ObservableAsPropertyHelper<bool> _PatchersProcessing;
+        public bool PatchersProcessing => _PatchersProcessing.Value;
+
         public GroupVm(
             ProfileVm profileVm,
             OverallErrorVm overallErrorVm,
@@ -109,13 +112,21 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                 .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
                 .RefCount();
 
+            var processingPatchers = onPatchers
+                .FilterOnObservable(p => p.WhenAnyValue(x => x.State)
+                    .Select(x => x.RunnableState.Failed && !x.IsHaltingError))
+                .QueryWhenChanged(q => q)
+                .StartWith(Noggog.ListExt.Empty<PatcherVm>())
+                .Replay(1)
+                .RefCount();
+
+            _PatchersProcessing = processingPatchers
+                .Select(x => x.Count > 0)
+                .ToGuiProperty(this, nameof(PatchersProcessing), false);
+
             _State = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.NumEnabledPatchers),
-                    onPatchers
-                        .FilterOnObservable(p => p.WhenAnyValue(x => x.State)
-                            .Select(x => x.RunnableState.Failed && !x.IsHaltingError))
-                        .QueryWhenChanged(q => q)
-                        .StartWith(Noggog.ListExt.Empty<PatcherVm>()),
+                    processingPatchers,
                     onPatchers
                         .FilterOnObservable(p => p.WhenAnyValue(x => x.State)
                             .Select(x => x.RunnableState.Failed && x.IsHaltingError))

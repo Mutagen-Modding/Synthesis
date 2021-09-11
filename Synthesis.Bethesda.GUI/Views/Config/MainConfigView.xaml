@@ -240,29 +240,22 @@
                 </StackPanel>
             </Button>
             <Grid Grid.Row="2"
-                x:Name="GoAreaOverlay"
+                x:Name="ProcessingCircle"
                 Margin="4,6,0,6">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="35" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="15" />
                 </Grid.ColumnDefinitions>
-                <mahapps:ProgressRing Grid.Column="0" Grid.ColumnSpan="3"
-                    x:Name="ProcessingRingAnimation"
-                    Width="25"
-                    Height="25"
-                    Margin="8,0"
-                    HorizontalAlignment="Center"
+                <icon:PackIconMaterial Grid.Column="1"
+                    Width="7"
+                    Height="7"
+                    VerticalAlignment="Center"
                     Foreground="{StaticResource LightPurpleBrush}"
-                    Visibility="Collapsed">
-                    <mahapps:ProgressRing.Effect>
-                        <DropShadowEffect
-                            BlurRadius="5"
-                            Opacity="0.3"
-                            ShadowDepth="0"
-                            Color="{StaticResource PaleBlue}" />
-                    </mahapps:ProgressRing.Effect>
-                </mahapps:ProgressRing>
+                    Kind="Circle"
+                    ToolTip="Preparing"
+                    ToolTipService.InitialShowDelay="0" />
             </Grid>
         </Grid>
         <StackPanel Grid.Row="1" Grid.Column="0"

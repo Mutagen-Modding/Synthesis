@@ -35,11 +35,11 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindTo(this, x => x.NameBlock.Text)
                     .DisposeWith(disposable);
 
-                // Set up tooltip display
-                this.WhenAnyFallback(x => x.ViewModel!.State.RunnableState.Succeeded)
-                    .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
-                    .BindTo(this, x => x.BlockingIssueDisplayCircle.Visibility)
+                this.WhenAnyValue(x => x.ViewModel!.State)
+                    .BindTo(this, x => x.BlockingIssueDisplayCircle.DataContext)
                     .DisposeWith(disposable);
+
+                // Set up tooltip display
                 this.WhenAnyFallback(x => x.ViewModel!.State.RunnableState.Reason)
                     .Select(s =>
                     {
