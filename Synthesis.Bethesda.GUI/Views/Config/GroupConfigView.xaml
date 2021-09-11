@@ -14,6 +14,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -55,5 +56,28 @@
                 Kind="FileTree"
                 ToolTip="Synthesis Patcher Group" />
         </Grid>
+        <TextBlock Grid.Row="1"
+            x:Name="StatusBlock"
+            Margin="13,-7,0,0">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Foreground" Value="{StaticResource Noggog.Brushes.Green.Foreground}" />
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding State.RunnableState.Failed}" Value="True" />
+                                <Condition Binding="{Binding State.IsHaltingError}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Foreground" Value="{StaticResource PurpleForegroundBrush}" />
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <DataTrigger Binding="{Binding State.IsHaltingError}" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource SalmonBrush}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
     </Grid>
 </local:GroupConfigViewBase>

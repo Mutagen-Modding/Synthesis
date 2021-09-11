@@ -1,3 +1,4 @@
+using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Noggog.WPF;
@@ -33,6 +34,17 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 this.WhenAnyValue(x => x.ViewModel!.DeleteCommand)
                     .BindTo(this, x => x.DeleteButton.Command)
+                    .DisposeWith(disposable);
+
+                this.WhenAnyFallback(x => x.ViewModel!.State)
+                    .Throttle(TimeSpan.FromMilliseconds(50), RxApp.MainThreadScheduler)
+                    .Select(state =>
+                    {
+                        if (state.IsHaltingError) return "Blocking Error";
+                        if (state.RunnableState.Failed) return "Preparing";
+                        return "Ready";
+                    })
+                    .BindTo(this, x => x.StatusBlock.Text)
                     .DisposeWith(disposable);
             });
         }
