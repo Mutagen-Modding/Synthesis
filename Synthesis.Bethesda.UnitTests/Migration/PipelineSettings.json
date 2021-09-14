@@ -1,7 +1,7 @@
 ﻿{
   "Profiles": [
     {
-      "Nickname": "zerer",
+      "Nickname": "Profile1",
       "ID": "tni5r3lh.kvj",
       "TargetRelease": "SkyrimSE",
       "Patchers": [
@@ -24,7 +24,7 @@
           "ManualSynthesisVersion": "",
           "LastSuccessfulRun": null,
           "On": false,
-          "Nickname": ""
+          "Nickname": "Patcher1"
         },
         {
           "$type": "Synthesis.Bethesda.Execution.Settings.GithubPatcherSettings, Synthesis.Bethesda.Execution",
@@ -51,7 +51,44 @@
             "SynthesisVersion": "0.19.2"
           },
           "On": true,
-          "Nickname": ""
+          "Nickname": "Patcher2"
+        }
+      ],
+      "MutagenVersioning": "Manual",
+      "MutagenManualVersion": "0.30.6",
+      "SynthesisVersioning": "Manual",
+      "SynthesisManualVersion": "0.19.2",
+      "DataPathOverride": null,
+      "ConsiderPrereleaseNugets": false,
+      "LockToCurrentVersioning": false,
+      "Persistence": "Text",
+      "IgnoreMissingMods": false
+    },
+    {
+      "Nickname": "Profile2",
+      "ID": "tniz313.kvj",
+      "TargetRelease": "SkyrimSE",
+      "Patchers": [
+        {
+          "$type": "Synthesis.Bethesda.Execution.Settings.GithubPatcherSettings, Synthesis.Bethesda.Execution",
+          "ID": "qd5fd1i2.aef",
+          "RemoteRepoPath": "https://github.com/Piranha91/NPC-Plugin-Chooser",
+          "SelectedProjectSubpath": "NPC-Plugin-Chooser\\NPC-Plugin-Chooser.csproj",
+          "PatcherVersioning": "Branch",
+          "TargetTag": null,
+          "TargetCommit": "fbffcec825b10407b48a319abdead2a189122bad",
+          "TargetBranch": "GameLoc",
+          "LatestTag": false,
+          "FollowDefaultBranch": false,
+          "AutoUpdateToBranchTip": false,
+          "OverrideNugetVersioning": false,
+          "MutagenVersionType": "Match",
+          "ManualMutagenVersion": "",
+          "SynthesisVersionType": "Match",
+          "ManualSynthesisVersion": "",
+          "LastSuccessfulRun": null,
+          "On": false,
+          "Nickname": "Patcher3"
         }
       ],
       "MutagenVersioning": "Manual",

@@ -13,13 +13,15 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.TopLevel
         [Theory, SynthAutoData]
         public void CombinesExtraDataWithNameProvider(
             DirectoryPath extraData,
+            string profileName,
             string name,
             PatcherExtraDataPathProvider sut)
         {
             sut.ExtraDataPathProvider.Path.Returns(extraData);
             sut.NameProvider.Name.Returns(name);
+            sut.ProfileNameProvider.Name.Returns(profileName);
             sut.Path.Should().Be(
-                new DirectoryPath(Path.Combine(extraData, name)));
+                new DirectoryPath(Path.Combine(extraData, profileName, name)));
         }
     }
 }
