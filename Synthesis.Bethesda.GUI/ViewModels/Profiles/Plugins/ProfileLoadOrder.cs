@@ -20,7 +20,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
         ErrorResponse State { get; }
     }
 
-    public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, ILoadOrderListingsProvider
+    public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, IProfileLoadOrderProvider
     {
         public IObservableList<ReadOnlyModListingVM> LoadOrder { get; }
 
@@ -29,6 +29,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 
         public ProfileLoadOrder(
             ILogger logger,
+            ILiveLoadOrderProvider liveLoadOrderProvider,
             IProfileIdentifier ident,
             IProfileDataFolderVm dataFolder)
         {
@@ -40,8 +41,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                     {
                         return (Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
                     }
-                    logger.Error($"Getting live load order for {ident.Release} -> {x.Value}");
-                    var liveLo = Mutagen.Bethesda.Plugins.Order.LoadOrder.GetLiveLoadOrder(ident.Release, x.Value, out var errors)
+                    logger.Error("Getting live load order for {Release} -> {DataDirectory}", ident.Release, x.Value);
+                    var liveLo = liveLoadOrderProvider.Get(out var errors)
                         .Transform(listing => new ReadOnlyModListingVM(listing, x.Value))
                         .DisposeMany();
                     return (Results: liveLo, State: errors);
@@ -56,11 +57,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                 {
                     if (loErr.Succeeded)
                     {
-                        logger.Information($"Load order location successful");
+                        logger.Information("Load order location successful");
                     }
                     else
                     {
-                        logger.Information($"Load order location error: {loErr.Reason}");
+                        logger.Information("Load order location error: {Reason}", loErr.Reason);
                     }
                 })
                 .DisposeWith(this);

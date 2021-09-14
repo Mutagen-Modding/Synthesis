@@ -2,8 +2,8 @@
 using System.Linq;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
-using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog;
+using Synthesis.Bethesda.Execution.Profile;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner
 {
@@ -14,10 +14,10 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 
     public class LoadOrderForRunProvider : ILoadOrderForRunProvider
     {
-        public ILoadOrderListingsProvider LoadOrderListingsProvider { get; }
+        public IProfileLoadOrderProvider LoadOrderListingsProvider { get; }
 
         public LoadOrderForRunProvider(
-            ILoadOrderListingsProvider loadOrderListingsProvider)
+            IProfileLoadOrderProvider loadOrderListingsProvider)
         {
             LoadOrderListingsProvider = loadOrderListingsProvider;
         }

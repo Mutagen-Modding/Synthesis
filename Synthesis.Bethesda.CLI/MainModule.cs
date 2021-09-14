@@ -2,8 +2,10 @@
 using System.Threading;
 using Autofac;
 using Mutagen.Bethesda.Autofac;
+using Noggog.Autofac;
 using Noggog.Autofac.Modules;
 using Serilog;
+using Synthesis.Bethesda.CLI.Services;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Reporters;
 
@@ -29,6 +31,11 @@ namespace Synthesis.Bethesda.CLI
             
             builder.Register(_ => CancellationToken.None).AsSelf();
             builder.RegisterInstance(new ConsoleReporter()).As<IRunReporter>();
+            
+            builder.RegisterAssemblyTypes(typeof(ProfileLoadOrderProvider).Assembly)
+                .InNamespacesOf(
+                    typeof(ProfileLoadOrderProvider))
+                .AsMatchingInterface();
             
             // Settings
             builder.RegisterInstance(Settings)
