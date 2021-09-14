@@ -10,7 +10,7 @@ using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
 {
     public class NugetConfigErrorVm : ViewModel, IEnvironmentErrorVm
     {

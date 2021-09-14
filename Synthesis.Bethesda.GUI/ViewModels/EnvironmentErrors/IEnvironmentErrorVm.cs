@@ -1,4 +1,4 @@
-﻿namespace Synthesis.Bethesda.GUI
+﻿namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
 {
     public interface IEnvironmentErrorVm
     {

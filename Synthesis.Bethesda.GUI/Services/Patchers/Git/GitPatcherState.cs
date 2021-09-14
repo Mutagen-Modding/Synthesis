@@ -9,7 +9,7 @@ using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.DotNet.Dto;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.GUI.ViewModels.Top;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {

@@ -2,6 +2,7 @@
 using System.Reactive.Linq;
 using Noggog.WPF;
 using ReactiveUI;
+using Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
 
 namespace Synthesis.Bethesda.GUI.Views
 {

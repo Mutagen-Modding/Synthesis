@@ -1,9 +1,6 @@
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Reactive.Linq;
 using System.Windows;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
@@ -24,7 +21,7 @@ namespace Synthesis.Bethesda.GUI.Views
             {
                 Observable.CombineLatest(
                         this.WhenAnyValue(x => x.ViewModel!.ActivePanel),
-                        this.WhenAnyValue(x => x.ViewModel!.EnvironmentErrors.ActiveError),
+                        this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.EnvironmentErrors.ActiveError),
                         (active, err) => ((object?)err) ?? active)
                     .BindTo(this, x => x.ContentPane.Content)
                     .DisposeWith(disposable);

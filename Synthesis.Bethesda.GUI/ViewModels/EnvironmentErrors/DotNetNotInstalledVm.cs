@@ -1,14 +1,12 @@
+using System.Reactive.Linq;
+using System.Windows.Input;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
-using Synthesis.Bethesda.Execution;
-using System.Reactive.Linq;
-using System.Windows.Input;
 using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.Services.Main;
 
-namespace Synthesis.Bethesda.GUI
+namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
 {
     public class DotNetNotInstalledVm : ViewModel, IEnvironmentErrorVm
     {

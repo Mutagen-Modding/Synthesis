@@ -99,6 +99,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         [Reactive]
         public bool IgnoreMissingMods { get; set; }
 
+        public IEnvironmentErrorsVm EnvironmentErrors { get; }
+
         public ProfileVm(
             ILifetimeScope scope,
             IPatcherInitializationVm initVm,
@@ -113,6 +115,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             ISelectedProfileControllerVm selProfile,
             IProfileExporter exporter,
             IProfileGroupsList groupsList,
+            IEnvironmentErrorsVm environmentErrors,
             OverallErrorVm overallErrorVm,
             StartRun startRun,
             ILogger logger)
@@ -134,6 +137,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
             ProfileDirectory = dirs.ProfileDirectory;
             WorkingDirectory = dirs.WorkingDirectory;
+            
+            EnvironmentErrors = environmentErrors;
 
             _DataFolder = dataFolder.WhenAnyValue(x => x.Path)
                 .ToGuiProperty<DirectoryPath>(this, nameof(DataFolder), string.Empty);

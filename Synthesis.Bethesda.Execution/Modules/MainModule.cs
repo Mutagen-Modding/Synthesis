@@ -2,6 +2,7 @@
 using Noggog.Autofac;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
+using Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Running;
@@ -31,6 +32,7 @@ namespace Synthesis.Bethesda.Execution.Modules
                     typeof(IConsiderPrereleasePreference),
                     typeof(IPatcherNameSanitizer),
                     typeof(ILinesToReflectionConfigsParser),
+                    typeof(INugetErrorSolution),
                     typeof(IRunProfileProvider),
                     typeof(IProjectRunProcessStartInfoProvider),
                     typeof(IBuild))

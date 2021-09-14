@@ -3,8 +3,10 @@ using System.Linq;
 using System.Reactive.Linq;
 using Noggog.WPF;
 using ReactiveUI;
+using Serilog;
+using Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Top
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
     public interface IEnvironmentErrorsVm
     {
@@ -20,9 +22,16 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         private readonly ObservableAsPropertyHelper<IEnvironmentErrorVm?> _ActiveError;
         public IEnvironmentErrorVm? ActiveError => _ActiveError.Value;
 
-        public EnvironmentErrorsVm(IEnumerable<IEnvironmentErrorVm> envErrors)
+        public EnvironmentErrorsVm(
+            ILogger logger,
+            IEnumerable<IEnvironmentErrorVm> envErrors)
         {
             var envErrorsArr = envErrors.ToArray();
+
+            if (envErrorsArr.Length == 0)
+            {
+                logger.Warning("No environment errors registered");
+            }
             
             _ActiveError =
                 Observable.CombineLatest(

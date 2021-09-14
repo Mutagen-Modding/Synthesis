@@ -57,8 +57,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         private readonly ObservableAsPropertyHelper<bool> _InModal;
         public bool InModal => _InModal.Value;
 
-        public IEnvironmentErrorsVm EnvironmentErrors { get; }
-
         private readonly ObservableAsPropertyHelper<ProfileVm?> _SelectedProfile;
         public ProfileVm? SelectedProfile => _SelectedProfile.Value;
 
@@ -68,7 +66,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             IConfirmationPanelControllerVm confirmationControllerVm,
             IProvideCurrentVersions currentVersions,
             ISelectedProfileControllerVm selectedProfile,
-            IEnvironmentErrorsVm environmentErrors,
             ISaveSignal saveSignal,
             ISettingsSingleton settingsSingleton,
             INewestLibraryVersions newestLibVersions,
@@ -151,8 +148,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _InModal = this.WhenAnyValue(x => x.ActiveConfirmation)
                 .Select(x => x != null)
                 .ToGuiProperty(this, nameof(InModal));
-            
-            EnvironmentErrors = environmentErrors;
 
             saveSignal.Saving
                 .Subscribe((x) => Save(x.Gui, x.Pipe))

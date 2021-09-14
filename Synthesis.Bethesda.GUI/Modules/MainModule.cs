@@ -22,6 +22,7 @@ using Synthesis.Bethesda.GUI.Services.Profile.Running;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Services.Versioning;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
@@ -122,6 +123,12 @@ namespace Synthesis.Bethesda.GUI.Modules
             builder.RegisterType<RxReporter>()
                 .InstancePerMatchingLifetimeScope(LifetimeScopes.RunNickname)
                 .AsImplementedInterfaces();
+            
+            builder.RegisterAssemblyTypes(typeof(IEnvironmentErrorVm).Assembly)
+                .InNamespacesOf(
+                    typeof(IEnvironmentErrorVm))
+                .AsImplementedInterfaces()
+                .SingleInstance();
 
             builder.RegisterModule<Synthesis.Bethesda.Execution.Modules.ProfileModule>();
         }
