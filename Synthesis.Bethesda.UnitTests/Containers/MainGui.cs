@@ -11,7 +11,6 @@ using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.Services.Startup;
-using Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.Views;
@@ -44,15 +43,6 @@ namespace Synthesis.Bethesda.UnitTests.Containers
                 typeof(IStartup), 
                 typeof(ProfileVm), 
                 typeof(RunVm));
-        }
-
-        [Fact]
-        public void EnvironmentVmsRegistered()
-        {
-            var builder = GetBuilder();
-            var cont = builder.Build();
-            var errs = cont.Resolve<IEnumerable<IEnvironmentErrorVm>>();
-            errs.Should().NotBeEmpty();
         }
     }
 }

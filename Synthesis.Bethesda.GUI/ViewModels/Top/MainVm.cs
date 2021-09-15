@@ -63,6 +63,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         public MainVm(
             ActiveRunVm activeRunVm,
             ConfigurationVm configuration,
+            OpenProfileSettings openProfileSettings,
             IConfirmationPanelControllerVm confirmationControllerVm,
             IProvideCurrentVersions currentVersions,
             ISelectedProfileControllerVm selectedProfile,
@@ -105,15 +106,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 .DistinctUntilChanged()
                 .ToGuiProperty(this, nameof(Hot));
 
-            OpenProfilesPageCommand = ReactiveCommand.Create(() =>
-            {
-                activePanelControllerVm.ActivePanel = new ProfilesDisplayVm(Configuration, profileFactory, activePanelControllerVm, ActivePanel);
-            },
+            OpenProfilesPageCommand = openProfileSettings.OpenCommand;
+            
             canExecute: Observable.CombineLatest(
                     activeRunVm.WhenAnyFallback(x => x.CurrentRun!.Running, fallback: false),
                     this.WhenAnyValue(x => x.ActivePanel)
                         .Select(x => x is ProfilesDisplayVm),
-                    (running, isProfile) => !running && !isProfile));
+                    (running, isProfile) => !running && !isProfile);
 
             Task.Run(() => Mutagen.Bethesda.WarmupAll.Init()).FireAndForget();
 

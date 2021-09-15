@@ -32,10 +32,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         public ProfilesDisplayVm(
             ConfigurationVm parent,
             IProfileFactory profileFactory, 
-            IActivePanelControllerVm activePanelController,
-            ViewModel? previousPage)
+            IActivePanelControllerVm activePanelController)
         {
-            _previous = previousPage;
+            _previous = activePanelController.ActivePanel;
             Config = parent;
             GoBackCommand = ReactiveCommand.Create(() =>
             {

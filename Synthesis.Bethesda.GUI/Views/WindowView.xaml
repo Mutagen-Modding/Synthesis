@@ -37,6 +37,9 @@
                 <DataTemplate DataType="{x:Type environmentErrors:NugetConfigErrorVm}">
                     <local:NugetConfigIssueView />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type environmentErrors:AllModsMissingErrorVm}">
+                    <local:AllModsMissingView />
+                </DataTemplate>
             </ContentPresenter.Resources>
         </ContentPresenter>
         <local:OverlayView x:Name="ConfirmationOverlay" Visibility="Collapsed" />

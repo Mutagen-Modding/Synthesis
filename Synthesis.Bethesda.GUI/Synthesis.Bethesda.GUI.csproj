@@ -96,6 +96,10 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Page</BuildAction>
     </Page>
+    <Page Update="Views\Errors\AllModsMissingView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
   </ItemGroup>
   
   <ItemGroup>
@@ -126,6 +130,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\Errors\MissingPluginsFileView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Views\Errors\AllModsMissingView.xaml.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
