@@ -112,6 +112,11 @@ namespace Synthesis.Bethesda.GUI.Modules
                 .AsImplementedInterfaces()
                 .AsSelf();
             
+            builder.RegisterAssemblyTypes(typeof(IEnvironmentErrorVm).Assembly)
+                .InNamespacesOf(
+                    typeof(IEnvironmentErrorVm))
+                .AsImplementedInterfaces();
+            
             builder.RegisterAssemblyTypes(typeof(ProfileVm).Assembly)
                 .InNamespacesOf(
                     typeof(RunVm),
@@ -124,11 +129,6 @@ namespace Synthesis.Bethesda.GUI.Modules
                 .InstancePerMatchingLifetimeScope(LifetimeScopes.RunNickname)
                 .AsImplementedInterfaces();
             
-            builder.RegisterAssemblyTypes(typeof(IEnvironmentErrorVm).Assembly)
-                .InNamespacesOf(
-                    typeof(IEnvironmentErrorVm))
-                .AsImplementedInterfaces()
-                .SingleInstance();
 
             builder.RegisterModule<Synthesis.Bethesda.Execution.Modules.ProfileModule>();
         }

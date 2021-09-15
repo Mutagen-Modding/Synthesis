@@ -30,7 +30,7 @@
                 x:Name="AttemptFixButton"
                 Margin="20,20"
                 HorizontalAlignment="Left"
-                ToolTip="Will attempt to "
+                ToolTip="Will attempt to fix the error"
                 FontSize="24">
             Attempt Fix
         </Button>

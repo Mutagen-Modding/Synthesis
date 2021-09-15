@@ -46,9 +46,9 @@
     <PackageReference Include="Loqui.Generation" Version="2.27.0.1-dev" />
     <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.31.1.1-dev" />
     <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.31.1.1-dev" />
-    <PackageReference Include="Noggog.Autofac" Version="2.28.0" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.28.0" />
-    <PackageReference Include="Noggog.WPF" Version="2.28.0" />
+    <PackageReference Include="Noggog.Autofac" Version="2.28.0.1-dev" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.28.0.1-dev" />
+    <PackageReference Include="Noggog.WPF" Version="2.28.0.1-dev" />
     <PackageReference Include="NuGetizer" Version="0.7.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -92,6 +92,10 @@
       <BuildAction>Page</BuildAction>
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\Errors\MissingPluginsFileView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
   </ItemGroup>
   
   <ItemGroup>
@@ -120,6 +124,11 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Errors\MissingPluginsFileView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
     </Compile>
   </ItemGroup>
 

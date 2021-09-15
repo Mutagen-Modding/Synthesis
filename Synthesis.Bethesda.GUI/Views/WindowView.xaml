@@ -31,6 +31,9 @@
                 <DataTemplate DataType="{x:Type environmentErrors:DotNetNotInstalledVm}">
                     <local:NoDotNetSdkInstalledView />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type environmentErrors:PluginsTxtMissingVm}">
+                    <local:MissingPluginsFileView />
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type environmentErrors:NugetConfigErrorVm}">
                     <local:NugetConfigIssueView />
                 </DataTemplate>
