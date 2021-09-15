@@ -11,5 +11,6 @@
     <Grid>
         <local:MainConfigView x:Name="Patchers" />
         <local:InitializationView x:Name="Initialization" Visibility="Collapsed" />
+        <local:EnvironmentErrorsView x:Name="EnvironmentErrors" Visibility="Collapsed" />
     </Grid>
 </local:ConfigurationViewBase>

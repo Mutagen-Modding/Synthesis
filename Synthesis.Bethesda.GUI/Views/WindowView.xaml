@@ -5,11 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     xmlns:top="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Top"
     xmlns:profiles="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles"
     xmlns:running="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
-    xmlns:environmentErrors="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -27,18 +25,6 @@
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type profiles:ProfilesDisplayVm}">
                     <local:ProfilesView />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type environmentErrors:DotNetNotInstalledVm}">
-                    <local:NoDotNetSdkInstalledView />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type environmentErrors:PluginsTxtMissingVm}">
-                    <local:MissingPluginsFileView />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type environmentErrors:NugetConfigErrorVm}">
-                    <local:NugetConfigIssueView />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type environmentErrors:AllModsMissingErrorVm}">
-                    <local:AllModsMissingView />
                 </DataTemplate>
             </ContentPresenter.Resources>
         </ContentPresenter>
