@@ -7,6 +7,7 @@ using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using ReactiveUI;
 using Serilog;
+using Synthesis.Bethesda.GUI.Logging;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
@@ -27,6 +28,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
         private readonly Lazy<MainVm> _mainVm;
         private readonly IMainWindow _window;
         private readonly IStartupTracker _tracker;
+        private readonly LogCleaner _logCleaner;
         private readonly IShutdown _shutdown;
 
         public Startup(
@@ -36,6 +38,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             Lazy<MainVm> mainVm,
             IMainWindow window,
             IStartupTracker tracker,
+            LogCleaner logCleaner,
             IShutdown shutdown)
         {
             _logger = logger;
@@ -44,6 +47,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             _mainVm = mainVm;
             _window = window;
             _tracker = tracker;
+            _logCleaner = logCleaner;
             _shutdown = shutdown;
         }
         
@@ -74,6 +78,10 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
                             Task.Run(() =>
                             {
                                 _settings.Value.GetType();
+                            }),
+                            Task.Run(() =>
+                            {
+                                _logCleaner.Clean();
                             })).ConfigureAwait(false);
                     })
                     .ObserveOn(RxApp.MainThreadScheduler)

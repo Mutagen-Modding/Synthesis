@@ -11,6 +11,8 @@ namespace Synthesis.Bethesda.GUI.Logging
         public static readonly ILogger Logger;
         public static readonly DateTime StartTime;
         public const string OverviewLogName = "--- Overview.txt";
+        public const string LogFolder = "logs";
+        public const string DateFormat = "MM-dd-yyyy";
 
         static Log()
         {
@@ -31,7 +33,7 @@ namespace Synthesis.Bethesda.GUI.Logging
         public static LoggerConfiguration WriteToFile(this LoggerConfiguration conf, params string[] extraIdentifiers)
         {
             var prefix = Path.Combine(
-                "logs",
+                LogFolder,
                 $"{StartTime:MM-dd-yyyy}",
                 $"{StartTime:HH_mm_ss}");
             return conf

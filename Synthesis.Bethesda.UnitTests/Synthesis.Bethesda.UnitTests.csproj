@@ -98,5 +98,13 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="UI\Services\LogCleanerTests.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+  </ItemGroup>
+
 
 </Project>
