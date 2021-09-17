@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Noggog;
 using Autofac;
@@ -8,9 +7,7 @@ using Serilog;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.V2;
-using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.Services.Profile;
-using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 
@@ -95,7 +92,9 @@ namespace Synthesis.Bethesda.GUI.Services.Main
             var newGroup = scope.Resolve<INewGroupCreator>();
 
             scope.DisposeWith(profile);
-            profile.Groups.Add(newGroup.Get());
+            var group = newGroup.Get();
+            group.Name = Constants.SynthesisName;
+            profile.Groups.Add(group);
             return profile;
         }
     }
