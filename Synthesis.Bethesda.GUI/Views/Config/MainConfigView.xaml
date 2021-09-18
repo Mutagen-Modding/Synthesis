@@ -275,7 +275,7 @@
                 FontSize="14"
                 FontWeight="Bold"
                 Foreground="{StaticResource PaleBlueBrush}"
-                Text="Add Some Patchers" />
+                Text="Add a Group" />
         </StackPanel>
         <local:AddNewItemsView Grid.Row="0" Grid.Column="0"
             Margin="-15,5,0,0" />
