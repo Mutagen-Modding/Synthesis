@@ -1,4 +1,6 @@
+using System.Linq;
 using System.Reactive.Linq;
+using DynamicData;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
@@ -16,9 +18,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         private readonly ObservableAsPropertyHelper<GroupVm?> _SelectedGroup;
         public GroupVm? SelectedGroup => _SelectedGroup.Value;
 
-        public SelectedGroupControllerVm(IProfileDisplayControllerVm selected)
+        public SelectedGroupControllerVm(
+            IProfileGroupsList groupsList,
+            IProfileDisplayControllerVm selected)
         {
-            _SelectedGroup = selected.WhenAnyValue(x => x.SelectedObject)
+            _SelectedGroup = Observable.CombineLatest(
+                    selected.WhenAnyValue(x => x.SelectedObject),
+                    groupsList.Groups.Connect()
+                        .QueryWhenChanged(q => q),
+                    (selected, groups) => selected ?? groups.FirstOrDefault())
                 .Select(x =>
                 {
                     if (x is GroupVm group) return group;
