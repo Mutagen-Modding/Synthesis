@@ -60,18 +60,21 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             _scope = scope;
             _selectedGroupControllerVm = selectedGroupControllerVm;
             _displayControllerVm = displayControllerVm;
-            AddGitPatcherCommand = ReactiveCommand.Create(() =>
-            {
-                NewPatcher = Resolve<GitPatcherInitVm, GuiGitPatcherModule, GithubPatcherSettings>();
-            });
-            AddSolutionPatcherCommand = ReactiveCommand.Create(() =>
-            {
-                NewPatcher = Resolve<SolutionPatcherInitVm, GuiSolutionPatcherModule, SolutionPatcherSettings>();
-            });
-            AddCliPatcherCommand = ReactiveCommand.Create(() =>
-            {
-                NewPatcher = Resolve<CliPatcherInitVm, GuiCliPatcherModule, CliPatcherSettings>();
-            });
+
+            var hasAnyGroups = groupsList.Groups.CountChanged
+                .Select(x => x > 0)
+                .Replay(1)
+                .RefCount();
+
+            AddGitPatcherCommand = ReactiveCommand.Create(
+                () => { NewPatcher = Resolve<GitPatcherInitVm, GuiGitPatcherModule, GithubPatcherSettings>(); },
+                canExecute: hasAnyGroups);
+            AddSolutionPatcherCommand = ReactiveCommand.Create(
+                () => { NewPatcher = Resolve<SolutionPatcherInitVm, GuiSolutionPatcherModule, SolutionPatcherSettings>(); },
+                hasAnyGroups);
+            AddCliPatcherCommand = ReactiveCommand.Create(
+                () => { NewPatcher = Resolve<CliPatcherInitVm, GuiCliPatcherModule, CliPatcherSettings>(); },
+                hasAnyGroups);
             AddGroupCommand = ReactiveCommand.Create(() =>
             {
                 var group = groupCreator.Get();
