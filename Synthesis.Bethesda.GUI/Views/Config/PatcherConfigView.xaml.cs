@@ -1,13 +1,9 @@
-using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using System;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Windows;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -29,7 +25,7 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel)
                     .BindTo(this, x => x.PatcherIconDisplay.DataContext)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.DisplayedObject)
+                this.WhenAnyValue(x => x.ViewModel!.ErrorDisplayVm.DisplayedObject)
                     .BindTo(this, x => x.ConfigDetailPane.Content)
                     .DisposeWith(disposable);
 
@@ -54,30 +50,12 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Subscribe(x => this.PatcherDetailName.Text = x)
                     .DisposeWith(disposable);
 
-                var errorDisp = Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.State.IsHaltingError),
-                        this.WhenAnyValue(x => x.ViewModel!.DisplayedObject),
-                        (halting, disp) => halting && !(disp is ErrorVM))
-                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .Replay(1)
-                    .RefCount();
-                errorDisp
-                    .BindTo(this, x => x.ErrorButton.Visibility)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.GoToErrorCommand)
-                    .BindTo(this, x => x.ErrorButton.Command)
-                    .DisposeWith(disposable);
-                errorDisp
-                    .BindTo(this, x => x.ErrorGlow.Visibility)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.State)
-                    .Select(x => x.RunnableState.Reason)
-                    .Select(x => x.Split(Environment.NewLine).FirstOrDefault())
-                    .BindTo(this, x => x.ErrorTextBlock.Text)
-                    .DisposeWith(disposable);
-
                 this.WhenAnyValue(x => x.ViewModel!.IsNameEditable)
                     .BindTo(this, x => x.PatcherDetailName.IsHitTestVisible)
+                    .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.ErrorDisplayVm)
+                    .BindTo(this, x => x.BottomErrorDisplay.DataContext)
                     .DisposeWith(disposable);
             });
         }

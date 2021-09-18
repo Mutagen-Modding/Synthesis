@@ -9,14 +9,14 @@ using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
 {
-    public abstract class PatcherVm : ViewModel
+    public abstract class PatcherVm : ViewModel, ISelected
     {
         public ILifetimeScope Scope { get; }
         public IPatcherNameVm NameVm { get; }
@@ -31,23 +31,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
 
         public ICommand DeleteCommand { get; }
 
-        public ICommand GoToErrorCommand => NoggogCommand.CreateFromObject(
-            objectSource: this.WhenAnyValue(x => x.State.RunnableState),
-            canExecute: x => x.Failed,
-            execute: x => DisplayedObject = ErrorVM,
-            disposable: this);
-
         public abstract ConfigurationState State { get; }
-
-        [Reactive]
-        public ViewModel DisplayedObject { get; set; }
-
-        public ErrorVM ErrorVM { get; }
 
         public virtual bool IsNameEditable => true;
 
         [Reactive] 
         public GroupVm? Group { get; set; } 
+        
+        public ErrorDisplayVm ErrorDisplayVm { get; }
 
         public PatcherVm(
             ILifetimeScope scope,
@@ -60,12 +51,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
             Scope = scope;
             Scope.DisposeWith(this);
             NameVm = nameVm;
-            DisplayedObject = this;
             InternalID = idProvider.InternalId;
-            ErrorVM = new ErrorVM("Error", backAction: () =>
-            {
-                DisplayedObject = this;
-            });
 
             _IsSelected = selPatcher.WhenAnyValue(x => x.SelectedObject)
                 .Select(x => x == this)
@@ -82,29 +68,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
                     $"Are you sure you want to delete {NameVm.Name}?",
                     Delete);
             });
-
-            this.WhenAnyValue(x => x.IsSelected)
-                .DistinctUntilChanged()
-                .Where(x => x)
-                .Subscribe(_ =>
-                {
-                    DisplayedObject = this;
-                })
-                .DisposeWith(this);
-
-            this.WhenAnyValue(x => x.State.RunnableState)
-                .Subscribe(state =>
-                {
-                    if (state.Failed)
-                    {
-                        ErrorVM.String = state.Reason;
-                    }
-                    else
-                    {
-                        ErrorVM.String = null;
-                    }
-                })
-                .DisposeWith(this);
+            
+            ErrorDisplayVm = new ErrorDisplayVm(this, this.WhenAnyValue(x => x.State));
         }
 
         public abstract PatcherSettings Save();
