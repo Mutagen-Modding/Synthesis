@@ -88,18 +88,6 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Enable/Disable all buttons
-                var enableDisableVis = this.BottomBar.WhenAnyValue(x => x.IsMouseOver)
-                    .CombineLatest(this.WhenAnyValue(x => x.ViewModel!.Expanded),
-                        (over, expanded) => over && expanded)
-                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .Replay(1)
-                    .RefCount();
-                enableDisableVis
-                    .BindTo(this, x => x.EnableAllPatchersButton.Visibility)
-                    .DisposeWith(disposable);
-                enableDisableVis
-                    .BindTo(this, x => x.DisableAllPatchersButton.Visibility)
-                    .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.EnableAllPatchersCommand)
                     .BindTo(this, x => x.EnableAllPatchersButton.Command)
                     .DisposeWith(disposable);

@@ -271,9 +271,10 @@
             <Button Grid.Column="0"
                 x:Name="DisableAllPatchersButton"
                 Margin="11,0,0,5"
-                ToolTip="Disable all groups">
+                ToolTip="Disable all patchers">
                 <Button.Style>
                     <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
+                        <Setter Property="Opacity" Value="0" />
                         <Setter Property="Content">
                             <Setter.Value>
                                 <icon:PackIconMaterial Kind="CheckboxBlankCircleOutline" />
@@ -294,6 +295,32 @@
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Expanded}" Value="True" />
+                                    <Condition Binding="{Binding IsMouseOver, ElementName=BottomBar}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1"
+                                                Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiDataTrigger.EnterActions>
+                                <MultiDataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="0"
+                                                Duration="0:0:0.15" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiDataTrigger.ExitActions>
+                            </MultiDataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
@@ -301,9 +328,10 @@
             <Button Grid.Column="1"
                 x:Name="EnableAllPatchersButton"
                 Margin="5,0,0,5"
-                ToolTip="Enable all groups">
+                ToolTip="Enable all patchers">
                 <Button.Style>
                     <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
+                        <Setter Property="Opacity" Value="0" />
                         <Setter Property="Content">
                             <Setter.Value>
                                 <icon:PackIconMaterial Kind="CheckboxMarkedCircle" />
@@ -324,6 +352,32 @@
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Expanded}" Value="True" />
+                                    <Condition Binding="{Binding IsMouseOver, ElementName=BottomBar}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1"
+                                                Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiDataTrigger.EnterActions>
+                                <MultiDataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="0"
+                                                Duration="0:0:0.15" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiDataTrigger.ExitActions>
+                            </MultiDataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
