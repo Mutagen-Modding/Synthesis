@@ -82,7 +82,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindTo(this, x => x.ProcessingCircle.Visibility)
                     .DisposeWith(disposable);
 
-                Noggog.WPF.Drag.ListBoxDragDrop<GroupVm>(this.GroupsList, () => this.ViewModel?.SelectedProfile?.Groups)
+                Noggog.WPF.Drag.ListBoxDragDrop<GroupVm>(this.GroupsList)
                     .DisposeWith(disposable);
 
                 // Bind top patcher list buttons

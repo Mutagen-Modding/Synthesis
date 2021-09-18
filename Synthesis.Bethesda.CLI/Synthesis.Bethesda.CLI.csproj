@@ -14,14 +14,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.31.1.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.31.1-prerelease006" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Autofac" Version="6.2.0" />
     <PackageReference Include="GitInfo" Version="2.1.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Noggog.Autofac" Version="2.29.0" />
+    <PackageReference Include="Noggog.Autofac" Version="2.29.0.1-dev" />
     <PackageReference Include="NuGetizer" Version="0.7.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
