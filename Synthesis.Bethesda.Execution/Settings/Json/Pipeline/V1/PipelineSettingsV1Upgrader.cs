@@ -89,6 +89,7 @@ namespace Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V1
                         {
                             Name = Synthesis.Bethesda.Constants.SynthesisName,
                             On = true,
+                            Expanded = true,
                             Patchers = x.Patchers
                         }
                     },
