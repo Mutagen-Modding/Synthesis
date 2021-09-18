@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Noggog.WPF;
 using ReactiveUI;
+using System.Windows;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 
 namespace Synthesis.Bethesda.GUI.Views
@@ -45,6 +46,11 @@ namespace Synthesis.Bethesda.GUI.Views
                         return "Ready";
                     })
                     .BindTo(this, x => x.StatusBlock.Text)
+                    .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.Patchers.Count)
+                    .Select(x => x == 0 ? Visibility.Visible : Visibility.Collapsed)
+                    .BindTo(this, x => x.AddSomePatchersHelpGrid.Visibility)
                     .DisposeWith(disposable);
             });
         }
