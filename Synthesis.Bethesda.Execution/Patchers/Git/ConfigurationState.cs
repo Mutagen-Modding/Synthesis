@@ -7,6 +7,12 @@ using System.Text;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
+    public interface IConfigurationState
+    {
+        bool IsHaltingError { get; }
+        ErrorResponse RunnableState { get; }
+    }
+    
     public class ConfigurationState : ConfigurationState<Unit>
     {
         public static readonly ConfigurationState Success = new();
@@ -28,7 +34,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
     }
 
     [ExcludeFromCodeCoverage]
-    public class ConfigurationState<T>
+    public class ConfigurationState<T> : IConfigurationState
     {
         public bool IsHaltingError { get; set; }
         public ErrorResponse RunnableState { get; set; } = ErrorResponse.Success;

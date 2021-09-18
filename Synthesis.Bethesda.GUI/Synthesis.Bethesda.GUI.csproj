@@ -100,6 +100,10 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Page</BuildAction>
     </Page>
+    <Page Update="Views\Config\GroupDetailPaneView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
   </ItemGroup>
   
   <ItemGroup>
@@ -145,6 +149,11 @@
       <BuildAction>Compile</BuildAction>
     </Compile>
     <Compile Update="Services\Startup\LogCleaner.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Views\Config\GroupDetailPaneView.xaml.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>

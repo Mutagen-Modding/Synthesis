@@ -20,12 +20,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels
 
         public ErrorVM ErrorVM { get; }
 
-        private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
-        public ConfigurationState State => _State.Value;
+        private readonly ObservableAsPropertyHelper<IConfigurationState> _State;
+        public IConfigurationState State => _State.Value;
 
         public ErrorDisplayVm(
             ISelected parent,
-            IObservable<ConfigurationState> state)
+            IObservable<IConfigurationState> state)
         {
             DisplayedObject = parent;
 

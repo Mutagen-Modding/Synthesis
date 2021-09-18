@@ -8,6 +8,8 @@
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:noggog="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
+    xmlns:running="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
+    xmlns:groups="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Groups"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -15,9 +17,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0"
             Name="TopBarGrid"
@@ -80,24 +81,18 @@
                 </Style>
             </TextBlock.Style>
         </TextBlock>
-        <Grid Grid.Row="2"
-            x:Name="AddSomePatchersHelpGrid"
-            Margin="0,10,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <icon:PackIconJamIcons Grid.Column="0"
-                Height="15"
-                Margin="0,2,5,0"
-                VerticalAlignment="Center"
-                Foreground="{StaticResource PaleBlueBrush}"
-                Kind="ChevronCircleUpLeftF" />
-            <TextBlock Grid.Column="1"
-                FontSize="20"
-                FontWeight="Bold"
-                Foreground="{StaticResource PaleBlueBrush}"
-                Text="Add some patchers" />
-        </Grid>
+        <ContentControl Grid.Row="2"
+                        x:Name="ConfigDetailPane"
+                        Margin="7,10,7,5">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type groups:GroupVm}">
+                    <local:GroupDetailPaneView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type running:ErrorVM}">
+                    <local:PatcherErrorView />
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
+        <local:BottomErrorDisplayView x:Name="BottomErrorDisplayView" Grid.Row="0" Grid.RowSpan="4" />
     </Grid>
 </local:GroupConfigViewBase>

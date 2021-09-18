@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -15,6 +14,7 @@ using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings.V2;
+using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
@@ -22,7 +22,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Groups
 {
-    public class GroupVm : ViewModel
+    public class GroupVm : ViewModel, ISelected
     {
         public IProfileDisplayControllerVm DisplayController { get; }
         public SourceList<PatcherVm> Patchers { get; } = new();
@@ -66,6 +66,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
 
         private readonly ObservableAsPropertyHelper<bool> _PatchersProcessing;
         public bool PatchersProcessing => _PatchersProcessing.Value;
+        
+        public ErrorDisplayVm ErrorDisplayVm { get; }
 
         public GroupVm(
             ProfileVm profileVm,
@@ -158,6 +160,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                         return new ConfigurationState<ViewModel>(this);
                     })
                 .ToGuiProperty(this, nameof(State), new ConfigurationState<ViewModel>(this));
+            
+            ErrorDisplayVm = new ErrorDisplayVm(this, this.WhenAnyValue(x => x.State));
 
             GoToErrorCommand = overallErrorVm.CreateCommand(
                 this.WhenAnyValue(x => x.State)
