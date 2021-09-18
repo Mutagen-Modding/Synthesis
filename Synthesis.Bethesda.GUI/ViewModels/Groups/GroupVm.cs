@@ -132,8 +132,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                             .Select(x => x.RunnableState.Failed && x.IsHaltingError))
                         .QueryWhenChanged(q => q)
                         .StartWith(Noggog.ListExt.Empty<PatcherVm>()),
-                    (numEnabledPatchers, processingPatchers, haltedPatchers) =>
+                    this.WhenAnyValue(x => x.ModKey),
+                    (numEnabledPatchers, processingPatchers, haltedPatchers, modKey) =>
                     {
+                        if (modKey.Failed)
+                        {
+                            return GetResponse<ViewModel>.Fail(this, "Group does not have a valid output name");
+                        }
+                        
                         if (numEnabledPatchers == 0)
                         {
                             return GetResponse<ViewModel>.Fail(this, "There are no enabled patchers to run.");
