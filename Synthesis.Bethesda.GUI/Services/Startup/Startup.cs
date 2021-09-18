@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Reactive;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Mutagen.Bethesda.Synthesis.Versioning;
-using Noggog;
 using ReactiveUI;
 using Serilog;
-using Synthesis.Bethesda.GUI.Logging;
-using Synthesis.Bethesda.GUI.Services.Main;
-using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 using Synthesis.Bethesda.GUI.Views;
 
@@ -23,31 +20,25 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
     public class Startup : IStartup
     {
         private readonly ILogger _logger;
-        private readonly IClearLoading _loading;
-        private readonly Lazy<ISettingsSingleton> _settings;
+        private readonly IEnumerable<IStartupTask> _startupTasks;
         private readonly Lazy<MainVm> _mainVm;
         private readonly IMainWindow _window;
         private readonly IStartupTracker _tracker;
-        private readonly LogCleaner _logCleaner;
         private readonly IShutdown _shutdown;
 
         public Startup(
             ILogger logger,
-            IClearLoading loading,
-            Lazy<ISettingsSingleton> settings,
+            IEnumerable<IStartupTask> startupTasks,
             Lazy<MainVm> mainVm,
             IMainWindow window,
             IStartupTracker tracker,
-            LogCleaner logCleaner,
             IShutdown shutdown)
         {
             _logger = logger;
-            _loading = loading;
-            _settings = settings;
+            _startupTasks = startupTasks;
             _mainVm = mainVm;
             _window = window;
             _tracker = tracker;
-            _logCleaner = logCleaner;
             _shutdown = shutdown;
         }
         
@@ -67,23 +58,9 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             
             try
             {
-                await Observable.Return(Unit.Default)
-                    .SelectTask(async (_) =>
-                    {
-                        await Task.WhenAll(
-                            Task.Run(() =>
-                            {
-                                _loading.Do();
-                            }),
-                            Task.Run(() =>
-                            {
-                                _settings.Value.GetType();
-                            }),
-                            Task.Run(() =>
-                            {
-                                _logCleaner.Clean();
-                            })).ConfigureAwait(false);
-                    })
+                await Observable.FromAsync(() =>
+                        Task.WhenAll(_startupTasks
+                            .Select(x => Task.Run(x.Do))))
                     .ObserveOn(RxApp.MainThreadScheduler)
                     .Do(_ =>
                     {

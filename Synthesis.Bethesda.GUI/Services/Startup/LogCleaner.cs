@@ -3,10 +3,11 @@ using System.IO.Abstractions;
 using Noggog;
 using Noggog.Time;
 using Serilog;
+using Synthesis.Bethesda.GUI.Logging;
 
-namespace Synthesis.Bethesda.GUI.Logging
+namespace Synthesis.Bethesda.GUI.Services.Startup
 {
-    public class LogCleaner
+    public class LogCleaner : IStartupTask
     {
         private const int DaysToKeep = 7;
         private readonly IFileSystem _fileSystem;
@@ -27,7 +28,7 @@ namespace Synthesis.Bethesda.GUI.Logging
             _logger = logger;
         }
         
-        public void Clean()
+        public void Do()
         {
             foreach (var dir in _fileSystem.Directory.EnumerateDirectoryPaths(LogSettings.LogFolder, includeSelf: false, recursive: false))
             {

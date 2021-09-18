@@ -1,4 +1,5 @@
-﻿using System.IO.Abstractions;
+﻿using System;
+using System.IO.Abstractions;
 using System.Threading.Tasks;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings;
@@ -6,6 +7,7 @@ using Synthesis.Bethesda.Execution.Settings.Json.Pipeline;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.GUI.Json;
 using Synthesis.Bethesda.GUI.Services.Main;
+using Synthesis.Bethesda.GUI.Services.Startup;
 
 namespace Synthesis.Bethesda.GUI.Settings
 {
@@ -47,6 +49,22 @@ namespace Synthesis.Bethesda.GUI.Settings
             ).Wait();
             Gui = guiSettings ?? new SynthesisGuiSettings();
             Pipeline = pipeSettings ?? new PipelineSettings();
+        }
+    }
+
+    public class SettingsLoader : IStartupTask
+    {
+        private readonly Lazy<ISettingsSingleton> _settings;
+
+        public SettingsLoader(
+            Lazy<ISettingsSingleton> settings)
+        {
+            _settings = settings;
+        }
+        
+        public void Do()
+        {
+            _settings.Value.GetType();
         }
     }
 }

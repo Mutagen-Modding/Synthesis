@@ -88,7 +88,7 @@ namespace Synthesis.Bethesda.GUI.Modules
                     typeof(MainVm),
                     typeof(INavigateTo),
                     typeof(IStartup),
-                    typeof(LogCleaner),
+                    typeof(ILogSettings),
                     typeof(IGuiSettingsImporter),
                     typeof(INewestLibraryVersions),
                     typeof(ISynthesisGuiSettings))

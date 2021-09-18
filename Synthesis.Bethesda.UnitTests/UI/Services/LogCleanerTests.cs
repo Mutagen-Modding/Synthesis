@@ -5,6 +5,7 @@ using FluentAssertions;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.GUI.Logging;
+using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
@@ -31,7 +32,7 @@ namespace Synthesis.Bethesda.UnitTests.UI
             var deleteFile = Path.Combine(deleteDir, "SomeFile");
             fs.File.Create(deleteFile);
             
-            cleaner.Clean();
+            cleaner.Do();
 
             fs.Directory.Exists(keepDir).Should().BeTrue();
             fs.File.Exists(keepFile).Should().BeTrue();
