@@ -81,7 +81,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             {
                 if (!_init.Initialized)
                 {
-                    _logger.Information("App was unable to start up.  Not saving settings.");
+                    _logger.Information("App was unable to start up.  Not saving settings");
                     return;
                 }
 
@@ -93,7 +93,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
                 }
                 catch (Exception e)
                 {
-                    _logger.Error("Error saving settings", e);
+                    _logger.Error(e, "Error saving settings");
                 }
             });
             
@@ -111,7 +111,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
                 }
                 catch (Exception e)
                 {
-                    _Logger.Error("Error shutting down build server", e);
+                    _Logger.Error(e, "Error shutting down build server");
                 }
             }));
 #endif
@@ -125,7 +125,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
                 }
                 catch (Exception e)
                 {
-                    _logger.Error("Error shutting down container actions", e);
+                    _logger.Error(e, "Error shutting down container actions");
                 }
             }));
             await Task.WhenAll(toDo);

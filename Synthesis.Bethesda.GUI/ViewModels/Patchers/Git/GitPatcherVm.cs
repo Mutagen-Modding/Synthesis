@@ -244,7 +244,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 LastSuccessfulRun = this.LastSuccessfulRun,
             };
             CopyOverSave(ret);
-            PatcherSettings.Persist();
+            try
+            {
+                PatcherSettings.Persist();
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Failed to save patcher settings");
+            }
             return ret;
         }
 
