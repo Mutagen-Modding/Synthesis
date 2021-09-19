@@ -36,17 +36,8 @@
                 VerticalAlignment="Top"
                 mahapps:TextBoxHelper.Watermark="Group Name"
                 FontSize="26"
-                FontWeight="Black">
-                <noggog:ErroredTextBox.Style>
-                    <Style BasedOn="{StaticResource Noggog.Styles.ErroredTextBox}" TargetType="noggog:ErroredTextBox">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding InError, RelativeSource={RelativeSource Self}}" Value="False">
-                                <Setter Property="Background" Value="Transparent" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </noggog:ErroredTextBox.Style>
-            </noggog:ErroredTextBox>
+                FontWeight="Black"
+                Style="{StaticResource Noggog.Styles.TransparentErroredTextBox}" />
             <Button Grid.Column="1"
                 x:Name="DeleteButton"
                 VerticalAlignment="Center"
