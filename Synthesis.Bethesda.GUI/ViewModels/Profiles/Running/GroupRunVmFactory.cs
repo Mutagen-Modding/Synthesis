@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading;
 using DynamicData;
@@ -40,17 +40,17 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .Where(x => x.IsOn)
                 .Select(x => _runnerFactory.ToRunner(x))
                 .ToArray();
-            var ret = new GroupRunVm(
+            var preps = patcherVms
+                        .Select(p => p.Run)
+                        .Select(x => _prepPatcherForRun.Prep(x, cancel))
+                        .ToArray();
+            return new GroupRunVm(
                 groupVm,
                 new GroupRun(
                     groupVm.ModKey.Value,
-                    patcherVms
-                        .Select(p => p.Run)
-                        .Select(x => _prepPatcherForRun.Prep(x, cancel))
-                        .ToArray()),
-                _runDisplayControllerVm);
-            ret.Patchers.Add(patcherVms);
-            return ret;
+                    preps),
+                _runDisplayControllerVm,
+                patcherVms);
         }
     }
 }

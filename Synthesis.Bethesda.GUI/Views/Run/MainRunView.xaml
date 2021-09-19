@@ -7,8 +7,8 @@
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     xmlns:running="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
+    xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -111,7 +111,7 @@
             </Grid>
             <ListBox Grid.Row="1"
                 Name="GroupsList"
-                Margin="8,15,0,0"
+                Margin="0,15,0,0"
                 Background="Transparent"
                 ClipToBounds="False"
                 ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
