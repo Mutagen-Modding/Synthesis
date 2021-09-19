@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
+using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Reporters;
 
@@ -21,15 +22,18 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 
     public class RunAPatcher : IRunAPatcher
     {
+        private readonly ILogger _logger;
         private readonly IRunReporter _reporter;
         public IFinalizePatcherRun FinalizePatcherRun { get; }
         public IRunArgsConstructor GetRunArgs { get; }
 
         public RunAPatcher(
+            ILogger logger,
             IRunReporter reporter,
             IFinalizePatcherRun finalizePatcherRun,
             IRunArgsConstructor getRunArgs)
         {
+            _logger = logger;
             _reporter = reporter;
             FinalizePatcherRun = finalizePatcherRun;
             GetRunArgs = getRunArgs;
@@ -54,6 +58,8 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                     sourcePath,
                     persistencePath);
                 
+                _logger.Information("================= Starting Patcher {Patcher} Run =================", prepBundle.Run.Name);
+
                 _reporter.ReportStartingRun(prepBundle.Run.Key, prepBundle.Run.Name);
                 await prepBundle.Run.Run(args,
                     cancel: cancellation);

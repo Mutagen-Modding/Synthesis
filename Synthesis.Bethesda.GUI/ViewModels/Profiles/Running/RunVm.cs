@@ -179,7 +179,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 
         public async Task Run()
         {
-            _Logger.Information("Starting patcher run");
             await Observable.Return(Unit.Default)
                 .ObserveOnGui()
                 .Do(_ => Running = true)
