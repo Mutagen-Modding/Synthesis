@@ -128,7 +128,7 @@ namespace Synthesis.Bethesda.GUI.Modules
                 .AsSelf();
             
             builder.RegisterType<RxReporter>()
-                .InstancePerMatchingLifetimeScope(LifetimeScopes.RunNickname)
+                .InstancePerMatchingLifetimeScope(LifetimeScopes.ProfileNickname)
                 .AsImplementedInterfaces();
             
 

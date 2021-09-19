@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
         [Reactive]
         public GetResponse<RunState> State { get; set; } = GetResponse<RunState>.Succeed(RunState.NotStarted);
 
-        public TextDocument OutputDisplay { get; } = new TextDocument();
+        public TextDocument OutputDisplay { get; } = new();
 
         private readonly ObservableAsPropertyHelper<TimeSpan> _RunTime;
         public TimeSpan RunTime => _RunTime.Value;
