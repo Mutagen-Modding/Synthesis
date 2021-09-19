@@ -14,6 +14,7 @@ using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Noggog;
 using Noggog.WPF;
+using Noggog.WPF.Containers;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
@@ -38,6 +39,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         public GameRelease Release { get; }
 
         public SourceList<GroupVm> Groups { get; }
+
+        public SourceListUiFunnel<GroupVm> GroupsDisplay { get; }
 
         IEnumerable<PatcherVm> IProfilePatcherEnumerable.Patchers => Groups.Items.SelectMany(x => x.Patchers.Items);
 
@@ -134,6 +137,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             _logger = logger;
             ID = ident.ID;
             Release = ident.Release;
+
+            GroupsDisplay = new SourceListUiFunnel<GroupVm>(Groups, this);
 
             ProfileDirectory = dirs.ProfileDirectory;
             WorkingDirectory = dirs.WorkingDirectory;

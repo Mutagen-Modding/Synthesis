@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using DynamicData;
-using DynamicData.Binding;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -24,8 +23,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 
         public SourceCache<ProfileVm, string> Profiles { get; } = new(p => p.ID);
 
-        public IObservableCollection<GroupVm> GroupsDisplay { get; }
-
         public ReactiveCommandBase<Unit, Unit> RunPatchers { get; }
 
         private readonly ObservableAsPropertyHelper<ProfileVm?> _SelectedProfile;
@@ -45,11 +42,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _ProfileFactory = profileFactory;
             _SelectedProfile = _SelectedProfileController.WhenAnyValue(x => x.SelectedProfile)
                 .ToGuiProperty(this, nameof(SelectedProfile), default);
-            
-            GroupsDisplay = this.WhenAnyValue(x => x.SelectedProfile)
-                .Select(p => p?.Groups.Connect() ?? Observable.Empty<IChangeSet<GroupVm>>())
-                .Switch()
-                .ToObservableCollection(this);
 
             _DisplayedObject = this.WhenAnyValue(x => x.SelectedProfile!.DisplayController.SelectedObject)
                 .ToGuiProperty(this, nameof(DisplayedObject), default);

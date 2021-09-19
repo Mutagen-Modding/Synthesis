@@ -5,10 +5,10 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using DynamicData;
-using DynamicData.Binding;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Noggog.WPF;
+using Noggog.WPF.Containers;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
@@ -26,7 +26,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
         public IProfileDisplayControllerVm DisplayController { get; }
         public SourceList<PatcherVm> Patchers { get; } = new();
 
-        public IObservableCollection<PatcherVm> PatchersDisplay { get; }
+        public SourceListUiFunnel<PatcherVm> PatchersDisplay { get; }
 
         [Reactive]
         public bool IsOn { get; set; }
@@ -95,10 +95,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                 .Select(x => x == this)
                 // Not GuiProperty, as it interacts with drag/drop oddly
                 .ToProperty(this, nameof(IsSelected));
-            
-            PatchersDisplay = Patchers.Connect()
-                .ObserveOnGui()
-                .ToObservableCollection(this);
+
+            PatchersDisplay = new SourceListUiFunnel<PatcherVm>(Patchers, this);
 
             _NumEnabledPatchers = Patchers.Connect()
                 .ObserveOnGui()

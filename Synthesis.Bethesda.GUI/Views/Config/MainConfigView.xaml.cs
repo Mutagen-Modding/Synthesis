@@ -1,10 +1,15 @@
-using Noggog.WPF;
-using Noggog;
-using ReactiveUI;
+using System;
 using System.Reactive.Disposables;
-using System.Windows;
 using System.Reactive.Linq;
+using Noggog.WPF;
+using System.Windows;
+using System.Windows.Controls;
+using DynamicData;
+using Noggog.WPF.Containers;
+using ReactiveUI;
+using Noggog;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views
@@ -21,7 +26,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated((disposable) =>
             {
-                this.WhenAnyValue(x => x.ViewModel!.GroupsDisplay)
+                this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.GroupsDisplay)
                     .BindTo(this, x => x.GroupsList.ItemsSource)
                     .DisposeWith(disposable);
 
@@ -34,7 +39,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Only show help if zero groups
-                this.WhenAnyValue(x => x.ViewModel!.GroupsDisplay.Count)
+                this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.GroupsDisplay.Count)
                     .Select(c => c == 0 ? Visibility.Visible : Visibility.Collapsed)
                     .BindTo(this, x => x.AddSomePatchersHelpGrid.Visibility)
                     .DisposeWith(disposable);
@@ -51,7 +56,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Replay(1)
                     .RefCount();
                 Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.GroupsDisplay.Count)
+                        this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.GroupsDisplay.Count)
                             .Select(c => c > 0),
                         overallErr.Select(x => x.Succeeded),
                         (hasGroups, succeeded) => hasGroups && !succeeded)
@@ -81,12 +86,53 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(show => show ? Visibility.Visible : Visibility.Collapsed)
                     .BindTo(this, x => x.ProcessingCircle.Visibility)
                     .DisposeWith(disposable);
+                
+                Drag.ListBoxDrops<ViewModel>(
+                        this.GroupsList,
+                        onlyWithinSameBox: false)
+                    .Subscribe(e =>
+                    {
+                        if (e.Vm == null) return;
+                        if (e.RawArgs.OriginalSource is not DependencyObject dep) return;
+                        if (!dep.TryGetAncestor<ListBoxItem>(out var targetItem)) return;
+                        if (!targetItem.TryGetAncestor<ListBox>(out var listBox)) return;
+                
+                        if (e.SourceListBox == null) return;
+                        
+                        if (listBox.ItemsSource is not ISourceListUiFunnel<GroupVm> targetGroupList) return;
 
-                Noggog.WPF.Drag.ListBoxDragDrop<GroupVm>(this.GroupsList)
+                        if (e.SourceListBox.ItemsSource is ISourceListUiFunnel<GroupVm> groupList)
+                        {
+                            var index = listBox.IndexOf(targetItem);
+                            if (index >= targetGroupList.SourceList.Count) return;
+                            if (e.Vm is not GroupVm groupVm) return;
+                            
+                            groupList.SourceList.RemoveAt(e.SourceListIndex);
+                
+                            if (index >= 0)
+                            {
+                                targetGroupList.SourceList.Insert(index, groupVm);
+                            }
+                            else
+                            {
+                                targetGroupList.SourceList.Add(groupVm);
+                            }
+                        }
+                        else if (e.SourceListBox.ItemsSource is ISourceListUiFunnel<PatcherVm> patcherList)
+                        {
+                            if (!targetItem.TryGetChildOfType<ListBox>(out var patcherListBox)) return;
+                            if (patcherListBox.ItemsSource is not ISourceListUiFunnel<PatcherVm> targetPatcherList) return;
+                            if (e.Vm is not PatcherVm patcherVm) return;
+                            
+                            patcherList.SourceList.RemoveAt(e.SourceListIndex);
+                            
+                            targetPatcherList.SourceList.Add(patcherVm);
+                        }
+                    })
                     .DisposeWith(disposable);
 
                 // Bind top patcher list buttons
-                this.WhenAnyValue(x => x.ViewModel!.GroupsDisplay.Count)
+                this.WhenAnyValue(x => x.ViewModel!.SelectedProfile!.GroupsDisplay.Count)
                     .Select(c => c == 0 ? Visibility.Hidden : Visibility.Visible)
                     .BindTo(this, x => x.TopAllPatchersControls.Visibility)
                     .DisposeWith(disposable);
