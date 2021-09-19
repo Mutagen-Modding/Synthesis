@@ -16,15 +16,24 @@
         <Grid Grid.Row="0"
             x:Name="TopGrid"
             Background="Transparent">
-            <local:GroupFrame
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <local:GroupFrame Grid.Column="0" Grid.ColumnSpan="2"
                 x:Name="GroupFrame"
                 Hovered="False"
                 IsSelected="False" />
-            <TextBlock
+            <TextBlock Grid.Column="0"
                 x:Name="GroupName"
                 Margin="14,0,0,0"
                 VerticalAlignment="Center"
                 FontWeight="SemiBold" />
+            <TextBlock Grid.Column="1"
+                x:Name="RunningTimeBlock"
+                Margin="0,0,4,0"
+                VerticalAlignment="Center"
+                Foreground="#44FFFFFF" />
         </Grid>
         <ListBox Grid.Row="1"
             Name="PatchersList"

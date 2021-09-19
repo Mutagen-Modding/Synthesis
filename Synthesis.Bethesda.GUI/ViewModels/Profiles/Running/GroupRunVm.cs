@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
@@ -27,6 +28,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
         private readonly ObservableAsPropertyHelper<bool> _HasStarted;
         public bool HasStarted => _HasStarted.Value;
 
+        private readonly ObservableAsPropertyHelper<string> _RunTimeString;
+        public string RunTimeString => _RunTimeString.Value;
+
         public GroupRunVm(
             GroupVm groupVm,
             IGroupRun run,
@@ -44,6 +48,37 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                         .Select(x => x != RunState.NotStarted))
                 .QueryWhenChanged(q => q.Count > 0)
                 .ToGuiProperty(this, nameof(HasStarted));
+
+            _RunTimeString = runVms.AsObservableChangeSet()
+                .AutoRefresh(x => x.RunTime)
+                .Transform(x => x.RunTime, transformOnRefresh: true)
+                .QueryWhenChanged(q =>
+                {
+                    TimeSpan span = new();
+                    foreach (var s in q)
+                    {
+                        span += s;
+                    }
+                    return span;
+                })
+                .Select(time =>
+                {
+                    if (time == new TimeSpan()) return string.Empty;
+                    if (time.TotalDays > 1)
+                    {
+                        return $"{time.TotalDays:n1}d";
+                    }
+                    if (time.TotalHours > 1)
+                    {
+                        return $"{time.TotalHours:n1}h";
+                    }
+                    if (time.TotalMinutes > 1)
+                    {
+                        return $"{time.TotalMinutes:n1}m";
+                    }
+                    return $"{time.TotalSeconds:n1}s";
+                })
+                .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty);
         }
     }
 }

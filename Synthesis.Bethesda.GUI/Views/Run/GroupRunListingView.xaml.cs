@@ -28,6 +28,10 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.HasStarted)
                     .BindTo(this, x => x.GroupFrame.IsOn)
                     .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.RunTimeString)
+                    .BindTo(this, x => x.RunningTimeBlock.Text)
+                    .DisposeWith(disposable);
             });
         }
     }
