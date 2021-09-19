@@ -18,7 +18,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         
         public void Start(params GroupVm[] groups)
         {
-            _activeRunVm.SetCurrentRun(_runFactory.GetRun(groups));
+            _activeRunVm.CurrentRun = _runFactory.GetRun(groups);
         }
     }
 }

@@ -24,6 +24,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
         public bool AutoScrolling { get; set; }
         
         public ViewModel SourceVm { get; }
+        
+        public GroupVm GroupVm { get; }
 
         private readonly ObservableAsPropertyHelper<bool> _HasStarted;
         public bool HasStarted => _HasStarted.Value;
@@ -38,6 +40,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
             IEnumerable<PatcherRunVm> runVms)
         {
             SourceVm = groupVm;
+            GroupVm = groupVm;
             Run = run;
             RunDisplayControllerVm = runDisplayControllerVm;
 
@@ -79,6 +82,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     return $"{time.TotalSeconds:n1}s";
                 })
                 .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty);
+        }
+
+        public override string ToString()
+        {
+            return GroupVm.Name;
         }
     }
 }

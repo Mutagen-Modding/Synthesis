@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Linq;
+using System.Windows.Input;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -10,22 +11,30 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
     public class ActiveRunVm : ViewModel
     {
         [Reactive]
-        public RunVm? CurrentRun { get; private set; }
-
-        public ActiveRunVm(
-            IActivePanelControllerVm activePanelController)
+        public RunVm? CurrentRun { get; set; }
+        
+        public ActiveRunVm(IActivePanelControllerVm activePanelController)
         {
             this.WhenAnyValue(x => x.CurrentRun)
-                .Do(run => activePanelController.ActivePanel = run)
+                .Do(run =>
+                {
+                    if (run != null)
+                    {
+                        activePanelController.ActivePanel = run;
+                    }
+                })
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .StartWith(default(RunVm?))
                 .Pairwise()
                 .Subscribe(async r =>
                 {
-                    if (r.Previous != null
-                        && r.Previous.Running)
+                    if (r.Previous != null)
                     {
-                        await r.Previous.Cancel();
+                        if (r.Previous.Running)
+                        {
+                            await r.Previous.Cancel();
+                        }
+                        r.Previous.Dispose();
                     }
                     
                     if (r.Current != null)
@@ -34,11 +43,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                     }
                 })
                 .DisposeWith(this);
-        }
-
-        public void SetCurrentRun(RunVm runVm)
-        {
-            CurrentRun = runVm;
         }
     }
 }

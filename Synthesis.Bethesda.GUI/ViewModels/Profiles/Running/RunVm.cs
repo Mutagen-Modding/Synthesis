@@ -54,6 +54,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
         public delegate RunVm Factory(IEnumerable<GroupVm> groups);
         
         public RunVm(
+            ActiveRunVm activeRunVm,
             ConfigurationVm configuration,
             RunDisplayControllerVm runDisplayControllerVm,
             ILogger logger,
@@ -85,6 +86,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
             {
                 profile.DisplayController.SelectedObject = runDisplayControllerVm.SelectedObject?.SourceVm;
                 activePanelController.ActivePanel = configuration;
+                activeRunVm.CurrentRun = null;
             },
             canExecute: this.WhenAnyValue(x => x.Running)
                 .Select(running => !running));
