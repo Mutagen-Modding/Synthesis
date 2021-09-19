@@ -38,6 +38,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
         private readonly IRetrieveSaveSettings _save;
         private readonly IGuiSettingsExporter _guiSettingsExporter;
         private readonly IPipelineSettingsExporter _pipelineSettingsExporter;
+        private readonly ShutDownBuildServer _shutDownBuildServer;
         private readonly IMainWindow _window;
         
         public bool IsShutdown { get; private set; }
@@ -51,6 +52,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             IRetrieveSaveSettings save,
             IGuiSettingsExporter guiSettingsExporter,
             IPipelineSettingsExporter pipelineSettingsExporter,
+            ShutDownBuildServer shutDownBuildServer,
             IMainWindow window)
         {
             _scope = scope;
@@ -61,6 +63,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             _save = save;
             _guiSettingsExporter = guiSettingsExporter;
             _pipelineSettingsExporter = pipelineSettingsExporter;
+            _shutDownBuildServer = shutDownBuildServer;
             _window = window;
         }
 
@@ -99,21 +102,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             
             var toDo = new List<Task>();
 #if !DEBUG
-            toDo.Add(Task.Run(async () =>
-            {
-                try
-                {
-                    using var process = _ProcessFactory.Create(
-                        new ProcessStartInfo(_dotNetCommandPathProvider.Path, $"build-server shutdown"));
-                    using var output = process.Output.Subscribe(x => _Logger.Information(x));
-                    using var error = process.Error.Subscribe(x => _Logger.Information(x));
-                    var ret = await process.Run();
-                }
-                catch (Exception e)
-                {
-                    _Logger.Error(e, "Error shutting down build server");
-                }
-            }));
+            toDo.Add(Task.Run(_shutDownBuildServer.Shutdown));
 #endif
 
             toDo.Add(Task.Run(() =>
