@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
@@ -44,12 +45,18 @@ namespace Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V1
                 return;
             }
             
-            Dictionary<string, Synthesis.Bethesda.Execution.Settings.V1.SynthesisProfile> patcherNamesToProfile = new();
+            Dictionary<string, Synthesis.Bethesda.Execution.Settings.V1.SynthesisProfile> patcherNamesToProfile = new(StringComparer.OrdinalIgnoreCase);
             foreach (var synthesisProfile in input.Profiles)
             {
                 foreach (var patcher in synthesisProfile.Patchers)
                 {
-                    patcherNamesToProfile.GetOrAdd(patcher.Nickname, () => synthesisProfile);
+                    var nickname = patcher.Nickname;
+                    if (patcher is GithubPatcherSettings githubPatcherSettings
+                        && nickname.IsNullOrWhitespace())
+                    {
+                        nickname = Path.GetFileName(githubPatcherSettings.RemoteRepoPath);
+                    }
+                    patcherNamesToProfile.GetOrAdd(nickname, () => synthesisProfile);
                 }
             }
 

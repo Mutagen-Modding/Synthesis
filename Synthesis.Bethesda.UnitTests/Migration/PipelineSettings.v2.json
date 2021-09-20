@@ -35,7 +35,7 @@
             {
               "$type": "Synthesis.Bethesda.Execution.Settings.GithubPatcherSettings, Synthesis.Bethesda.Execution",
               "ID": "5qoxdyxg.5c0",
-              "RemoteRepoPath": "https://github.com/radj307/Another-Archery-Patcher",
+              "RemoteRepoPath": "https://github.com/radj307/Patcher2",
               "SelectedProjectSubpath": "Another_Archery_Patcher\\Another_Archery_Patcher.csproj",
               "PatcherVersioning": "Branch",
               "TargetTag": null,
@@ -50,14 +50,14 @@
               "SynthesisVersionType": "Profile",
               "ManualSynthesisVersion": "",
               "LastSuccessfulRun": {
-                "TargetRepo": "https://github.com/radj307/Another-Archery-Patcher",
+                "TargetRepo": "https://github.com/radj307/Patcher2",
                 "ProjectSubpath": "Another_Archery_Patcher\\Another_Archery_Patcher.csproj",
                 "Commit": "f635b76b0f37905e2ab6e9c39ef444067c6112e2",
                 "MutagenVersion": "0.30.6",
                 "SynthesisVersion": "0.19.2"
               },
               "On": true,
-              "Nickname": "Patcher2"
+              "Nickname": ""
             }
           ],
           "Expanded": true
