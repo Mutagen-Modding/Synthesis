@@ -32,10 +32,16 @@ namespace Synthesis.Bethesda.GUI.Logging
 
         public static LoggerConfiguration WriteToFile(this LoggerConfiguration conf, params string[] extraIdentifiers)
         {
+            var startTime = $"{StartTime:HH_mm_ss}";
+            startTime = startTime.Remove(5, 1);
+            startTime = startTime.Remove(2, 1);
+            startTime = startTime.Insert(2, "h");
+            startTime = startTime.Insert(5, "m");
+            startTime += "s";
             var prefix = Path.Combine(
                 LogFolder,
                 $"{StartTime:MM-dd-yyyy}",
-                $"{StartTime:HH_mm_ss}");
+                $"{startTime}");
             return conf
                 .WriteTo.File(
                     formatter: new ExtraAttributeFormatter(),
