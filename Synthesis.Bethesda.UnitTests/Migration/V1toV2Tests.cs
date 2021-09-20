@@ -78,7 +78,11 @@ namespace Synthesis.Bethesda.UnitTests.Migration
             mockFileSystem.File.WriteAllText(Path.Combine(extraDataPathProvider.Path, "Patcher2", "settings.json"), string.Empty);
             mockFileSystem.Directory.CreateDirectory(Path.Combine(extraDataPathProvider.Path, "Patcher3"));
             mockFileSystem.File.WriteAllText(Path.Combine(extraDataPathProvider.Path, "Patcher3", "settings.json"), string.Empty);
+            mockFileSystem.Directory.CreateDirectory(Path.Combine(extraDataPathProvider.Path, "Patcher4"));
+            mockFileSystem.File.WriteAllText(Path.Combine(extraDataPathProvider.Path, "Patcher4", "settings.json"), string.Empty);
+            
             importer.Import(V1FilePath);
+            
             mockFileSystem.Directory.Exists(Path.Combine(extraDataPathProvider.Path, "Patcher1"))
                 .Should().BeFalse();
             mockFileSystem.Directory.Exists(Path.Combine(extraDataPathProvider.Path, "Patcher2"))
@@ -101,6 +105,10 @@ namespace Synthesis.Bethesda.UnitTests.Migration
             mockFileSystem.Directory.Exists(Path.Combine(extraDataPathProvider.Path, "Profile2", "Patcher3"))
                 .Should().BeTrue();
             mockFileSystem.File.Exists(Path.Combine(extraDataPathProvider.Path, "Profile2", "Patcher3", "settings.json"))
+                .Should().BeTrue();
+            mockFileSystem.Directory.Exists(Path.Combine(extraDataPathProvider.Path, "Unknown Profile", "Patcher4"))
+                .Should().BeTrue();
+            mockFileSystem.File.Exists(Path.Combine(extraDataPathProvider.Path, "Unknown Profile", "Patcher4", "settings.json"))
                 .Should().BeTrue();
         }
     }

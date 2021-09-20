@@ -56,9 +56,16 @@ namespace Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V1
             foreach (var patcherSettingsDir in _fileSystem.Directory.EnumerateDirectoryPaths(_extraDataPathProvider.Path, includeSelf: false, recursive: false))
             {
                 var existingFolder = Path.Combine(_extraDataPathProvider.Path, patcherSettingsDir.Name);
-                if (!patcherNamesToProfile.TryGetValue(patcherSettingsDir.Name, out var profile)) continue;
                 if (!_fileSystem.Directory.Exists(existingFolder)) continue;
-                var newFolder = Path.Combine(_extraDataPathProvider.Path, profile.Nickname, patcherSettingsDir.Name);
+                string newFolder;
+                if (patcherNamesToProfile.TryGetValue(patcherSettingsDir.Name, out var profile))
+                {
+                    newFolder = Path.Combine(_extraDataPathProvider.Path, profile.Nickname, patcherSettingsDir.Name);
+                }
+                else
+                {
+                    newFolder = Path.Combine(_extraDataPathProvider.Path, "Unknown Profile", patcherSettingsDir.Name);
+                }
                 if (_fileSystem.Directory.Exists(newFolder)) continue;
                 _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(newFolder));
                 _fileSystem.Directory.Move(existingFolder, newFolder);
