@@ -316,6 +316,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         }
 
         FilePath IPathToProjProvider.Path => RunnableData?.ProjPath ?? throw new ArgumentNullException($"{nameof(IPathToProjProvider)}.{nameof(IPathToProjProvider.Path)}");
-        FilePath IPathToSolutionFileProvider.Path => RunnableData?.SolutionPath ?? throw new ArgumentNullException($"{nameof(IPathToProjProvider)}.{nameof(IPathToProjProvider.Path)}");
+        FilePath IPathToSolutionFileProvider.Path => RunnableData?.SolutionPath ?? throw new ArgumentNullException($"{nameof(IPathToSolutionFileProvider)}.{nameof(IPathToSolutionFileProvider.Path)}");
     }
 }

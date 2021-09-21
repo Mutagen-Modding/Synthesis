@@ -16,9 +16,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
         PathPickerVM Picker { get; }
     }
 
-    public class SelectedProjectInputVm : ViewModel, 
-        ISelectedProjectInputVm,
-        IPathToProjProvider
+    public class SelectedProjectInputVm : ViewModel, ISelectedProjectInputVm
     {
         [Reactive]
         public string ProjectSubpath { get; set; } = string.Empty;
@@ -47,7 +45,5 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
                 })
                 .DisposeWith(this);
         }
-
-        FilePath IPathToProjProvider.Path => Picker.TargetPath;
     }
 }
