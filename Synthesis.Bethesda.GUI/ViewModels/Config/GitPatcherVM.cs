@@ -140,6 +140,8 @@ namespace Synthesis.Bethesda.GUI
 
         public ICommand SetToLastSuccessfulRunCommand { get; }
 
+        public ICommand DeleteUserDataCommand { get; }
+
         public GitPatcherVM(ProfileVM parent, GithubPatcherSettings? settings = null)
             : base(parent, settings)
         {
@@ -991,6 +993,8 @@ namespace Synthesis.Bethesda.GUI
                     this.SynthesisVersioning = PatcherNugetVersioningEnum.Manual;
                     this.MutagenVersioning = PatcherNugetVersioningEnum.Manual;
                 });
+
+            DeleteUserDataCommand = ReactiveCommand.Create(DeleteUserSettings);
         }
 
         public override PatcherSettings Save()
@@ -1165,6 +1169,20 @@ namespace Synthesis.Bethesda.GUI
                 Commit: this.TargetCommit,
                 MutagenVersion: MutagenVersionDiff.SelectedVersion,
                 SynthesisVersion: SynthesisVersionDiff.SelectedVersion);
+        }
+
+        private void DeleteUserSettings()
+        {
+            try
+            {
+                var dir = new DirectoryPath(
+                    Path.Combine(Synthesis.Bethesda.Execution.Paths.TypicalExtraData, this.DisplayName));
+                dir.DeleteEntireFolder();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Failed to delete user settings");
+            }
         }
     }
 }

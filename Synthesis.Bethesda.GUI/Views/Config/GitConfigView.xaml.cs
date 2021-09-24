@@ -307,6 +307,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindTo(this, x => x.SetToLastRunButton.Command)
                     .DisposeWith(disposable);
                 #endregion
+
+                this.WhenAnyValue(x => x.ViewModel!.DeleteUserDataCommand)
+                    .BindTo(this, x => x.DeleteUserDataButton.Command)
+                    .DisposeWith(disposable);
             });
         }
     }
