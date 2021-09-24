@@ -74,7 +74,20 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Settings">
-                <local:PatcherSettingsView x:Name="PatcherSettings" />
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <local:PatcherSettingsView x:Name="PatcherSettings" Grid.Row="0" />
+                    <Button Grid.Row="1"
+                        x:Name="DeleteUserDataButton"
+                        Margin="0,0,6,0"
+                        HorizontalAlignment="Right"
+                        ToolTip="Deletes the user data folder on disk.  Does not reset the settings displayed here to defaults.">
+                        Delete User Data
+                    </Button>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

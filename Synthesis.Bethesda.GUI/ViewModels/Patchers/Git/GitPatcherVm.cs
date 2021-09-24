@@ -27,6 +27,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
     public class GitPatcherVm : PatcherVm, IPathToProjProvider, IPathToSolutionFileProvider
     {
         private readonly ILogger _logger;
+        private readonly ICopyOverExtraData _copyOverExtraData;
+        private readonly DeleteUserData _deleteUserData;
         public override bool IsNameEditable => false;
 
         public ISelectedProjectInputVm SelectedProjectInput { get; }
@@ -75,6 +77,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         public IGitPatcherTargetingVm PatcherTargeting { get; }
         public IGitNugetTargetingVm NugetTargeting { get; }
         public IUpdateAllCommand UpdateAllCommand { get; }
+        public ICommand DeleteUserDataCommand { get; }
 
         public GitPatcherVm(
             IGithubPatcherIdentifier ident,
@@ -105,6 +108,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IUpdateAllCommand updateAllCommand,
             IAttemptedCheckout attemptedCheckout,
             IPatcherIdProvider idProvider,
+            ICopyOverExtraData copyOverExtraData,
+            DeleteUserData deleteUserData,
             PatcherSettingsVm.Factory settingsVmFactory,
             GithubPatcherSettings? settings = null)
             : base(
@@ -112,6 +117,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 confirmation, idProvider, settings)
         {
             _logger = logger;
+            _copyOverExtraData = copyOverExtraData;
+            _deleteUserData = deleteUserData;
             SelectedProjectInput = selectedProjectInput;
             RemoteRepoPathInput = remoteRepoPathInputVm;
             Locking = lockToCurrentVersioning;
@@ -120,6 +127,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             PatcherTargeting = patcherTargeting;
             NugetTargeting = nugetTargetingVm;
             UpdateAllCommand = updateAllCommand;
+
+            DeleteUserDataCommand = ReactiveCommand.Create(_deleteUserData.Delete);
 
             ID = ident.Id;
             
@@ -246,6 +255,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             CopyOverSave(ret);
             try
             {
+                _copyOverExtraData.Copy();
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Failed to copy in extra data");
+            }
+            try
+            {
                 PatcherSettings.Persist();
             }
             catch (Exception e)
@@ -277,6 +294,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         public override void PrepForRun()
         {
             base.PrepForRun();
+            _copyOverExtraData.Copy();
             PatcherSettings.Persist();
         }
 
