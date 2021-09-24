@@ -1018,11 +1018,14 @@ namespace Synthesis.Bethesda.GUI
                 LastSuccessfulRun = this.LastSuccessfulRun,
             };
             CopyOverSave(ret);
-            SolutionPatcherRun.CopyOverExtraData(
-                RunnableData.ProjPath,
-                Execution.Paths.TypicalExtraData,
-                DisplayName,
-                Logger.Information);
+            if (RunnableData != null)
+            {
+                SolutionPatcherRun.CopyOverExtraData(
+                    RunnableData.ProjPath,
+                    Execution.Paths.TypicalExtraData,
+                    DisplayName,
+                    Logger.Information);
+            }
             PatcherSettings.Persist(Logger.Information);
             return ret;
         }
