@@ -559,7 +559,7 @@ namespace Synthesis.Bethesda.GUI
 
                             Logger.Error($"Checking out runner repository succeeded");
 
-                            await SolutionPatcherRun.CopyOverExtraData(runInfo.Item.ProjPath, Execution.Paths.TypicalExtraData, DisplayName, Logger.Information);
+                            SolutionPatcherRun.CopyOverExtraData(runInfo.Item.ProjPath, Execution.Paths.TypicalExtraData, DisplayName, Logger.Information);
 
                             observer.OnNext(runInfo);
                         }
@@ -1018,6 +1018,11 @@ namespace Synthesis.Bethesda.GUI
                 LastSuccessfulRun = this.LastSuccessfulRun,
             };
             CopyOverSave(ret);
+            SolutionPatcherRun.CopyOverExtraData(
+                RunnableData.ProjPath,
+                Execution.Paths.TypicalExtraData,
+                DisplayName,
+                Logger.Information);
             PatcherSettings.Persist(Logger.Information);
             return ret;
         }
@@ -1078,6 +1083,11 @@ namespace Synthesis.Bethesda.GUI
             {
                 throw new ArgumentNullException(nameof(RunnableData));
             }
+            SolutionPatcherRun.CopyOverExtraData(
+                RunnableData.ProjPath, 
+                Execution.Paths.TypicalExtraData, 
+                DisplayName,
+                Logger.Information);
             PatcherSettings.Persist(Logger.Information);
             return new PatcherRunVM(
                 parent,

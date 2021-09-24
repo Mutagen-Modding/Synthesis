@@ -181,9 +181,9 @@ namespace Synthesis.Bethesda.Execution.Patchers
                 .FirstOrDefault();
         }
 
-        private Task CopyOverExtraData()
+        private async Task CopyOverExtraData()
         {
-            return CopyOverExtraData(PathToProject, PathToExtraDataBaseFolder, Name, _output.OnNext);
+            CopyOverExtraData(PathToProject, PathToExtraDataBaseFolder, Name, _output.OnNext);
         }
 
         public static string GetDefaultDataPathFromProj(string pathToProject)
@@ -191,7 +191,7 @@ namespace Synthesis.Bethesda.Execution.Patchers
             return Path.Combine(Path.GetDirectoryName(pathToProject)!, "Data");
         }
 
-        public static async Task CopyOverExtraData(string pathToProject, string pathToExtraDataBaseFolder, string name, Action<string> log)
+        public static void CopyOverExtraData(string pathToProject, string pathToExtraDataBaseFolder, string name, Action<string> log)
         {
             var inputExtraData = new DirectoryInfo(GetDefaultDataPathFromProj(pathToProject));
             if (!inputExtraData.Exists)
