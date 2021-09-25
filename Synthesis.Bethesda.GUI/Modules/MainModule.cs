@@ -10,7 +10,6 @@ using Noggog.Reactive;
 using Noggog.WPF;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
-using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -74,7 +73,7 @@ namespace Synthesis.Bethesda.GUI.Modules
 
             builder.RegisterModule<Synthesis.Bethesda.Execution.Modules.MainModule>();
             
-            builder.RegisterAssemblyTypes(typeof(ICheckOrCloneRepo).Assembly)
+            builder.RegisterAssemblyTypes(typeof(IExecuteRunnabilityCheck).Assembly)
                 .InNamespacesOf(
                     typeof(IExecuteRunnabilityCheck),
                     typeof(IBuild))

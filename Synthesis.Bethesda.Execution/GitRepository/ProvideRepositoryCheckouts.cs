@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
-using LibGit2Sharp;
 using Noggog;
 using Serilog;
 

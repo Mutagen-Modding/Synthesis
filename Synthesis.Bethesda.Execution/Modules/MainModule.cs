@@ -21,9 +21,8 @@ namespace Synthesis.Bethesda.Execution.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterAssemblyTypes(typeof(ICheckOrCloneRepo).Assembly)
+            builder.RegisterAssemblyTypes(typeof(IProcessRunner).Assembly)
                 .InNamespacesOf(
-                    typeof(ICheckOrCloneRepo),
                     typeof(IQueryNewestLibraryVersions),
                     typeof(IProcessRunner),
                     typeof(IWorkingDirectorySubPaths),
@@ -39,15 +38,21 @@ namespace Synthesis.Bethesda.Execution.Modules
                 .NotInNamespacesOf(typeof(IInstalledSdkFollower))
                 .TypicalRegistrations();
             
-            builder.RegisterAssemblyTypes(typeof(ICheckOrCloneRepo).Assembly)
+            builder.RegisterAssemblyTypes(typeof(IProcessRunner).Assembly)
                 .InNamespacesOf(
                     typeof(IExecuteRun))
                 .InstancePerMatchingLifetimeScope(LifetimeScopes.RunNickname)
                 .TypicalRegistrations();
             
-            builder.RegisterAssemblyTypes(typeof(ICheckOrCloneRepo).Assembly)
+            builder.RegisterAssemblyTypes(typeof(IProcessRunner).Assembly)
                 .InNamespacesOf(
                     typeof(IInstalledSdkFollower))
+                .SingleInstance()
+                .AsMatchingInterface();
+            
+            builder.RegisterAssemblyTypes(typeof(IProcessRunner).Assembly)
+                .InNamespacesOf(
+                    typeof(ICheckOrCloneRepo))
                 .SingleInstance()
                 .AsMatchingInterface();
         }
