@@ -146,22 +146,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                         .Information("Finished {RunTime}", vm.RunTime);
                 })
                 .DisposeWith(this);
-            reporterWatcher.Output
-                .Subscribe(s =>
-                {
-                    logger
-                        .ForContextIfNotNull(nameof(IPatcherNameVm.Name), s.Run)
-                        .Information(s.String);
-                })
-                .DisposeWith(this);
-            reporterWatcher.Error
-                .Subscribe(s =>
-                {
-                    logger
-                        .ForContextIfNotNull(nameof(IPatcherNameVm.Name), s.Run)
-                        .Error(s.String);
-                })
-                .DisposeWith(this);
 
             // Clear selected patcher on showing error
             this.ShowOverallErrorCommand.StartingExecution()
