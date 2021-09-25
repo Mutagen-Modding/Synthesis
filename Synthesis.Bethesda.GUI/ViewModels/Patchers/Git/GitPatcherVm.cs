@@ -17,14 +17,13 @@ using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Patchers.Git;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 {
-    public class GitPatcherVm : PatcherVm, IPathToProjProvider, IPathToSolutionFileProvider
+    public class GitPatcherVm : PatcherVm, IPathToSolutionFileProvider
     {
         private readonly ILogger _logger;
         private readonly ICopyOverExtraData _copyOverExtraData;
@@ -149,8 +148,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 .Select(attemptedCheckout.Attempted)
                 .ToGuiProperty(this, nameof(AttemptedCheckout));
 
-            _RunnableData = runnableStateProvider.State
-                .Select(x => x.Item ?? default(RunnerRepoInfo?))
+            _RunnableData = runnableStateProvider.WhenAnyValue(x => x.State.Item)
                 .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?));
 
             _State = state.State
@@ -333,7 +331,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 SynthesisVersion: NugetDiff.SynthesisVersionDiff.SelectedVersion);
         }
 
-        FilePath IPathToProjProvider.Path => RunnableData?.ProjPath ?? throw new ArgumentNullException($"{nameof(IPathToProjProvider)}.{nameof(IPathToProjProvider.Path)}");
         FilePath IPathToSolutionFileProvider.Path => RunnableData?.SolutionPath ?? throw new ArgumentNullException($"{nameof(IPathToSolutionFileProvider)}.{nameof(IPathToSolutionFileProvider.Path)}");
     }
 }

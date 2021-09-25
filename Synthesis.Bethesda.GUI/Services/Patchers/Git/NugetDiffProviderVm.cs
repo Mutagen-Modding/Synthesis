@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             IRunnableStateProvider runnableStateProvider,
             IGitNugetTargetingVm nugetTargetingVm)
         {
-            var cleanState = runnableStateProvider.State
+            var cleanState = runnableStateProvider.WhenAnyValue(x => x.State)
                 .Select(x => x.Item ?? default(RunnerRepoInfo?));
 
             _MutagenVersionDiff = Observable.CombineLatest(

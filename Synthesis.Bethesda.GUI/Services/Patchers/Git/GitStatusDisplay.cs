@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reactive.Linq;
+using ReactiveUI;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
@@ -20,7 +21,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
         {
             StatusDisplay = Observable.CombineLatest(
                     driverRepositoryPreparation.DriverInfo,
-                    runnableStateProvider.State,
+                    runnableStateProvider.WhenAnyValue(x => x.State),
                     compliationProvider.State,
                     runnabilityCliState.Runnable,
                     (driver, runnable, comp, runnability) =>

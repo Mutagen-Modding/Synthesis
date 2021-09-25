@@ -36,7 +36,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                     driverRepositoryPreparation.DriverInfo
                         .Select(x => x.ToUnit()),
                     runnerRepositoryState.State,
-                    runnableStateProvider.State
+                    runnableStateProvider.WhenAnyValue(x => x.State)
                         .Select(x => x.ToUnit()),
                     runnabilityCliState.Runnable,
                     dotNetInstalled.DotNetSdkInstalled

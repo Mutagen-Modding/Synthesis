@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Linq;
 using Noggog;
+using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
@@ -33,7 +34,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             _logger = logger;
             _runnableStateProvider = runnableStateProvider;
             
-            State = _runnableStateProvider.State
+            State = _runnableStateProvider.WhenAnyValue(x => x.State)
                 .Select(state =>
                 {
                     return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>

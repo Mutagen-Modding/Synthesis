@@ -3,6 +3,7 @@ using Path = System.IO.Path;
 using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Linq;
+using ReactiveUI;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.Settings.Json;
 
@@ -15,8 +16,6 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
     public class PatcherConfigurationWatcher : IPatcherConfigurationWatcher
     {
-        private readonly IRunnableStateProvider _runnableStateProvider;
-
         public IObservable<PatcherCustomization?> Customization { get; }
 
         public PatcherConfigurationWatcher(
@@ -24,8 +23,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             IPatcherCustomizationImporter customizationImporter,
             IRunnableStateProvider runnableStateProvider)
         {
-            _runnableStateProvider = runnableStateProvider;
-            Customization = runnableStateProvider.State
+            Customization = runnableStateProvider.WhenAnyValue(x => x.State)
                 .Select(x =>
                 {
                     if (x.RunnableState.Failed) return Observable.Return(default(PatcherCustomization?));

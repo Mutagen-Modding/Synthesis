@@ -2,36 +2,42 @@
 using System.Reactive.Linq;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.WPF;
+using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
     public interface IRunnableStateProvider
     {
-        IObservable<ConfigurationState<RunnerRepoInfo>> State { get; }
+        ConfigurationState<RunnerRepoInfo> State { get; }
     }
 
-    public class RunnableStateProvider : IRunnableStateProvider
+    public class RunnableStateProvider : ViewModel, IRunnableStateProvider, IPathToProjProvider
     {
-        public IObservable<ConfigurationState<RunnerRepoInfo>> State { get; }
+        private readonly ObservableAsPropertyHelper<ConfigurationState<RunnerRepoInfo>> _State;
+        public ConfigurationState<RunnerRepoInfo> State => _State.Value;
 
         public RunnableStateProvider(
             ISchedulerProvider schedulerProvider,
             ICheckoutInputProvider checkoutInputProvider,
             IPrepareRunnableState prepareRunnableState)
         {
-            State = checkoutInputProvider.Input
+            _State = checkoutInputProvider.Input
                 .Throttle(TimeSpan.FromMilliseconds(150), schedulerProvider.MainThread)
                 .DistinctUntilChanged()
                 .ObserveOn(schedulerProvider.TaskPool)
                 .Select(prepareRunnableState.Prepare)
                 .Switch()
-                .StartWith(new ConfigurationState<RunnerRepoInfo>(GetResponse<RunnerRepoInfo>.Fail("Constructing runnable state"))
+                .ToGuiProperty(this, nameof(State), new ConfigurationState<RunnerRepoInfo>(
+                    GetResponse<RunnerRepoInfo>.Fail("Constructing runnable state"))
                 {
                     IsHaltingError = false
-                })
-                .Replay(1)
-                .RefCount();
+                });
         }
+            
+        FilePath IPathToProjProvider.Path => State?.Item?.ProjPath ??
+                                             throw new ArgumentNullException($"{nameof(IPathToProjProvider)}.{nameof(IPathToProjProvider.Path)}");
     }
 }
