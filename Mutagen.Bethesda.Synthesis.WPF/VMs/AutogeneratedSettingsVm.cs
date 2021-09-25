@@ -21,8 +21,16 @@ namespace Mutagen.Bethesda.Synthesis.WPF
         private readonly ObservableAsPropertyHelper<ErrorResponse> _Status;
         public ErrorResponse Error => _Status.Value;
 
-        [Reactive]
-        public ReflectionSettingsVM? SelectedSettings { get; set; }
+        private ReflectionSettingsVM? _selectedSettings;
+        public ReflectionSettingsVM? SelectedSettings
+        {
+            get => _selectedSettings;
+            set
+            {
+                if (value == null) return;
+                RaiseAndSetIfChanged(ref _selectedSettings, value);
+            }
+        }
 
         private readonly ObservableAsPropertyHelper<ReflectionSettingsBundleVm?> _Bundle;
         public ReflectionSettingsBundleVm? Bundle => _Bundle.Value;
