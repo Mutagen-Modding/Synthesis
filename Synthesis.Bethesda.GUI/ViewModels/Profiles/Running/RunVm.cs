@@ -72,7 +72,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
             Reporter = reporter;
             RunningProfile = profile;
             Groups.Add(groups
-                .Where(x => x.IsOn)
                 .Select(p => runVmFactory.ToRunner(p, _cancel.Token)));
             _patchers = Groups.SelectMany(x => x.Patchers)
                 .ToDictionary(x => x.InternalID, x => x);

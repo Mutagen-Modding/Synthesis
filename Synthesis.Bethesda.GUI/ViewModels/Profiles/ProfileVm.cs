@@ -406,7 +406,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
         public void StartRun()
         {
-            _startRun.Start(Groups.Items.ToArray());
+            _startRun.Start(Groups.Items.Where(x => x.IsOn).ToArray());
         }
     }
 }
