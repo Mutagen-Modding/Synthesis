@@ -45,6 +45,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     .SingleInstance();
             });
             var runnerFactory = scope.Resolve<PatcherRunVm.Factory>();
+            patcherVm.PrepForRun();
             var ret = runnerFactory(patcherVm);
             scope.DisposeWith(ret);
             return ret;
