@@ -88,9 +88,9 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             builder.RegisterModule<GitPatcherModule>();
             builder.RegisterMock<IProfileIdentifier>();
             builder.RegisterMock<IPatcherIdProvider>();
+            builder.RegisterMock<IPatcherNameProvider>();
             builder.RegisterMock<GithubPatcherSettings>()
                 .As<IGithubPatcherIdentifier>()
-                .As<IPatcherNameProvider>()
                 .As<IProjectSubpathProvider>();
             var cont = builder.Build();
             cont.Validate(typeof(IGitPatcherRun));
