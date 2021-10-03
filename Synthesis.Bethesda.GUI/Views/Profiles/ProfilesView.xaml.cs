@@ -14,10 +14,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class ProfilesViewBase : NoggogUserControl<ProfilesDisplayVM> { }
+    public class ProfilesViewBase : NoggogUserControl<ProfilesDisplayVm> { }
 
     /// <summary>
     /// Interaction logic for ProfilesView.xaml
@@ -48,7 +49,7 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 // Set up dimmer
                 Observable.CombineLatest(
-                        this.WhenAnyFallback(x => x.ViewModel!.DisplayedProfile!.Profile, fallback: null),
+                        this.WhenAnyFallback(x => x.ViewModel!.DisplayedProfile!.Profile, fallback: default(ProfileVm?)),
                         this.WhenAnyValue(x => x.ViewModel!.ProfilesDisplay.Count),
                         (profile, count) => count > 0 && profile == null)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)

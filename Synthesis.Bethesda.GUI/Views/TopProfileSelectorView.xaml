@@ -49,10 +49,10 @@
                     <Image.Style>
                         <Style TargetType="Image">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Configuration.SelectedProfile.Release}" Value="{x:Static muta:GameRelease.Oblivion}">
+                                <DataTrigger Binding="{Binding SelectedProfile.Release}" Value="{x:Static muta:GameRelease.Oblivion}">
                                     <Setter Property="Effect" Value="{StaticResource GlowEffect}" />
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding Configuration.SelectedProfile.Release}" Value="{x:Static muta:GameRelease.SkyrimLE}">
+                                <DataTrigger Binding="{Binding SelectedProfile.Release}" Value="{x:Static muta:GameRelease.SkyrimLE}">
                                     <Setter Property="Effect" Value="{StaticResource GlowEffect}" />
                                 </DataTrigger>
                             </Style.Triggers>

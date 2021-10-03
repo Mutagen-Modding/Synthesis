@@ -15,10 +15,11 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Reactive.Linq;
 using Mutagen.Bethesda;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class TopProfileSelectorViewBase : NoggogUserControl<MainVM> { }
+    public class TopProfileSelectorViewBase : NoggogUserControl<MainVm> { }
 
     /// <summary>
     /// Interaction logic for TopProfileSelectorView.xaml
@@ -30,11 +31,11 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-                this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.Nickname, string.Empty)
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.NameVm.Name, string.Empty)
                     .BindTo(this, x => x.ProfileNameBlock.Text)
                     .DisposeWith(dispose);
 
-                this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.Release, GameRelease.SkyrimSE)
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Release, GameRelease.SkyrimSE)
                     .ObserveOn(RxApp.TaskpoolScheduler)
                     .Select(gameRelease =>
                     {
@@ -48,15 +49,15 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindTo(this, x => x.OpenProfilesPageButton.Command)
                     .DisposeWith(dispose);
 
-                this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.UpdateProfileNugetVersionCommand)
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Versioning.UpdateProfileNugetVersionCommand)
                     .Select(x => x as ICommand)
                     .BindTo(this, x => x.UpdateButton.Command)
                     .DisposeWith(dispose);
                 Observable.CombineLatest(
-                        this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.UpdateProfileNugetVersionCommand)
+                        this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Versioning.UpdateProfileNugetVersionCommand)
                             .Select(x => x?.CanExecute ?? Observable.Return(false))
                             .Switch(),
-                        this.WhenAnyFallback(x => x.ViewModel!.Configuration.SelectedProfile!.LockUpgrades),
+                        this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.LockSetting.Lock),
                         (hasUpdate, locked) => hasUpdate && !locked)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindTo(this, x => x.UpdateButton.Visibility)

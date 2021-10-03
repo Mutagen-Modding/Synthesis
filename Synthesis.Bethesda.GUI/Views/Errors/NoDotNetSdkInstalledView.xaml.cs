@@ -2,10 +2,11 @@ using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class NoDotNetSdkInstalledViewBase : NoggogUserControl<DotNetNotInstalledVM> { }
+    public class NoDotNetSdkInstalledViewBase : NoggogUserControl<DotNetNotInstalledVm> { }
 
     /// <summary>
     /// Interaction logic for NoDotNetSdkInstalledView.xaml

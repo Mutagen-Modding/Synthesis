@@ -7,6 +7,7 @@
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:running="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -109,15 +110,15 @@
                 </Button>
             </Grid>
             <ListBox Grid.Row="1"
-                Name="PatchersList"
-                Margin="8,15,0,0"
+                Name="GroupsList"
+                Margin="0,15,0,0"
                 Background="Transparent"
                 ClipToBounds="False"
                 ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <local:PatcherRunListingView />
+                        <local:GroupRunListingView />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -125,10 +126,10 @@
         <local:VerticalSlicer Grid.Column="1" Margin="5,0" />
         <ContentControl x:Name="PatcherDetail" Grid.Column="2">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type vm:PatcherRunVM}">
+                <DataTemplate DataType="{x:Type running:PatcherRunVm}">
                     <local:PatcherRunView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:ErrorVM}">
+                <DataTemplate DataType="{x:Type running:ErrorVM}">
                     <local:ErrorView />
                 </DataTemplate>
             </ContentControl.Resources>

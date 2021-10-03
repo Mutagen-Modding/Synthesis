@@ -3,10 +3,11 @@ using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class OverlayViewBase : NoggogUserControl<MainVM> { }
+    public class OverlayViewBase : NoggogUserControl<MainVm> { }
 
     /// <summary>
     /// Interaction logic for OverlayView.xaml
@@ -26,19 +27,19 @@ namespace Synthesis.Bethesda.GUI.Views
                         (c, _) => c?.Description)
                     .BindTo(this, x => x.DescriptionBlock.Text)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.ConfirmActionCommand)
+                this.WhenAnyValue(x => x.ViewModel!.Confirmation.ConfirmActionCommand)
                     .BindTo(this, x => x.AcceptButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.ConfirmActionCommand)
+                this.WhenAnyValue(x => x.ViewModel!.Confirmation.ConfirmActionCommand)
                     .Select(x => x?.CanExecute ?? Observable.Return(false))
                     .Switch()
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                     .BindTo(this, x => x.AcceptButton.Visibility)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.DiscardActionCommand)
+                this.WhenAnyValue(x => x.ViewModel!.Confirmation.DiscardActionCommand)
                     .BindTo(this, x => x.CancelButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.DiscardActionCommand)
+                this.WhenAnyValue(x => x.ViewModel!.Confirmation.DiscardActionCommand)
                     .Select(x => x?.CanExecute ?? Observable.Return(false))
                     .Switch()
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)

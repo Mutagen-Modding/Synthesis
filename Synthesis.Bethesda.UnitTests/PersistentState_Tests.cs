@@ -5,15 +5,13 @@ using Mutagen.Bethesda.Plugins.Allocators;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
-using Noggog.Utility;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Path = System.IO.Path;
 
 namespace Synthesis.Bethesda.UnitTests
 {
-    public class PersistentState_Tests
+    public class PersistentState_Tests : IClassFixture<LoquiUse>
     {
         protected static readonly string AddAwesomeNPCName = "AddAwesomeNPC";
 
@@ -25,11 +23,11 @@ namespace Synthesis.Bethesda.UnitTests
 
         protected static ModKey PatchModKey => new("Patch", ModType.Plugin);
 
-        protected static ModPath PatchModPath(TempFolder dataFolder) => new(PatchModKey, Path.Combine(dataFolder.Dir.Path, PatchModKey.ToString()));
+        protected static ModPath PatchModPath(DirectoryPath dataFolder) => new(PatchModKey, Path.Combine(dataFolder.Path, PatchModKey.ToString()));
 
-        private static string GetStatePath(TempFolder tmpFolder)
+        private static string GetStatePath(DirectoryPath tmpFolder)
         {
-            return Path.Combine(tmpFolder.Dir.Path, "StatePath");
+            return Path.Combine(tmpFolder.Path, "StatePath");
         }
 
         private static void AddItemToAllNPCs(IPatcherState<IOblivionMod, IOblivionModGetter> state)
@@ -63,23 +61,24 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task FreshStart_AwesomeNPC()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(PersistentState_Tests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
-            var modPath = PatchModPath(dataFolder);
+            var env = Utility.SetupEnvironment(GameRelease.Oblivion);
+            var modPath = PatchModPath(env.DataFolder);
 
             await new SynthesisPipeline()
                 .AddPatch<IOblivionMod, IOblivionModGetter>(AddAwesomeNPC)
-                .Run(new RunSynthesisMutagenPatcher()
-                {
-                    DataFolderPath = dataFolder.Dir.Path,
-                    GameRelease = GameRelease.Oblivion,
-                    OutputPath = modPath,
-                    SourcePath = null,
-                    LoadOrderFilePath = Utility.PathToLoadOrderFile
-                });
+                .Run(
+                    new RunSynthesisMutagenPatcher() 
+                    {
+                        DataFolderPath = env.DataFolder,
+                        GameRelease = GameRelease.Oblivion,
+                        OutputPath = modPath,
+                        SourcePath = null,
+                        LoadOrderFilePath = env.PluginPath
+                    }, 
+                    fileSystem: env.FileSystem);
 
-            Assert.True(File.Exists(modPath.Path));
-            using var patch = OblivionMod.CreateFromBinaryOverlay(modPath);
+            Assert.True(env.FileSystem.File.Exists(modPath.Path));
+            using var patch = OblivionMod.CreateFromBinaryOverlay(modPath, fileSystem: env.FileSystem);
             Assert.Equal(3, patch.Npcs.Count);
             Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
             Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
@@ -91,21 +90,22 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task FreshStart_AnotherNPC()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(PersistentState_Tests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
-            var modPath = PatchModPath(dataFolder);
+            var env = Utility.SetupEnvironment(GameRelease.Oblivion);
+            var modPath = PatchModPath(env.DataFolder);
             await new SynthesisPipeline()
                 .AddPatch<IOblivionMod, IOblivionModGetter>(AddAnotherNPC)
-                .Run(new RunSynthesisMutagenPatcher()
-                {
-                    DataFolderPath = dataFolder.Dir.Path,
-                    GameRelease = GameRelease.Oblivion,
-                    OutputPath = modPath,
-                    SourcePath = null,
-                    LoadOrderFilePath = Utility.PathToLoadOrderFile
-                });
-            Assert.True(File.Exists(modPath.Path));
-            using var patch = OblivionMod.CreateFromBinaryOverlay(modPath);
+                .Run(
+                    new RunSynthesisMutagenPatcher()
+                    {
+                        DataFolderPath = env.DataFolder,
+                        GameRelease = GameRelease.Oblivion,
+                        OutputPath = modPath,
+                        SourcePath = null,
+                        LoadOrderFilePath = env.PluginPath
+                    },
+                    fileSystem: env.FileSystem);
+            Assert.True(env.FileSystem.File.Exists(modPath.Path));
+            using var patch = OblivionMod.CreateFromBinaryOverlay(modPath, fileSystem: env.FileSystem);
             Assert.Equal(3, patch.Npcs.Count);
             Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
             Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
@@ -117,39 +117,42 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task FreshStart_AwesomeNPCAndAnotherNPC()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(PersistentState_Tests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
-            var statePath = GetStatePath(tmpFolder);
-            var modPath = PatchModPath(dataFolder);
+            var env = Utility.SetupEnvironment(GameRelease.Oblivion);
+            var statePath = GetStatePath(env.BaseFolder);
+            var modPath = PatchModPath(env.DataFolder);
 
             await new SynthesisPipeline()
                 .AddPatch<IOblivionMod, IOblivionModGetter>(AddAwesomeNPC)
-                .Run(new RunSynthesisMutagenPatcher()
-                {
-                    DataFolderPath = dataFolder.Dir.Path,
-                    GameRelease = GameRelease.Oblivion,
-                    OutputPath = modPath,
-                    SourcePath = null,
-                    LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                    PersistencePath = statePath,
-                    PatcherName = AddAwesomeNPCName
-                });
+                .Run(
+                    new RunSynthesisMutagenPatcher()
+                    {
+                        DataFolderPath = env.DataFolder,
+                        GameRelease = GameRelease.Oblivion,
+                        OutputPath = modPath,
+                        SourcePath = null,
+                        LoadOrderFilePath = env.PluginPath,
+                        PersistencePath = statePath,
+                        PatcherName = AddAwesomeNPCName
+                    },
+                    fileSystem: env.FileSystem);
 
             await new SynthesisPipeline()
                 .AddPatch<IOblivionMod, IOblivionModGetter>(AddAnotherNPC)
-                .Run(new RunSynthesisMutagenPatcher()
-                {
-                    DataFolderPath = dataFolder.Dir.Path,
-                    GameRelease = GameRelease.Oblivion,
-                    OutputPath = modPath,
-                    SourcePath = modPath,
-                    LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                    PersistencePath = statePath,
-                    PatcherName = AddAnotherNPCName
-                });
+                .Run(
+                    new RunSynthesisMutagenPatcher()
+                    {
+                        DataFolderPath = env.DataFolder,
+                        GameRelease = GameRelease.Oblivion,
+                        OutputPath = modPath,
+                        SourcePath = modPath,
+                        LoadOrderFilePath = env.PluginPath,
+                        PersistencePath = statePath,
+                        PatcherName = AddAnotherNPCName
+                    },
+                    fileSystem: env.FileSystem);
 
-            Assert.True(File.Exists(modPath.Path));
-            using var patch = OblivionMod.CreateFromBinaryOverlay(modPath);
+            Assert.True(env.FileSystem.File.Exists(modPath.Path));
+            using var patch = OblivionMod.CreateFromBinaryOverlay(modPath, fileSystem: env.FileSystem);
             Assert.Equal(4, patch.Npcs.Count);
             Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
             Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
@@ -164,39 +167,42 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task FreshStart_AnotherNPCAndAwesomeNPC()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(PersistentState_Tests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
-            var statePath = GetStatePath(tmpFolder);
-            var modPath = PatchModPath(dataFolder);
+            var env = Utility.SetupEnvironment(GameRelease.Oblivion);
+            var statePath = GetStatePath(env.BaseFolder);
+            var modPath = PatchModPath(env.DataFolder);
 
             await new SynthesisPipeline()
             .AddPatch<IOblivionMod, IOblivionModGetter>(AddAnotherNPC)
-            .Run(new RunSynthesisMutagenPatcher()
-            {
-                DataFolderPath = dataFolder.Dir.Path,
-                GameRelease = GameRelease.Oblivion,
-                OutputPath = modPath,
-                SourcePath = null,
-                LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                PersistencePath = statePath,
-                PatcherName = AddAnotherNPCName
-            });
+            .Run(
+                new RunSynthesisMutagenPatcher()
+                {
+                    DataFolderPath = env.DataFolder,
+                    GameRelease = GameRelease.Oblivion,
+                    OutputPath = modPath,
+                    SourcePath = null,
+                    LoadOrderFilePath = env.PluginPath,
+                    PersistencePath = statePath,
+                    PatcherName = AddAnotherNPCName
+                },
+                env.FileSystem);
 
             await new SynthesisPipeline()
                 .AddPatch<IOblivionMod, IOblivionModGetter>(AddAwesomeNPC)
-                .Run(new RunSynthesisMutagenPatcher()
-                {
-                    DataFolderPath = dataFolder.Dir.Path,
-                    GameRelease = GameRelease.Oblivion,
-                    OutputPath = modPath,
-                    SourcePath = modPath,
-                    LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                    PersistencePath = statePath,
-                    PatcherName = AddAwesomeNPCName
-                });
+                .Run(
+                    new RunSynthesisMutagenPatcher()
+                    {
+                        DataFolderPath = env.DataFolder,
+                        GameRelease = GameRelease.Oblivion,
+                        OutputPath = modPath,
+                        SourcePath = modPath,
+                        LoadOrderFilePath = env.PluginPath,
+                        PersistencePath = statePath,
+                        PatcherName = AddAwesomeNPCName
+                    },
+                    env.FileSystem);
 
-            Assert.True(File.Exists(modPath.Path));
-            using var patch = OblivionMod.CreateFromBinaryOverlay(modPath);
+            Assert.True(env.FileSystem.File.Exists(modPath.Path));
+            using var patch = OblivionMod.CreateFromBinaryOverlay(modPath, env.FileSystem);
             Assert.Equal(4, patch.Npcs.Count);
             Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
             Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
@@ -214,45 +220,48 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task SecondRun_AwesomeNPCAndAnotherNPC()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(PersistentState_Tests));
-            var statePath = GetStatePath(tmpFolder);
+            var env = Utility.SetupEnvironment(GameRelease.Oblivion);
+            var statePath = GetStatePath(env.BaseFolder);
             TextFileSharedFormKeyAllocator.Initialize(statePath);
 
             for (int i = 0; i < 2; i++)
             {
-                using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
-                var modPath = PatchModPath(dataFolder);
+                var modPath = PatchModPath(env.DataFolder);
 
                 await new SynthesisPipeline()
                     .AddPatch<IOblivionMod, IOblivionModGetter>(AddAwesomeNPC)
-                    .Run(new RunSynthesisMutagenPatcher()
-                    {
-                        DataFolderPath = dataFolder.Dir.Path,
-                        GameRelease = GameRelease.Oblivion,
-                        OutputPath = modPath,
-                        SourcePath = null,
-                        LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        PersistencePath = statePath,
-                        PatcherName = AddAwesomeNPCName
-                    });
+                    .Run(
+                        new RunSynthesisMutagenPatcher()
+                        {
+                            DataFolderPath = env.DataFolder,
+                            GameRelease = GameRelease.Oblivion,
+                            OutputPath = modPath,
+                            SourcePath = null,
+                            LoadOrderFilePath = env.PluginPath,
+                            PersistencePath = statePath,
+                            PatcherName = AddAwesomeNPCName
+                        },
+                        fileSystem : env.FileSystem);
 
                 await new SynthesisPipeline()
                     .AddPatch<IOblivionMod, IOblivionModGetter>(AddAnotherNPC)
-                    .Run(new RunSynthesisMutagenPatcher()
-                    {
-                        DataFolderPath = dataFolder.Dir.Path,
-                        GameRelease = GameRelease.Oblivion,
-                        OutputPath = modPath,
-                        SourcePath = modPath,
-                        LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        PersistencePath = statePath,
-                        PatcherName = AddAnotherNPCName
-                    });
+                    .Run(
+                        new RunSynthesisMutagenPatcher()
+                        {
+                            DataFolderPath = env.DataFolder,
+                            GameRelease = GameRelease.Oblivion,
+                            OutputPath = modPath,
+                            SourcePath = modPath,
+                            LoadOrderFilePath = env.PluginPath,
+                            PersistencePath = statePath,
+                            PatcherName = AddAnotherNPCName
+                        },
+                        fileSystem: env.FileSystem);
 
                 if (i == 1)
                 {
-                    Assert.True(File.Exists(modPath.Path));
-                    using var patch = OblivionMod.CreateFromBinaryOverlay(modPath);
+                    Assert.True(env.FileSystem.File.Exists(modPath.Path));
+                    using var patch = OblivionMod.CreateFromBinaryOverlay(modPath, env.FileSystem);
                     Assert.Equal(4, patch.Npcs.Count);
                     Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
                     Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
@@ -269,74 +278,80 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public async Task SecondRun_AwesomeNPCAndAnotherNPCSwapped()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(PersistentState_Tests));
-            var statePath = GetStatePath(tmpFolder);
+            var env = Utility.SetupEnvironment(GameRelease.Oblivion);
+            var statePath = GetStatePath(env.BaseFolder);
             TextFileSharedFormKeyAllocator.Initialize(statePath);
 
             {
-                using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
-                var modPath = PatchModPath(dataFolder);
+                var modPath = PatchModPath(env.DataFolder);
 
                 await new SynthesisPipeline()
                     .AddPatch<IOblivionMod, IOblivionModGetter>(AddAwesomeNPC)
-                    .Run(new RunSynthesisMutagenPatcher()
-                    {
-                        DataFolderPath = dataFolder.Dir.Path,
-                        GameRelease = GameRelease.Oblivion,
-                        OutputPath = modPath,
-                        SourcePath = null,
-                        LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        PersistencePath = statePath,
-                        PatcherName = AddAwesomeNPCName
-                    });
+                    .Run(
+                        new RunSynthesisMutagenPatcher()
+                        {
+                            DataFolderPath = env.DataFolder,
+                            GameRelease = GameRelease.Oblivion,
+                            OutputPath = modPath,
+                            SourcePath = null,
+                            LoadOrderFilePath = env.PluginPath,
+                            PersistencePath = statePath,
+                            PatcherName = AddAwesomeNPCName
+                        },
+                        fileSystem: env.FileSystem);
 
                 await new SynthesisPipeline()
                     .AddPatch<IOblivionMod, IOblivionModGetter>(AddAnotherNPC)
-                    .Run(new RunSynthesisMutagenPatcher()
-                    {
-                        DataFolderPath = dataFolder.Dir.Path,
-                        GameRelease = GameRelease.Oblivion,
-                        OutputPath = modPath,
-                        SourcePath = modPath,
-                        LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        PersistencePath = statePath,
-                        PatcherName = AddAnotherNPCName
-                    });
+                    .Run(
+                        new RunSynthesisMutagenPatcher()
+                        {
+                            DataFolderPath = env.DataFolder,
+                            GameRelease = GameRelease.Oblivion,
+                            OutputPath = modPath,
+                            SourcePath = modPath,
+                            LoadOrderFilePath = env.PluginPath,
+                            PersistencePath = statePath,
+                            PatcherName = AddAnotherNPCName
+                        },
+                        fileSystem: env.FileSystem);
             }
 
             {
-                Assert.True(Directory.Exists(statePath));
-                using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.Oblivion);
-                var modPath = PatchModPath(dataFolder);
+                Assert.True(env.FileSystem.Directory.Exists(statePath));
+                var modPath = PatchModPath(env.DataFolder);
 
                 await new SynthesisPipeline()
                     .AddPatch<IOblivionMod, IOblivionModGetter>(AddAnotherNPC)
-                    .Run(new RunSynthesisMutagenPatcher()
-                    {
-                        DataFolderPath = dataFolder.Dir.Path,
-                        GameRelease = GameRelease.Oblivion,
-                        OutputPath = modPath,
-                        SourcePath = null,
-                        LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        PersistencePath = statePath,
-                        PatcherName = AddAnotherNPCName
-                    });
+                    .Run(
+                        new RunSynthesisMutagenPatcher()
+                        {
+                            DataFolderPath = env.DataFolder,
+                            GameRelease = GameRelease.Oblivion,
+                            OutputPath = modPath,
+                            SourcePath = null,
+                            LoadOrderFilePath = env.PluginPath,
+                            PersistencePath = statePath,
+                            PatcherName = AddAnotherNPCName
+                        },
+                        fileSystem: env.FileSystem);
 
                 await new SynthesisPipeline()
                     .AddPatch<IOblivionMod, IOblivionModGetter>(AddAwesomeNPC)
-                    .Run(new RunSynthesisMutagenPatcher()
-                    {
-                        DataFolderPath = dataFolder.Dir.Path,
-                        GameRelease = GameRelease.Oblivion,
-                        OutputPath = modPath,
-                        SourcePath = modPath,
-                        LoadOrderFilePath = Utility.PathToLoadOrderFile,
-                        PersistencePath = statePath,
-                        PatcherName = AddAwesomeNPCName
-                    });
+                    .Run(
+                        new RunSynthesisMutagenPatcher()
+                        {
+                            DataFolderPath = env.DataFolder,
+                            GameRelease = GameRelease.Oblivion,
+                            OutputPath = modPath,
+                            SourcePath = modPath,
+                            LoadOrderFilePath = env.PluginPath,
+                            PersistencePath = statePath,
+                            PatcherName = AddAwesomeNPCName
+                        },
+                        fileSystem: env.FileSystem);
 
-                Assert.True(File.Exists(modPath.Path));
-                using var patch = OblivionMod.CreateFromBinaryOverlay(modPath);
+                Assert.True(env.FileSystem.File.Exists(modPath.Path));
+                using var patch = OblivionMod.CreateFromBinaryOverlay(modPath, fileSystem: env.FileSystem);
                 Assert.Equal(4, patch.Npcs.Count);
                 Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
                 Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);

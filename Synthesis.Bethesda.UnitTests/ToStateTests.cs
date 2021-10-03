@@ -1,24 +1,29 @@
+using System.Linq;
 using FluentAssertions;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.CLI;
-using System.IO;
-using System.Linq;
+using Mutagen.Bethesda.Plugins.Masters;
+using Mutagen.Bethesda.Plugins.Order.DI;
+using Mutagen.Bethesda.Synthesis.States;
+using Mutagen.Bethesda.Synthesis.States.DI;
 using Xunit;
+using Path = System.IO.Path;
 
 namespace Synthesis.Bethesda.UnitTests
 {
-    public class ToStateTests
+    public class ToStateTests : IClassFixture<LoquiUse>
     {
         [Fact]
         public void LoadOrderTrim()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(ToStateTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimLE);
-            var output = Utility.TypicalOutputFile(tmpFolder);
-            var pluginPath = Path.Combine(tmpFolder.Dir.Path, "Plugins.txt");
-            File.WriteAllLines(pluginPath,
+            var env = Utility.SetupEnvironment(GameRelease.SkyrimLE);
+            var output = Utility.TypicalOutputFile(env.DataFolder);
+            var pluginPath = Path.Combine(env.DataFolder, "Plugins.txt");
+            env.FileSystem.File.WriteAllLines(pluginPath,
                 new string[]
                 {
                     $"*{Utility.TestFileName}",
@@ -28,13 +33,14 @@ namespace Synthesis.Bethesda.UnitTests
                 });
             var settings = new RunSynthesisMutagenPatcher()
             {
-                DataFolderPath = dataFolder.Dir.Path,
+                DataFolderPath = env.DataFolder,
                 GameRelease = GameRelease.SkyrimLE,
-                LoadOrderFilePath = Utility.PathToLoadOrderFile,
+                LoadOrderFilePath = env.PluginPath,
                 OutputPath = output,
                 SourcePath = null
             };
-            using var state = Mutagen.Bethesda.Synthesis.Internal.Utility.ToState(
+            var stateFactory = env.GetStateFactory();
+            using var state = stateFactory.ToState(
                 GameCategory.Skyrim,
                 settings,
                 new PatcherPreferences(),
@@ -51,11 +57,10 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void NonSynthesisTarget()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(ToStateTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimLE);
-            var output = ModPath.FromPath(Path.Combine(dataFolder.Dir.Path, Utility.OtherFileName));
-            var pluginPath = Path.Combine(tmpFolder.Dir.Path, "Plugins.txt");
-            File.WriteAllLines(pluginPath,
+            var env = Utility.SetupEnvironment(GameRelease.SkyrimLE);
+            var output = ModPath.FromPath(Path.Combine(env.DataFolder, Utility.OtherFileName));
+            var pluginPath = Path.Combine(env.DataFolder, "Plugins.txt");
+            env.FileSystem.File.WriteAllLines(pluginPath,
                 new string[]
                 {
                     $"*{Utility.TestFileName}",
@@ -66,13 +71,14 @@ namespace Synthesis.Bethesda.UnitTests
                 });
             var settings = new RunSynthesisMutagenPatcher()
             {
-                DataFolderPath = dataFolder.Dir.Path,
+                DataFolderPath = env.DataFolder,
                 GameRelease = GameRelease.SkyrimLE,
-                LoadOrderFilePath = Utility.PathToLoadOrderFile,
+                LoadOrderFilePath = env.PluginPath,
                 OutputPath = output,
                 SourcePath = null
             };
-            using var state = Mutagen.Bethesda.Synthesis.Internal.Utility.ToState(
+            var stateFactory = env.GetStateFactory();
+            using var state = stateFactory.ToState(
                 GameCategory.Skyrim,
                 settings,
                 new PatcherPreferences(),

@@ -42,13 +42,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Mutagen.Bethesda" Version="0.31.0" />
-    <PackageReference Include="Mutagen.Bethesda.Core.Windows" Version="0.31.0" />
-    <PackageReference Include="Mutagen.Bethesda.Json" Version="0.31.0" />
-    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.31.0" />
-    <PackageReference Include="Mutagen.Bethesda.Sqlite" Version="0.31.0" />
+    <PackageReference Include="Mutagen.Bethesda" Version="0.32.0" />
+    <PackageReference Include="Mutagen.Bethesda.Core.Windows" Version="0.32.0" />
+    <PackageReference Include="Mutagen.Bethesda.Json" Version="0.32.0" />
+    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.32.0" />
+    <PackageReference Include="Mutagen.Bethesda.Sqlite" Version="0.32.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.27.0" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.30" />
     <PackageReference Include="NuGetizer" Version="0.7.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -57,6 +57,19 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Synthesis.Bethesda\Synthesis.Bethesda.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Versioning\Versions.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="States\DI\StateFactory.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

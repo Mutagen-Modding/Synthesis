@@ -1,23 +1,14 @@
 using Noggog.WPF;
 using ReactiveUI;
-using System;
-using System.Collections.Generic;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Noggog;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Cli;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class CliInitViewBase : NoggogUserControl<CliPatcherInitVM> { }
+    public class CliInitViewBase : NoggogUserControl<CliPatcherInitVm> { }
 
     /// <summary>
     /// Interaction logic for CliInitView.xaml
@@ -29,17 +20,23 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.Bind(this.ViewModel, vm => vm.DisplayName, view => view.PatcherDetailName.Text)
+                this.WhenAnyValue(x => x.ViewModel!.NameVm.Name)
+                    .Select(x => x.IsNullOrWhitespace() ? "Patcher Name" : x)
+                    .BindTo(this, view => view.PatcherDetailName.Text)
+                    .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.NameVm.Name)
+                    .Select(x => x.IsNullOrWhitespace() ? 0.6d : 1d)
+                    .BindTo(this, view => view.PatcherDetailName.Opacity)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel)
                     .BindTo(this, x => x.PatcherIconDisplay.DataContext)
                     .DisposeWith(disposable);
 
                 // Set up discard/confirm clicks
-                this.WhenAnyValue(x => x.ViewModel!.Profile.Config.CancelConfiguration)
+                this.WhenAnyValue(x => x.ViewModel!.CancelConfiguration)
                     .BindTo(this, x => x.CancelAdditionButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.Profile.Config.CompleteConfiguration)
+                this.WhenAnyValue(x => x.ViewModel!.CompleteConfiguration)
                     .BindTo(this, x => x.ConfirmButton.ConfirmAdditionButton.Command)
                     .DisposeWith(disposable);
             });

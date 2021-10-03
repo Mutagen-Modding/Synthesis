@@ -1,6 +1,5 @@
 using CommandLine;
 using Mutagen.Bethesda.Plugins;
-using Mutagen.Bethesda.Plugins.Binary;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Synthesis.CLI;
@@ -13,12 +12,20 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Installs;
-using Mutagen.Bethesda.Plugins.Binary.Parameters;
+using Mutagen.Bethesda.Synthesis.Versioning;
 using SynthesisBase = Synthesis.Bethesda;
+using Mutagen.Bethesda.Plugins.Binary.Parameters;
+using Mutagen.Bethesda.Plugins.Implicit.DI;
+using Mutagen.Bethesda.Plugins.Order.DI;
+using Mutagen.Bethesda.Synthesis.States;
+using Mutagen.Bethesda.Synthesis.States.DI;
+using Synthesis.Bethesda.Commands;
 
 namespace Mutagen.Bethesda.Synthesis
 {
@@ -113,14 +120,25 @@ namespace Mutagen.Bethesda.Synthesis
             return this;
         }
 
-        private async Task<int> CheckRunnability(CheckRunnability args)
+        private async Task<int> CheckRunnability(CheckRunnability args, IFileSystem fileSystem)
         {
             var patcher = _patchers.GetOrDefault(args.GameRelease.ToCategory());
-            var loadOrder = Utility.GetLoadOrder(
-                release: args.GameRelease,
-                loadOrderFilePath: args.LoadOrderFilePath,
-                dataFolderPath: args.DataFolderPath,
-                patcher?.Prefs)
+            var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
+            var loadOrder = new GetStateLoadOrder(
+                    new ImplicitListingsProvider(
+                        fileSystem,
+                        new DataDirectoryInjection(args.DataFolderPath),
+                        new ImplicitListingModKeyProvider(
+                            gameReleaseInjection)),
+                    new StatePluginsListingProvider(
+                        args.LoadOrderFilePath,
+                        new PluginRawListingsReader(
+                            fileSystem,
+                            new PluginListingsParser(
+                                new ModListingParser(
+                                    new HasEnabledMarkersProvider(
+                                        gameReleaseInjection))))))
+                .GetLoadOrder(patcher?.Prefs)
                 .ToLoadOrder();
             var state = new RunnabilityState(args, loadOrder);
             try
@@ -299,14 +317,17 @@ namespace Mutagen.Bethesda.Synthesis
             return HandleOnShutdown(await InternalRun(args, preferences));
         }
 
-        public async Task<int> Run(string[] args)
+        public async Task<int> Run(
+            string[] args,
+            IFileSystem? fileSystem = null)
         {
-            return HandleOnShutdown(await InternalRun(args, null));
+            return HandleOnShutdown(await InternalRun(args, null, fileSystem: fileSystem));
         }
 
         private async Task<int> InternalRun(
             string[] args,
-            RunPreferences? preferences = null)
+            RunPreferences? preferences = null,
+            IFileSystem? fileSystem = null)
         {
             await using var throttler = new ConsoleThrottler();
             if (_argumentAdjustment != null)
@@ -364,6 +385,7 @@ namespace Mutagen.Bethesda.Synthesis
             {
                 s.IgnoreUnknownArguments = true;
             });
+            fileSystem = fileSystem.GetOrDefault();
             return await parser.ParseArguments(
                     args,
                     typeof(RunSynthesisMutagenPatcher),
@@ -375,7 +397,7 @@ namespace Mutagen.Bethesda.Synthesis
                     {
                         try
                         {
-                            await Run(settings);
+                            await Run(settings, fileSystem: fileSystem);
                         }
                         catch (Exception ex)
                         {
@@ -389,7 +411,7 @@ namespace Mutagen.Bethesda.Synthesis
                         }
                         return 0;
                     },
-                    (CheckRunnability checkRunnability) => CheckRunnability(checkRunnability),
+                    (CheckRunnability checkRunnability) => CheckRunnability(checkRunnability, fileSystem),
                     (OpenForSettings openForSettings) => OpenForSettings(openForSettings),
                     (SettingsQuery settingsQuery) => QuerySettings(settingsQuery),
                     async _ =>
@@ -399,9 +421,11 @@ namespace Mutagen.Bethesda.Synthesis
                     });
         }
 
-        public async Task Run(RunSynthesisMutagenPatcher args)
+        public async Task Run(
+            RunSynthesisMutagenPatcher args,
+            IFileSystem? fileSystem = null)
         {
-            await Run(args, SynthesisBase.Constants.SynthesisModKey);
+            await Run(args, SynthesisBase.Constants.SynthesisModKey, fileSystem);
         }
 
         [Obsolete("Using SetTypicalOpen is the new preferred API for supplying RunDefaultPatcher preferences")]
@@ -425,8 +449,10 @@ namespace Mutagen.Bethesda.Synthesis
 
         private async Task Run(
             RunSynthesisMutagenPatcher args,
-            ModKey exportKey)
+            ModKey exportKey,
+            IFileSystem? fileSystem = null)
         {
+            fileSystem = fileSystem.GetOrDefault();
             Console.WriteLine($"Mutagen version: {Versions.MutagenVersion}");
             Console.WriteLine($"Mutagen sha: {Versions.MutagenSha}");
             Console.WriteLine($"Synthesis version: {Versions.SynthesisVersion}");
@@ -441,24 +467,49 @@ namespace Mutagen.Bethesda.Synthesis
             if (_runnabilityChecks.Count > 0)
             {
                 System.Console.WriteLine("Checking runnability");
-                await CheckRunnability(new CheckRunnability()
-                {
-                    DataFolderPath = args.DataFolderPath,
-                    GameRelease = args.GameRelease,
-                    LoadOrderFilePath = args.LoadOrderFilePath
-                });
+                await CheckRunnability(
+                    new CheckRunnability()
+                    {
+                        DataFolderPath = args.DataFolderPath,
+                        GameRelease = args.GameRelease,
+                        LoadOrderFilePath = args.LoadOrderFilePath
+                    },
+                    fileSystem: fileSystem);
                 System.Console.WriteLine("Checking runnability complete");
             }
             WarmupAll.Init();
             System.Console.WriteLine("Prepping state.");
             var prefs = patcher.Prefs ?? new PatcherPreferences();
-            using var state = Utility.ToState(cat, args, prefs, exportKey);
+            var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
+            var dataDirectoryInjection = new DataDirectoryInjection(args.DataFolderPath);
+            var pluginRawListingsReader = new PluginRawListingsReader(
+                fileSystem,
+                new PluginListingsParser(
+                    new ModListingParser(
+                        new HasEnabledMarkersProvider(
+                            gameReleaseInjection))));
+            var pluginListingsPathProvider = new PluginListingsPathProvider(gameReleaseInjection);
+            var stateFactory = new StateFactory(
+                fileSystem,
+                new LoadOrderImporterFactory(
+                    fileSystem),
+                new GetStateLoadOrder(
+                    new ImplicitListingsProvider(
+                        fileSystem,
+                        dataDirectoryInjection,
+                        new ImplicitListingModKeyProvider(
+                            gameReleaseInjection)),
+                    new StatePluginsListingProvider(
+                        args.LoadOrderFilePath,
+                        pluginRawListingsReader)),
+                new EnableImplicitMastersFactory(fileSystem));
+            using var state = stateFactory.ToState(cat, args, prefs, exportKey);
             await patcher.Patcher(state).ConfigureAwait(false);
             System.Console.WriteLine("Running patch.");
             if (!prefs.NoPatch)
             {
                 System.Console.WriteLine($"Writing to output: {args.OutputPath}");
-                state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)));
+                state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)), fileSystem: fileSystem);
             }
         }
         #endregion
@@ -533,18 +584,20 @@ namespace Mutagen.Bethesda.Synthesis
         /// <param name="settings">Patcher run settings</param>
         /// <param name="patcher">Patcher func that processes a load order, and returns a mod object to export.</param>
         /// <param name="userPreferences">Any custom user preferences</param>
+        /// <param name="fileSystem">File system to run on</param>
         [Obsolete("Using the AddPatch().Run() combination chain is the new preferred API")]
         public async Task Patch<TMod, TModGetter>(
             RunSynthesisMutagenPatcher settings,
             DepreciatedAsyncPatcherFunction<TMod, TModGetter> patcher,
-            UserPreferences? userPreferences = null)
+            UserPreferences? userPreferences = null,
+            IFileSystem? fileSystem = null)
             where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
             where TModGetter : class, IContextGetterMod<TMod, TModGetter>
         {
             try
             {
                 await AddPatch<TMod, TModGetter>(state => patcher(ToDepreciatedState(state)), userPreferences?.ToPatcherPrefs())
-                    .Run(settings);
+                    .Run(settings, fileSystem);
             }
             catch (Exception ex)
             when (Environment.GetCommandLineArgs().Length == 0
@@ -564,18 +617,20 @@ namespace Mutagen.Bethesda.Synthesis
         /// <param name="settings">Patcher run settings</param>
         /// <param name="patcher">Patcher func that processes a load order, and returns a mod object to export.</param>
         /// <param name="userPreferences">Any custom user preferences</param>
+        /// <param name="fileSystem">File system to run on</param>
         [Obsolete("Using the AddPatch().Run() combination chain is the new preferred API")]
         public void Patch<TMod, TModGetter>(
             RunSynthesisMutagenPatcher settings,
             DepreciatedPatcherFunction<TMod, TModGetter> patcher,
-            UserPreferences? userPreferences = null)
+            UserPreferences? userPreferences = null,
+            IFileSystem? fileSystem = null)
             where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
             where TModGetter : class, IContextGetterMod<TMod, TModGetter>
         {
             try
             {
                 AddPatch<TMod, TModGetter>(state => patcher(ToDepreciatedState(state)), userPreferences?.ToPatcherPrefs())
-                    .Run(settings).Wait();
+                    .Run(settings, fileSystem).Wait();
             }
             catch (Exception ex)
             when (Environment.GetCommandLineArgs().Length == 0

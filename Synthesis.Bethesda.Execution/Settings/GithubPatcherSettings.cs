@@ -1,9 +1,13 @@
 using Noggog;
-using Synthesis.Bethesda.Execution.Reporters;
 using System;
+using System.Diagnostics.CodeAnalysis;
+using Serilog;
+using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
+    [ExcludeFromCodeCoverage]
     public record GithubPatcherLastRunState(
         string TargetRepo,
         string ProjectSubpath,
@@ -11,9 +15,11 @@ namespace Synthesis.Bethesda.Execution.Settings
         string MutagenVersion,
         string SynthesisVersion);
 
-    public class GithubPatcherSettings : PatcherSettings
+    [ExcludeFromCodeCoverage]
+    public class GithubPatcherSettings : PatcherSettings, IGithubPatcherIdentifier, IProjectSubpathDefaultSettings
     {
         public string ID = string.Empty;
+        string IGithubPatcherIdentifier.Id => ID;
         public string RemoteRepoPath = string.Empty;
         public string SelectedProjectSubpath = string.Empty;
         public PatcherVersioningEnum PatcherVersioning = PatcherVersioningEnum.Branch;
@@ -23,16 +29,15 @@ namespace Synthesis.Bethesda.Execution.Settings
         public bool LatestTag = true;
         public bool FollowDefaultBranch = true;
         public bool AutoUpdateToBranchTip = false;
-        public bool OverrideNugetVersioning = false;
         public PatcherNugetVersioningEnum MutagenVersionType = PatcherNugetVersioningEnum.Profile;
         public string ManualMutagenVersion = string.Empty;
         public PatcherNugetVersioningEnum SynthesisVersionType = PatcherNugetVersioningEnum.Profile;
         public string ManualSynthesisVersion = string.Empty;
         public GithubPatcherLastRunState? LastSuccessfulRun;
 
-        public override void Print(IRunReporter logger)
+        public override void Print(ILogger logger)
         {
-            logger.Write(default, $"[Git] {Nickname.Decorate(x => $"{x} => ")}{RemoteRepoPath}/{SelectedProjectSubpath} {PatcherVersioningString()}");
+            logger.Information($"[Git] {Nickname.Decorate(x => $"{x} => ")}{RemoteRepoPath}/{SelectedProjectSubpath} {PatcherVersioningString()}");
         }
 
         public string PatcherVersioningString()
@@ -63,5 +68,7 @@ namespace Synthesis.Bethesda.Execution.Settings
                     throw new NotImplementedException();
             }
         }
+
+        string IProjectSubpathProvider.ProjectSubpath => SelectedProjectSubpath;
     }
 }

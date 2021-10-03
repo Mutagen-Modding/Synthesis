@@ -1,17 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using Synthesis.Bethesda.Execution.Versioning;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
+    [ExcludeFromCodeCoverage]
     public record RunnerRepoInfo(
         string SolutionPath,
         string ProjPath,
         string? Target,
         string CommitMessage,
         DateTime CommitDate,
-        string? ListedMutagenVersion,
-        string? ListedSynthesisVersion,
-        string? TargetMutagenVersion,
-        string? TargetSynthesisVersion);
+        NugetVersionPair ListedVersions,
+        NugetVersionPair TargetVersions);
 }

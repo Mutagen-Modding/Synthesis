@@ -1,0 +1,329 @@
+<local:GroupConfigListingViewBase
+    x:Class="Synthesis.Bethesda.GUI.Views.GroupConfigListingView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
+    xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:wpf="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <Grid
+        Margin="0,0,0,8"
+        Background="Transparent"
+        FocusVisualStyle="{x:Null}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem x:Name="DeleteContextMenuButton" Header="Delete" />
+            </ContextMenu>
+        </Grid.ContextMenu>
+
+        <Grid Grid.Row="0"
+            x:Name="TopGrid"
+            Margin="5,0,0,0"
+            Background="Transparent"
+            ClipToBounds="True">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <local:GroupFrame Grid.Column="0" Grid.ColumnSpan="5"
+                Hovered="{Binding IsMouseOver, ElementName=TopGrid}"
+                IsSelected="{Binding IsSelected}"
+                IsOn="{Binding IsOn}" />
+            <local:IsOnToggleButtonView Grid.Column="0"
+                x:Name="OnToggle"
+                Width="30"
+                HorizontalAlignment="Left"
+                Background="Transparent" />
+            <TextBox Grid.Column="1"
+                x:Name="ExportNameBlock"
+                Margin="2,0,0,0"
+                VerticalAlignment="Center"
+                mahapps:TextBoxHelper.Watermark="Group Name"
+                Background="Transparent"
+                FontWeight="Bold"
+                IsHitTestVisible="False" />
+            <icon:PackIconMaterial Grid.Column="3"
+                x:Name="ProcessingCircle"
+                Width="7"
+                Height="7"
+                Margin="0,0,2,0"
+                VerticalAlignment="Center"
+                Foreground="{StaticResource LightPurpleBrush}"
+                Kind="Circle" />
+            <ToggleButton Grid.Column="4"
+                x:Name="ExpandStateButton"
+                Margin="0,0,4,0"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                Focusable="False">
+                <ToggleButton.Style>
+                    <Style BasedOn="{StaticResource Noggog.Styles.ToggleButton}" TargetType="ToggleButton">
+                        <Setter Property="Content">
+                            <Setter.Value>
+                                <icon:PackIconMaterial
+                                    Width="10"
+                                    Height="10"
+                                    VerticalAlignment="Center"
+                                    Kind="ChevronUp" />
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <icon:PackIconMaterial
+                                            Width="10"
+                                            Height="10"
+                                            VerticalAlignment="Center"
+                                            Kind="ChevronDown" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToggleButton.Style>
+            </ToggleButton>
+        </Grid>
+        <Rectangle Grid.Row="1"
+            Margin="5,0,0,0"
+            Fill="#35000000" />
+        <ListBox Grid.Row="1"
+            Name="PatchersList"
+            Margin="5,2,0,0"
+            AllowDrop="True"
+            Background="Transparent"
+            ClipToBounds="False"
+            Focusable="False"
+            ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            ScrollViewer.VerticalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <local:PatcherConfigListingView />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Grid Grid.Row="2"
+            x:Name="BottomBar"
+            Height="25"
+            Background="Transparent"
+            ClipToBounds="True">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" Grid.ColumnSpan="4"
+                Margin="5,-15,-15,0"
+                Background="#35000000"
+                CornerRadius="15" />
+            <Border Grid.Column="0" Grid.ColumnSpan="4"
+                x:Name="BottomBorder"
+                Margin="5,-15,-15,0"
+                BorderThickness="1"
+                CornerRadius="15"
+                Opacity="0.6">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="BorderBrush">
+                            <Setter.Value>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Offset="0.7" Color="#00444444" />
+                                    <GradientStop Offset="1" Color="{StaticResource MahApps.Colors.Gray8}" />
+                                </LinearGradientBrush>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsOn}" Value="True">
+                                <Setter Property="BorderBrush">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Offset="0.7" Color="#00444444" />
+                                            <GradientStop Offset="1" Color="{StaticResource MahApps.Colors.Gray3}" />
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
+            <Button Grid.Column="0"
+                x:Name="DisableAllPatchersButton"
+                Margin="11,0,0,5"
+                ToolTip="Disable all patchers">
+                <Button.Style>
+                    <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
+                        <Setter Property="Opacity" Value="0" />
+                        <Setter Property="Content">
+                            <Setter.Value>
+                                <icon:PackIconMaterial Kind="CheckboxBlankCircleOutline" />
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <icon:PackIconMaterial Foreground="{StaticResource Noggog.Brushes.Yellow.Foreground}" Kind="CheckboxBlankCircleOutline">
+                                            <icon:PackIconMaterial.Effect>
+                                                <DropShadowEffect
+                                                    BlurRadius="15"
+                                                    ShadowDepth="0"
+                                                    Color="{StaticResource Salmon}" />
+                                            </icon:PackIconMaterial.Effect>
+                                        </icon:PackIconMaterial>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Expanded}" Value="True" />
+                                    <Condition Binding="{Binding IsMouseOver, ElementName=BottomBar}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1"
+                                                Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiDataTrigger.EnterActions>
+                                <MultiDataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="0"
+                                                Duration="0:0:0.15" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiDataTrigger.ExitActions>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button Grid.Column="1"
+                x:Name="EnableAllPatchersButton"
+                Margin="5,0,0,5"
+                ToolTip="Enable all patchers">
+                <Button.Style>
+                    <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
+                        <Setter Property="Opacity" Value="0" />
+                        <Setter Property="Content">
+                            <Setter.Value>
+                                <icon:PackIconMaterial Kind="CheckboxMarkedCircle" />
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <icon:PackIconMaterial Foreground="{StaticResource Noggog.Brushes.Yellow.Foreground}" Kind="CheckboxMarkedCircle">
+                                            <icon:PackIconMaterial.Effect>
+                                                <DropShadowEffect
+                                                    BlurRadius="15"
+                                                    ShadowDepth="0"
+                                                    Color="{StaticResource Salmon}" />
+                                            </icon:PackIconMaterial.Effect>
+                                        </icon:PackIconMaterial>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Expanded}" Value="True" />
+                                    <Condition Binding="{Binding IsMouseOver, ElementName=BottomBar}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1"
+                                                Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiDataTrigger.EnterActions>
+                                <MultiDataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="0"
+                                                Duration="0:0:0.15" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </MultiDataTrigger.ExitActions>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <StackPanel Grid.Column="0" Grid.ColumnSpan="2"
+                x:Name="PatcherCountPanel"
+                Margin="16,0,0,0"
+                Orientation="Horizontal">
+                <TextBlock x:Name="ActiveCountText" VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{StaticResource PaleYellowBrush}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding NumEnabledPatchers}" Value="0">
+                                    <Setter Property="Foreground" Value="Gray" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <TextBlock
+                    x:Name="OutOfSlashText"
+                    Margin="3,0"
+                    VerticalAlignment="Center"
+                    Foreground="Gray"
+                    Text="/" />
+                <TextBlock
+                    x:Name="TotalCountText"
+                    VerticalAlignment="Center"
+                    Foreground="Gray" />
+            </StackPanel>
+            <Grid Grid.Column="3" Margin="0,0,5,2">
+                <Button
+                    x:Name="GoButton"
+                    HorizontalContentAlignment="Stretch"
+                    ToolTip="Run group pipeline">
+                    <icon:PackIconMaterial
+                        Width="15"
+                        Height="15"
+                        Kind="Send" />
+                </Button>
+                <Button
+                    x:Name="OverallErrorButton"
+                    Style="{StaticResource ErrorButton}"
+                    Visibility="Collapsed">
+                    <icon:PackIconMaterial
+                        Width="15"
+                        Height="15"
+                        VerticalAlignment="Center"
+                        Kind="AlertCircle" />
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</local:GroupConfigListingViewBase>

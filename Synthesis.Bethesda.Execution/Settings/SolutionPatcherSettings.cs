@@ -1,19 +1,26 @@
 using Noggog;
-using Synthesis.Bethesda.Execution.Reporters;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
+using Serilog;
+using Synthesis.Bethesda.Execution.Patchers.Common;
+using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
-    public class SolutionPatcherSettings : PatcherSettings
+    [ExcludeFromCodeCoverage]
+    public class SolutionPatcherSettings : PatcherSettings, 
+        IPathToSolutionFileProvider, 
+        IProjectSubpathDefaultSettings,
+        IPatcherNameProvider
     {
-        public string SolutionPath = string.Empty;
-        public string ProjectSubpath = string.Empty;
+        public FilePath SolutionPath { get; set; } = string.Empty;
+        public string ProjectSubpath { get; set; } = string.Empty;
 
-        public override void Print(IRunReporter logger)
+        public override void Print(ILogger logger)
         {
-            logger.Write(default, $"[Solution] {Nickname.Decorate(x => $"{x} => ")}{SolutionPath} => {ProjectSubpath}");
+            logger.Information($"[Solution] {Nickname.Decorate(x => $"{x} => ")}{SolutionPath} => {ProjectSubpath}");
         }
+
+        FilePath IPathToSolutionFileProvider.Path => SolutionPath;
+        string IPatcherNameProvider.Name => Nickname;
     }
 }

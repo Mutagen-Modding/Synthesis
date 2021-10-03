@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Synthesis.Bethesda.Execution.Settings
@@ -12,6 +13,7 @@ namespace Synthesis.Bethesda.Execution.Settings
         Manual,
     }
 
+    [ExcludeFromCodeCoverage]
     public static class PatcherNugetVersioningEnumExt
     {
         public static NugetVersioningEnum ToNugetVersioningEnum(this PatcherNugetVersioningEnum e)

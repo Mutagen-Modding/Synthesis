@@ -3,6 +3,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Order;
 using System.IO;
 using System.Linq;
+using Noggog;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests
@@ -26,10 +27,14 @@ namespace Synthesis.Bethesda.UnitTests
                     $"*{Utility.TestModKey.FileName}",
                     $"{Utility.OverrideModKey.FileName}",
                 });
-            var listings = Mutagen.Bethesda.Synthesis.Internal.Utility.GetLoadOrder(
+            var testEnv = new TestEnvironment(
+                IFileSystemExt.DefaultFilesystem,
                 GameRelease.SkyrimSE,
-                loadOrderFilePath: pluginPath,
-                dataFolderPath: dataFolder).ToList();
+                string.Empty,
+                dataFolder,
+                pluginPath);
+            var getStateLoadOrder = testEnv.GetStateLoadOrder();
+            var listings = getStateLoadOrder.GetLoadOrder().ToList();
             listings.Should().HaveCount(3);
             listings.Should().BeEquivalentTo(new IModListingGetter[]
             {
@@ -42,12 +47,10 @@ namespace Synthesis.Bethesda.UnitTests
         [Fact]
         public void GetLoadOrder_NoLoadOrderPath()
         {
-            using var tmpFolder = Utility.GetTempFolder(nameof(PipelineTests));
-            using var dataFolder = Utility.SetupDataFolder(tmpFolder, GameRelease.SkyrimSE);
-            var lo = Mutagen.Bethesda.Synthesis.Internal.Utility.GetLoadOrder(
-                GameRelease.SkyrimSE, 
-                string.Empty,
-                dataFolder.Dir.Path);
+            var env = Utility.SetupEnvironment(GameRelease.SkyrimSE);
+            env = env with {PluginPath = string.Empty};
+            var getStateLoadOrder = env.GetStateLoadOrder();
+            var lo = getStateLoadOrder.GetLoadOrder();
             lo.Select(l => l.ModKey).Should().BeEmpty();
         }
     }

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -37,29 +37,86 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.2.0" />
     <PackageReference Include="Buildalyzer" Version="3.2.3" />
     <PackageReference Include="GitInfo" Version="2.1.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
-    <PackageReference Include="Microsoft.Build" Version="16.11.0" />
-    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="16.11.0" />
+    <PackageReference Include="Microsoft.Build" Version="16.10.0" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="16.10.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.11.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.11.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="3.11.0" />
-    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.31.0" />
+    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.32.0" />
+    <PackageReference Include="Noggog.Autofac" Version="2.30" />
     <PackageReference Include="NuGet.Versioning" Version="5.11.0" />
     <PackageReference Include="NuGetizer" Version="0.7.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Noggog.CSharpExt" Version="2.27.0" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.30" />
+    <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Mutagen.Bethesda.Synthesis\Mutagen.Bethesda.Synthesis.csproj" />
     <ProjectReference Include="..\Synthesis.Bethesda\Synthesis.Bethesda.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Json\PipelineSettings\PipelineSettingsImporter.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Json\PipelineSettings\PipelineSettingsExporter.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Settings\V1\SynthesisProfile.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Settings\V1\PipelineSettings.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Settings\V2\PipelineSettings.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Settings\V2\SynthesisProfile.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Settings\Json\Pipeline\V1\PipelineSettingsV1Reader.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Patchers\Solution\IProjectSubpathDefaultSettings.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Commands\RunPatcherPipelineInstructions.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Modules\LifetimeScopes.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

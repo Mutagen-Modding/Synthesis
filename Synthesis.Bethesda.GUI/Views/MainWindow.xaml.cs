@@ -1,80 +1,38 @@
-using MahApps.Metro.Controls;
-using Synthesis.Bethesda.Execution.Settings;
-using Newtonsoft.Json;
-using System.IO;
-using System;
-using Newtonsoft.Json.Linq;
-using System.Threading.Tasks;
-using Mutagen.Bethesda.Synthesis;
-using Noggog;
+using System.ComponentModel;
+using System.Windows;
+using Autofac;
+using Synthesis.Bethesda.Execution.Placement;
+using Synthesis.Bethesda.GUI.Modules;
+using Synthesis.Bethesda.GUI.Services.Startup;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
+    public interface IMainWindow
+    {
+        public Visibility Visibility { get; set; }
+        public object DataContext { get; set; }
+        event CancelEventHandler Closing;
+    }
+    
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : MetroWindow
+    public partial class MainWindow : IMainWindow, IWindowPlacement
     {
         public MainWindow()
         {
             InitializeComponent();
 
-            AppDomain.CurrentDomain.UnhandledException += (o, e) =>
-            {
-                Log.Logger.Error(e.ExceptionObject as Exception, "Crashing");
-            };
+            var builder = new ContainerBuilder();
+            builder.RegisterModule<MainModule>();
+            builder.RegisterInstance(this)
+                .AsSelf()
+                .As<IWindowPlacement>()
+                .As<IMainWindow>();
+            var container = builder.Build();
 
-            var versionLine = $"============== Opening Synthesis v{Versions.SynthesisVersion} ==============";
-            var bars = new string('=', versionLine.Length);
-            Log.Logger.Information(bars);
-            Log.Logger.Information(versionLine);
-            Log.Logger.Information(bars);
-            Log.Logger.Information(DateTime.Now.ToString());
-            SynthesisGuiSettings? guiSettings = null;
-            PipelineSettings? pipeSettings = null;
-            Task.WhenAll(
-                Task.Run(async () =>
-                {
-                    if (File.Exists(Paths.GuiSettingsPath))
-                    {
-                        guiSettings = JsonConvert.DeserializeObject<SynthesisGuiSettings>(await File.ReadAllTextAsync(Paths.GuiSettingsPath), Execution.Constants.JsonSettings)!;
-                    }
-                }),
-                Task.Run(async () =>
-                {
-                    if (File.Exists(Execution.Paths.SettingsFileName))
-                    {
-                        pipeSettings = JsonConvert.DeserializeObject<PipelineSettings>(await File.ReadAllTextAsync(Execution.Paths.SettingsFileName), Execution.Constants.JsonSettings)!;
-                    }
-                }),
-                Task.Run(() =>
-                {
-                    try
-                    {
-                        var loadingDir = new DirectoryInfo(Execution.Paths.LoadingFolder);
-                        if (!loadingDir.Exists) return;
-                        Log.Logger.Information("Clearing Loading folder");
-                        loadingDir.DeleteEntireFolder(deleteFolderItself: false);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Logger.Error(ex, "Error clearing Loading folder");
-                    }
-                })
-            ).Wait();
-
-            var mainVM = new MainVM(this);
-            mainVM.Load(guiSettings, pipeSettings);
-            Closed += (a, b) =>
-            {
-                mainVM.Save(out var gui, out var pipe);
-                File.WriteAllText(Execution.Paths.SettingsFileName, JsonConvert.SerializeObject(pipe, Formatting.Indented, Execution.Constants.JsonSettings));
-                File.WriteAllText(Paths.GuiSettingsPath, JsonConvert.SerializeObject(gui, Formatting.Indented, Execution.Constants.JsonSettings));
-                mainVM.Dispose();
-            };
-
-            DataContext = mainVM;
-            mainVM.Init();
+            container.Resolve<IStartup>()
+                .Initialize();
         }
     }
 }

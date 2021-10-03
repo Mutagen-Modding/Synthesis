@@ -9,12 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.2.0" />
     <PackageReference Include="GitHubDependents" Version="1.1.1" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
     <PackageReference Include="GitInfo" Version="2.1.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Noggog.Autofac" Version="2.30" />
     <PackageReference Include="NuGetizer" Version="0.7.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -24,7 +26,14 @@
   <ItemGroup>
     <ProjectReference Include="..\Mutagen.Bethesda.Synthesis\Mutagen.Bethesda.Synthesis.csproj" />
     <ProjectReference Include="..\Synthesis.Bethesda.Execution\Synthesis.Bethesda.Execution.csproj" />
-    <ProjectReference Include="..\Synthesis.Bethesda.UnitTests\Synthesis.Bethesda.UnitTests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="MainModule.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

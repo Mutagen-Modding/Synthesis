@@ -1,9 +1,10 @@
 using Noggog;
-using Synthesis.Bethesda.Execution.Patchers;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Synthesis.Bethesda.Execution.Reporters
 {
+    [ExcludeFromCodeCoverage]
     public class ConsoleReporter : IRunReporter
     {
         public void ReportOverallProblem(Exception ex)
@@ -12,36 +13,46 @@ namespace Synthesis.Bethesda.Execution.Reporters
             System.Console.Error.WriteLine(ex);
         }
 
-        public void ReportPrepProblem(IPatcherRun patcher, Exception ex)
+        public void WriteOverall(string str)
         {
-            System.Console.Error.WriteLine($"[{patcher.Name}] Preparation error:");
+            Write(default, default, str);
+        }
+
+        public void WriteErrorOverall(string str)
+        {
+            WriteError(default, default, str);
+        }
+
+        public void ReportPrepProblem(Guid key, string name, Exception ex)
+        {
+            System.Console.Error.WriteLine($"[{name}] Preparation error:");
             System.Console.Error.WriteLine(ex);
         }
 
-        public void ReportRunProblem(IPatcherRun patcher, Exception ex)
+        public void ReportRunProblem(Guid key, string name, Exception ex)
         {
-            System.Console.Error.WriteLine($"[{patcher.Name}] Run error:");
+            System.Console.Error.WriteLine($"[{name}] Run error:");
             System.Console.Error.WriteLine(ex);
         }
 
-        public void ReportRunSuccessful(IPatcherRun patcher, string outputPath)
+        public void ReportRunSuccessful(Guid key, string name, string outputPath)
         {
-            System.Console.WriteLine($"[{patcher.Name}] Run successful.");
+            System.Console.WriteLine($"[{name}] Run successful.");
         }
 
-        public void ReportStartingRun(IPatcherRun patcher)
+        public void ReportStartingRun(Guid key, string name)
         {
-            System.Console.WriteLine($"[{patcher.Name}] Starting run.");
+            System.Console.WriteLine($"[{name}] Starting run.");
         }
 
-        public void Write(IPatcherRun? patcher, string str)
+        public void Write(Guid key, string? name, string str)
         {
-            System.Console.WriteLine($"{patcher?.Name.Decorate(x => $"[{x}] ")}{str}");
+            System.Console.WriteLine($"{name?.Decorate(x => $"[{x}] ")}{str}");
         }
 
-        public void WriteError(IPatcherRun? patcher, string str)
+        public void WriteError(Guid key, string? name, string str)
         {
-            System.Console.Error.WriteLine($"{patcher?.Name.Decorate(x => $"[{x}] ")}{str}");
+            System.Console.Error.WriteLine($"{name?.Decorate(x => $"[{x}] ")}{str}");
         }
     }
 }

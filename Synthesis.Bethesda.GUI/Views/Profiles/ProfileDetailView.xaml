@@ -179,15 +179,15 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"
-                    Margin="0,16,0,0"
-                    FontSize="14"
-                    FontWeight="Bold"
-                    Text="Other" />
-                <CheckBox Grid.Row="2"
-                    x:Name="IgnoreMissingModsCheckbox"
-                    Margin="0,4,0,0"
-                    Content="Ignore Missing Mods"
-                    ToolTip="Whether to allow pipeline execution even if there are missing mods" />
+                           Margin="0,16,0,0"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           Text="Other" />
+                <CheckBox Grid.Row="1"
+                          x:Name="IgnoreMissingModsCheckbox"
+                          Margin="0,4,0,0"
+                          Content="Ignore Missing Mods"
+                          ToolTip="Whether to allow pipeline execution even if there are missing mods" />
             </Grid>
             <Button Grid.Row="6"
                 x:Name="ProfileInternalFilesButton"

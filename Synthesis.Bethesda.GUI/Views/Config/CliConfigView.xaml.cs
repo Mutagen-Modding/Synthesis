@@ -1,12 +1,11 @@
 using Noggog.WPF;
-using System;
 using ReactiveUI;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
+using Synthesis.Bethesda.GUI.Services.Patchers.Cli;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class CliConfigViewBase : NoggogUserControl<CliPatcherVM> { }
+    public class CliConfigViewBase : NoggogUserControl<ICliInputSourceVm> { }
 
     /// <summary>
     /// Interaction logic for CliConfigView.xaml
@@ -18,16 +17,19 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.Bind(this.ViewModel, vm => vm.PathToExecutable, view => view.ExecutablePathPicker.PickerVM)
+                this.Bind(this.ViewModel, vm => vm.ExecutableInput.Picker, view => view.ExecutablePathPicker.PickerVM)
                     .DisposeWith(disposable);
 
-                var isNewPatcher = this.WhenAnyFallback(x => x.ViewModel!.Profile.Config.NewPatcher, default)
-                    .Select(newPatcher => newPatcher != null)
-                    .Replay(1)
-                    .RefCount();
-
+                // ToDo
+                // Re-enable
+                
+                // var isNewPatcher = this.WhenAnyFallback(x => x.ViewModel!.Profile.Config.NewPatcher, default)
+                //     .Select(newPatcher => newPatcher != null)
+                //     .Replay(1)
+                //     .RefCount();
+                
                 // Hide help box if not in initialization
-                UtilityBindings.HelpWiring(this.ViewModel!.Profile.Config, this.HelpButton, this.HelpText, isNewPatcher)
+                UtilityBindings.HelpWiring(this.ViewModel!.ShowHelpSetting, this.HelpButton, this.HelpText)
                     .DisposeWith(disposable);
             });
         }

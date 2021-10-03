@@ -1,10 +1,9 @@
-using Synthesis.Bethesda.Execution.Patchers;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Synthesis.Bethesda.Execution.Reporters
 {
+    [ExcludeFromCodeCoverage]
     public class ThrowReporter : IRunReporter
     {
         public static ThrowReporter Instance = new();
@@ -13,38 +12,44 @@ namespace Synthesis.Bethesda.Execution.Reporters
         {
         }
 
-        public void WriteError(IPatcherRun? patcher, string str)
-        {
-        }
-
-        public void Write(IPatcherRun? patcher, string str)
-        {
-        }
-
-        public void ReportOutputMapping(IPatcherRun patcher, string str)
-        {
-        }
-
         public void ReportOverallProblem(Exception ex)
         {
             throw ex;
         }
 
-        public void ReportPrepProblem(IPatcherRun patcher, Exception ex)
+        public void WriteOverall(string str)
+        {
+            Write(default, default, str);
+        }
+
+        public void WriteErrorOverall(string str)
+        {
+            WriteError(default, default, str);
+        }
+
+        public void ReportPrepProblem(Guid key, string name, Exception ex)
         {
             throw ex;
         }
 
-        public void ReportRunProblem(IPatcherRun patcher, Exception ex)
+        public void ReportRunProblem(Guid key, string name, Exception ex)
         {
             throw ex;
         }
 
-        public void ReportRunSuccessful(IPatcherRun patcher, string outputPath)
+        public void ReportStartingRun(Guid key, string name)
         {
         }
 
-        public void ReportStartingRun(IPatcherRun patcher)
+        public void ReportRunSuccessful(Guid key, string name, string outputPath)
+        {
+        }
+
+        public void Write(Guid key, string? name, string str)
+        {
+        }
+
+        public void WriteError(Guid key, string? name, string str)
         {
         }
     }

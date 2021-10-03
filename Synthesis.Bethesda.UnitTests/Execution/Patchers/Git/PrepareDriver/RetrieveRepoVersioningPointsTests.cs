@@ -1,0 +1,57 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using AutoFixture.Xunit2;
+using FluentAssertions;
+using Noggog;
+using NSubstitute;
+using Synthesis.Bethesda.Execution.GitRepository;
+using Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver;
+using Synthesis.Bethesda.UnitTests.AutoData;
+using Xunit;
+
+namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareDriver
+{
+    public class RetrieveRepoVersioningPointsTests
+    {
+        [Theory, SynthAutoData]
+        public void RetrievesAllTags(
+            ITag[] repoTags,
+            [Frozen]IGitRepository repo,
+            RetrieveRepoVersioningPoints sut)
+        {
+            repo.Tags.Returns(repoTags);
+            sut.Retrieve(repo, out var tags, out _);
+            tags.Should().Equal(
+                repoTags.Select((t, i) => new DriverTag(i, t.FriendlyName, t.Sha)));
+        }
+        
+        [Theory, SynthAutoData(ConfigureMembers: true)]
+        public void RetrievesBranches(
+            IBranch[] repoBranches,
+            [Frozen]IGitRepository repo,
+            RetrieveRepoVersioningPoints sut)
+        {
+            repo.Branches.Returns(repoBranches);
+            sut.Retrieve(repo, out _, out var branches);
+            ((IEnumerable<KeyValuePair<string, string>>)branches).Should().Equal(
+                repoBranches.Select((t) => new KeyValuePair<string, string>(t.FriendlyName, t.Tip.Sha)));
+        }
+        
+        [Theory, SynthAutoData(ConfigureMembers: true)]
+        public void BranchCollisionThrows(
+            [Frozen]IGitRepository repo,
+            RetrieveRepoVersioningPoints sut)
+        {
+            var b1 = Substitute.For<IBranch>();
+            b1.FriendlyName.Returns("HELLO");
+            var b2 = Substitute.For<IBranch>();
+            b2.FriendlyName.Returns("hello");
+            repo.Branches.Returns(b1.AsEnumerable().And(b2));
+            Assert.Throws<ArgumentException>(() =>
+            {
+                sut.Retrieve(repo, out _, out _);
+            });
+        }
+    }
+}

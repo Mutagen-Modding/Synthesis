@@ -1,44 +1,55 @@
 using Noggog.WPF;
 using ReactiveUI;
-using System;
-using System.Collections.Generic;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class ConfigurationViewBase : NoggogUserControl<ConfigurationVM> { }
+    public class ConfigurationViewBase : NoggogUserControl<ConfigurationVm> { }
 
     /// <summary>
     /// Interaction logic for ConfigurationView.xaml
     /// </summary>
     public partial class ConfigurationView : ConfigurationViewBase
     {
+        enum Active { Normal, Init, Err }
+        
         public ConfigurationView()
         {
             InitializeComponent();
             this.WhenActivated(dispose =>
             {
-                this.WhenAnyFallback(x => x.ViewModel!.NewPatcher)
-                    .Select(x => x == null ? Visibility.Visible : Visibility.Collapsed)
+                var active = Observable.CombineLatest(
+                        this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Init.NewPatcher),
+                        this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.EnvironmentErrors.ActiveError),
+                        (newPatcher, activeError) =>
+                        {
+                            if (activeError != null) return Active.Err;
+                            if (newPatcher != null) return Active.Init;
+                            return Active.Normal;
+                        })
+                    .StartWith(Active.Normal)
+                    .Replay(1)
+                    .RefCount();
+                active
+                    .Select(x => x == Active.Normal ? Visibility.Visible : Visibility.Collapsed)
                     .BindTo(this, x => x.Patchers.Visibility)
                     .DisposeWith(dispose);
-                this.WhenAnyFallback(x => x.ViewModel!.NewPatcher)
-                    .Select(x => x == null ? Visibility.Collapsed : Visibility.Visible)
+                active
+                    .Select(x => x == Active.Init ? Visibility.Visible : Visibility.Collapsed)
                     .BindTo(this, x => x.Initialization.Visibility)
                     .DisposeWith(dispose);
-                this.WhenAnyFallback(x => x.ViewModel!.NewPatcher)
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Init.NewPatcher)
                     .BindTo(this, x => x.Initialization.ViewModel)
+                    .DisposeWith(dispose);
+                active
+                    .Select(x => x == Active.Err ? Visibility.Visible : Visibility.Collapsed)
+                    .BindTo(this, x => x.EnvironmentErrors.Visibility)
+                    .DisposeWith(dispose);
+                this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.EnvironmentErrors.ActiveError)
+                    .BindTo(this, x => x.EnvironmentErrors.ContentPane.Content)
                     .DisposeWith(dispose);
             });
         }

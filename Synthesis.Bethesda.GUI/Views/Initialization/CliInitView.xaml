@@ -45,15 +45,12 @@
                     </icon:PackIconFontAwesome.Style>
                 </icon:PackIconFontAwesome>
             </Button>
-            <TextBox Grid.Column="1"
+            <TextBlock Grid.Column="1"
                 Name="PatcherDetailName"
                 MinWidth="150"
-                Margin="0,0,10,0"
+                Margin="5,0,10,0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Top"
-                mahapps:TextBoxHelper.Watermark="Patcher Name"
-                Background="Transparent"
-                BorderThickness="0"
                 FontSize="26"
                 FontWeight="Black" />
             <TextBlock Grid.Column="2"
@@ -69,8 +66,7 @@
                 VerticalAlignment="Center" />
         </Grid>
         <local:CliConfigView Grid.Row="1"
-            Margin="7,0"
-            DataContext="{Binding Patcher}" />
+            Margin="7,0" />
         <local:BottomDecisionButtonsView x:Name="ConfirmButton" Grid.Row="1" />
     </Grid>
 </local:CliInitViewBase>

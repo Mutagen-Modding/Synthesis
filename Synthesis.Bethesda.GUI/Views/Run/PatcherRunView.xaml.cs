@@ -5,10 +5,11 @@ using System;
 using System.Windows;
 using System.Reactive.Linq;
 using Noggog;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class PatcherRunViewBase : NoggogUserControl<PatcherRunVM> { }
+    public class PatcherRunViewBase : NoggogUserControl<PatcherRunVm> { }
 
     /// <summary>
     /// Interaction logic for PatcherRunView.xaml
@@ -20,10 +21,10 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel!.Config.DisplayName)
+                this.WhenAnyValue(x => x.ViewModel!.Name)
                     .BindTo(this, x => x.PatcherDetailName.Text)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.Config)
+                this.WhenAnyValue(x => x.ViewModel!.SourceVm)
                     .BindTo(this, x => x.PatcherIconDisplay.DataContext)
                     .DisposeWith(disposable);
 

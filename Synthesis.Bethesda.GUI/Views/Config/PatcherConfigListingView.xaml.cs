@@ -2,17 +2,17 @@ using Noggog.WPF;
 using Noggog;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Text;
 using System.Windows;
 using System.Reactive.Disposables;
 using System.Windows.Controls;
 using System.Linq;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class PatcherConfigListingViewBase : NoggogUserControl<PatcherVM> { }
+    public class PatcherConfigListingViewBase : NoggogUserControl<PatcherVm> { }
 
     /// <summary>
     /// Interaction logic for PatcherConfigListingView.xaml
@@ -26,19 +26,20 @@ namespace Synthesis.Bethesda.GUI.Views
             {
                 this.WhenAnyFallback(x => x.ViewModel!.IsSelected)
                     .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .ObserveOnGui()
                     .BindTo(this, x => x.SelectedGlow.Visibility)
                     .DisposeWith(disposable);
-                this.Bind(this.ViewModel, vm => vm.IsOn, view => view.OnToggle.IsChecked)
+                this.Bind(this.ViewModel, vm => vm.IsOn, view => view.OnToggle.IsOn)
                     .DisposeWith(disposable);
-                this.WhenAnyFallback(x => x.ViewModel!.DisplayName)
+                this.WhenAnyFallback(x => x.ViewModel!.NameVm.Name)
                     .BindTo(this, x => x.NameBlock.Text)
                     .DisposeWith(disposable);
 
-                // Set up tooltip display
-                this.WhenAnyFallback(x => x.ViewModel!.State.RunnableState.Succeeded)
-                    .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
-                    .BindTo(this, x => x.BlockingIssueDisplayCircle.Visibility)
+                this.WhenAnyValue(x => x.ViewModel!.State)
+                    .BindTo(this, x => x.BlockingIssueDisplayCircle.DataContext)
                     .DisposeWith(disposable);
+
+                // Set up tooltip display
                 this.WhenAnyFallback(x => x.ViewModel!.State.RunnableState.Reason)
                     .Select(s =>
                     {
@@ -89,14 +90,24 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 // Update button
                 this.WhenAnyFallback(x => x.ViewModel)
-                    .Select(patcher => (patcher as GitPatcherVM)?.UpdateAllCommand)
+                    .Select(patcher => (patcher as GitPatcherVm)?.UpdateAllCommand.Command)
                     .BindTo(this, x => x.UpdateButton.Command)
                     .DisposeWith(disposable);
+                var gitPatcher = this.WhenAnyFallback(x => x.ViewModel)
+                    .Select(p => p as GitPatcherVm)
+                    .Replay(1)
+                    .RefCount();
                 var hasAnyUpdateCmd = Observable.CombineLatest(
-                        this.WhenAnyFallback(x => x.ViewModel)
-                            .Select(patcher => (patcher as GitPatcherVM)?.UpdateAllCommand.CanExecute ?? Observable.Return(false))
+                        gitPatcher
+                            .Select(patcher => patcher?.UpdateAllCommand.Command.CanExecute ?? Observable.Return(false))
                             .Switch(),
-                        this.WhenAnyFallback(x => x.ViewModel!.Profile.LockUpgrades),
+                        gitPatcher
+                            .Select(g =>
+                            {
+                                if (g == null) return Observable.Return(false);
+                                return g.WhenAnyValue(x => x.Locking.Lock);
+                            })
+                            .Switch(),
                         (hasUpdate, locked) => hasUpdate && !locked)
                     .Replay(1)
                     .RefCount();

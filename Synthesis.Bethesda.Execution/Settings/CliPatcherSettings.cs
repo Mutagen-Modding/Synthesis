@@ -1,18 +1,22 @@
+using System.Diagnostics.CodeAnalysis;
 using Noggog;
-using Synthesis.Bethesda.Execution.Reporters;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Serilog;
+using Synthesis.Bethesda.Execution.Patchers.Cli;
+using Synthesis.Bethesda.Execution.Patchers.Common;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {
-    public class CliPatcherSettings : PatcherSettings
+    [ExcludeFromCodeCoverage]
+    public class CliPatcherSettings : PatcherSettings, IPathToExecutableInputProvider, IPatcherNameProvider
     {
         public string PathToExecutable { get; set; } = string.Empty;
 
-        public override void Print(IRunReporter logger)
+        public override void Print(ILogger logger)
         {
-            logger.Write(default, $"[CLI] {Nickname.Decorate(x => $"{x} => ")}{PathToExecutable}");
+            logger.Information($"[CLI] {Nickname.Decorate(x => $"{x} => ")}{PathToExecutable}");
         }
+
+        FilePath IPathToExecutableInputProvider.Path => PathToExecutable;
+        string IPatcherNameProvider.Name => Nickname;
     }
 }

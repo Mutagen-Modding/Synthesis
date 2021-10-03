@@ -7,6 +7,8 @@
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
+    xmlns:profiles="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles"
+    xmlns:top="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Top"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -79,10 +81,10 @@
         <local:VerticalSlicer Grid.Column="1" Margin="5,0" />
         <ContentControl x:Name="ProfileDetail" Grid.Column="2">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type vm:ProfileDisplayVM}">
+                <DataTemplate DataType="{x:Type profiles:ProfileDisplayVm}">
                     <local:ProfileDetailView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:NewProfileVM}">
+                <DataTemplate DataType="{x:Type top:NewProfileVm}">
                     <local:NewProfileView />
                 </DataTemplate>
             </ContentControl.Resources>

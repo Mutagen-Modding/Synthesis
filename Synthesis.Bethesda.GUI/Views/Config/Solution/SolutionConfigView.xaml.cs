@@ -14,10 +14,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Reactive.Linq;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class SolutionConfigViewBase : NoggogUserControl<SolutionPatcherVM> { }
+    public class SolutionConfigViewBase : NoggogUserControl<SolutionPatcherVm> { }
 
     /// <summary>
     /// Interaction logic for SolutionConfigView.xaml
@@ -29,7 +30,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.WhenAnyValue(x => x.ViewModel!.SolutionPath)
+                this.WhenAnyValue(x => x.ViewModel!.SolutionPathInput.Picker)
                     .BindTo(this, view => view.SolutionPathPicker.PickerVM)
                     .DisposeWith(disposable);
 
@@ -50,13 +51,13 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Bind project picker
-                this.Bind(this.ViewModel, vm => vm.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
+                this.Bind(this.ViewModel, vm => vm.SelectedProjectInput.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
                     .DisposeWith(disposable);
                 this.OneWayBind(this.ViewModel, vm => vm.AvailableProjects, view => view.ProjectsPickerBox.ItemsSource)
                     .DisposeWith(disposable);
 
                 // Set project picker tooltips
-                this.WhenAnyValue(x => x.ViewModel!.SelectedProjectPath.ErrorState)
+                this.WhenAnyValue(x => x.ViewModel!.SelectedProjectInput.Picker.ErrorState)
                     .Select(e =>
                     {
                         if (e.Succeeded) return "Project in the solution to run";

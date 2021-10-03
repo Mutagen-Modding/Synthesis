@@ -1,0 +1,119 @@
+﻿{
+  "Version": 2,
+  "Profiles": [
+    {
+      "$type": "Synthesis.Bethesda.Execution.Settings.V2.SynthesisProfile, Synthesis.Bethesda.Execution",
+      "Nickname": "Profile1",
+      "ID": "tni5r3lh.kvj",
+      "TargetRelease": "SkyrimSE",
+      "Groups": [
+        {
+          "On": true,
+          "Name": "Synthesis",
+          "Patchers": [
+            {
+              "$type": "Synthesis.Bethesda.Execution.Settings.GithubPatcherSettings, Synthesis.Bethesda.Execution",
+              "ID": "qd5fd1i2.aef",
+              "RemoteRepoPath": "https://github.com/Piranha91/NPC-Plugin-Chooser",
+              "SelectedProjectSubpath": "NPC-Plugin-Chooser\\NPC-Plugin-Chooser.csproj",
+              "PatcherVersioning": "Branch",
+              "TargetTag": null,
+              "TargetCommit": "fbffcec825b10407b48a319abdead2a189122bad",
+              "TargetBranch": "GameLoc",
+              "LatestTag": false,
+              "FollowDefaultBranch": false,
+              "AutoUpdateToBranchTip": false,
+              "MutagenVersionType": "Match",
+              "ManualMutagenVersion": "",
+              "SynthesisVersionType": "Match",
+              "ManualSynthesisVersion": "",
+              "LastSuccessfulRun": null,
+              "On": false,
+              "Nickname": "Patcher1"
+            },
+            {
+              "$type": "Synthesis.Bethesda.Execution.Settings.GithubPatcherSettings, Synthesis.Bethesda.Execution",
+              "ID": "5qoxdyxg.5c0",
+              "RemoteRepoPath": "https://github.com/radj307/Patcher2",
+              "SelectedProjectSubpath": "Another_Archery_Patcher\\Another_Archery_Patcher.csproj",
+              "PatcherVersioning": "Branch",
+              "TargetTag": null,
+              "TargetCommit": "f635b76b0f37905e2ab6e9c39ef444067c6112e2",
+              "TargetBranch": "synthesis",
+              "LatestTag": false,
+              "FollowDefaultBranch": true,
+              "AutoUpdateToBranchTip": false,
+              "MutagenVersionType": "Profile",
+              "ManualMutagenVersion": "",
+              "SynthesisVersionType": "Profile",
+              "ManualSynthesisVersion": "",
+              "LastSuccessfulRun": {
+                "TargetRepo": "https://github.com/radj307/Patcher2",
+                "ProjectSubpath": "Another_Archery_Patcher\\Another_Archery_Patcher.csproj",
+                "Commit": "f635b76b0f37905e2ab6e9c39ef444067c6112e2",
+                "MutagenVersion": "0.30.6",
+                "SynthesisVersion": "0.19.2"
+              },
+              "On": true,
+              "Nickname": ""
+            }
+          ],
+          "Expanded": true
+        }
+      ],
+      "MutagenVersioning": "Manual",
+      "MutagenManualVersion": "0.30.6",
+      "SynthesisVersioning": "Manual",
+      "SynthesisManualVersion": "0.19.2",
+      "DataPathOverride": null,
+      "ConsiderPrereleaseNugets": false,
+      "LockToCurrentVersioning": false,
+      "Persistence": "Text",
+      "IgnoreMissingMods": false
+    },
+    {
+      "$type": "Synthesis.Bethesda.Execution.Settings.V2.SynthesisProfile, Synthesis.Bethesda.Execution",
+      "Nickname": "Profile2",
+      "ID": "tniz313.kvj",
+      "TargetRelease": "SkyrimSE",
+      "Groups": [
+        {
+          "On": true,
+          "Name": "Synthesis",
+          "Patchers": [
+            {
+              "$type": "Synthesis.Bethesda.Execution.Settings.GithubPatcherSettings, Synthesis.Bethesda.Execution",
+              "ID": "qd5fd1i2.aef",
+              "RemoteRepoPath": "https://github.com/Piranha91/NPC-Plugin-Chooser",
+              "SelectedProjectSubpath": "NPC-Plugin-Chooser\\NPC-Plugin-Chooser.csproj",
+              "PatcherVersioning": "Branch",
+              "TargetTag": null,
+              "TargetCommit": "fbffcec825b10407b48a319abdead2a189122bad",
+              "TargetBranch": "GameLoc",
+              "LatestTag": false,
+              "FollowDefaultBranch": false,
+              "AutoUpdateToBranchTip": false,
+              "MutagenVersionType": "Match",
+              "ManualMutagenVersion": "",
+              "SynthesisVersionType": "Match",
+              "ManualSynthesisVersion": "",
+              "LastSuccessfulRun": null,
+              "On": false,
+              "Nickname": "Patcher3"
+            }
+          ],
+          "Expanded": true
+        }
+      ],
+      "MutagenVersioning": "Manual",
+      "MutagenManualVersion": "0.30.6",
+      "SynthesisVersioning": "Manual",
+      "SynthesisManualVersion": "0.19.2",
+      "DataPathOverride": null,
+      "ConsiderPrereleaseNugets": false,
+      "LockToCurrentVersioning": false,
+      "Persistence": "Text",
+      "IgnoreMissingMods": false
+    }
+  ]
+}

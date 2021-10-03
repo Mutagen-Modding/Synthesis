@@ -9,24 +9,26 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Test Solutions\**" />
-    <EmbeddedResource Remove="Test Solutions\**" />
-    <None Remove="Test Solutions\**" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.17.0" />
+    <PackageReference Include="AutoFixture.AutoNSubstitute" Version="4.17.0" />
     <PackageReference Include="FluentAssertions" Version="6.0.0" />
     <PackageReference Include="GitInfo" Version="2.1.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-    <PackageReference Include="Mutagen.Bethesda" Version="0.31.0" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.27.0" />
+    <PackageReference Include="Mutagen.Bethesda" Version="0.32.0" />
+    <PackageReference Include="Mutagen.Bethesda.Testing" Version="0.32.0" />
+    <PackageReference Include="Noggog.Autofac" Version="2.30" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.30" />
+    <PackageReference Include="Noggog.Testing" Version="2.30" />
+    <PackageReference Include="NSubstitute" Version="4.2.2" />
     <PackageReference Include="NuGetizer" Version="0.7.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="13.2.43" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
@@ -37,34 +39,71 @@
   <ItemGroup>
     <ProjectReference Include="..\Mutagen.Bethesda.Synthesis.WPF\Mutagen.Bethesda.Synthesis.WPF.csproj" />
     <ProjectReference Include="..\Mutagen.Bethesda.Synthesis\Mutagen.Bethesda.Synthesis.csproj" />
+    <ProjectReference Include="..\Synthesis.Bethesda.CLI\Synthesis.Bethesda.CLI.csproj" />
     <ProjectReference Include="..\Synthesis.Bethesda.Execution\Synthesis.Bethesda.Execution.csproj" />
+    <ProjectReference Include="..\Synthesis.Bethesda.GUI\Synthesis.Bethesda.GUI.csproj" />
+    <ProjectReference Include="..\Synthesis.Bethesda.ImpactTester\Synthesis.Bethesda.ImpactTester.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="BuildFailure.txt">
+    <None Update="Files\le_test.esp">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="BuildSuccess.txt">
+    <None Update="Files\le_override.esp">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="BuildSuccessNonEnglish.txt">
+    <None Update="Files\BuildSuccessNonEnglish.txt">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="le_override.esp">
+    <None Update="Files\BuildSuccess.txt">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="le_test.esp">
+    <None Update="Files\BuildFailure.txt">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="oblivion_override.esp">
+    <None Update="Files\oblivion_override.esp">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="oblivion_test.esp">
+    <None Update="Files\oblivion_test.esp">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Plugins.txt">
+    <None Update="Files\Plugins.txt">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Migration\PipelineSettings.json">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Migration\PipelineSettings.v2.json">
+      <DefaultPackFolder>none</DefaultPackFolder>
+      <BuildAction>None</BuildAction>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="UI\Services\LogCleanerTests.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
   </ItemGroup>
 
 

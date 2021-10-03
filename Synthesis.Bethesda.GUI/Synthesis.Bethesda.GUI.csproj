@@ -28,46 +28,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Views\Run\**" />
-    <EmbeddedResource Remove="Views\Run\**" />
-    <None Remove="Views\Run\**" />
-    <Page Remove="Views\Run\**" />
-    <Page Update="Views\Errors\NoDotNetSdkInstalledView.xaml">
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Page</BuildAction>
-    </Page>
-    <Compile Update="Views\Errors\NoDotNetSdkInstalledView.xaml.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Page Update="Views\Errors\NugetConfigIssueView.xaml">
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Page</BuildAction>
-    </Page>
-    <Compile Update="Views\Errors\NugetConfigIssueView.xaml.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\EnvironmentErrors\EnvironmentErrorsVM.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\EnvironmentErrors\DotNetNotInstalledVM.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\EnvironmentErrors\NugetConfigErrorVM.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Resources\mushroom.ico" />
     <None Remove="Resources\Oblivion.png" />
     <None Remove="Resources\SkyrimLE.png" />
@@ -76,38 +36,32 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Views\Run\MainRunView.xaml.cs" />
-    <Compile Include="Views\Run\PatcherRunListingView.xaml.cs" />
-    <Compile Include="Views\Run\PatcherRunView.xaml.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.2.0" />
     <PackageReference Include="GitInfo" Version="2.1.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Humanizer.Core" Version="2.11.10" />
-    <PackageReference Include="Loqui" Version="2.27.0" />
-    <PackageReference Include="Loqui.Generation" Version="2.27.0" />
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.31.0" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.27.0" />
-    <PackageReference Include="Noggog.WPF" Version="2.27.0" />
+    <PackageReference Include="Loqui" Version="2.30.0" />
+    <PackageReference Include="Loqui.Generation" Version="2.30.0" />
+    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.32.0" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.32.0" />
+    <PackageReference Include="Noggog.Autofac" Version="2.30" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.30" />
+    <PackageReference Include="Noggog.WPF" Version="2.30" />
     <PackageReference Include="NuGetizer" Version="0.7.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="reactiveui" Version="14.3.10" />
     <PackageReference Include="ReactiveUI.Fody" Version="14.3.10" />
+    <PackageReference Include="Scrutor" Version="3.3.0" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.Map" Version="1.0.2" />
+    <PackageReference Include="System.IO.Abstractions" Version="13.2.43" />
     <PackageReference Include="System.Linq.Async" Version="5.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Include="Views\Run\MainRunView.xaml" />
-    <Page Include="Views\Run\PatcherRunListingView.xaml" />
-    <Page Include="Views\Run\PatcherRunView.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -124,6 +78,88 @@
     <Resource Include="Resources\SkyrimVR.png" />
   </ItemGroup>
   
+  <ItemGroup>
+    <Page Update="Views\Run\GroupRunListingView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+    <Page Update="Views\Config\GroupConfigView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+    <Page Update="Views\Config\AddNewItemsView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\Errors\MissingPluginsFileView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+    <Page Update="Views\Errors\AllModsMissingView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+    <Page Update="Views\Config\GroupDetailPaneView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="ViewModels\Profiles\SelectedGroupControllerVm.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="ViewModels\Groups\GroupVm.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="ViewModels\Top\NewProfileVm.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Views\Config\GroupConfigView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Views\Config\AddNewItemsView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Errors\MissingPluginsFileView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Views\Errors\AllModsMissingView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Services\Startup\ClearLoading.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Services\Startup\LogCleaner.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Views\Config\GroupDetailPaneView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+  </ItemGroup>
+
   <!-- Replace inherited target -->
   <Target Name="SetVersion" BeforeTargets="GetAssemblyVersion;GetPackageVersion" DependsOnTargets="GitVersion" Returns="$(PackageVersion)">
     <PropertyGroup>

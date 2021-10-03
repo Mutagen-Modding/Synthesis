@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data;
+using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Xml.Linq;
 using Noggog;
@@ -8,10 +10,14 @@ namespace Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget
 {
     public class MissingNugetOrgError : INugetErrorSolution
     {
-        public static readonly MissingNugetOrgError Instance = new();
-
+        private readonly IFileSystem _fileSystem;
         public string ErrorText => "Config did not list nuget.org as a source";
 
+        public MissingNugetOrgError(IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
+        
         public void RunFix(FilePath path)
         {
             var addElem = new XElement("add",
@@ -19,7 +25,7 @@ namespace Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget
                 new XAttribute("value", "https://api.nuget.org/v3/index.json"),
                 new XAttribute("protocolVersion", "3"));
             
-            var doc = XElement.Load(path);
+            var doc = XElement.Load(_fileSystem.FileStream.Create(path, FileMode.Open, FileAccess.Read));
             var sources = doc.Element("packageSources");
             if (sources == null)
             {
@@ -41,7 +47,7 @@ namespace Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget
                 sources.Add(addElem);
             }
                         
-            doc.Save(path);
+            doc.Save(_fileSystem.FileStream.Create(path, FileMode.Create, FileAccess.Write));
         }
     }
 }

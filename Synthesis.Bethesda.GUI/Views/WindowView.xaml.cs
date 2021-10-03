@@ -1,15 +1,13 @@
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Reactive.Linq;
 using System.Windows;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class WindowViewBase : NoggogUserControl<MainVM> { }
+    public class WindowViewBase : NoggogUserControl<MainVm> { }
 
     /// <summary>
     /// Interaction logic for MainView.xaml
@@ -21,10 +19,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.ActivePanel),
-                        this.WhenAnyValue(x => x.ViewModel!.EnvironmentErrors.ActiveError),
-                        (active, err) => ((object?)err) ?? active)
+                this.WhenAnyValue(x => x.ViewModel!.ActivePanel)
                     .BindTo(this, x => x.ContentPane.Content)
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.ActiveConfirmation)

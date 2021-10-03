@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO.Abstractions;
 
 namespace Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget
 {
@@ -8,7 +9,10 @@ namespace Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget
         
         public Exception Exception { get; }
         
-        public CorruptError(Exception ex)
+        public CorruptError(
+            IFileSystem fileSystem,
+            Exception ex)
+            : base(fileSystem)
         {
             Exception = ex;
         }

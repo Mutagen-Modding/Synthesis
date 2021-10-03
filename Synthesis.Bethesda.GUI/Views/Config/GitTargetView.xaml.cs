@@ -1,25 +1,13 @@
 using Noggog.WPF;
 using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class GitTargetViewBase : NoggogUserControl<GitPatcherVM> { }
+    public class GitTargetViewBase : NoggogUserControl<GitPatcherVm> { }
 
     /// <summary>
     /// Interaction logic for GitTargetView.xaml
@@ -39,7 +27,7 @@ namespace Synthesis.Bethesda.GUI.Views
             InitializeComponent();
             this.WhenActivated(disposable =>
             {
-                this.Bind(this.ViewModel, vm => vm.RemoteRepoPath, view => view.RepositoryPath.Text)
+                this.Bind(this.ViewModel, vm => vm.RemoteRepoPathInput.RemoteRepoPath, view => view.RepositoryPath.Text)
                     .DisposeWith(disposable);
 
                 this.WhenAnyValue(x => x.ViewModel!.RepoValidity)
@@ -57,11 +45,11 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 // Bind project picker
-                this.Bind(this.ViewModel, vm => vm.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
+                this.Bind(this.ViewModel, vm => vm.SelectedProjectInput.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
                     .DisposeWith(disposable);
                 this.OneWayBind(this.ViewModel, vm => vm.AvailableProjects, view => view.ProjectsPickerBox.ItemsSource)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid)
+                this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid.Valid)
                     .BindTo(this, view => view.ProjectsPickerBox.IsEnabled)
                     .DisposeWith(disposable);
 
@@ -76,13 +64,13 @@ namespace Synthesis.Bethesda.GUI.Views
 
                 #region Versioning Lock
                 Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.Profile.LockUpgrades),
+                        this.WhenAnyValue(x => x.ViewModel!.Locking.Lock),
                         this.WhenAnyValue(x => x.RespectLocking),
                         (locked, respect) => !locked || !respect)
                     .BindTo(this, x => x.RepositoryPath.IsEnabled)
                     .DisposeWith(disposable);
                 Observable.CombineLatest(
-                        this.WhenAnyValue(x => x.ViewModel!.Profile.LockUpgrades),
+                        this.WhenAnyValue(x => x.ViewModel!.Locking.Lock),
                         this.WhenAnyValue(x => x.RespectLocking),
                         (locked, respect) => !locked || !respect)
                     .BindTo(this, x => x.ProjectsPickerBox.IsEnabled)

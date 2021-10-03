@@ -14,7 +14,7 @@ namespace Synthesis.Bethesda.Execution
             foreach (var remote in repo.Network.Remotes)
             {
                 var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
-                Commands.Fetch(repo, remote.Name, refSpecs, fetchOptions, string.Empty);
+                LibGit2Sharp.Commands.Fetch(repo, remote.Name, refSpecs, fetchOptions, string.Empty);
             }
         }
     }
