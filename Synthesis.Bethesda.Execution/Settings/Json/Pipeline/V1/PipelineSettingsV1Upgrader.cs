@@ -32,8 +32,34 @@ namespace Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V1
         
         public Vers2 Upgrade(Vers1 input)
         {
+            BackupUserData();
             MoveUserData(input);
             return UpgradeSettingsObject(input);
+        }
+
+        private void BackupUserData()
+        {
+            Log.Logger.Information("Backing up current user data");
+            if (!_fileSystem.Directory.Exists(_extraDataPathProvider.Path))
+            {
+                Log.Logger.Information("No user data to back up");
+                return;
+            }
+
+            var targetDir = Path.Combine(_extraDataPathProvider.Path.Directory!, "Data Backup - 0.19.x");
+            int i = 2;
+            while (_fileSystem.Directory.Exists(targetDir))
+            {
+                if (i == 10)
+                {
+                    Log.Logger.Information("Too many data backups already");
+                    return;
+                }
+                targetDir = Path.Combine(_extraDataPathProvider.Path.Directory!, $"Data Backup - 0.19.x - {i}");
+                i++;
+            }
+            
+            _fileSystem.Directory.DeepCopy(_extraDataPathProvider.Path, targetDir);
         }
 
         private void MoveUserData(Vers1 input)
