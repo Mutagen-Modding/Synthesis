@@ -117,6 +117,16 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
+    <Compile Update="WorkEngine\WorkDropoff.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Utility\IStartupTask.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

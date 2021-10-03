@@ -5,6 +5,7 @@ using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.Json.Pipeline;
 using Synthesis.Bethesda.Execution.Settings.V2;
+using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.GUI.Json;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Startup;
@@ -62,7 +63,7 @@ namespace Synthesis.Bethesda.GUI.Settings
             _settings = settings;
         }
         
-        public void Do()
+        public void Start()
         {
             _settings.Value.GetType();
         }
