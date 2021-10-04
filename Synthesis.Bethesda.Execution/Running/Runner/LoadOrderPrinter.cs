@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
+using Serilog;
 using Synthesis.Bethesda.Execution.Reporters;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner
@@ -12,18 +13,17 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 
     public class LoadOrderPrinter : ILoadOrderPrinter
     {
-        private readonly IRunReporter _reporter;
+        private readonly ILogger _logger;
 
-        public LoadOrderPrinter(
-            IRunReporter reporter)
+        public LoadOrderPrinter(ILogger logger)
         {
-            _reporter = reporter;
+            _logger = logger;
         }
         
         public void Print(IEnumerable<IModListingGetter> loadOrder)
         {
-            _reporter.WriteOverall("Load Order:");
-            loadOrder.WithIndex().ForEach(i => _reporter.WriteOverall($" [{i.Index,3}] {i.Item}"));
+            _logger.Information("Load Order:");
+            loadOrder.WithIndex().ForEach(i => _logger.Information($" [{i.Index,3}] {i.Item}"));
         }
     }
 }
