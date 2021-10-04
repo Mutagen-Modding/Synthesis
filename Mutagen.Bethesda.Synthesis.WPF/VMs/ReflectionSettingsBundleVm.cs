@@ -42,7 +42,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                 }
                 catch (Exception ex)
                 {
-                    _logger?.Error($"Could not clean up reflection settings:", ex);
+                    _logger?.Error(ex, "Could not clean up reflection settings");
                 }
             }
         }
