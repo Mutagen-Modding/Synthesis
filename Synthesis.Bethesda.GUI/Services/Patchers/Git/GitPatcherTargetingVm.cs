@@ -62,7 +62,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             
             // Set latest checkboxes to drive user input
             driverRepositoryPreparation.DriverInfo
-                .FilterSwitch(this.WhenAnyValue(x => x.BranchFollowMain))
+                .FlowSwitch(this.WhenAnyValue(x => x.BranchFollowMain))
                 .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
                 .Subscribe(state =>
                 {
@@ -77,7 +77,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                     driverRepositoryPreparation.DriverInfo,
                     targetOriginBranchName,
                     (Driver, TargetBranch) => (Driver, TargetBranch))
-                .FilterSwitch(
+                .FlowSwitch(
                     Observable.CombineLatest(
                         this.WhenAnyValue(x => x.BranchAutoUpdate),
                         this.WhenAnyValue(x => x.PatcherVersioning),
@@ -95,7 +95,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             driverRepositoryPreparation.DriverInfo
                 .Select(x =>
                     x.RunnableState.Failed ? default : x.Item.Tags.OrderByDescending(x => x.Index).FirstOrDefault())
-                .FilterSwitch(
+                .FlowSwitch(
                     Observable.CombineLatest(
                         this.WhenAnyValue(x => x.TagAutoUpdate),
                         lockToCurrentVersioning.WhenAnyValue(x => x.Lock),
