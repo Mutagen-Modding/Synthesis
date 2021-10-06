@@ -6,6 +6,7 @@ using DynamicData;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
+using Noggog;
 using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Profile;
@@ -37,7 +38,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                 .Throttle(TimeSpan.FromMilliseconds(100), RxApp.TaskpoolScheduler)
                 .Select(x =>
                 {
-                    return Observable.Create<ILinkCache?>(obs =>
+                    return Observable.Create<(ILinkCache? Cache, IDisposable Disposable)>(obs =>
                     {
                         try
                         {
@@ -45,18 +46,23 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                                 x.dataFolder,
                                 x.loadOrder,
                                 factory: (modPath) => ModInstantiator.Importer(modPath, ident.Release));
-                            obs.OnNext(loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()));
+                            obs.OnNext(
+                                (loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()), loadOrder));
+                            obs.OnCompleted();
+                            return loadOrder;
                         }
                         catch (Exception ex)
                         {
                             logger.Error(ex, "Error creating simple link cache for GUI lookups");
-                            obs.OnNext(null);
+                            obs.OnNext((default, Disposable.Empty));
+                            obs.OnCompleted();
                         }
-                        obs.OnCompleted();
                         return Disposable.Empty;
                     });
                 })
                 .Switch()
+                .DisposePrevious(x => x.Disposable)
+                .Select(x => x.Cache)
                 .Replay(1)
                 .RefCount();
         }
