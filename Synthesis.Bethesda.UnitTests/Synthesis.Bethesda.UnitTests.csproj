@@ -17,11 +17,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-    <PackageReference Include="Mutagen.Bethesda" Version="0.32.0" />
-    <PackageReference Include="Mutagen.Bethesda.Testing" Version="0.32.0" />
-    <PackageReference Include="Noggog.Autofac" Version="2.30" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.30" />
-    <PackageReference Include="Noggog.Testing" Version="2.30" />
+    <PackageReference Include="Mutagen.Bethesda" Version="0.33.1.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.Testing" Version="0.33.1.1-dev" />
+    <PackageReference Include="Noggog.Autofac" Version="2.30.0.1-dev" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.30.0.1-dev" />
+    <PackageReference Include="Noggog.Testing" Version="2.30.0.1-dev" />
     <PackageReference Include="NSubstitute" Version="4.2.2" />
     <PackageReference Include="NuGetizer" Version="0.7.4">
       <PrivateAssets>all</PrivateAssets>
