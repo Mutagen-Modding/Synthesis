@@ -6,28 +6,31 @@ using DynamicData;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
+using Noggog;
+using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Profile;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 {
-    public interface IProfileSimpleLinkCache
+    public interface IProfileSimpleLinkCacheVm
     {
-        IObservable<ILinkCache?> SimpleLinkCache { get; }
+        ILinkCache? SimpleLinkCache { get; }
     }
 
-    public class ProfileSimpleLinkCache : IProfileSimpleLinkCache
+    public class ProfileSimpleLinkCacheVm : ViewModel, IProfileSimpleLinkCacheVm
     {
-        public IObservable<ILinkCache?> SimpleLinkCache { get; }
+        private readonly ObservableAsPropertyHelper<ILinkCache?> _SimpleLinkCache;
+        public ILinkCache? SimpleLinkCache => _SimpleLinkCache.Value;
 
-        public ProfileSimpleLinkCache(
+        public ProfileSimpleLinkCacheVm(
             ILogger logger,
             IProfileLoadOrder loadOrder,
             IProfileDataFolderVm dataFolder,
             IProfileIdentifier ident)
         {
-            SimpleLinkCache = Observable.CombineLatest(
+            _SimpleLinkCache = Observable.CombineLatest(
                     dataFolder.WhenAnyValue(x => x.Path),
                     loadOrder.LoadOrder.Connect()
                         .QueryWhenChanged()
@@ -37,7 +40,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                 .Throttle(TimeSpan.FromMilliseconds(100), RxApp.TaskpoolScheduler)
                 .Select(x =>
                 {
-                    return Observable.Create<ILinkCache?>(obs =>
+                    return Observable.Create<(ILinkCache? Cache, IDisposable Disposable)>(obs =>
                     {
                         try
                         {
@@ -45,20 +48,29 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                                 x.dataFolder,
                                 x.loadOrder,
                                 factory: (modPath) => ModInstantiator.Importer(modPath, ident.Release));
-                            obs.OnNext(loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()));
+                            obs.OnNext(
+                                (loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()),
+                                    loadOrder));
+                            obs.OnCompleted();
+                            // ToDo
+                            // Figure out why returning this is disposing too early.
+                            // Gets disposed undesirably, which makes formlink pickers fail
+                            // return loadOrder;
                         }
                         catch (Exception ex)
                         {
-                            logger.Error("Error creating simple link cache for GUI lookups", ex);
-                            obs.OnNext(null);
+                            logger.Error(ex, "Error creating simple link cache for GUI lookups");
+                            obs.OnNext((default, Disposable.Empty));
+                            obs.OnCompleted();
                         }
-                        obs.OnCompleted();
+
                         return Disposable.Empty;
                     });
                 })
                 .Switch()
-                .Replay(1)
-                .RefCount();
+                .DisposePrevious(x => x.Disposable)
+                .Select(x => x.Cache)
+                .ToGuiProperty(this, nameof(SimpleLinkCache), default(ILinkCache?), deferSubscription: true);
         }
     }
 }

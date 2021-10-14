@@ -181,7 +181,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error("Error opening Git webpage", ex);
+                        _logger.Error(ex, "Error opening Git webpage");
                     }
                 });
 

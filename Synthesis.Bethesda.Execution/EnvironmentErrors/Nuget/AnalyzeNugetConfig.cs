@@ -33,10 +33,11 @@ namespace Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget
                 return new NotExistsError(_fileSystem);
             }
 
+            using var stream = _fileSystem.FileStream.Create(path, FileMode.Open, FileAccess.Read);
             XDocument doc;
             try
             {
-                doc = XDocument.Load(_fileSystem.FileStream.Create(path, FileMode.Open, FileAccess.Read));
+                doc = XDocument.Load(stream);
             }
             catch (Exception e)
             {

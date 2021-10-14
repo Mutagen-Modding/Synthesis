@@ -30,7 +30,8 @@ namespace Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget
         
         public void RunFix(FilePath path)
         {
-            TypicalFile().Save(_fileSystem.FileStream.Create(path, FileMode.Create, FileAccess.Write));
+            using var stream = _fileSystem.FileStream.Create(path, FileMode.Create, FileAccess.Write);
+            TypicalFile().Save(stream);
         }
     }
 }

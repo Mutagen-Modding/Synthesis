@@ -77,7 +77,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                             }
                             catch (Exception ex)
                             {
-                                _Logger.Error($"Error creating reflected settings:", ex);
+                                _Logger.Error(ex, "Error creating reflected settings");
                                 throw new ArgumentException($"Error creating reflected settings: {ex.Message}");
                             }
                         })

@@ -72,7 +72,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                     });
                 })
                 .Switch()
-                .DisposePrevious()
+                .DisposePrevious(x => x.SettingsVM.Value)
                 .Replay(1)
                 .RefCount();
 

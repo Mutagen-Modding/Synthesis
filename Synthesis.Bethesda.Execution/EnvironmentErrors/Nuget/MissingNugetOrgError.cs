@@ -24,8 +24,13 @@ namespace Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget
                 new XAttribute("key", "nuget.org"),
                 new XAttribute("value", "https://api.nuget.org/v3/index.json"),
                 new XAttribute("protocolVersion", "3"));
-            
-            var doc = XElement.Load(_fileSystem.FileStream.Create(path, FileMode.Open, FileAccess.Read));
+
+            XElement doc;
+
+            using (var stream = _fileSystem.FileStream.Create(path, FileMode.Open, FileAccess.Read))
+            {
+                doc = XElement.Load(stream);
+            }
             var sources = doc.Element("packageSources");
             if (sources == null)
             {
@@ -46,8 +51,11 @@ namespace Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget
 
                 sources.Add(addElem);
             }
-                        
-            doc.Save(_fileSystem.FileStream.Create(path, FileMode.Create, FileAccess.Write));
+
+            using (var stream = _fileSystem.FileStream.Create(path, FileMode.Create, FileAccess.Write))
+            {
+                doc.Save(stream);
+            }
         }
     }
 }

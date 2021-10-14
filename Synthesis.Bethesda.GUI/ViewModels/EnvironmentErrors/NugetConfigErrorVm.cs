@@ -43,7 +43,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
                     
                     if (err is CorruptError corr)
                     {
-                        logger.Error("Nuget.Config corrupt", corr.Exception);
+                        logger.Error(corr.Exception, "Nuget.Config corrupt");
                     }
 
                     return new ErrorVM(this, logger, err);
@@ -74,7 +74,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
                     }
                     catch (Exception e)
                     {
-                        logger.Error("Error executing nuget config fix", e);
+                        logger.Error(e, "Error executing nuget config fix");
                     }
                 });
             }

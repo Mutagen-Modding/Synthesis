@@ -139,7 +139,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         {
             var initScope = _scope.BeginLifetimeScope(LifetimeScopes.PatcherNickname, c =>
             {
-                c.RegisterInstance(new TSettings());
+                c.RegisterInstance(new TSettings())
+                    .AsSelf()
+                    .AsImplementedInterfaces();
                 c.RegisterModule<TModule>();
             });
             var init = initScope.Resolve<TInit>();

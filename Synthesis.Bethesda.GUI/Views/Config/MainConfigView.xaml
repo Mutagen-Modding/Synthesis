@@ -181,6 +181,7 @@
                 Background="Transparent"
                 ClipToBounds="False"
                 ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}"
+                ScrollViewer.CanContentScroll="False"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemTemplate>
                     <DataTemplate>

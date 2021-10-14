@@ -349,7 +349,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                         }
                         catch (Exception ex)
                         {
-                            logger.Error("Error creating simple link cache for GUI lookups", ex);
+                            logger.Error(ex, "Error creating simple link cache for GUI lookups");
                             obs.OnNext(null);
                         }
                         obs.OnCompleted();
