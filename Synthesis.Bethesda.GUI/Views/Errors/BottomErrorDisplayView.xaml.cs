@@ -37,7 +37,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.State)
                     .Select(x => x.RunnableState.Reason)
-                    .Select(x => x.Split(Environment.NewLine).FirstOrDefault())
+                    .Select(x => x?.Split(Environment.NewLine).FirstOrDefault())
                     .BindTo(this, x => x.ErrorTextBlock.Text)
                     .DisposeWith(disposable);
             });
