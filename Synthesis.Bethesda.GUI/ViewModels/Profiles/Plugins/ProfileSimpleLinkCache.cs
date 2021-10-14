@@ -7,28 +7,30 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
 using Noggog;
+using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Profile;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 {
-    public interface IProfileSimpleLinkCache
+    public interface IProfileSimpleLinkCacheVm
     {
-        IObservable<ILinkCache?> SimpleLinkCache { get; }
+        ILinkCache? SimpleLinkCache { get; }
     }
 
-    public class ProfileSimpleLinkCache : IProfileSimpleLinkCache
+    public class ProfileSimpleLinkCacheVm : ViewModel, IProfileSimpleLinkCacheVm
     {
-        public IObservable<ILinkCache?> SimpleLinkCache { get; }
+        private readonly ObservableAsPropertyHelper<ILinkCache?> _SimpleLinkCache;
+        public ILinkCache? SimpleLinkCache => _SimpleLinkCache.Value;
 
-        public ProfileSimpleLinkCache(
+        public ProfileSimpleLinkCacheVm(
             ILogger logger,
             IProfileLoadOrder loadOrder,
             IProfileDataFolderVm dataFolder,
             IProfileIdentifier ident)
         {
-            SimpleLinkCache = Observable.CombineLatest(
+            _SimpleLinkCache = Observable.CombineLatest(
                     dataFolder.WhenAnyValue(x => x.Path),
                     loadOrder.LoadOrder.Connect()
                         .QueryWhenChanged()
@@ -47,9 +49,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                                 x.loadOrder,
                                 factory: (modPath) => ModInstantiator.Importer(modPath, ident.Release));
                             obs.OnNext(
-                                (loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()), loadOrder));
+                                (loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()),
+                                    loadOrder));
                             obs.OnCompleted();
-                            return loadOrder;
+                            // ToDo
+                            // Figure out why returning this is disposing too early.
+                            // Gets disposed undesirably, which makes formlink pickers fail
+                            // return loadOrder;
                         }
                         catch (Exception ex)
                         {
@@ -57,14 +63,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                             obs.OnNext((default, Disposable.Empty));
                             obs.OnCompleted();
                         }
+
                         return Disposable.Empty;
                     });
                 })
                 .Switch()
                 .DisposePrevious(x => x.Disposable)
                 .Select(x => x.Cache)
-                .Replay(1)
-                .RefCount();
+                .ToGuiProperty(this, nameof(SimpleLinkCache), default(ILinkCache?), deferSubscription: true);
         }
     }
 }
