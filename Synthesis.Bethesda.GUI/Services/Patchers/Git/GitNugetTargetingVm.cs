@@ -51,11 +51,11 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
         public GitNugetTargetingVm(
             ILogger logger,
-            INewestLibraryVersions newest,
+            INewestLibraryVersionsVm newest,
             IProfileVersioning versioning)
         {
             UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(
-                objectSource: newest.NewestMutagenVersion,
+                objectSource: newest.WhenAnyValue(x => x.NewestMutagenVersion),
                 canExecute: v =>
                 {
                     return Observable.CombineLatest(
@@ -68,7 +68,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                     .Select(vers => vers == PatcherNugetVersioningEnum.Manual),
                 disposable: this);
             UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
-                objectSource: newest.NewestSynthesisVersion,
+                objectSource: newest.WhenAnyValue(x => x.NewestSynthesisVersion),
                 canExecute: v =>
                 {
                     return Observable.CombineLatest(
@@ -86,10 +86,10 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                         .Switch(),
                     this.WhenAnyValue(x => x.MutagenVersioning),
                     this.WhenAnyValue(x => x.ManualMutagenVersion),
-                    newest.NewestMutagenVersion,
+                    newest.WhenAnyValue(x => x.NewestMutagenVersion),
                     this.WhenAnyValue(x => x.SynthesisVersioning),
                     this.WhenAnyValue(x => x.ManualSynthesisVersion),
-                    newest.NewestSynthesisVersion,
+                    newest.WhenAnyValue(x => x.NewestSynthesisVersion),
                     (profile, mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
                     {
                         var sb = new StringBuilder("Switching nuget targets");

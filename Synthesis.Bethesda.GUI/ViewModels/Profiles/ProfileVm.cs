@@ -92,7 +92,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         public IProfileExporter Exporter { get; }
 
         [Reactive]
-        public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.Text;
+        public PersistenceMode SelectedPersistenceMode { get; set; } = PersistenceMode.None;
 
         public ILifetimeScope Scope { get; }
         public IPatcherInitializationVm Init { get; }
@@ -378,7 +378,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 DataPathOverride = DataFolderOverride.DataPathOverride,
                 ConsiderPrereleaseNugets = ConsiderPrereleaseNugets,
                 LockToCurrentVersioning = LockSetting.Lock,
-                Persistence = SelectedPersistenceMode,
+                FormIdPersistence = SelectedPersistenceMode,
                 IgnoreMissingMods = IgnoreMissingMods,
             };
         }

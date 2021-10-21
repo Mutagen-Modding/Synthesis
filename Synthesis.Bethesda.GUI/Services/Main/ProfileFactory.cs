@@ -8,6 +8,7 @@ using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.GUI.Services.Profile;
+using Synthesis.Bethesda.GUI.Services.Versioning;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 
@@ -22,13 +23,16 @@ namespace Synthesis.Bethesda.GUI.Services.Main
     public class ProfileFactory : IProfileFactory
     {
         private readonly ILifetimeScope _scope;
+        private readonly INewestLibraryVersionsVm _newestLibraryVersionsVm;
         private readonly ILogger _logger;
 
         public ProfileFactory(
             ILifetimeScope scope,
+            INewestLibraryVersionsVm newestLibraryVersionsVm,
             ILogger logger)
         {
             _scope = scope;
+            _newestLibraryVersionsVm = newestLibraryVersionsVm;
             _logger = logger;
         }
         
@@ -60,7 +64,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
             profile.IgnoreMissingMods = settings.IgnoreMissingMods;
             profile.ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
             profile.LockSetting.Lock = settings.LockToCurrentVersioning;
-            profile.SelectedPersistenceMode = settings.Persistence;
+            profile.SelectedPersistenceMode = settings.FormIdPersistence;
 
             profile.Groups.AddRange(settings.Groups.Select(x => factory.Get(x)));
 
@@ -89,6 +93,8 @@ namespace Synthesis.Bethesda.GUI.Services.Main
                         .AsImplementedInterfaces();
                 });
             var profile = scope.Resolve<ProfileVm>();
+            profile.Versioning.ManualMutagenVersion = _newestLibraryVersionsVm.NewestMutagenVersion;
+            profile.Versioning.ManualMutagenVersion = _newestLibraryVersionsVm.NewestMutagenVersion;
             var newGroup = scope.Resolve<INewGroupCreator>();
 
             scope.DisposeWith(profile);

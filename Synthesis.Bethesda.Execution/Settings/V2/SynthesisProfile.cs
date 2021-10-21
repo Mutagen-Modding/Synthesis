@@ -19,7 +19,7 @@ namespace Synthesis.Bethesda.Execution.Settings.V2
         public string? DataPathOverride { get; set; }
         public bool ConsiderPrereleaseNugets { get; set; }
         public bool LockToCurrentVersioning { get; set; }
-        public PersistenceMode Persistence { get; set; } = PersistenceMode.None;
+        public PersistenceMode FormIdPersistence { get; set; } = PersistenceMode.None;
         public bool IgnoreMissingMods { get; set; }
 
         GameRelease IGameReleaseContext.Release => TargetRelease;

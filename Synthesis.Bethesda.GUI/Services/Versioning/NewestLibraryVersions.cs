@@ -4,6 +4,8 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using Noggog;
+using Noggog.WPF;
+using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Versioning;
@@ -11,21 +13,25 @@ using Synthesis.Bethesda.Execution.Versioning.Query;
 
 namespace Synthesis.Bethesda.GUI.Services.Versioning
 {
-    public interface INewestLibraryVersions
+    public interface INewestLibraryVersionsVm
     {
-        IObservable<string?> NewestSynthesisVersion { get; }
-        IObservable<string?> NewestMutagenVersion { get; }
+        string? NewestSynthesisVersion { get; }
+        string? NewestMutagenVersion { get; }
     }
 
-    public class NewestLibraryVersions : INewestLibraryVersions
+    public class NewestLibraryVersionsVm : ViewModel, INewestLibraryVersionsVm
     {
         public IQueryNewestLibraryVersions QueryNewest { get; }
         public IInstalledSdkFollower InstalledSdkFollower { get; }
         public IConsiderPrereleasePreference ConsiderPrerelease { get; }
-        public IObservable<string?> NewestSynthesisVersion { get; }
-        public IObservable<string?> NewestMutagenVersion { get; }
 
-        public NewestLibraryVersions(
+        private readonly ObservableAsPropertyHelper<string?> _NewestSynthesisVersion;
+        public string? NewestSynthesisVersion => _NewestSynthesisVersion.Value;
+
+        private readonly ObservableAsPropertyHelper<string?> _NewestMutagenVersion;
+        public string? NewestMutagenVersion => _NewestMutagenVersion.Value;
+
+        public NewestLibraryVersionsVm(
             ILogger logger,
             IQueryNewestLibraryVersions queryNewest,
             IInstalledSdkFollower installedSdkFollower,
@@ -63,18 +69,16 @@ namespace Synthesis.Bethesda.GUI.Services.Versioning
                 })
                 .Replay(1)
                 .RefCount();
-            NewestMutagenVersion = Observable.CombineLatest(
+            _NewestMutagenVersion = Observable.CombineLatest(
                     latestVersions,
                     considerPrerelease.ConsiderPrereleases,
                     (vers, prereleases) => prereleases ? vers.Prerelease.Mutagen : vers.Normal.Mutagen)
-                .Replay(1)
-                .RefCount();
-            NewestSynthesisVersion = Observable.CombineLatest(
+                .ToGuiProperty(this, nameof(NewestMutagenVersion), default(string?));
+            _NewestSynthesisVersion = Observable.CombineLatest(
                     latestVersions,
                     considerPrerelease.ConsiderPrereleases,
                     (vers, prereleases) => prereleases ? vers.Prerelease.Synthesis : vers.Normal.Synthesis)
-                .Replay(1)
-                .RefCount();
+                .ToGuiProperty(this, nameof(NewestSynthesisVersion), default(string?));
         }
     }
 }

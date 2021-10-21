@@ -68,7 +68,7 @@
       "DataPathOverride": null,
       "ConsiderPrereleaseNugets": false,
       "LockToCurrentVersioning": false,
-      "Persistence": "Text",
+      "FormIdPersistence": "Text",
       "IgnoreMissingMods": false
     },
     {
@@ -112,7 +112,7 @@
       "DataPathOverride": null,
       "ConsiderPrereleaseNugets": false,
       "LockToCurrentVersioning": false,
-      "Persistence": "Text",
+      "FormIdPersistence": "Text",
       "IgnoreMissingMods": false
     }
   ]

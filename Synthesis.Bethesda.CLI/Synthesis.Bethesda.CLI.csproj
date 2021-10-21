@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.33.2" />
+    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.33.2.1-dev" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Autofac" Version="6.2.0" />
     <PackageReference Include="GitInfo" Version="2.1.2">
