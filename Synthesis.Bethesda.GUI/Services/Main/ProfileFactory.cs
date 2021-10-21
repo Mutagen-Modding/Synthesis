@@ -60,7 +60,7 @@ namespace Synthesis.Bethesda.GUI.Services.Main
             profile.IgnoreMissingMods = settings.IgnoreMissingMods;
             profile.ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
             profile.LockSetting.Lock = settings.LockToCurrentVersioning;
-            profile.SelectedPersistenceMode = settings.Persistence;
+            profile.SelectedPersistenceMode = settings.FormIdPersistence;
 
             profile.Groups.AddRange(settings.Groups.Select(x => factory.Get(x)));
 

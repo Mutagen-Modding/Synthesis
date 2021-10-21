@@ -18,7 +18,7 @@ namespace Synthesis.Bethesda.Execution.Settings
         string? DataPathOverride { get; set; }
         bool ConsiderPrereleaseNugets { get; set; }
         bool LockToCurrentVersioning { get; set; }
-        PersistenceMode Persistence { get; set; }
+        PersistenceMode FormIdPersistence { get; set; }
         bool IgnoreMissingMods { get; set; }
     }
 }

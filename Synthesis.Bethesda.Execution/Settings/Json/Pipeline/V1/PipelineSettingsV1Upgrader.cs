@@ -122,7 +122,7 @@ namespace Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V1
                     DataPathOverride = x.DataPathOverride,
                     ConsiderPrereleaseNugets = x.ConsiderPrereleaseNugets,
                     LockToCurrentVersioning = x.LockToCurrentVersioning,
-                    Persistence = x.Persistence,
+                    FormIdPersistence = x.Persistence,
                     IgnoreMissingMods = x.IgnoreMissingMods,
                     Groups = new List<PatcherGroupSettings>()
                     {
