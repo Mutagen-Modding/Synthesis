@@ -56,7 +56,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 groupRun.Patchers,
                 cancellation,
                 sourcePath,
-                persistencePath);
+                persistenceMode == PersistenceMode.None ? null : persistencePath);
 
             if (sourcePath == null) return false;
 
