@@ -38,13 +38,13 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="GitInfo" Version="2.1.2">
+    <PackageReference Include="GitInfo" Version="2.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.33.2" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.31.0" />
-    <PackageReference Include="NuGetizer" Version="0.7.4">
+    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.33.2.1-dev" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.31.0.1-dev" />
+    <PackageReference Include="NuGetizer" Version="0.7.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
