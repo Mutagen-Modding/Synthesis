@@ -89,7 +89,7 @@ namespace Synthesis.Bethesda.GUI.Modules
                     typeof(IStartup),
                     typeof(ILogSettings),
                     typeof(IGuiSettingsImporter),
-                    typeof(INewestLibraryVersions),
+                    typeof(INewestLibraryVersionsVm),
                     typeof(ISynthesisGuiSettings))
                 .AsImplementedInterfaces()
                 .AsSelf()

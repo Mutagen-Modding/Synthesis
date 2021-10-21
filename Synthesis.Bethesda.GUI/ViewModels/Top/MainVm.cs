@@ -68,7 +68,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             ISelectedProfileControllerVm selectedProfile,
             ISaveSignal saveSignal,
             ISettingsSingleton settingsSingleton,
-            INewestLibraryVersions newestLibVersions,
+            INewestLibraryVersionsVm newestLibVersionsVm,
             IActivePanelControllerVm activePanelControllerVm,
             IProfileFactory profileFactory,
             ILogger logger)
@@ -117,9 +117,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 
             SynthesisVersion = currentVersions.SynthesisVersion;
             MutagenVersion = currentVersions.MutagenVersion;
-            _NewestMutagenVersion = newestLibVersions.NewestMutagenVersion
+            _NewestMutagenVersion = newestLibVersionsVm.WhenAnyValue(x => x.NewestMutagenVersion)
                 .ToGuiProperty(this, nameof(NewestMutagenVersion), default);
-            _NewestSynthesisVersion = newestLibVersions.NewestSynthesisVersion
+            _NewestSynthesisVersion = newestLibVersionsVm.WhenAnyValue(x => x.NewestSynthesisVersion)
                 .ToGuiProperty(this, nameof(NewestSynthesisVersion), default);
 
             _ActiveConfirmation = Observable.CombineLatest(
