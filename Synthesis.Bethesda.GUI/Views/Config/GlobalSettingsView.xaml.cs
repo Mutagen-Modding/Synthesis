@@ -1,4 +1,6 @@
+using System;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Windows.Controls;
 using Noggog.WPF;
 using ReactiveUI;
@@ -25,6 +27,14 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.Bind(ViewModel, x => x.SelectedSettings, x => x.TabControl.SelectedIndex,
                         x => (int)x,
                         x => (GlobalSettingsVm.SettingsPages)x)
+                    .DisposeWith(dispose);
+                this.Bind(ViewModel, x => x.BuildCores, x => x.ProcessorCountSlider.Value)
+                    .DisposeWith(dispose);
+                this.OneWayBind(ViewModel, x => x.NumProcessors, x => x.ProcessorCountSlider.Maximum)
+                    .DisposeWith(dispose);
+                this.WhenAnyValue(x => x.ViewModel!.BuildCores)
+                    .Select(x => x == 0 ? Environment.ProcessorCount : x)
+                    .BindTo(this, x => x.ActiveProcessorsText.Text)
                     .DisposeWith(dispose);
             });
         }

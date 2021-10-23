@@ -10,12 +10,6 @@ namespace Synthesis.Bethesda.Execution.WorkEngine
         private readonly Channel<IToDo> _channel = Channel.CreateUnbounded<IToDo>();
         public ChannelReader<IToDo> Reader => _channel.Reader;
 
-        public WorkDropoff()
-        {
-            int wer = 23;
-            wer++;
-        }
-
         public ValueTask Enqueue(Action toDo, CancellationToken cancellationToken = default)
         {
             return _channel.Writer.WriteAsync(new ToDo(toDo, null), cancellationToken);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -131,8 +131,9 @@ namespace Synthesis.Bethesda.Execution.WorkEngine
         public void Start()
         {
             _numThreads
-                .StartWith(Environment.ProcessorCount)
-                .Select(x => x ?? Environment.ProcessorCount)
+                .StartWith(0)
+                .Select(x => x ?? 0)
+                .Select(x => x == 0 ? Environment.ProcessorCount : x)
                 .DistinctUntilChanged()
                 .Subscribe(AddNewThreadsIfNeeded)
                 .DisposeWithComposite(_disposable);

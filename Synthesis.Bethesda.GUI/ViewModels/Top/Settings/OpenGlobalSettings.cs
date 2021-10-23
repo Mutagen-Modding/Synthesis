@@ -20,6 +20,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
 
         public void Open()
         {
+            _globalSettingsVm.SelectedSettings = GlobalSettingsVm.SettingsPages.General;
             _globalSettingsVm.SetPrevious(_activePanelControllerVm.ActivePanel);
             _activePanelControllerVm.ActivePanel = _globalSettingsVm;
         }

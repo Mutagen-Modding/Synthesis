@@ -1,3 +1,5 @@
+using System;
+
 namespace Synthesis.Bethesda.GUI.Settings
 {
     public interface ISynthesisGuiSettings
@@ -8,6 +10,7 @@ namespace Synthesis.Bethesda.GUI.Settings
         string MainRepositoryFolder { get; set; }
         string SelectedProfile { get; set; }
         string WorkingDirectory { get; set; }
+        byte BuildCores { get; set; }
     }
 
     public record SynthesisGuiSettings : ISynthesisGuiSettings
@@ -18,5 +21,6 @@ namespace Synthesis.Bethesda.GUI.Settings
         public string MainRepositoryFolder { get; set; } = string.Empty;
         public string SelectedProfile { get; set; } = string.Empty;
         public string WorkingDirectory { get; set; } = string.Empty;
+        public byte BuildCores { get; set; } = (byte)Math.Min(byte.MaxValue, Math.Max(Environment.ProcessorCount / 2, 1));
     }
 }

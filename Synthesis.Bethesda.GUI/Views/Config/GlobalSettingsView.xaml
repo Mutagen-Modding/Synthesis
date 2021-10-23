@@ -28,7 +28,28 @@
                     <Setter Property="Margin" Value="40,0,0,0" />
                 </Style>
             </TabControl.Resources>
-            <TabItem Header="General" />
+            <TabItem Header="General">
+                <StackPanel Margin="15" Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,0,10,0"
+                            VerticalAlignment="Center"
+                            Text="Num Processors" />
+                        <Slider
+                            x:Name="ProcessorCountSlider"
+                            Width="200"
+                            VerticalAlignment="Center"
+                            Minimum="0" />
+                        <TextBlock
+                            x:Name="ActiveProcessorsText"
+                            Margin="10,0"
+                            FontWeight="Black"
+                            FontSize="14"
+                            VerticalAlignment="Center"
+                            Text="Num Processors" />
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
             <TabItem Header="Profiles">
                 <local:ProfilesView x:Name="ProfilesView" />
             </TabItem>
