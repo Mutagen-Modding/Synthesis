@@ -1,8 +1,11 @@
+using System;
 using System.Linq;
+using System.Reactive.Linq;
 using Noggog;
 using Autofac;
 using DynamicData;
 using Mutagen.Bethesda;
+using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Settings;
@@ -93,8 +96,14 @@ namespace Synthesis.Bethesda.GUI.Services.Main
                         .AsImplementedInterfaces();
                 });
             var profile = scope.Resolve<ProfileVm>();
-            profile.Versioning.ManualMutagenVersion = _newestLibraryVersionsVm.NewestMutagenVersion;
-            profile.Versioning.ManualMutagenVersion = _newestLibraryVersionsVm.NewestMutagenVersion;
+            _newestLibraryVersionsVm.WhenAnyValue(x => x.NewestMutagenVersion)
+                .TakeUntil(x => x != null)
+                .Subscribe(x => profile.Versioning.ManualMutagenVersion = x)
+                .DisposeWith(profile);
+            _newestLibraryVersionsVm.WhenAnyValue(x => x.NewestSynthesisVersion)
+                .TakeUntil(x => x != null)
+                .Subscribe(x => profile.Versioning.ManualSynthesisVersion = x)
+                .DisposeWith(profile);
             var newGroup = scope.Resolve<INewGroupCreator>();
 
             scope.DisposeWith(profile);
