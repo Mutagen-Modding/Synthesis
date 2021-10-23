@@ -1,20 +1,10 @@
-﻿using Noggog.WPF;
+using Noggog.WPF;
 using ReactiveUI;
-using System;
-using System.Collections.Generic;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
+using Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -32,9 +22,6 @@ namespace Synthesis.Bethesda.GUI.Views
             {
                 this.WhenAnyValue(x => x.ViewModel!.ProfilesDisplay)
                     .BindTo(this, x => x.ProfilesList.ItemsSource)
-                    .DisposeWith(dispose);
-                this.WhenAnyValue(x => x.ViewModel!.GoBackCommand)
-                    .BindTo(this, x => x.BackButton.Command)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.AddCommand)
                     .BindTo(this, x => x.AddButton.Command)
