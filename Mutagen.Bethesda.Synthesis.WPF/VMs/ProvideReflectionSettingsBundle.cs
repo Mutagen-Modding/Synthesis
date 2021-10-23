@@ -83,12 +83,12 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                         })
                         .NotNull()
                         .ToArray();
-                });
+                }).ConfigureAwait(false);
             if (vms.Failed)
             {
                 return vms.BubbleFailure<ReflectionSettingsBundleVm>();
             }
-            await Task.WhenAll(vms.Value.Item.Select(vm => vm.Import(cancel)));
+            await Task.WhenAll(vms.Value.Item.Select(vm => vm.Import(cancel))).ConfigureAwait(false);
             return new ReflectionSettingsBundleVm(vms.Value.Item, vms.Value.Temp, _Logger);
         }
     }

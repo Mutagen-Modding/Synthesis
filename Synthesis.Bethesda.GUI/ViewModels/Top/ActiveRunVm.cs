@@ -32,14 +32,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                     {
                         if (r.Previous.Running)
                         {
-                            await r.Previous.Cancel();
+                            await r.Previous.Cancel().ConfigureAwait(false);
                         }
                         r.Previous.Dispose();
                     }
                     
                     if (r.Current != null)
                     {
-                        await r.Current.Run(); 
+                        await r.Current.Run().ConfigureAwait(false); 
                     }
                 })
                 .DisposeWith(this);

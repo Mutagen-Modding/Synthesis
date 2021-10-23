@@ -33,7 +33,7 @@ namespace Synthesis.Bethesda.CLI
                             
                             await runScope
                                 .Resolve<IRunPatcherPipeline>()
-                                .Run(CancellationToken.None);
+                                .Run(CancellationToken.None).ConfigureAwait(false);
                         }
                         catch (Exception ex)
                         {
@@ -45,7 +45,7 @@ namespace Synthesis.Bethesda.CLI
                     async _ =>
                     {
                         return -1;
-                    });
+                    }).ConfigureAwait(false);
         }
     }
 }

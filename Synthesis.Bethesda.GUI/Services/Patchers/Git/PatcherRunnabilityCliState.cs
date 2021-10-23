@@ -63,7 +63,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                                 path: i.comp.Item.ProjPath,
                                 directExe: false,
                                 cancel: cancel,
-                                loadOrderPath: tmpLoadOrder.File);
+                                loadOrderPath: tmpLoadOrder.File).ConfigureAwait(false);
                             if (runnability.Failed)
                             {
                                 logger.Information($"Checking runnability failed: {runnability.Reason}");

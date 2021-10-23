@@ -31,7 +31,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
                     new ProcessStartInfo(_dotNetCommandPathProvider.Path, $"build-server shutdown"));
                 using var output = process.Output.Subscribe(x => _logger.Information(x));
                 using var error = process.Error.Subscribe(x => _logger.Information(x));
-                var ret = await process.Run();
+                await process.Run().ConfigureAwait(false);
             }
             catch (Exception e)
             {

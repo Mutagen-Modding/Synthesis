@@ -48,7 +48,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
                     PathToProjProvider.Path,
                     Formatter.Format(args),
                     build: false),
-                cancel: cancel);
+                cancel: cancel).ConfigureAwait(false);
             
             if (result != 0)
             {

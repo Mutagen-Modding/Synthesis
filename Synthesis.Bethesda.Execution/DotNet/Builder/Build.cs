@@ -48,7 +48,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.Builder
                     outputCallback: accumulator.Process,
                     errorCallback: e => {},
                     cancel: cancel);
-            }, cancel);
+            }, cancel).ConfigureAwait(false);
             
             if (result == 0) return ErrorResponse.Success;
 

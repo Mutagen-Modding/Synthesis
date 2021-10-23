@@ -64,7 +64,7 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
                     DataFolderPath = DataDirectoryProvider.Path,
                     GameRelease = GameReleaseContext.Release,
                 }),
-                cancel: cancel);
+                cancel: cancel).ConfigureAwait(false);
         }
     }
 }

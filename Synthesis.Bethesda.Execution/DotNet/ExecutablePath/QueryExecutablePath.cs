@@ -39,7 +39,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.ExecutablePath
             // locating information like this.
             var result = await Runner.RunAndCapture(
                 StartInfoProvider.Construct(projectPath),
-                cancel: cancel);
+                cancel: cancel).ConfigureAwait(false);
             if (result.Errors.Count > 0)
             {
                 return GetResponse<string>.Fail($"{string.Join(Environment.NewLine, result.Errors)}");

@@ -56,7 +56,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                             });
 
                             // Compile to help prep
-                            var compileResp = await _build.Compile(state.Item.ProjPath, cancel);
+                            var compileResp = await _build.Compile(state.Item.ProjPath, cancel).ConfigureAwait(false);
                             if (compileResp.Failed)
                             {
                                 _logger.Information("Compiling failed: {Reason}", compileResp.Reason);

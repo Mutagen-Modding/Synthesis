@@ -46,10 +46,7 @@ namespace Synthesis.Bethesda.Execution.WorkEngine
                 while (_desiredNumThreads > _tasks.Count)
                 {
                     var cpuID = _nextCpuID++;
-                    _tasks[cpuID] = Task.Run(async () =>
-                    {
-                        await ThreadBody(cpuID);
-                    });
+                    _tasks[cpuID] = Task.Run(() => ThreadBody(cpuID));
                 }
                 _cpuCountSubj.OnNext((_tasks.Count, _desiredNumThreads));
             }
@@ -64,7 +61,6 @@ namespace Synthesis.Bethesda.Execution.WorkEngine
                 while (true)
                 {
                     if (_shutdown.IsCancellationRequested) return;
-
 
                     IToDo? toDo;
                     try

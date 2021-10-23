@@ -40,7 +40,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                     patcher,
                     cancellation,
                     sourcePath,
-                    persistencePath);
+                    persistencePath).ConfigureAwait(false);
 
                 if (nextPath == null) return null;
                 

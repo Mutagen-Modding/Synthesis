@@ -56,7 +56,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                                 targets: config.Targets,
                                 detectedLoadOrder: loadOrder,
                                 linkCache: linkCache,
-                                cancel: cancel);
+                                cancel: cancel).ConfigureAwait(false);
                             if (reflectionBundle.Failed)
                             {
                                 observer.OnNext((false, reflectionBundle));

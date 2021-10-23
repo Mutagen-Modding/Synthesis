@@ -56,7 +56,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             _CopyDirectory.Copy(projDir, tempFolder.Dir.Path, cancel);
             projPath = Path.Combine(tempFolder.Dir.Path, Path.GetFileName(projPath));
             _Logger.Information($"Retrieving executable path from {projPath}");
-            var exec = await _QueryExecutablePath.Query(projPath, cancel);
+            var exec = await _QueryExecutablePath.Query(projPath, cancel).ConfigureAwait(false);
             if (exec.Failed) return exec.BubbleFailure<(TRet Item, TempFolder Temp)>();
             _Logger.Information($"Located executable path for {projPath}: {exec.Value}");
             var ret = ExecuteAndUnload(exec.Value, getter);

@@ -43,24 +43,24 @@ namespace Synthesis.Bethesda.Execution.Versioning.Query
                             Pathing.ProjectFile, 
                             current: false,
                             includePrerelease: false, 
-                            cancel);
+                            cancel).ConfigureAwait(false);
                         _logger.Information("Latest published library versions:");
                         _logger.Information("  Mutagen: {MutagenVersion}", ret.Mutagen);
                         _logger.Information("  Synthesis: {SynthesisVersion}", ret.Synthesis);
                         return ret;
-                    }),
+                    }).ConfigureAwait(false),
                     await Task.Run(async () =>
                     {
                         var ret = await QueryLibraryVersions.Query(
                             Pathing.ProjectFile, 
                             current: false,
                             includePrerelease: true,
-                            cancel);
+                            cancel).ConfigureAwait(false);
                         _logger.Information("Latest published prerelease library versions:");
                         _logger.Information("  Mutagen: {MutagenVersion}", ret.Mutagen);
                         _logger.Information("  Synthesis: {SynthesisVersion}", ret.Synthesis);
                         return ret;
-                    }));
+                    }).ConfigureAwait(false));
             }
             catch (Exception ex)
             {
