@@ -14,8 +14,11 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
         public void Checkout(IGitRepository repo)
         {
             var runnerBranch = repo.TryCreateBranch(RunnerBranch);
-            repo.ResetHard();
-            repo.Checkout(runnerBranch);
+            if (!repo.CurrentBranch.Equals(runnerBranch))
+            {
+                repo.ResetHard();
+                repo.Checkout(runnerBranch);
+            }
         }
     }
 }

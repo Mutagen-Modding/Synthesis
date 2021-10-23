@@ -12,6 +12,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
         IEnumerable<IBranch> Branches { get; }
         IEnumerable<ITag> Tags { get; }
         string CurrentSha { get; }
+        IBranch CurrentBranch { get; }
         IBranch? MainBranch { get; }
         string WorkingDirectory { get; }
         string? MainRemoteUrl { get; }
@@ -37,6 +38,7 @@ namespace Synthesis.Bethesda.Execution.GitRepository
         public IEnumerable<IBranch> Branches => _Repository.Branches.Select(x => new BranchWrapper(x));
         public IEnumerable<ITag> Tags => _Repository.Tags.Select(x => new TagWrapper(x));
         public string CurrentSha => _Repository.Head.Tip.Sha;
+        public IBranch CurrentBranch => new BranchWrapper(_Repository.Head);
 
         public IBranch? MainBranch
         {

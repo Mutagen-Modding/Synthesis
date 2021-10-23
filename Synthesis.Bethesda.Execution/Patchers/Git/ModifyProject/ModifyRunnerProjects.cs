@@ -77,7 +77,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject
             foreach (var subProj in _availableProjectsRetriever.Get(solutionPath))
             {
                 var proj = Path.Combine(Path.GetDirectoryName(solutionPath)!, subProj);
-                var projXml = XElement.Parse(File.ReadAllText(proj));
+                var txt = File.ReadAllText(proj);
+                var projXml = XElement.Parse(txt);
                 _swapDesiredVersions.Swap(
                     projXml,
                     versions,
@@ -106,7 +107,11 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject
                     _swapVersioning.Swap(projXml, "Mutagen.Bethesda.FormKeys.SkyrimSE", "2.1", new SemanticVersion(2, 0, 0));
                 }
 
-                File.WriteAllText(proj, projXml.ToString());
+                var outputStr = projXml.ToString();
+                if (!txt.Equals(outputStr))
+                {
+                    File.WriteAllText(proj, outputStr);
+                }
 
                 if (drivingProjSubPath.Equals(subProj))
                 {
@@ -115,9 +120,14 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject
             }
             foreach (var item in Directory.EnumerateFiles(Path.GetDirectoryName(solutionPath)!, "Directory.Build.*"))
             {
-                var projXml = XElement.Parse(File.ReadAllText(item));
+                var txt = File.ReadAllText(item);
+                var projXml = XElement.Parse(txt);
                 _turnOffNullability.TurnOff(projXml);
-                File.WriteAllText(item, projXml.ToString());
+                var outputStr = projXml.ToString();
+                if (!txt.Equals(outputStr))
+                {
+                    File.WriteAllText(item, outputStr);
+                }
             }
         }
     }
