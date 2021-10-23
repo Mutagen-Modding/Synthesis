@@ -89,7 +89,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IAvailableTags availableTags,
             ILockToCurrentVersioning lockToCurrentVersioning,
             IAvailableProjects availableProjects,
-            ICompliationProvider compilationProvider,
+            ICompilationProvider compilationProvider,
             IBaseRepoDirectoryProvider baseRepoDir,
             IGitStatusDisplay gitStatusDisplay,
             IDriverRepoDirectoryProvider driverRepoDirectoryProvider,

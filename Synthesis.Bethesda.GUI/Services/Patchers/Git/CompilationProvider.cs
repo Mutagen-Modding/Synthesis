@@ -11,12 +11,12 @@ using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
-    public interface ICompliationProvider
+    public interface ICompilationProvider
     {
         IObservable<ConfigurationState<RunnerRepoInfo>> State { get; }
     }
 
-    public class CompilationProvider : ICompliationProvider
+    public class CompilationProvider : ICompilationProvider
     {
         private readonly IBuild _build;
         private readonly ILogger _logger;
