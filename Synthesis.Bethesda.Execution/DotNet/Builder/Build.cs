@@ -14,7 +14,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.Builder
 
     public class Build : IBuild
     {
-        private readonly IWorkDropoff _workDropoff;
+        public IWorkDropoff Dropoff { get; }
         public Func<IBuildOutputAccumulator> OutputAccumulatorFactory { get; }
         public IBuildResultsProcessor ResultsProcessor { get; }
         public IProcessRunner ProcessRunner { get; }
@@ -27,7 +27,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.Builder
             IBuildResultsProcessor resultsProcessor,
             IBuildStartInfoProvider buildStartInfoProvider)
         {
-            _workDropoff = workDropoff;
+            Dropoff = workDropoff;
             OutputAccumulatorFactory = outputAccumulatorFactory;
             ResultsProcessor = resultsProcessor;
             ProcessRunner = processRunner;
@@ -41,7 +41,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.Builder
 
             var accumulator = OutputAccumulatorFactory();
 
-            var result = await _workDropoff.EnqueueAndWait(() =>
+            var result = await Dropoff.EnqueueAndWait(() =>
             {
                 return ProcessRunner.RunWithCallback(
                     start,
