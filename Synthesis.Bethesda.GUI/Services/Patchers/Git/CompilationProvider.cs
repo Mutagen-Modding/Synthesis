@@ -6,8 +6,8 @@ using Noggog;
 using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.Execution.DotNet.Builder;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
@@ -18,16 +18,17 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
     public class CompilationProvider : ICompilationProvider
     {
-        private readonly IBuild _build;
+        private readonly IGitPatcherCompilation _build;
         private readonly ILogger _logger;
         private readonly IRunnableStateProvider _runnableStateProvider;
         
         public IObservable<ConfigurationState<RunnerRepoInfo>> State { get; }
 
         public CompilationProvider(
-            IBuild build,
+            IGitPatcherCompilation build,
             ILogger logger,
             IPrintErrorMessage printErrorMessage,
+            IShortCircuitCompilationSettingsProvider shortCircuitCompilationSettingsProvider,
             IRunnableStateProvider runnableStateProvider)
         {
             _build = build;
@@ -35,6 +36,9 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             _runnableStateProvider = runnableStateProvider;
             
             State = _runnableStateProvider.WhenAnyValue(x => x.State)
+                .CombineLatest(
+                    shortCircuitCompilationSettingsProvider.WhenAnyValue(x => x.ShortcircuitBuilds),
+                    (state, _) => state)
                 .Select(state =>
                 {
                     return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
@@ -56,7 +60,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                             });
 
                             // Compile to help prep
-                            var compileResp = await _build.Compile(state.Item.ProjPath, cancel).ConfigureAwait(false);
+                            var compileResp = await _build.Compile(state.Item, cancel).ConfigureAwait(false);
                             if (compileResp.Failed)
                             {
                                 _logger.Information("Compiling failed: {Reason}", compileResp.Reason);

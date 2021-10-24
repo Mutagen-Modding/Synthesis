@@ -1,7 +1,6 @@
 using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Windows.Controls;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
@@ -29,6 +28,8 @@ namespace Synthesis.Bethesda.GUI.Views
                         x => (GlobalSettingsVm.SettingsPages)x)
                     .DisposeWith(dispose);
                 this.Bind(ViewModel, x => x.BuildCores, x => x.ProcessorCountSlider.Value)
+                    .DisposeWith(dispose);
+                this.Bind(ViewModel, x => x.ShortcircuitBuilds, x => x.ShortCircuitBuildsBox.IsChecked)
                     .DisposeWith(dispose);
                 this.OneWayBind(ViewModel, x => x.NumProcessors, x => x.ProcessorCountSlider.Maximum)
                     .DisposeWith(dispose);

@@ -30,7 +30,7 @@
             </TabControl.Resources>
             <TabItem Header="General">
                 <StackPanel Margin="15" Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Margin="5" Orientation="Horizontal">
                         <TextBlock
                             Margin="0,0,10,0"
                             VerticalAlignment="Center"
@@ -39,14 +39,21 @@
                             x:Name="ProcessorCountSlider"
                             Width="200"
                             VerticalAlignment="Center"
-                            Minimum="0" />
+                            Minimum="0"
+                            ToolTip="How many processors to use when building" />
                         <TextBlock
                             x:Name="ActiveProcessorsText"
                             Margin="10,0"
-                            FontWeight="Black"
-                            FontSize="14"
                             VerticalAlignment="Center"
+                            FontSize="14"
+                            FontWeight="Black"
                             Text="Num Processors" />
+                    </StackPanel>
+                    <StackPanel Margin="5" Orientation="Horizontal">
+                        <CheckBox
+                            x:Name="ShortCircuitBuildsBox"
+                            Content="Short Circuit Builds"
+                            ToolTip="Whether to track and skip building when deemed appropriate" />
                     </StackPanel>
                 </StackPanel>
             </TabItem>

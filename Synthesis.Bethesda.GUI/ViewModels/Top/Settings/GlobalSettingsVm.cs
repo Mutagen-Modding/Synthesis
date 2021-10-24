@@ -4,12 +4,14 @@ using Noggog.WPF;
 using Noggog;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.Execution.WorkEngine;
 using Synthesis.Bethesda.GUI.Settings;
+using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
 {
-    public class GlobalSettingsVm : ViewModel
+    public class GlobalSettingsVm : ViewModel, IShortCircuitCompilationSettingsProvider
     {
         public enum SettingsPages
         {
@@ -29,6 +31,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
 
         public byte NumProcessors { get; }
 
+        [Reactive] public bool ShortcircuitBuilds { get; set; }
+
         public GlobalSettingsVm(
             ProfilesDisplayVm profilesDisplayVm,
             ISettingsSingleton settingsSingleton,
@@ -43,13 +47,18 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
             Profiles = profilesDisplayVm;
             BuildCores = settingsSingleton.Gui.BuildCores;
             NumProcessors = (byte)Math.Min(byte.MaxValue, Environment.ProcessorCount);
+            ShortcircuitBuilds = settingsSingleton.Pipeline.ShortcircuitBuilds;
             
             this.WhenAnyValue(x => x.BuildCores)
                 .Subscribe(x => workConsumerSettings.SetNumThreads(x))
                 .DisposeWith(this);
             
             saveSignal.Saving
-                .Subscribe(x => Save(x.Gui))
+                .Subscribe(x =>
+                {
+                    Save(x.Gui);
+                    Save(x.Pipe);
+                })
                 .DisposeWith(this);
         }
 
@@ -61,6 +70,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
         private void Save(SynthesisGuiSettings settings)
         {
             settings.BuildCores = BuildCores;
+        }
+
+        private void Save(IPipelineSettings settings)
+        {
+            settings.ShortcircuitBuilds = ShortcircuitBuilds;
         }
     }
 }
