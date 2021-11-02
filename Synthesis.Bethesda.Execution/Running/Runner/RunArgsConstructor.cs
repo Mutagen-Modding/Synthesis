@@ -48,7 +48,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             string? persistencePath)
         {
             var fileName = PatcherNameSanitizer.Sanitize(patcher.Name);
-            var nextPath = new ModPath(outputKey,
+            var nextPath = new FilePath(
                 Path.Combine(ProfileDirectories.WorkingDirectory, $"{patcher.Index} - {fileName}"));
 
             return new RunSynthesisPatcher()
@@ -59,7 +59,8 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 GameRelease = ReleaseContext.Release,
                 LoadOrderFilePath = RunLoadOrderPathProvider.Path,
                 PersistencePath = persistencePath,
-                PatcherName = fileName
+                PatcherName = fileName,
+                ModKey = outputKey.FileName,
             };
         }
     }

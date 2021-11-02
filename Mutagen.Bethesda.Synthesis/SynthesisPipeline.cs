@@ -425,7 +425,10 @@ namespace Mutagen.Bethesda.Synthesis
             RunSynthesisMutagenPatcher args,
             IFileSystem? fileSystem = null)
         {
-            await Run(args, SynthesisBase.Constants.SynthesisModKey, fileSystem).ConfigureAwait(false);
+            await Run(
+                args, 
+                ModKey.FromNameAndExtension(args.ModKey),
+                fileSystem).ConfigureAwait(false);
         }
 
         [Obsolete("Using SetTypicalOpen is the new preferred API for supplying RunDefaultPatcher preferences")]
@@ -449,7 +452,7 @@ namespace Mutagen.Bethesda.Synthesis
 
         private async Task Run(
             RunSynthesisMutagenPatcher args,
-            ModKey exportKey,
+            ModKey? exportKey,
             IFileSystem? fileSystem = null)
         {
             fileSystem = fileSystem.GetOrDefault();
@@ -503,7 +506,8 @@ namespace Mutagen.Bethesda.Synthesis
                         args.LoadOrderFilePath,
                         pluginRawListingsReader)),
                 new EnableImplicitMastersFactory(fileSystem));
-            using var state = stateFactory.ToState(cat, args, prefs, exportKey);
+            exportKey = exportKey == null || exportKey.Value.IsNull ? SynthesisBase.Constants.SynthesisModKey : exportKey.Value;
+            using var state = stateFactory.ToState(cat, args, prefs, exportKey.Value);
             await patcher.Patcher(state).ConfigureAwait(false);
             System.Console.WriteLine("Running patch.");
             if (!prefs.NoPatch)
