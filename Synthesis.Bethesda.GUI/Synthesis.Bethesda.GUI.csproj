@@ -36,31 +36,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="6.2.0" />
-    <PackageReference Include="GitInfo" Version="2.1.2">
+    <PackageReference Include="Autofac" Version="6.3.0" />
+    <PackageReference Include="GitInfo" Version="2.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Humanizer.Core" Version="2.11.10" />
-    <PackageReference Include="Loqui" Version="2.31.0" />
-    <PackageReference Include="Loqui.Generation" Version="2.31.0" />
-    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.33.2" />
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.33.2" />
-    <PackageReference Include="Noggog.Autofac" Version="2.31.0" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.31.0" />
-    <PackageReference Include="Noggog.WPF" Version="2.31.0" />
-    <PackageReference Include="NuGetizer" Version="0.7.4">
+    <PackageReference Include="Loqui" Version="2.32.0" />
+    <PackageReference Include="Loqui.Generation" Version="2.32.0" />
+    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.33.5" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.33.5" />
+    <PackageReference Include="Noggog.Autofac" Version="2.32.0" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.32.0" />
+    <PackageReference Include="Noggog.WPF" Version="2.32.0" />
+    <PackageReference Include="NuGetizer" Version="0.7.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="reactiveui" Version="14.3.10" />
-    <PackageReference Include="ReactiveUI.Fody" Version="14.3.10" />
+    <PackageReference Include="reactiveui" Version="16.2.6" />
+    <PackageReference Include="ReactiveUI.Fody" Version="16.2.6" />
     <PackageReference Include="Scrutor" Version="3.3.0" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.Map" Version="1.0.2" />
-    <PackageReference Include="System.IO.Abstractions" Version="13.2.43" />
+    <PackageReference Include="System.IO.Abstractions" Version="13.2.47" />
     <PackageReference Include="System.Linq.Async" Version="5.0.0" />
   </ItemGroup>
 
