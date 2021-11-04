@@ -36,17 +36,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitInfo" Version="2.1.2">
+    <PackageReference Include="GitInfo" Version="2.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.33.2" />
-    <PackageReference Include="NuGetizer" Version="0.7.4">
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.33.5" />
+    <PackageReference Include="NuGetizer" Version="0.7.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="reactiveui" Version="14.3.10" />
-    <PackageReference Include="ReactiveUI.Fody" Version="14.3.10" />
+    <PackageReference Include="reactiveui" Version="16.2.6" />
+    <PackageReference Include="ReactiveUI.Fody" Version="16.2.6" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
   </ItemGroup>
 

@@ -82,7 +82,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .ToGuiProperty(this, nameof(IsErrored));
 
             var runTime = Noggog.ObservableExt.TimePassed(TimeSpan.FromMilliseconds(100), RxApp.MainThreadScheduler)
-                .FilterSwitch(this.WhenAnyValue(x => x.IsRunning))
+                .FlowSwitch(this.WhenAnyValue(x => x.IsRunning))
                 .Publish()
                 .RefCount();
 
