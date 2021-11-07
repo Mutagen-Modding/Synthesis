@@ -2,7 +2,10 @@ using CommandLine;
 using Synthesis.Bethesda;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Converters;
 
 namespace Mutagen.Bethesda.Synthesis.CLI
 {
@@ -35,6 +38,9 @@ namespace Mutagen.Bethesda.Synthesis.CLI
 
         [Option('f', "DefaultDataFolderPath", Required = false, HelpText = "Path to the data folder as the patcher source code defines it.")]
         public string? DefaultDataFolderPath { get; set; }
+        
+        [Option('k', "ModKey", Required = false, HelpText = "ModKey associated with the patch being generated")]
+        public string? ModKey { get; set; }
 
         public override string ToString()
         {
@@ -47,7 +53,8 @@ namespace Mutagen.Bethesda.Synthesis.CLI
                 + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
                 + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}\n"
                 + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
-                + $"  {nameof(PatcherName)} => {this.PatcherName}";
+                + $"  {nameof(PatcherName)} => {this.PatcherName}\n"
+                + $"  {nameof(ModKey)} => {this.ModKey}";
         }
     }
 }

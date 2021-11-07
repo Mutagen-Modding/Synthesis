@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
+using Noggog;
+using Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner;
 using Synthesis.Bethesda.Execution.Versioning;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git
@@ -10,8 +10,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git
     public record RunnerRepoInfo(
         string SolutionPath,
         string ProjPath,
-        string? Target,
+        RepoTarget Target,
         string CommitMessage,
+        FilePath MetaPath,
         DateTime CommitDate,
         NugetVersionPair ListedVersions,
         NugetVersionPair TargetVersions);

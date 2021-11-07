@@ -41,7 +41,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
                 OutputPath = settings.OutputPath,
                 SourcePath = settings.SourcePath,
                 PatcherName = settings.PatcherName,
-                PersistencePath = settings.PersistencePath
+                PersistencePath = settings.PersistencePath,
+                ModKey = settings.ModKey,
             };
         }
     }

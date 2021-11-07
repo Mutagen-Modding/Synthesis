@@ -39,23 +39,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.Builder
         }
         
         [Theory, SynthAutoData]
-        public async Task StartAndAccumulatorPassedToRun(
-            FilePath targetPath,
-            CancellationToken cancel,
-            ProcessStartInfo start,
-            [Frozen]IBuildOutputAccumulator accumulator,
-            Build sut)
-        {
-            sut.BuildStartInfoProvider.Construct(default).ReturnsForAnyArgs(start);
-            await sut.Compile(targetPath, cancel);
-            await sut.ProcessRunner.Received(1).RunWithCallback(
-                start,
-                accumulator.Process,
-                Arg.Any<Action<string>>(),
-                cancel);
-        }
-        
-        [Theory, SynthAutoData]
         public async Task RunnerSuccessReturnsSuccess(
             FilePath targetPath,
             CancellationToken cancel,
@@ -63,6 +46,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.Builder
         {
             sut.ProcessRunner.RunWithCallback(default!, default!, default!, default)
                 .ReturnsForAnyArgs(0);
+            sut.Dropoff.EnqueueAndWait(default(Func<Task<int>>)!).ReturnsForAnyArgs(ValueTask.FromResult(0));
             var result = await sut.Compile(targetPath, cancel);
             result.Should().Be(ErrorResponse.Success);
         }
@@ -75,6 +59,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.Builder
         {
             sut.ProcessRunner.RunWithCallback(default!, default!, default!, default)
                 .ReturnsForAnyArgs(0);
+            sut.Dropoff.EnqueueAndWait(default(Func<Task<int>>)!).ReturnsForAnyArgs(ValueTask.FromResult(0));
             await sut.Compile(targetPath, cancel);
             sut.ResultsProcessor.DidNotReceiveWithAnyArgs().GetResults(default, default, default!);
         }

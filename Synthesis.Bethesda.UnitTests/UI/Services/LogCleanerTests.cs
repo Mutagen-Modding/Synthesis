@@ -32,7 +32,7 @@ namespace Synthesis.Bethesda.UnitTests.UI
             var deleteFile = Path.Combine(deleteDir, "SomeFile");
             fs.File.Create(deleteFile);
             
-            cleaner.Do();
+            cleaner.Start();
 
             fs.Directory.Exists(keepDir).Should().BeTrue();
             fs.File.Exists(keepFile).Should().BeTrue();

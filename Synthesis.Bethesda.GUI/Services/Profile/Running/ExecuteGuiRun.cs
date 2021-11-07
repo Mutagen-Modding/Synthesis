@@ -56,7 +56,7 @@ namespace Synthesis.Bethesda.GUI.Services.Profile.Running
                 cancel: cancel,
                 outputDir: outputDir,
                 persistenceMode: persistenceMode,
-                persistencePath: Path.Combine(_profileDirectories.ProfileDirectory, "Persistence"));
+                persistencePath: Path.Combine(_profileDirectories.ProfileDirectory, "Persistence")).ConfigureAwait(false);
 
             if (_fileSystem.Directory.Exists(outputDir))
             {

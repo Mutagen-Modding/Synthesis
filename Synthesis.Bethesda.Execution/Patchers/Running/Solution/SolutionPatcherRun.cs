@@ -61,14 +61,14 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
                 PathToProjProvider.Path,
                 directExe: false,
                 loadOrderPath: settings.LoadOrderFilePath,
-                cancel: cancel);
+                cancel: cancel).ConfigureAwait(false);
 
             if (runnability.Failed)
             {
                 throw new CliUnsuccessfulRunException((int)Codes.NotRunnable, runnability.Reason);
             }
             
-            await SolutionPatcherRunner.Run(settings, cancel);
+            await SolutionPatcherRunner.Run(settings, cancel).ConfigureAwait(false);
         }
 
         public void Dispose()

@@ -64,7 +64,7 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
             var result = await ProcessRunner.RunWithCallback(
                 RunProcessStartInfoProvider.GetStart(path, directExe, checkState),
                 AddResult,
-                cancel: cancel);
+                cancel: cancel).ConfigureAwait(false);
 
             if (result == (int)Codes.NotRunnable)
             {

@@ -7,6 +7,7 @@ using System.Windows;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using ReactiveUI;
 using Serilog;
+using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 using Synthesis.Bethesda.GUI.Views;
 
@@ -60,7 +61,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             {
                 await Observable.FromAsync(() =>
                         Task.WhenAll(_startupTasks
-                            .Select(x => Task.Run(x.Do))))
+                            .Select(x => Task.Run(x.Start))))
                     .ObserveOn(RxApp.MainThreadScheduler)
                     .Do(_ =>
                     {

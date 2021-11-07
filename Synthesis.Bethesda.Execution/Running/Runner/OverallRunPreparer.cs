@@ -38,7 +38,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 Task.Run(() =>
                 {
                     PersistencePreparer.Prepare(persistenceMode, persistencePath);
-                }));
+                })).ConfigureAwait(false);
         }
     }
 }

@@ -76,7 +76,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
                                 i.ProjPath.Value,
                                 directExe: false,
                                 cancel: cancel,
-                                build: needBuild);
+                                build: needBuild).ConfigureAwait(false);
                             logger.Information($"Settings type: {result}");
                             observer.OnNext(result);
                         }
@@ -105,14 +105,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
                             o.Proj.Value,
                             directExe: false,
                             cancel: CancellationToken.None,
-                            loadOrder: loadOrder.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
+                            loadOrder: loadOrder.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm)).ConfigureAwait(false);
                     }
                     else
                     {
                         await openSettingsHost.Open(
                             path: o.Proj.Value,
                             cancel: CancellationToken.None,
-                            loadOrder: loadOrder.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
+                            loadOrder: loadOrder.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm)).ConfigureAwait(false);
                     }
                 },
                 disposable: this);

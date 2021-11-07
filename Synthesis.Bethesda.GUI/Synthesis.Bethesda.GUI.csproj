@@ -42,19 +42,19 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Humanizer.Core" Version="2.11.10" />
-    <PackageReference Include="Loqui" Version="2.32.0" />
-    <PackageReference Include="Loqui.Generation" Version="2.32.0" />
+    <PackageReference Include="Loqui" Version="2.34.0" />
+    <PackageReference Include="Loqui.Generation" Version="2.34.0" />
     <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.33.5" />
     <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.33.5" />
-    <PackageReference Include="Noggog.Autofac" Version="2.32.0" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.32.0" />
-    <PackageReference Include="Noggog.WPF" Version="2.32.0" />
+    <PackageReference Include="Noggog.Autofac" Version="2.34.0" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.34.0" />
+    <PackageReference Include="Noggog.WPF" Version="2.34.0" />
     <PackageReference Include="NuGetizer" Version="0.7.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="reactiveui" Version="16.2.6" />
-    <PackageReference Include="ReactiveUI.Fody" Version="16.2.6" />
+    <PackageReference Include="reactiveui" Version="16.3.10" />
+    <PackageReference Include="ReactiveUI.Fody" Version="16.3.10" />
     <PackageReference Include="Scrutor" Version="3.3.0" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
@@ -154,6 +154,21 @@
       <BuildAction>Compile</BuildAction>
     </Compile>
     <Compile Update="Views\Config\GroupDetailPaneView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="ViewModels\Top\Settings\GlobalSettingsVm.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="ViewModels\Top\Settings\OpenProfileSettings.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="ViewModels\Top\Settings\ProfilesDisplayVm.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>

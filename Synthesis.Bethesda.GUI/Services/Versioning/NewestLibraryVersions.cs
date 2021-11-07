@@ -57,7 +57,7 @@ namespace Synthesis.Bethesda.GUI.Services.Versioning
                                 new NugetVersionPair(null, null));
                         }
 
-                        return await queryNewest.GetLatestVersions(CancellationToken.None);
+                        return await queryNewest.GetLatestVersions(CancellationToken.None).ConfigureAwait(false);
                     }
                     catch (Exception e)
                     {

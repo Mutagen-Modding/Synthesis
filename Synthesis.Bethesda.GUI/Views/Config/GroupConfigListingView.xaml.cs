@@ -1,13 +1,9 @@
-using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Noggog.WPF;
 using System.Windows;
-using System.Windows.Controls;
 using DynamicData;
-using Noggog.WPF.Containers;
 using ReactiveUI;
-using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
@@ -88,7 +84,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindTo(this, x => x.ProcessingCircle.Visibility)
                     .DisposeWith(disposable);
 
-                Drag.ListBoxDragDropAgainstSourceListUiFunnel<PatcherVm>(this.PatchersList, onlyWithinSameBox: false)
+                Drag.ListBoxDragDrop<PatcherVm>(this.PatchersList, onlyWithinSameBox: false)
                     .DisposeWith(disposable);
 
                 // ContextMenu

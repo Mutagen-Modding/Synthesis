@@ -49,14 +49,14 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         {
             _logger.Information("================= Starting Group {Group} Run =================", groupRun.ModKey.Name);
             
-            await GroupRunPreparer.Prepare(groupRun.ModKey, persistenceMode, persistencePath);
+            await GroupRunPreparer.Prepare(groupRun.ModKey, persistenceMode, persistencePath).ConfigureAwait(false);
 
             sourcePath = await RunSomePatchers.Run(
                 groupRun.ModKey,
                 groupRun.Patchers,
                 cancellation,
                 sourcePath,
-                persistenceMode == PersistenceMode.None ? null : persistencePath);
+                persistenceMode == PersistenceMode.None ? null : persistencePath).ConfigureAwait(false);
 
             if (sourcePath == null) return false;
 

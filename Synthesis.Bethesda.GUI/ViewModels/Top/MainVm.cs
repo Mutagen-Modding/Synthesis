@@ -14,6 +14,7 @@ using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
+using Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
 #if !DEBUG
 using Noggog.Utility;
@@ -58,11 +59,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 
         private readonly ObservableAsPropertyHelper<ProfileVm?> _SelectedProfile;
         public ProfileVm? SelectedProfile => _SelectedProfile.Value;
+        
+        public ICommand OpenGlobalSettingsCommand { get; }
 
         public MainVm(
             ActiveRunVm activeRunVm,
             ConfigurationVm configuration,
             OpenProfileSettings openProfileSettings,
+            OpenGlobalSettings openGlobalSettings,
             IConfirmationPanelControllerVm confirmationControllerVm,
             IProvideCurrentVersions currentVersions,
             ISelectedProfileControllerVm selectedProfile,
@@ -87,6 +91,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _SelectedProfile = _SelectedProfileController.WhenAnyValue(x => x.SelectedProfile)
                 .ToGuiProperty(this, nameof(SelectedProfile), default);
 
+            OpenGlobalSettingsCommand = openGlobalSettings.OpenCommand;
+            
             _Hot = this.WhenAnyValue(x => x.ActivePanel)
                 .Select(x =>
                 {

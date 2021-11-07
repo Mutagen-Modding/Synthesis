@@ -14,6 +14,7 @@ using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.Execution.Versioning.Query;
+using Synthesis.Bethesda.Execution.WorkEngine;
 
 namespace Synthesis.Bethesda.Execution.Modules
 {
@@ -37,6 +38,12 @@ namespace Synthesis.Bethesda.Execution.Modules
                     typeof(IBuild))
                 .NotInNamespacesOf(typeof(IInstalledSdkFollower))
                 .TypicalRegistrations();
+            
+            builder.RegisterAssemblyTypes(typeof(IWorkDropoff).Assembly)
+                .InNamespacesOf(
+                    typeof(IWorkDropoff))
+                .SingleInstance()
+                .AsImplementedInterfaces();
             
             builder.RegisterAssemblyTypes(typeof(IProcessRunner).Assembly)
                 .InNamespacesOf(

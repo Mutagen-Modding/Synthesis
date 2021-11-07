@@ -44,7 +44,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.NugetListing
             // Run restore first
             await ProcessRunner.Run(
                 NetCommandStartConstructor.Construct("restore", projectPath),
-                cancel: cancel);
+                cancel: cancel).ConfigureAwait(false);
 
             var result = await ProcessRunner.RunAndCapture(
                 NetCommandStartConstructor.Construct("list",
@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.NugetListing
                     "package",
                     outdated ? "--outdated" : null,
                     includePrerelease ? "--include-prerelease" : null),
-                cancel: cancel);
+                cancel: cancel).ConfigureAwait(false);
             if (result.Errors.Count > 0)
             {
                 throw new InvalidOperationException($"Error while retrieving nuget listings: \n{string.Join("\n", result.Errors)}");

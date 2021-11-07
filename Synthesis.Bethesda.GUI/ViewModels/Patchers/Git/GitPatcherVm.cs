@@ -89,7 +89,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IAvailableTags availableTags,
             ILockToCurrentVersioning lockToCurrentVersioning,
             IAvailableProjects availableProjects,
-            ICompliationProvider compilationProvider,
+            ICompilationProvider compilationProvider,
             IBaseRepoDirectoryProvider baseRepoDir,
             IGitStatusDisplay gitStatusDisplay,
             IDriverRepoDirectoryProvider driverRepoDirectoryProvider,
@@ -170,14 +170,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                     try
                     {
                         if (RunnableData is not {} runnable) return;
-                        if (runnable.Target == null)
-                        {
-                            navigate.Navigate(RemoteRepoPathInput.RemoteRepoPath);
-                        }
-                        else
-                        {
-                            navigate.Navigate(Path.Combine(RemoteRepoPathInput.RemoteRepoPath, "tree", runnable.Target));
-                        }
+                        navigate.Navigate(Path.Combine(RemoteRepoPathInput.RemoteRepoPath, "tree", runnable.Target.Target));
                     }
                     catch (Exception ex)
                     {

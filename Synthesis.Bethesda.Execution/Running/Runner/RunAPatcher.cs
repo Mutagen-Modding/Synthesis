@@ -49,7 +49,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             try
             {
                 // Finish waiting for prep, if it didn't finish
-                var prepException = await prepBundle.Prep;
+                var prepException = await prepBundle.Prep.ConfigureAwait(false);
                 if (prepException != null) return null;
                 
                 var args = GetRunArgs.GetArgs(
@@ -62,7 +62,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 
                 _reporter.ReportStartingRun(prepBundle.Run.Key, prepBundle.Run.Name);
                 await prepBundle.Run.Run(args,
-                    cancel: cancellation);
+                    cancel: cancellation).ConfigureAwait(false);
                 
                 if (cancellation.IsCancellationRequested) return null;
 

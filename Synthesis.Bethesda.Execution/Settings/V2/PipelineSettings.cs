@@ -8,5 +8,6 @@ namespace Synthesis.Bethesda.Execution.Settings.V2
     {
         public int Version => 2; 
         public IList<ISynthesisProfileSettings> Profiles { get; set; } = new List<ISynthesisProfileSettings>();
+        public bool ShortcircuitBuilds { get; set; } = true;
     }
 }

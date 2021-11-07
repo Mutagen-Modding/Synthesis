@@ -36,7 +36,7 @@ namespace Mutagen.Bethesda.Synthesis
         CancellationToken Cancel { get; }
 
         /// <summary>
-        /// Path to the supplimental data folder dedicated to storing patcher specific user settings/files
+        /// Path to the supplemental data folder dedicated to storing patcher specific user settings/files
         /// </summary>
         string ExtraSettingsDataPath { get; }
 

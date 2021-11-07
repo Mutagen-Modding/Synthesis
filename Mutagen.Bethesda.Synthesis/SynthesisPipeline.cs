@@ -146,7 +146,7 @@ namespace Mutagen.Bethesda.Synthesis
                 await Task.WhenAll(_runnabilityChecks.Select(check =>
                 {
                     return check(state);
-                }));
+                })).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -211,7 +211,7 @@ namespace Mutagen.Bethesda.Synthesis
                     x: args.Left,
                     y: args.Top,
                     width: args.Width,
-                    height: args.Height));
+                    height: args.Height)).ConfigureAwait(false);
             return 0;
         }
 
@@ -264,7 +264,7 @@ namespace Mutagen.Bethesda.Synthesis
 
                 await Run(
                     GetDefaultRun(targetRelease, identifyingModKey),
-                    identifyingModKey);
+                    identifyingModKey).ConfigureAwait(false);
                 return 0;
             });
             return this;
@@ -281,7 +281,7 @@ namespace Mutagen.Bethesda.Synthesis
                     x: args.Left,
                     y: args.Top,
                     width: args.Width,
-                    height: args.Height));
+                    height: args.Height)).ConfigureAwait(false);
             return 0;
         }
         #endregion
@@ -314,14 +314,14 @@ namespace Mutagen.Bethesda.Synthesis
             string[] args,
             RunPreferences? preferences)
         {
-            return HandleOnShutdown(await InternalRun(args, preferences));
+            return HandleOnShutdown(await InternalRun(args, preferences).ConfigureAwait(false));
         }
 
         public async Task<int> Run(
             string[] args,
             IFileSystem? fileSystem = null)
         {
-            return HandleOnShutdown(await InternalRun(args, null, fileSystem: fileSystem));
+            return HandleOnShutdown(await InternalRun(args, null, fileSystem: fileSystem).ConfigureAwait(false));
         }
 
         private async Task<int> InternalRun(
@@ -329,7 +329,7 @@ namespace Mutagen.Bethesda.Synthesis
             RunPreferences? preferences = null,
             IFileSystem? fileSystem = null)
         {
-            await using var throttler = new ConsoleThrottler();
+            await using var throttler = new ConsoleThrottler().ConfigureAwait(false);
             if (_argumentAdjustment != null)
             {
                 args = _argumentAdjustment(args);
@@ -367,11 +367,11 @@ namespace Mutagen.Bethesda.Synthesis
                 {
                     if (_openTypical != null)
                     {
-                        return await OpenTypical(openSettings);
+                        return await OpenTypical(openSettings).ConfigureAwait(false);
                     }
                     else if (_openForSettings != null)
                     {
-                        return await OpenForSettings(openSettings);
+                        return await OpenForSettings(openSettings).ConfigureAwait(false);
                     }
                 }
                 catch (Exception ex)
@@ -397,7 +397,7 @@ namespace Mutagen.Bethesda.Synthesis
                     {
                         try
                         {
-                            await Run(settings, fileSystem: fileSystem);
+                            await Run(settings, fileSystem: fileSystem).ConfigureAwait(false);
                         }
                         catch (Exception ex)
                         {
@@ -425,7 +425,10 @@ namespace Mutagen.Bethesda.Synthesis
             RunSynthesisMutagenPatcher args,
             IFileSystem? fileSystem = null)
         {
-            await Run(args, SynthesisBase.Constants.SynthesisModKey, fileSystem);
+            await Run(
+                args, 
+                ModKey.FromNameAndExtension(args.ModKey),
+                fileSystem).ConfigureAwait(false);
         }
 
         [Obsolete("Using SetTypicalOpen is the new preferred API for supplying RunDefaultPatcher preferences")]
@@ -435,7 +438,7 @@ namespace Mutagen.Bethesda.Synthesis
         {
             try
             {
-                await Run(args);
+                await Run(args).ConfigureAwait(false);
             }
             catch (Exception ex)
             when (Environment.GetCommandLineArgs().Length == 0
@@ -449,7 +452,7 @@ namespace Mutagen.Bethesda.Synthesis
 
         private async Task Run(
             RunSynthesisMutagenPatcher args,
-            ModKey exportKey,
+            ModKey? exportKey,
             IFileSystem? fileSystem = null)
         {
             fileSystem = fileSystem.GetOrDefault();
@@ -474,7 +477,7 @@ namespace Mutagen.Bethesda.Synthesis
                         GameRelease = args.GameRelease,
                         LoadOrderFilePath = args.LoadOrderFilePath
                     },
-                    fileSystem: fileSystem);
+                    fileSystem: fileSystem).ConfigureAwait(false);
                 System.Console.WriteLine("Checking runnability complete");
             }
             WarmupAll.Init();
@@ -503,7 +506,8 @@ namespace Mutagen.Bethesda.Synthesis
                         args.LoadOrderFilePath,
                         pluginRawListingsReader)),
                 new EnableImplicitMastersFactory(fileSystem));
-            using var state = stateFactory.ToState(cat, args, prefs, exportKey);
+            exportKey = exportKey == null || exportKey.Value.IsNull ? SynthesisBase.Constants.SynthesisModKey : exportKey.Value;
+            using var state = stateFactory.ToState(cat, args, prefs, exportKey.Value);
             await patcher.Patcher(state).ConfigureAwait(false);
             System.Console.WriteLine("Running patch.");
             if (!prefs.NoPatch)

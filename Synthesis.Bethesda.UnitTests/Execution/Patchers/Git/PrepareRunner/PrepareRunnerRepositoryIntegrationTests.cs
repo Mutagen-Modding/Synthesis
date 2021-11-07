@@ -48,6 +48,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner
                     new GetRepoTarget(),
                     new RetrieveCommit(
                         new ShouldFetchIfMissing())),
+                new BuildMetaFilePathProviderInjection(Path.Combine(local, "Build.meta")),
                 runnerRepoDirectoryInjection,
                 new ProvideRepositoryCheckouts(
                     Substitute.For<ILogger>(),

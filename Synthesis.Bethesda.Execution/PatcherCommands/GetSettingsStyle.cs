@@ -41,7 +41,7 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
         {
             var result = await ProcessRunner.RunAndCapture(
                 GetRunProcessStartInfoProvider.GetStart(path, directExe, new SettingsQuery(), build: build),
-                cancel: cancel);
+                cancel: cancel).ConfigureAwait(false);
             
             switch ((Codes)result.Result)
             {

@@ -95,20 +95,21 @@ namespace Synthesis.Bethesda.GUI.Views
                         if (e.Vm == null) return;
                         if (e.RawArgs.OriginalSource is not DependencyObject dep) return;
                         if (!dep.TryGetAncestor<ListBoxItem>(out var targetItem)) return;
-                        if (!targetItem.TryGetAncestor<ListBox>(out var listBox)) return;
+                        if (targetItem.DataContext is not GroupVm targetGroup) return;
+                        if (!targetItem.TryGetAncestor<ListBox>(out var targetListBox)) return;
                 
                         if (e.SourceListBox == null) return;
                         
-                        if (listBox.ItemsSource is not ISourceListUiFunnel<GroupVm> targetGroupList) return;
+                        if (targetListBox.ItemsSource is not ISourceListUiFunnel<GroupVm> targetGroupList) return;
 
                         if (e.SourceListBox.ItemsSource is ISourceListUiFunnel<GroupVm> groupList)
                         {
-                            var index = listBox.IndexOf(targetItem);
-                            if (index >= targetGroupList.SourceList.Count) return;
                             if (e.Vm is not GroupVm groupVm) return;
+                            var index = targetGroupList.IndexOf(targetGroup);
+                            if (index >= targetGroupList.SourceList.Count) return;
                             
-                            groupList.SourceList.RemoveAt(e.SourceListIndex);
-                
+                            groupList.SourceList.Remove(groupVm);
+                            
                             if (index >= 0)
                             {
                                 targetGroupList.SourceList.Insert(index, groupVm);
@@ -124,7 +125,7 @@ namespace Synthesis.Bethesda.GUI.Views
                             if (patcherListBox.ItemsSource is not ISourceListUiFunnel<PatcherVm> targetPatcherList) return;
                             if (e.Vm is not PatcherVm patcherVm) return;
                             
-                            patcherList.SourceList.RemoveAt(e.SourceListIndex);
+                            patcherList.SourceList.Remove(patcherVm);
                             
                             targetPatcherList.SourceList.Add(patcherVm);
                         }

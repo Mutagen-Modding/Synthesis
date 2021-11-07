@@ -32,7 +32,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
                 SourcePath = settings.SourcePath,
                 PersistencePath = settings.PersistencePath,
                 PatcherName = settings.PatcherName,
-                ExtraDataFolder = ExtraDataPathProvider.Path
+                ExtraDataFolder = ExtraDataPathProvider.Path,
+                ModKey = settings.ModKey,
             };
         }
     }

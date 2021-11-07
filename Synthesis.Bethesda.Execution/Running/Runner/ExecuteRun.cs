@@ -67,7 +67,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 outputDir,
                 sourcePath,
                 persistenceMode,
-                persistencePath);
+                persistencePath).ConfigureAwait(false);
         }
     }
 }

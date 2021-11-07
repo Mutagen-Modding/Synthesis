@@ -1,5 +1,6 @@
 using CommandLine;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Plugins;
 using Noggog;
 
 namespace Synthesis.Bethesda.Commands
@@ -27,17 +28,21 @@ namespace Synthesis.Bethesda.Commands
 
         [Option('p', "PatcherName", Required = false, HelpText = "Name of the patcher to be recorded in the shared FormKey allocation state")]
         public string? PatcherName { get; set; }
-
+        
+        [Option('k', "ModKey", Required = false, HelpText = "ModKey associated with the patch being generated")]
+        public string? ModKey { get; set; }
+        
         public override string ToString()
         {
             return $"{nameof(RunSynthesisPatcher)} => \n"
-                + $"  {nameof(SourcePath)} => {this.SourcePath} \n"
-                + $"  {nameof(OutputPath)} => {this.OutputPath} \n"
-                + $"  {nameof(GameRelease)} => {this.GameRelease} \n"
-                + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
-                + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath} \n"
-                + $"  {nameof(PersistencePath)} => {this.PersistencePath} \n"
-                + $"  {nameof(PatcherName)} => {this.PatcherName}";
+                + $"  {nameof(SourcePath)} => {SourcePath} \n"
+                + $"  {nameof(OutputPath)} => {OutputPath} \n"
+                + $"  {nameof(GameRelease)} => {GameRelease} \n"
+                + $"  {nameof(DataFolderPath)} => {DataFolderPath} \n"
+                + $"  {nameof(LoadOrderFilePath)} => {LoadOrderFilePath} \n"
+                + $"  {nameof(PersistencePath)} => {PersistencePath} \n"
+                + $"  {nameof(PatcherName)} => {PatcherName} \n"
+                + $"  {nameof(ModKey)} => {ModKey}";
         }
     }
 }

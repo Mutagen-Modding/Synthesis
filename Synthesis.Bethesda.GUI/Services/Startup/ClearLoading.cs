@@ -3,6 +3,7 @@ using System.IO;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.GUI.Services.Startup
 {
@@ -19,7 +20,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             _logger = logger;
         }
         
-        public void Do()
+        public void Start()
         {
             try
             {

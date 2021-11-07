@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Synthesis.Bethesda.Execution.DotNet.Dto;
@@ -31,7 +31,7 @@ namespace Synthesis.Bethesda.Execution.DotNet
         {
             var result = await ProcessRunner.RunAndCapture(
                 new System.Diagnostics.ProcessStartInfo(NetCommandPathProvider.Path, "--version"),
-                cancel: cancel);
+                cancel: cancel).ConfigureAwait(false);
             if (result.Errors.Count > 0)
             {
                 throw new InvalidOperationException($"{string.Join("\n", result.Errors)}");

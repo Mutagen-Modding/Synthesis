@@ -39,7 +39,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             CancellationToken cancel)
         {
             if (!_FileSystem.File.Exists(SettingsPath)) return;
-            var txt = await _FileSystem.File.ReadAllTextAsync(SettingsPath, cancel);
+            var txt = await _FileSystem.File.ReadAllTextAsync(SettingsPath, cancel).ConfigureAwait(false);
             var json = JsonDocument.Parse(txt, new JsonDocumentOptions()
             {
                 AllowTrailingCommas = true

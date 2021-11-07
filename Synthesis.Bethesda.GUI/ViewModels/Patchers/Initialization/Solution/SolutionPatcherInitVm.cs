@@ -105,7 +105,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
         public async IAsyncEnumerable<PatcherVm> Construct()
         {
             if (TargetSolutionInitializer == null) yield break;
-            var ret = (await TargetSolutionInitializer()).ToList();
+            var ret = (await TargetSolutionInitializer().ConfigureAwait(false)).ToList();
             foreach (var item in ret)
             {
                 yield return item;

@@ -28,7 +28,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 {
                     try
                     {
-                        await patcher.Prep(cancellation);
+                        await patcher.Prep(cancellation).ConfigureAwait(false);
                     }
                     catch (TaskCanceledException)
                     {

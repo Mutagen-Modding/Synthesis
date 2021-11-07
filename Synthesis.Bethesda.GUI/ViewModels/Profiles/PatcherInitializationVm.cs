@@ -86,7 +86,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 {
                     var initializer = this.NewPatcher;
                     if (initializer == null) return;
-                    AddNewPatchers(await initializer.Construct().ToListAsync());
+                    AddNewPatchers(await initializer.Construct().ToListAsync().ConfigureAwait(false));
                 },
                 canExecute: this.WhenAnyValue(x => x.NewPatcher)
                     .Select(patcher =>

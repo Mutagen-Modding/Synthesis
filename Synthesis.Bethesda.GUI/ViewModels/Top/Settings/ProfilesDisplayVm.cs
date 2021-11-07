@@ -9,16 +9,14 @@ using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.GUI.Services.Main;
-using Synthesis.Bethesda.GUI.ViewModels.Top;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
+namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
 {
     public class ProfilesDisplayVm : ViewModel
     {
         public ConfigurationVm Config { get; }
-        private readonly ViewModel? _previous;
 
-        public ICommand GoBackCommand { get; }
         public ICommand AddCommand { get; }
 
         public IObservableCollection<ProfileDisplayVm> ProfilesDisplay { get; }
@@ -27,19 +25,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         public ProfileDisplayVm? DisplayedProfile { get; set; }
 
         [Reactive]
-        public object? DisplayObject { get; set; } = null;
+        public object? DisplayObject { get; set; }
 
         public ProfilesDisplayVm(
             ConfigurationVm parent,
-            IProfileFactory profileFactory, 
-            IActivePanelControllerVm activePanelController)
+            IProfileFactory profileFactory)
         {
-            _previous = activePanelController.ActivePanel;
             Config = parent;
-            GoBackCommand = ReactiveCommand.Create(() =>
-            {
-                activePanelController.ActivePanel = _previous;
-            });
             AddCommand = ReactiveCommand.Create(() =>
             {
                 DisplayObject = new NewProfileVm(

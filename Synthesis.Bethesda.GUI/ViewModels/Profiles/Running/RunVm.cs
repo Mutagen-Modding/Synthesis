@@ -173,7 +173,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                         await _executeRun.Run(
                             Groups.Select(vm => vm.Run),
                             RunningProfile.SelectedPersistenceMode,
-                            _cancel.Token);
+                            _cancel.Token).ConfigureAwait(false);
                     }
                     catch (TaskCanceledException)
                     {
