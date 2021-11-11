@@ -425,9 +425,18 @@ namespace Mutagen.Bethesda.Synthesis
             RunSynthesisMutagenPatcher args,
             IFileSystem? fileSystem = null)
         {
+            ModKey modKey;
+            if (args.ModKey.IsNullOrWhitespace())
+            {
+                modKey = SynthesisBase.Constants.SynthesisModKey;
+            }
+            else
+            {
+                modKey = ModKey.FromNameAndExtension(args.ModKey);
+            }
             await Run(
                 args, 
-                ModKey.FromNameAndExtension(args.ModKey),
+                modKey,
                 fileSystem).ConfigureAwait(false);
         }
 
