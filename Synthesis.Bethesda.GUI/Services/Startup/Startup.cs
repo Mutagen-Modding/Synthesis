@@ -66,10 +66,14 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
                     .Do(_ =>
                     {
                         var mainVM = _mainVm.Value;
+                        _logger.Information("Loading settings");
                         mainVM.Load();
+                        _logger.Information("Loaded settings");
 
+                        _logger.Information("Setting main View Model");
                         _window.DataContext = mainVM;
                         mainVM.Init();
+                        _logger.Information("Set main View Model");
                     });
                 _tracker.Initialized = true;
             }

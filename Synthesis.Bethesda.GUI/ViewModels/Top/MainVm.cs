@@ -29,6 +29,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         private readonly ISettingsSingleton _SettingsSingleton;
         private readonly IActivePanelControllerVm _ActivePanelControllerVm;
         private readonly IProfileFactory _ProfileFactory;
+        private readonly ILogger _logger;
         public ConfigurationVm Configuration { get; }
 
         private readonly ObservableAsPropertyHelper<ViewModel?> _ActivePanel;
@@ -82,6 +83,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _SettingsSingleton = settingsSingleton;
             _ActivePanelControllerVm = activePanelControllerVm;
             _ProfileFactory = profileFactory;
+            _logger = logger;
             _ActivePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
                 .ToGuiProperty(this, nameof(ActivePanel), default);
             Configuration = configuration;
@@ -160,7 +162,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 
         public void Load()
         {
+            _logger.Information("Applying settings");
             Configuration.Load(_SettingsSingleton.Gui, _SettingsSingleton.Pipeline);
+            _logger.Information("Settings applied");
         }
 
         private void Save(SynthesisGuiSettings guiSettings, PipelineSettings _)
