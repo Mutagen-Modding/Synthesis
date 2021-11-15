@@ -36,31 +36,31 @@ namespace Synthesis.Bethesda.Execution.Versioning.Query
             {
                 _logger.Information("Querying for latest published library versions");
                 PrepLatestVersionProject.Prep();
-                return new NugetVersionOptions(
-                    await Task.Run(async () =>
-                    {
-                        var ret = await QueryLibraryVersions.Query(
-                            Pathing.ProjectFile, 
-                            current: false,
-                            includePrerelease: false, 
-                            cancel).ConfigureAwait(false);
-                        _logger.Information("Latest published library versions:");
-                        _logger.Information("  Mutagen: {MutagenVersion}", ret.Mutagen);
-                        _logger.Information("  Synthesis: {SynthesisVersion}", ret.Synthesis);
-                        return ret;
-                    }).ConfigureAwait(false),
-                    await Task.Run(async () =>
-                    {
-                        var ret = await QueryLibraryVersions.Query(
-                            Pathing.ProjectFile, 
-                            current: false,
-                            includePrerelease: true,
-                            cancel).ConfigureAwait(false);
-                        _logger.Information("Latest published prerelease library versions:");
-                        _logger.Information("  Mutagen: {MutagenVersion}", ret.Mutagen);
-                        _logger.Information("  Synthesis: {SynthesisVersion}", ret.Synthesis);
-                        return ret;
-                    }).ConfigureAwait(false));
+
+                var normalTask = Task.Run(() =>
+                    QueryLibraryVersions.Query(
+                        Pathing.ProjectFile,
+                        current: false,
+                        includePrerelease: false,
+                        cancel));
+                var prereleaseTask = Task.Run(() =>
+                    QueryLibraryVersions.Query(
+                        Pathing.ProjectFile,
+                        current: false,
+                        includePrerelease: true,
+                        cancel));
+
+                var normal = await normalTask.ConfigureAwait(false);
+                var prerelease = await prereleaseTask.ConfigureAwait(false);
+                
+                _logger.Information("Latest published library versions:");
+                _logger.Information("  Mutagen: {MutagenVersion}", normal.Mutagen);
+                _logger.Information("  Synthesis: {SynthesisVersion}", normal.Synthesis);
+                _logger.Information("Latest published prerelease library versions:");
+                _logger.Information("  Mutagen: {MutagenVersion}", prerelease.Mutagen);
+                _logger.Information("  Synthesis: {SynthesisVersion}", prerelease.Synthesis);
+                
+                return new NugetVersionOptions(normal, prerelease);
             }
             catch (Exception ex)
             {
