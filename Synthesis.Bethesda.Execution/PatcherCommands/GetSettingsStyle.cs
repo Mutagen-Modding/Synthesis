@@ -5,6 +5,7 @@ using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.Execution.Utility;
+using Synthesis.Bethesda.Execution.WorkEngine;
 
 namespace Synthesis.Bethesda.Execution.PatcherCommands
 {
@@ -19,15 +20,18 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
 
     public class GetSettingsStyle : IGetSettingsStyle
     {
+        private readonly IWorkDropoff _workDropoff;
         public ILinesToReflectionConfigsParser LinesToConfigsParser { get; }
         public IProcessRunner ProcessRunner { get; }
         public IRunProcessStartInfoProvider GetRunProcessStartInfoProvider { get; }
 
         public GetSettingsStyle(
             IProcessRunner processRunner,
+            IWorkDropoff workDropoff,
             ILinesToReflectionConfigsParser linesToConfigsParser,
             IRunProcessStartInfoProvider getRunProcessStartInfoProvider)
         {
+            _workDropoff = workDropoff;
             LinesToConfigsParser = linesToConfigsParser;
             ProcessRunner = processRunner;
             GetRunProcessStartInfoProvider = getRunProcessStartInfoProvider;
@@ -39,9 +43,12 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
             CancellationToken cancel,
             bool build)
         {
-            var result = await ProcessRunner.RunAndCapture(
-                GetRunProcessStartInfoProvider.GetStart(path, directExe, new SettingsQuery(), build: build),
-                cancel: cancel).ConfigureAwait(false);
+            var result = await _workDropoff.EnqueueAndWait(() =>
+            {
+                return ProcessRunner.RunAndCapture(
+                    GetRunProcessStartInfoProvider.GetStart(path, directExe, new SettingsQuery(), build: build),
+                    cancel: cancel);
+            }).ConfigureAwait(false);
             
             switch ((Codes)result.Result)
             {

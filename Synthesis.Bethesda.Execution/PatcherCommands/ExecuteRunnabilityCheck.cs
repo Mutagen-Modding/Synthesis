@@ -6,6 +6,7 @@ using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Utility;
+using Synthesis.Bethesda.Execution.WorkEngine;
 
 namespace Synthesis.Bethesda.Execution.PatcherCommands
 {
@@ -22,6 +23,7 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
     {
         public const int MaxLines = 100;
         
+        public IWorkDropoff Dropoff { get; }
         public IGameReleaseContext GameReleaseContext { get; }
         public IProcessRunner ProcessRunner { get; }
         public IRunProcessStartInfoProvider RunProcessStartInfoProvider { get; }
@@ -29,10 +31,12 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
 
         public ExecuteRunnabilityCheck(
             IGameReleaseContext gameReleaseContext,
+            IWorkDropoff workDropoff,
             IProcessRunner processRunner,
             IDataDirectoryProvider dataDirectoryProvider,
             IRunProcessStartInfoProvider runProcessStartInfoProvider)
         {
+            Dropoff = workDropoff;
             DataDirectoryProvider = dataDirectoryProvider;
             GameReleaseContext = gameReleaseContext;
             ProcessRunner = processRunner;
@@ -61,10 +65,13 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
                 LoadOrderFilePath = loadOrderPath
             };
 
-            var result = await ProcessRunner.RunWithCallback(
-                RunProcessStartInfoProvider.GetStart(path, directExe, checkState),
-                AddResult,
-                cancel: cancel).ConfigureAwait(false);
+            var result = await Dropoff.EnqueueAndWait(() =>
+            {
+                return ProcessRunner.RunWithCallback(
+                    RunProcessStartInfoProvider.GetStart(path, directExe, checkState),
+                    AddResult,
+                    cancel: cancel);
+            }).ConfigureAwait(false);
 
             if (result == (int)Codes.NotRunnable)
             {
