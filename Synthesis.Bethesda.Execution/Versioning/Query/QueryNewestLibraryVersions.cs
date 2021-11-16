@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.WorkEngine;
 
 namespace Synthesis.Bethesda.Execution.Versioning.Query
 {
@@ -14,6 +15,7 @@ namespace Synthesis.Bethesda.Execution.Versioning.Query
     public class QueryNewestLibraryVersions : IQueryNewestLibraryVersions
     {
         private readonly ILogger _logger;
+        private readonly IWorkDropoff _workDropoff;
         public IQueryVersionProjectPathing Pathing { get; }
         public IPrepLatestVersionProject PrepLatestVersionProject { get; }
         public IQueryLibraryVersions QueryLibraryVersions { get; }
@@ -21,10 +23,12 @@ namespace Synthesis.Bethesda.Execution.Versioning.Query
         public QueryNewestLibraryVersions(
             ILogger logger,
             IQueryVersionProjectPathing pathing, 
+            IWorkDropoff workDropoff,
             IPrepLatestVersionProject prepLatestVersionProject,
             IQueryLibraryVersions queryLibraryVersions)
         {
             _logger = logger;
+            _workDropoff = workDropoff;
             Pathing = pathing;
             PrepLatestVersionProject = prepLatestVersionProject;
             QueryLibraryVersions = queryLibraryVersions;
@@ -37,13 +41,13 @@ namespace Synthesis.Bethesda.Execution.Versioning.Query
                 _logger.Information("Querying for latest published library versions");
                 PrepLatestVersionProject.Prep();
 
-                var normalTask = Task.Run(() =>
+                var normalTask = _workDropoff.EnqueueAndWait(() =>
                     QueryLibraryVersions.Query(
                         Pathing.ProjectFile,
                         current: false,
                         includePrerelease: false,
                         cancel));
-                var prereleaseTask = Task.Run(() =>
+                var prereleaseTask = _workDropoff.EnqueueAndWait(() =>
                     QueryLibraryVersions.Query(
                         Pathing.ProjectFile,
                         current: false,
