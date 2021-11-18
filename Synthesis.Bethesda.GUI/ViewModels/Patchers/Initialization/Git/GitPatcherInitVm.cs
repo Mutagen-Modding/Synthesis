@@ -20,6 +20,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
 {
@@ -27,7 +28,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
     {
         private readonly IPatcherInitializationVm _init;
         private readonly IPatcherFactory _PatcherFactory;
-        
+        private readonly IProfileGroupsList _groupsList;
+        private readonly IConfirmationPanelControllerVm _confirmation;
+        private readonly PatcherInitRenameActionVm.Factory _renameFactory;
+
         public ICommand CompleteConfiguration => _init.CompleteConfiguration;
         public ICommand CancelConfiguration => _init.CancelConfiguration;
         
@@ -70,10 +74,16 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             IPatcherFactory patcherFactory,
             INavigateTo navigateTo, 
             PatcherStoreListingVm.Factory listingVmFactory,
-            IRegistryListingsProvider listingsProvider)
+            IProfileGroupsList groupsList,
+            IRegistryListingsProvider listingsProvider,
+            IConfirmationPanelControllerVm confirmation,
+            PatcherInitRenameActionVm.Factory renameFactory)
         {
             _init = init;
             _PatcherFactory = patcherFactory;
+            _groupsList = groupsList;
+            _confirmation = confirmation;
+            _renameFactory = renameFactory;
             Patcher = patcherFactory.GetGitPatcher();
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid.Valid)
@@ -162,7 +172,20 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
                 RemoteRepoPath = listing.RepoPath,
                 SelectedProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')
             });
-            _init.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
+            var existingNames = _groupsList.Groups.Items
+                .SelectMany(g => g.Patchers.Items)
+                .Select(x => x.NameVm.Name)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            if (existingNames.Contains(patcher.NameVm.Name))
+            {
+                _confirmation.TargetConfirmation = _renameFactory(
+                    patcher,
+                    existingNames);
+            }
+            else
+            {
+                _init.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
+            }
         }
 
         public override void Dispose()
