@@ -30,6 +30,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 canExecute: target =>
                 {
                     if (target == null) return Observable.Return(false);
+                    if (target.DiscardActionCommand == null) return Observable.Return(true);
                     return target.DiscardActionCommand.CanExecute;
                 },
                 execute: x =>

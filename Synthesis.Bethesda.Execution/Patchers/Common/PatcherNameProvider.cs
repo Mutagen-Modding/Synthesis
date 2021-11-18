@@ -6,10 +6,4 @@ namespace Synthesis.Bethesda.Execution.Patchers.Common
     {
         public string Name { get; }
     }
-
-    [ExcludeFromCodeCoverage]
-    public class PatcherNameInjection : IPatcherNameProvider
-    {
-        public string Name { get; init; } = string.Empty;
-    }
 }

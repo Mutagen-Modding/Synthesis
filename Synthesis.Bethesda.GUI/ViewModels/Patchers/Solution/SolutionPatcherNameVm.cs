@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Reactive.Linq;
+using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
@@ -14,12 +16,17 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
         private readonly ObservableAsPropertyHelper<string> _Name;
         public string Name => _Name.Value;
 
+        [Reactive] public string Nickname { get; set; } = string.Empty;
+
         public SolutionPatcherNameVm(
             IProjectSubpathDefaultSettings defaultSettings,
             ISelectedProjectInputVm selectedProjectInputVm)
         {
             _Name = selectedProjectInputVm.WhenAnyValue(x => x.Picker.TargetPath)
                 .Select(GetNameFromPath)
+                .CombineLatest(
+                    this.WhenAnyValue(x => x.Nickname),
+                    (auto, nickname) => nickname.IsNullOrWhitespace() ? auto : nickname)
                 .ToGuiProperty<string>(this, nameof(Name), GetNameFromPath(defaultSettings.ProjectSubpath));
         }
 

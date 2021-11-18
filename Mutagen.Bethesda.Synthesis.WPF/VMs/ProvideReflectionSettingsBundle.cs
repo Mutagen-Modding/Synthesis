@@ -28,19 +28,16 @@ namespace Mutagen.Bethesda.Synthesis.WPF
     public class ProvideReflectionSettingsBundle : IProvideReflectionSettingsBundle
     {
         private readonly ILogger _Logger;
-        private readonly IPatcherExtraDataPathProvider _extraDataPathProvider;
-        private readonly IFileSystem _FileSystem;
+        private readonly ReflectionSettingsVM.Factory _reflFactory;
         private readonly IExtractInfoFromProject _Extract;
 
         public ProvideReflectionSettingsBundle(
             ILogger logger,
-            IPatcherExtraDataPathProvider extraDataPathProvider,
-            IFileSystem fileSystem,
+            ReflectionSettingsVM.Factory reflFactory,
             IExtractInfoFromProject extract)
         {
             _Logger = logger;
-            _extraDataPathProvider = extraDataPathProvider;
-            _FileSystem = fileSystem;
+            _reflFactory = reflFactory;
             _Extract = extract;
         }
         
@@ -63,17 +60,14 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                             {
                                 var t = assemb.GetType(s.TypeName);
                                 if (t == null) return null;
-                                return new ReflectionSettingsVM(
+                                return _reflFactory(
                                     ReflectionSettingsParameters.FromType(
                                         detectedLoadOrder,
                                         linkCache,
                                         t,
                                         Activator.CreateInstance(t)),
                                     nickname: targets[index].Nickname,
-                                    settingsFolder: _extraDataPathProvider.Path,
-                                    settingsSubPath: targets[index].Path,
-                                    logger: _Logger,
-                                    fileSystem: _FileSystem);
+                                    settingsSubPath: targets[index].Path);
                             }
                             catch (Exception ex)
                             {

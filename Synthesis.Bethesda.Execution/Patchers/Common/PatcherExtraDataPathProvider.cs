@@ -7,6 +7,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Common
     public interface IPatcherExtraDataPathProvider
     {
         DirectoryPath Path { get; }
+        DirectoryPath GetPathForName(string name);
     }
 
     public class PatcherExtraDataPathProvider : IPatcherExtraDataPathProvider
@@ -24,7 +25,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Common
             ProfileNameProvider = profileNameProvider;
             ExtraDataPathProvider = extraDataPathProvider;
         }
+        
+        public DirectoryPath GetPathForName(string name) => System.IO.Path.Combine(ExtraDataPathProvider.Path, ProfileNameProvider.Name, name);
 
-        public DirectoryPath Path => System.IO.Path.Combine(ExtraDataPathProvider.Path, ProfileNameProvider.Name, NameProvider.Name);
+        public DirectoryPath Path => GetPathForName(NameProvider.Name);
     }
 }

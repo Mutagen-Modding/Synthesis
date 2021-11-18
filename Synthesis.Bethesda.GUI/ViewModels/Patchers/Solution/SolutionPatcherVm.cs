@@ -90,8 +90,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             ISolutionMetaFileSync metaFileSync,
             INavigateTo navigateTo,
             IPatcherIdProvider idProvider,
+            PatcherRenameActionVm.Factory renameFactory,
             SolutionPatcherSettings? settings = null)
-            : base(scope, nameVm, profileDisplay, confirmation, idProvider, settings)
+            : base(scope, nameVm, profileDisplay, confirmation, idProvider, renameFactory, settings)
         {
             SolutionPathInput = solutionPathInput;
             SelectedProjectInput = selectedProjectInput;

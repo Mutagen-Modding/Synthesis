@@ -31,8 +31,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
             IConfirmationPanelControllerVm confirmation,
             IShowHelpSetting showHelpSetting,
             ILifetimeScope scope,
+            PatcherRenameActionVm.Factory renameFactory,
             CliPatcherSettings? settings = null)
-            : base(scope, nameVm, selPatcher, confirmation, idProvider, settings)
+            : base(scope, nameVm, selPatcher, confirmation, idProvider, renameFactory, settings)
         {
             ExecutableInput = pathToExecutableInputVm;
             ShowHelpSetting = showHelpSetting;

@@ -108,12 +108,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IAttemptedCheckout attemptedCheckout,
             IPatcherIdProvider idProvider,
             ICopyOverExtraData copyOverExtraData,
+            PatcherRenameActionVm.Factory renameFactory,
             DeleteUserData deleteUserData,
             PatcherSettingsVm.Factory settingsVmFactory,
             GithubPatcherSettings? settings = null)
             : base(
                 scope, nameVm, selPatcher,
-                confirmation, idProvider, settings)
+                confirmation, idProvider, renameFactory, settings)
         {
             _logger = logger;
             _copyOverExtraData = copyOverExtraData;

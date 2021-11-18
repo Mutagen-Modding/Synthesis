@@ -31,6 +31,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
 
         public ICommand DeleteCommand { get; }
 
+        public ICommand RenameCommand { get; }
+
         public abstract ConfigurationState State { get; }
 
         public virtual bool IsNameEditable => true;
@@ -46,6 +48,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             IPatcherIdProvider idProvider,
+            PatcherRenameActionVm.Factory renameFactory,
             PatcherSettings? settings)
         {
             Scope = scope;
@@ -67,6 +70,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
                     "Confirm",
                     $"Are you sure you want to delete {NameVm.Name}?",
                     Delete);
+            });
+
+            RenameCommand = ReactiveCommand.Create(() =>
+            {
+                confirmation.TargetConfirmation = renameFactory();
             });
             
             ErrorDisplayVm = new ErrorDisplayVm(this, this.WhenAnyValue(x => x.State));
