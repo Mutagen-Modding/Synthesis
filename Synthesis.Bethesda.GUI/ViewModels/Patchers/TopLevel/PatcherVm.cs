@@ -61,8 +61,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
                 // Not GuiProperty, as it interacts with drag/drop oddly
                 .ToProperty(this, nameof(IsSelected));
 
-            // Set to settings
-            IsOn = settings?.On ?? false;
+            if (settings != null)
+            {
+                CopyInSettings(settings);
+            }
 
             DeleteCommand = ReactiveCommand.Create(() =>
             {
@@ -86,6 +88,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         {
             settings.On = IsOn;
             settings.Nickname = NameVm.Name;
+        }
+
+        protected void CopyInSettings(PatcherSettings settings)
+        {
+            IsOn = settings.On;
+            NameVm.Nickname = settings.Nickname;
         }
 
         public virtual void Delete()
