@@ -11,7 +11,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Confirmations
 {
     public class PatcherInitRenameActionVm : ViewModel, IConfirmationActionVm
     {

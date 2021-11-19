@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -17,6 +18,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
     {
         private readonly ILogger _logger;
         private readonly IPatcherNameVm _nameVm;
+        private readonly IFileSystem _fileSystem;
         private readonly IPatcherExtraDataPathProvider _extraDataPathProvider;
         public ReactiveCommand<Unit, Unit> ConfirmActionCommand { get; }
         public ReactiveCommand<Unit, Unit>? DiscardActionCommand => null;
@@ -30,11 +32,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         public PatcherRenameActionVm(
             ILogger logger,
             IPatcherNameVm nameVm,
+            IFileSystem fileSystem,
             IPatcherExtraDataPathProvider extraDataPathProvider,
             IProfileGroupsList groupsList)
         {
             _logger = logger;
             _nameVm = nameVm;
+            _fileSystem = fileSystem;
             _extraDataPathProvider = extraDataPathProvider;
             Name = nameVm.Name;
             var names = groupsList.Groups.Items
@@ -51,9 +55,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         {
             try
             {
-                Directory.Move(
-                    _extraDataPathProvider.Path,
-                    _extraDataPathProvider.GetPathForName(Name));
+                if (_fileSystem.Directory.Exists(_extraDataPathProvider.Path))
+                {
+                    Directory.Move(
+                        _extraDataPathProvider.Path,
+                        _extraDataPathProvider.GetPathForName(Name));
+                }
             }
             catch (Exception e)
             {
