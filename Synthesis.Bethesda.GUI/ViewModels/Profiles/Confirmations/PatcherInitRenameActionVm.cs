@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Confirmations
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Confirmations
 {
     public class PatcherInitRenameActionVm : ViewModel, IConfirmationActionVm
     {
@@ -22,22 +18,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Confirmation
         
         [Reactive] public string Name { get; set; }
 
-        public delegate PatcherInitRenameActionVm Factory(
-            PatcherVm patcher,
-            IReadOnlyCollection<string> existingNames);
-
         public PatcherInitRenameActionVm(
-            IPatcherInitializationVm init,
-            PatcherVm patcher,
+            string currentName,
             IReadOnlyCollection<string> existingNames)
         {
-            Name = patcher.NameVm.Name;
+            Name = currentName;
             ConfirmActionCommand = ReactiveCommand.Create(
-                () =>
-                {
-                    patcher.NameVm.Nickname = Name;
-                    init.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
-                },
+                () => { },
                 this.WhenAnyValue(x => x.Name).Select(n => !existingNames.Contains(n)));
         }
     }

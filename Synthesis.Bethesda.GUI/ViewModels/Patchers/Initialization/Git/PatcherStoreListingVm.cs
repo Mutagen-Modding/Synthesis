@@ -49,9 +49,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsSelected));
             OpenWebsite = ReactiveCommand.Create(() => navigate.Navigate(RepoPath));
-            AddCommand = ReactiveCommand.Create(() =>
+            AddCommand = ReactiveCommand.CreateFromTask(async () =>
             {
-                gitInit.AddStorePatcher(this);
+                await gitInit.AddStorePatcher(this);
             });
         }
 

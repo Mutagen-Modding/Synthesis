@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
@@ -17,11 +18,9 @@ using Synthesis.Bethesda.Execution.Patchers.Git.Registry;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Confirmations;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
-using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
 {
@@ -30,8 +29,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
         private readonly IPatcherInitializationVm _init;
         private readonly IPatcherFactory _PatcherFactory;
         private readonly IProfileGroupsList _groupsList;
-        private readonly IConfirmationPanelControllerVm _confirmation;
-        private readonly PatcherInitRenameActionVm.Factory _renameFactory;
+        private readonly PatcherInitRenameValidator _renamer;
 
         public ICommand CompleteConfiguration => _init.CompleteConfiguration;
         public ICommand CancelConfiguration => _init.CancelConfiguration;
@@ -77,14 +75,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             PatcherStoreListingVm.Factory listingVmFactory,
             IProfileGroupsList groupsList,
             IRegistryListingsProvider listingsProvider,
-            IConfirmationPanelControllerVm confirmation,
-            PatcherInitRenameActionVm.Factory renameFactory)
+            PatcherInitRenameValidator renamer)
         {
             _init = init;
             _PatcherFactory = patcherFactory;
             _groupsList = groupsList;
-            _confirmation = confirmation;
-            _renameFactory = renameFactory;
+            _renamer = renamer;
             Patcher = patcherFactory.GetGitPatcher();
 
             _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid.Valid)
@@ -165,25 +161,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
         {
             Patcher.Delete();
         }
-
-        public void AddStorePatcher(PatcherStoreListingVm listing)
+        
+        public async Task AddStorePatcher(PatcherStoreListingVm listing)
         {
             var patcher = _PatcherFactory.GetGitPatcher(new GithubPatcherSettings()
             {
                 RemoteRepoPath = listing.RepoPath,
                 SelectedProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')
             });
-            var existingNames = _groupsList.Groups.Items
-                .SelectMany(g => g.Patchers.Items)
-                .Select(x => x.NameVm.Name)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-            if (existingNames.Contains(patcher.NameVm.Name))
-            {
-                _confirmation.TargetConfirmation = _renameFactory(
-                    patcher,
-                    existingNames);
-            }
-            else
+            if (await _renamer.ConfirmNameUnique(patcher))
             {
                 _init.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
             }

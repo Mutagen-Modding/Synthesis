@@ -55,7 +55,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             IProfileGroupsList groupsList,
             INewGroupCreator groupCreator,
             ISelectedGroupControllerVm selectedGroupControllerVm,
-            IProfileDisplayControllerVm displayControllerVm)
+            IProfileDisplayControllerVm displayControllerVm,
+            PatcherInitRenameValidator renamer)
         {
             _scope = scope;
             _selectedGroupControllerVm = selectedGroupControllerVm;
@@ -86,7 +87,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 {
                     var initializer = this.NewPatcher;
                     if (initializer == null) return;
-                    AddNewPatchers(await initializer.Construct().ToListAsync().ConfigureAwait(false));
+                    var list = await initializer.Construct().ToListAsync().ConfigureAwait(false);
+                    foreach (var item in list)
+                    {
+                        if (!await renamer.ConfirmNameUnique(item)) return;
+                    }
+                    AddNewPatchers(list);
                 },
                 canExecute: this.WhenAnyValue(x => x.NewPatcher)
                     .Select(patcher =>
