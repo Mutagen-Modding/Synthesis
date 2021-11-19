@@ -120,7 +120,7 @@ namespace Mutagen.Bethesda.Synthesis
             return this;
         }
 
-        private async Task<int> CheckRunnability(CheckRunnability args, IFileSystem fileSystem)
+        private async Task<Codes> CheckRunnability(CheckRunnability args, IFileSystem fileSystem)
         {
             var patcher = _patchers.GetOrDefault(args.GameRelease.ToCategory());
             var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
@@ -151,7 +151,7 @@ namespace Mutagen.Bethesda.Synthesis
             catch (Exception ex)
             {
                 System.Console.Error.Write(ex);
-                return (int)Codes.NotRunnable;
+                return Codes.NotRunnable;
             }
             return 0;
         }
@@ -411,7 +411,7 @@ namespace Mutagen.Bethesda.Synthesis
                         }
                         return 0;
                     },
-                    (CheckRunnability checkRunnability) => CheckRunnability(checkRunnability, fileSystem),
+                    async (CheckRunnability checkRunnability) => (int)await CheckRunnability(checkRunnability, fileSystem),
                     (OpenForSettings openForSettings) => OpenForSettings(openForSettings),
                     (SettingsQuery settingsQuery) => QuerySettings(settingsQuery),
                     async _ =>
@@ -479,7 +479,7 @@ namespace Mutagen.Bethesda.Synthesis
             if (_runnabilityChecks.Count > 0)
             {
                 System.Console.WriteLine("Checking runnability");
-                await CheckRunnability(
+                var runnabilityResult = await CheckRunnability(
                     new CheckRunnability()
                     {
                         DataFolderPath = args.DataFolderPath,
@@ -487,6 +487,10 @@ namespace Mutagen.Bethesda.Synthesis
                         LoadOrderFilePath = args.LoadOrderFilePath
                     },
                     fileSystem: fileSystem).ConfigureAwait(false);
+                if (runnabilityResult == Codes.NotRunnable)
+                {
+                    throw new ArgumentException("Patcher responded that it was not runnable.");
+                }
                 System.Console.WriteLine("Checking runnability complete");
             }
             WarmupAll.Init();
