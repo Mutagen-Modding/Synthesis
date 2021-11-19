@@ -46,7 +46,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.Builder
         {
             sut.ProcessRunner.RunWithCallback(default!, default!, default!, default)
                 .ReturnsForAnyArgs(0);
-            sut.Dropoff.EnqueueAndWait(default(Func<Task<int>>)!).ReturnsForAnyArgs(ValueTask.FromResult(0));
             var result = await sut.Compile(targetPath, cancel);
             result.Should().Be(ErrorResponse.Success);
         }
@@ -59,7 +58,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.Builder
         {
             sut.ProcessRunner.RunWithCallback(default!, default!, default!, default)
                 .ReturnsForAnyArgs(0);
-            sut.Dropoff.EnqueueAndWait(default(Func<Task<int>>)!).ReturnsForAnyArgs(ValueTask.FromResult(0));
             await sut.Compile(targetPath, cancel);
             sut.ResultsProcessor.DidNotReceiveWithAnyArgs().GetResults(default, default, default!);
         }
