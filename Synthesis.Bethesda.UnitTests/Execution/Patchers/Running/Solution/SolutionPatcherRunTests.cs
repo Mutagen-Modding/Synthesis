@@ -55,6 +55,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Running.Solution
                     projPath,
                     directExe: false,
                     loadOrderPath: settings.LoadOrderFilePath,
+                    buildMetaPath: null,
                     cancel: cancel);
         }
         
@@ -65,7 +66,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Running.Solution
             ErrorResponse fail,
             SolutionPatcherRun sut)
         {
-            sut.CheckRunnability.Check(default!, default, default!, default)
+            sut.CheckRunnability.Check(default!, default, default!, default, default)
                 .ReturnsForAnyArgs(fail);
             var ex = await Assert.ThrowsAsync<CliUnsuccessfulRunException>(async () =>
             {
@@ -95,7 +96,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Running.Solution
             Received.InOrder(() =>
             {
                 sut.CheckRunnability.Check(
-                    Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+                    Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), Arg.Any<FilePath?>(), Arg.Any<CancellationToken>());
                 sut.SolutionPatcherRunner.Run(Arg.Any<RunSynthesisPatcher>(), Arg.Any<CancellationToken>());
             });
         }

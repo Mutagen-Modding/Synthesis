@@ -12,21 +12,21 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Git
     public class ShouldShortCircuitCompilation : IShouldShortCircuitCompilation
     {
         private readonly IShortCircuitCompilationSettingsProvider _settingsProvider;
-        private readonly IFileSystem _fs;
+        private readonly IBuildMetaFileReader _metaFileReader;
 
         public ShouldShortCircuitCompilation(
             IShortCircuitCompilationSettingsProvider settingsProvider,
-            IFileSystem fs)
+            IBuildMetaFileReader metaFileReader)
         {
             _settingsProvider = settingsProvider;
-            _fs = fs;
+            _metaFileReader = metaFileReader;
         }
 
         public bool ShouldShortCircuit(RunnerRepoInfo info)
         {
             if (!_settingsProvider.ShortcircuitBuilds) return false;
-            if (!_fs.File.Exists(info.MetaPath)) return false;
-            var meta = JsonConvert.DeserializeObject<GitCompilationMeta>(_fs.File.ReadAllText(info.MetaPath), Constants.JsonSettings)!;
+            var meta = _metaFileReader.Read(info.MetaPath);
+            if (meta == null) return false;
             if (meta.Sha != info.Target.TargetSha) return false;
             if (meta.MutagenVersion != info.TargetVersions.Mutagen) return false;
             if (meta.SynthesisVersion != info.TargetVersions.Synthesis) return false;

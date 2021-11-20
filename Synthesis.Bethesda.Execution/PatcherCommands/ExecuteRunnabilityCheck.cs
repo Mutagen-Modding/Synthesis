@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Synthesis.Bethesda.Commands;
+using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.Execution.WorkEngine;
 
@@ -16,11 +18,13 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
             string path,
             bool directExe,
             string loadOrderPath,
+            FilePath? buildMetaPath,
             CancellationToken cancel);
     }
 
     public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
     {
+        private readonly IWriteShortCircuitMeta _writeShortCircuitMeta;
         public const int MaxLines = 100;
         
         public IWorkDropoff Dropoff { get; }
@@ -28,14 +32,19 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
         public IProcessRunner ProcessRunner { get; }
         public IRunProcessStartInfoProvider RunProcessStartInfoProvider { get; }
         public IDataDirectoryProvider DataDirectoryProvider { get; }
+        public IBuildMetaFileReader MetaFileReader { get; }
 
         public ExecuteRunnabilityCheck(
             IGameReleaseContext gameReleaseContext,
             IWorkDropoff workDropoff,
             IProcessRunner processRunner,
             IDataDirectoryProvider dataDirectoryProvider,
+            IBuildMetaFileReader metaFileReader,
+            IWriteShortCircuitMeta writeShortCircuitMeta,
             IRunProcessStartInfoProvider runProcessStartInfoProvider)
         {
+            MetaFileReader = metaFileReader;
+            _writeShortCircuitMeta = writeShortCircuitMeta;
             Dropoff = workDropoff;
             DataDirectoryProvider = dataDirectoryProvider;
             GameReleaseContext = gameReleaseContext;
@@ -47,8 +56,12 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
             string path,
             bool directExe,
             string loadOrderPath,
+            FilePath? buildMetaPath,
             CancellationToken cancel)
         {
+            var meta = buildMetaPath != null ? MetaFileReader.Read(buildMetaPath.Value) : default;
+            if (meta is { DoesNotHaveRunnability: true }) return ErrorResponse.Success;
+            
             var results = new List<string>();
             void AddResult(string s)
             {
@@ -65,7 +78,7 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
                 LoadOrderFilePath = loadOrderPath
             };
 
-            var result = await Dropoff.EnqueueAndWait(() =>
+            var result = (Codes)await Dropoff.EnqueueAndWait(() =>
             {
                 return ProcessRunner.RunWithCallback(
                     RunProcessStartInfoProvider.GetStart(path, directExe, checkState),
@@ -73,9 +86,17 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
                     cancel: cancel);
             }).ConfigureAwait(false);
 
-            if (result == (int)Codes.NotRunnable)
+            if (result == Codes.NotRunnable)
             {
                 return ErrorResponse.Fail(string.Join(Environment.NewLine, results));
+            }
+
+            if (result == Codes.NotNeeded 
+                && meta != null
+                && buildMetaPath != null)
+            {
+                meta.DoesNotHaveRunnability = true;
+                _writeShortCircuitMeta.WriteMeta(buildMetaPath, meta);
             }
 
             // Other error codes are likely the target app just not handling runnability checks, so return as runnable unless

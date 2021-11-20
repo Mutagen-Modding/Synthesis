@@ -63,6 +63,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                                 path: i.comp.Item.ProjPath,
                                 directExe: false,
                                 cancel: cancel,
+                                buildMetaPath: i.comp.Item.MetaPath,
                                 loadOrderPath: tmpLoadOrder.File).ConfigureAwait(false);
                             if (runnability.Failed)
                             {

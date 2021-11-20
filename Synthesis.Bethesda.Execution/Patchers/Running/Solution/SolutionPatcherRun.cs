@@ -61,6 +61,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
                 PathToProjProvider.Path,
                 directExe: false,
                 loadOrderPath: settings.LoadOrderFilePath,
+                buildMetaPath: null,
                 cancel: cancel).ConfigureAwait(false);
 
             if (runnability.Failed)

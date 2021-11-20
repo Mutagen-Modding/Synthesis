@@ -5,5 +5,6 @@
         public string MutagenVersion { get; set; } = string.Empty;
         public string SynthesisVersion { get; set; } = string.Empty;
         public string Sha { get; set; } = string.Empty;
+        public bool DoesNotHaveRunnability { get; set; }
     }
 }

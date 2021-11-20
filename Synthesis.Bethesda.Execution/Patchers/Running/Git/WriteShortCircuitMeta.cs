@@ -7,6 +7,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Git
     public interface IWriteShortCircuitMeta
     {
         void WriteMeta(RunnerRepoInfo info);
+        void WriteMeta(string metaPath, GitCompilationMeta meta);
     }
 
     public class WriteShortCircuitMeta : IWriteShortCircuitMeta
@@ -20,14 +21,19 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Git
         
         public void WriteMeta(RunnerRepoInfo info)
         {
+            WriteMeta(info.MetaPath, new GitCompilationMeta()
+            {
+                MutagenVersion = info.TargetVersions.Mutagen ?? string.Empty,
+                SynthesisVersion = info.TargetVersions.Synthesis ?? string.Empty,
+                Sha = info.Target.TargetSha
+            });
+        }
+        
+        public void WriteMeta(string metaPath, GitCompilationMeta meta)
+        {
             _fs.File.WriteAllText(
-                info.MetaPath,
-                JsonConvert.SerializeObject(new GitCompilationMeta()
-                {
-                    MutagenVersion = info.TargetVersions.Mutagen ?? string.Empty,
-                    SynthesisVersion = info.TargetVersions.Synthesis ?? string.Empty,
-                    Sha = info.Target.TargetSha
-                }));
+                metaPath,
+                JsonConvert.SerializeObject(meta));
         }
     }
 }
