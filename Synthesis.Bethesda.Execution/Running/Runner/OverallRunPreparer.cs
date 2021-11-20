@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins;
 using Synthesis.Bethesda.Execution.Settings;
 
@@ -8,6 +9,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     {
         Task Prepare(
             ModKey modKey,
+            IReadOnlySet<ModKey> blackListedMods,
             PersistenceMode persistenceMode = PersistenceMode.None,
             string? persistencePath = null);
     }
@@ -27,13 +29,14 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         
         public async Task Prepare(
             ModKey modKey,
+            IReadOnlySet<ModKey> blackListedMods,
             PersistenceMode persistenceMode = PersistenceMode.None,
             string? persistencePath = null)
         {
             await Task.WhenAll(
                 Task.Run(() =>
                 {
-                    RunLoadOrderPreparer.Write(modKey);
+                    RunLoadOrderPreparer.Write(modKey, blackListedMods);
                 }), 
                 Task.Run(() =>
                 {

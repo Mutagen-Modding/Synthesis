@@ -83,7 +83,7 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Page</BuildAction>
     </Page>
-    <Page Update="Views\Config\GroupConfigView.xaml">
+    <Page Update="Views\Config\Group\GroupConfigView.xaml">
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Page</BuildAction>
     </Page>
@@ -100,7 +100,7 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Page</BuildAction>
     </Page>
-    <Page Update="Views\Config\GroupDetailPaneView.xaml">
+    <Page Update="Views\Config\Group\GroupDetailPaneView.xaml">
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Page</BuildAction>
     </Page>
@@ -122,7 +122,7 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
-    <Compile Update="Views\Config\GroupConfigView.xaml.cs">
+    <Compile Update="Views\Config\Group\GroupConfigView.xaml.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
@@ -153,7 +153,7 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
-    <Compile Update="Views\Config\GroupDetailPaneView.xaml.cs">
+    <Compile Update="Views\Config\Group\GroupDetailPaneView.xaml.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>

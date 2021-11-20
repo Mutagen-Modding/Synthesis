@@ -1,11 +1,13 @@
-﻿using Mutagen.Bethesda.Plugins;
+﻿using System.Collections.Generic;
+using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order.DI;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner
 {
     public interface IRunLoadOrderPreparer
     {
-        void Write(ModKey modKey);
+        void Write(ModKey modKey,
+            IReadOnlySet<ModKey> blackListedMods);
     }
 
     public class RunLoadOrderPreparer : IRunLoadOrderPreparer
@@ -27,9 +29,11 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             LoadOrderWriter = loadOrderWriter;
         }
 
-        public void Write(ModKey modKey)
+        public void Write(
+            ModKey modKey,
+            IReadOnlySet<ModKey> blackListedMods)
         {
-            var loadOrderList = LoadOrderForRunProvider.Get(modKey);
+            var loadOrderList = LoadOrderForRunProvider.Get(modKey, blackListedMods);
             
             Printer.Print(loadOrderList);
             

@@ -14,22 +14,11 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public void PassesOutputPathToLoadOrderForRunProvider(
             ModPath outputPath,
+            IReadOnlySet<ModKey> blacklist,
             RunLoadOrderPreparer sut)
         {
-            sut.Write(outputPath);
-            sut.LoadOrderForRunProvider.Received(1).Get(outputPath);
-        }
-        
-        [Theory, SynthAutoData]
-        public void PassesLoadOrderToPrinter(
-            ModPath outputPath,
-            IList<IModListingGetter> loadOrder,
-            RunLoadOrderPreparer sut)
-        {
-            sut.LoadOrderForRunProvider.Get(default!)
-                .ReturnsForAnyArgs(loadOrder);
-            sut.Write(outputPath);
-            //sut.Printer.Received(1).Print(loadOrder);
+            sut.Write(outputPath, blacklist);
+            sut.LoadOrderForRunProvider.Received(1).Get(outputPath, blacklist);
         }
         
         [Theory, SynthAutoData]
@@ -37,7 +26,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             ModPath outputPath,
             RunLoadOrderPreparer sut)
         {
-            sut.Write(outputPath);
+            sut.Write(outputPath, default!);
             sut.LoadOrderWriter.Received(1)
                 .Write(
                     Arg.Any<FilePath>(),
@@ -51,9 +40,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             IList<IModListingGetter> loadOrder,
             RunLoadOrderPreparer sut)
         {
-            sut.LoadOrderForRunProvider.Get(default!)
+            sut.LoadOrderForRunProvider.Get(default!, default!)
                 .ReturnsForAnyArgs(loadOrder);
-            sut.Write(outputPath);
+            sut.Write(outputPath, default!);
             sut.LoadOrderWriter.Received(1)
                 .Write(
                     Arg.Any<FilePath>(),
@@ -68,7 +57,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             RunLoadOrderPreparer sut)
         {
             sut.LoadOrderPathProvider.Path.Returns(path);
-            sut.Write(outputPath);
+            sut.Write(outputPath, default!);
             sut.LoadOrderWriter.Received(1)
                 .Write(
                     path,

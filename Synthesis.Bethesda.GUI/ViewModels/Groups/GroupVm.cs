@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -17,6 +18,7 @@ using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Groups
@@ -67,16 +69,23 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
         public bool PatchersProcessing => _PatchersProcessing.Value;
         
         public ErrorDisplayVm ErrorDisplayVm { get; }
+        
+        public IObservable<IChangeSet<ModKey>> LoadOrder { get; }
+
+        public ObservableCollection<ModKey> BlacklistedModKeys { get; } = new();
 
         public GroupVm(
             ProfileVm profileVm,
             OverallErrorVm overallErrorVm,
             StartRun startRun,
+            IProfileLoadOrder loadOrder,
             IConfirmationPanelControllerVm confirmation,
             IProfileDisplayControllerVm selPatcher,
             ILogger logger)
         {
             ProfileVm = profileVm;
+            LoadOrder = loadOrder.LoadOrder.Connect()
+                .Transform(x => x.ModKey);
             DisplayController = profileVm.DisplayController;
             _ModKey = this.WhenAnyValue(x => x.Name)
                 .Select(x =>
@@ -259,7 +268,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                 Name = Name,
                 On = IsOn,
                 Patchers = Patchers.Items.Select(p => p.Save()).ToList(),
-                Expanded = Expanded
+                Expanded = Expanded,
+                BlacklistedMods = BlacklistedModKeys.ToList(),
             };
         }
     }

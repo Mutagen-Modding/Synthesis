@@ -20,6 +20,14 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x == 0 ? Visibility.Visible : Visibility.Collapsed)
                     .BindTo(this, x => x.AddSomePatchersHelpGrid.Visibility)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.Patchers.Count)
+                    .Select(x => x > 0 ? Visibility.Visible : Visibility.Collapsed)
+                    .BindTo(this, x => x.SettingsGrid.Visibility)
+                    .DisposeWith(disposable);
+                this.OneWayBind(ViewModel, x => x.LoadOrder, x => x.BlacklistedMods.SearchableMods)
+                    .DisposeWith(disposable);
+                this.OneWayBind(ViewModel, x => x.BlacklistedModKeys, x => x.BlacklistedMods.ModKeys)
+                    .DisposeWith(disposable);
             });
         }
     }

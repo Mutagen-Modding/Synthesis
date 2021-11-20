@@ -44,7 +44,8 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
                         _getPatcherRunners.Get(settings.Patchers).Select(patcher =>
                         {
                             return _prepPatcherForRun.Prep(patcher, cancellation);
-                        }).ToArray());
+                        }).ToArray(),
+                        settings.BlacklistedMods.ToHashSet());
                 })
                 .ToArray();
         }

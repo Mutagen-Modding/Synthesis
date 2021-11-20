@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Noggog;
@@ -48,8 +49,16 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             string? persistencePath = null)
         {
             _logger.Information("================= Starting Group {Group} Run =================", groupRun.ModKey.Name);
+            if (groupRun.BlacklistedMods.Count > 0)
+            {
+                _logger.Information("Blacklisting mods:");
+                foreach (var mod in groupRun.BlacklistedMods.OrderBy(x => x.Name))
+                {
+                    _logger.Information("   {Mod}", mod);
+                }
+            }
             
-            await GroupRunPreparer.Prepare(groupRun.ModKey, persistenceMode, persistencePath).ConfigureAwait(false);
+            await GroupRunPreparer.Prepare(groupRun.ModKey, groupRun.BlacklistedMods, persistenceMode, persistencePath).ConfigureAwait(false);
 
             sourcePath = await RunSomePatchers.Run(
                 groupRun.ModKey,

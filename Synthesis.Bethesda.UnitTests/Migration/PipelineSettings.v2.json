@@ -58,7 +58,8 @@
               "Nickname": ""
             }
           ],
-          "Expanded": true
+          "Expanded": true,
+          "BlacklistedMods": []
         }
       ],
       "MutagenVersioning": "Manual",
@@ -102,7 +103,8 @@
               "Nickname": "Patcher3"
             }
           ],
-          "Expanded": true
+          "Expanded": true,
+          "BlacklistedMods": []
         }
       ],
       "MutagenVersioning": "Manual",

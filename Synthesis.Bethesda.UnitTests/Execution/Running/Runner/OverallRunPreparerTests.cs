@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins;
 using NSubstitute;
@@ -14,20 +15,22 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         [Theory, SynthAutoData]
         public async Task PassesOutputToRunLoadOrderPreparer(
             ModPath outputPath,
+            IReadOnlySet<ModKey> blacklist,
             GroupRunPreparer sut)
         {
-            await sut.Prepare(outputPath);
-            sut.RunLoadOrderPreparer.Received(1).Write(outputPath);
+            await sut.Prepare(outputPath, blacklist);
+            sut.RunLoadOrderPreparer.Received(1).Write(outputPath, blacklist);
         }
         
         [Theory, SynthAutoData]
         public async Task PassesPersistenceToPersister(
             ModPath outputPath,
             PersistenceMode persistenceMode,
+            IReadOnlySet<ModKey> blacklist,
             string? persistencePath,
             GroupRunPreparer sut)
         {
-            await sut.Prepare(outputPath, persistenceMode, persistencePath);
+            await sut.Prepare(outputPath, blacklist, persistenceMode, persistencePath);
             sut.PersistencePreparer.Received(1).Prepare(persistenceMode, persistencePath);
         }
         
@@ -35,14 +38,15 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         public async Task ThrowingLoadOrderPreparerStillRunsPersistence(
             ModPath outputPath,
             PersistenceMode persistenceMode,
+            IReadOnlySet<ModKey> blacklist,
             string? persistencePath,
             GroupRunPreparer sut)
         {
-            sut.RunLoadOrderPreparer.When(x => x.Write(outputPath))
+            sut.RunLoadOrderPreparer.When(x => x.Write(outputPath, blacklist))
                 .Do(_ => throw new NotImplementedException());
             await Assert.ThrowsAsync<NotImplementedException>(async () =>
             {
-                await sut.Prepare(outputPath, persistenceMode, persistencePath);
+                await sut.Prepare(outputPath, blacklist, persistenceMode, persistencePath);
             });
             sut.PersistencePreparer.Received(1).Prepare(persistenceMode, persistencePath);
         }
@@ -51,6 +55,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         public async Task ThrowingPersistencePrepareStillRunsLoadOrderPrepare(
             ModPath outputPath,
             PersistenceMode persistenceMode,
+            IReadOnlySet<ModKey> blacklist,
             string? persistencePath,
             GroupRunPreparer sut)
         {
@@ -58,9 +63,9 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .Do(_ => throw new NotImplementedException());
             await Assert.ThrowsAsync<NotImplementedException>(async () =>
             {
-                await sut.Prepare(outputPath, persistenceMode, persistencePath);
+                await sut.Prepare(outputPath, blacklist, persistenceMode, persistencePath);
             });
-            sut.RunLoadOrderPreparer.Received(1).Write(outputPath);
+            sut.RunLoadOrderPreparer.Received(1).Write(outputPath, blacklist);
         }
     }
 }

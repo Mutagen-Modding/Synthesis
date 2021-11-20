@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading;
-using DynamicData;
 using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
@@ -48,7 +47,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 groupVm,
                 new GroupRun(
                     groupVm.ModKey.Value,
-                    preps),
+                    preps,
+                    groupVm.BlacklistedModKeys.ToHashSet()),
                 _runDisplayControllerVm,
                 patcherVms);
         }
