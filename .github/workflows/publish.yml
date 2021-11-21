@@ -31,7 +31,7 @@ jobs:
     #    tag: ${{ github.event.release.tag_name }}
     #    file_glob: "true"
     - name: Pack GUI
-      run: dotnet publish "Synthesis.Bethesda.GUI/Synthesis.Bethesda.GUI.csproj" --configuration Release --no-self-contained
+      run: dotnet publish "Synthesis.Bethesda.GUI/Synthesis.Bethesda.GUI.csproj" --configuration Release
     #- name: Pack Settings Host
     #  run: dotnet publish "Synthesis.Bethesda.SettingsHost/Synthesis.Bethesda.SettingsHost.csproj" --configuration Release --no-self-contained
     #- name: Copy Host
