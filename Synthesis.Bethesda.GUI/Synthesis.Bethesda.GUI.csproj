@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <AssemblyName>Synthesis</AssemblyName>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <UseWPF>true</UseWPF>
@@ -21,7 +21,6 @@
     <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable</WarningsAsErrors>
-    <PublishSingleFile>True</PublishSingleFile>
     <PublishReadyToRun>True</PublishReadyToRun>
     <PublishReadyToRunShowWarnings>True</PublishReadyToRunShowWarnings>
     <DebugType>embedded</DebugType>
@@ -41,14 +40,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Humanizer.Core" Version="2.11.10" />
-    <PackageReference Include="Loqui" Version="2.34.0" />
-    <PackageReference Include="Loqui.Generation" Version="2.34.0" />
-    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.33.6" />
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.33.6" />
-    <PackageReference Include="Noggog.Autofac" Version="2.34.0" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.34.0" />
-    <PackageReference Include="Noggog.WPF" Version="2.34.0" />
+    <PackageReference Include="Humanizer.Core" Version="2.13.14" />
+    <PackageReference Include="Loqui" Version="2.34.0.1-dev" />
+    <PackageReference Include="Loqui.Generation" Version="2.34.0.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.33.7.1-dev" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.33.7.1-dev" />
+    <PackageReference Include="Noggog.Autofac" Version="2.34.0.1-dev" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.34.0.1-dev" />
+    <PackageReference Include="Noggog.WPF" Version="2.34.0.1-dev" />
     <PackageReference Include="NuGetizer" Version="0.7.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

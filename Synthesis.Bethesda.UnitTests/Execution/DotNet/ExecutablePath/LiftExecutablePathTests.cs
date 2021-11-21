@@ -15,7 +15,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.ExecutablePath
             var lines = File.ReadAllLines(Utility.BuildSuccessFile);
             sut.TryGet(lines, out var path)
                 .Should().BeTrue();
-            path.Should().Be(@"C:\Repos\Patchers\khajiitearsshow\KhajiitEarsShow\bin\Debug\net5.0\KhajiitEarsShow.dll");
+            path.Should().Be(@"C:\Repos\Patchers\khajiitearsshow\KhajiitEarsShow\bin\Debug\net6.0\KhajiitEarsShow.dll");
         }
 
         [Theory, SynthAutoData]
@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.ExecutablePath
             var lines = File.ReadAllLines(Utility.BuildSuccessNonEnglishFile);
             sut.TryGet(lines, out var path)
                 .Should().BeTrue();
-            path.Should().Be(@"C:\Users\Andrew\AppData\Local\Temp\Synthesis\Loading\ugqvnbdg.i1q\bin\Debug\net5.0\win-x64\FaceFixer.dll");
+            path.Should().Be(@"C:\Users\Andrew\AppData\Local\Temp\Synthesis\Loading\ugqvnbdg.i1q\bin\Debug\net6.0\win-x64\FaceFixer.dll");
         }
 
         [Theory, SynthAutoData]

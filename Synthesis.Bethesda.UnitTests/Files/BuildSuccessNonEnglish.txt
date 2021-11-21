@@ -3,7 +3,7 @@ Microsoft (R) Build Engine ўҐабЁЁ 16.8.3+39993bd9d ¤«п .NET
 
   ЋЇаҐ¤Ґ«Ґ­ЁҐ Їа®ҐЄв®ў ¤«п ў®ббв ­®ў«Ґ­Ёп...
   ‚®ббв ­®ў«Ґ­ C:\Users\Andrew\AppData\Local\Temp\Synthesis\Loading\ugqvnbdg.i1q\FaceFixer.csproj (§  238 ms).
-  FaceFixer -> C:\Users\Andrew\AppData\Local\Temp\Synthesis\Loading\ugqvnbdg.i1q\bin\Debug\net5.0\win-x64\FaceFixer.dll
+  FaceFixer -> C:\Users\Andrew\AppData\Local\Temp\Synthesis\Loading\ugqvnbdg.i1q\bin\Debug\net6.0\win-x64\FaceFixer.dll
 
 ‘Ў®аЄ  гбЇҐи­® § ўҐаиҐ­ .
     ЏаҐ¤гЇаҐ¦¤Ґ­Ё©: 0

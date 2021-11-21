@@ -37,7 +37,7 @@ namespace Mutagen.Bethesda.Synthesis.Projects
             fg.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk\">");
             fg.AppendLine($"  <PropertyGroup>");
             fg.AppendLine($"    <OutputType>Exe</OutputType>");
-            fg.AppendLine($"    <TargetFramework>net5.0</TargetFramework>");
+            fg.AppendLine($"    <TargetFramework>net6.0</TargetFramework>");
             fg.AppendLine($"    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>");
             fg.AppendLine($"  </PropertyGroup>");
             fg.AppendLine();
