@@ -54,6 +54,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.Builder
 
             return ResultsProcessor.GetResults(
                 targetPath,
+                result,
                 cancel,
                 accumulator);
         }
