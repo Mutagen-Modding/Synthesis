@@ -15,6 +15,9 @@ namespace Synthesis.Bethesda.GUI
         public static readonly string SkyrimLeLargeIcon = Path.Combine(ResourceFolder, "SkyrimLE.png");
         public static readonly string SkyrimSseLargeIcon = Path.Combine(ResourceFolder, "SkyrimSSE.png");
         public static readonly string SkyrimVrLargeIcon = Path.Combine(ResourceFolder, "SkyrimVR.png");
+        public static readonly string FalloutLargeIcon = Path.Combine(ResourceFolder, "Fallout4.png");
+        public static readonly string EnderalLeLargeIcon = Path.Combine(ResourceFolder, "enderal.png");
+        public static readonly string EnderalSeLargeIcon = Path.Combine(ResourceFolder, "enderal-se.png");
         public static string GetIcon(GameRelease release)
         {
             return release switch
@@ -23,6 +26,9 @@ namespace Synthesis.Bethesda.GUI
                 GameRelease.SkyrimLE => SkyrimLeLargeIcon,
                 GameRelease.SkyrimSE => SkyrimSseLargeIcon,
                 GameRelease.SkyrimVR => SkyrimVrLargeIcon,
+                GameRelease.Fallout4 => FalloutLargeIcon,
+                GameRelease.EnderalLE => EnderalLeLargeIcon,
+                GameRelease.EnderalSE => EnderalSeLargeIcon,
                 _ => throw new NotImplementedException()
             };
         }

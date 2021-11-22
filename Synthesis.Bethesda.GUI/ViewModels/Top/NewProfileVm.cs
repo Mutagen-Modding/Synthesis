@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using Mutagen.Bethesda;
@@ -10,7 +11,6 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
-using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
@@ -19,13 +19,18 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         private ConfigurationVm _config;
         private readonly IProfileFactory _ProfileFactory;
 
-        public ObservableCollectionExtended<GameRelease> ReleaseOptions { get; } = new();
+        public ObservableCollectionExtended<GameCategory> CategoryOptions { get; } = new();
+
+        public IObservableCollection<GameRelease> ReleaseOptions { get; }
 
         [Reactive]
-        public GameRelease? SelectedGame { get; set; }
+        public GameCategory? SelectedCategory { get; set; }
 
         [Reactive]
         public string Nickname { get; set; } = string.Empty;
+
+        [Reactive]
+        public GameRelease? SelectedRelease { get; set; }
 
         public NewProfileVm(
             ConfigurationVm config, 
@@ -34,21 +39,24 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         {
             _config = config;
             _ProfileFactory = profileFactory;
-            ReleaseOptions.AddRange(EnumExt.GetValues<GameRelease>()
-                .Where(x =>
-                {
-                    switch (x)
-                    {
-                        case GameRelease.EnderalLE:
-                        case GameRelease.EnderalSE:
-                        case GameRelease.Fallout4:
-                            return false;
-                        default:
-                            return true;
-                    }
-                }));
+            CategoryOptions.AddRange(EnumExt.GetValues<GameCategory>());
 
-            this.WhenAnyValue(x => x.SelectedGame)
+            ReleaseOptions = this.WhenAnyValue(x => x.SelectedCategory)
+                .Select(x => x?.GetRelatedReleases().AsObservableChangeSet() ?? Observable.Return(ChangeSet<GameRelease>.Empty))
+                .Switch()
+                .ToObservableCollection(this);
+
+            this.WhenAnyValue(x => x.SelectedCategory)
+                .NotNull()
+                .Select(x => x.GetRelatedReleases())
+                .Where(x => x.Count() == 1)
+                .Subscribe(rel =>
+                {
+                    SelectedRelease = rel.FirstOrDefault();
+                })
+                .DisposeWith(this);
+
+            this.WhenAnyValue(x => x.SelectedRelease)
                 .Subscribe(game =>
                 {
                     if (game == null) return;

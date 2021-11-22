@@ -22,7 +22,7 @@
             FontSize="26"
             FontWeight="Black" />
         <ListBox Grid.Row="1"
-            x:Name="GameReleaseOptionsControl"
+            x:Name="GameCategoryOptionsControl"
             Margin="20,25"
             HorizontalAlignment="Center"
             Background="Transparent"

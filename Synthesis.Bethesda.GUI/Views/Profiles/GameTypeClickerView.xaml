@@ -54,6 +54,24 @@
                         <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.SkyrimVR}">
                             <Setter Property="Source" Value="../../Resources/SkyrimVR.png" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.Fallout4}">
+                            <Setter Property="Source" Value="../../Resources/Fallout4.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.EnderalLE}">
+                            <Setter Property="Source" Value="../../Resources/enderal.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.EnderalSE}">
+                            <Setter Property="Source" Value="../../Resources/enderal-se.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameCategory.Oblivion}">
+                            <Setter Property="Source" Value="../../Resources/Oblivion.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameCategory.Skyrim}">
+                            <Setter Property="Source" Value="../../Resources/SkyrimSSE.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameCategory.Fallout4}">
+                            <Setter Property="Source" Value="../../Resources/Fallout4.png" />
+                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </Image.Style>

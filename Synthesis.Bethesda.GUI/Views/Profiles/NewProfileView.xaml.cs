@@ -1,4 +1,4 @@
-﻿using Noggog.WPF;
+using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
@@ -20,10 +20,10 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.Bind(this.ViewModel, vm => vm.Nickname, view => view.PatcherDetailName.Text)
                     .DisposeWith(dispose);
 
-                this.WhenAnyFallback(x => x.ViewModel!.ReleaseOptions, fallback: default)
-                    .BindTo(this, x => x.GameReleaseOptionsControl.ItemsSource)
+                this.WhenAnyFallback(x => x.ViewModel!.CategoryOptions, fallback: default)
+                    .BindTo(this, x => x.GameCategoryOptionsControl.ItemsSource)
                     .DisposeWith(dispose);
-                this.Bind(this.ViewModel, vm => vm.SelectedGame, view => view.GameReleaseOptionsControl.SelectedItem)
+                this.Bind(this.ViewModel, vm => vm.SelectedCategory, view => view.GameCategoryOptionsControl.SelectedItem)
                     .DisposeWith(dispose);
             });
         }
