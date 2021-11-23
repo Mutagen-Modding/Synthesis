@@ -87,8 +87,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject
                 _removeGitInfo.Remove(projXml);
                 _swapOffNetCore.Swap(projXml);
                 _turnOffWindowsSpec.TurnOff(projXml);
-                System.Version.TryParse(curListedVersions.Mutagen, out var mutaVersion);
-                System.Version.TryParse(curListedVersions.Synthesis, out var synthVersion);
+                System.Version.TryParse(TrimVersion(curListedVersions.Mutagen), out var mutaVersion);
+                System.Version.TryParse(TrimVersion(curListedVersions.Synthesis), out var synthVersion);
                 _addNewtonsoftToOldSetups.Add(projXml, mutaVersion, synthVersion);
                 System.Version.TryParse(trimmedMutagenVersion, out var targetMutaVersion);
                 System.Version.TryParse(trimmedSynthesisVersion, out var targetSynthesisVersion);
