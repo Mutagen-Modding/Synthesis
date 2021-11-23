@@ -28,6 +28,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 .SelectMany(g => g.Patchers.Items)
                 .Select(x => x.NameVm.Name)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            if (!existingNames.Contains(patcher.NameVm.Name)) return true;
             var rename = new PatcherInitRenameActionVm(
                 patcher.NameVm.Name,
                 existingNames);
