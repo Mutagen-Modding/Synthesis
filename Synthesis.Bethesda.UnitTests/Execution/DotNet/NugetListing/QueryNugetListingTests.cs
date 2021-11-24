@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -127,93 +128,18 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.NugetListing
         }
 
         [Theory, SynthAutoData]
-        public async Task NoResultsReturnsNoResults(
+        public async Task PassesResultsToProcessor(
             FilePath projPath,
             CancellationToken cancel,
+            List<string> processOutput,
+            IEnumerable<NugetListingQuery> functionReturn,
             QueryNugetListing sut)
         {
-            sut.ProcessRunner.RunAndCapture(default!, default).ReturnsForAnyArgs(
-                new ProcessRunReturn(0, new(), new()));
-            (await sut.Query(projPath, default, default, cancel))
-                .Should().BeEmpty();
-        }
-
-        [Theory, SynthAutoData]
-        public async Task NoTopLevelLineReturnsNoResults(
-            string line1,
-            string line2,
-            FilePath projPath,
-            CancellationToken cancel,
-            QueryNugetListing sut)
-        {
-            sut.ProcessRunner.RunAndCapture(default!, default).ReturnsForAnyArgs(
-                new ProcessRunReturn(0, new() { line1, line2 }, new()));
-            (await sut.Query(projPath, default, default, cancel))
-                .Should().BeEmpty();
-        }
-
-        [Theory, SynthAutoData]
-        public async Task LinesAfterDelimterPassedToParser(
-            string line1,
-            string line2,
-            FilePath projPath,
-            CancellationToken cancel,
-            QueryNugetListing sut)
-        {
-            sut.ProcessRunner.RunAndCapture(default!, default).ReturnsForAnyArgs(
-                new ProcessRunReturn(0, new() { line1, QueryNugetListing.Delimeter, line2 }, new()));
-            await sut.Query(projPath, default, default, cancel);
-            sut.LineParser.Received(1).TryParse(line2,
-                out Arg.Any<string?>(),
-                out Arg.Any<string?>(),
-                out Arg.Any<string?>(),
-                out Arg.Any<string?>());
-        }
-
-        [Theory, SynthAutoData]
-        public async Task ParserResultsGetReturned(
-            string line1,
-            string line2,
-            string package,
-            string requested,
-            string resolved,
-            string latest,
-            FilePath projPath,
-            CancellationToken cancel,
-            QueryNugetListing sut)
-        {
-            sut.ProcessRunner.RunAndCapture(default!, default).ReturnsForAnyArgs(
-                new ProcessRunReturn(0, new() { line1, QueryNugetListing.Delimeter, line2 }, new()));
-            sut.LineParser.TryParse(line2, out _, out _, out _, out _).Returns(x =>
-            {
-                x[1] = package;
-                x[2] = requested;
-                x[3] = resolved;
-                x[4] = latest;
-                return true;
-            });
-            (await sut.Query(projPath, default, default, cancel))
-                .Should().Equal(
-                    new NugetListingQuery(package, requested, resolved, latest));
-        }
-
-        [Theory, SynthAutoData]
-        public async Task LineParserSkipRespected(
-            string line1,
-            string line2,
-            FilePath projPath,
-            CancellationToken cancel,
-            QueryNugetListing sut)
-        {
-            sut.ProcessRunner.RunAndCapture(default!, default).ReturnsForAnyArgs(
-                new ProcessRunReturn(0, new() { line1, QueryNugetListing.Delimeter, line2 }, new()));
-            sut.LineParser.TryParse(line2, out _, out _, out _, out _).Returns(
-                _ =>
-                {
-                    return false;
-                });
-            (await sut.Query(projPath, default, default, cancel))
-                .Should().BeEmpty();
+            var processReturn = new ProcessRunReturn(0, processOutput, new List<string>());
+            sut.ProcessRunner.RunAndCapture(default!, default).ReturnsForAnyArgs(processReturn);
+            sut.ResultProcessor.Process(processReturn.Out).Returns(functionReturn);
+            var result = await sut.Query(projPath, default, default, cancel);
+            result.Should().Equal(functionReturn);
         }
     }
 }
