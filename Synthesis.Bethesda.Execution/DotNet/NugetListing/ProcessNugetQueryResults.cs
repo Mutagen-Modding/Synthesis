@@ -10,7 +10,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.NugetListing
 
     public class ProcessNugetQueryResults : IProcessNugetQueryResults
     {
-        public const string Delimeter = "Top-level Package";
+        public const string Prefix = "   > ";
         public INugetListingParser LineParser { get; }
         
         public ProcessNugetQueryResults(
@@ -21,16 +21,10 @@ namespace Synthesis.Bethesda.Execution.DotNet.NugetListing
         
         public IEnumerable<NugetListingQuery> Process(IReadOnlyList<string> output)
         {
-            bool on = false;
             var lines = new List<string>();
             foreach (var s in output)
             {
-                if (s.Contains(Delimeter))
-                {
-                    on = true;
-                    continue;
-                }
-                if (!on) continue;
+                if (!s.StartsWith(Prefix)) continue;
                 lines.Add(s);
             }
 
