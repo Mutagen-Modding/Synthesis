@@ -36,11 +36,12 @@
                             VerticalAlignment="Center"
                             Text="Num Processors" />
                         <Slider
-                            x:Name="ProcessorCountSlider"
+                            x:Name="ProcessorPercentSlider"
                             Width="200"
                             VerticalAlignment="Center"
                             Minimum="0"
-                            ToolTip="How many processors to use when building" />
+                            Maximum="1"
+                            ToolTip="The percentage of your total processors to use when building" />
                         <TextBlock
                             x:Name="ActiveProcessorsText"
                             Margin="10,0"

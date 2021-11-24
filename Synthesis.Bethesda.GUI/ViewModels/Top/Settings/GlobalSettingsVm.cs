@@ -1,4 +1,5 @@
 using System;
+using System.Reactive.Linq;
 using System.Windows.Input;
 using Noggog.WPF;
 using Noggog;
@@ -27,7 +28,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
 
         public ProfilesDisplayVm Profiles { get; }
 
-        [Reactive] public byte BuildCores { get; set; }
+        private readonly ObservableAsPropertyHelper<byte> _BuildCores;
+        public byte BuildCores => _BuildCores.Value;
+        
+        [Reactive] public double BuildCorePercentage { get; set; }
 
         public byte NumProcessors { get; }
 
@@ -45,9 +49,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
                 activePanelController.ActivePanel = _previous;
             });
             Profiles = profilesDisplayVm;
-            BuildCores = settingsSingleton.Gui.BuildCores;
+            BuildCorePercentage = settingsSingleton.Gui.BuildCorePercentage;
             NumProcessors = (byte)Math.Min(byte.MaxValue, Environment.ProcessorCount);
             ShortcircuitBuilds = settingsSingleton.Pipeline.ShortcircuitBuilds;
+
+            _BuildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
+                .Select(x => (byte)Math.Min(byte.MaxValue, Environment.ProcessorCount * Percent.FactoryPutInRange(x)))
+                .ToGuiProperty(this, nameof(BuildCores));
             
             this.WhenAnyValue(x => x.BuildCores)
                 .Subscribe(x => workConsumerSettings.SetNumThreads(x))
@@ -69,7 +77,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
 
         private void Save(SynthesisGuiSettings settings)
         {
-            settings.BuildCores = BuildCores;
+            settings.BuildCorePercentage = BuildCorePercentage;
         }
 
         private void Save(IPipelineSettings settings)
