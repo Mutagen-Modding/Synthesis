@@ -21,8 +21,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 
     public class ProfileSimpleLinkCacheVm : ViewModel, IProfileSimpleLinkCacheVm
     {
-        private readonly ObservableAsPropertyHelper<ILinkCache?> _SimpleLinkCache;
-        public ILinkCache? SimpleLinkCache => _SimpleLinkCache.Value;
+        private readonly ObservableAsPropertyHelper<ILinkCache?> _simpleLinkCache;
+        public ILinkCache? SimpleLinkCache => _simpleLinkCache.Value;
 
         public ProfileSimpleLinkCacheVm(
             ILogger logger,
@@ -30,7 +30,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
             IProfileDataFolderVm dataFolder,
             IProfileIdentifier ident)
         {
-            _SimpleLinkCache = Observable.CombineLatest(
+            _simpleLinkCache = Observable.CombineLatest(
                     dataFolder.WhenAnyValue(x => x.Path),
                     loadOrder.LoadOrder.Connect()
                         .QueryWhenChanged()

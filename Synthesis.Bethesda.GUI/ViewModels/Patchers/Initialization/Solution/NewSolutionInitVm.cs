@@ -22,16 +22,16 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
         [Reactive]
         public string ProjectName { get; set; } = string.Empty;
 
-        private readonly ObservableAsPropertyHelper<GetResponse<string>> _SolutionPath;
-        public GetResponse<string> SolutionPath => _SolutionPath.Value;
+        private readonly ObservableAsPropertyHelper<GetResponse<string>> _solutionPath;
+        public GetResponse<string> SolutionPath => _solutionPath.Value;
 
         public override IObservable<GetResponse<InitializerCall>> InitializationCall { get; }
 
-        private readonly ObservableAsPropertyHelper<ErrorResponse> _ProjectError;
-        public ErrorResponse ProjectError => _ProjectError.Value;
+        private readonly ObservableAsPropertyHelper<ErrorResponse> _projectError;
+        public ErrorResponse ProjectError => _projectError.Value;
 
-        private readonly ObservableAsPropertyHelper<string> _ProjectNameWatermark;
-        public string ProjectNameWatermark => _ProjectNameWatermark.Value;
+        private readonly ObservableAsPropertyHelper<string> _projectNameWatermark;
+        public string ProjectNameWatermark => _projectNameWatermark.Value;
 
         public NewSolutionInitVm(
             IGameCategoryContext gameCategoryContext,
@@ -45,7 +45,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
             ParentDirPath.PathType = PathPickerVM.PathTypeOptions.Folder;
             ParentDirPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
 
-            _SolutionPath = Observable.CombineLatest(
+            _solutionPath = Observable.CombineLatest(
                 this.ParentDirPath.PathState(),
                 this.WhenAnyValue(x => x.SolutionName),
                 (parentDir, slnName) =>
@@ -93,7 +93,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
                 .Replay(1)
                 .RefCount();
 
-            _ProjectError = validation
+            _projectError = validation
                 .Select(i => (ErrorResponse)i.validation)
                 .ToGuiProperty<ErrorResponse>(this, nameof(ProjectError), ErrorResponse.Success);
 
@@ -119,7 +119,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
                     });
                 });
 
-            _ProjectNameWatermark = this.WhenAnyValue(x => x.SolutionName)
+            _projectNameWatermark = this.WhenAnyValue(x => x.SolutionName)
                 .Select(x => string.IsNullOrWhiteSpace(x) ? "The name of the patcher" : SolutionNameProcessor(x))
                 .ToGuiProperty<string>(this, nameof(ProjectNameWatermark), string.Empty);
         }

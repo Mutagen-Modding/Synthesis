@@ -21,8 +21,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         public ILifetimeScope Scope { get; }
         public IPatcherNameVm NameVm { get; }
 
-        private readonly ObservableAsPropertyHelper<bool> _IsSelected;
-        public bool IsSelected => _IsSelected.Value;
+        private readonly ObservableAsPropertyHelper<bool> _isSelected;
+        public bool IsSelected => _isSelected.Value;
 
         public Guid InternalID { get; }
 
@@ -56,7 +56,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
             NameVm = nameVm;
             InternalID = idProvider.InternalId;
 
-            _IsSelected = selPatcher.WhenAnyValue(x => x.SelectedObject)
+            _isSelected = selPatcher.WhenAnyValue(x => x.SelectedObject)
                 .Select(x => x == this)
                 // Not GuiProperty, as it interacts with drag/drop oddly
                 .ToProperty(this, nameof(IsSelected));

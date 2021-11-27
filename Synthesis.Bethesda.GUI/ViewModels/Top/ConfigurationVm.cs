@@ -18,18 +18,18 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
     public class ConfigurationVm : ViewModel
     {
-        private ISelectedProfileControllerVm _SelectedProfileController;
-        private readonly IProfileFactory _ProfileFactory;
+        private readonly ISelectedProfileControllerVm _selectedProfileController;
+        private readonly IProfileFactory _profileFactory;
 
         public SourceCache<ProfileVm, string> Profiles { get; } = new(p => p.ID);
 
         public ReactiveCommandBase<Unit, Unit> RunPatchers { get; }
 
-        private readonly ObservableAsPropertyHelper<ProfileVm?> _SelectedProfile;
-        public ProfileVm? SelectedProfile => _SelectedProfile.Value;
+        private readonly ObservableAsPropertyHelper<ProfileVm?> _selectedProfile;
+        public ProfileVm? SelectedProfile => _selectedProfile.Value;
 
-        private readonly ObservableAsPropertyHelper<ViewModel?> _DisplayedObject;
-        public ViewModel? DisplayedObject => _DisplayedObject.Value;
+        private readonly ObservableAsPropertyHelper<ViewModel?> _displayedObject;
+        public ViewModel? DisplayedObject => _displayedObject.Value;
 
         public ConfigurationVm(
             ISelectedProfileControllerVm selectedProfile,
@@ -38,12 +38,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             ILogger logger)
         {
             logger.Information("Creating ConfigurationVM");
-            _SelectedProfileController = selectedProfile;
-            _ProfileFactory = profileFactory;
-            _SelectedProfile = _SelectedProfileController.WhenAnyValue(x => x.SelectedProfile)
+            _selectedProfileController = selectedProfile;
+            _profileFactory = profileFactory;
+            _selectedProfile = _selectedProfileController.WhenAnyValue(x => x.SelectedProfile)
                 .ToGuiProperty(this, nameof(SelectedProfile), default);
 
-            _DisplayedObject = this.WhenAnyValue(x => x.SelectedProfile!.DisplayController.SelectedObject)
+            _displayedObject = this.WhenAnyValue(x => x.SelectedProfile!.DisplayController.SelectedObject)
                 .ToGuiProperty(this, nameof(DisplayedObject), default);
 
             RunPatchers = NoggogCommand.CreateFromObject(
@@ -68,11 +68,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             Profiles.Clear();
             Profiles.AddOrUpdate(pipeSettings.Profiles.Select(p =>
             {
-                return _ProfileFactory.Get(p);
+                return _profileFactory.Get(p);
             }));
             if (Profiles.TryGetValue(settings.SelectedProfile, out var profile))
             {
-                _SelectedProfileController.SelectedProfile = profile;
+                _selectedProfileController.SelectedProfile = profile;
             }
         }
 

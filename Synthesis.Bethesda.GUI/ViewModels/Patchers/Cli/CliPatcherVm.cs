@@ -8,7 +8,6 @@ using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Patchers.Cli;
 using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
@@ -20,8 +19,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
         public IPathToExecutableInputVm ExecutableInput { get; }
         public IShowHelpSetting ShowHelpSetting { get; }
 
-        private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
-        public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
+        private readonly ObservableAsPropertyHelper<ConfigurationState> _state;
+        public override ConfigurationState State => _state?.Value ?? ConfigurationState.Success;
 
         public CliPatcherVm(
             IPatcherIdProvider idProvider,
@@ -38,7 +37,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
             ExecutableInput = pathToExecutableInputVm;
             ShowHelpSetting = showHelpSetting;
 
-            _State = pathToExecutableInputVm.WhenAnyValue(x => x.Picker.ErrorState)
+            _state = pathToExecutableInputVm.WhenAnyValue(x => x.Picker.ErrorState)
                 .Select(e =>
                 {
                     return new ConfigurationState()

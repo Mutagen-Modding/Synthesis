@@ -8,15 +8,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
     {
         private bool _midSwap;
 
-        private IRunItem? _SelectedObject;
+        private IRunItem? _selectedObject;
         public IRunItem? SelectedObject
         {
-            get => _SelectedObject;
+            get => _selectedObject;
             set
             {
                 if (_midSwap) return;
                 _midSwap = true;
-                this.RaiseAndSetIfChanged(ref _SelectedObject, value);
+                this.RaiseAndSetIfChanged(ref _selectedObject, value);
                 _midSwap = false;
             } 
         }

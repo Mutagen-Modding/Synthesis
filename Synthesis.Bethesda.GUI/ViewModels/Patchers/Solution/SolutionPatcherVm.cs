@@ -40,8 +40,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 
         public IObservableCollection<string> AvailableProjects { get; }
 
-        private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
-        public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
+        private readonly ObservableAsPropertyHelper<ConfigurationState> _state;
+        public override ConfigurationState State => _state?.Value ?? ConfigurationState.Success;
 
         public ICommand OpenSolutionCommand { get; }
 
@@ -104,7 +104,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
                 .ObserveOnGui()
                 .ToObservableCollection(this);
 
-            _State = Observable.CombineLatest(
+            _state = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.SolutionPathInput.Picker.ErrorState),
                     SelectedProjectInput.WhenAnyValue(x => x.Picker.ErrorState),
                     dotNetSdkFollowerInstalled.DotNetSdkInstalled,

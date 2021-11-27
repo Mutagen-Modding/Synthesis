@@ -25,41 +25,41 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
     public class MainVm : ViewModel
     {
-        private readonly ISelectedProfileControllerVm _SelectedProfileController;
-        private readonly ISettingsSingleton _SettingsSingleton;
-        private readonly IActivePanelControllerVm _ActivePanelControllerVm;
-        private readonly IProfileFactory _ProfileFactory;
+        private readonly ISelectedProfileControllerVm _selectedProfileController;
+        private readonly ISettingsSingleton _settingsSingleton;
+        private readonly IActivePanelControllerVm _activePanelControllerVm;
+        private readonly IProfileFactory _profileFactory;
         private readonly ILogger _logger;
         public ConfigurationVm Configuration { get; }
 
-        private readonly ObservableAsPropertyHelper<ViewModel?> _ActivePanel;
-        public ViewModel? ActivePanel => _ActivePanel.Value;
+        private readonly ObservableAsPropertyHelper<ViewModel?> _activePanel;
+        public ViewModel? ActivePanel => _activePanel.Value;
 
         public ICommand OpenProfilesPageCommand { get; }
 
         public IConfirmationPanelControllerVm Confirmation { get; }
 
         // Whether to show red glow in background
-        private readonly ObservableAsPropertyHelper<bool> _Hot;
-        public bool Hot => _Hot.Value;
+        private readonly ObservableAsPropertyHelper<bool> _hot;
+        public bool Hot => _hot.Value;
 
         public string SynthesisVersion { get; }
         public string MutagenVersion { get; }
 
-        private readonly ObservableAsPropertyHelper<string?> _NewestSynthesisVersion;
-        public string? NewestSynthesisVersion => _NewestSynthesisVersion.Value;
+        private readonly ObservableAsPropertyHelper<string?> _newestSynthesisVersion;
+        public string? NewestSynthesisVersion => _newestSynthesisVersion.Value;
 
-        private readonly ObservableAsPropertyHelper<string?> _NewestMutagenVersion;
-        public string? NewestMutagenVersion => _NewestMutagenVersion.Value;
+        private readonly ObservableAsPropertyHelper<string?> _newestMutagenVersion;
+        public string? NewestMutagenVersion => _newestMutagenVersion.Value;
 
-        private readonly ObservableAsPropertyHelper<IConfirmationActionVm?> _ActiveConfirmation;
-        public IConfirmationActionVm? ActiveConfirmation => _ActiveConfirmation.Value;
+        private readonly ObservableAsPropertyHelper<IConfirmationActionVm?> _activeConfirmation;
+        public IConfirmationActionVm? ActiveConfirmation => _activeConfirmation.Value;
 
-        private readonly ObservableAsPropertyHelper<bool> _InModal;
-        public bool InModal => _InModal.Value;
+        private readonly ObservableAsPropertyHelper<bool> _inModal;
+        public bool InModal => _inModal.Value;
 
-        private readonly ObservableAsPropertyHelper<ProfileVm?> _SelectedProfile;
-        public ProfileVm? SelectedProfile => _SelectedProfile.Value;
+        private readonly ObservableAsPropertyHelper<ProfileVm?> _selectedProfile;
+        public ProfileVm? SelectedProfile => _selectedProfile.Value;
         
         public ICommand OpenGlobalSettingsCommand { get; }
 
@@ -79,23 +79,23 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             ILogger logger)
         {
             logger.Information("Creating MainVM");
-            _SelectedProfileController = selectedProfile;
-            _SettingsSingleton = settingsSingleton;
-            _ActivePanelControllerVm = activePanelControllerVm;
-            _ProfileFactory = profileFactory;
+            _selectedProfileController = selectedProfile;
+            _settingsSingleton = settingsSingleton;
+            _activePanelControllerVm = activePanelControllerVm;
+            _profileFactory = profileFactory;
             _logger = logger;
-            _ActivePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
+            _activePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
                 .ToGuiProperty(this, nameof(ActivePanel), default);
             Configuration = configuration;
             activePanelControllerVm.ActivePanel = Configuration;
             Confirmation = confirmationControllerVm;
 
-            _SelectedProfile = _SelectedProfileController.WhenAnyValue(x => x.SelectedProfile)
+            _selectedProfile = _selectedProfileController.WhenAnyValue(x => x.SelectedProfile)
                 .ToGuiProperty(this, nameof(SelectedProfile), default);
 
             OpenGlobalSettingsCommand = openGlobalSettings.OpenCommand;
             
-            _Hot = this.WhenAnyValue(x => x.ActivePanel)
+            _hot = this.WhenAnyValue(x => x.ActivePanel)
                 .Select(x =>
                 {
                     switch (x)
@@ -125,12 +125,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 
             SynthesisVersion = currentVersions.SynthesisVersion;
             MutagenVersion = currentVersions.MutagenVersion;
-            _NewestMutagenVersion = newestLibVersionsVm.WhenAnyValue(x => x.NewestMutagenVersion)
+            _newestMutagenVersion = newestLibVersionsVm.WhenAnyValue(x => x.NewestMutagenVersion)
                 .ToGuiProperty(this, nameof(NewestMutagenVersion), default);
-            _NewestSynthesisVersion = newestLibVersionsVm.WhenAnyValue(x => x.NewestSynthesisVersion)
+            _newestSynthesisVersion = newestLibVersionsVm.WhenAnyValue(x => x.NewestSynthesisVersion)
                 .ToGuiProperty(this, nameof(NewestSynthesisVersion), default);
 
-            _ActiveConfirmation = Observable.CombineLatest(
+            _activeConfirmation = Observable.CombineLatest(
                     this.WhenAnyFallback(x => x.Configuration.SelectedProfile!.SelectedPatcher)
                         .Select(x =>
                         {
@@ -151,7 +151,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                     })
                 .ToGuiProperty(this, nameof(ActiveConfirmation), default(ConfirmationActionVm?));
 
-            _InModal = this.WhenAnyValue(x => x.ActiveConfirmation)
+            _inModal = this.WhenAnyValue(x => x.ActiveConfirmation)
                 .Select(x => x != null)
                 .ToGuiProperty(this, nameof(InModal));
 
@@ -163,27 +163,27 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         public void Load()
         {
             _logger.Information("Applying settings");
-            Configuration.Load(_SettingsSingleton.Gui, _SettingsSingleton.Pipeline);
+            Configuration.Load(_settingsSingleton.Gui, _settingsSingleton.Pipeline);
             _logger.Information("Settings applied");
         }
 
         private void Save(SynthesisGuiSettings guiSettings, PipelineSettings _)
         {
-            guiSettings.MainRepositoryFolder = _SettingsSingleton.Gui.MainRepositoryFolder;
-            guiSettings.OpenIdeAfterCreating = _SettingsSingleton.Gui.OpenIdeAfterCreating;
+            guiSettings.MainRepositoryFolder = _settingsSingleton.Gui.MainRepositoryFolder;
+            guiSettings.OpenIdeAfterCreating = _settingsSingleton.Gui.OpenIdeAfterCreating;
         }
 
         public void Init()
         {
             if (Configuration.Profiles.Count == 0)
             {
-                _ActivePanelControllerVm.ActivePanel = new NewProfileVm(
+                _activePanelControllerVm.ActivePanel = new NewProfileVm(
                     this.Configuration, 
-                    _ProfileFactory,
+                    _profileFactory,
                     (profile) =>
                     {
-                        _SelectedProfileController.SelectedProfile = profile;
-                        _ActivePanelControllerVm.ActivePanel = Configuration;
+                        _selectedProfileController.SelectedProfile = profile;
+                        _activePanelControllerVm.ActivePanel = Configuration;
                     });
             }
         }

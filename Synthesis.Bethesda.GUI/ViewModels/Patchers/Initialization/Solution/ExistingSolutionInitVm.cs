@@ -23,8 +23,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
         [Reactive]
         public string ProjectName { get; set; } = string.Empty;
 
-        private readonly ObservableAsPropertyHelper<ErrorResponse> _ProjectError;
-        public ErrorResponse ProjectError => _ProjectError.Value;
+        private readonly ObservableAsPropertyHelper<ErrorResponse> _projectError;
+        public ErrorResponse ProjectError => _projectError.Value;
 
         public ExistingSolutionInitVm(
             IGameCategoryContext gameCategoryContext,
@@ -44,7 +44,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
                 .Replay(1)
                 .RefCount();
 
-            _ProjectError = validation
+            _projectError = validation
                 .Select(i => (ErrorResponse)i.validation)
                 .ToGuiProperty<ErrorResponse>(this, nameof(ProjectError), ErrorResponse.Success);
 

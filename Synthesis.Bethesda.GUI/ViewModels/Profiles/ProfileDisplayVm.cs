@@ -18,11 +18,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
         public ProfileVm Profile { get; }
 
-        private readonly ObservableAsPropertyHelper<bool> _IsDisplaying;
-        public bool IsDisplaying => _IsDisplaying.Value;
+        private readonly ObservableAsPropertyHelper<bool> _isDisplaying;
+        public bool IsDisplaying => _isDisplaying.Value;
 
-        private readonly ObservableAsPropertyHelper<bool> _IsActive;
-        public bool IsActive => _IsActive.Value;
+        private readonly ObservableAsPropertyHelper<bool> _isActive;
+        public bool IsActive => _isActive.Value;
 
         public ICommand DeleteCommand { get; }
         public ICommand SwitchToCommand { get; }
@@ -42,11 +42,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             Parent = parent;
             Profile = profile;
 
-            _IsDisplaying = parent.WhenAnyValue(x => x.DisplayedProfile)
+            _isDisplaying = parent.WhenAnyValue(x => x.DisplayedProfile)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsDisplaying));
 
-            _IsActive = this.WhenAnyValue(x => x.Profile.IsActive)
+            _isActive = this.WhenAnyValue(x => x.Profile.IsActive)
                 .ToGuiProperty(this, nameof(IsActive));
 
             DeleteCommand = ReactiveCommand.Create(

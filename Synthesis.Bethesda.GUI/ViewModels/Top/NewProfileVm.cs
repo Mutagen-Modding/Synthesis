@@ -16,8 +16,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
     public class NewProfileVm : ViewModel
     {
-        private ConfigurationVm _config;
-        private readonly IProfileFactory _ProfileFactory;
+        private readonly ConfigurationVm _config;
 
         public ObservableCollectionExtended<GameCategory> CategoryOptions { get; } = new();
 
@@ -38,7 +37,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             Action<ProfileVm>? postRun = null)
         {
             _config = config;
-            _ProfileFactory = profileFactory;
             CategoryOptions.AddRange(EnumExt.GetValues<GameCategory>());
 
             ReleaseOptions = this.WhenAnyValue(x => x.SelectedCategory)
@@ -60,7 +58,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 .Subscribe(game =>
                 {
                     if (game == null) return;
-                    var profile = _ProfileFactory.Get(game.Value, GetNewProfileId(), Nickname.IsNullOrWhitespace() ? game.Value.ToDescriptionString() : Nickname);
+                    var profile = profileFactory.Get(game.Value, GetNewProfileId(), Nickname.IsNullOrWhitespace() ? game.Value.ToDescriptionString() : Nickname);
                     config.Profiles.AddOrUpdate(profile);
                     postRun?.Invoke(profile);
                 })

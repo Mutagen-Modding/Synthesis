@@ -5,23 +5,22 @@ using Noggog.Autofac;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Modules;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Cli;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution;
 using Synthesis.Bethesda.GUI.Views;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Containers
 {
-    public class PatcherVm
+    public class InitTests
     {
         [Fact]
-        public void GitPatcherVm()
+        public void GitInitPatcherVm()
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MainModule>();
@@ -37,11 +36,11 @@ namespace Synthesis.Bethesda.UnitTests.Containers
                 .As<IGameReleaseContext>();
             var cont = builder.Build();
             cont.Validate(
-                typeof(GitPatcherVm));
+                typeof(GitPatcherInitVm));
         }
         
         [Fact]
-        public void SolutionPatcherVm()
+        public void SolutionPatcherInitVm()
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MainModule>();
@@ -51,21 +50,20 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             builder.RegisterMock<IGithubPatcherIdentifier>();
             builder.RegisterMock<IPatcherIdProvider>();
             builder.RegisterMock<ISynthesisProfileSettings>();
-            builder.RegisterMock<IProjectSubpathDefaultSettings>();
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
                 .As<IGameReleaseContext>();
             var cont = builder.Build();
             cont.Validate(
-                typeof(SolutionPatcherVm));
+                typeof(SolutionPatcherInitVm));
         }
         
         [Fact]
-        public void CliPatcherVm()
+        public void CliPatcherInitVm()
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MainModule>();
-            builder.RegisterModule<GuiCliPatcherModule>();
+            builder.RegisterModule<GuiCliModule>();
             builder.RegisterMock<IMainWindow>();
             builder.RegisterMock<IWindowPlacement>();
             builder.RegisterMock<IGithubPatcherIdentifier>();
@@ -77,7 +75,7 @@ namespace Synthesis.Bethesda.UnitTests.Containers
                 .As<IGameReleaseContext>();
             var cont = builder.Build();
             cont.Validate(
-                typeof(CliPatcherVm));
+                typeof(CliPatcherInitVm));
         }
     }
 }

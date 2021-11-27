@@ -13,8 +13,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 {
     public class SolutionPatcherNameVm : ViewModel, IPatcherNameVm
     {
-        private readonly ObservableAsPropertyHelper<string> _Name;
-        public string Name => _Name.Value;
+        private readonly ObservableAsPropertyHelper<string> _name;
+        public string Name => _name.Value;
 
         [Reactive] public string Nickname { get; set; } = string.Empty;
 
@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             IProjectSubpathDefaultSettings defaultSettings,
             ISelectedProjectInputVm selectedProjectInputVm)
         {
-            _Name = selectedProjectInputVm.WhenAnyValue(x => x.Picker.TargetPath)
+            _name = selectedProjectInputVm.WhenAnyValue(x => x.Picker.TargetPath)
                 .Select(GetNameFromPath)
                 .CombineLatest(
                     this.WhenAnyValue(x => x.Nickname),

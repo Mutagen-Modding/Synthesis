@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Containers
 {
-    public class Impact
+    public class ImpactTests
     {
         [Fact]
         public void ImpactModule()

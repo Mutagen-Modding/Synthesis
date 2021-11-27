@@ -39,19 +39,19 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
         [Reactive]
         public string Name { get; set; } = string.Empty;
 
-        private readonly ObservableAsPropertyHelper<GetResponse<ModKey>> _ModKey;
-        public GetResponse<ModKey> ModKey => _ModKey.Value;
+        private readonly ObservableAsPropertyHelper<GetResponse<ModKey>> _modKey;
+        public GetResponse<ModKey> ModKey => _modKey.Value;
 
-        private readonly ObservableAsPropertyHelper<ConfigurationState<ViewModel>> _State;
-        public ConfigurationState<ViewModel> State => _State.Value;
+        private readonly ObservableAsPropertyHelper<ConfigurationState<ViewModel>> _state;
+        public ConfigurationState<ViewModel> State => _state.Value;
         
         public ReactiveCommand<Unit, Unit> UpdateAllPatchersCommand { get; }
 
-        private readonly ObservableAsPropertyHelper<int> _NumEnabledPatchers;
-        public int NumEnabledPatchers => _NumEnabledPatchers.Value;
+        private readonly ObservableAsPropertyHelper<int> _numEnabledPatchers;
+        public int NumEnabledPatchers => _numEnabledPatchers.Value;
 
-        private readonly ObservableAsPropertyHelper<bool> _IsSelected;
-        public bool IsSelected => _IsSelected.Value;
+        private readonly ObservableAsPropertyHelper<bool> _isSelected;
+        public bool IsSelected => _isSelected.Value;
 
         public ReactiveCommand<Unit, Unit> GoToErrorCommand { get; }
 
@@ -65,8 +65,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
 
         public ProfileVm ProfileVm { get; }
 
-        private readonly ObservableAsPropertyHelper<bool> _PatchersProcessing;
-        public bool PatchersProcessing => _PatchersProcessing.Value;
+        private readonly ObservableAsPropertyHelper<bool> _patchersProcessing;
+        public bool PatchersProcessing => _patchersProcessing.Value;
         
         public ErrorDisplayVm ErrorDisplayVm { get; }
         
@@ -87,7 +87,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
             LoadOrder = loadOrder.LoadOrder.Connect()
                 .Transform(x => x.ModKey);
             DisplayController = profileVm.DisplayController;
-            _ModKey = this.WhenAnyValue(x => x.Name)
+            _modKey = this.WhenAnyValue(x => x.Name)
                 .Select(x =>
                 {
                     if (!string.IsNullOrWhiteSpace(x)
@@ -100,14 +100,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                 })
                 .ToGuiProperty(this, nameof(ModKey), GetResponse<ModKey>.Fail(Mutagen.Bethesda.Plugins.ModKey.Null));
 
-            _IsSelected = selPatcher.WhenAnyValue(x => x.SelectedObject)
+            _isSelected = selPatcher.WhenAnyValue(x => x.SelectedObject)
                 .Select(x => x == this)
                 // Not GuiProperty, as it interacts with drag/drop oddly
                 .ToProperty(this, nameof(IsSelected));
 
             PatchersDisplay = new SourceListUiFunnel<PatcherVm>(Patchers, this);
 
-            _NumEnabledPatchers = Patchers.Connect()
+            _numEnabledPatchers = Patchers.Connect()
                 .ObserveOnGui()
                 .FilterOnObservable(group => group.WhenAnyValue(x => x.IsOn),
                     scheduler: RxApp.MainThreadScheduler)
@@ -128,11 +128,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                 .Replay(1)
                 .RefCount();
 
-            _PatchersProcessing = processingPatchers
+            _patchersProcessing = processingPatchers
                 .Select(x => x.Count > 0)
                 .ToGuiProperty(this, nameof(PatchersProcessing), false);
 
-            _State = Observable.CombineLatest(
+            _state = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.NumEnabledPatchers),
                     processingPatchers,
                     onPatchers

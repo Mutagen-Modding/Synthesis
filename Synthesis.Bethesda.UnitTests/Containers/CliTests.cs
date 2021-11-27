@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Containers
 {
-    public class Cli
+    public class CliTests
     {
         [Fact]
         public void ProfileLocator()

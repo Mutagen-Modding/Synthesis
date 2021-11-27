@@ -19,9 +19,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
     public class SolutionPatcherInitVm : ViewModel, IPatcherInitVm
     {
         public IShowHelpSetting ShowHelpSetting { get; }
-        private readonly ISettingsSingleton _SettingsSingleton;
-        private readonly IOpenIde _OpenIde;
-        private readonly ILogger _Logger;
+        private readonly ISettingsSingleton _settingsSingleton;
+        private readonly IOpenIde _openIde;
+        private readonly ILogger _logger;
         private readonly IPatcherInitializationVm _init;
 
         public ExistingSolutionInitVm ExistingSolution { get; }
@@ -31,14 +31,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
         public ICommand CompleteConfiguration => _init.CompleteConfiguration;
         public ICommand CancelConfiguration => _init.CancelConfiguration;
 
-        private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
-        public ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
+        private readonly ObservableAsPropertyHelper<ErrorResponse> _canCompleteConfiguration;
+        public ErrorResponse CanCompleteConfiguration => _canCompleteConfiguration.Value;
 
         [Reactive]
         public int SelectedIndex { get; set; }
 
-        private readonly ObservableAsPropertyHelper<ASolutionInitializer.InitializerCall?> _TargetSolutionInitializer;
-        public ASolutionInitializer.InitializerCall? TargetSolutionInitializer => _TargetSolutionInitializer.Value;
+        private readonly ObservableAsPropertyHelper<ASolutionInitializer.InitializerCall?> _targetSolutionInitializer;
+        public ASolutionInitializer.InitializerCall? TargetSolutionInitializer => _targetSolutionInitializer.Value;
 
         [Reactive]
         public bool OpenCodeAfter { get; set; }
@@ -63,13 +63,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
             ExistingSolution = existingSolutionInit;
             ExistingProject = existingProjectInit;
             New = newSolutionInit;
-            _SettingsSingleton = settingsSingleton;
-            _OpenIde = openIde;
-            _Logger = logger;
+            _settingsSingleton = settingsSingleton;
+            _openIde = openIde;
+            _logger = logger;
             _init = init;
-            OpenCodeAfter = _SettingsSingleton.Gui.OpenIdeAfterCreating;
-            New.ParentDirPath.TargetPath = _SettingsSingleton.Gui.MainRepositoryFolder;
-            Ide = _SettingsSingleton.Gui.Ide;
+            OpenCodeAfter = _settingsSingleton.Gui.OpenIdeAfterCreating;
+            New.ParentDirPath.TargetPath = _settingsSingleton.Gui.MainRepositoryFolder;
+            Ide = _settingsSingleton.Gui.Ide;
 
             var initializer = this.WhenAnyValue(x => x.SelectedIndex)
                 .Select<int, ASolutionInitializer>(x =>
@@ -86,10 +86,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
                 .Switch()
                 .Replay(1)
                 .RefCount();
-            _TargetSolutionInitializer = initializer
+            _targetSolutionInitializer = initializer
                 .Select(x => x.Succeeded ? x.Value : default(ASolutionInitializer.InitializerCall?))
                 .ToGuiProperty(this, nameof(TargetSolutionInitializer), default);
-            _CanCompleteConfiguration = initializer
+            _canCompleteConfiguration = initializer
                 .Select(x => (ErrorResponse)x)
                 .ToGuiProperty<ErrorResponse>(this, nameof(CanCompleteConfiguration), ErrorResponse.Failure);
         }
@@ -97,9 +97,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
         public override void Dispose()
         {
             base.Dispose();
-            _SettingsSingleton.Gui.OpenIdeAfterCreating = OpenCodeAfter;
-            _SettingsSingleton.Gui.MainRepositoryFolder = New.ParentDirPath.TargetPath;
-            _SettingsSingleton.Gui.Ide = Ide;
+            _settingsSingleton.Gui.OpenIdeAfterCreating = OpenCodeAfter;
+            _settingsSingleton.Gui.MainRepositoryFolder = New.ParentDirPath.TargetPath;
+            _settingsSingleton.Gui.Ide = Ide;
         }
 
         public async IAsyncEnumerable<PatcherVm> Construct()
@@ -115,11 +115,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
             {
                 try
                 {
-                    _OpenIde.OpenSolution(ret[0].SolutionPathInput.Picker.TargetPath, Ide);
+                    _openIde.OpenSolution(ret[0].SolutionPathInput.Picker.TargetPath, Ide);
                 }
                 catch (Exception ex)
                 {
-                    _Logger.Error(ex, "Error opening IDE");
+                    _logger.Error(ex, "Error opening IDE");
                 }
             }
         }

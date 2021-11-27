@@ -18,7 +18,7 @@ using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Containers
 {
-    public class Gui
+    public class MainGuiTests
     {
         private static ContainerBuilder GetBuilder()
         {

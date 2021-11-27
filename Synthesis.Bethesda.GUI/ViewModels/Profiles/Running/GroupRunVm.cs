@@ -27,11 +27,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
         
         public GroupVm GroupVm { get; }
 
-        private readonly ObservableAsPropertyHelper<bool> _HasStarted;
-        public bool HasStarted => _HasStarted.Value;
+        private readonly ObservableAsPropertyHelper<bool> _hasStarted;
+        public bool HasStarted => _hasStarted.Value;
 
-        private readonly ObservableAsPropertyHelper<string> _RunTimeString;
-        public string RunTimeString => _RunTimeString.Value;
+        private readonly ObservableAsPropertyHelper<string> _runTimeString;
+        public string RunTimeString => _runTimeString.Value;
 
         public GroupRunVm(
             GroupVm groupVm,
@@ -46,13 +46,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 
             Patchers = runVms;
 
-            _HasStarted = runVms.AsObservableChangeSet()
+            _hasStarted = runVms.AsObservableChangeSet()
                 .FilterOnObservable(x => x.WhenAnyValue(x => x.State.Value)
                         .Select(x => x != RunState.NotStarted))
                 .QueryWhenChanged(q => q.Count > 0)
                 .ToGuiProperty(this, nameof(HasStarted));
 
-            _RunTimeString = runVms.AsObservableChangeSet()
+            _runTimeString = runVms.AsObservableChangeSet()
                 .AutoRefresh(x => x.RunTime)
                 .Transform(x => x.RunTime, transformOnRefresh: true)
                 .QueryWhenChanged(q =>

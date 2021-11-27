@@ -27,15 +27,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
     public class GitPatcherInitVm : ViewModel, IPatcherInitVm
     {
         private readonly IPatcherInitializationVm _init;
-        private readonly IPatcherFactory _PatcherFactory;
-        private readonly IProfileGroupsList _groupsList;
+        private readonly IPatcherFactory _patcherFactory;
         private readonly PatcherInitRenameValidator _renamer;
 
         public ICommand CompleteConfiguration => _init.CompleteConfiguration;
         public ICommand CancelConfiguration => _init.CancelConfiguration;
         
-        private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
-        public ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
+        private readonly ObservableAsPropertyHelper<ErrorResponse> _canCompleteConfiguration;
+        public ErrorResponse CanCompleteConfiguration => _canCompleteConfiguration.Value;
 
         public GitPatcherVm Patcher { get; }
 
@@ -73,17 +72,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             IPatcherFactory patcherFactory,
             INavigateTo navigateTo, 
             PatcherStoreListingVm.Factory listingVmFactory,
-            IProfileGroupsList groupsList,
             IRegistryListingsProvider listingsProvider,
             PatcherInitRenameValidator renamer)
         {
             _init = init;
-            _PatcherFactory = patcherFactory;
-            _groupsList = groupsList;
+            _patcherFactory = patcherFactory;
             _renamer = renamer;
             Patcher = patcherFactory.GetGitPatcher();
 
-            _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid.Valid)
+            _canCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid.Valid)
                 .Select(x => ErrorResponse.Create(x))
                 .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
 
@@ -164,7 +161,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
         
         public async Task AddStorePatcher(PatcherStoreListingVm listing)
         {
-            var patcher = _PatcherFactory.GetGitPatcher(new GithubPatcherSettings()
+            var patcher = _patcherFactory.GetGitPatcher(new GithubPatcherSettings()
             {
                 RemoteRepoPath = listing.RepoPath,
                 SelectedProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')

@@ -28,8 +28,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
 
         public ProfilesDisplayVm Profiles { get; }
 
-        private readonly ObservableAsPropertyHelper<byte> _BuildCores;
-        public byte BuildCores => _BuildCores.Value;
+        private readonly ObservableAsPropertyHelper<byte> _buildCores;
+        public byte BuildCores => _buildCores.Value;
         
         [Reactive] public double BuildCorePercentage { get; set; }
 
@@ -53,7 +53,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
             NumProcessors = (byte)Math.Min(byte.MaxValue, Environment.ProcessorCount);
             ShortcircuitBuilds = settingsSingleton.Pipeline.ShortcircuitBuilds;
 
-            _BuildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
+            _buildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
                 .Select(x => (byte)Math.Min(byte.MaxValue, Environment.ProcessorCount * Percent.FactoryPutInRange(x)))
                 .ToGuiProperty(this, nameof(BuildCores));
             

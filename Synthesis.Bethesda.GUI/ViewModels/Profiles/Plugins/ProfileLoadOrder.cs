@@ -24,8 +24,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
     {
         public IObservableList<ReadOnlyModListingVM> LoadOrder { get; }
 
-        private readonly ObservableAsPropertyHelper<ErrorResponse> _State;
-        public ErrorResponse State => _State.Value;
+        private readonly ObservableAsPropertyHelper<ErrorResponse> _state;
+        public ErrorResponse State => _state.Value;
 
         public ProfileLoadOrder(
             ILogger logger,
@@ -71,7 +71,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                 .Switch()
                 .AsObservableList();
 
-            _State = loadOrderResult
+            _state = loadOrderResult
                 .Select(x => x.State)
                 .Switch()
                 .ToGuiProperty(this, nameof(State), ErrorResponse.Success);

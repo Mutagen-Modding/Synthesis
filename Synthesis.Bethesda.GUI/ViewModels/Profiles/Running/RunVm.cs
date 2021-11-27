@@ -23,11 +23,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 {
     public class RunVm : ViewModel
     {
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
         private readonly IExecuteGuiRun _executeRun;
         public RunDisplayControllerVm RunDisplayControllerVm { get; }
         public IRunReporter Reporter { get; }
-        public readonly Dictionary<Guid, PatcherRunVm> _patchers;
+        private readonly Dictionary<Guid, PatcherRunVm> _patchers;
 
         public ProfileVm RunningProfile { get; }
 
@@ -46,8 +46,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 
         public ReactiveCommand<Unit, Unit> ShowOverallErrorCommand { get; } = ReactiveCommand.Create(ActionExt.Nothing);
 
-        private readonly ObservableAsPropertyHelper<object?> _DetailDisplay;
-        public object? DetailDisplay => _DetailDisplay.Value;
+        private readonly ObservableAsPropertyHelper<object?> _detailDisplay;
+        public object? DetailDisplay => _detailDisplay.Value;
 
         private PatcherRunVm? _previousPatcher;
 
@@ -66,7 +66,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
             IEnumerable<GroupVm> groups,
             ProfileVm profile)
         {
-            _Logger = logger;
+            _logger = logger;
             _executeRun = executeRun;
             RunDisplayControllerVm = runDisplayControllerVm;
             Reporter = reporter;
@@ -152,7 +152,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .Subscribe(_ => runDisplayControllerVm.SelectedObject = null)
                 .DisposeWith(this);
 
-            _DetailDisplay = Observable.Merge(
+            _detailDisplay = Observable.Merge(
                     runDisplayControllerVm.WhenAnyValue(x => x.SelectedObject)
                         .Select(i => i as object),
                     this.ShowOverallErrorCommand.EndingExecution()
@@ -188,7 +188,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 {
                     Running = false;
                 });
-            _Logger.Information("Finished patcher run");
+            _logger.Information("Finished patcher run");
         }
 
         public async Task Cancel()
