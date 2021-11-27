@@ -15,12 +15,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 {
     public interface IPatcherRunnerFactory
     {
-        PatcherRunVm ToRunner(PatcherVm patcherVm);
+        PatcherRunVm ToRunner(PatcherInputVm patcherVm);
     }
 
     public class PatcherRunnerFactory : IPatcherRunnerFactory
     {
-        public PatcherRunVm ToRunner(PatcherVm patcherVm)
+        public PatcherRunVm ToRunner(PatcherInputVm patcherVm)
         {
             switch (patcherVm)
             {
@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
             }
         }
         
-        private PatcherRunVm ToRunner<T>(PatcherVm patcherVm)
+        private PatcherRunVm ToRunner<T>(PatcherInputVm patcherVm)
             where T :  IPatcherRun
         {
             var scope = patcherVm.Scope.BeginLifetimeScope(LifetimeScopes.RunNickname, c =>

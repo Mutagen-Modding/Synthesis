@@ -44,9 +44,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
         
         public string Name { get; }
 
-        public delegate PatcherRunVm Factory(PatcherVm sourcePatcherVm);
+        public delegate PatcherRunVm Factory(PatcherInputVm sourcePatcherVm);
 
-        public PatcherRunVm(PatcherVm sourcePatcherVm, IPatcherRun run, IReporterLoggerWrapper loggerWrapper)
+        public PatcherRunVm(PatcherInputVm sourcePatcherVm, IPatcherRun run, IReporterLoggerWrapper loggerWrapper)
         {
             Name = sourcePatcherVm.NameVm.Name;
             InternalID = sourcePatcherVm.InternalID;

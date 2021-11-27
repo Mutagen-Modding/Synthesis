@@ -9,14 +9,13 @@ using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
 {
-    public abstract class PatcherVm : ViewModel, ISelected
+    public abstract class PatcherInputVm : ViewModel, ISelected
     {
         public ILifetimeScope Scope { get; }
         public IPatcherNameVm NameVm { get; }
@@ -42,7 +41,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         
         public ErrorDisplayVm ErrorDisplayVm { get; }
 
-        public PatcherVm(
+        public PatcherInputVm(
             ILifetimeScope scope,
             IPatcherNameVm nameVm,
             IProfileDisplayControllerVm selPatcher,

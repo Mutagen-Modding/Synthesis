@@ -23,7 +23,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 {
-    public class GitPatcherVm : PatcherVm, IPathToSolutionFileProvider
+    public class GitPatcherVm : PatcherInputVm, IPathToSolutionFileProvider
     {
         private readonly ILogger _logger;
         private readonly ICopyOverExtraData _copyOverExtraData;
@@ -59,7 +59,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         private readonly ObservableAsPropertyHelper<bool> _attemptedCheckout;
         public bool AttemptedCheckout => _attemptedCheckout.Value;
 
-        public PatcherSettingsVm PatcherSettings { get; }
+        public PatcherUserSettingsVm PatcherSettings { get; }
 
         private readonly ObservableAsPropertyHelper<StatusRecord> _statusDisplay;
         public StatusRecord StatusDisplay => _statusDisplay.Value;
@@ -109,7 +109,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             ICopyOverExtraData copyOverExtraData,
             PatcherRenameActionVm.Factory renameFactory,
             DeleteUserData deleteUserData,
-            PatcherSettingsVm.Factory settingsVmFactory,
+            PatcherUserSettingsVm.Factory settingsVmFactory,
             GithubPatcherSettings? settings = null)
             : base(
                 scope, nameVm, selPatcher,

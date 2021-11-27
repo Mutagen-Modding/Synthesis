@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             _confirmation = confirmation;
         }
 
-        public async Task<bool> ConfirmNameUnique(PatcherVm patcher)
+        public async Task<bool> ConfirmNameUnique(PatcherInputVm patcher)
         {
             var existingNames = _groupsList.Groups.Items
                 .SelectMany(g => g.Patchers.Items)

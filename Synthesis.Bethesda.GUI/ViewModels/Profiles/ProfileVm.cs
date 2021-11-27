@@ -42,7 +42,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
         public SourceListUiFunnel<GroupVm> GroupsDisplay { get; }
 
-        IEnumerable<PatcherVm> IProfilePatcherEnumerable.Patchers => Groups.Items.SelectMany(x => x.Patchers.Items);
+        IEnumerable<PatcherInputVm> IProfilePatcherEnumerable.Patchers => Groups.Items.SelectMany(x => x.Patchers.Items);
 
         public ICommand GoToErrorCommand { get; }
         public ICommand EnableAllGroupsCommand { get; }
@@ -76,8 +76,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
         public ICommand SetAllToProfileCommand { get; }
 
-        private readonly ObservableAsPropertyHelper<PatcherVm?> _selectedPatcher;
-        public PatcherVm? SelectedPatcher => _selectedPatcher.Value;
+        private readonly ObservableAsPropertyHelper<PatcherInputVm?> _selectedPatcher;
+        public PatcherInputVm? SelectedPatcher => _selectedPatcher.Value;
 
         [Reactive]
         public bool ConsiderPrereleaseNugets { get; set; }
@@ -254,7 +254,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 .DisposeWith(this);
             
             _selectedPatcher = this.WhenAnyValue(x => x.DisplayController.SelectedObject)
-                .Select(x => x as PatcherVm)
+                .Select(x => x as PatcherInputVm)
                 .ToGuiProperty(this, nameof(SelectedPatcher), default);
 
             SetAllToProfileCommand = ReactiveCommand.Create(

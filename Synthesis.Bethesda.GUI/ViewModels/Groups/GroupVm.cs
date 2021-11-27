@@ -26,9 +26,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
     public class GroupVm : ViewModel, ISelected
     {
         public IProfileDisplayControllerVm DisplayController { get; }
-        public SourceList<PatcherVm> Patchers { get; } = new();
+        public SourceList<PatcherInputVm> Patchers { get; } = new();
 
-        public SourceListUiFunnel<PatcherVm> PatchersDisplay { get; }
+        public SourceListUiFunnel<PatcherInputVm> PatchersDisplay { get; }
 
         [Reactive]
         public bool IsOn { get; set; }
@@ -105,14 +105,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                 // Not GuiProperty, as it interacts with drag/drop oddly
                 .ToProperty(this, nameof(IsSelected));
 
-            PatchersDisplay = new SourceListUiFunnel<PatcherVm>(Patchers, this);
+            PatchersDisplay = new SourceListUiFunnel<PatcherInputVm>(Patchers, this);
 
             _numEnabledPatchers = Patchers.Connect()
                 .ObserveOnGui()
                 .FilterOnObservable(group => group.WhenAnyValue(x => x.IsOn),
                     scheduler: RxApp.MainThreadScheduler)
                 .QueryWhenChanged(q => q)
-                .StartWith(Noggog.ListExt.Empty<PatcherVm>())
+                .StartWith(Noggog.ListExt.Empty<PatcherInputVm>())
                 .Select(x => x.Count)
                 .ToGuiProperty(this, nameof(NumEnabledPatchers));
 
@@ -124,7 +124,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                 .FilterOnObservable(p => p.WhenAnyValue(x => x.State)
                     .Select(x => x.RunnableState.Failed && !x.IsHaltingError))
                 .QueryWhenChanged(q => q)
-                .StartWith(Noggog.ListExt.Empty<PatcherVm>())
+                .StartWith(Noggog.ListExt.Empty<PatcherInputVm>())
                 .Replay(1)
                 .RefCount();
 
@@ -139,7 +139,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                         .FilterOnObservable(p => p.WhenAnyValue(x => x.State)
                             .Select(x => x.RunnableState.Failed && x.IsHaltingError))
                         .QueryWhenChanged(q => q)
-                        .StartWith(Noggog.ListExt.Empty<PatcherVm>()),
+                        .StartWith(Noggog.ListExt.Empty<PatcherInputVm>()),
                     this.WhenAnyValue(x => x.ModKey),
                     (numEnabledPatchers, processingPatchers, haltedPatchers, modKey) =>
                     {
@@ -256,7 +256,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
             }
         }
 
-        public void Remove(PatcherVm patcher)
+        public void Remove(PatcherInputVm patcher)
         {
             Patchers.Remove(patcher);
         }

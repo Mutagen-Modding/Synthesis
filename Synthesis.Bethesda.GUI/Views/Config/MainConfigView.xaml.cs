@@ -119,11 +119,11 @@ namespace Synthesis.Bethesda.GUI.Views
                                 targetGroupList.SourceList.Add(groupVm);
                             }
                         }
-                        else if (e.SourceListBox.ItemsSource is ISourceListUiFunnel<PatcherVm> patcherList)
+                        else if (e.SourceListBox.ItemsSource is ISourceListUiFunnel<PatcherInputVm> patcherList)
                         {
                             if (!targetItem.TryGetChildOfType<ListBox>(out var patcherListBox)) return;
-                            if (patcherListBox.ItemsSource is not ISourceListUiFunnel<PatcherVm> targetPatcherList) return;
-                            if (e.Vm is not PatcherVm patcherVm) return;
+                            if (patcherListBox.ItemsSource is not ISourceListUiFunnel<PatcherInputVm> targetPatcherList) return;
+                            if (e.Vm is not PatcherInputVm patcherVm) return;
                             
                             patcherList.SourceList.Remove(patcherVm);
                             

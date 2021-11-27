@@ -43,7 +43,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Cli
                 .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
         }
 
-        public async IAsyncEnumerable<PatcherVm> Construct()
+        public async IAsyncEnumerable<PatcherInputVm> Construct()
         {
             yield return Factory.GetCliPatcher(new CliPatcherSettings()
             {

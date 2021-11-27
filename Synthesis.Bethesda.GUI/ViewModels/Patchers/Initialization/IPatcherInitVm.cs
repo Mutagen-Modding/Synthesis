@@ -10,7 +10,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
         ICommand CompleteConfiguration { get; }
         ICommand CancelConfiguration { get; }
         ErrorResponse CanCompleteConfiguration { get; }
-        IAsyncEnumerable<PatcherVm> Construct();
+        IAsyncEnumerable<PatcherInputVm> Construct();
         void Cancel();
     }
 }

@@ -19,7 +19,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
 {
-    public class PatcherSettingsVm : ViewModel
+    public class PatcherUserSettingsVm : ViewModel
     {
         private readonly ILogger _logger;
         private readonly IProvideRepositoryCheckouts _repoCheckouts;
@@ -43,11 +43,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
             }
         }
 
-        public delegate PatcherSettingsVm Factory(
+        public delegate PatcherUserSettingsVm Factory(
             bool needBuild,
             IObservable<(GetResponse<FilePath> ProjPath, string? SynthVersion)> source);
         
-        public PatcherSettingsVm(
+        public PatcherUserSettingsVm(
             ILogger logger,
             IProfileLoadOrder loadOrder,
             IProfileSimpleLinkCacheVm linkCacheVm,

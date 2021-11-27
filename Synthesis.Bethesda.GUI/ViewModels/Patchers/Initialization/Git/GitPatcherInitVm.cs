@@ -148,7 +148,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             ClearSearchCommand = ReactiveCommand.Create(() => Search = string.Empty);
         }
 
-        public async IAsyncEnumerable<PatcherVm> Construct()
+        public async IAsyncEnumerable<PatcherInputVm> Construct()
         {
             _wasAdded = true;
             yield return Patcher;
@@ -168,7 +168,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             });
             if (await _renamer.ConfirmNameUnique(patcher))
             {
-                _init.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
+                _init.AddNewPatchers(patcher.AsEnumerable<PatcherInputVm>().ToList());
             }
         }
 

@@ -14,7 +14,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
 {
     public interface IPatcherFactory
     {
-        PatcherVm Get(PatcherSettings settings);
+        PatcherInputVm Get(PatcherSettings settings);
         GitPatcherVm GetGitPatcher(GithubPatcherSettings? settings = null);
         SolutionPatcherVm GetSolutionPatcher(SolutionPatcherSettings settings);
         CliPatcherVm GetCliPatcher(CliPatcherSettings settings);
@@ -33,7 +33,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
             _gitSettingsInitializer = gitSettingsInitializer;
         }
         
-        public PatcherVm Get(PatcherSettings settings)
+        public PatcherInputVm Get(PatcherSettings settings)
         {
             return settings switch
             {

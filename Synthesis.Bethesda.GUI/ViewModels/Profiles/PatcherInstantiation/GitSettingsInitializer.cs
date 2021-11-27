@@ -35,7 +35,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
         {
             bool IsValid(string id)
             {
-                foreach (var patcher in _patchersList.Patchers.WhereCastable<PatcherVm, GitPatcherVm>())
+                foreach (var patcher in _patchersList.Patchers.WhereCastable<PatcherInputVm, GitPatcherVm>())
                 {
                     if (patcher.ID == id)
                     {

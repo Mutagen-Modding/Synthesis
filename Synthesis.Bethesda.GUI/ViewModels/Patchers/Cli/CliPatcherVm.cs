@@ -14,7 +14,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
 {
-    public class CliPatcherVm : PatcherVm, ICliInputSourceVm
+    public class CliPatcherVm : PatcherInputVm, ICliInputSourceVm
     {
         public IPathToExecutableInputVm ExecutableInput { get; }
         public IShowHelpSetting ShowHelpSetting { get; }
