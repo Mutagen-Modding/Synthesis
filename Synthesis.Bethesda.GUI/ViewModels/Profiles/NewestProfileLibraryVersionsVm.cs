@@ -2,8 +2,9 @@
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Versioning;
+using Synthesis.Bethesda.GUI.Services.Versioning;
 
-namespace Synthesis.Bethesda.GUI.Services.Versioning
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
     public interface INewestProfileLibraryVersionsVm
     {

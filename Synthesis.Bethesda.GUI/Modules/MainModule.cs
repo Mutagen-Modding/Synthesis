@@ -19,6 +19,7 @@ using Synthesis.Bethesda.GUI.Logging;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Profile.Exporter;
 using Synthesis.Bethesda.GUI.Services.Profile.Running;
+using Synthesis.Bethesda.GUI.Services.Profile.TopLevel;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Services.Versioning;
 using Synthesis.Bethesda.GUI.Settings;
@@ -91,7 +92,7 @@ namespace Synthesis.Bethesda.GUI.Modules
                     typeof(IStartup),
                     typeof(ILogSettings),
                     typeof(IGuiSettingsImporter),
-                    typeof(INewestProfileLibraryVersionsVm),
+                    typeof(INewestLibraryVersionsVm),
                     typeof(ISynthesisGuiSettings))
                 .AsImplementedInterfaces()
                 .AsSelf()
@@ -102,7 +103,8 @@ namespace Synthesis.Bethesda.GUI.Modules
         {
             builder.RegisterAssemblyTypes(typeof(ProfileVm).Assembly)
                 .InNamespacesOf(
-                    typeof(ProfileVm))
+                    typeof(ProfileVm),
+                    typeof(ConsiderPrereleasePreference))
                 .NotInNamespacesOf(typeof(RunVm), typeof(PatcherInitRenameActionVm))
                 .InstancePerMatchingLifetimeScope(LifetimeScopes.ProfileNickname)
                 .AsImplementedInterfaces()
