@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
     public class NewProfileVm : ViewModel
     {
-        private readonly ConfigurationVm _config;
+        private readonly ProfileManagerVm _config;
 
         public ObservableCollectionExtended<GameCategory> CategoryOptions { get; } = new();
 
@@ -32,7 +32,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         public GameRelease? SelectedRelease { get; set; }
 
         public NewProfileVm(
-            ConfigurationVm config, 
+            ProfileManagerVm config, 
             IProfileFactory profileFactory,
             Action<ProfileVm>? postRun = null)
         {

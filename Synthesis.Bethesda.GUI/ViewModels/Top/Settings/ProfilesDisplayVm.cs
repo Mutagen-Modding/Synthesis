@@ -15,7 +15,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
 {
     public class ProfilesDisplayVm : ViewModel
     {
-        public ConfigurationVm Config { get; }
+        public ProfileManagerVm Config { get; }
 
         public ICommand AddCommand { get; }
 
@@ -28,7 +28,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
         public object? DisplayObject { get; set; }
 
         public ProfilesDisplayVm(
-            ConfigurationVm parent,
+            ProfileManagerVm parent,
             IProfileFactory profileFactory)
         {
             Config = parent;

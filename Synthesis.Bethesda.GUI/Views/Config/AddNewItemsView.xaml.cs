@@ -6,7 +6,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class AddNewItemsViewBase : NoggogUserControl<ConfigurationVm> { }
+    public class AddNewItemsViewBase : NoggogUserControl<ProfileManagerVm> { }
 
     /// <summary>
     /// Interaction logic for AddNewItemsView.xaml

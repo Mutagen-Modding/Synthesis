@@ -6,6 +6,7 @@ using DynamicData;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.V2;
@@ -16,32 +17,32 @@ using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
-    public class ConfigurationVm : ViewModel
+    public interface ISelectedProfileControllerVm
     {
-        private readonly ISelectedProfileControllerVm _selectedProfileController;
+        ProfileVm? SelectedProfile { get; set; }
+    }
+    
+    public class ProfileManagerVm : ViewModel
+    {
         private readonly IProfileFactory _profileFactory;
 
         public SourceCache<ProfileVm, string> Profiles { get; } = new(p => p.ID);
 
         public ReactiveCommandBase<Unit, Unit> RunPatchers { get; }
 
-        private readonly ObservableAsPropertyHelper<ProfileVm?> _selectedProfile;
-        public ProfileVm? SelectedProfile => _selectedProfile.Value;
-
         private readonly ObservableAsPropertyHelper<ViewModel?> _displayedObject;
         public ViewModel? DisplayedObject => _displayedObject.Value;
+        
+        [Reactive]
+        public ProfileVm? SelectedProfile { get; set; }
 
-        public ConfigurationVm(
-            ISelectedProfileControllerVm selectedProfile,
+        public ProfileManagerVm(
             ISaveSignal saveSignal,
             IProfileFactory profileFactory,
             ILogger logger)
         {
             logger.Information("Creating ConfigurationVM");
-            _selectedProfileController = selectedProfile;
             _profileFactory = profileFactory;
-            _selectedProfile = _selectedProfileController.WhenAnyValue(x => x.SelectedProfile)
-                .ToGuiProperty(this, nameof(SelectedProfile), default);
 
             _displayedObject = this.WhenAnyValue(x => x.SelectedProfile!.DisplayController.SelectedObject)
                 .ToGuiProperty(this, nameof(DisplayedObject), default);
@@ -72,7 +73,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             }));
             if (Profiles.TryGetValue(settings.SelectedProfile, out var profile))
             {
-                _selectedProfileController.SelectedProfile = profile;
+                SelectedProfile = profile;
             }
         }
 

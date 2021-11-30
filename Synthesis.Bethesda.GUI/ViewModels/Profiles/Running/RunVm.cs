@@ -55,7 +55,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
         
         public RunVm(
             ActiveRunVm activeRunVm,
-            ConfigurationVm configuration,
+            ProfileManagerVm profileManager,
             RunDisplayControllerVm runDisplayControllerVm,
             ILogger logger,
             IGroupRunVmFactory runVmFactory,
@@ -84,7 +84,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
             BackCommand = ReactiveCommand.Create(() =>
             {
                 profile.DisplayController.SelectedObject = runDisplayControllerVm.SelectedObject?.SourceVm;
-                activePanelController.ActivePanel = configuration;
+                activePanelController.ActivePanel = profileManager;
                 activeRunVm.CurrentRun = null;
             },
             canExecute: this.WhenAnyValue(x => x.Running)

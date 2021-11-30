@@ -30,7 +30,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         private readonly IActivePanelControllerVm _activePanelControllerVm;
         private readonly IProfileFactory _profileFactory;
         private readonly ILogger _logger;
-        public ConfigurationVm Configuration { get; }
+        public ProfileManagerVm ProfileManager { get; }
 
         private readonly ObservableAsPropertyHelper<ViewModel?> _activePanel;
         public ViewModel? ActivePanel => _activePanel.Value;
@@ -65,7 +65,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 
         public MainVm(
             ActiveRunVm activeRunVm,
-            ConfigurationVm configuration,
+            ProfileManagerVm profileManager,
             OpenProfileSettings openProfileSettings,
             OpenGlobalSettings openGlobalSettings,
             IConfirmationPanelControllerVm confirmationControllerVm,
@@ -86,8 +86,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _logger = logger;
             _activePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
                 .ToGuiProperty(this, nameof(ActivePanel), default);
-            Configuration = configuration;
-            activePanelControllerVm.ActivePanel = Configuration;
+            ProfileManager = profileManager;
+            activePanelControllerVm.ActivePanel = ProfileManager;
             Confirmation = confirmationControllerVm;
 
             _selectedProfile = _selectedProfileController.WhenAnyValue(x => x.SelectedProfile)
@@ -100,7 +100,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 {
                     switch (x)
                     {
-                        case ConfigurationVm config:
+                        case ProfileManagerVm config:
                             return activeRunVm.WhenAnyFallback(x => x.CurrentRun!.Running, fallback: false);
                         case RunVm running:
                             return running.WhenAnyValue(x => x.Running);
@@ -131,7 +131,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 .ToGuiProperty(this, nameof(NewestSynthesisVersion), default);
 
             _activeConfirmation = Observable.CombineLatest(
-                    this.WhenAnyFallback(x => x.Configuration.SelectedProfile!.SelectedPatcher)
+                    this.WhenAnyFallback(x => x.ProfileManager.SelectedProfile!.SelectedPatcher)
                         .Select(x =>
                         {
                             if (x is not GitPatcherVm gitPatcher) return Observable.Return(default(GitPatcherVm?));
@@ -163,7 +163,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         public void Load()
         {
             _logger.Information("Applying settings");
-            Configuration.Load(_settingsSingleton.Gui, _settingsSingleton.Pipeline);
+            ProfileManager.Load(_settingsSingleton.Gui, _settingsSingleton.Pipeline);
             _logger.Information("Settings applied");
         }
 
@@ -175,15 +175,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 
         public void Init()
         {
-            if (Configuration.Profiles.Count == 0)
+            if (ProfileManager.Profiles.Count == 0)
             {
                 _activePanelControllerVm.ActivePanel = new NewProfileVm(
-                    this.Configuration, 
+                    this.ProfileManager, 
                     _profileFactory,
                     (profile) =>
                     {
                         _selectedProfileController.SelectedProfile = profile;
-                        _activePanelControllerVm.ActivePanel = Configuration;
+                        _activePanelControllerVm.ActivePanel = ProfileManager;
                     });
             }
         }

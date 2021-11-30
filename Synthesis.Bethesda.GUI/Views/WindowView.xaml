@@ -15,7 +15,7 @@
     <Grid>
         <ContentPresenter x:Name="ContentPane">
             <ContentPresenter.Resources>
-                <DataTemplate DataType="{x:Type top:ConfigurationVm}">
+                <DataTemplate DataType="{x:Type top:ProfileManagerVm}">
                     <local:ConfigurationView />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type top:NewProfileVm}">
