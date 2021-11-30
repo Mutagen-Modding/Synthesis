@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         ProfileVm? SelectedProfile { get; set; }
     }
     
-    public class ProfileManagerVm : ViewModel
+    public class ProfileManagerVm : ViewModel, ISelectedProfileControllerVm
     {
         private readonly IProfileFactory _profileFactory;
 
