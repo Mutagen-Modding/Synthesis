@@ -51,7 +51,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
         public GitNugetTargetingVm(
             ILogger logger,
-            INewestLibraryVersionsVm newest,
+            INewestProfileLibraryVersionsVm newest,
             IProfileVersioning versioning)
         {
             UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(

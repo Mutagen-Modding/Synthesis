@@ -26,16 +26,16 @@ namespace Synthesis.Bethesda.GUI.Services.Main
     public class ProfileFactory : IProfileFactory
     {
         private readonly ILifetimeScope _scope;
-        private readonly INewestLibraryVersionsVm _newestLibraryVersionsVm;
+        private readonly INewestProfileLibraryVersionsVm _newestProfileLibraryVersionsVm;
         private readonly ILogger _logger;
 
         public ProfileFactory(
             ILifetimeScope scope,
-            INewestLibraryVersionsVm newestLibraryVersionsVm,
+            INewestProfileLibraryVersionsVm newestProfileLibraryVersionsVm,
             ILogger logger)
         {
             _scope = scope;
-            _newestLibraryVersionsVm = newestLibraryVersionsVm;
+            _newestProfileLibraryVersionsVm = newestProfileLibraryVersionsVm;
             _logger = logger;
         }
         
@@ -96,11 +96,11 @@ namespace Synthesis.Bethesda.GUI.Services.Main
                         .AsImplementedInterfaces();
                 });
             var profile = scope.Resolve<ProfileVm>();
-            _newestLibraryVersionsVm.WhenAnyValue(x => x.NewestMutagenVersion)
+            _newestProfileLibraryVersionsVm.WhenAnyValue(x => x.NewestMutagenVersion)
                 .TakeUntil(x => x != null)
                 .Subscribe(x => profile.Versioning.ManualMutagenVersion = x)
                 .DisposeWith(profile);
-            _newestLibraryVersionsVm.WhenAnyValue(x => x.NewestSynthesisVersion)
+            _newestProfileLibraryVersionsVm.WhenAnyValue(x => x.NewestSynthesisVersion)
                 .TakeUntil(x => x != null)
                 .Subscribe(x => profile.Versioning.ManualSynthesisVersion = x)
                 .DisposeWith(profile);
