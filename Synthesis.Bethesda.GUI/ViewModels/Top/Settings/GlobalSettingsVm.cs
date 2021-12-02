@@ -5,7 +5,7 @@ using Noggog.WPF;
 using Noggog;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.Execution.Patchers.Running.Git;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.WorkEngine;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.Execution.Settings;

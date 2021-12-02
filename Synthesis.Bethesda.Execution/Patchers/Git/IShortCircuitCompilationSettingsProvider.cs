@@ -1,4 +1,4 @@
-﻿namespace Synthesis.Bethesda.Execution.Patchers.Running.Git
+﻿namespace Synthesis.Bethesda.Execution.Patchers.Git
 {
     public interface IShortCircuitCompilationSettingsProvider
     {
