@@ -505,7 +505,6 @@ namespace Mutagen.Bethesda.Synthesis
                     new ModListingParser(
                         new HasEnabledMarkersProvider(
                             gameReleaseInjection))));
-            var pluginListingsPathProvider = new PluginListingsPathProvider(gameReleaseInjection);
             var stateFactory = new StateFactory(
                 fileSystem,
                 new LoadOrderImporterFactory(

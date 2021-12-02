@@ -183,10 +183,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 false, 
                 compilationProvider.State.Select(c =>
                     {
-                        if (c.RunnableState.Failed) return (c.RunnableState.BubbleFailure<FilePath>(), null);
-                        return (GetResponse<FilePath>.Succeed(c.Item.ProjPath), c.Item.TargetVersions.Synthesis);
+                        if (c.RunnableState.Failed)
+                        {
+                            return new PatcherUserSettingsVm.Inputs(c.RunnableState.BubbleFailure<FilePath>(), null, default);
+                        }
+                        return new PatcherUserSettingsVm.Inputs(GetResponse<FilePath>.Succeed(c.Item.ProjPath), c.Item.TargetVersions.Synthesis, c.Item.MetaPath);
                     })
-                    .DistinctUntilChanged(x => (x.Item1.Value, x.Synthesis)))
+                    .DistinctUntilChanged())
                 .DisposeWith(this);
 
             _statusDisplay = gitStatusDisplay.StatusDisplay

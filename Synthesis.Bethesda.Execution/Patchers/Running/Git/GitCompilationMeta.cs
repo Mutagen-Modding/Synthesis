@@ -6,5 +6,6 @@
         public string SynthesisVersion { get; set; } = string.Empty;
         public string Sha { get; set; } = string.Empty;
         public bool DoesNotHaveRunnability { get; set; }
+        public SettingsConfiguration? SettingsConfiguration { get; set; }
     }
 }

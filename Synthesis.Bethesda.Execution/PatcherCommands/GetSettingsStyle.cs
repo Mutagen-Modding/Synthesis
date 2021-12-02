@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Noggog;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.DTO;
+using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.Execution.WorkEngine;
@@ -14,6 +17,7 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
         Task<SettingsConfiguration> Get(
             string path,
             bool directExe,
+            FilePath? buildMetaPath,
             CancellationToken cancel,
             bool build);
     }
@@ -21,6 +25,9 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
     public class GetSettingsStyle : IGetSettingsStyle
     {
         private readonly IWorkDropoff _workDropoff;
+        private readonly IBuildMetaFileReader _metaFileReader;
+        private readonly IShortCircuitSettingsProvider _shortCircuitSettingsProvider;
+        private readonly IWriteShortCircuitMeta _writeShortCircuitMeta;
         public ILinesToReflectionConfigsParser LinesToConfigsParser { get; }
         public IProcessRunner ProcessRunner { get; }
         public IRunProcessStartInfoProvider GetRunProcessStartInfoProvider { get; }
@@ -28,10 +35,16 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
         public GetSettingsStyle(
             IProcessRunner processRunner,
             IWorkDropoff workDropoff,
+            IBuildMetaFileReader metaFileReader,
+            IShortCircuitSettingsProvider shortCircuitSettingsProvider,
             ILinesToReflectionConfigsParser linesToConfigsParser,
+            IWriteShortCircuitMeta writeShortCircuitMeta,
             IRunProcessStartInfoProvider getRunProcessStartInfoProvider)
         {
             _workDropoff = workDropoff;
+            _metaFileReader = metaFileReader;
+            _shortCircuitSettingsProvider = shortCircuitSettingsProvider;
+            _writeShortCircuitMeta = writeShortCircuitMeta;
             LinesToConfigsParser = linesToConfigsParser;
             ProcessRunner = processRunner;
             GetRunProcessStartInfoProvider = getRunProcessStartInfoProvider;
@@ -40,8 +53,27 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
         public async Task<SettingsConfiguration> Get(
             string path,
             bool directExe,
+            FilePath? buildMetaPath,
             CancellationToken cancel,
             bool build)
+        {
+            var meta = buildMetaPath != null ? _metaFileReader.Read(buildMetaPath.Value) : default;
+
+            if (_shortCircuitSettingsProvider.Shortcircuit && meta?.SettingsConfiguration != null) return meta.SettingsConfiguration;
+
+            var settingsConfig = await ExecuteSettingsRetrieval(path, directExe, cancel, build);
+
+            if (meta != null
+                && buildMetaPath != null)
+            {
+                meta.SettingsConfiguration = settingsConfig;
+                _writeShortCircuitMeta.WriteMeta(buildMetaPath.Value, meta);
+            }
+
+            return settingsConfig;
+        }
+
+        private async Task<SettingsConfiguration> ExecuteSettingsRetrieval(string path, bool directExe, CancellationToken cancel, bool build)
         {
             var result = await _workDropoff.EnqueueAndWait(() =>
             {
@@ -49,7 +81,7 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
                     GetRunProcessStartInfoProvider.GetStart(path, directExe, new SettingsQuery(), build: build),
                     cancel: cancel);
             }).ConfigureAwait(false);
-            
+
             switch ((Codes)result.Result)
             {
                 case Codes.OpensForSettings:
