@@ -30,13 +30,13 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                     cleanState.Select(x => x?.ListedVersions.Mutagen),
                     nugetTargetingVm.ActiveNugetVersion.Select(x => x.Value?.Mutagen.Version),
                     (matchVersion, selVersion) => new NugetVersionDiff(matchVersion, selVersion))
-                .ToGuiProperty(this, nameof(MutagenVersionDiff), new NugetVersionDiff(null, null));
+                .ToGuiProperty(this, nameof(MutagenVersionDiff), new NugetVersionDiff(null, null), deferSubscription: true);
 
             _SynthesisVersionDiff = Observable.CombineLatest(
                     cleanState.Select(x => x?.ListedVersions.Synthesis),
                     nugetTargetingVm.ActiveNugetVersion.Select(x => x.Value?.Synthesis.Version),
                     (matchVersion, selVersion) => new NugetVersionDiff(matchVersion, selVersion))
-                .ToGuiProperty(this, nameof(SynthesisVersionDiff), new NugetVersionDiff(null, null));
+                .ToGuiProperty(this, nameof(SynthesisVersionDiff), new NugetVersionDiff(null, null), deferSubscription: true);
         }
     }
 }

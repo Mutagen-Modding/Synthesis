@@ -146,7 +146,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             EnvironmentErrors = environmentErrors;
 
             _dataFolder = dataFolder.WhenAnyValue(x => x.Path)
-                .ToGuiProperty<DirectoryPath>(this, nameof(DataFolder), string.Empty);
+                .ToGuiProperty<DirectoryPath>(this, nameof(DataFolder), string.Empty, deferSubscription: true);
 
             LoadOrder = loadOrder.LoadOrder;
 
@@ -209,7 +209,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                         logger.Warning($"Encountered blocking overall error: {x.Reason}");
                     }
                 })
-                .ToGuiProperty(this, nameof(BlockingError), GetResponse<ViewModel>.Fail("Uninitialized blocking error"));
+                .ToGuiProperty(this, nameof(BlockingError), GetResponse<ViewModel>.Fail("Uninitialized blocking error"), deferSubscription: true);
             
             _state = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.BlockingError),
@@ -230,11 +230,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                     if (!overall.Succeeded) return overall;
                     return patcherState;
                 })
-                .ToGuiProperty<ErrorResponse>(this, nameof(State), ErrorResponse.Fail("Uninitialized state error"));
+                .ToGuiProperty<ErrorResponse>(this, nameof(State), ErrorResponse.Fail("Uninitialized state error"), deferSubscription: true);
 
             _isActive = selProfile.WhenAnyValue(x => x.SelectedProfile)
                 .Select(x => x == this)
-                .ToGuiProperty(this, nameof(IsActive));
+                .ToGuiProperty(this, nameof(IsActive), deferSubscription: true);
 
             GoToErrorCommand = OverallErrorVm.CreateCommand(this.WhenAnyValue(x => x.BlockingError));
 
@@ -255,7 +255,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             
             _selectedPatcher = this.WhenAnyValue(x => x.DisplayController.SelectedObject)
                 .Select(x => x as PatcherInputVm)
-                .ToGuiProperty(this, nameof(SelectedPatcher), default);
+                .ToGuiProperty(this, nameof(SelectedPatcher), default, deferSubscription: true);
 
             SetAllToProfileCommand = ReactiveCommand.Create(
                 execute: () =>

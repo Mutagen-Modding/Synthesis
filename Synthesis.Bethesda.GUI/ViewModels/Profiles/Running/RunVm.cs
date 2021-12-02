@@ -157,7 +157,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                         .Select(i => i as object),
                     this.ShowOverallErrorCommand.EndingExecution()
                         .Select(_ => ResultError == null ? null : new ErrorVM("Patching Error", ResultError.ToString())))
-                .ToGuiProperty(this, nameof(DetailDisplay), default);
+                .ToGuiProperty(this, nameof(DetailDisplay), default, deferSubscription: true);
         }
 
         public async Task Run()

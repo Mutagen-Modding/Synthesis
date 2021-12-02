@@ -25,7 +25,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
         {
             _InError = mvm.DotNetSdkInstalled
                 .Select(x => !x.Acceptable)
-                .ToGuiProperty(this, nameof(InError));
+                .ToGuiProperty(this, nameof(InError), deferSubscription: true);
             
             _CustomDisplayString = mvm.DotNetSdkInstalled
                 .Select(x =>
@@ -40,7 +40,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
                         return $"While an SDK was found, it was not an acceptable version.  You had {x.Version}, but it must be at least {ParseNugetVersionString.MinVersion}";
                     }
                 })
-                .ToGuiProperty(this, nameof(CustomDisplayString), string.Empty);
+                .ToGuiProperty(this, nameof(CustomDisplayString), string.Empty, deferSubscription: true);
 
             DownloadCommand = ReactiveCommand.Create(
                 () =>
@@ -50,7 +50,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
             
             _ErrorString = this.WhenAnyValue(x => x.InError)
                 .Select(x => x ? $"DotNet SDK: Desired SDK not found" : null)
-                .ToGuiProperty(this, nameof(ErrorString), default);
+                .ToGuiProperty(this, nameof(ErrorString), default, deferSubscription: true);
         }
     }
 }

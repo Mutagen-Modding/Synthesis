@@ -55,7 +55,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
 
             _buildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
                 .Select(x => (byte)Math.Min(byte.MaxValue, Environment.ProcessorCount * Percent.FactoryPutInRange(x)))
-                .ToGuiProperty(this, nameof(BuildCores));
+                .ToGuiProperty(this, nameof(BuildCores), deferSubscription: true);
             
             this.WhenAnyValue(x => x.BuildCores)
                 .Subscribe(x => workConsumerSettings.SetNumThreads(x))

@@ -32,12 +32,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                     newestLibraryVersionsVm.WhenAnyValue(x => x.Versions),
                     considerPrerelease.ConsiderPrereleases,
                     (vers, prereleases) => prereleases ? vers.Prerelease.Mutagen : vers.Normal.Mutagen)
-                .ToGuiProperty(this, nameof(NewestMutagenVersion), default(string?));
+                .ToGuiProperty(this, nameof(NewestMutagenVersion), default(string?), deferSubscription: true);
             _newestSynthesisVersion = Observable.CombineLatest(
                     newestLibraryVersionsVm.WhenAnyValue(x => x.Versions),
                     considerPrerelease.ConsiderPrereleases,
                     (vers, prereleases) => prereleases ? vers.Prerelease.Synthesis : vers.Normal.Synthesis)
-                .ToGuiProperty(this, nameof(NewestSynthesisVersion), default(string?));
+                .ToGuiProperty(this, nameof(NewestSynthesisVersion), default(string?), deferSubscription: true);
         }
     }
 }

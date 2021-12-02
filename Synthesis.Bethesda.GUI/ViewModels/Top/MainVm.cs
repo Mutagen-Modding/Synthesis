@@ -85,13 +85,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _profileFactory = profileFactory;
             _logger = logger;
             _activePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
-                .ToGuiProperty(this, nameof(ActivePanel), default);
+                .ToGuiProperty(this, nameof(ActivePanel), default, deferSubscription: true);
             ProfileManager = profileManager;
             activePanelControllerVm.ActivePanel = ProfileManager;
             Confirmation = confirmationControllerVm;
 
             _selectedProfile = _selectedProfileController.WhenAnyValue(x => x.SelectedProfile)
-                .ToGuiProperty(this, nameof(SelectedProfile), default);
+                .ToGuiProperty(this, nameof(SelectedProfile), default, deferSubscription: true);
 
             OpenGlobalSettingsCommand = openGlobalSettings.OpenCommand;
             
@@ -111,7 +111,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 })
                 .Switch()
                 .DistinctUntilChanged()
-                .ToGuiProperty(this, nameof(Hot));
+                .ToGuiProperty(this, nameof(Hot), deferSubscription: true);
 
             OpenProfilesPageCommand = openProfileSettings.OpenCommand;
             
@@ -127,10 +127,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             MutagenVersion = currentVersions.MutagenVersion;
             _newestMutagenVersion = libVersionsVm.WhenAnyValue(x => x.Versions)
                 .Select(x => x.Normal.Mutagen)
-                .ToGuiProperty(this, nameof(NewestMutagenVersion), default);
+                .ToGuiProperty(this, nameof(NewestMutagenVersion), default, deferSubscription: true);
             _newestSynthesisVersion = libVersionsVm.WhenAnyValue(x => x.Versions)
                 .Select(x => x.Normal.Synthesis)
-                .ToGuiProperty(this, nameof(NewestSynthesisVersion), default);
+                .ToGuiProperty(this, nameof(NewestSynthesisVersion), default, deferSubscription: true);
 
             _activeConfirmation = Observable.CombineLatest(
                     this.WhenAnyFallback(x => x.ProfileManager.SelectedProfile!.SelectedPatcher)
@@ -151,11 +151,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                             $"{openPatcher.NameVm.Name} is open for settings manipulation.",
                             toDo: null);
                     })
-                .ToGuiProperty(this, nameof(ActiveConfirmation), default(ConfirmationActionVm?));
+                .ToGuiProperty(this, nameof(ActiveConfirmation), default(ConfirmationActionVm?), deferSubscription: true);
 
             _inModal = this.WhenAnyValue(x => x.ActiveConfirmation)
                 .Select(x => x != null)
-                .ToGuiProperty(this, nameof(InModal));
+                .ToGuiProperty(this, nameof(InModal), deferSubscription: true);
 
             saveSignal.Saving
                 .Subscribe((x) => Save(x.Gui, x.Pipe))

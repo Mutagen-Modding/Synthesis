@@ -42,11 +42,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                                 .Select(inErr => inErr ? env : default);
                         }),
                         (errs) => errs.FirstOrDefault(e => e != null))
-                    .ToGuiProperty(this, nameof(ActiveError), default);
+                    .ToGuiProperty(this, nameof(ActiveError), default, deferSubscription: true);
 
             _inError = this.WhenAnyValue(x => x.ActiveError)
                 .Select(x => x == null)
-                .ToGuiProperty(this, nameof(InError));
+                .ToGuiProperty(this, nameof(InError), deferSubscription: true);
         }
     }
 }

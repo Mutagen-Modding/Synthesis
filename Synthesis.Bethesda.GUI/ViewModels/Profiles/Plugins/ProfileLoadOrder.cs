@@ -74,7 +74,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
             _state = loadOrderResult
                 .Select(x => x.State)
                 .Switch()
-                .ToGuiProperty(this, nameof(State), ErrorResponse.Success);
+                .ToGuiProperty(this, nameof(State), ErrorResponse.Success, deferSubscription: true);
         }
 
         public IEnumerable<IModListingGetter> Get()

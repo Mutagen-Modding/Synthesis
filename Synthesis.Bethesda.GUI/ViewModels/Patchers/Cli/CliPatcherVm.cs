@@ -49,7 +49,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
                 .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
                 {
                     IsHaltingError = false
-                });
+                }, deferSubscription: true);
         }
 
         public override PatcherSettings Save()

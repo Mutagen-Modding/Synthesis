@@ -91,7 +91,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
                     });
                 })
                 .Switch()
-                .ToGuiProperty(this, nameof(SettingsConfiguration), new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()));
+                .ToGuiProperty(this, nameof(SettingsConfiguration), new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()), deferSubscription: true);
 
             OpenSettingsCommand = NoggogCommand.CreateFromObject(
                 objectSource: Observable.CombineLatest(
@@ -121,7 +121,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
                 disposable: this);
 
             _settingsOpen = OpenSettingsCommand.IsExecuting
-                .ToGuiProperty(this, nameof(SettingsOpen));
+                .ToGuiProperty(this, nameof(SettingsOpen), deferSubscription: true);
 
             _reflectionSettings = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.SettingsConfiguration),

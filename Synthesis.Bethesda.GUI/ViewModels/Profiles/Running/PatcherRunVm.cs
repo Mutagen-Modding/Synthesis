@@ -75,11 +75,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 
             _isRunning = this.WhenAnyValue(x => x.State)
                 .Select(x => x.Value == RunState.Started)
-                .ToGuiProperty(this, nameof(IsRunning));
+                .ToGuiProperty(this, nameof(IsRunning), deferSubscription: true);
 
             _isErrored = this.WhenAnyValue(x => x.State)
                 .Select(x => x.Value == RunState.Error)
-                .ToGuiProperty(this, nameof(IsErrored));
+                .ToGuiProperty(this, nameof(IsErrored), deferSubscription: true);
 
             var runTime = Noggog.ObservableExt.TimePassed(TimeSpan.FromMilliseconds(100), RxApp.MainThreadScheduler)
                 .FlowSwitch(this.WhenAnyValue(x => x.IsRunning))
@@ -106,7 +106,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     }
                     return $"{time.TotalSeconds:n1}s";
                 })
-                .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty);
+                .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty, deferSubscription: true);
 
             this.WhenAnyValue(x => x.State)
                 .Where(x => x.Succeeded && x.Value == RunState.Finished)

@@ -6,7 +6,6 @@ using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.ViewModels
@@ -30,7 +29,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels
             DisplayedObject = parent;
 
             _state = state
-                .ToGuiProperty(this, nameof(State), ConfigurationState.Success);
+                .ToGuiProperty(this, nameof(State), ConfigurationState.Success, deferSubscription: true);
             
             ErrorVM = new ErrorVM("Error", backAction: () =>
             {

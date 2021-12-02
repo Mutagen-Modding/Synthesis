@@ -50,7 +50,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .FilterOnObservable(x => x.WhenAnyValue(x => x.State.Value)
                         .Select(x => x != RunState.NotStarted))
                 .QueryWhenChanged(q => q.Count > 0)
-                .ToGuiProperty(this, nameof(HasStarted));
+                .ToGuiProperty(this, nameof(HasStarted), deferSubscription: true);
 
             _runTimeString = runVms.AsObservableChangeSet()
                 .AutoRefresh(x => x.RunTime)
@@ -81,7 +81,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     }
                     return $"{time.TotalSeconds:n1}s";
                 })
-                .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty);
+                .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty, deferSubscription: true);
         }
 
         public override string ToString()

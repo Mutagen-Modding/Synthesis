@@ -98,7 +98,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
 
                     return GetResponse<ModKey>.Failure;
                 })
-                .ToGuiProperty(this, nameof(ModKey), GetResponse<ModKey>.Fail(Mutagen.Bethesda.Plugins.ModKey.Null));
+                .ToGuiProperty(this, nameof(ModKey), GetResponse<ModKey>.Fail(Mutagen.Bethesda.Plugins.ModKey.Null), deferSubscription: true);
 
             _isSelected = selPatcher.WhenAnyValue(x => x.SelectedObject)
                 .Select(x => x == this)
@@ -114,7 +114,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                 .QueryWhenChanged(q => q)
                 .StartWith(Noggog.ListExt.Empty<PatcherInputVm>())
                 .Select(x => x.Count)
-                .ToGuiProperty(this, nameof(NumEnabledPatchers));
+                .ToGuiProperty(this, nameof(NumEnabledPatchers), deferSubscription: true);
 
             var onPatchers = Patchers.Connect()
                 .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
@@ -130,7 +130,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
 
             _patchersProcessing = processingPatchers
                 .Select(x => x.Count > 0)
-                .ToGuiProperty(this, nameof(PatchersProcessing), false);
+                .ToGuiProperty(this, nameof(PatchersProcessing), false, deferSubscription: true);
 
             _state = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.NumEnabledPatchers),
@@ -165,7 +165,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
 
                         return new ConfigurationState<ViewModel>(this);
                     })
-                .ToGuiProperty(this, nameof(State), new ConfigurationState<ViewModel>(this));
+                .ToGuiProperty(this, nameof(State), new ConfigurationState<ViewModel>(this), deferSubscription: true);
             
             ErrorDisplayVm = new ErrorDisplayVm(this, this.WhenAnyValue(x => x.State));
 

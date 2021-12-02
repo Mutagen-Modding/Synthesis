@@ -27,7 +27,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
                 .CombineLatest(
                     this.WhenAnyValue(x => x.Nickname),
                     (auto, nickname) => nickname.IsNullOrWhitespace() ? auto : nickname)
-                .ToGuiProperty<string>(this, nameof(Name), GetNameFromPath(defaultSettings.ProjectSubpath));
+                .ToGuiProperty<string>(this, nameof(Name), GetNameFromPath(defaultSettings.ProjectSubpath), deferSubscription: true);
         }
 
         private string GetNameFromPath(string path)

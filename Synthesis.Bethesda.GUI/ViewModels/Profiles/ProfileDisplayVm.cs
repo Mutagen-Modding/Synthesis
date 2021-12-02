@@ -44,10 +44,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
             _isDisplaying = parent.WhenAnyValue(x => x.DisplayedProfile)
                 .Select(x => x == this)
-                .ToGuiProperty(this, nameof(IsDisplaying));
+                .ToGuiProperty(this, nameof(IsDisplaying), deferSubscription: true);
 
             _isActive = this.WhenAnyValue(x => x.Profile.IsActive)
-                .ToGuiProperty(this, nameof(IsActive));
+                .ToGuiProperty(this, nameof(IsActive), deferSubscription: true);
 
             DeleteCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.Profile!.IsActive)

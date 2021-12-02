@@ -25,7 +25,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                     this.WhenAnyValue(x => x.Nickname),
                     (auto, nickname) => nickname.IsNullOrWhitespace() ? auto : nickname)
                 .ToGuiProperty<string>(this, nameof(Name),
-                    nameConstructor.Construct(remoteRepoPathFollower.RemoteRepoPath));
+                    nameConstructor.Construct(remoteRepoPathFollower.RemoteRepoPath), deferSubscription: true);
         }
     }
 }

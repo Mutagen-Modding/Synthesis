@@ -58,7 +58,7 @@ namespace Synthesis.Bethesda.GUI.Services.Versioning
                 })
                 .ToGuiProperty(this, nameof(Versions), new NugetVersionOptions(
                     new NugetVersionPair(null, null),
-                    new NugetVersionPair(null, null)));
+                    new NugetVersionPair(null, null)), deferSubscription: true);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Cli
                 .CombineLatest(
                     this.WhenAnyValue(x => x.Nickname),
                     (auto, nickname) => nickname.IsNullOrWhitespace() ? auto : nickname)
-                .ToGuiProperty<string>(this, nameof(Name), string.Empty);
+                .ToGuiProperty<string>(this, nameof(Name), string.Empty, deferSubscription: true);
         }
     }
 }

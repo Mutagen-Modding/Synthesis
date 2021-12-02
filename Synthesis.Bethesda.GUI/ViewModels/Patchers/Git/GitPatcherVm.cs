@@ -137,7 +137,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
             _repoValidity = getRepoPathValidity.RepoPath
                 .Select(r => r.RunnableState)
-                .ToGuiProperty(this, nameof(RepoValidity));
+                .ToGuiProperty(this, nameof(RepoValidity), deferSubscription: true);
 
             AvailableProjects = availableProjects.Projects;
 
@@ -145,16 +145,16 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
             _attemptedCheckout = checkoutInputProvider.Input
                 .Select(attemptedCheckout.Attempted)
-                .ToGuiProperty(this, nameof(AttemptedCheckout));
+                .ToGuiProperty(this, nameof(AttemptedCheckout), deferSubscription: true);
 
             _runnableData = runnableStateProvider.WhenAnyValue(x => x.State.Item)
-                .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?));
+                .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?), deferSubscription: true);
 
             _state = state.State
                 .ToGuiProperty(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
                 {
                     IsHaltingError = false
-                });
+                }, deferSubscription: true);
 
             OpenGitPageCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.RepoValidity)
@@ -198,7 +198,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                         Text: "Initializing",
                         Processing: false,
                         Blocking: false,
-                        Command: null));
+                        Command: null), deferSubscription: true);
 
             SetToLastSuccessfulRunCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.LastSuccessfulRun)

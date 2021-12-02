@@ -44,7 +44,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _profileFactory = profileFactory;
 
             _displayedObject = this.WhenAnyValue(x => x.SelectedProfile!.DisplayController.SelectedObject)
-                .ToGuiProperty(this, nameof(DisplayedObject), default);
+                .ToGuiProperty(this, nameof(DisplayedObject), default, deferSubscription: true);
 
             RunPatchers = NoggogCommand.CreateFromObject(
                 objectSource: this.WhenAnyValue(x => x.SelectedProfile),

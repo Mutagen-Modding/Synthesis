@@ -117,7 +117,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
                 .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
                 {
                     IsHaltingError = false
-                });
+                }, deferSubscription: true);
 
             OpenSolutionCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.SolutionPathInput.Picker.InError)
