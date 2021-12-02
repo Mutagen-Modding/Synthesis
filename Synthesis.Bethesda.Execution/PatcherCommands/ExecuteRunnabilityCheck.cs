@@ -24,6 +24,7 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
 
     public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
     {
+        private readonly IShortCircuitSettingsProvider _shortCircuitSettingsProvider;
         private readonly IWriteShortCircuitMeta _writeShortCircuitMeta;
         public const int MaxLines = 100;
         
@@ -40,10 +41,12 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
             IProcessRunner processRunner,
             IDataDirectoryProvider dataDirectoryProvider,
             IBuildMetaFileReader metaFileReader,
+            IShortCircuitSettingsProvider shortCircuitSettingsProvider,
             IWriteShortCircuitMeta writeShortCircuitMeta,
             IRunProcessStartInfoProvider runProcessStartInfoProvider)
         {
             MetaFileReader = metaFileReader;
+            _shortCircuitSettingsProvider = shortCircuitSettingsProvider;
             _writeShortCircuitMeta = writeShortCircuitMeta;
             Dropoff = workDropoff;
             DataDirectoryProvider = dataDirectoryProvider;
@@ -60,8 +63,9 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands
             CancellationToken cancel)
         {
             var meta = buildMetaPath != null ? MetaFileReader.Read(buildMetaPath.Value) : default;
-            if (meta is { DoesNotHaveRunnability: true }) return ErrorResponse.Success;
-            
+
+            if (_shortCircuitSettingsProvider.Shortcircuit && meta is { DoesNotHaveRunnability: true }) return ErrorResponse.Success;
+
             var results = new List<string>();
             void AddResult(string s)
             {

@@ -52,9 +52,9 @@
                     </StackPanel>
                     <StackPanel Margin="5" Orientation="Horizontal">
                         <CheckBox
-                            x:Name="ShortCircuitBuildsBox"
-                            Content="Short Circuit Builds"
-                            ToolTip="Whether to track and skip building when deemed appropriate" />
+                            x:Name="ShortCircuitBox"
+                            Content="Short Circuit Checks"
+                            ToolTip="Whether to track and skip building and other meta gathering steps when deemed appropriate" />
                     </StackPanel>
                 </StackPanel>
             </TabItem>

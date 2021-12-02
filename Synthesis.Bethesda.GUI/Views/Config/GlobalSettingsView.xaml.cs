@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(dispose);
                 this.Bind(ViewModel, x => x.BuildCorePercentage, x => x.ProcessorPercentSlider.Value)
                     .DisposeWith(dispose);
-                this.Bind(ViewModel, x => x.ShortcircuitBuilds, x => x.ShortCircuitBuildsBox.IsChecked)
+                this.Bind(ViewModel, x => x.Shortcircuit, x => x.ShortCircuitBox.IsChecked)
                     .DisposeWith(dispose);
                 this.WhenAnyValue(x => x.ViewModel!.BuildCores)
                     .Select(x => x == 0 ? Environment.ProcessorCount : x)

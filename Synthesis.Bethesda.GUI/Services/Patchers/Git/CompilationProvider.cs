@@ -28,7 +28,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             IGitPatcherCompilation build,
             ILogger logger,
             IPrintErrorMessage printErrorMessage,
-            IShortCircuitCompilationSettingsProvider shortCircuitCompilationSettingsProvider,
+            IShortCircuitSettingsProvider shortCircuitSettingsProvider,
             IRunnableStateProvider runnableStateProvider)
         {
             _build = build;
@@ -37,7 +37,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             
             State = _runnableStateProvider.WhenAnyValue(x => x.State)
                 .CombineLatest(
-                    shortCircuitCompilationSettingsProvider.WhenAnyValue(x => x.ShortcircuitBuilds),
+                    shortCircuitSettingsProvider.WhenAnyValue(x => x.Shortcircuit),
                     (state, _) => state)
                 .Select(state =>
                 {

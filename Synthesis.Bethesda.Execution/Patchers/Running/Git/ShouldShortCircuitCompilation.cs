@@ -11,11 +11,11 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Git
 
     public class ShouldShortCircuitCompilation : IShouldShortCircuitCompilation
     {
-        private readonly IShortCircuitCompilationSettingsProvider _settingsProvider;
+        private readonly IShortCircuitSettingsProvider _settingsProvider;
         private readonly IBuildMetaFileReader _metaFileReader;
 
         public ShouldShortCircuitCompilation(
-            IShortCircuitCompilationSettingsProvider settingsProvider,
+            IShortCircuitSettingsProvider settingsProvider,
             IBuildMetaFileReader metaFileReader)
         {
             _settingsProvider = settingsProvider;
@@ -24,7 +24,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Git
 
         public bool ShouldShortCircuit(RunnerRepoInfo info)
         {
-            if (!_settingsProvider.ShortcircuitBuilds) return false;
+            if (!_settingsProvider.Shortcircuit) return false;
             var meta = _metaFileReader.Read(info.MetaPath);
             if (meta == null) return false;
             if (meta.Sha != info.Target.TargetSha) return false;

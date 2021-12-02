@@ -118,5 +118,5 @@
       "IgnoreMissingMods": false
     }
   ],
-  "ShortcircuitBuilds": true
+  "Shortcircuit": true
 }
