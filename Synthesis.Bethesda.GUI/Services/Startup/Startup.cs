@@ -45,7 +45,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
         
         public async void Initialize()
         {
-            AppDomain.CurrentDomain.UnhandledException += (o, e) =>
+            AppDomain.CurrentDomain.UnhandledException += (_, e) =>
             {
                 _logger.Error(e.ExceptionObject as Exception, "Crashing");
             };
@@ -62,18 +62,26 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
                 await Observable.FromAsync(() =>
                         Task.WhenAll(_startupTasks
                             .Select(x => Task.Run(x.Start))))
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .Do(_ =>
+                    .Select(x => _mainVm.Value)
+                    .Do(mainVM =>
                     {
-                        var mainVM = _mainVm.Value;
                         _logger.Information("Loading settings");
                         mainVM.Load();
                         _logger.Information("Loaded settings");
-
-                        _logger.Information("Setting main View Model");
+                    })
+                    .ObserveOn(RxApp.MainThreadScheduler)
+                    .Do(mainVM =>
+                    {
+                        _logger.Information("Setting Main VM");
                         _window.DataContext = mainVM;
+                        _logger.Information("Set Main VM");
+                    })
+                    .ObserveOn(RxApp.TaskpoolScheduler)
+                    .Do(mainVM =>
+                    {
+                        _logger.Information("Initializing Main VM");
                         mainVM.Init();
-                        _logger.Information("Set main View Model");
+                        _logger.Information("Initialized Main VM");
                     });
                 _tracker.Initialized = true;
             }
