@@ -117,6 +117,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                 .ToGuiProperty(this, nameof(NumEnabledPatchers), deferSubscription: true);
 
             var onPatchers = Patchers.Connect()
+                .ObserveOnGui()
                 .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
                 .RefCount();
 
@@ -178,6 +179,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups
                     }));
             
             var allCommands = Patchers.Connect()
+                .ObserveOnGui()
                 .Transform(x => x as GitPatcherVm)
                 .ChangeNotNull()
                 .Transform(x => CommandVM.Factory(x.UpdateAllCommand.Command))

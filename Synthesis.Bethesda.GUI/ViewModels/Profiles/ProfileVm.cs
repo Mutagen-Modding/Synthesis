@@ -151,6 +151,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             LoadOrder = loadOrder.LoadOrder;
 
             var enabledGroups = Groups.Connect()
+                .ObserveOnGui()
                 .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
                 .RefCount();
 
@@ -300,6 +301,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             });
 
             var allCommands = Groups.Connect()
+                .ObserveOnGui()
                 .Transform(x => CommandVM.Factory(x.UpdateAllPatchersCommand))
                 .AsObservableList();
             UpdateAllPatchersCommand = ReactiveCommand.CreateFromTask(

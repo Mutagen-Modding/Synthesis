@@ -25,6 +25,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             _selectedGroup = Observable.CombineLatest(
                     selected.WhenAnyValue(x => x.SelectedObject),
                     groupsList.Groups.Connect()
+                        .ObserveOnGui()
                         .QueryWhenChanged(q => q),
                     (selected, groups) => selected ?? groups.FirstOrDefault())
                 .Select(x =>
