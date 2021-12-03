@@ -84,6 +84,16 @@
     </Grid>
     <mahapps:MetroWindow.RightWindowCommands>
         <mahapps:WindowCommands>
+            <mahapps:WindowCommands.Style>
+                <Style TargetType="mahapps:WindowCommands" >
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding InitialLoading}" Value="False">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </mahapps:WindowCommands.Style>
             <local:TopProfileSelectorView />
             <Button Command="{Binding OpenGlobalSettingsCommand}" >
                 <icon:PackIconMaterial Kind="Cog" />

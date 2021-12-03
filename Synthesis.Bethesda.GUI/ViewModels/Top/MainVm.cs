@@ -6,6 +6,7 @@ using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.GUI.Services.Main;
@@ -60,6 +61,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 
         private readonly ObservableAsPropertyHelper<ProfileVm?> _selectedProfile;
         public ProfileVm? SelectedProfile => _selectedProfile.Value;
+
+        [Reactive]
+        public bool InitialLoading { get; set; } = true;
         
         public ICommand OpenGlobalSettingsCommand { get; }
 
@@ -188,6 +192,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                         _activePanelControllerVm.ActivePanel = ProfileManager;
                     });
             }
+            InitialLoading = false;
         }
     }
 }

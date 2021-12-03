@@ -5,7 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:profiles="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles"
     xmlns:running="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
     xmlns:settings="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Top.Settings"
     xmlns:top="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Top"
@@ -33,5 +32,6 @@
             </ContentPresenter.Resources>
         </ContentPresenter>
         <local:OverlayView x:Name="ConfirmationOverlay" Visibility="Collapsed" />
+        <local:MainLoadingView x:Name="InitialLoading" />
     </Grid>
 </local:WindowViewBase>
