@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using Noggog.WPF;
+using ReactiveUI;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 {
@@ -22,6 +23,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                 .Select(x => x.Item?.AvailableProjects ?? Enumerable.Empty<string>())
                 .Select(x => x.AsObservableChangeSet<string>())
                 .Switch()
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .ToObservableCollection(this);
         }
     }

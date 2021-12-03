@@ -54,6 +54,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
                         DisplayedProfile = p;
                     }
                 })
+                .ObserveOnGui()
                 .ToObservableCollection(this);
 
             this.WhenAnyValue(x => x.DisplayedProfile)

@@ -46,6 +46,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                     }))
                 .Sort(SortExpressionComparer<DriverTag>.Descending(x => x.Index))
                 .Transform(x => x.Name)
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .ToObservableCollection(this);
         }
     }

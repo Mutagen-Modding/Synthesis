@@ -2,7 +2,6 @@ using DynamicData;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda;
 using System;
 using System.Linq;
@@ -54,7 +53,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                             var reflectionBundle = await provideBundle.ExtractBundle(
                                 projPath,
                                 targets: config.Targets,
-                                detectedLoadOrder: loadOrder,
+                                detectedLoadOrder: loadOrder.ObserveOn(RxApp.MainThreadScheduler),
                                 linkCache: linkCache,
                                 cancel: cancel).ConfigureAwait(false);
                             if (reflectionBundle.Failed)

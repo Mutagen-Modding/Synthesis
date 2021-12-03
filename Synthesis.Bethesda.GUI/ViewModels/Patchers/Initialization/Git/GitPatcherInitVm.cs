@@ -142,6 +142,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
                                 return false;
                             });
                     }))
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .ToObservableCollection(this);
 
             OpenPopulationInfoCommand = ReactiveCommand.Create(() => navigateTo.Navigate(Constants.ListingRepositoryAddress));

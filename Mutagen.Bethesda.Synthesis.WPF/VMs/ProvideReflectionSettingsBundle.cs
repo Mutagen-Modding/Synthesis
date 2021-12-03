@@ -1,6 +1,6 @@
 ﻿using System;
-using System.IO.Abstractions;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicData;
@@ -8,10 +8,9 @@ using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Reflection;
 using Noggog;
+using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.DTO;
-using Synthesis.Bethesda.Execution.Patchers;
-using Synthesis.Bethesda.Execution.Patchers.Common;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {
@@ -62,7 +61,7 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                                 if (t == null) return null;
                                 return _reflFactory(
                                     ReflectionSettingsParameters.FromType(
-                                        detectedLoadOrder,
+                                        detectedLoadOrder.ObserveOn(RxApp.MainThreadScheduler),
                                         linkCache,
                                         t,
                                         Activator.CreateInstance(t)),

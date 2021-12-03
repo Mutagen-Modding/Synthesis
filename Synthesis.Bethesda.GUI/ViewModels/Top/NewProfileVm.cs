@@ -42,6 +42,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             ReleaseOptions = this.WhenAnyValue(x => x.SelectedCategory)
                 .Select(x => x?.GetRelatedReleases().AsObservableChangeSet() ?? Observable.Return(ChangeSet<GameRelease>.Empty))
                 .Switch()
+                .ObserveOnGui()
                 .ToObservableCollection(this);
 
             this.WhenAnyValue(x => x.SelectedCategory)

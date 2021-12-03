@@ -69,6 +69,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
             LoadOrder = loadOrderResult
                 .Select(x => x.Results)
                 .Switch()
+                .ObserveOnGui()
                 .AsObservableList();
 
             _state = loadOrderResult

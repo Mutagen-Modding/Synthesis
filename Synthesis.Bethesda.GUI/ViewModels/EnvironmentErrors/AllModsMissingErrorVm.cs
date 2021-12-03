@@ -6,7 +6,6 @@ using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
-using Synthesis.Bethesda.GUI.ViewModels.Top;
 using Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
@@ -32,6 +31,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
         {
             var nonImplicit = profileLoadOrder.LoadOrder.Connect()
                 .Filter(x => !implicitListingsProvider.Listings.Contains(x.ModKey))
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .AsObservableList();
             
             _InError = nonImplicit.CountChanged
