@@ -29,7 +29,7 @@ namespace Mutagen.Bethesda.Synthesis
 
         /// <inheritdoc />
         public TModSetter PatchMod { get; }
-        IModGetter IPatcherState.PatchMod => PatchMod;
+        IMod IPatcherState.PatchMod => PatchMod;
 
         /// <inheritdoc />
         public CancellationToken Cancel { get; }

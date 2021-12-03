@@ -550,6 +550,11 @@ namespace Mutagen.Bethesda.Synthesis
             if (!prefs.NoPatch)
             {
                 System.Console.WriteLine($"Writing to output: {args.OutputPath}");
+
+                if (state.PatchMod.CanUseLocalization)
+                {
+                    state.PatchMod.UsingLocalization = true;
+                }
                 state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)), fileSystem: fileSystem);
             }
         }

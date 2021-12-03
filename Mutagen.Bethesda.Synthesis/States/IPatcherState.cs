@@ -23,7 +23,7 @@ namespace Mutagen.Bethesda.Synthesis
         /// Previous patchers in the pipeline will have already added content.  Your changes should build
         /// upon that content as appropriate, and mesh any changes to produce the final patch file.
         /// </summary>
-        IModGetter PatchMod { get; }
+        IMod PatchMod { get; }
 
         /// <summary>
         /// A list of ModKeys as they appeared, and whether they were enabled

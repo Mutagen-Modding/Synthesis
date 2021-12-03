@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Noggog;
 using System.IO;
 using System.IO.Abstractions;
@@ -140,6 +140,11 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
                 cache = loadOrder.ToMutableLinkCache(patchMod);
                 loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));
                 rawLoadOrder.Add(new ModListing(patchMod.ModKey, enabled: true));
+
+                if (patchMod.CanUseLocalization)
+                {
+                    patchMod.UsingLocalization = true;
+                }
             }
 
             return new SynthesisState<TModSetter, TModGetter>(
