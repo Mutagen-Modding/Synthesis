@@ -83,7 +83,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindTo(this, x => x.ProcessingCircle.Visibility)
                     .DisposeWith(disposable);
 
-                Drag.ListBoxDragDrop<PatcherInputVm>(this.PatchersList, onlyWithinSameBox: false)
+                Drag.ListBoxDragDrop<PatcherVm>(this.PatchersList, onlyWithinSameBox: false)
                     .DisposeWith(disposable);
 
                 // ContextMenu

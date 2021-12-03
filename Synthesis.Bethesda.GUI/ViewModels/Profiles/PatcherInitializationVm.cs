@@ -30,7 +30,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         ICommand CompleteConfiguration { get; }
         ICommand CancelConfiguration { get; }
         IPatcherInitVm? NewPatcher { get; set; }
-        void AddNewPatchers(List<PatcherInputVm> patchersToAdd);
+        void AddNewPatchers(List<PatcherVm> patchersToAdd);
     }
 
     public class PatcherInitializationVm : ViewModel, IPatcherInitializationVm
@@ -121,7 +121,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 .DisposeWith(this);
         }
 
-        public void AddNewPatchers(List<PatcherInputVm> patchersToAdd)
+        public void AddNewPatchers(List<PatcherVm> patchersToAdd)
         {
             NewPatcher = null;
             if (patchersToAdd.Count == 0) return;

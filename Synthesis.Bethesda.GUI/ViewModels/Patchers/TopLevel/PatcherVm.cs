@@ -15,7 +15,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
 {
-    public abstract class PatcherInputVm : ViewModel, ISelected
+    public abstract class PatcherVm : ViewModel, ISelected
     {
         public ILifetimeScope Scope { get; }
         public IPatcherNameVm NameVm { get; }
@@ -41,7 +41,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         
         public ErrorDisplayVm ErrorDisplayVm { get; }
 
-        public PatcherInputVm(
+        public PatcherVm(
             ILifetimeScope scope,
             IPatcherNameVm nameVm,
             IProfileDisplayControllerVm selPatcher,

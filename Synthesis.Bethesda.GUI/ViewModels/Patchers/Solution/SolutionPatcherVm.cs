@@ -28,7 +28,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 {
-    public class SolutionPatcherVm : PatcherInputVm, 
+    public class SolutionPatcherVm : PatcherVm, 
         IProvidePatcherMetaPath, 
         ISolutionPatcherSettingsVm
     {

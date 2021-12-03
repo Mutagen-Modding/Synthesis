@@ -13,9 +13,9 @@ namespace Synthesis.Bethesda.GUI.Modules
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterModule<PatcherModule>();
-            builder.RegisterAssemblyTypes(typeof(PatcherInputVm).Assembly)
+            builder.RegisterAssemblyTypes(typeof(PatcherVm).Assembly)
                 .InNamespacesOf(
-                    typeof(PatcherInputVm),
+                    typeof(PatcherVm),
                     typeof(IPatcherInitVm))
                 .NotInjection()
                 .InstancePerMatchingLifetimeScope(LifetimeScopes.PatcherNickname)

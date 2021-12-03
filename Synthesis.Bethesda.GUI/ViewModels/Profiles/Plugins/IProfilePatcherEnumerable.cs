@@ -5,6 +5,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 {
     public interface IProfilePatcherEnumerable
     {
-        IEnumerable<PatcherInputVm> Patchers { get; }
+        IEnumerable<PatcherVm> Patchers { get; }
     }
 }

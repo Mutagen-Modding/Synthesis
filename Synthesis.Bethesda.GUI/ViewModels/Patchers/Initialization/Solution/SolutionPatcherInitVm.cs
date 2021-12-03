@@ -102,7 +102,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution
             _settingsSingleton.Gui.Ide = Ide;
         }
 
-        public async IAsyncEnumerable<PatcherInputVm> Construct()
+        public async IAsyncEnumerable<PatcherVm> Construct()
         {
             if (TargetSolutionInitializer == null) yield break;
             var ret = (await TargetSolutionInitializer().ConfigureAwait(false)).ToList();

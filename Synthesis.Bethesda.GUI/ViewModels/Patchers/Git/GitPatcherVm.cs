@@ -23,7 +23,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 {
-    public class GitPatcherVm : PatcherInputVm, IPathToSolutionFileProvider
+    public class GitPatcherVm : PatcherVm, IPathToSolutionFileProvider
     {
         private readonly ILogger _logger;
         private readonly ICopyOverExtraData _copyOverExtraData;

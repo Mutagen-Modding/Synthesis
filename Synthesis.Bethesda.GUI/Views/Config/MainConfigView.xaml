@@ -290,7 +290,7 @@
         <ContentControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"
             x:Name="DetailControl">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type topLevel:PatcherInputVm}">
+                <DataTemplate DataType="{x:Type topLevel:PatcherVm}">
                     <local:PatcherConfigView Margin="15,15,15,0" />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type running:ErrorVM}">

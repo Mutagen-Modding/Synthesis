@@ -31,7 +31,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 .Select(x =>
                 {
                     if (x is GroupVm group) return group;
-                    if (x is PatcherInputVm patcher) return patcher.Group;
+                    if (x is PatcherVm patcher) return patcher.Group;
                     return default(GroupVm?);
                 })
                 .ToGuiProperty(this, nameof(SelectedGroup), default(GroupVm?), deferSubscription: true);

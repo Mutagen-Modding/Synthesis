@@ -7,7 +7,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class PatcherConfigViewBase : NoggogUserControl<PatcherInputVm> { }
+    public class PatcherConfigViewBase : NoggogUserControl<PatcherVm> { }
 
     /// <summary>
     /// Interaction logic for PatcherConfigView.xaml
