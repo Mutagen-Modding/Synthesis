@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.UnitTests
                 dataFolder,
                 pluginPath);
             var getStateLoadOrder = testEnv.GetStateLoadOrder();
-            var listings = getStateLoadOrder.GetLoadOrder().ToList();
+            var listings = getStateLoadOrder.GetLoadOrder(false).ToList();
             listings.Should().HaveCount(3);
             listings.Should().BeEquivalentTo(new IModListingGetter[]
             {
@@ -50,7 +50,7 @@ namespace Synthesis.Bethesda.UnitTests
             var env = Utility.SetupEnvironment(GameRelease.SkyrimSE);
             env = env with {PluginPath = string.Empty};
             var getStateLoadOrder = env.GetStateLoadOrder();
-            var lo = getStateLoadOrder.GetLoadOrder();
+            var lo = getStateLoadOrder.GetLoadOrder(false);
             lo.Select(l => l.ModKey).Should().BeEmpty();
         }
     }

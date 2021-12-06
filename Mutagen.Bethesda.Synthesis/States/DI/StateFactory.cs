@@ -57,11 +57,11 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
             }
 
             // Get load order
-            var loadOrderListing = _GetStateLoadOrder.GetLoadOrder(userPrefs)
+            var loadOrderListing = _GetStateLoadOrder.GetLoadOrder(!settings.LoadOrderIncludesCreationClub, userPrefs)
                 .ToExtendedList();
             var rawLoadOrder = loadOrderListing.Select(x => new ModListing(x.ModKey, x.Enabled)).ToExtendedList();
 
-            // Trim past Synthesis.esp
+            // Trim past export key
             var synthIndex = loadOrderListing.IndexOf(exportKey, (listing, key) => listing.ModKey == key);
             if (synthIndex != -1)
             {

@@ -42,6 +42,10 @@ namespace Mutagen.Bethesda.Synthesis.CLI
         [Option('k', "ModKey", Required = false, HelpText = "ModKey associated with the patch being generated")]
         public string? ModKey { get; set; }
 
+        [Option("LoadOrderIncludesCreationClub", Required = false,
+            HelpText = "Whether the load order path file includes CC mods already")]
+        public bool LoadOrderIncludesCreationClub { get; set; } = true;
+
         public override string ToString()
         {
             return $"{nameof(RunSynthesisMutagenPatcher)} => \n"
@@ -53,6 +57,7 @@ namespace Mutagen.Bethesda.Synthesis.CLI
                 + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
                 + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}\n"
                 + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
+                + $"  {nameof(LoadOrderIncludesCreationClub)} => {this.LoadOrderIncludesCreationClub}\n"
                 + $"  {nameof(PatcherName)} => {this.PatcherName}\n"
                 + $"  {nameof(ModKey)} => {this.ModKey}";
         }

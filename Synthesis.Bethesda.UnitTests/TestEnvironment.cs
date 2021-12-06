@@ -2,6 +2,7 @@
 using System.IO.Abstractions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Installs.DI;
 using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Order.DI;
@@ -34,6 +35,7 @@ namespace Synthesis.Bethesda.UnitTests
         public GetStateLoadOrder GetStateLoadOrder()
         {
             var gameReleaseInjection = new GameReleaseInjection(Release);
+            var categoryContext = new GameCategoryContext(gameReleaseInjection);
             var dataDirectoryInjection = new DataDirectoryInjection(DataFolder);
             return new GetStateLoadOrder(
                 new ImplicitListingsProvider(
@@ -41,6 +43,17 @@ namespace Synthesis.Bethesda.UnitTests
                     dataDirectoryInjection,
                     new ImplicitListingModKeyProvider(
                         gameReleaseInjection)),
+                new OrderListings(),
+                new CreationClubListingsProvider(
+                    FileSystem,
+                    dataDirectoryInjection,
+                    new CreationClubListingsPathProvider(
+                        categoryContext,
+                        new CreationClubEnabledProvider(categoryContext),
+                        new GameDirectoryProvider(
+                            gameReleaseInjection,
+                            new GameLocator())),
+                    new CreationClubRawListingsReader()),
                 StatePluginListings());
         }
 

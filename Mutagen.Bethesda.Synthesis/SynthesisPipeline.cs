@@ -18,6 +18,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Installs;
+using Mutagen.Bethesda.Installs.DI;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using SynthesisBase = Synthesis.Bethesda;
 using Mutagen.Bethesda.Plugins.Binary.Parameters;
@@ -125,12 +126,25 @@ namespace Mutagen.Bethesda.Synthesis
             if (_runnabilityChecks.Count == 0) return Codes.NotNeeded;
             var patcher = _patchers.GetOrDefault(args.GameRelease.ToCategory());
             var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
+            var categoryContext = new GameCategoryContext(gameReleaseInjection);
+            var dataDir = new DataDirectoryInjection(args.DataFolderPath);
             var loadOrder = new GetStateLoadOrder(
                     new ImplicitListingsProvider(
                         fileSystem,
-                        new DataDirectoryInjection(args.DataFolderPath),
+                        dataDir,
                         new ImplicitListingModKeyProvider(
                             gameReleaseInjection)),
+                    new OrderListings(),
+                    new CreationClubListingsProvider(
+                        fileSystem,
+                        dataDir,
+                        new CreationClubListingsPathProvider(
+                            categoryContext,
+                            new CreationClubEnabledProvider(categoryContext),
+                            new GameDirectoryProvider(
+                                gameReleaseInjection,
+                                new GameLocator())),
+                        new CreationClubRawListingsReader()),
                     new StatePluginsListingProvider(
                         args.LoadOrderFilePath,
                         new PluginRawListingsReader(
@@ -139,7 +153,7 @@ namespace Mutagen.Bethesda.Synthesis
                                 new ModListingParser(
                                     new HasEnabledMarkersProvider(
                                         gameReleaseInjection))))))
-                .GetLoadOrder(patcher?.Prefs)
+                .GetLoadOrder(false, patcher?.Prefs)
                 .ToLoadOrder();
             var state = new RunnabilityState(args, loadOrder);
             try
@@ -498,6 +512,7 @@ namespace Mutagen.Bethesda.Synthesis
             System.Console.WriteLine("Prepping state.");
             var prefs = patcher.Prefs ?? new PatcherPreferences();
             var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
+            var categoryContext = new GameCategoryContext(gameReleaseInjection);
             var dataDirectoryInjection = new DataDirectoryInjection(args.DataFolderPath);
             var pluginRawListingsReader = new PluginRawListingsReader(
                 fileSystem,
@@ -515,6 +530,17 @@ namespace Mutagen.Bethesda.Synthesis
                         dataDirectoryInjection,
                         new ImplicitListingModKeyProvider(
                             gameReleaseInjection)),
+                    new OrderListings(),
+                    new CreationClubListingsProvider(
+                        fileSystem,
+                        dataDirectoryInjection,
+                        new CreationClubListingsPathProvider(
+                            categoryContext,
+                            new CreationClubEnabledProvider(categoryContext),
+                            new GameDirectoryProvider(
+                                gameReleaseInjection,
+                                new GameLocator())),
+                        new CreationClubRawListingsReader()),
                     new StatePluginsListingProvider(
                         args.LoadOrderFilePath,
                         pluginRawListingsReader)),
@@ -691,6 +717,7 @@ namespace Mutagen.Bethesda.Synthesis
                 LoadOrderFilePath = path.Path,
                 ExtraDataFolder = Path.GetFullPath("./Data"),
                 DefaultDataFolderPath = null,
+                LoadOrderIncludesCreationClub = false,
                 PatcherName = targetModKey.Name,
                 PersistencePath = "Persistence"
             };
