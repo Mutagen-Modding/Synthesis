@@ -57,17 +57,6 @@ namespace Synthesis.Bethesda.GUI.Services.Profile.Running
                 outputDir: outputDir,
                 persistenceMode: persistenceMode,
                 persistencePath: Path.Combine(_profileDirectories.ProfileDirectory, "Persistence")).ConfigureAwait(false);
-
-            if (_fileSystem.Directory.Exists(outputDir))
-            {
-                foreach (var patchPath in _fileSystem.Directory.EnumerateFilePaths(outputDir))
-                {
-                    var dataFolderPath = Path.Combine(_dataDirectoryProvider.Path, patchPath.Name);
-                    _fileSystem.File.Copy(patchPath, dataFolderPath, overwrite: true);
-                    _logger.Information("Copied {PatchName} to: {DataFolderPath}", patchPath.Name, dataFolderPath);
-                }
-            }
-            
         }
     }
 }
