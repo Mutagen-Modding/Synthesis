@@ -74,7 +74,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
             .AsObservableChangeSet();
 
         public SolutionPatcherVm(
-            GroupVm group,
             ILifetimeScope scope,
             IPatcherNameVm nameVm,
             IProfileLoadOrder loadOrder,

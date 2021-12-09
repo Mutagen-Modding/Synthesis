@@ -1,7 +1,6 @@
 using Noggog;
 using System.Diagnostics.CodeAnalysis;
 using Serilog;
-using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.Execution.Settings
@@ -9,8 +8,7 @@ namespace Synthesis.Bethesda.Execution.Settings
     [ExcludeFromCodeCoverage]
     public class SolutionPatcherSettings : PatcherSettings, 
         IPathToSolutionFileProvider, 
-        IProjectSubpathDefaultSettings,
-        IPatcherNameProvider
+        IProjectSubpathDefaultSettings
     {
         public FilePath SolutionPath { get; set; } = string.Empty;
         public string ProjectSubpath { get; set; } = string.Empty;
@@ -21,6 +19,5 @@ namespace Synthesis.Bethesda.Execution.Settings
         }
 
         FilePath IPathToSolutionFileProvider.Path => SolutionPath;
-        string IPatcherNameProvider.Name => Nickname;
     }
 }
