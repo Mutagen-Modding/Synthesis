@@ -11,6 +11,7 @@ namespace Synthesis.Bethesda.GUI.Settings
         string SelectedProfile { get; set; }
         string WorkingDirectory { get; set; }
         double BuildCorePercentage { get; set; }
+        string DotNetPathOverride { get; set; }
     }
 
     public record SynthesisGuiSettings : ISynthesisGuiSettings
@@ -22,5 +23,6 @@ namespace Synthesis.Bethesda.GUI.Settings
         public string SelectedProfile { get; set; } = string.Empty;
         public string WorkingDirectory { get; set; } = string.Empty;
         public double BuildCorePercentage { get; set; } = 0.5d;
+        public string DotNetPathOverride { get; set; } = string.Empty;
     }
 }

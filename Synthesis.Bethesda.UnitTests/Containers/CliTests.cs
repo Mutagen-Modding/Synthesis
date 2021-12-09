@@ -71,6 +71,7 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             builder.RegisterMock<IProfileIdentifier>();
             builder.RegisterMock<IPatcherIdProvider>();
             builder.RegisterMock<IShortCircuitSettingsProvider>();
+            builder.RegisterMock<IDotNetPathSettingsProvider>();
             builder.RegisterMock<SolutionPatcherSettings>()
                 .As<IPatcherNameProvider>()
                 .As<IPathToSolutionFileProvider>()
@@ -91,6 +92,7 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             builder.RegisterMock<IPatcherIdProvider>();
             builder.RegisterMock<IPatcherNameProvider>();
             builder.RegisterMock<IShortCircuitSettingsProvider>();
+            builder.RegisterMock<IDotNetPathSettingsProvider>();
             builder.RegisterMock<GithubPatcherSettings>()
                 .As<IGithubPatcherIdentifier>()
                 .As<IProjectSubpathProvider>();

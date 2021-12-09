@@ -9,12 +9,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
 
         public OpenProfileSettings(
             OpenGlobalSettings openGlobalSettings,
-            GlobalSettingsVm globalSettingsVm)
+            GlobalSettingsPaneVm globalSettingsPaneVm)
         {
             OpenCommand = ReactiveCommand.Create(() =>
             {
                 openGlobalSettings.Open();
-                globalSettingsVm.SelectedSettings = GlobalSettingsVm.SettingsPages.Profile;
+                globalSettingsPaneVm.SelectedSettings = GlobalSettingsPaneVm.SettingsPages.Profile;
             });
         }
     }

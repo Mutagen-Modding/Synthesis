@@ -1,66 +1,47 @@
-<local:GlobalSettingsViewBase
-    x:Class="Synthesis.Bethesda.GUI.Views.GlobalSettingsView"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
-    xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
-    mc:Ignorable="d">
-    <Grid>
-        <Button
-            x:Name="BackButton"
-            Margin="5,11,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            HorizontalContentAlignment="Stretch">
-            <icon:PackIconFontAwesome
-                Width="15"
-                Height="15"
-                Margin="7,0,0,0"
-                Kind="ArrowLeftSolid" />
-        </Button>
-        <TabControl x:Name="TabControl" Margin="0,5,0,0">
-            <TabControl.Resources>
-                <Style TargetType="TabPanel">
-                    <Setter Property="Margin" Value="40,0,0,0" />
-                </Style>
-            </TabControl.Resources>
-            <TabItem Header="General">
-                <StackPanel Margin="15" Orientation="Vertical">
-                    <StackPanel Margin="5" Orientation="Horizontal">
-                        <TextBlock
-                            Margin="0,0,10,0"
-                            VerticalAlignment="Center"
-                            Text="Num Processors" />
-                        <Slider
-                            x:Name="ProcessorPercentSlider"
-                            Width="200"
-                            VerticalAlignment="Center"
-                            Minimum="0"
-                            Maximum="1"
-                            ToolTip="The percentage of your total processors to use when building" />
-                        <TextBlock
-                            x:Name="ActiveProcessorsText"
-                            Margin="10,0"
-                            VerticalAlignment="Center"
-                            FontSize="14"
-                            FontWeight="Black"
-                            Text="Num Processors" />
-                    </StackPanel>
-                    <StackPanel Margin="5" Orientation="Horizontal">
-                        <CheckBox
-                            x:Name="ShortCircuitBox"
-                            Content="Short Circuit Checks"
-                            ToolTip="Whether to track and skip building and other meta gathering steps when deemed appropriate" />
-                    </StackPanel>
-                </StackPanel>
-            </TabItem>
-            <TabItem Header="Profiles">
-                <local:ProfilesView x:Name="ProfilesView" />
-            </TabItem>
-        </TabControl>
-    </Grid>
+﻿<local:GlobalSettingsViewBase x:Class="Synthesis.Bethesda.GUI.Views.GlobalSettingsView"
+                                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                  xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                                  xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
+                                  mc:Ignorable="d"
+                                  d:DesignHeight="300" d:DesignWidth="300">
+    <StackPanel Margin="15" Orientation="Vertical">
+        <TextBlock Text="Processing" Style="{StaticResource SettingSectionHeaderStyle}" Margin="0,0,0,5" />
+        <StackPanel Orientation="Vertical" Margin="15,5,5,5">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock
+                    Margin="0,0,10,0"
+                    VerticalAlignment="Center"
+                    Text="Num Processors" />
+                <Slider
+                    x:Name="ProcessorPercentSlider"
+                    Width="200"
+                    VerticalAlignment="Center"
+                    Minimum="0"
+                    Maximum="1"
+                    ToolTip="The percentage of your total processors to use when building" />
+                <TextBlock
+                    x:Name="ActiveProcessorsText"
+                    Margin="10,0"
+                    VerticalAlignment="Center"
+                    Text="Num Processors" />
+            </StackPanel>
+            <StackPanel Margin="5" Orientation="Horizontal">
+                <CheckBox
+                    x:Name="ShortCircuitBox"
+                    Content="Short Circuit Checks"
+                    ToolTip="Whether to track and skip building and other meta gathering steps when deemed appropriate" />
+            </StackPanel>
+        </StackPanel>
+        <TextBlock Text="Pathing" Style="{StaticResource SettingSectionHeaderStyle}" Margin="0,25,0,5" />
+        <StackPanel Orientation="Vertical" Margin="15,5,5,5">
+            <TextBlock
+                Text="DotNet path" />
+            <TextBox x:Name="DotNetPathOverrideBox"
+                     mahapps:TextBoxHelper.Watermark="Default pathing">
+            </TextBox>
+        </StackPanel>
+    </StackPanel>
 </local:GlobalSettingsViewBase>

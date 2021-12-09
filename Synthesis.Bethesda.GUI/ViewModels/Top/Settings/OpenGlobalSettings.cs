@@ -5,24 +5,24 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
 {
     public class OpenGlobalSettings
     {
-        private readonly GlobalSettingsVm _globalSettingsVm;
+        private readonly GlobalSettingsPaneVm _globalSettingsPaneVm;
         private readonly IActivePanelControllerVm _activePanelControllerVm;
         public ICommand OpenCommand { get; }
 
         public OpenGlobalSettings(
-            GlobalSettingsVm globalSettingsVm,
+            GlobalSettingsPaneVm globalSettingsPaneVm,
             IActivePanelControllerVm activePanelControllerVm)
         {
-            _globalSettingsVm = globalSettingsVm;
+            _globalSettingsPaneVm = globalSettingsPaneVm;
             _activePanelControllerVm = activePanelControllerVm;
             OpenCommand = ReactiveCommand.Create(Open);
         }
 
         public void Open()
         {
-            _globalSettingsVm.SelectedSettings = GlobalSettingsVm.SettingsPages.General;
-            _globalSettingsVm.SetPrevious(_activePanelControllerVm.ActivePanel);
-            _activePanelControllerVm.ActivePanel = _globalSettingsVm;
+            _globalSettingsPaneVm.SelectedSettings = GlobalSettingsPaneVm.SettingsPages.General;
+            _globalSettingsPaneVm.SetPrevious(_activePanelControllerVm.ActivePanel);
+            _activePanelControllerVm.ActivePanel = _globalSettingsPaneVm;
         }
     }
 }

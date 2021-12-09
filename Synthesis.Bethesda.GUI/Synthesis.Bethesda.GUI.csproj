@@ -109,6 +109,10 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Page</BuildAction>
     </Page>
+    <Page Update="Views\Config\GlobalSettingsView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
   </ItemGroup>
   
   <ItemGroup>
@@ -163,7 +167,7 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
-    <Compile Update="ViewModels\Top\Settings\GlobalSettingsVm.cs">
+    <Compile Update="ViewModels\Top\Settings\GlobalSettingsPaneVm.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
@@ -179,6 +183,11 @@
       <BuildAction>Compile</BuildAction>
     </Compile>
     <Compile Update="Services\Profile\TopLevel\ConsiderPrereleasePreference.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Views\Config\GlobalSettingsView.xaml.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>

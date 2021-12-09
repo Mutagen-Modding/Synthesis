@@ -26,8 +26,8 @@
                 <DataTemplate DataType="{x:Type settings:ProfilesDisplayVm}">
                     <local:ProfilesView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type settings:GlobalSettingsVm}">
-                    <local:GlobalSettingsView />
+                <DataTemplate DataType="{x:Type settings:GlobalSettingsPaneVm}">
+                    <local:GlobalSettingsPaneView />
                 </DataTemplate>
             </ContentPresenter.Resources>
         </ContentPresenter>

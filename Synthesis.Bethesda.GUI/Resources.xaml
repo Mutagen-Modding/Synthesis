@@ -75,4 +75,8 @@
             </MultiDataTrigger>
         </Style.Triggers>
     </Style>
+    <Style x:Key="SettingSectionHeaderStyle" TargetType="TextBlock" >
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
 </ResourceDictionary>

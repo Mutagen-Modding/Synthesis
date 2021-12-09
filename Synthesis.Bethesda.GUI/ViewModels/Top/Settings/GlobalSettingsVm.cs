@@ -1,32 +1,21 @@
-using System;
+﻿using System;
 using System.Reactive.Linq;
-using System.Windows.Input;
-using Noggog.WPF;
 using Noggog;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.Settings;
+using Noggog.WPF;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.WorkEngine;
-using Synthesis.Bethesda.GUI.Settings;
-using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
 {
-    public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider
+    public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider, IDotNetPathSettingsProvider
     {
-        public enum SettingsPages
-        {
-            General,
-            Profile
-        };
+        [Reactive] public bool Shortcircuit { get; set; }
 
-        public ICommand GoBackCommand { get; }
-        
-        [Reactive] public SettingsPages SelectedSettings { get; set; }
-
-        private ViewModel? _previous;
-
-        public ProfilesDisplayVm Profiles { get; }
+        [Reactive] public string DotNetPathOverride { get; set; }
 
         private readonly ObservableAsPropertyHelper<byte> _buildCores;
         public byte BuildCores => _buildCores.Value;
@@ -35,30 +24,22 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
 
         public byte NumProcessors { get; }
 
-        [Reactive] public bool Shortcircuit { get; set; }
-
         public GlobalSettingsVm(
-            ProfilesDisplayVm profilesDisplayVm,
-            ISettingsSingleton settingsSingleton,
             ISaveSignal saveSignal,
             IWorkConsumerSettings workConsumerSettings,
-            IActivePanelControllerVm activePanelController)
+            ISettingsSingleton settingsSingleton)
         {
-            GoBackCommand = ReactiveCommand.Create(() =>
-            {
-                activePanelController.ActivePanel = _previous;
-            });
-            Profiles = profilesDisplayVm;
-            BuildCorePercentage = settingsSingleton.Gui.BuildCorePercentage;
-            NumProcessors = (byte)Math.Min(byte.MaxValue, Environment.ProcessorCount);
             Shortcircuit = settingsSingleton.Pipeline.Shortcircuit;
+            DotNetPathOverride = settingsSingleton.Gui.DotNetPathOverride;
+            BuildCorePercentage = settingsSingleton.Gui.BuildCorePercentage;
+            
+            NumProcessors = (byte)Math.Min(byte.MaxValue, Environment.ProcessorCount);
 
             _buildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
                 .Select(x => (byte)Math.Min(byte.MaxValue, Environment.ProcessorCount * Percent.FactoryPutInRange(x)))
                 .ToGuiProperty(this, nameof(BuildCores), deferSubscription: true);
             
-            this.WhenAnyValue(x => x.BuildCores)
-                .Subscribe(x => workConsumerSettings.SetNumThreads(x))
+            ObservableExtensions.Subscribe(this.WhenAnyValue(x => x.BuildCores), x => workConsumerSettings.SetNumThreads(x))
                 .DisposeWith(this);
             
             saveSignal.Saving
@@ -70,14 +51,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
                 .DisposeWith(this);
         }
 
-        public void SetPrevious(ViewModel? previous)
-        {
-            _previous = previous;
-        }
-
         private void Save(SynthesisGuiSettings settings)
         {
             settings.BuildCorePercentage = BuildCorePercentage;
+            settings.DotNetPathOverride = DotNetPathOverride;
         }
 
         private void Save(IPipelineSettings settings)

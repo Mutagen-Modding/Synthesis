@@ -113,8 +113,7 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"
                     Margin="0,8,0,0"
-                    FontSize="14"
-                    FontWeight="Bold"
+                    Style="{StaticResource SettingSectionHeaderStyle}"
                     Text="Nuget Versions" />
                 <local:NugetsVersioningView Grid.Row="1"
                     x:Name="Nugets"
@@ -148,8 +147,7 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"
                     Margin="0,16,0,0"
-                    FontSize="14"
-                    FontWeight="Bold"
+                    Style="{StaticResource SettingSectionHeaderStyle}"
                     Text="Data Folder Location" />
                 <TextBox Grid.Row="1"
                     x:Name="DataFolderOverrideBox"
@@ -164,8 +162,7 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"
                     Margin="0,16,0,0"
-                    FontSize="14"
-                    FontWeight="Bold"
+                    Style="{StaticResource SettingSectionHeaderStyle}"
                     Text="FormID Persistence" />
                 <ComboBox Grid.Row="1"
                     x:Name="PersistenceStyleSelector"
@@ -180,8 +177,7 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"
                            Margin="0,16,0,0"
-                           FontSize="14"
-                           FontWeight="Bold"
+                           Style="{StaticResource SettingSectionHeaderStyle}"
                            Text="Other" />
                 <CheckBox Grid.Row="1"
                           x:Name="IgnoreMissingModsCheckbox"
