@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -15,6 +16,7 @@ using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.Patchers.Git.Registry;
+using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
@@ -29,6 +31,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
         private readonly IPatcherInitializationVm _init;
         private readonly IPatcherFactory _patcherFactory;
         private readonly PatcherInitRenameValidator _renamer;
+        private readonly IPathSanitation _pathSanitation;
 
         public ICommand CompleteConfiguration => _init.CompleteConfiguration;
         public ICommand CancelConfiguration => _init.CancelConfiguration;
@@ -71,6 +74,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             ILogger logger,
             IPatcherFactory patcherFactory,
             INavigateTo navigateTo, 
+            IPathSanitation pathSanitation,
             PatcherStoreListingVm.Factory listingVmFactory,
             IRegistryListingsProvider listingsProvider,
             PatcherInitRenameValidator renamer)
@@ -78,6 +82,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             _init = init;
             _patcherFactory = patcherFactory;
             _renamer = renamer;
+            _pathSanitation = pathSanitation;
             Patcher = patcherFactory.GetGitPatcher();
 
             _canCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid.Valid)
@@ -165,7 +170,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             var patcher = _patcherFactory.GetGitPatcher(new GithubPatcherSettings()
             {
                 RemoteRepoPath = listing.RepoPath,
-                SelectedProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')
+                SelectedProjectSubpath = _pathSanitation.Sanitize(listing.Raw.ProjectPath)
             });
             if (await _renamer.ConfirmNameUnique(patcher))
             {
