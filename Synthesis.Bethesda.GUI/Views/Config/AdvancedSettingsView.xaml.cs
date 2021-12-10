@@ -8,11 +8,11 @@ using Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class GlobalSettingsViewBase : NoggogUserControl<GlobalSettingsVm> { }
+    public class AdvancedSettingsViewBase : NoggogUserControl<GlobalSettingsVm> { }
     
-    public partial class GlobalSettingsView : GlobalSettingsViewBase
+    public partial class AdvancedSettingsView : AdvancedSettingsViewBase
     {
-        public GlobalSettingsView()
+        public AdvancedSettingsView()
         {
             InitializeComponent();
             this.WhenActivated(dispose =>

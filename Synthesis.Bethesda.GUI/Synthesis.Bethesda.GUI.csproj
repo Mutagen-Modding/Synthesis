@@ -109,7 +109,7 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Page</BuildAction>
     </Page>
-    <Page Update="Views\Config\GlobalSettingsView.xaml">
+    <Page Update="Views\Config\AdvancedSettingsView.xaml">
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Page</BuildAction>
     </Page>
@@ -187,7 +187,7 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
-    <Compile Update="Views\Config\GlobalSettingsView.xaml.cs">
+    <Compile Update="Views\Config\AdvancedSettingsView.xaml.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>

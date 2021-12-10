@@ -1,4 +1,4 @@
-﻿<local:GlobalSettingsViewBase x:Class="Synthesis.Bethesda.GUI.Views.GlobalSettingsView"
+﻿<local:AdvancedSettingsViewBase x:Class="Synthesis.Bethesda.GUI.Views.AdvancedSettingsView"
                                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -44,4 +44,4 @@
             </TextBox>
         </StackPanel>
     </StackPanel>
-</local:GlobalSettingsViewBase>
+</local:AdvancedSettingsViewBase>

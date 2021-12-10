@@ -9,8 +9,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
     {
         public enum SettingsPages
         {
-            General,
-            Profile
+            Profile,
+            Advanced,
         };
 
         public ICommand GoBackCommand { get; }

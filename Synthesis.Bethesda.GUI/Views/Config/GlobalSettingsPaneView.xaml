@@ -28,11 +28,11 @@
                     <Setter Property="Margin" Value="40,0,0,0" />
                 </Style>
             </TabControl.Resources>
-            <TabItem Header="General">
-                <local:GlobalSettingsView x:Name="GlobalSettingsView" />
-            </TabItem>
             <TabItem Header="Profiles">
                 <local:ProfilesView x:Name="ProfilesView" />
+            </TabItem>
+            <TabItem Header="Advanced">
+                <local:AdvancedSettingsView x:Name="AdvancedSettingsView" />
             </TabItem>
         </TabControl>
     </Grid>

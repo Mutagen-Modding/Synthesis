@@ -21,7 +21,7 @@ namespace Synthesis.Bethesda.GUI.Views
             {
                 this.OneWayBind(ViewModel, x => x.Profiles, x => x.ProfilesView.DataContext)
                     .DisposeWith(dispose);
-                this.OneWayBind(ViewModel, x => x.GlobalSettingsVm, x => x.GlobalSettingsView.DataContext)
+                this.OneWayBind(ViewModel, x => x.GlobalSettingsVm, x => x.AdvancedSettingsView.DataContext)
                     .DisposeWith(dispose);
                 this.OneWayBind(ViewModel, x => x.GoBackCommand, x => x.BackButton.Command)
                     .DisposeWith(dispose);
