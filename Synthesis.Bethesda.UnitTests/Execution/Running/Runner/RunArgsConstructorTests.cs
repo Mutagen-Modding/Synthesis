@@ -39,34 +39,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         }
         
         [Theory, SynthAutoData]
-        public void OutputPathShouldContainIndex(
-            IPatcherRun patcher,
-            ModKey outputKey,
-            FilePath? sourcePath,
-            string? persistencePath,
-            RunArgsConstructor sut)
-        {
-            var index = 5;
-            patcher.Index.Returns(index);
-            var result = sut.GetArgs(patcher, outputKey, sourcePath, persistencePath);
-            result.OutputPath.Name.String.Should().Contain(index.ToString());
-        }
-        
-        [Theory, SynthAutoData]
-        public void OutputPathShouldContainsSanitizedName(
-            IPatcherRun patcher,
-            ModKey outputKey,
-            FilePath? sourcePath,
-            string? persistencePath,
-            string sanitize,
-            RunArgsConstructor sut)
-        {
-            sut.PatcherNameSanitizer.Sanitize(default!).ReturnsForAnyArgs(sanitize);
-            var result = sut.GetArgs(patcher, outputKey, sourcePath, persistencePath);
-            result.OutputPath.Name.String.Should().Contain(sanitize);
-        }
-        
-        [Theory, SynthAutoData]
         public void PatcherNameShouldBeSanitizedName(
             IPatcherRun patcher,
             ModKey outputKey,

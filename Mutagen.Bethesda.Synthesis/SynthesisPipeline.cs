@@ -545,18 +545,20 @@ namespace Mutagen.Bethesda.Synthesis
                 new EnableImplicitMastersFactory(fileSystem));
             exportKey = exportKey == null || exportKey.Value.IsNull ? SynthesisBase.Constants.SynthesisModKey : exportKey.Value;
             using var state = stateFactory.ToState(cat, args, prefs, exportKey.Value);
-            await patcher.Patcher(state).ConfigureAwait(false);
             System.Console.WriteLine("Running patch.");
-            if (!prefs.NoPatch)
-            {
-                System.Console.WriteLine($"Writing to output: {args.OutputPath}");
+            await patcher.Patcher(state).ConfigureAwait(false);
+            System.Console.WriteLine("Finished patch.");
+            if (prefs.NoPatch) return;
+            System.Console.WriteLine($"Writing to output: {args.OutputPath}");
 
-                if (state.PatchMod.CanUseLocalization)
-                {
-                    state.PatchMod.UsingLocalization = true;
-                }
-                state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)), fileSystem: fileSystem);
+            if (state.PatchMod.CanUseLocalization)
+            {
+                state.PatchMod.UsingLocalization = true;
             }
+
+            Directory.CreateDirectory(Path.GetDirectoryName(args.OutputPath)!);
+            
+            state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)), fileSystem: fileSystem);
         }
         #endregion
 

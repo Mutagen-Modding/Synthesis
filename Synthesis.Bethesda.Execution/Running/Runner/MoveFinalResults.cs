@@ -10,7 +10,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     {
         void Move(
             FilePath finalPatch,
-            FilePath outputPath);
+            DirectoryPath outputPath);
     }
 
     public class MoveFinalResults : IMoveFinalResults
@@ -31,23 +31,18 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         
         public void Move(
             FilePath finalPatch,
-            FilePath outputPath)
+            DirectoryPath outputPath)
         {
-            if (FileSystem.File.Exists(outputPath))
+            if (!FileSystem.Directory.Exists(outputPath))
             {
-                FileSystem.File.Delete(outputPath);
-            }
-
-            if (!FileSystem.Directory.Exists(outputPath.Directory))
-            {
-                FileSystem.Directory.CreateDirectory(outputPath.Directory);
+                FileSystem.Directory.CreateDirectory(outputPath);
             }
             
-            var dataFolderPath = Path.Combine(_dataDirectoryProvider.Path, outputPath.Name);
+            var finalPathFolder = finalPatch.Directory;
             
-            FileSystem.File.Copy(finalPatch.Path, outputPath);
+            FileSystem.Directory.DeepCopy(finalPathFolder!.Value.Path, outputPath);
             _reporter.Write(default!, default, $"Exported patch to workspace: {outputPath}");
-            FileSystem.File.Copy(finalPatch.Path, dataFolderPath, overwrite: true);
+            FileSystem.Directory.DeepCopy(finalPathFolder.Value.Path, _dataDirectoryProvider.Path, overwrite: true);
             _reporter.Write(default!, default, $"Exported patch to final destination: {outputPath}");
         }
     }

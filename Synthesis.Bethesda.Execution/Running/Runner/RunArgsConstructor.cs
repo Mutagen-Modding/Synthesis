@@ -49,7 +49,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         {
             var fileName = PatcherNameSanitizer.Sanitize(patcher.Name);
             var nextPath = new FilePath(
-                Path.Combine(ProfileDirectories.WorkingDirectory, $"{patcher.Index} - {fileName}"));
+                Path.Combine(ProfileDirectories.WorkingDirectory, $"{patcher.Index} - {fileName}", outputKey.FileName));
 
             return new RunSynthesisPatcher()
             {

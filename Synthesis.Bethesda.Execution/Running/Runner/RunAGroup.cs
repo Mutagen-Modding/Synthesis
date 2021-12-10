@@ -60,17 +60,17 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             
             await GroupRunPreparer.Prepare(groupRun.ModKey, groupRun.BlacklistedMods, persistenceMode, persistencePath).ConfigureAwait(false);
 
-            sourcePath = await RunSomePatchers.Run(
+            var finalPath = await RunSomePatchers.Run(
                 groupRun.ModKey,
                 groupRun.Patchers,
                 cancellation,
                 sourcePath,
                 persistenceMode == PersistenceMode.None ? null : persistencePath).ConfigureAwait(false);
 
-            if (sourcePath == null) return false;
+            if (finalPath == null) return false;
 
             cancellation.ThrowIfCancellationRequested();
-            MoveFinalResults.Move(sourcePath.Value, Path.Combine(outputDir.Path, groupRun.ModKey.FileName));
+            MoveFinalResults.Move(finalPath.Value, outputDir);
             return true;
         }
     }
