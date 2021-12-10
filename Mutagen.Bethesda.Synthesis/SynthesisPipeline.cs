@@ -75,7 +75,7 @@ namespace Mutagen.Bethesda.Synthesis
             where TModGetter : class, IContextGetterMod<TMod, TModGetter>
         {
             var cata = GameCategoryHelper.FromModType<TModGetter>();
-            if (_patchers.TryGetValue(cata, out var _))
+            if (_patchers.TryGetValue(cata, out _))
             {
                 throw new ArgumentException($"Cannot add two patch callbacks for the same game category: {cata}");
             }
@@ -513,13 +513,6 @@ namespace Mutagen.Bethesda.Synthesis
             var prefs = patcher.Prefs ?? new PatcherPreferences();
             var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
             var categoryContext = new GameCategoryContext(gameReleaseInjection);
-            var dataDirectoryInjection = new DataDirectoryInjection(args.DataFolderPath);
-            var pluginRawListingsReader = new PluginRawListingsReader(
-                fileSystem,
-                new PluginListingsParser(
-                    new ModListingParser(
-                        new HasEnabledMarkersProvider(
-                            gameReleaseInjection))));
             var stateFactory = new StateFactory(
                 fileSystem,
                 new LoadOrderImporterFactory(
@@ -527,13 +520,13 @@ namespace Mutagen.Bethesda.Synthesis
                 new GetStateLoadOrder(
                     new ImplicitListingsProvider(
                         fileSystem,
-                        dataDirectoryInjection,
+                        new DataDirectoryInjection(args.DataFolderPath),
                         new ImplicitListingModKeyProvider(
                             gameReleaseInjection)),
                     new OrderListings(),
                     new CreationClubListingsProvider(
                         fileSystem,
-                        dataDirectoryInjection,
+                        new DataDirectoryInjection(args.DataFolderPath),
                         new CreationClubListingsPathProvider(
                             categoryContext,
                             new CreationClubEnabledProvider(categoryContext),
@@ -543,7 +536,12 @@ namespace Mutagen.Bethesda.Synthesis
                         new CreationClubRawListingsReader()),
                     new StatePluginsListingProvider(
                         args.LoadOrderFilePath,
-                        pluginRawListingsReader)),
+                        new PluginRawListingsReader(
+                            fileSystem,
+                            new PluginListingsParser(
+                                new ModListingParser(
+                                    new HasEnabledMarkersProvider(
+                                        gameReleaseInjection)))))),
                 new EnableImplicitMastersFactory(fileSystem));
             exportKey = exportKey == null || exportKey.Value.IsNull ? SynthesisBase.Constants.SynthesisModKey : exportKey.Value;
             using var state = stateFactory.ToState(cat, args, prefs, exportKey.Value);

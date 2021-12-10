@@ -32,10 +32,10 @@ namespace Mutagen.Bethesda.Synthesis
         IModGetter IPatcherState.PatchMod => PatchMod;
 
         /// <inheritdoc />
-        public CancellationToken Cancel { get; } = CancellationToken.None;
+        public CancellationToken Cancel { get; }
 
         /// <inheritdoc />
-        public string ExtraSettingsDataPath { get; } = string.Empty;
+        public string ExtraSettingsDataPath { get; }
 
         /// <inheritdoc />
         public string? DefaultSettingsDataPath { get; }
@@ -55,10 +55,9 @@ namespace Mutagen.Bethesda.Synthesis
         /// <inheritdoc />
         public string? SourcePath { get; }
 
-        // <inheritdoc />
-        IFormKeyAllocator? IPatcherState.FormKeyAllocator => FormKeyAllocator;
+        IFormKeyAllocator? IPatcherState.FormKeyAllocator => _formKeyAllocator;
 
-        private readonly IFormKeyAllocator? FormKeyAllocator;
+        private readonly IFormKeyAllocator? _formKeyAllocator;
 
         public SynthesisState(
             RunSynthesisMutagenPatcher runArguments,
@@ -83,14 +82,16 @@ namespace Mutagen.Bethesda.Synthesis
             GameRelease = runArguments.GameRelease;
             OutputPath = runArguments.OutputPath;
             SourcePath = runArguments.SourcePath;
-            FormKeyAllocator = formKeyAllocator;
+            _formKeyAllocator = formKeyAllocator;
         }
 
         public void Dispose()
         {
             LoadOrder.Dispose();
-            if (FormKeyAllocator is IDisposable PersistentFormKeyAllocator)
-                PersistentFormKeyAllocator.Dispose();
+            if (_formKeyAllocator is IDisposable disp)
+            {
+                disp.Dispose();
+            }
         }
     }
 }

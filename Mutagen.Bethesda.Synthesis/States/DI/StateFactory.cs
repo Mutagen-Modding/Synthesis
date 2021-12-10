@@ -24,10 +24,10 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
 
     public class StateFactory : IStateFactory
     {
-        private readonly IFileSystem _FileSystem;
-        private readonly ILoadOrderImporterFactory _LoadOrderImporter;
-        private readonly IGetStateLoadOrder _GetStateLoadOrder;
-        private readonly IEnableImplicitMastersFactory _EnableImplicitMasters;
+        private readonly IFileSystem _fileSystem;
+        private readonly ILoadOrderImporterFactory _loadOrderImporter;
+        private readonly IGetStateLoadOrder _getStateLoadOrder;
+        private readonly IEnableImplicitMastersFactory _enableImplicitMasters;
 
         public StateFactory(
             IFileSystem fileSystem,
@@ -35,10 +35,10 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
             IGetStateLoadOrder getStateLoadOrder,
             IEnableImplicitMastersFactory enableImplicitMasters)
         {
-            _FileSystem = fileSystem;
-            _LoadOrderImporter = loadOrderImporter;
-            _GetStateLoadOrder = getStateLoadOrder;
-            _EnableImplicitMasters = enableImplicitMasters;
+            _fileSystem = fileSystem;
+            _loadOrderImporter = loadOrderImporter;
+            _getStateLoadOrder = getStateLoadOrder;
+            _enableImplicitMasters = enableImplicitMasters;
         }
         
         public SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
@@ -57,7 +57,7 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
             }
 
             // Get load order
-            var loadOrderListing = _GetStateLoadOrder.GetLoadOrder(!settings.LoadOrderIncludesCreationClub, userPrefs)
+            var loadOrderListing = _getStateLoadOrder.GetLoadOrder(!settings.LoadOrderIncludesCreationClub, userPrefs)
                 .ToExtendedList();
             var rawLoadOrder = loadOrderListing.Select(x => new ModListing(x.ModKey, x.Enabled)).ToExtendedList();
 
@@ -70,7 +70,7 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
 
             if (userPrefs.AddImplicitMasters)
             {
-                _EnableImplicitMasters
+                _enableImplicitMasters
                     .Get(settings.DataFolderPath, settings.GameRelease)
                     .Add(loadOrderListing);
             }
@@ -81,7 +81,7 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
                 loadOrderListing = loadOrderListing.OnlyEnabled().ToExtendedList();
             }
 
-            var loadOrder = _LoadOrderImporter
+            var loadOrder = _loadOrderImporter
                 .Get<TModGetter>(
                     settings.DataFolderPath,
                     loadOrderListing,
@@ -104,7 +104,7 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
                 }
                 else
                 {
-                    readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease, fileSystem: _FileSystem);
+                    readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease, fileSystem: _fileSystem);
                 }
                 loadOrder.Add(new ModListing<TModGetter>(readOnlyPatchMod, enabled: true));
                 rawLoadOrder.Add(new ModListing(readOnlyPatchMod.ModKey, enabled: true));
@@ -118,14 +118,14 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
                 }
                 else
                 {
-                    patchMod = ModInstantiator<TModSetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease, fileSystem: _FileSystem);
+                    patchMod = ModInstantiator<TModSetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease, fileSystem: _fileSystem);
                 }
                 if (settings.PersistencePath is not null && settings.PatcherName is not null)
                 {
                     if (TextFileSharedFormKeyAllocator.IsPathOfAllocatorType(settings.PersistencePath))
                     {
                         System.Console.WriteLine($"Using {nameof(TextFileSharedFormKeyAllocator)} allocator");
-                        patchMod.SetAllocator(formKeyAllocator = new TextFileSharedFormKeyAllocator(patchMod, settings.PersistencePath, settings.PatcherName, fileSystem: _FileSystem));
+                        patchMod.SetAllocator(formKeyAllocator = new TextFileSharedFormKeyAllocator(patchMod, settings.PersistencePath, settings.PatcherName, fileSystem: _fileSystem));
                     }
                     //else if (SQLiteFormKeyAllocator.IsPathOfAllocatorType(settings.PersistencePath))
                     //{
@@ -157,7 +157,8 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
         public IPatcherState ToState(GameCategory category, RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
         {
             var regis = category.ToModRegistration();
-            var method = typeof(StateFactory).GetMethods()
+            var method = typeof(StateFactory)
+                .GetMethods()
                 .Where(m => m.Name == nameof(ToState))
                 .Where(m => m.ContainsGenericParameters)
                 .First()
