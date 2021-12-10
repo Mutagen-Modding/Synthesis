@@ -96,8 +96,19 @@ namespace Synthesis.Bethesda.Execution.Utility
                 startInfo.FileName,
                 startInfo.Arguments);
             using var outSub = proc.Output.Subscribe(outputCallback);
-            using var errSub = proc.Error.Subscribe(errorCallback);
-            return await proc.Run().ConfigureAwait(false);
+            List<string> errs = new();
+            using var errSub = proc.Error.Subscribe(errs.Add);
+            try
+            {
+                return await proc.Run().ConfigureAwait(false);
+            }
+            finally
+            {
+                foreach (var err in errs)
+                {
+                    errorCallback(err);
+                }
+            }
         }
 
         public async Task<int> RunWithCallback(
