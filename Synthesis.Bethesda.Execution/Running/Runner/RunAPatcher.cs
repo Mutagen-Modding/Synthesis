@@ -24,17 +24,20 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     {
         private readonly ILogger _logger;
         private readonly IRunReporter _reporter;
+        private readonly IFileSystem _fs;
         public IFinalizePatcherRun FinalizePatcherRun { get; }
         public IRunArgsConstructor GetRunArgs { get; }
 
         public RunAPatcher(
             ILogger logger,
             IRunReporter reporter,
+            IFileSystem fs,
             IFinalizePatcherRun finalizePatcherRun,
             IRunArgsConstructor getRunArgs)
         {
             _logger = logger;
             _reporter = reporter;
+            _fs = fs;
             FinalizePatcherRun = finalizePatcherRun;
             GetRunArgs = getRunArgs;
         }
@@ -57,6 +60,8 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                     outputKey,
                     sourcePath,
                     persistencePath);
+
+                _fs.Directory.CreateDirectory(args.OutputPath.Directory!);
                 
                 _logger.Information("================= Starting Patcher {Patcher} Run =================", prepBundle.Run.Name);
 
