@@ -7,6 +7,7 @@ using NSubstitute;
 using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Running.Cli;
+using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
@@ -25,7 +26,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
             await sut.Run(cancel);
             await sut.ExecuteRun.Received(1).Run(
                 groupRuns, Arg.Any<CancellationToken>(), Arg.Any<DirectoryPath>(),
-                Arg.Any<FilePath?>(), Arg.Any<PersistenceMode>(), Arg.Any<string?>());
+                Arg.Any<RunParameters>(), Arg.Any<FilePath?>());
         }
         
         [Theory, SynthAutoData]
@@ -39,9 +40,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
                 Arg.Any<IGroupRun[]>(),
                 Arg.Any<CancellationToken>(),
                 outputDir: sut.Instructions.OutputDirectory,
-                sourcePath: sut.Instructions.SourcePath,
-                persistenceMode: sut.Instructions.PersistenceMode.Value, 
-                persistencePath: sut.Instructions.PersistencePath);
+                runParameters: new RunParameters(
+                    sut.Instructions.PersistenceMode.Value,
+                    sut.Instructions.PersistencePath),
+                sourcePath: sut.Instructions.SourcePath);
         }
         
         [Theory, SynthAutoData]
@@ -53,7 +55,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
             await sut.Run(cancel);
             await sut.ExecuteRun.Received(1).Run(
                 Arg.Any<IGroupRun[]>(), Arg.Any<CancellationToken>(), Arg.Any<DirectoryPath>(),
-                Arg.Any<FilePath?>(), PersistenceMode.None, Arg.Any<string?>());
+                Arg.Any<RunParameters>(), Arg.Any<FilePath?>());
         }
     }
 }

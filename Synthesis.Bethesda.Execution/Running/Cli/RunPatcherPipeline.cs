@@ -36,8 +36,9 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
                     sourcePath: Instructions.SourcePath,
                     outputDir: Instructions.OutputDirectory,
                     cancel: cancel,
-                    persistenceMode: Instructions.PersistenceMode ?? PersistenceMode.None,
-                    persistencePath: Instructions.PersistencePath).ConfigureAwait(false);
+                    runParameters: new RunParameters(
+                        Instructions.PersistenceMode ?? PersistenceMode.None, 
+                        Instructions.PersistencePath)).ConfigureAwait(false);
         }
     }
 }

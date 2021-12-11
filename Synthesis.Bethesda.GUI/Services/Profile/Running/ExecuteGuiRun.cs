@@ -24,20 +24,17 @@ namespace Synthesis.Bethesda.GUI.Services.Profile.Running
 
     public class ExecuteGuiRun : IExecuteGuiRun
     {
-        private readonly ILogger _logger;
         private readonly IFileSystem _fileSystem;
         private readonly IExecuteRun _executeRun;
         private readonly IDataDirectoryProvider _dataDirectoryProvider;
         private readonly IProfileDirectories _profileDirectories;
 
         public ExecuteGuiRun(
-            ILogger logger,
             IFileSystem fileSystem,
             IExecuteRun executeRun,
             IDataDirectoryProvider dataDirectoryProvider,
             IProfileDirectories profileDirectories)
         {
-            _logger = logger;
             _fileSystem = fileSystem;
             _executeRun = executeRun;
             _dataDirectoryProvider = dataDirectoryProvider;
@@ -55,8 +52,9 @@ namespace Synthesis.Bethesda.GUI.Services.Profile.Running
                 groups: groupRuns.ToArray(),
                 cancel: cancel,
                 outputDir: outputDir,
-                persistenceMode: persistenceMode,
-                persistencePath: Path.Combine(_profileDirectories.ProfileDirectory, "Persistence")).ConfigureAwait(false);
+                runParameters: new RunParameters(
+                    persistenceMode,
+                    Path.Combine(_profileDirectories.ProfileDirectory, "Persistence"))).ConfigureAwait(false);
         }
     }
 }

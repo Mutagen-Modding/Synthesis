@@ -16,9 +16,8 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             IGroupRun groupRun,
             CancellationToken cancellation,
             DirectoryPath outputDir,
-            FilePath? sourcePath = null,
-            PersistenceMode persistenceMode = PersistenceMode.None,
-            string? persistencePath = null);
+            RunParameters runParameters,
+            FilePath? sourcePath = null);
     }
 
     public class RunAGroup : IRunAGroup
@@ -44,9 +43,8 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             IGroupRun groupRun,
             CancellationToken cancellation,
             DirectoryPath outputDir,
-            FilePath? sourcePath = null,
-            PersistenceMode persistenceMode = PersistenceMode.None,
-            string? persistencePath = null)
+            RunParameters runParameters,
+            FilePath? sourcePath = null)
         {
             _logger.Information("================= Starting Group {Group} Run =================", groupRun.ModKey.Name);
             if (groupRun.BlacklistedMods.Count > 0)
@@ -58,14 +56,18 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 }
             }
             
-            await GroupRunPreparer.Prepare(groupRun.ModKey, groupRun.BlacklistedMods, persistenceMode, persistencePath).ConfigureAwait(false);
+            await GroupRunPreparer.Prepare(
+                groupRun.ModKey, 
+                groupRun.BlacklistedMods,
+                runParameters.PersistenceMode, 
+                runParameters.PersistencePath).ConfigureAwait(false);
 
             var finalPath = await RunSomePatchers.Run(
                 groupRun.ModKey,
                 groupRun.Patchers,
                 cancellation,
                 sourcePath,
-                persistenceMode == PersistenceMode.None ? null : persistencePath).ConfigureAwait(false);
+                runParameters).ConfigureAwait(false);
 
             if (finalPath == null) return false;
 

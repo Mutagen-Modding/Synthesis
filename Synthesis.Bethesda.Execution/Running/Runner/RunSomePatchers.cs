@@ -12,7 +12,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             PatcherPrepBundle[] patchers,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath);
+            RunParameters runParameters);
     }
 
     public class RunSomePatchers : IRunSomePatchers
@@ -29,7 +29,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             PatcherPrepBundle[] patchers,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath)
+            RunParameters runParameters)
         {
             for (int i = 0; i < patchers.Length; i++)
             {
@@ -40,7 +40,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                     patcher,
                     cancellation,
                     sourcePath,
-                    persistencePath).ConfigureAwait(false);
+                    runParameters).ConfigureAwait(false);
 
                 if (nextPath == null) return null;
                 

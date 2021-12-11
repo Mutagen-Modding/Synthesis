@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Serilog;
-using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Reporters;
+using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner
 {
@@ -17,7 +17,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             PatcherPrepBundle prepBundle,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath);
+            RunParameters runParameters);
     }
 
     public class RunAPatcher : IRunAPatcher
@@ -47,7 +47,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             PatcherPrepBundle prepBundle,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath)
+            RunParameters runParameters)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                     prepBundle.Run,
                     outputKey,
                     sourcePath,
-                    persistencePath);
+                    runParameters);
 
                 _fs.Directory.CreateDirectory(args.OutputPath.Directory!);
                 

@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             PatcherPrepBundle[] patchers,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunSomePatchers sut)
         {
             await sut.Run(
@@ -31,11 +31,11 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 patchers,
                 cancellation,
                 sourcePath,
-                persistencePath);
+                runParameters);
 
             await sut.RunAPatcher.ReceivedWithAnyArgs().Run(
                 default, default!, default!,
-                default!, default);
+                default!, default!);
 
             for (int i = 0; i < patchers.Length; i++)
             {
@@ -44,7 +44,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                         patchers[i],
                         cancellation,
                         Arg.Any<FilePath?>(),
-                        persistencePath);
+                        runParameters);
             }
         }
         
@@ -55,7 +55,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             ModPath return2,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunSomePatchers sut)
         {
             PatcherPrepBundle[] patchers = new[]
@@ -73,7 +73,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     patchers[0],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
-                    Arg.Any<string?>())
+                    Arg.Any<RunParameters>())
                 .Returns(return1);
             
             sut.RunAPatcher.Run(
@@ -81,7 +81,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     patchers[1],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
-                    Arg.Any<string?>())
+                    Arg.Any<RunParameters>())
                 .Returns(return2);
                 
             await sut.Run(
@@ -89,7 +89,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 patchers,
                 cancellation,
                 sourcePath,
-                persistencePath);
+                runParameters);
 
             await sut.RunAPatcher.Received(1)
                 .Run(
@@ -97,7 +97,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     patchers[0],
                     Arg.Any<CancellationToken>(),
                     sourcePath,
-                    Arg.Any<string?>());
+                    Arg.Any<RunParameters>());
 
             await sut.RunAPatcher.Received(1)
                 .Run(
@@ -105,7 +105,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     patchers[1],
                     Arg.Any<CancellationToken>(),
                     return1,
-                    Arg.Any<string?>());
+                    Arg.Any<RunParameters>());
         }
         
         [Theory, SynthAutoData]
@@ -115,7 +115,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             FilePath return2,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunSomePatchers sut)
         {
             PatcherPrepBundle[] patchers = new[]
@@ -133,7 +133,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     patchers[0],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
-                    Arg.Any<string?>())
+                    Arg.Any<RunParameters>())
                 .Returns(return1);
             
             sut.RunAPatcher.Run(
@@ -141,7 +141,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     patchers[1],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
-                    Arg.Any<string?>())
+                    Arg.Any<RunParameters>())
                 .Returns(return2);
 
             (await sut.Run(
@@ -149,7 +149,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     patchers,
                     cancellation,
                     sourcePath,
-                    persistencePath))
+                    runParameters))
                 .Should().Be(return2);
         }
         
@@ -159,7 +159,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             ModPath return2,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunSomePatchers sut)
         {
             PatcherPrepBundle[] patchers = new[]
@@ -177,7 +177,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     patchers[0],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
-                    Arg.Any<string?>())
+                    Arg.Any<RunParameters>())
                 .Returns(default(FilePath?));
             
             sut.RunAPatcher.Run(
@@ -185,7 +185,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     patchers[1],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
-                    Arg.Any<string?>())
+                    Arg.Any<RunParameters>())
                 .Returns(return2);
 
             await sut.Run(
@@ -193,7 +193,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 patchers,
                 cancellation,
                 sourcePath,
-                persistencePath);
+                runParameters);
 
             await sut.RunAPatcher.DidNotReceive()
                 .Run(
@@ -201,7 +201,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     patchers[1],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
-                    Arg.Any<string?>());
+                    Arg.Any<RunParameters>());
         }
         
         [Theory, SynthAutoData]
@@ -210,7 +210,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             ModPath return2,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunSomePatchers sut)
         {
             PatcherPrepBundle[] patchers = new[]
@@ -228,7 +228,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     patchers[0],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
-                    Arg.Any<string?>())
+                    Arg.Any<RunParameters>())
                 .ThrowsForAnyArgs<NotImplementedException>();
             
             sut.RunAPatcher.Run(
@@ -236,7 +236,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     patchers[1],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
-                    Arg.Any<string?>())
+                    Arg.Any<RunParameters>())
                 .Returns(return2);
 
             await Assert.ThrowsAsync<NotImplementedException>(async () =>
@@ -246,7 +246,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     patchers,
                     cancellation,
                     sourcePath,
-                    persistencePath);
+                    runParameters);
             });
 
             await sut.RunAPatcher.DidNotReceive()
@@ -255,7 +255,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     patchers[1],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
-                    Arg.Any<string?>());
+                    Arg.Any<RunParameters>());
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunAPatcher sut)
         {
             (await sut.Run(
@@ -32,7 +32,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                         Task.FromResult<Exception?>(new NotImplementedException())),
                     cancellation,
                     sourcePath,
-                    persistencePath))
+                    runParameters))
                 .Should().BeNull();
         }
         
@@ -42,7 +42,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             IPatcherRun patcher,
             CancellationToken cancelled,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunAPatcher sut)
         {
             (await sut.Run(
@@ -52,7 +52,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                         Task.FromResult<Exception?>(new NotImplementedException())),
                     cancelled,
                     sourcePath,
-                    persistencePath))
+                    runParameters))
                 .Should().BeNull();
         }
         
@@ -62,11 +62,11 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunSynthesisPatcher args,
             RunAPatcher sut)
         {
-            sut.GetRunArgs.GetArgs(default!, default, default, default)
+            sut.GetRunArgs.GetArgs(default!, default, default, default!)
                 .ReturnsForAnyArgs(args);
             await sut.Run(
                 outputKey,
@@ -75,12 +75,12 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     Task.FromResult<Exception?>(null)),
                 cancellation,
                 sourcePath,
-                persistencePath);
+                runParameters);
             sut.GetRunArgs.Received(1).GetArgs(
                 patcher,
                 outputKey,
                 sourcePath,
-                persistencePath);
+                runParameters);
         }
         
         [Theory, SynthAutoData]
@@ -90,12 +90,12 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             CancellationToken cancellation,
             FilePath? sourcePath,
             ModPath outputPath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunSynthesisPatcher args,
             RunAPatcher sut)
         {
             args.OutputPath = outputPath;
-            sut.GetRunArgs.GetArgs(default!, default, default, default)
+            sut.GetRunArgs.GetArgs(default!, default, default, default!)
                 .ReturnsForAnyArgs(args);
             await sut.Run(
                 outputKey,
@@ -104,7 +104,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     Task.FromResult<Exception?>(null)),
                 cancellation,
                 sourcePath,
-                persistencePath);
+                runParameters);
             await patcher.Received(1).Run(args, cancellation);
         }
         
@@ -114,10 +114,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunAPatcher sut)
         {
-            sut.GetRunArgs.GetArgs(default!, default, default, default)
+            sut.GetRunArgs.GetArgs(default!, default, default, default!)
                 .ThrowsForAnyArgs<NotImplementedException>();
             (await sut.Run(
                 outputKey,
@@ -126,7 +126,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     Task.FromResult<Exception?>(null)),
                 cancellation,
                 sourcePath,
-                persistencePath)).Should().BeNull();
+                runParameters)).Should().BeNull();
         }
         
         [Theory, SynthAutoData]
@@ -135,7 +135,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunAPatcher sut)
         {
             patcher.Run(default!, default)
@@ -147,7 +147,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     Task.FromResult<Exception?>(null)),
                 cancellation,
                 sourcePath,
-                persistencePath)).Should().BeNull();
+                runParameters)).Should().BeNull();
         }
 
         [Theory, SynthAutoData]
@@ -156,12 +156,12 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunSynthesisPatcher args,
             FilePath outputPath,
             RunAPatcher sut)
         {
-            sut.GetRunArgs.GetArgs(default!, default, default, default)
+            sut.GetRunArgs.GetArgs(default!, default, default, default!)
                 .ReturnsForAnyArgs(args);
             args.OutputPath = outputPath;
             await sut.Run(
@@ -171,7 +171,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     Task.FromResult<Exception?>(null)),
                 cancellation,
                 sourcePath,
-                persistencePath);
+                runParameters);
             sut.FinalizePatcherRun.Received(1)
                 .Finalize(patcher, args.OutputPath);
         }
@@ -182,7 +182,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             FilePath ret,
             RunAPatcher sut)
         {
@@ -195,7 +195,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                         Task.FromResult<Exception?>(null)),
                     cancellation,
                     sourcePath,
-                    persistencePath))
+                    runParameters))
                 .Should().Be(ret);
         }
     }

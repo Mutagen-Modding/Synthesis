@@ -18,10 +18,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             IPatcherRun patcher,
             ModKey outputKey,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunArgsConstructor sut)
         {
-            sut.GetArgs(patcher, outputKey, sourcePath, persistencePath);
+            sut.GetArgs(patcher, outputKey, sourcePath, runParameters);
             sut.PatcherNameSanitizer.Received(1).Sanitize(patcher.Name);
         }
         
@@ -30,10 +30,10 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             IPatcherRun patcher,
             ModKey outputKey,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunArgsConstructor sut)
         {
-            var result = sut.GetArgs(patcher, outputKey, sourcePath, persistencePath);
+            var result = sut.GetArgs(patcher, outputKey, sourcePath, runParameters);
             result.OutputPath.IsUnderneath(sut.ProfileDirectories.WorkingDirectory)
                 .Should().BeTrue();
         }
@@ -43,12 +43,12 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             IPatcherRun patcher,
             ModKey outputKey,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             string sanitize,
             RunArgsConstructor sut)
         {
             sut.PatcherNameSanitizer.Sanitize(default!).ReturnsForAnyArgs(sanitize);
-            var result = sut.GetArgs(patcher, outputKey, sourcePath, persistencePath);
+            var result = sut.GetArgs(patcher, outputKey, sourcePath, runParameters);
             result.PatcherName.Should().Be(sanitize);
         }
         
@@ -57,12 +57,12 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             IPatcherRun patcher,
             ModKey outputKey,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             string sanitize,
             RunArgsConstructor sut)
         {
             sut.PatcherNameSanitizer.Sanitize(default!).ReturnsForAnyArgs(sanitize);
-            var result = sut.GetArgs(patcher, outputKey, sourcePath, persistencePath);
+            var result = sut.GetArgs(patcher, outputKey, sourcePath, runParameters);
             result.OutputPath.Name.String.Should().NotContain(patcher.Name);
         }
         
@@ -71,7 +71,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             IPatcherRun patcher,
             ModKey outputKey,
             FilePath sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             DirectoryPath dataDir,
             GameRelease release,
             FilePath loadOrderPath,
@@ -80,7 +80,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             sut.DataDirectoryProvider.Path.Returns(dataDir);
             sut.ReleaseContext.Release.Returns(release);
             sut.RunLoadOrderPathProvider.Path.Returns(loadOrderPath);
-            var result = sut.GetArgs(patcher, outputKey, sourcePath, persistencePath);
+            var result = sut.GetArgs(patcher, outputKey, sourcePath, runParameters);
             result.SourcePath.Should().Be(sourcePath);
             result.DataFolderPath.Should().Be(dataDir);
             result.LoadOrderFilePath.Should().Be(loadOrderPath);

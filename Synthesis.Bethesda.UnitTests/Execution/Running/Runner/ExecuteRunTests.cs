@@ -27,17 +27,15 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             CancellationToken cancellation,
             DirectoryPath outputDir,
             FilePath? sourcePath,
-            PersistenceMode persistenceMode,
-            string? persistencePath,
+            RunParameters runParameters,
             ExecuteRun sut)
         {
             await sut.Run(
                 groups,
                 cancellation,
                 outputDir,
-                sourcePath,
-                persistenceMode,
-                persistencePath);
+                runParameters,
+                sourcePath);
             
             sut.ResetWorkingDirectory.Received(1).Reset();
         }
@@ -47,8 +45,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             CancellationToken cancellation,
             FilePath? sourcePath,
             DirectoryPath outputDir,
-            PersistenceMode persistenceMode,
-            string? persistencePath,
+            RunParameters runParameters,
             ExecuteRun sut)
         {
             IGroupRun[] groups = Array.Empty<IGroupRun>();
@@ -56,12 +53,11 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 groups,
                 cancellation,
                 outputDir,
-                sourcePath,
-                persistenceMode,
-                persistencePath);
+                runParameters,
+                sourcePath);
             sut.EnsureSourcePathExists.DidNotReceiveWithAnyArgs().Ensure(default);
             await sut.RunAllGroups.DidNotReceiveWithAnyArgs().Run(
-                default!, default, default);
+                default!, default, default, default!);
         }
         
         [Theory, SynthAutoData]
@@ -69,8 +65,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             CancellationToken cancelled,
             FilePath? sourcePath,
             DirectoryPath outputDir,
-            PersistenceMode persistenceMode,
-            string? persistencePath,
+            RunParameters runParameters,
             ExecuteRun sut)
         {
             IGroupRun[] groups = Array.Empty<IGroupRun>();
@@ -78,9 +73,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 groups,
                 cancelled,
                 outputDir,
-                sourcePath,
-                persistenceMode,
-                persistencePath));
+                runParameters,
+                sourcePath));
         }
         
         [Theory, SynthAutoData]
@@ -89,17 +83,15 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             CancellationToken cancellation,
             DirectoryPath outputDir,
             FilePath? sourcePath,
-            PersistenceMode persistenceMode,
-            string? persistencePath,
+            RunParameters runParameters,
             ExecuteRun sut)
         {
             await sut.Run(
                 groups,
                 cancellation,
                 outputDir,
-                sourcePath,
-                persistenceMode,
-                persistencePath);
+                runParameters,
+                sourcePath);
             
             sut.EnsureSourcePathExists.Received(1).Ensure(sourcePath);
         }
@@ -110,17 +102,15 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             CancellationToken cancellation,
             DirectoryPath outputDir,
             FilePath? sourcePath,
-            PersistenceMode persistenceMode,
-            string? persistencePath,
+            RunParameters runParameters,
             ExecuteRun sut)
         {
             await sut.Run(
                 groups,
                 cancellation,
                 outputDir,
-                sourcePath,
-                persistenceMode,
-                persistencePath);
+                runParameters,
+                sourcePath);
             
             Received.InOrder(() =>
             {
@@ -136,17 +126,15 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             CancellationToken cancellation,
             DirectoryPath outputDir,
             FilePath? sourcePath,
-            PersistenceMode persistenceMode,
-            string? persistencePath,
+            RunParameters runParameters,
             ExecuteRun sut)
         {
             await sut.Run(
                 groups,
                 cancellation,
                 outputDir,
-                sourcePath,
-                persistenceMode,
-                persistencePath);
+                runParameters,
+                sourcePath);
             
             Received.InOrder(() =>
             {
@@ -154,7 +142,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                     Arg.Any<FilePath?>());
                 sut.RunAllGroups.Run(
                     Arg.Any<IGroupRun[]>(), Arg.Any<CancellationToken>(), Arg.Any<DirectoryPath>(), 
-                    Arg.Any<FilePath?>(), Arg.Any<PersistenceMode>(), Arg.Any<string?>());
+                    Arg.Any<RunParameters>(), Arg.Any<FilePath?>());
             });
         }
     }

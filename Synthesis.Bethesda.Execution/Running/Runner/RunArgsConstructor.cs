@@ -7,6 +7,7 @@ using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Profile;
+using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner
 {
@@ -16,7 +17,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             IPatcherRun patcher,
             ModKey outputKey,
             FilePath? sourcePath,
-            string? persistencePath);
+            RunParameters runParameters);
     }
 
     public class RunArgsConstructor : IRunArgsConstructor
@@ -45,7 +46,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             IPatcherRun patcher,
             ModKey outputKey,
             FilePath? sourcePath,
-            string? persistencePath)
+            RunParameters runParameters)
         {
             var fileName = PatcherNameSanitizer.Sanitize(patcher.Name);
             var nextPath = new FilePath(
@@ -58,7 +59,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 DataFolderPath = DataDirectoryProvider.Path,
                 GameRelease = ReleaseContext.Release,
                 LoadOrderFilePath = RunLoadOrderPathProvider.Path,
-                PersistencePath = persistencePath,
+                PersistencePath = runParameters.PersistenceMode == PersistenceMode.None ? null : runParameters.PersistencePath,
                 PatcherName = fileName,
                 ModKey = outputKey.FileName,
             };
