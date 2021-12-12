@@ -98,12 +98,12 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.NugetListing
                     @"Project `VersionQuery` has the following updates to its packages",
                     @"   [net6.0-windows7.0]:",
                     @"   Top-level Package                 Requested   Resolved   Latest",
-                    @"   > Mutagen.Bethesda                0.14.0      0.14.0     0.33.7.1-dev",
+                    @"   > Mutagen.Bethesda                0.14.0      0.14.0     0.34.0",
                     @"   > Mutagen.Bethesda.Synthesis      0.0.3       0.0.3      0.20.6.1-dev",
                 },
                 new NugetListingQuery[]
                 {
-                    new NugetListingQuery("Mutagen.Bethesda", "0.14.0", "0.14.0", "0.33.7.1-dev"),
+                    new NugetListingQuery("Mutagen.Bethesda", "0.14.0", "0.14.0", "0.34.0"),
                     new NugetListingQuery("Mutagen.Bethesda.Synthesis", "0.0.3", "0.0.3", "0.20.6.1-dev"),
                 }
             },
