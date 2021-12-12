@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Strings;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.Groups;
@@ -19,6 +20,8 @@ namespace Synthesis.Bethesda.GUI.Services.Profile.Running
         Task Run(
             IEnumerable<IGroupRun> groupRuns,
             PersistenceMode persistenceMode,
+            bool localize,
+            Language targetLanguage,
             CancellationToken cancel);
     }
 
@@ -26,24 +29,23 @@ namespace Synthesis.Bethesda.GUI.Services.Profile.Running
     {
         private readonly IFileSystem _fileSystem;
         private readonly IExecuteRun _executeRun;
-        private readonly IDataDirectoryProvider _dataDirectoryProvider;
         private readonly IProfileDirectories _profileDirectories;
 
         public ExecuteGuiRun(
             IFileSystem fileSystem,
             IExecuteRun executeRun,
-            IDataDirectoryProvider dataDirectoryProvider,
             IProfileDirectories profileDirectories)
         {
             _fileSystem = fileSystem;
             _executeRun = executeRun;
-            _dataDirectoryProvider = dataDirectoryProvider;
             _profileDirectories = profileDirectories;
         }
         
         public async Task Run(
             IEnumerable<IGroupRun> groupRuns,
             PersistenceMode persistenceMode,
+            bool localize,
+            Language targetLanguage,
             CancellationToken cancel)
         {
             var outputDir = new DirectoryPath(Path.Combine(_profileDirectories.WorkingDirectory, "Output"));
@@ -53,6 +55,8 @@ namespace Synthesis.Bethesda.GUI.Services.Profile.Running
                 cancel: cancel,
                 outputDir: outputDir,
                 runParameters: new RunParameters(
+                    targetLanguage,
+                    Localize: localize,
                     persistenceMode,
                     Path.Combine(_profileDirectories.ProfileDirectory, "Persistence"))).ConfigureAwait(false);
         }

@@ -58,6 +58,8 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 OutputPath = nextPath,
                 DataFolderPath = DataDirectoryProvider.Path,
                 GameRelease = ReleaseContext.Release,
+                Localize = runParameters.Localize,
+                TargetLanguage = runParameters.TargetLanguage.ToString(),
                 LoadOrderFilePath = RunLoadOrderPathProvider.Path,
                 PersistencePath = runParameters.PersistenceMode == PersistenceMode.None ? null : runParameters.PersistencePath,
                 PatcherName = fileName,

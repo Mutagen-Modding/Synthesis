@@ -1,4 +1,6 @@
-﻿using System.IO.Abstractions;
+﻿using System;
+using System.IO.Abstractions;
+using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Common;
@@ -42,6 +44,8 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
                 SourcePath = settings.SourcePath,
                 PatcherName = settings.PatcherName,
                 PersistencePath = settings.PersistencePath,
+                TargetLanguage = Enum.Parse<Language>(settings.TargetLanguage),
+                Localize = settings.Localize,
                 ModKey = settings.ModKey,
             };
         }

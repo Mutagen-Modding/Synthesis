@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Strings;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Groups;
@@ -41,6 +42,8 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
                 Arg.Any<CancellationToken>(),
                 outputDir: sut.Instructions.OutputDirectory,
                 runParameters: new RunParameters(
+                    sut.ProfileSettings.TargetLanguage,
+                    sut.ProfileSettings.Localize,
                     sut.Instructions.PersistenceMode.Value,
                     sut.Instructions.PersistencePath),
                 sourcePath: sut.Instructions.SourcePath);

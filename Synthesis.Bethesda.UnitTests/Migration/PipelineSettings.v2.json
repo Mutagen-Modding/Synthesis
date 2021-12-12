@@ -70,7 +70,9 @@
       "ConsiderPrereleaseNugets": false,
       "LockToCurrentVersioning": false,
       "FormIdPersistence": "Text",
-      "IgnoreMissingMods": false
+      "IgnoreMissingMods": false,
+      "Localize": false,
+      "TargetLanguage": "English"
     },
     {
       "$type": "Synthesis.Bethesda.Execution.Settings.V2.SynthesisProfile, Synthesis.Bethesda.Execution",
@@ -115,7 +117,9 @@
       "ConsiderPrereleaseNugets": false,
       "LockToCurrentVersioning": false,
       "FormIdPersistence": "Text",
-      "IgnoreMissingMods": false
+      "IgnoreMissingMods": false,
+      "Localize": false,
+      "TargetLanguage": "English"
     }
   ],
   "Shortcircuit": true

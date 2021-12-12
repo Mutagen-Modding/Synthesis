@@ -20,20 +20,17 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 
     public class ExecuteRun : IExecuteRun
     {
-        private readonly ILogger _logger;
         private readonly IPrintRunStart _print;
         public IResetWorkingDirectory ResetWorkingDirectory { get; }
         public IRunAllGroups RunAllGroups { get; }
         public IEnsureSourcePathExists EnsureSourcePathExists { get; }
 
         public ExecuteRun(
-            ILogger logger,
             IResetWorkingDirectory resetWorkingDirectory,
             IRunAllGroups runAllGroups,
             IPrintRunStart print,
             IEnsureSourcePathExists ensureSourcePathExists)
         {
-            _logger = logger;
             _print = print;
             ResetWorkingDirectory = resetWorkingDirectory;
             RunAllGroups = runAllGroups;

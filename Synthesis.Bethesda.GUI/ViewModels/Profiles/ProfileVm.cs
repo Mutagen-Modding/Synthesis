@@ -11,6 +11,7 @@ using DynamicData;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
+using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Noggog;
 using Noggog.WPF;
@@ -101,6 +102,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
         [Reactive]
         public bool IgnoreMissingMods { get; set; }
+        
+        [Reactive]
+        public bool Localize { get; set; }
+        
+        [Reactive]
+        public Language TargetLanguage { get; set; }
 
         public IEnvironmentErrorsVm EnvironmentErrors { get; }
 
@@ -382,6 +389,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 LockToCurrentVersioning = LockSetting.Lock,
                 FormIdPersistence = SelectedPersistenceMode,
                 IgnoreMissingMods = IgnoreMissingMods,
+                Localize = Localize,
+                TargetLanguage = TargetLanguage
             };
         }
 

@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
+using Mutagen.Bethesda.Strings;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -29,6 +30,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         public ICommand OpenInternalProfileFolderCommand { get; }
 
         public ObservableCollectionExtended<PersistenceMode> PersistenceModes { get; } = new(EnumExt.GetValues<PersistenceMode>());
+
+        public ObservableCollectionExtended<Language> Languages { get; } = new(EnumExt.GetValues<Language>());
 
         public delegate ProfileDisplayVm Factory(ProfilesDisplayVm parent, ProfileVm profile);
         

@@ -68,6 +68,8 @@ namespace Synthesis.Bethesda.GUI.Services.Main
             profile.ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
             profile.LockSetting.Lock = settings.LockToCurrentVersioning;
             profile.SelectedPersistenceMode = settings.FormIdPersistence;
+            profile.TargetLanguage = settings.TargetLanguage;
+            profile.Localize = settings.Localize;
 
             profile.Groups.AddRange(settings.Groups.Select(x => factory.Get(x)));
 

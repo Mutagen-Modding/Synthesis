@@ -47,6 +47,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -171,6 +172,27 @@
                     ToolTip="What type of persistence system to use for keeping FormIDs in sync" />
             </Grid>
             <Grid Grid.Row="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0"
+                           Margin="0,16,0,0"
+                           Style="{StaticResource SettingSectionHeaderStyle}"
+                           Text="Language" />
+                <CheckBox Grid.Row="1" x:Name="Localize"
+                          Content="Localize" 
+                          Margin="0,4,0,0"
+                          ToolTip="Whether to use STRINGS files during export" />
+                <ComboBox Grid.Row="2"
+                          Margin="0,4,0,0"
+                          x:Name="TargetLanguage"
+                          ItemsSource="{Binding Languages}"
+                          SelectedItem="{Binding Profile.TargetLanguage}"
+                          ToolTip="What language to view as the default language" />
+            </Grid>
+            <Grid Grid.Row="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />

@@ -7,6 +7,7 @@ using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
+using Mutagen.Bethesda.Strings;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 
 namespace Synthesis.Bethesda.GUI.Views
@@ -176,6 +177,9 @@ namespace Synthesis.Bethesda.GUI.Views
                     .DisposeWith(disposable);
 
                 this.Bind(ViewModel, x => x.Profile!.IgnoreMissingMods, x => x.IgnoreMissingModsCheckbox.IsChecked)
+                    .DisposeWith(disposable);
+
+                this.Bind(ViewModel, x => x.Profile!.Localize, x => x.Localize.IsChecked)
                     .DisposeWith(disposable);
 
                 //this.WhenAnyValue(x => x.ViewModel!.PersistenceModes)

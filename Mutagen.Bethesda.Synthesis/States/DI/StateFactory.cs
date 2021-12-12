@@ -9,6 +9,7 @@ using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Plugins.Records.Internals;
+using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Synthesis.CLI;
 
 namespace Mutagen.Bethesda.Synthesis.States.DI
@@ -55,6 +56,10 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
             {
                 throw new ArgumentException($"Target mod type {typeof(TModGetter)} was not of the expected type {regis.GetterType}");
             }
+            
+            // Set up target language
+            System.Console.WriteLine($"Language: {settings.TargetLanguage}");
+            TranslatedString.DefaultLanguage = settings.TargetLanguage;
 
             // Get load order
             var loadOrderListing = _getStateLoadOrder.GetLoadOrder(!settings.LoadOrderIncludesCreationClub, userPrefs)
@@ -145,6 +150,13 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
                 {
                     patchMod.UsingLocalization = true;
                 }
+            }
+            
+            System.Console.WriteLine($"Can use localization: {patchMod.CanUseLocalization}");
+            if (patchMod.CanUseLocalization)
+            {
+                System.Console.WriteLine($"Localized: {settings.Localize}");
+                patchMod.UsingLocalization = settings.Localize;
             }
 
             return new SynthesisState<TModSetter, TModGetter>(

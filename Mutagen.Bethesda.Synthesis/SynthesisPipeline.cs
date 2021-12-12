@@ -24,6 +24,7 @@ using SynthesisBase = Synthesis.Bethesda;
 using Mutagen.Bethesda.Plugins.Binary.Parameters;
 using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
+using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Synthesis.States;
 using Mutagen.Bethesda.Synthesis.States.DI;
 using Synthesis.Bethesda.Commands;
@@ -486,11 +487,13 @@ namespace Mutagen.Bethesda.Synthesis
             Console.WriteLine($"Synthesis sha: {Versions.SynthesisSha}");
             System.Console.WriteLine(Parser.Default.FormatCommandLine(args));
             SetReflectionSettingsAnchorPaths(args.ExtraDataFolder);
+            
             var cat = args.GameRelease.ToCategory();
             if (!_patchers.TryGetValue(cat, out var patcher))
             {
                 throw new ArgumentException($"No applicable patchers for {cat}");
             }
+            
             if (_runnabilityChecks.Count > 0)
             {
                 System.Console.WriteLine("Checking runnability");
@@ -508,6 +511,7 @@ namespace Mutagen.Bethesda.Synthesis
                 }
                 System.Console.WriteLine("Checking runnability complete");
             }
+            
             WarmupAll.Init();
             System.Console.WriteLine("Prepping state.");
             var prefs = patcher.Prefs ?? new PatcherPreferences();
@@ -543,21 +547,18 @@ namespace Mutagen.Bethesda.Synthesis
                                     new HasEnabledMarkersProvider(
                                         gameReleaseInjection)))))),
                 new EnableImplicitMastersFactory(fileSystem));
+            
             exportKey = exportKey == null || exportKey.Value.IsNull ? SynthesisBase.Constants.SynthesisModKey : exportKey.Value;
             using var state = stateFactory.ToState(cat, args, prefs, exportKey.Value);
+            
             System.Console.WriteLine("Running patch.");
             await patcher.Patcher(state).ConfigureAwait(false);
             System.Console.WriteLine("Finished patch.");
-            if (prefs.NoPatch) return;
-            System.Console.WriteLine($"Writing to output: {args.OutputPath}");
-
-            if (state.PatchMod.CanUseLocalization)
-            {
-                state.PatchMod.UsingLocalization = true;
-            }
-
-            Directory.CreateDirectory(Path.GetDirectoryName(args.OutputPath)!);
             
+            if (prefs.NoPatch) return;
+            
+            System.Console.WriteLine($"Writing to output: {args.OutputPath}");
+            Directory.CreateDirectory(Path.GetDirectoryName(args.OutputPath)!);
             state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)), fileSystem: fileSystem);
         }
         #endregion
@@ -724,7 +725,7 @@ namespace Mutagen.Bethesda.Synthesis
                 DefaultDataFolderPath = null,
                 LoadOrderIncludesCreationClub = false,
                 PatcherName = targetModKey.Name,
-                PersistencePath = "Persistence"
+                PersistencePath = "Persistence",
             };
         }
 

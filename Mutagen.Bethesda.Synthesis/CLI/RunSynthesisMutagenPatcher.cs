@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Text;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Converters;
+using Mutagen.Bethesda.Strings;
 
 namespace Mutagen.Bethesda.Synthesis.CLI
 {
@@ -46,6 +47,14 @@ namespace Mutagen.Bethesda.Synthesis.CLI
             HelpText = "Whether the load order path file includes CC mods already")]
         public bool LoadOrderIncludesCreationClub { get; set; } = true;
 
+        [Option("TargetLanguage", Required = false,
+            HelpText = "What language to view as the default language")]
+        public Language TargetLanguage { get; set; } = Language.English;
+
+        [Option("Localize", Required = false,
+            HelpText = "Whether to use STRINGS files during export")]
+        public bool Localize { get; set; } = false;
+
         public override string ToString()
         {
             return $"{nameof(RunSynthesisMutagenPatcher)} => \n"
@@ -59,6 +68,8 @@ namespace Mutagen.Bethesda.Synthesis.CLI
                 + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
                 + $"  {nameof(LoadOrderIncludesCreationClub)} => {this.LoadOrderIncludesCreationClub}\n"
                 + $"  {nameof(PatcherName)} => {this.PatcherName}\n"
+                + $"  {nameof(TargetLanguage)} => {this.TargetLanguage}\n"
+                + $"  {nameof(Localize)} => {this.Localize}\n"
                 + $"  {nameof(ModKey)} => {this.ModKey}";
         }
     }

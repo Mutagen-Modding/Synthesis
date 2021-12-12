@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Synthesis.Bethesda.Execution.Commands;
-using Synthesis.Bethesda.Execution.Running.Cli.Settings;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
 
@@ -14,6 +13,7 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
 
     public class RunPatcherPipeline : IRunPatcherPipeline
     {
+        public ISynthesisProfileSettings ProfileSettings { get; }
         public IExecuteRun ExecuteRun { get; }
         public IGetGroupRunners GetGroupRunners { get; }
         public RunPatcherPipelineInstructions Instructions { get; }
@@ -21,8 +21,10 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
         public RunPatcherPipeline(
             IExecuteRun executeRun,
             IGetGroupRunners getGroupRunners,
+            ISynthesisProfileSettings profileSettings,
             RunPatcherPipelineInstructions instructions)
         {
+            ProfileSettings = profileSettings;
             ExecuteRun = executeRun;
             GetGroupRunners = getGroupRunners;
             Instructions = instructions;
@@ -37,6 +39,8 @@ namespace Synthesis.Bethesda.Execution.Running.Cli
                     outputDir: Instructions.OutputDirectory,
                     cancel: cancel,
                     runParameters: new RunParameters(
+                        ProfileSettings.TargetLanguage,
+                        ProfileSettings.Localize,
                         Instructions.PersistenceMode ?? PersistenceMode.None, 
                         Instructions.PersistencePath)).ConfigureAwait(false);
         }

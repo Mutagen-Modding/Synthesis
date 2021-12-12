@@ -31,6 +31,14 @@ namespace Synthesis.Bethesda.Commands
         
         [Option('k', "ModKey", Required = false, HelpText = "ModKey associated with the patch being generated")]
         public string? ModKey { get; set; }
+
+        [Option("TargetLanguage", Required = false,
+            HelpText = "What language to view as the default language")]
+        public string TargetLanguage { get; set; } = "English";
+        
+        [Option("Localize", Required = false,
+            HelpText = "Whether to use STRINGS files during export")]
+        public bool Localize { get; set; }
         
         public override string ToString()
         {
@@ -42,6 +50,8 @@ namespace Synthesis.Bethesda.Commands
                 + $"  {nameof(LoadOrderFilePath)} => {LoadOrderFilePath} \n"
                 + $"  {nameof(PersistencePath)} => {PersistencePath} \n"
                 + $"  {nameof(PatcherName)} => {PatcherName} \n"
+                + $"  {nameof(TargetLanguage)} => {this.TargetLanguage}\n"
+                + $"  {nameof(Localize)} => {this.Localize}\n"
                 + $"  {nameof(ModKey)} => {ModKey}";
         }
     }

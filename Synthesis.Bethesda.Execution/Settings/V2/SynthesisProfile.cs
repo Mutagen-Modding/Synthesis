@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Strings;
 
 namespace Synthesis.Bethesda.Execution.Settings.V2
 {
@@ -21,6 +22,8 @@ namespace Synthesis.Bethesda.Execution.Settings.V2
         public bool LockToCurrentVersioning { get; set; }
         public PersistenceMode FormIdPersistence { get; set; } = PersistenceMode.None;
         public bool IgnoreMissingMods { get; set; }
+        public bool Localize { get; set; } = false;
+        public Language TargetLanguage { get; set; } = Language.English;
 
         GameRelease IGameReleaseContext.Release => TargetRelease;
     }
