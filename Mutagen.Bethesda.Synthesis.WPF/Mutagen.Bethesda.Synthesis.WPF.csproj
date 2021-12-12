@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <IsPackable>true</IsPackable>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
@@ -40,13 +40,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.33.5" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.34.0" />
     <PackageReference Include="NuGetizer" Version="0.7.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="reactiveui" Version="16.2.6" />
-    <PackageReference Include="ReactiveUI.Fody" Version="16.2.6" />
+    <PackageReference Include="reactiveui" Version="16.3.10" />
+    <PackageReference Include="ReactiveUI.Fody" Version="16.3.10" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
   </ItemGroup>
 
