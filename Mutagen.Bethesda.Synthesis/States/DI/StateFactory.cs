@@ -164,6 +164,7 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
                 loadOrder: loadOrder,
                 rawLoadOrder: rawLoadOrder,
                 linkCache: cache,
+                internalDataPath: settings.InternalDataFolder,
                 patchMod: patchMod,
                 extraDataPath: settings.ExtraDataFolder == null ? string.Empty : Path.GetFullPath(settings.ExtraDataFolder),
                 defaultDataPath: settings.DefaultDataFolderPath,

@@ -16,15 +16,18 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
     public class ConstructSolutionPatcherRunArgs : IConstructSolutionPatcherRunArgs
     {
         private readonly IFileSystem _fileSystem;
+        private readonly IPatcherInternalDataPathProvider _internalDataPathProvider;
         public IPatcherExtraDataPathProvider PatcherExtraDataPathProvider { get; }
         public IDefaultDataPathProvider DefaultDataPathProvider { get; }
 
         public ConstructSolutionPatcherRunArgs(
             IFileSystem fileSystem,
+            IPatcherInternalDataPathProvider internalDataPathProvider,
             IPatcherExtraDataPathProvider patcherExtraDataPathProvider,
             IDefaultDataPathProvider defaultDataPathProvider)
         {
             _fileSystem = fileSystem;
+            _internalDataPathProvider = internalDataPathProvider;
             PatcherExtraDataPathProvider = patcherExtraDataPathProvider;
             DefaultDataPathProvider = defaultDataPathProvider;
         }
@@ -42,6 +45,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
                 LoadOrderFilePath = settings.LoadOrderFilePath,
                 OutputPath = settings.OutputPath,
                 SourcePath = settings.SourcePath,
+                InternalDataFolder = _fileSystem.Directory.Exists(_internalDataPathProvider.Path) ? _internalDataPathProvider.Path.Path : null,
                 PatcherName = settings.PatcherName,
                 PersistencePath = settings.PersistencePath,
                 TargetLanguage = Enum.Parse<Language>(settings.TargetLanguage),

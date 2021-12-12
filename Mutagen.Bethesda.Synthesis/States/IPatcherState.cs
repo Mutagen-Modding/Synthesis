@@ -41,6 +41,11 @@ namespace Mutagen.Bethesda.Synthesis
         string ExtraSettingsDataPath { get; }
 
         /// <summary>
+        /// Path to the internal data folder dedicated to storing patcher specific files hidden from user
+        /// </summary>
+        string? InternalDataPath { get; }
+
+        /// <summary>
         /// Path to the default data folder as defined by the patcher's source code
         /// </summary>
         string? DefaultSettingsDataPath { get; }
@@ -153,6 +158,49 @@ namespace Mutagen.Bethesda.Synthesis
             }
 
             throw new FileNotFoundException($"Could not locate config file: {relativePath}");
+        }
+        
+        /// <summary>
+        /// Attempts to locate and confirm the existence of an internal file.
+        /// </summary>
+        /// <param name="state">Patcher state to refer to</param>
+        /// <param name="relativePath">Path to the internal file, relative to the internal data folder.</param>
+        /// <param name="resolvedPath">Located file that exists</param>
+        /// <returns>True if file was located that exists</returns>
+        public static bool TryRetrieveInternalFile(this IPatcherState state, string relativePath, [MaybeNullWhen(false)] out string resolvedPath)
+        {
+            if (state.InternalDataPath == null)
+            {
+                resolvedPath = null;
+                return false;
+            }
+            
+            var userPath = Path.Combine(state.InternalDataPath, relativePath);
+            if (File.Exists(userPath))
+            {
+                resolvedPath = userPath;
+                return true;
+            }
+
+            resolvedPath = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to locate and confirm the existence of an internal file.
+        /// </summary>
+        /// <param name="state">Patcher state to refer to</param>
+        /// <param name="relativePath">Path to the internal file, relative to the internal data folder.</param>
+        /// <exception cref="FileNotFoundException">If a file could not be located that exists in either location.</exception>
+        /// <returns>Located file that exists</returns>
+        public static string RetrieveInternalFile(this IPatcherState state, string relativePath)
+        {
+            if (TryRetrieveInternalFile(state, relativePath, out var resolved))
+            {
+                return resolved;
+            }
+
+            throw new FileNotFoundException($"Could not locate internal file: {relativePath}");
         }
     }
 }

@@ -28,8 +28,11 @@ namespace Mutagen.Bethesda.Synthesis.CLI
         [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.  This is typically plugins.txt.  This should be the file that the game will use to read in its load order.")]
         public string LoadOrderFilePath { get; set; } = string.Empty;
 
-        [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to the extra data folder dedicated for a patcher")]
+        [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to the user data folder dedicated for a patcher")]
         public string? ExtraDataFolder { get; set; }
+
+        [Option('i', "InternalDataFolder", Required = false, HelpText = "Path to the internal data folder dedicated for a patcher")]
+        public string? InternalDataFolder { get; set; }
 
         [Option('r', "PersistencePath", Required = false, HelpText = "Path to the shared FormKey allocation state")]
         public string? PersistencePath { get; set; }
@@ -65,6 +68,7 @@ namespace Mutagen.Bethesda.Synthesis.CLI
                 + $"  {nameof(DefaultDataFolderPath)} => {this.DefaultDataFolderPath} \n"
                 + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
                 + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}\n"
+                + $"  {nameof(InternalDataFolder)} => {this.InternalDataFolder}\n"
                 + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
                 + $"  {nameof(LoadOrderIncludesCreationClub)} => {this.LoadOrderIncludesCreationClub}\n"
                 + $"  {nameof(PatcherName)} => {this.PatcherName}\n"
