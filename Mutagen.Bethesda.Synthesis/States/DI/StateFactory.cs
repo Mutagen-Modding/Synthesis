@@ -132,11 +132,11 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
                         System.Console.WriteLine($"Using {nameof(TextFileSharedFormKeyAllocator)} allocator");
                         patchMod.SetAllocator(formKeyAllocator = new TextFileSharedFormKeyAllocator(patchMod, settings.PersistencePath, settings.PatcherName, fileSystem: _fileSystem));
                     }
-                    //else if (SQLiteFormKeyAllocator.IsPathOfAllocatorType(settings.PersistencePath))
-                    //{
-                    //    System.Console.WriteLine($"Using {nameof(SQLiteFormKeyAllocator)} allocator");
-                    //    patchMod.SetAllocator(formKeyAllocator = new SQLiteFormKeyAllocator(patchMod, settings.PersistencePath, settings.PatcherName));
-                    //}
+                    // else if (SQLiteFormKeyAllocator.IsPathOfAllocatorType(settings.PersistencePath))
+                    // {
+                    //     System.Console.WriteLine($"Using {nameof(SQLiteFormKeyAllocator)} allocator");
+                    //     patchMod.SetAllocator(formKeyAllocator = new SQLiteFormKeyAllocator(patchMod, settings.PersistencePath, settings.PatcherName));
+                    // }
                     else
                     {
                         System.Console.WriteLine($"Allocation systems were marked to be on, but could not identify allocation system to be used");
