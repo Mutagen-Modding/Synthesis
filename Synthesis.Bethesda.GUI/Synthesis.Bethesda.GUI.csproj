@@ -33,6 +33,7 @@
     <None Remove="Resources\SkyrimLE.png" />
     <None Remove="Resources\SkyrimSSE.png" />
     <None Remove="Resources\SkyrimVR.png" />
+    <None Remove="Resources\Splashscreen.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -81,6 +82,10 @@
     <Resource Include="Resources\enderal.png" />
     <None Remove="Resources\enderal-se.png" />
     <Resource Include="Resources\enderal-se.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SplashScreen Include="Resources\Splashscreen.png" />
   </ItemGroup>
   
   <ItemGroup>

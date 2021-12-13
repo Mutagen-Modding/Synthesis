@@ -26,26 +26,24 @@ namespace Synthesis.Bethesda.GUI.Views
         {
             InitializeComponent();
 
-            Task.Run(() =>
+            try
             {
-                try
-                {
-                    var builder = new ContainerBuilder();
-                    builder.RegisterModule<MainModule>();
-                    builder.RegisterInstance(this)
-                        .AsSelf()
-                        .As<IWindowPlacement>()
-                        .As<IMainWindow>();
-                    var container = builder.Build();
+                var builder = new ContainerBuilder();
+                builder.RegisterModule<MainModule>();
+                builder.RegisterInstance(this)
+                    .AsSelf()
+                    .As<IWindowPlacement>()
+                    .As<IMainWindow>();
+                var container = builder.Build();
 
-                    container.Resolve<IStartup>()
-                        .Initialize();
-                }
-                catch (Exception ex)
-                {
-                    Log.Logger.Error(ex, "Error constructing container");
-                }
-            });
+                container.Resolve<IStartup>()
+                    .Initialize();
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(ex, "Error constructing container");
+                throw;
+            }
         }
     }
 }

@@ -59,30 +59,19 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             
             try
             {
-                await Observable.FromAsync(() =>
-                        Task.WhenAll(_startupTasks
-                            .Select(x => Task.Run(x.Start))))
-                    .Select(x => _mainVm.Value)
-                    .Do(mainVM =>
-                    {
-                        _logger.Information("Loading settings");
-                        mainVM.Load();
-                        _logger.Information("Loaded settings");
-                    })
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .Do(mainVM =>
-                    {
-                        _logger.Information("Setting Main VM");
-                        _window.DataContext = mainVM;
-                        _logger.Information("Set Main VM");
-                    })
-                    .ObserveOn(RxApp.TaskpoolScheduler)
-                    .Do(mainVM =>
-                    {
-                        _logger.Information("Initializing Main VM");
-                        mainVM.Init();
-                        _logger.Information("Initialized Main VM");
-                    });
+                foreach (var startupTask in _startupTasks)
+                {
+                    startupTask.Start();;
+                }
+                _logger.Information("Loading settings");
+                _mainVm.Value.Load();
+                _logger.Information("Loaded settings");
+                _logger.Information("Setting Main VM");
+                _window.DataContext = _mainVm.Value;
+                _logger.Information("Set Main VM");
+                _logger.Information("Initializing Main VM");
+                _mainVm.Value.Init();
+                _logger.Information("Initialized Main VM");
                 _tracker.Initialized = true;
             }
             catch (Exception e)
