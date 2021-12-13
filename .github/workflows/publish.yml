@@ -41,7 +41,7 @@ jobs:
     #    powershell Move-Item -Path Synthesis.Bethesda.SettingsHost/bin/Release/net5.0/win-x64/publish -Destination Synthesis.Bethesda.GUI/bin/Release/net5.0/win-x64/publish/SettingsHost
     - name: Archive Release
       run: |
-        powershell Compress-Archive Synthesis.Bethesda.GUI/bin/Release/net5.0/win-x64/publish/* Synthesis.zip
+        powershell Compress-Archive Synthesis.Bethesda.GUI/bin/Release/net6.0/win-x64/publish/* Synthesis.zip
     - name: Publish Synthesis GUI to Github
       uses: svenstaro/upload-release-action@v2
       with:
