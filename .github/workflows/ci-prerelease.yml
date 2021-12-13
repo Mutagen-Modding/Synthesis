@@ -2,9 +2,9 @@ name: Prerelease
 
 on:
   push:
-    branches: [ prerelease ]
+    branches: [ pre-release ]
   pull_request:
-    branches: [ prerelease ]
+    branches: [ pre-release ]
 
 jobs:
   build:
