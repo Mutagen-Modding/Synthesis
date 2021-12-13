@@ -15,15 +15,12 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
 
     public class GenericSettingsToMutagenSettings : IGenericSettingsToMutagenSettings
     {
-        private readonly IPatcherInternalDataPathProvider _patcherInternalData;
         public IPatcherExtraDataPathProvider ExtraDataPathProvider { get; }
 
         [ExcludeFromCodeCoverage]
         public GenericSettingsToMutagenSettings(
-            IPatcherInternalDataPathProvider patcherInternalData,
             IPatcherExtraDataPathProvider extraDataPathProvider)
         {
-            _patcherInternalData = patcherInternalData;
             ExtraDataPathProvider = extraDataPathProvider;
         }
         
@@ -38,7 +35,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
                 SourcePath = settings.SourcePath,
                 PersistencePath = settings.PersistencePath,
                 PatcherName = settings.PatcherName,
-                InternalDataFolder = _patcherInternalData.Path,
                 ExtraDataFolder = ExtraDataPathProvider.Path,
                 Localize = settings.Localize,
                 TargetLanguage = Enum.Parse<Language>(settings.TargetLanguage),
