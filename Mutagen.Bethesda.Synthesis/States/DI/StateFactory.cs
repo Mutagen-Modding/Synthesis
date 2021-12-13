@@ -146,17 +146,12 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
                 loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));
                 rawLoadOrder.Add(new ModListing(patchMod.ModKey, enabled: true));
 
+                System.Console.WriteLine($"Can use localization: {patchMod.CanUseLocalization}");
                 if (patchMod.CanUseLocalization)
                 {
-                    patchMod.UsingLocalization = true;
+                    System.Console.WriteLine($"Localized: {settings.Localize}");
+                    patchMod.UsingLocalization = settings.Localize;
                 }
-            }
-            
-            System.Console.WriteLine($"Can use localization: {patchMod.CanUseLocalization}");
-            if (patchMod.CanUseLocalization)
-            {
-                System.Console.WriteLine($"Localized: {settings.Localize}");
-                patchMod.UsingLocalization = settings.Localize;
             }
 
             return new SynthesisState<TModSetter, TModGetter>(
