@@ -42,41 +42,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Running.Solution
         }
         
         [Theory, SynthAutoData]
-        public async Task RunnabilityCheckCall(
-            FilePath projPath,
-            RunSynthesisPatcher settings,
-            CancellationToken cancel,
-            SolutionPatcherRun sut)
-        {
-            sut.PathToProjProvider.Path.Returns(projPath);
-            await sut.Run(settings, cancel);
-            await sut.CheckRunnability.Received(1)
-                .Check(
-                    projPath,
-                    directExe: false,
-                    loadOrderPath: settings.LoadOrderFilePath,
-                    buildMetaPath: null,
-                    cancel: cancel);
-        }
-        
-        [Theory, SynthAutoData]
-        public async Task FailedRunnabilityThrows(
-            RunSynthesisPatcher settings,
-            CancellationToken cancel,
-            ErrorResponse fail,
-            SolutionPatcherRun sut)
-        {
-            sut.CheckRunnability.Check(default!, default, default!, default, default)
-                .ReturnsForAnyArgs(fail);
-            var ex = await Assert.ThrowsAsync<CliUnsuccessfulRunException>(async () =>
-            {
-                await sut.Run(settings, cancel);
-            });
-            ex.ExitCode.Should().Be((int) Codes.NotRunnable);
-            ex.Message.Should().Be(fail.Reason);
-        }
-        
-        [Theory, SynthAutoData]
         public async Task PassesSettingsToRunner(
             RunSynthesisPatcher settings,
             CancellationToken cancel,
@@ -84,21 +49,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Running.Solution
         {
             await sut.Run(settings, cancel);
             await sut.SolutionPatcherRunner.Received(1).Run(settings, cancel);
-        }
-        
-        [Theory, SynthAutoData]
-        public async Task PipelineOrder(
-            RunSynthesisPatcher settings,
-            CancellationToken cancel,
-            SolutionPatcherRun sut)
-        {
-            await sut.Run(settings, cancel);
-            Received.InOrder(() =>
-            {
-                sut.CheckRunnability.Check(
-                    Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<string>(), Arg.Any<FilePath?>(), Arg.Any<CancellationToken>());
-                sut.SolutionPatcherRunner.Run(Arg.Any<RunSynthesisPatcher>(), Arg.Any<CancellationToken>());
-            });
         }
     }
 }
