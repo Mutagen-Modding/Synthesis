@@ -48,9 +48,9 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
             Index = indexDisseminator.GetNext();
         }
 
-        public Task Prep(CancellationToken cancel)
+        public async Task Prep(CancellationToken cancel)
         {
-            return PrepService.Prep(cancel);
+            await PrepService.Prep(cancel).ConfigureAwait(false);
         }
 
         public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)
