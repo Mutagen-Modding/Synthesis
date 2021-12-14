@@ -8,6 +8,7 @@ using Noggog;
 using NSubstitute;
 using NSubstitute.Core;
 using NSubstitute.ExceptionExtensions;
+using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -19,7 +20,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
     {
         [Theory, SynthAutoData]
         public async Task PassesEachPatcherToRunComponent(
-            ModKey outputKey,
+            IGroupRun groupRun,
             PatcherPrepBundle[] patchers,
             CancellationToken cancellation,
             FilePath? sourcePath,
@@ -27,20 +28,20 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             RunSomePatchers sut)
         {
             await sut.Run(
-                outputKey,
+                groupRun,
                 patchers,
                 cancellation,
                 sourcePath,
                 runParameters);
 
             await sut.RunAPatcher.ReceivedWithAnyArgs().Run(
-                default, default!, default!,
+                default!, default!, default!,
                 default!, default!);
 
             for (int i = 0; i < patchers.Length; i++)
             {
                 await sut.RunAPatcher.Received(1)
-                    .Run(outputKey,
+                    .Run(groupRun,
                         patchers[i],
                         cancellation,
                         Arg.Any<FilePath?>(),
@@ -50,7 +51,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task PassesPreviousPathToNext(
-            ModKey outputKey,
+            IGroupRun groupRun,
             ModPath return1,
             ModPath return2,
             CancellationToken cancellation,
@@ -69,7 +70,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             };
             
             sut.RunAPatcher.Run(
-                    Arg.Any<ModKey>(),
+                    Arg.Any<IGroupRun>(),
                     patchers[0],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
@@ -77,7 +78,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .Returns(return1);
             
             sut.RunAPatcher.Run(
-                    Arg.Any<ModKey>(),
+                    Arg.Any<IGroupRun>(),
                     patchers[1],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
@@ -85,7 +86,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .Returns(return2);
                 
             await sut.Run(
-                outputKey,
+                groupRun,
                 patchers,
                 cancellation,
                 sourcePath,
@@ -93,7 +94,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
 
             await sut.RunAPatcher.Received(1)
                 .Run(
-                    Arg.Any<ModKey>(),
+                    Arg.Any<IGroupRun>(),
                     patchers[0],
                     Arg.Any<CancellationToken>(),
                     sourcePath,
@@ -101,7 +102,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
 
             await sut.RunAPatcher.Received(1)
                 .Run(
-                    Arg.Any<ModKey>(),
+                    Arg.Any<IGroupRun>(),
                     patchers[1],
                     Arg.Any<CancellationToken>(),
                     return1,
@@ -110,7 +111,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task ReturnsFinalPatcherReturn(
-            ModKey outputKey,
+            IGroupRun groupRun,
             FilePath return1,
             FilePath return2,
             CancellationToken cancellation,
@@ -129,7 +130,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             };
             
             sut.RunAPatcher.Run(
-                    Arg.Any<ModKey>(),
+                    Arg.Any<IGroupRun>(),
                     patchers[0],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
@@ -137,7 +138,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .Returns(return1);
             
             sut.RunAPatcher.Run(
-                    Arg.Any<ModKey>(),
+                    Arg.Any<IGroupRun>(),
                     patchers[1],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
@@ -145,7 +146,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .Returns(return2);
 
             (await sut.Run(
-                    outputKey,
+                    groupRun,
                     patchers,
                     cancellation,
                     sourcePath,
@@ -155,7 +156,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task PatcherNullReturnDoesNotRunAnyMore(
-            ModKey outputKey,
+            IGroupRun groupRun,
             ModPath return2,
             CancellationToken cancellation,
             FilePath? sourcePath,
@@ -173,7 +174,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             };
             
             sut.RunAPatcher.Run(
-                    Arg.Any<ModKey>(),
+                    Arg.Any<IGroupRun>(),
                     patchers[0],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
@@ -181,7 +182,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .Returns(default(FilePath?));
             
             sut.RunAPatcher.Run(
-                    Arg.Any<ModKey>(),
+                    Arg.Any<IGroupRun>(),
                     patchers[1],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
@@ -189,7 +190,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .Returns(return2);
 
             await sut.Run(
-                outputKey,
+                groupRun,
                 patchers,
                 cancellation,
                 sourcePath,
@@ -197,7 +198,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
 
             await sut.RunAPatcher.DidNotReceive()
                 .Run(
-                    Arg.Any<ModKey>(),
+                    Arg.Any<IGroupRun>(),
                     patchers[1],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
@@ -206,7 +207,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public async Task ThrowingPatcherRethrows(
-            ModKey outputKey,
+            IGroupRun groupRun,
             ModPath return2,
             CancellationToken cancellation,
             FilePath? sourcePath,
@@ -224,7 +225,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             };
 
             sut.RunAPatcher.Run(
-                    Arg.Any<ModKey>(),
+                    Arg.Any<IGroupRun>(),
                     patchers[0],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
@@ -232,7 +233,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
                 .ThrowsForAnyArgs<NotImplementedException>();
             
             sut.RunAPatcher.Run(
-                    Arg.Any<ModKey>(),
+                    Arg.Any<IGroupRun>(),
                     patchers[1],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),
@@ -242,7 +243,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
             await Assert.ThrowsAsync<NotImplementedException>(async () =>
             {
                 await sut.Run(
-                    outputKey,
+                    groupRun,
                     patchers,
                     cancellation,
                     sourcePath,
@@ -251,7 +252,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
 
             await sut.RunAPatcher.DidNotReceive()
                 .Run(
-                    Arg.Any<ModKey>(),
+                    Arg.Any<IGroupRun>(),
                     patchers[1],
                     Arg.Any<CancellationToken>(),
                     Arg.Any<FilePath?>(),

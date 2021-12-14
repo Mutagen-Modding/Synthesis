@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Serilog;
+using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
 
@@ -13,7 +14,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     public interface IRunAPatcher
     {
         Task<FilePath?> Run(
-            ModKey outputKey,
+            IGroupRun groupRun,
             PatcherPrepBundle prepBundle,
             CancellationToken cancellation,
             FilePath? sourcePath,
@@ -43,7 +44,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         }
 
         public async Task<FilePath?> Run(
-            ModKey outputKey,
+            IGroupRun groupRun,
             PatcherPrepBundle prepBundle,
             CancellationToken cancellation,
             FilePath? sourcePath,
@@ -56,8 +57,8 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 if (prepException != null) return null;
                 
                 var args = GetRunArgs.GetArgs(
+                    groupRun,
                     prepBundle.Run,
-                    outputKey,
                     sourcePath,
                     runParameters);
 

@@ -4,6 +4,7 @@ using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Synthesis.Bethesda.Commands;
+using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Profile;
@@ -14,8 +15,8 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     public interface IRunArgsConstructor
     {
         RunSynthesisPatcher GetArgs(
+            IGroupRun groupRun,
             IPatcherRun patcher,
-            ModKey outputKey,
             FilePath? sourcePath,
             RunParameters runParameters);
     }
@@ -43,14 +44,14 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         }
         
         public RunSynthesisPatcher GetArgs(
+            IGroupRun groupRun,
             IPatcherRun patcher,
-            ModKey outputKey,
             FilePath? sourcePath,
             RunParameters runParameters)
         {
             var fileName = PatcherNameSanitizer.Sanitize(patcher.Name);
             var nextPath = new FilePath(
-                Path.Combine(ProfileDirectories.WorkingDirectory, $"{patcher.Index} - {fileName}", outputKey.FileName));
+                Path.Combine(ProfileDirectories.WorkingDirectory, $"{patcher.Index} - {fileName}", groupRun.ModKey.FileName));
 
             return new RunSynthesisPatcher()
             {
@@ -63,7 +64,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 LoadOrderFilePath = RunLoadOrderPathProvider.Path,
                 PersistencePath = runParameters.PersistenceMode == PersistenceMode.None ? null : runParameters.PersistencePath,
                 PatcherName = fileName,
-                ModKey = outputKey.FileName,
+                ModKey = groupRun.ModKey.FileName,
             };
         }
     }

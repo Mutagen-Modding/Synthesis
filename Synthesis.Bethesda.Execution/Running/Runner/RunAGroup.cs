@@ -63,7 +63,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 runParameters.PersistencePath).ConfigureAwait(false);
 
             var finalPath = await RunSomePatchers.Run(
-                groupRun.ModKey,
+                groupRun,
                 groupRun.Patchers,
                 cancellation,
                 sourcePath,
