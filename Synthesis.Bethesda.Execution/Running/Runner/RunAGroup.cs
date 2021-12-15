@@ -57,7 +57,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             }
             
             await GroupRunPreparer.Prepare(
-                groupRun.ModKey, 
+                groupRun, 
                 groupRun.BlacklistedMods,
                 runParameters.PersistenceMode, 
                 runParameters.PersistencePath).ConfigureAwait(false);

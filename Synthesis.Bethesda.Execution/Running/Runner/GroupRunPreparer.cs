@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins;
+using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner
@@ -8,7 +9,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
     public interface IGroupRunPreparer
     {
         Task Prepare(
-            ModKey modKey,
+            IGroupRun groupRun,
             IReadOnlySet<ModKey> blackListedMods,
             PersistenceMode persistenceMode = PersistenceMode.None,
             string? persistencePath = null);
@@ -16,19 +17,19 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
 
     public class GroupRunPreparer : IGroupRunPreparer
     {
-        public IRunLoadOrderPreparer RunLoadOrderPreparer { get; }
+        public IGroupRunLoadOrderPreparer GroupRunLoadOrderPreparer { get; }
         public IRunPersistencePreparer PersistencePreparer { get; }
 
         public GroupRunPreparer(
-            IRunLoadOrderPreparer runLoadOrderPreparer,
+            IGroupRunLoadOrderPreparer groupRunLoadOrderPreparer,
             IRunPersistencePreparer persistencePreparer)
         {
-            RunLoadOrderPreparer = runLoadOrderPreparer;
+            GroupRunLoadOrderPreparer = groupRunLoadOrderPreparer;
             PersistencePreparer = persistencePreparer;
         }
         
         public async Task Prepare(
-            ModKey modKey,
+            IGroupRun groupRun,
             IReadOnlySet<ModKey> blackListedMods,
             PersistenceMode persistenceMode = PersistenceMode.None,
             string? persistencePath = null)
@@ -36,7 +37,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             await Task.WhenAll(
                 Task.Run(() =>
                 {
-                    RunLoadOrderPreparer.Write(modKey, blackListedMods);
+                    GroupRunLoadOrderPreparer.Write(groupRun, blackListedMods);
                 }), 
                 Task.Run(() =>
                 {

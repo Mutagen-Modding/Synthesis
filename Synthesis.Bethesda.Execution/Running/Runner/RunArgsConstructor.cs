@@ -61,7 +61,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 GameRelease = ReleaseContext.Release,
                 Localize = runParameters.Localize,
                 TargetLanguage = runParameters.TargetLanguage.ToString(),
-                LoadOrderFilePath = RunLoadOrderPathProvider.Path,
+                LoadOrderFilePath = RunLoadOrderPathProvider.PathFor(groupRun),
                 PersistencePath = runParameters.PersistenceMode == PersistenceMode.None ? null : runParameters.PersistencePath,
                 PatcherName = fileName,
                 ModKey = groupRun.ModKey.FileName,

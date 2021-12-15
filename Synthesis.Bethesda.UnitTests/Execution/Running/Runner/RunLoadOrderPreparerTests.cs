@@ -3,6 +3,7 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
 using NSubstitute;
+using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
@@ -13,20 +14,20 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
     {
         [Theory, SynthAutoData]
         public void PassesOutputPathToLoadOrderForRunProvider(
-            ModPath outputPath,
+            IGroupRun groupRun,
             IReadOnlySet<ModKey> blacklist,
-            RunLoadOrderPreparer sut)
+            GroupRunLoadOrderPreparer sut)
         {
-            sut.Write(outputPath, blacklist);
-            sut.LoadOrderForRunProvider.Received(1).Get(outputPath, blacklist);
+            sut.Write(groupRun, blacklist);
+            sut.LoadOrderForRunProvider.Received(1).Get(groupRun.ModKey, blacklist);
         }
         
         [Theory, SynthAutoData]
         public void RemovesImplicitMods(
-            ModPath outputPath,
-            RunLoadOrderPreparer sut)
+            IGroupRun groupRun,
+            GroupRunLoadOrderPreparer sut)
         {
-            sut.Write(outputPath, default!);
+            sut.Write(groupRun, default!);
             sut.LoadOrderWriter.Received(1)
                 .Write(
                     Arg.Any<FilePath>(),
@@ -36,13 +37,13 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public void PassesLoadOrderToWriter(
-            ModPath outputPath,
+            IGroupRun groupRun,
             IList<IModListingGetter> loadOrder,
-            RunLoadOrderPreparer sut)
+            GroupRunLoadOrderPreparer sut)
         {
             sut.LoadOrderForRunProvider.Get(default!, default!)
                 .ReturnsForAnyArgs(loadOrder);
-            sut.Write(outputPath, default!);
+            sut.Write(groupRun, default!);
             sut.LoadOrderWriter.Received(1)
                 .Write(
                     Arg.Any<FilePath>(),
@@ -52,12 +53,12 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         
         [Theory, SynthAutoData]
         public void PassesLoadOrderPathToWriter(
-            ModPath outputPath,
+            IGroupRun groupRun,
             FilePath path,
-            RunLoadOrderPreparer sut)
+            GroupRunLoadOrderPreparer sut)
         {
-            sut.LoadOrderPathProvider.Path.Returns(path);
-            sut.Write(outputPath, default!);
+            sut.LoadOrderPathProvider.PathFor(groupRun).Returns(path);
+            sut.Write(groupRun, default!);
             sut.LoadOrderWriter.Received(1)
                 .Write(
                     path,

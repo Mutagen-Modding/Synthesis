@@ -80,7 +80,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
         {
             sut.DataDirectoryProvider.Path.Returns(dataDir);
             sut.ReleaseContext.Release.Returns(release);
-            sut.RunLoadOrderPathProvider.Path.Returns(loadOrderPath);
+            sut.RunLoadOrderPathProvider.PathFor(groupRun).Returns(loadOrderPath);
             var result = sut.GetArgs(groupRun, patcher, sourcePath, runParameters);
             result.SourcePath.Should().Be(sourcePath);
             result.DataFolderPath.Should().Be(dataDir);
