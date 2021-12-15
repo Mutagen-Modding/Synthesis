@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel"
     xmlns:conf="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Confirmations"
+    xmlns:top="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Top"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -86,6 +87,7 @@
                         <DataTemplate DataType="{x:Type conf:PatcherInitRenameActionVm}">
                             <TextBox Margin="15,5" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </DataTemplate>
+                        <DataTemplate DataType="{x:Type top:ConfirmationActionVm}" />
                     </ContentControl.Resources>
                 </ContentControl>
                 <Button Grid.Row="3" Grid.Column="0"
