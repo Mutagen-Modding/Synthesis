@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
@@ -36,12 +37,20 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
                 Task.Run(async () =>
                 {
                     _logger.Information("Compiling");
-                    var resp = await Build.Compile(PathToProjProvider.Path, cancel).ConfigureAwait(false);
-                    if (!resp.Succeeded)
+                    try
                     {
-                        throw new SynthesisBuildFailure(resp.Reason);
+                        var resp = await Build.Compile(PathToProjProvider.Path, cancel).ConfigureAwait(false);
+                        if (!resp.Succeeded)
+                        {
+                            throw new SynthesisBuildFailure(resp.Reason);
+                        }
+                        _logger.Information("Compiled");
                     }
-                    _logger.Information("Compiled");
+                    catch (Exception e)
+                    {
+                        _logger.Error(e, "Failed to compile");
+                        throw;
+                    }
                 }),
                 Task.Run(() =>
                 {

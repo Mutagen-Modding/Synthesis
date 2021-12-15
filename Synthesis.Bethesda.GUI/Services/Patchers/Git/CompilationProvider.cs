@@ -81,9 +81,8 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                         }
                         catch (Exception ex)
                         {
-                            var str = $"Error checking out runner repository: {ex}";
-                            _logger.Error(str);
-                            observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
+                            _logger.Error(ex, "Error compiling");
+                            observer.OnNext(ErrorResponse.Fail($"Error compiling: {ex}").BubbleFailure<RunnerRepoInfo>());
                         }
 
                         observer.OnCompleted();
