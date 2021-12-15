@@ -11,7 +11,8 @@ namespace Mutagen.Bethesda.Synthesis.Projects
         string[] Create(
             GameCategory category,
             FilePath projPath,
-            bool insertOldVersion = false);
+            bool insertOldVersion = false,
+            string? targetFramework = null);
     }
 
     public class CreateProject : ICreateProject
@@ -27,7 +28,8 @@ namespace Mutagen.Bethesda.Synthesis.Projects
         public string[] Create(
             GameCategory category,
             FilePath projPath,
-            bool insertOldVersion = false)
+            bool insertOldVersion = false,
+            string? targetFramework = null)
         {
             _FileSystem.Directory.CreateDirectory(projPath.Directory);
             var projName = projPath.NameWithoutExtension;
@@ -37,7 +39,7 @@ namespace Mutagen.Bethesda.Synthesis.Projects
             fg.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk\">");
             fg.AppendLine($"  <PropertyGroup>");
             fg.AppendLine($"    <OutputType>Exe</OutputType>");
-            fg.AppendLine($"    <TargetFramework>net6.0</TargetFramework>");
+            fg.AppendLine($"    <TargetFramework>{(targetFramework ?? "net6.0")}</TargetFramework>");
             fg.AppendLine($"    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>");
             fg.AppendLine($"  </PropertyGroup>");
             fg.AppendLine();

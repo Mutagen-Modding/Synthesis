@@ -40,11 +40,6 @@ namespace Synthesis.Bethesda.Execution.DotNet.NugetListing
         
         public async Task<IEnumerable<NugetListingQuery>> Query(FilePath projectPath, bool outdated, bool includePrerelease, CancellationToken cancel)
         {
-            // Run restore first
-            await ProcessRunner.Run(
-                NetCommandStartConstructor.Construct("restore", projectPath),
-                cancel: cancel).ConfigureAwait(false);
-
             var result = await ProcessRunner.RunAndCapture(
                 NetCommandStartConstructor.Construct("list",
                     projectPath, 
@@ -52,6 +47,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.NugetListing
                     outdated ? "--outdated" : null,
                     includePrerelease ? "--include-prerelease" : null),
                 cancel: cancel).ConfigureAwait(false);
+            
             if (result.Errors.Count > 0)
             {
                 throw new InvalidOperationException($"Error while retrieving nuget listings: \n{string.Join("\n", result.Errors)}");

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.DotNet.NugetListing;
 using Synthesis.Bethesda.Execution.WorkEngine;
 
 namespace Synthesis.Bethesda.Execution.Versioning.Query
@@ -39,20 +40,20 @@ namespace Synthesis.Bethesda.Execution.Versioning.Query
             try
             {
                 _logger.Information("Querying for latest published library versions");
-                PrepLatestVersionProject.Prep();
+                await _workDropoff.EnqueueAndWait(() => PrepLatestVersionProject.Prep(cancel), cancel);
 
                 var normalTask = _workDropoff.EnqueueAndWait(() =>
                     QueryLibraryVersions.Query(
                         Pathing.ProjectFile,
                         current: false,
                         includePrerelease: false,
-                        cancel));
+                        cancel), cancel);
                 var prereleaseTask = _workDropoff.EnqueueAndWait(() =>
                     QueryLibraryVersions.Query(
                         Pathing.ProjectFile,
                         current: false,
                         includePrerelease: true,
-                        cancel));
+                        cancel), cancel);
 
                 var normal = await normalTask.ConfigureAwait(false);
                 var prerelease = await prereleaseTask.ConfigureAwait(false);

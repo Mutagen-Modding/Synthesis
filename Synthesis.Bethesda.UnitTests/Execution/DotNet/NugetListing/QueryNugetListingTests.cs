@@ -19,46 +19,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.NugetListing
     public class QueryNugetListingTests
     {
         [Theory, SynthAutoData]
-        public async Task CallsConstructRestoreWithProjPath(
-            FilePath projPath,
-            CancellationToken cancel,
-            QueryNugetListing sut)
-        {
-            sut.ProcessRunner.RunAndCapture(default!, default).ReturnsForAnyArgs(new ProcessRunReturn());
-            await sut.Query(projPath, default, default, cancel);
-            sut.NetCommandStartConstructor.Received(1).Construct("restore", projPath);
-        }
-        
-        [Theory, SynthAutoData]
-        public async Task PassesRestoreCommandToRunner(
-            FilePath projPath,
-            [Frozen]ProcessStartInfo startInfo,
-            CancellationToken cancel,
-            QueryNugetListing sut)
-        {
-            sut.ProcessRunner.RunAndCapture(default!, default).ReturnsForAnyArgs(new ProcessRunReturn());
-            sut.NetCommandStartConstructor.Construct("restore", projPath).Returns(startInfo);
-            await sut.Query(projPath, default, default, cancel);
-            await sut.ProcessRunner.Received(1).Run(startInfo, cancel);
-        }
-        
-        [Theory, SynthAutoData]
-        public async Task RestoreFailingDoesNotRunList(
-            FilePath projPath,
-            [Frozen]ProcessStartInfo startInfo,
-            CancellationToken cancel,
-            QueryNugetListing sut)
-        {
-            sut.ProcessRunner.RunAndCapture(default!, default).ReturnsForAnyArgs(new ProcessRunReturn());
-            sut.NetCommandStartConstructor.Construct("restore", projPath).Throws<NotImplementedException>();
-            await Assert.ThrowsAsync<NotImplementedException>(async () =>
-            {
-                await sut.Query(projPath, default, default, cancel);
-            });
-            await sut.ProcessRunner.DidNotReceiveWithAnyArgs().RunAndCapture(default!, default);
-        }
-        
-        [Theory, SynthAutoData]
         public async Task CallsConstructListWithProjPath(
             FilePath projPath,
             CancellationToken cancel,
