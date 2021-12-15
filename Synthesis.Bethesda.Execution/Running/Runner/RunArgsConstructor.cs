@@ -51,7 +51,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         {
             var fileName = PatcherNameSanitizer.Sanitize(patcher.Name);
             var nextPath = new FilePath(
-                Path.Combine(ProfileDirectories.WorkingDirectory, $"{patcher.Index} - {fileName}", groupRun.ModKey.FileName));
+                Path.Combine(ProfileDirectories.WorkingDirectory, groupRun.ModKey.Name, $"{patcher.Index} - {fileName}", groupRun.ModKey.FileName));
 
             return new RunSynthesisPatcher()
             {
