@@ -95,11 +95,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                 {
                     if (d.Failed)
                     {
-                        logger.Error($"Could not locate data folder: {d.Reason}");
+                        logger.Error("Could not locate data folder: {Reason}", d.Reason);
                     }
                     else
                     {
-                        logger.Information($"Data Folder: {d.Value}");
+                        logger.Information("Data Folder: {DataFolderPath}", d.Value);
                     }
                 })
                 .ToGuiProperty(this, nameof(DataFolderResult), deferSubscription: true);
