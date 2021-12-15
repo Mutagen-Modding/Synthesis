@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
@@ -47,7 +47,13 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
         {
             AppDomain.CurrentDomain.UnhandledException += (_, e) =>
             {
-                _logger.Error(e.ExceptionObject as Exception, "Crashing");
+                var ex = e.ExceptionObject as Exception;
+                _logger.Error(ex, "Crashing");
+                while (ex?.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                    _logger.Error(ex, "Inner Exception");
+                }
             };
 
             var versionLine = $"============== Opening Synthesis v{Versions.SynthesisVersion} ==============";
