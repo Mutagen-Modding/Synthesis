@@ -20,7 +20,6 @@ using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
-using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
@@ -34,7 +33,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
     {
         public ISolutionPathInputVm SolutionPathInput { get; }
         public ISelectedProjectInputVm SelectedProjectInput { get; }
-        private readonly IProfileLoadOrder _LoadOrder;
+        private readonly IProfileLoadOrder _loadOrder;
 
         public IObservableCollection<string> AvailableProjects { get; }
 
@@ -61,7 +60,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
 
         public ObservableCollection<ModKey> RequiredMods { get; } = new();
          
-        public IObservable<IChangeSet<ModKey>> DetectedMods => _LoadOrder.LoadOrder.Connect().Transform(l => l.ModKey);
+        public IObservable<IChangeSet<ModKey>> DetectedMods => _loadOrder.LoadOrder.Connect().Transform(l => l.ModKey);
 
         public PatcherUserSettingsVm PatcherSettings { get; }
 
@@ -93,7 +92,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution
         {
             SolutionPathInput = solutionPathInput;
             SelectedProjectInput = selectedProjectInput;
-            _LoadOrder = loadOrder;
+            _loadOrder = loadOrder;
             CopyInSettings(settings);
 
             AvailableProjects = availableProjectsFollower.Process(
