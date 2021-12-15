@@ -131,6 +131,7 @@ namespace Synthesis.Bethesda.Execution.WorkEngine
                 .Select(x => x ?? 0)
                 .Select(x => x == 0 ? Environment.ProcessorCount : x)
                 .DistinctUntilChanged()
+                .Do(x => _logger.Information("Number of cores to use: {NumCores}", x))
                 .Subscribe(AddNewThreadsIfNeeded)
                 .DisposeWithComposite(_disposable);
         }
