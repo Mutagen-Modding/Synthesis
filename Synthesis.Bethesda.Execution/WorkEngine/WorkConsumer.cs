@@ -127,7 +127,6 @@ namespace Synthesis.Bethesda.Execution.WorkEngine
         public void Start()
         {
             _numThreads
-                .StartWith(0)
                 .Select(x => x ?? 0)
                 .Select(x => x == 0 ? Environment.ProcessorCount : x)
                 .DistinctUntilChanged()
