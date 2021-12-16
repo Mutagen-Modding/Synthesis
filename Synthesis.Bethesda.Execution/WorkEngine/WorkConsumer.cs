@@ -24,6 +24,8 @@ namespace Synthesis.Bethesda.Execution.WorkEngine
         private readonly Dictionary<int, Task> _tasks = new();
         private int _nextCpuID = 1; // Start at 1, as 0 is "Unassigned"
         private static readonly AsyncLocal<int> _cpuId = new();
+        internal static readonly AsyncLocal<IWorkQueue?> AsyncLocalCurrentQueue = new();
+        public static bool WorkerThread => _cpuId.Value != 0;
         private int CpuId => _cpuId.Value;
         private readonly CancellationTokenSource _shutdown = new();
 
@@ -55,6 +57,7 @@ namespace Synthesis.Bethesda.Execution.WorkEngine
         private async Task ThreadBody(int cpuID)
         {
             _cpuId.Value = cpuID;
+            AsyncLocalCurrentQueue.Value = _queue;
 
             try
             {
