@@ -67,7 +67,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             {
                 foreach (var startupTask in _startupTasks)
                 {
-                    startupTask.Start();;
+                    startupTask.Start();
                 }
                 _logger.Information("Loading settings");
                 _mainVm.Value.Load();
