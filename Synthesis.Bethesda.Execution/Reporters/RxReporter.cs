@@ -6,7 +6,7 @@ namespace Synthesis.Bethesda.Execution.Reporters
 {
     public interface IRunReporterWatcher
     {       
-        public IObservable<Exception> Overall { get; }
+        public IObservable<Exception> Exceptions { get; }
         public IObservable<(Guid Key, string Run, Exception Error)> PrepProblem { get; }
         public IObservable<(Guid Key, string Run, Exception Error)> RunProblem { get; }
         public IObservable<(Guid Key, string Run, string OutputPath)> RunSuccessful { get; }
@@ -26,7 +26,7 @@ namespace Synthesis.Bethesda.Execution.Reporters
         private readonly Subject<(Guid Key, string? Run, string String)> _output = new();
         private readonly Subject<(Guid Key, string? Run, string String)> _error = new();
 
-        public IObservable<Exception> Overall => _overall;
+        public IObservable<Exception> Exceptions => _overall;
         public IObservable<(Guid Key, string Run, Exception Error)> PrepProblem => _prepProblem;
         public IObservable<(Guid Key, string Run, Exception Error)> RunProblem => _runProblem;
         public IObservable<(Guid Key, string Run, string OutputPath)> RunSuccessful => _runSuccessful;

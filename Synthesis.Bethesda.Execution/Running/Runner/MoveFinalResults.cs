@@ -38,12 +38,18 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 FileSystem.Directory.CreateDirectory(outputPath);
             }
             
-            var finalPathFolder = finalPatch.Directory;
+            var finalPatchFolder = finalPatch.Directory!;
             
-            FileSystem.Directory.DeepCopy(finalPathFolder!.Value.Path, outputPath);
-            _reporter.Write(default!, default, $"Exported patch to workspace: {outputPath}");
-            FileSystem.Directory.DeepCopy(finalPathFolder.Value.Path, _dataDirectoryProvider.Path, overwrite: true);
-            _reporter.Write(default!, default, $"Exported patch to final destination: {outputPath}");
+            _reporter.WriteOverall("Files to export:");
+            foreach (var file in finalPatchFolder.Value.EnumerateFiles(true, fileSystem: FileSystem))
+            {
+                _reporter.WriteOverall($"   {file.GetRelativePathTo(finalPatchFolder.Value)}");
+            }
+            
+            FileSystem.Directory.DeepCopy(finalPatchFolder.Value.Path, outputPath);
+            _reporter.WriteOverall($"Exported patch to workspace: {outputPath}");
+            FileSystem.Directory.DeepCopy(finalPatchFolder.Value.Path, _dataDirectoryProvider.Path, overwrite: true);
+            _reporter.WriteOverall($"Exported patch to final destination: {_dataDirectoryProvider.Path}");
         }
     }
 }
