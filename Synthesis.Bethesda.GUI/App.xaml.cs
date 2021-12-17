@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Autofac;
+using Noggog.IO;
 using Serilog;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.GUI.Services.Startup;
@@ -17,6 +18,14 @@ namespace Synthesis.Bethesda.GUI
         {
             base.OnStartup(e);
             
+            var singleApp = new SingletonApplicationEnforcer("Synthesis");
+
+            if (!singleApp.IsFirstApplication)
+            {
+                Application.Current.Shutdown();
+                return;
+            }
+            
             var window = new MainWindow();
             
             try
@@ -27,6 +36,7 @@ namespace Synthesis.Bethesda.GUI
                     .AsSelf()
                     .As<IWindowPlacement>()
                     .As<IMainWindow>();
+                builder.RegisterInstance(singleApp);
                 var container = builder.Build();
 
                 container.Resolve<IStartup>()
