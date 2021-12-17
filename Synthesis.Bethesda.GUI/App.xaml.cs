@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
+using Autofac;
+using Serilog;
+using Synthesis.Bethesda.Execution.Placement;
+using Synthesis.Bethesda.GUI.Services.Startup;
+using Synthesis.Bethesda.GUI.Views;
 
 namespace Synthesis.Bethesda.GUI
 {
@@ -13,5 +13,32 @@ namespace Synthesis.Bethesda.GUI
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            
+            var window = new MainWindow();
+            
+            try
+            {
+                var builder = new ContainerBuilder();
+                builder.RegisterModule<Synthesis.Bethesda.GUI.Modules.MainModule>();
+                builder.RegisterInstance(window)
+                    .AsSelf()
+                    .As<IWindowPlacement>()
+                    .As<IMainWindow>();
+                var container = builder.Build();
+
+                container.Resolve<IStartup>()
+                    .Initialize();
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(ex, "Error constructing container");
+                throw;
+            }
+            
+            window.Show();
+        }
     }
 }
