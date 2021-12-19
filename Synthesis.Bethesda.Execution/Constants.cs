@@ -3,8 +3,8 @@ using Newtonsoft.Json.Converters;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection.Metadata;
 using Mutagen.Bethesda.Json;
+using Noggog.Json;
 using Synthesis.Bethesda.Execution.Settings.V2;
 
 namespace Synthesis.Bethesda.Execution
@@ -26,6 +26,7 @@ namespace Synthesis.Bethesda.Execution
         static Constants()
         {
             JsonSettings.AddMutagenConverters();
+            JsonSettings.AddNoggogConverters();
         }
 
         static void ErrorHandler(object? sender, Newtonsoft.Json.Serialization.ErrorEventArgs args)
