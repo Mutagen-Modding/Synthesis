@@ -9,6 +9,7 @@ using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Plugins.Records.Internals;
+using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Synthesis.CLI;
 
 namespace Mutagen.Bethesda.Synthesis.States.DI
@@ -24,10 +25,10 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
 
     public class StateFactory : IStateFactory
     {
-        private readonly IFileSystem _FileSystem;
-        private readonly ILoadOrderImporterFactory _LoadOrderImporter;
-        private readonly IGetStateLoadOrder _GetStateLoadOrder;
-        private readonly IEnableImplicitMastersFactory _EnableImplicitMasters;
+        private readonly IFileSystem _fileSystem;
+        private readonly ILoadOrderImporterFactory _loadOrderImporter;
+        private readonly IGetStateLoadOrder _getStateLoadOrder;
+        private readonly IEnableImplicitMastersFactory _enableImplicitMasters;
 
         public StateFactory(
             IFileSystem fileSystem,
@@ -35,10 +36,10 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
             IGetStateLoadOrder getStateLoadOrder,
             IEnableImplicitMastersFactory enableImplicitMasters)
         {
-            _FileSystem = fileSystem;
-            _LoadOrderImporter = loadOrderImporter;
-            _GetStateLoadOrder = getStateLoadOrder;
-            _EnableImplicitMasters = enableImplicitMasters;
+            _fileSystem = fileSystem;
+            _loadOrderImporter = loadOrderImporter;
+            _getStateLoadOrder = getStateLoadOrder;
+            _enableImplicitMasters = enableImplicitMasters;
         }
         
         public SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
@@ -55,13 +56,17 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
             {
                 throw new ArgumentException($"Target mod type {typeof(TModGetter)} was not of the expected type {regis.GetterType}");
             }
+            
+            // Set up target language
+            System.Console.WriteLine($"Language: {settings.TargetLanguage}");
+            TranslatedString.DefaultLanguage = settings.TargetLanguage;
 
             // Get load order
-            var loadOrderListing = _GetStateLoadOrder.GetLoadOrder(userPrefs)
+            var loadOrderListing = _getStateLoadOrder.GetLoadOrder(!settings.LoadOrderIncludesCreationClub, userPrefs)
                 .ToExtendedList();
             var rawLoadOrder = loadOrderListing.Select(x => new ModListing(x.ModKey, x.Enabled)).ToExtendedList();
 
-            // Trim past Synthesis.esp
+            // Trim past export key
             var synthIndex = loadOrderListing.IndexOf(exportKey, (listing, key) => listing.ModKey == key);
             if (synthIndex != -1)
             {
@@ -70,7 +75,7 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
 
             if (userPrefs.AddImplicitMasters)
             {
-                _EnableImplicitMasters
+                _enableImplicitMasters
                     .Get(settings.DataFolderPath, settings.GameRelease)
                     .Add(loadOrderListing);
             }
@@ -81,7 +86,7 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
                 loadOrderListing = loadOrderListing.OnlyEnabled().ToExtendedList();
             }
 
-            var loadOrder = _LoadOrderImporter
+            var loadOrder = _loadOrderImporter
                 .Get<TModGetter>(
                     settings.DataFolderPath,
                     loadOrderListing,
@@ -104,7 +109,7 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
                 }
                 else
                 {
-                    readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease, fileSystem: _FileSystem);
+                    readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease, fileSystem: _fileSystem);
                 }
                 loadOrder.Add(new ModListing<TModGetter>(readOnlyPatchMod, enabled: true));
                 rawLoadOrder.Add(new ModListing(readOnlyPatchMod.ModKey, enabled: true));
@@ -118,14 +123,14 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
                 }
                 else
                 {
-                    patchMod = ModInstantiator<TModSetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease, fileSystem: _FileSystem);
+                    patchMod = ModInstantiator<TModSetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease, fileSystem: _fileSystem);
                 }
                 if (settings.PersistencePath is not null && settings.PatcherName is not null)
                 {
                     if (TextFileSharedFormKeyAllocator.IsPathOfAllocatorType(settings.PersistencePath))
                     {
                         System.Console.WriteLine($"Using {nameof(TextFileSharedFormKeyAllocator)} allocator");
-                        patchMod.SetAllocator(formKeyAllocator = new TextFileSharedFormKeyAllocator(patchMod, settings.PersistencePath, settings.PatcherName, fileSystem: _FileSystem));
+                        patchMod.SetAllocator(formKeyAllocator = new TextFileSharedFormKeyAllocator(patchMod, settings.PersistencePath, settings.PatcherName, fileSystem: _fileSystem));
                     }
                     // else if (SQLiteFormKeyAllocator.IsPathOfAllocatorType(settings.PersistencePath))
                     // {
@@ -140,6 +145,13 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
                 cache = loadOrder.ToMutableLinkCache(patchMod);
                 loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));
                 rawLoadOrder.Add(new ModListing(patchMod.ModKey, enabled: true));
+
+                System.Console.WriteLine($"Can use localization: {patchMod.CanUseLocalization}");
+                if (patchMod.CanUseLocalization)
+                {
+                    System.Console.WriteLine($"Localized: {settings.Localize}");
+                    patchMod.UsingLocalization = settings.Localize;
+                }
             }
 
             return new SynthesisState<TModSetter, TModGetter>(
@@ -147,6 +159,7 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
                 loadOrder: loadOrder,
                 rawLoadOrder: rawLoadOrder,
                 linkCache: cache,
+                internalDataPath: settings.InternalDataFolder,
                 patchMod: patchMod,
                 extraDataPath: settings.ExtraDataFolder == null ? string.Empty : Path.GetFullPath(settings.ExtraDataFolder),
                 defaultDataPath: settings.DefaultDataFolderPath,
@@ -157,7 +170,8 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
         public IPatcherState ToState(GameCategory category, RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
         {
             var regis = category.ToModRegistration();
-            var method = typeof(StateFactory).GetMethods()
+            var method = typeof(StateFactory)
+                .GetMethods()
                 .Where(m => m.Name == nameof(ToState))
                 .Where(m => m.ContainsGenericParameters)
                 .First()

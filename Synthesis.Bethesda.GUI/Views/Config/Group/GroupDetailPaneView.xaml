@@ -1,0 +1,24 @@
+<local:GroupDetailPaneViewBase x:Class="Synthesis.Bethesda.GUI.Views.GroupDetailPaneView"
+                               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                               xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                               xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
+                               xmlns:plugins="clr-namespace:Mutagen.Bethesda.WPF.Plugins;assembly=Mutagen.Bethesda.WPF"
+                               mc:Ignorable="d"
+                               d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid x:Name="SettingsGrid" Margin="0,15,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="300" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="Blacklisted Mods"
+                       FontSize="14"
+                       FontWeight="Bold" />
+            <plugins:ModKeyMultiPicker Grid.Row="1" x:Name="BlacklistedMods" MaxHeight="300" 
+                                       ToolTip="Mods that the group will not consider when creating a patch" />
+        </Grid>
+        <local:GroupAddPatchersHelpView x:Name="AddSomePatchersHelpGrid" Visibility="Collapsed" />
+    </Grid>
+</local:GroupDetailPaneViewBase>

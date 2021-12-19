@@ -22,7 +22,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                     driverRepositoryPreparation.DriverInfo,
                     runnerRepositoryPreparation.State,
                     (driver, runner) => driver.RunnableState.Succeeded && runner.RunnableState.Succeeded)
-                .ToGuiProperty(this, nameof(Valid));
+                .ToGuiProperty(this, nameof(Valid), deferSubscription: true);
         }
     }
 }

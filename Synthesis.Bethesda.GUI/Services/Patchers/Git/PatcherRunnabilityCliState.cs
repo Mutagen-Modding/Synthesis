@@ -23,7 +23,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
         public IObservable<ConfigurationState<RunnerRepoInfo>> Runnable { get; }
 
         public PatcherRunnabilityCliState(
-            ICompliationProvider compliationProvider,
+            ICompilationProvider compilationProvider,
             IProfileDataFolderVm dataFolder,
             IProfileLoadOrder loadOrder,
             IExecuteRunnabilityCheck checkRunnability,
@@ -31,7 +31,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             ILogger logger)
         {
             Runnable = Observable.CombineLatest(
-                    compliationProvider.State,
+                    compilationProvider.State,
                     dataFolder.WhenAnyValue(x => x.Path),
                     loadOrder.LoadOrder.Connect()
                         .QueryWhenChanged()
@@ -63,7 +63,8 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                                 path: i.comp.Item.ProjPath,
                                 directExe: false,
                                 cancel: cancel,
-                                loadOrderPath: tmpLoadOrder.File);
+                                buildMetaPath: i.comp.Item.MetaPath,
+                                loadOrderPath: tmpLoadOrder.File).ConfigureAwait(false);
                             if (runnability.Failed)
                             {
                                 logger.Information($"Checking runnability failed: {runnability.Reason}");

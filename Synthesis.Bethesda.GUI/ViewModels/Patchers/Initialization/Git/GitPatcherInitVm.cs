@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
@@ -14,6 +16,7 @@ using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.Patchers.Git.Registry;
+using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
@@ -26,13 +29,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
     public class GitPatcherInitVm : ViewModel, IPatcherInitVm
     {
         private readonly IPatcherInitializationVm _init;
-        private readonly IPatcherFactory _PatcherFactory;
-        
+        private readonly IPatcherFactory _patcherFactory;
+        private readonly PatcherInitRenameValidator _renamer;
+        private readonly IPathSanitation _pathSanitation;
+
         public ICommand CompleteConfiguration => _init.CompleteConfiguration;
         public ICommand CancelConfiguration => _init.CancelConfiguration;
         
-        private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
-        public ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
+        private readonly ObservableAsPropertyHelper<ErrorResponse> _canCompleteConfiguration;
+        public ErrorResponse CanCompleteConfiguration => _canCompleteConfiguration.Value;
 
         public GitPatcherVm Patcher { get; }
 
@@ -69,14 +74,18 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             ILogger logger,
             IPatcherFactory patcherFactory,
             INavigateTo navigateTo, 
+            IPathSanitation pathSanitation,
             PatcherStoreListingVm.Factory listingVmFactory,
-            IRegistryListingsProvider listingsProvider)
+            IRegistryListingsProvider listingsProvider,
+            PatcherInitRenameValidator renamer)
         {
             _init = init;
-            _PatcherFactory = patcherFactory;
+            _patcherFactory = patcherFactory;
+            _renamer = renamer;
+            _pathSanitation = pathSanitation;
             Patcher = patcherFactory.GetGitPatcher();
 
-            _CanCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid.Valid)
+            _canCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid.Valid)
                 .Select(x => ErrorResponse.Create(x))
                 .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
 
@@ -138,6 +147,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
                                 return false;
                             });
                     }))
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .ToObservableCollection(this);
 
             OpenPopulationInfoCommand = ReactiveCommand.Create(() => navigateTo.Navigate(Constants.ListingRepositoryAddress));
@@ -154,15 +164,18 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
         {
             Patcher.Delete();
         }
-
-        public void AddStorePatcher(PatcherStoreListingVm listing)
+        
+        public async Task AddStorePatcher(PatcherStoreListingVm listing)
         {
-            var patcher = _PatcherFactory.GetGitPatcher(new GithubPatcherSettings()
+            var patcher = _patcherFactory.GetGitPatcher(new GithubPatcherSettings()
             {
                 RemoteRepoPath = listing.RepoPath,
-                SelectedProjectSubpath = listing.Raw.ProjectPath.Replace('/', '\\')
+                SelectedProjectSubpath = _pathSanitation.Sanitize(listing.Raw.ProjectPath)
             });
-            _init.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
+            if (await _renamer.ConfirmNameUnique(patcher))
+            {
+                _init.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
+            }
         }
 
         public override void Dispose()

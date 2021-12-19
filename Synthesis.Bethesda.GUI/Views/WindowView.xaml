@@ -5,16 +5,16 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:top="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Top"
-    xmlns:profiles="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles"
     xmlns:running="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
+    xmlns:settings="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Top.Settings"
+    xmlns:top="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Top"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Grid>
         <ContentPresenter x:Name="ContentPane">
             <ContentPresenter.Resources>
-                <DataTemplate DataType="{x:Type top:ConfigurationVm}">
+                <DataTemplate DataType="{x:Type top:ProfileManagerVm}">
                     <local:ConfigurationView />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type top:NewProfileVm}">
@@ -23,11 +23,15 @@
                 <DataTemplate DataType="{x:Type running:RunVm}">
                     <local:MainRunView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type profiles:ProfilesDisplayVm}">
+                <DataTemplate DataType="{x:Type settings:ProfilesDisplayVm}">
                     <local:ProfilesView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type settings:GlobalSettingsPaneVm}">
+                    <local:GlobalSettingsPaneView />
                 </DataTemplate>
             </ContentPresenter.Resources>
         </ContentPresenter>
         <local:OverlayView x:Name="ConfirmationOverlay" Visibility="Collapsed" />
+        <local:MainLoadingView x:Name="InitialLoading" />
     </Grid>
 </local:WindowViewBase>

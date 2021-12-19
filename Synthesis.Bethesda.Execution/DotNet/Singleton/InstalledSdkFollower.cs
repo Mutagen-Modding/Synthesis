@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.Execution.DotNet
                 {
                     try
                     {
-                        return await query.Query(CancellationToken.None);
+                        return await query.Query(CancellationToken.None).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {

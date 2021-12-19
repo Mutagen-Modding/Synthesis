@@ -4,19 +4,21 @@ using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Synthesis.Bethesda.Commands;
+using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Profile;
+using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner
 {
     public interface IRunArgsConstructor
     {
         RunSynthesisPatcher GetArgs(
+            IGroupRun groupRun,
             IPatcherRun patcher,
-            ModKey outputKey,
             FilePath? sourcePath,
-            string? persistencePath);
+            RunParameters runParameters);
     }
 
     public class RunArgsConstructor : IRunArgsConstructor
@@ -42,14 +44,14 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         }
         
         public RunSynthesisPatcher GetArgs(
+            IGroupRun groupRun,
             IPatcherRun patcher,
-            ModKey outputKey,
             FilePath? sourcePath,
-            string? persistencePath)
+            RunParameters runParameters)
         {
             var fileName = PatcherNameSanitizer.Sanitize(patcher.Name);
-            var nextPath = new ModPath(outputKey,
-                Path.Combine(ProfileDirectories.WorkingDirectory, $"{patcher.Index} - {fileName}"));
+            var nextPath = new FilePath(
+                Path.Combine(ProfileDirectories.WorkingDirectory, groupRun.ModKey.Name, $"{patcher.Index} - {fileName}", groupRun.ModKey.FileName));
 
             return new RunSynthesisPatcher()
             {
@@ -57,9 +59,12 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 OutputPath = nextPath,
                 DataFolderPath = DataDirectoryProvider.Path,
                 GameRelease = ReleaseContext.Release,
-                LoadOrderFilePath = RunLoadOrderPathProvider.Path,
-                PersistencePath = persistencePath,
-                PatcherName = fileName
+                Localize = runParameters.Localize,
+                TargetLanguage = runParameters.TargetLanguage.ToString(),
+                LoadOrderFilePath = RunLoadOrderPathProvider.PathFor(groupRun),
+                PersistencePath = runParameters.PersistenceMode == PersistenceMode.None ? null : runParameters.PersistencePath,
+                PatcherName = fileName,
+                ModKey = groupRun.ModKey.FileName,
             };
         }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -49,13 +49,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
                     return new ErrorVM(this, logger, err);
                 })
                 .RetryWithBackOff<ErrorVM?, Exception>((_, times) => TimeSpan.FromMilliseconds(Math.Min(times * 250, 5000)))
-                .ToGuiProperty(this, nameof(Error), default);
+                .ToGuiProperty(this, nameof(Error), default, deferSubscription: true);
             _InError = this.WhenAnyValue(x => x.Error)
                 .Select(x => x != null)
-                .ToGuiProperty(this, nameof(InError));
+                .ToGuiProperty(this, nameof(InError), deferSubscription: true);
             _ErrorString = this.WhenAnyValue(x => x.Error)
                 .Select(x => x != null ? $"Nuget Config: {x.ErrorText}" : null)
-                .ToGuiProperty(this, nameof(ErrorString), default);
+                .ToGuiProperty(this, nameof(ErrorString), default, deferSubscription: true);
         }
 
         public class ErrorVM

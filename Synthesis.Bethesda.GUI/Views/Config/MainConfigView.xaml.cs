@@ -14,7 +14,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class MainConfigViewBase : NoggogUserControl<ConfigurationVm> { }
+    public class MainConfigViewBase : NoggogUserControl<ProfileManagerVm> { }
 
     /// <summary>
     /// Interaction logic for PatchersConfigurationView.xaml

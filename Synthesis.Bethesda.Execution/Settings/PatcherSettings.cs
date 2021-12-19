@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using Serilog;
-using Synthesis.Bethesda.Execution.Patchers.Common;
 
 namespace Synthesis.Bethesda.Execution.Settings
 {

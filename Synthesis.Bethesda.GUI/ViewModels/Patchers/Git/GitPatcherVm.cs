@@ -27,29 +27,28 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
     {
         private readonly ILogger _logger;
         private readonly ICopyOverExtraData _copyOverExtraData;
-        private readonly DeleteUserData _deleteUserData;
         public override bool IsNameEditable => false;
 
         public ISelectedProjectInputVm SelectedProjectInput { get; }
         public IGitRemoteRepoPathInputVm RemoteRepoPathInput { get; }
 
-        private readonly ObservableAsPropertyHelper<ConfigurationState> _State;
-        public override ConfigurationState State => _State?.Value ?? ConfigurationState.Success;
+        private readonly ObservableAsPropertyHelper<ConfigurationState> _state;
+        public override ConfigurationState State => _state?.Value ?? ConfigurationState.Success;
 
-        public string ID { get; private set; } = string.Empty;
+        public string ID { get; private set; }
 
         public string LocalDriverRepoDirectory { get; }
         public string LocalRunnerRepoDirectory { get; }
 
-        private readonly ObservableAsPropertyHelper<ErrorResponse> _RepoValidity;
-        public ErrorResponse RepoValidity => _RepoValidity.Value;
+        private readonly ObservableAsPropertyHelper<ErrorResponse> _repoValidity;
+        public ErrorResponse RepoValidity => _repoValidity.Value;
 
         public IObservableCollection<string> AvailableProjects { get; }
 
         public IObservableCollection<string> AvailableTags { get; }
 
-        private readonly ObservableAsPropertyHelper<RunnerRepoInfo?> _RunnableData;
-        public RunnerRepoInfo? RunnableData => _RunnableData.Value;
+        private readonly ObservableAsPropertyHelper<RunnerRepoInfo?> _runnableData;
+        public RunnerRepoInfo? RunnableData => _runnableData.Value;
 
         public ICommand OpenGitPageCommand { get; }
 
@@ -57,13 +56,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
 
         public ICommand NavigateToInternalFilesCommand { get; }
 
-        private readonly ObservableAsPropertyHelper<bool> _AttemptedCheckout;
-        public bool AttemptedCheckout => _AttemptedCheckout.Value;
+        private readonly ObservableAsPropertyHelper<bool> _attemptedCheckout;
+        public bool AttemptedCheckout => _attemptedCheckout.Value;
 
-        public PatcherSettingsVm PatcherSettings { get; }
+        public PatcherUserSettingsVm PatcherSettings { get; }
 
-        private readonly ObservableAsPropertyHelper<StatusRecord> _StatusDisplay;
-        public StatusRecord StatusDisplay => _StatusDisplay.Value;
+        private readonly ObservableAsPropertyHelper<StatusRecord> _statusDisplay;
+        public StatusRecord StatusDisplay => _statusDisplay.Value;
 
         [Reactive]
         public GithubPatcherLastRunState? LastSuccessfulRun { get; set; }
@@ -89,7 +88,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IAvailableTags availableTags,
             ILockToCurrentVersioning lockToCurrentVersioning,
             IAvailableProjects availableProjects,
-            ICompliationProvider compilationProvider,
+            ICompilationProvider compilationProvider,
             IBaseRepoDirectoryProvider baseRepoDir,
             IGitStatusDisplay gitStatusDisplay,
             IDriverRepoDirectoryProvider driverRepoDirectoryProvider,
@@ -108,16 +107,16 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IAttemptedCheckout attemptedCheckout,
             IPatcherIdProvider idProvider,
             ICopyOverExtraData copyOverExtraData,
+            PatcherRenameActionVm.Factory renameFactory,
             DeleteUserData deleteUserData,
-            PatcherSettingsVm.Factory settingsVmFactory,
+            PatcherUserSettingsVm.Factory settingsVmFactory,
             GithubPatcherSettings? settings = null)
             : base(
                 scope, nameVm, selPatcher,
-                confirmation, idProvider, settings)
+                confirmation, idProvider, renameFactory, settings)
         {
             _logger = logger;
             _copyOverExtraData = copyOverExtraData;
-            _deleteUserData = deleteUserData;
             SelectedProjectInput = selectedProjectInput;
             RemoteRepoPathInput = remoteRepoPathInputVm;
             Locking = lockToCurrentVersioning;
@@ -127,7 +126,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             NugetTargeting = nugetTargetingVm;
             UpdateAllCommand = updateAllCommand;
 
-            DeleteUserDataCommand = ReactiveCommand.Create(_deleteUserData.Delete);
+            DeleteUserDataCommand = ReactiveCommand.Create(deleteUserData.Delete);
 
             ID = ident.Id;
             
@@ -136,26 +135,26 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             LocalDriverRepoDirectory = driverRepoDirectoryProvider.Path.Path;
             LocalRunnerRepoDirectory = runnerRepoDirectoryProvider.Path.Path;
 
-            _RepoValidity = getRepoPathValidity.RepoPath
+            _repoValidity = getRepoPathValidity.RepoPath
                 .Select(r => r.RunnableState)
-                .ToGuiProperty(this, nameof(RepoValidity));
+                .ToGuiProperty(this, nameof(RepoValidity), deferSubscription: true);
 
             AvailableProjects = availableProjects.Projects;
 
             AvailableTags = availableTags.Tags;
 
-            _AttemptedCheckout = checkoutInputProvider.Input
+            _attemptedCheckout = checkoutInputProvider.Input
                 .Select(attemptedCheckout.Attempted)
-                .ToGuiProperty(this, nameof(AttemptedCheckout));
+                .ToGuiProperty(this, nameof(AttemptedCheckout), deferSubscription: true);
 
-            _RunnableData = runnableStateProvider.WhenAnyValue(x => x.State.Item)
-                .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?));
+            _runnableData = runnableStateProvider.WhenAnyValue(x => x.State.Item)
+                .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?), deferSubscription: true);
 
-            _State = state.State
+            _state = state.State
                 .ToGuiProperty(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
                 {
                     IsHaltingError = false
-                });
+                }, deferSubscription: true);
 
             OpenGitPageCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.RepoValidity)
@@ -170,14 +169,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                     try
                     {
                         if (RunnableData is not {} runnable) return;
-                        if (runnable.Target == null)
-                        {
-                            navigate.Navigate(RemoteRepoPathInput.RemoteRepoPath);
-                        }
-                        else
-                        {
-                            navigate.Navigate(Path.Combine(RemoteRepoPathInput.RemoteRepoPath, "tree", runnable.Target));
-                        }
+                        navigate.Navigate(Path.Combine(RemoteRepoPathInput.RemoteRepoPath, "tree", runnable.Target.Target));
                     }
                     catch (Exception ex)
                     {
@@ -191,19 +183,22 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 false, 
                 compilationProvider.State.Select(c =>
                     {
-                        if (c.RunnableState.Failed) return (c.RunnableState.BubbleFailure<FilePath>(), null);
-                        return (GetResponse<FilePath>.Succeed(c.Item.ProjPath), c.Item.TargetVersions.Synthesis);
+                        if (c.RunnableState.Failed)
+                        {
+                            return new PatcherUserSettingsVm.Inputs(c.RunnableState.BubbleFailure<FilePath>(), null, default);
+                        }
+                        return new PatcherUserSettingsVm.Inputs(GetResponse<FilePath>.Succeed(c.Item.ProjPath), c.Item.TargetVersions.Synthesis, c.Item.MetaPath);
                     })
-                    .DistinctUntilChanged(x => (x.Item1.Value, x.Synthesis)))
+                    .DistinctUntilChanged())
                 .DisposeWith(this);
 
-            _StatusDisplay = gitStatusDisplay.StatusDisplay
+            _statusDisplay = gitStatusDisplay.StatusDisplay
                 .ToGuiProperty(this, nameof(StatusDisplay),
                     new StatusRecord(
                         Text: "Initializing",
                         Processing: false,
                         Blocking: false,
-                        Command: null));
+                        Command: null), deferSubscription: true);
 
             SetToLastSuccessfulRunCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.LastSuccessfulRun)
@@ -306,7 +301,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Failure deleting git repo: {this.LocalDriverRepoDirectory}");
+                _logger.Error(ex, "Failure deleting git repo: {LocalDriverRepoDirectory}", LocalDriverRepoDirectory);
             }
             try
             {
@@ -315,7 +310,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Failure deleting git repo: {this.LocalRunnerRepoDirectory}");
+                _logger.Error(ex, "Failure deleting git repo: {LocalRunnerRepoDirectory}", this.LocalRunnerRepoDirectory);
             }
         }
 

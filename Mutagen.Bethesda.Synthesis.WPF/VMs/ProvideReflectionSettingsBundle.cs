@@ -1,6 +1,6 @@
 ﻿using System;
-using System.IO.Abstractions;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicData;
@@ -8,10 +8,9 @@ using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Reflection;
 using Noggog;
+using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.DTO;
-using Synthesis.Bethesda.Execution.Patchers;
-using Synthesis.Bethesda.Execution.Patchers.Common;
 
 namespace Mutagen.Bethesda.Synthesis.WPF
 {
@@ -28,19 +27,16 @@ namespace Mutagen.Bethesda.Synthesis.WPF
     public class ProvideReflectionSettingsBundle : IProvideReflectionSettingsBundle
     {
         private readonly ILogger _Logger;
-        private readonly IPatcherExtraDataPathProvider _extraDataPathProvider;
-        private readonly IFileSystem _FileSystem;
+        private readonly ReflectionSettingsVM.Factory _reflFactory;
         private readonly IExtractInfoFromProject _Extract;
 
         public ProvideReflectionSettingsBundle(
             ILogger logger,
-            IPatcherExtraDataPathProvider extraDataPathProvider,
-            IFileSystem fileSystem,
+            ReflectionSettingsVM.Factory reflFactory,
             IExtractInfoFromProject extract)
         {
             _Logger = logger;
-            _extraDataPathProvider = extraDataPathProvider;
-            _FileSystem = fileSystem;
+            _reflFactory = reflFactory;
             _Extract = extract;
         }
         
@@ -63,17 +59,14 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                             {
                                 var t = assemb.GetType(s.TypeName);
                                 if (t == null) return null;
-                                return new ReflectionSettingsVM(
+                                return _reflFactory(
                                     ReflectionSettingsParameters.FromType(
-                                        detectedLoadOrder,
+                                        detectedLoadOrder.ObserveOn(RxApp.MainThreadScheduler),
                                         linkCache,
                                         t,
                                         Activator.CreateInstance(t)),
                                     nickname: targets[index].Nickname,
-                                    settingsFolder: _extraDataPathProvider.Path,
-                                    settingsSubPath: targets[index].Path,
-                                    logger: _Logger,
-                                    fileSystem: _FileSystem);
+                                    settingsSubPath: targets[index].Path);
                             }
                             catch (Exception ex)
                             {
@@ -83,12 +76,12 @@ namespace Mutagen.Bethesda.Synthesis.WPF
                         })
                         .NotNull()
                         .ToArray();
-                });
+                }).ConfigureAwait(false);
             if (vms.Failed)
             {
                 return vms.BubbleFailure<ReflectionSettingsBundleVm>();
             }
-            await Task.WhenAll(vms.Value.Item.Select(vm => vm.Import(cancel)));
+            await Task.WhenAll(vms.Value.Item.Select(vm => vm.Import(cancel))).ConfigureAwait(false);
             return new ReflectionSettingsBundleVm(vms.Value.Item, vms.Value.Temp, _Logger);
         }
     }

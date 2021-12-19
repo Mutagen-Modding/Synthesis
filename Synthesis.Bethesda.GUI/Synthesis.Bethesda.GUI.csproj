@@ -21,18 +21,19 @@
     <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable</WarningsAsErrors>
-    <PublishSingleFile>True</PublishSingleFile>
     <PublishReadyToRun>True</PublishReadyToRun>
     <PublishReadyToRunShowWarnings>True</PublishReadyToRunShowWarnings>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Fallout4.png" />
     <None Remove="Resources\mushroom.ico" />
     <None Remove="Resources\Oblivion.png" />
     <None Remove="Resources\SkyrimLE.png" />
     <None Remove="Resources\SkyrimSSE.png" />
     <None Remove="Resources\SkyrimVR.png" />
+    <None Remove="Resources\Splashscreen.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,8 +45,8 @@
     <PackageReference Include="Humanizer.Core" Version="2.13.14" />
     <PackageReference Include="Loqui" Version="2.35.0" />
     <PackageReference Include="Loqui.Generation" Version="2.35.0" />
-    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.34.0" />
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.34.0" />
+    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.34.1" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.34.1" />
     <PackageReference Include="Noggog.Autofac" Version="2.35.0" />
     <PackageReference Include="Noggog.CSharpExt" Version="2.35.0" />
     <PackageReference Include="Noggog.WPF" Version="2.35.0" />
@@ -71,11 +72,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Fallout4.png" />
     <Resource Include="Resources\mushroom.ico" />
     <Resource Include="Resources\Oblivion.png" />
     <Resource Include="Resources\SkyrimLE.png" />
     <Resource Include="Resources\SkyrimSSE.png" />
     <Resource Include="Resources\SkyrimVR.png" />
+    <None Remove="Resources\enderal.png" />
+    <Resource Include="Resources\enderal.png" />
+    <None Remove="Resources\enderal-se.png" />
+    <Resource Include="Resources\enderal-se.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SplashScreen Include="Resources\Splashscreen.png" />
   </ItemGroup>
   
   <ItemGroup>
@@ -83,7 +93,7 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Page</BuildAction>
     </Page>
-    <Page Update="Views\Config\GroupConfigView.xaml">
+    <Page Update="Views\Config\Group\GroupConfigView.xaml">
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Page</BuildAction>
     </Page>
@@ -100,7 +110,11 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Page</BuildAction>
     </Page>
-    <Page Update="Views\Config\GroupDetailPaneView.xaml">
+    <Page Update="Views\Config\Group\GroupDetailPaneView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+    <Page Update="Views\Config\AdvancedSettingsView.xaml">
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Page</BuildAction>
     </Page>
@@ -122,7 +136,7 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
-    <Compile Update="Views\Config\GroupConfigView.xaml.cs">
+    <Compile Update="Views\Config\Group\GroupConfigView.xaml.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
@@ -153,7 +167,32 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
-    <Compile Update="Views\Config\GroupDetailPaneView.xaml.cs">
+    <Compile Update="Views\Config\Group\GroupDetailPaneView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="ViewModels\Top\Settings\GlobalSettingsPaneVm.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="ViewModels\Top\Settings\OpenProfileSettings.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="ViewModels\Top\Settings\ProfilesDisplayVm.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Services\Profile\TopLevel\ConsiderPrereleasePreference.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Views\Config\AdvancedSettingsView.xaml.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>

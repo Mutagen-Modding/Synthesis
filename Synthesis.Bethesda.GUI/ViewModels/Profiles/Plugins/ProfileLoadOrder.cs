@@ -24,12 +24,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
     {
         public IObservableList<ReadOnlyModListingVM> LoadOrder { get; }
 
-        private readonly ObservableAsPropertyHelper<ErrorResponse> _State;
-        public ErrorResponse State => _State.Value;
+        private readonly ObservableAsPropertyHelper<ErrorResponse> _state;
+        public ErrorResponse State => _state.Value;
 
         public ProfileLoadOrder(
             ILogger logger,
             ILiveLoadOrderProvider liveLoadOrderProvider,
+            IPluginListingsPathProvider listingsPathProvider,
             IProfileIdentifier ident,
             IProfileDataFolderVm dataFolder)
         {
@@ -41,7 +42,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                     {
                         return (Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
                     }
-                    logger.Error("Getting live load order for {Release} -> {DataDirectory}", ident.Release, x.Value);
+                    logger.Error("Getting live load order for {Release}. DataDirectory: {DataDirectory}, Plugin File Path: {PluginFilePath}", ident.Release, x.Value, listingsPathProvider.Path);
                     var liveLo = liveLoadOrderProvider.Get(out var errors)
                         .Transform(listing => new ReadOnlyModListingVM(listing, x.Value))
                         .DisposeMany();
@@ -69,12 +70,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
             LoadOrder = loadOrderResult
                 .Select(x => x.Results)
                 .Switch()
+                .ObserveOnGui()
                 .AsObservableList();
 
-            _State = loadOrderResult
+            _state = loadOrderResult
                 .Select(x => x.State)
                 .Switch()
-                .ToGuiProperty(this, nameof(State), ErrorResponse.Success);
+                .ToGuiProperty(this, nameof(State), ErrorResponse.Success, deferSubscription: true);
         }
 
         public IEnumerable<IModListingGetter> Get()

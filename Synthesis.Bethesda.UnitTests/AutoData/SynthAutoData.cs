@@ -6,6 +6,7 @@ using Mutagen.Bethesda.Testing.AutoData;
 using Noggog.Testing.AutoFixture;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;
+using Synthesis.Bethesda.Execution.WorkEngine;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.AutoData
@@ -131,6 +132,7 @@ namespace Synthesis.Bethesda.UnitTests.AutoData
                         fixture.Create<ILogger>(),
                         new GitRepositoryFactory()));
             }
+            fixture.Register<IWorkDropoff>(() => new InlineWorkDropoff());
         }
     }
 }

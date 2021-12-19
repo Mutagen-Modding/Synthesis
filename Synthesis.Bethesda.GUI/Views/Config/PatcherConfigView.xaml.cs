@@ -57,6 +57,10 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.ErrorDisplayVm)
                     .BindTo(this, x => x.BottomErrorDisplay.DataContext)
                     .DisposeWith(disposable);
+
+                this.WhenAnyValue(x => x.ViewModel!.RenameCommand)
+                    .BindTo(this, x => x.RenameButton.Command)
+                    .DisposeWith(disposable);
             });
         }
     }

@@ -12,6 +12,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -94,8 +96,8 @@
             Style="{StaticResource SubtextStyle}"
             Text="Which game do you want to target?" />
         <ListBox Grid.Row="2"
-            x:Name="GameReleaseOptionsControl"
-            Margin="20,25"
+            x:Name="GameCategoryOptionsControl"
+            Margin="20,25,20,5"
             HorizontalAlignment="Center"
             Background="Transparent"
             ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}">
@@ -111,6 +113,29 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <TextBlock Grid.Row="3"
+                   Margin="0,15,0,25"
+                   x:Name="WhichReleaseLabel"
+                   HorizontalAlignment="Center"
+                   Style="{StaticResource SubtextStyle}"
+                   Text="Which release do you want to target?" />
+        <ListBox Grid.Row="4"
+                 x:Name="GameReleaseOptionsControl"
+                 Margin="20,25,20,5"
+                 HorizontalAlignment="Center"
+                 Background="Transparent"
+                 ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Margin="100,0" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <local:GameTypeClickerView Width="150" Height="150" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <TextBlock Grid.Row="5"
             Margin="0,15"
             HorizontalAlignment="Center"
             Style="{StaticResource SubtextStyle}"

@@ -26,6 +26,11 @@ namespace Synthesis.Bethesda.GUI.Views
                     .Select(x => x == null ? Visibility.Collapsed : Visibility.Visible)
                     .BindTo(this, x => x.ConfirmationOverlay.Visibility)
                     .DisposeWith(disposable);
+                this.WhenAnyValue(x => x.ViewModel!.InitialLoading)
+                    .ObserveOnGui()
+                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
+                    .BindTo(this, x => x.InitialLoading.Visibility)
+                    .DisposeWith(disposable);
             });
         }
     }

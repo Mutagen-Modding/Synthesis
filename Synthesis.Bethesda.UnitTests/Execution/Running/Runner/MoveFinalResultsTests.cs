@@ -1,6 +1,8 @@
 ﻿using System.IO;
-using Mutagen.Bethesda.Plugins;
-using NSubstitute;
+using System.IO.Abstractions;
+using FluentAssertions;
+using Mutagen.Bethesda.Environments.DI;
+using Noggog;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
@@ -9,78 +11,65 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
 {
     public class MoveFinalResultsTests
     {
+        private readonly string SourcePatchPath = "C:/Workspace/PatcherDir/Synthesis.esp";
+        
+        private void PrepFileSystem(IFileSystem fs)
+        {
+            fs.Directory.CreateDirectory("C:/Workspace/PatcherDir/Strings");
+            fs.File.WriteAllText(SourcePatchPath, string.Empty);
+            fs.File.WriteAllText("C:/Workspace/PatcherDir/Strings/Synthesis_English.STRINGS", string.Empty);
+        }
+        
         [Theory, SynthAutoData]
-        public void ThrowsIfFinalPatchMissing(
-            ModPath missingFinalPatch,
-            ModPath existingOutput,
+        public void CreatesOutputDirectory(
+            IFileSystem fs,
+            DirectoryPath missingOutputPath,
             MoveFinalResults sut)
         {
-            Assert.Throws<FileNotFoundException>(() =>
-            {
-                sut.Move(missingFinalPatch, existingOutput);
-            });
+            PrepFileSystem(fs);
+            sut.Move(SourcePatchPath, missingOutputPath);
+            fs.Directory.Exists(missingOutputPath).Should().BeTrue();
         }
         
-        [Theory, SynthAutoData(UseMockFileSystem: false)]
-        public void DeleteFileIfExists(
-            ModPath existingFinalPatch,
-            ModPath existingOutput,
+        [Theory, SynthAutoData]
+        public void MovesFilesToWorkspaceFinalDestination(
+            IFileSystem fs,
+            DirectoryPath missingOutputPath,
             MoveFinalResults sut)
         {
-            sut.FileSystem.File.Exists(existingFinalPatch).Returns(true);
-            sut.FileSystem.File.Exists(existingOutput).Returns(true);
-            sut.Move(existingFinalPatch, existingOutput);
-            sut.FileSystem.File.Received(1).Delete(existingOutput);
+            PrepFileSystem(fs);
+            sut.Move(SourcePatchPath, missingOutputPath);
+            fs.File.Exists(Path.Combine(missingOutputPath, "Synthesis.esp")).Should().BeTrue();
+            fs.File.Exists(Path.Combine(missingOutputPath, "Strings", "Synthesis_English.STRINGS")).Should().BeTrue();
         }
         
-        [Theory, SynthAutoData(UseMockFileSystem: false)]
-        public void DoesNotCallDeleteFileIfMissing(
-            ModPath existingFinalPatch,
-            ModPath missingOutput,
+        [Theory, SynthAutoData]
+        public void MovesFilesToDataDir(
+            IFileSystem fs,
+            IDataDirectoryProvider dataDirectoryProvider,
+            DirectoryPath missingOutputPath,
             MoveFinalResults sut)
         {
-            sut.FileSystem.File.Exists(existingFinalPatch).Returns(true);
-            sut.FileSystem.File.Exists(missingOutput).Returns(false);
-            sut.Move(existingFinalPatch, missingOutput);
-            sut.FileSystem.File.DidNotReceiveWithAnyArgs().Delete(missingOutput);
+            PrepFileSystem(fs);
+            sut.Move(SourcePatchPath, missingOutputPath);
+            fs.File.Exists(Path.Combine(dataDirectoryProvider.Path, "Synthesis.esp")).Should().BeTrue();
+            fs.File.Exists(Path.Combine(dataDirectoryProvider.Path, "Strings", "Synthesis_English.STRINGS")).Should().BeTrue();
         }
         
-        [Theory, SynthAutoData(UseMockFileSystem: false)]
-        public void CallsCopy(
-            ModPath existingFinalPatch,
-            ModPath outputPath,
+        [Theory, SynthAutoData]
+        public void OverwritesFilesInDataDir(
+            IFileSystem fs,
+            IDataDirectoryProvider dataDirectoryProvider,
+            DirectoryPath missingOutputPath,
             MoveFinalResults sut)
         {
-            sut.FileSystem.File.Exists(existingFinalPatch).Returns(true);
-            sut.FileSystem.File.Exists(outputPath).Returns(false);
-            sut.Move(existingFinalPatch, outputPath);
-            sut.FileSystem.File.Received(1).Copy(existingFinalPatch.Path, outputPath.Path);
-        }
-        
-        [Theory, SynthAutoData(UseMockFileSystem: false)]
-        public void CreatesDirectoryIfMissing(
-            ModPath existingFinalPatch,
-            ModPath outputPath,
-            MoveFinalResults sut)
-        {
-            sut.FileSystem.File.Exists(existingFinalPatch).Returns(true);
-            sut.FileSystem.Directory.Exists(outputPath.Path.Directory).Returns(false);
-            sut.FileSystem.File.Exists(outputPath).Returns(false);
-            sut.Move(existingFinalPatch, outputPath);
-            sut.FileSystem.Directory.Received(1).CreateDirectory(outputPath.Path.Directory);
-        }
-        
-        [Theory, SynthAutoData(UseMockFileSystem: false)]
-        public void DoesNotCreateDirectoryIfExists(
-            ModPath existingFinalPatch,
-            ModPath outputPath,
-            MoveFinalResults sut)
-        {
-            sut.FileSystem.File.Exists(existingFinalPatch).Returns(true);
-            sut.FileSystem.Directory.Exists(outputPath.Path.Directory).Returns(true);
-            sut.FileSystem.File.Exists(outputPath).Returns(false);
-            sut.Move(existingFinalPatch, outputPath);
-            sut.FileSystem.Directory.DidNotReceiveWithAnyArgs().CreateDirectory(outputPath.Path.Directory);
+            PrepFileSystem(fs);
+            fs.File.WriteAllText(Path.Combine(dataDirectoryProvider.Path, "Synthesis.esp"), "Hello");
+            fs.Directory.CreateDirectory(Path.Combine(dataDirectoryProvider.Path, "Strings"));
+            fs.File.WriteAllText(Path.Combine(dataDirectoryProvider.Path, "Strings", "Synthesis_English.STRINGS"), "World");
+            sut.Move(SourcePatchPath, missingOutputPath);
+            fs.File.ReadAllText(Path.Combine(dataDirectoryProvider.Path, "Synthesis.esp")).Should().Be(string.Empty);
+            fs.File.ReadAllText(Path.Combine(dataDirectoryProvider.Path, "Strings", "Synthesis_English.STRINGS")).Should().Be(string.Empty);
         }
     }
 }

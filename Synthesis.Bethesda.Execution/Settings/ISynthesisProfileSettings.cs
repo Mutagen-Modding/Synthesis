@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Strings;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings.V2;
 
@@ -20,5 +21,7 @@ namespace Synthesis.Bethesda.Execution.Settings
         bool LockToCurrentVersioning { get; set; }
         PersistenceMode FormIdPersistence { get; set; }
         bool IgnoreMissingMods { get; set; }
+        bool Localize { get; set; }
+        Language TargetLanguage { get; set; }
     }
 }

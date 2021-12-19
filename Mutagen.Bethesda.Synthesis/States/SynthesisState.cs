@@ -29,13 +29,16 @@ namespace Mutagen.Bethesda.Synthesis
 
         /// <inheritdoc />
         public TModSetter PatchMod { get; }
-        IModGetter IPatcherState.PatchMod => PatchMod;
+        IMod IPatcherState.PatchMod => PatchMod;
 
         /// <inheritdoc />
-        public CancellationToken Cancel { get; } = CancellationToken.None;
+        public CancellationToken Cancel { get; }
 
         /// <inheritdoc />
-        public string ExtraSettingsDataPath { get; } = string.Empty;
+        public string ExtraSettingsDataPath { get; }
+
+        /// <inheritdoc />
+        public string? InternalDataPath { get; }
 
         /// <inheritdoc />
         public string? DefaultSettingsDataPath { get; }
@@ -45,7 +48,6 @@ namespace Mutagen.Bethesda.Synthesis
 
         /// <inheritdoc />
         public string DataFolderPath { get; }
-
         /// <inheritdoc />
         public GameRelease GameRelease { get; }
 
@@ -55,10 +57,9 @@ namespace Mutagen.Bethesda.Synthesis
         /// <inheritdoc />
         public string? SourcePath { get; }
 
-        // <inheritdoc />
-        IFormKeyAllocator? IPatcherState.FormKeyAllocator => FormKeyAllocator;
+        IFormKeyAllocator? IPatcherState.FormKeyAllocator => _formKeyAllocator;
 
-        private readonly IFormKeyAllocator? FormKeyAllocator;
+        private readonly IFormKeyAllocator? _formKeyAllocator;
 
         public SynthesisState(
             RunSynthesisMutagenPatcher runArguments,
@@ -67,6 +68,7 @@ namespace Mutagen.Bethesda.Synthesis
             ILinkCache<TModSetter, TModGetter> linkCache,
             TModSetter patchMod,
             string extraDataPath,
+            string? internalDataPath,
             string? defaultDataPath,
             CancellationToken cancellation,
             IFormKeyAllocator? formKeyAllocator)
@@ -76,6 +78,7 @@ namespace Mutagen.Bethesda.Synthesis
             LoadOrder = loadOrder;
             PatchMod = patchMod;
             ExtraSettingsDataPath = extraDataPath;
+            InternalDataPath = internalDataPath;
             DefaultSettingsDataPath = defaultDataPath;
             Cancel = cancellation;
             LoadOrderFilePath = runArguments.LoadOrderFilePath;
@@ -83,14 +86,16 @@ namespace Mutagen.Bethesda.Synthesis
             GameRelease = runArguments.GameRelease;
             OutputPath = runArguments.OutputPath;
             SourcePath = runArguments.SourcePath;
-            FormKeyAllocator = formKeyAllocator;
+            _formKeyAllocator = formKeyAllocator;
         }
 
         public void Dispose()
         {
             LoadOrder.Dispose();
-            if (FormKeyAllocator is IDisposable PersistentFormKeyAllocator)
-                PersistentFormKeyAllocator.Dispose();
+            if (_formKeyAllocator is IDisposable disp)
+            {
+                disp.Dispose();
+            }
         }
     }
 }

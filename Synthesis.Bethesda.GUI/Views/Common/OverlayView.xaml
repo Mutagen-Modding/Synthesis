@@ -6,6 +6,9 @@
     xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel"
+    xmlns:conf="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Confirmations"
+    xmlns:top="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Top"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -57,6 +60,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -70,10 +74,23 @@
                     TextWrapping="Wrap" />
                 <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                     x:Name="DescriptionBlock"
-                    Margin="25,0,25,25"
+                    Margin="25,0"
                     FontSize="14"
                     TextWrapping="Wrap" />
-                <Button Grid.Row="2" Grid.Column="0"
+                <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                    x:Name="CustomContent"
+                    Margin="0,0,0,25">
+                    <ContentControl.Resources>
+                        <DataTemplate DataType="{x:Type vm:PatcherRenameActionVm}">
+                            <TextBox Margin="15,5" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type conf:PatcherInitRenameActionVm}">
+                            <TextBox Margin="15,5" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type top:ConfirmationActionVm}" />
+                    </ContentControl.Resources>
+                </ContentControl>
+                <Button Grid.Row="3" Grid.Column="0"
                     x:Name="CancelButton"
                     HorizontalContentAlignment="Stretch">
                     <Grid Background="Transparent">
@@ -103,7 +120,7 @@
                         </TextBlock>
                     </Grid>
                 </Button>
-                <Button Grid.Row="2" Grid.Column="1"
+                <Button Grid.Row="3" Grid.Column="1"
                     x:Name="AcceptButton"
                     HorizontalContentAlignment="Stretch">
                     <Grid Background="Transparent">

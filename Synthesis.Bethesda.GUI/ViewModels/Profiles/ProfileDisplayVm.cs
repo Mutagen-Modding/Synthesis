@@ -2,12 +2,15 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
+using Mutagen.Bethesda.Strings;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
+using Serilog;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
+using Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
@@ -17,11 +20,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
         public ProfileVm Profile { get; }
 
-        private readonly ObservableAsPropertyHelper<bool> _IsDisplaying;
-        public bool IsDisplaying => _IsDisplaying.Value;
+        private readonly ObservableAsPropertyHelper<bool> _isDisplaying;
+        public bool IsDisplaying => _isDisplaying.Value;
 
-        private readonly ObservableAsPropertyHelper<bool> _IsActive;
-        public bool IsActive => _IsActive.Value;
+        private readonly ObservableAsPropertyHelper<bool> _isActive;
+        public bool IsActive => _isActive.Value;
 
         public ICommand DeleteCommand { get; }
         public ICommand SwitchToCommand { get; }
@@ -29,10 +32,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
         public ObservableCollectionExtended<PersistenceMode> PersistenceModes { get; } = new(EnumExt.GetValues<PersistenceMode>());
 
+        public ObservableCollectionExtended<Language> Languages { get; } = new(EnumExt.GetValues<Language>());
+
         public delegate ProfileDisplayVm Factory(ProfilesDisplayVm parent, ProfileVm profile);
         
         public ProfileDisplayVm(
             ProfilesDisplayVm parent,
+            ILogger logger,
             INavigateTo navigate, 
             ISelectedProfileControllerVm selProfile,
             IConfirmationPanelControllerVm confirmation,
@@ -41,12 +47,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             Parent = parent;
             Profile = profile;
 
-            _IsDisplaying = parent.WhenAnyValue(x => x.DisplayedProfile)
+            _isDisplaying = parent.WhenAnyValue(x => x.DisplayedProfile)
                 .Select(x => x == this)
-                .ToGuiProperty(this, nameof(IsDisplaying));
+                .ToGuiProperty(this, nameof(IsDisplaying), deferSubscription: true);
 
-            _IsActive = this.WhenAnyValue(x => x.Profile.IsActive)
-                .ToGuiProperty(this, nameof(IsActive));
+            _isActive = this.WhenAnyValue(x => x.Profile.IsActive)
+                .ToGuiProperty(this, nameof(IsActive), deferSubscription: true);
 
             DeleteCommand = ReactiveCommand.Create(
                 canExecute: this.WhenAnyValue(x => x.Profile!.IsActive)
@@ -55,11 +61,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 {
                     var profile = this.Profile;
                     if (profile.IsActive) return;
+                    logger.Information("Asking if user wants to delete profile {ID} {Name}", profile.ID, profile.NameVm.Name);
                     confirmation.TargetConfirmation = new ConfirmationActionVm(
                         "Confirm",
                         $"Are you sure you want to delete {profile.NameVm.Name}?",
                         () =>
                         {
+                            logger.Information("Deleting profile {ID} {Name}", profile.ID, profile.NameVm.Name);
                             parent.Config.Profiles.Remove(profile);
                             Parent.SwitchToActive();
                         });

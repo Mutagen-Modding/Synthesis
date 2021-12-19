@@ -28,6 +28,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0"
                 Name="PatcherDetailName"
@@ -40,7 +41,17 @@
                 FontSize="26"
                 FontWeight="Black" />
             <Button Grid.Column="1"
+                x:Name="RenameButton"
+                VerticalAlignment="Center"
+                ToolTip="Rename Patcher">
+                <Button.Resources>
+                    <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#44FFFFFF" />
+                </Button.Resources>
+                <icon:PackIconMaterialDesign Kind="Edit" />
+            </Button>
+            <Button Grid.Column="2"
                 x:Name="DeleteButton"
+                Margin="15,0,0,0"
                 VerticalAlignment="Center"
                 ToolTip="Delete Patcher">
                 <Button.Resources>
@@ -50,7 +61,7 @@
                 </Button.Resources>
                 <icon:PackIconFontAwesome Kind="TrashSolid" />
             </Button>
-            <local:TypeIcon Grid.Column="2"
+            <local:TypeIcon Grid.Column="3"
                 x:Name="PatcherIconDisplay"
                 Margin="15,0,10,0"
                 HorizontalAlignment="Right"
@@ -74,6 +85,7 @@
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
-        <local:BottomErrorDisplayView x:Name="BottomErrorDisplay" Grid.Row="0" Grid.RowSpan="3" />
+        <local:BottomErrorDisplayView Grid.Row="0" Grid.RowSpan="3"
+            x:Name="BottomErrorDisplay" />
     </Grid>
 </local:PatcherConfigViewBase>

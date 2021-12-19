@@ -2,17 +2,18 @@
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
+using Synthesis.Bethesda.Execution.Groups;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner
 {
     public interface IRunSomePatchers
     {
         Task<FilePath?> Run(
-            ModKey outputKey,
+            IGroupRun groupRun,
             PatcherPrepBundle[] patchers,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath);
+            RunParameters runParameters);
     }
 
     public class RunSomePatchers : IRunSomePatchers
@@ -25,22 +26,22 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
         }
         
         public async Task<FilePath?> Run(
-            ModKey outputKey,
+            IGroupRun groupRun,
             PatcherPrepBundle[] patchers,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath)
+            RunParameters runParameters)
         {
             for (int i = 0; i < patchers.Length; i++)
             {
                 var patcher = patchers[i];
 
                 var nextPath = await RunAPatcher.Run(
-                    outputKey: outputKey,
+                    groupRun,
                     patcher,
                     cancellation,
                     sourcePath,
-                    persistencePath);
+                    runParameters).ConfigureAwait(false);
 
                 if (nextPath == null) return null;
                 

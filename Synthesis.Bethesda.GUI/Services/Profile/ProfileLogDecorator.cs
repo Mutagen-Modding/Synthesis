@@ -17,7 +17,7 @@ namespace Synthesis.Bethesda.GUI.Services.Profile
         {
             _logger = nameProvider.WhenAnyValue(x => x.Name)
                 .Select(x => Log.Logger.ForContext(FunnelNames.Profile, x))
-                .ToGuiProperty(this, nameof(Logger), Log.Logger.ForContext(FunnelNames.Profile, nameProvider.Name));
+                .ToGuiProperty(this, nameof(Logger), Log.Logger.ForContext(FunnelNames.Profile, nameProvider.Name), deferSubscription: true);
         }
 
         public void Write(LogEvent logEvent)

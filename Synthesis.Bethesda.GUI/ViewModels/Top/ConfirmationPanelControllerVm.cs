@@ -1,4 +1,6 @@
-﻿using System.Reactive;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Windows.Input;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -23,20 +25,30 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 
         public ConfirmationPanelControllerVm()
         {
-            DiscardActionCommand = NoggogCommand.CreateFromObject(
+            DiscardActionCommand = NoggogCommand.CreateFromObjectz(
                 objectSource: this.WhenAnyValue(x => x.TargetConfirmation),
-                canExecute: target => target != null,
-                execute: (_) =>
+                canExecute: target =>
                 {
+                    if (target == null) return Observable.Return(false);
+                    if (target.DiscardActionCommand == null) return Observable.Return(true);
+                    return target.DiscardActionCommand.CanExecute;
+                },
+                execute: x =>
+                {
+                    (x?.DiscardActionCommand as ICommand)?.Execute(Unit.Default);
                     TargetConfirmation = null;
                 },
                 disposable: this);
-            ConfirmActionCommand = NoggogCommand.CreateFromObject(
-                objectSource: this.WhenAnyFallback(x => x.TargetConfirmation!.ToDo),
-                canExecute: toDo => toDo != null,
-                execute: toDo =>
+            ConfirmActionCommand = NoggogCommand.CreateFromObjectz(
+                objectSource: this.WhenAnyValue(x => x.TargetConfirmation),
+                canExecute: target =>
                 {
-                    toDo?.Invoke();
+                    if (target == null) return Observable.Return(false);
+                    return target.ConfirmActionCommand.CanExecute;
+                },
+                execute: x =>
+                {
+                    (x?.ConfirmActionCommand as ICommand)?.Execute(Unit.Default);
                     TargetConfirmation = null;
                 },
                 disposable: this);

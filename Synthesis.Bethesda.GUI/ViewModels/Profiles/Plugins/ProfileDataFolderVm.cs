@@ -28,11 +28,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
         [Reactive]
         public string? DataPathOverride { get; set; }
 
-        private readonly ObservableAsPropertyHelper<GetResponse<DirectoryPath>> _DataFolderResult;
-        public GetResponse<DirectoryPath> DataFolderResult => _DataFolderResult.Value;
+        private readonly ObservableAsPropertyHelper<GetResponse<DirectoryPath>> _dataFolderResult;
+        public GetResponse<DirectoryPath> DataFolderResult => _dataFolderResult.Value;
 
-        private readonly ObservableAsPropertyHelper<DirectoryPath> _Path;
-        public DirectoryPath Path => _Path.Value;
+        private readonly ObservableAsPropertyHelper<DirectoryPath> _path;
+        public DirectoryPath Path => _path.Value;
 
         public ProfileDataFolderVm(
             ILogger logger,
@@ -44,7 +44,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
         {
             FileSystem = fileSystem;
             GameLocator = gameLocator;
-            _DataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
+            _dataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
                 .Select(path =>
                 {
                     if (path != null) return Observable.Return(GetResponse<DirectoryPath>.Succeed(path));
@@ -95,16 +95,16 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                 {
                     if (d.Failed)
                     {
-                        logger.Error($"Could not locate data folder: {d.Reason}");
+                        logger.Error("Could not locate data folder: {Reason}", d.Reason);
                     }
                     else
                     {
-                        logger.Information($"Data Folder: {d.Value}");
+                        logger.Information("Data Folder: {DataFolderPath}", d.Value);
                     }
                 })
                 .ToGuiProperty(this, nameof(DataFolderResult), deferSubscription: true);
 
-            _Path = this.WhenAnyValue(x => x.DataFolderResult)
+            _path = this.WhenAnyValue(x => x.DataFolderResult)
                 .Select(x => x.Value)
                 .ToGuiProperty(this, nameof(Path), deferSubscription: true);
         }

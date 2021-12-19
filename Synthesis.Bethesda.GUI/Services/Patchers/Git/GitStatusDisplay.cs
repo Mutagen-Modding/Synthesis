@@ -15,14 +15,14 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
         public GitStatusDisplay(
             IRunnableStateProvider runnableStateProvider,
-            ICompliationProvider compliationProvider,
+            ICompilationProvider compilationProvider,
             IPatcherRunnabilityCliState runnabilityCliState,
             IDriverRepositoryPreparationFollower driverRepositoryPreparation)
         {
             StatusDisplay = Observable.CombineLatest(
                     driverRepositoryPreparation.DriverInfo,
                     runnableStateProvider.WhenAnyValue(x => x.State),
-                    compliationProvider.State,
+                    compilationProvider.State,
                     runnabilityCliState.Runnable,
                     (driver, runnable, comp, runnability) =>
                     {

@@ -16,11 +16,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
     public class EnvironmentErrorsVm : ViewModel, IEnvironmentErrorsVm
     {
-        private readonly ObservableAsPropertyHelper<bool> _InError;
-        public bool InError => _InError.Value;
+        private readonly ObservableAsPropertyHelper<bool> _inError;
+        public bool InError => _inError.Value;
 
-        private readonly ObservableAsPropertyHelper<IEnvironmentErrorVm?> _ActiveError;
-        public IEnvironmentErrorVm? ActiveError => _ActiveError.Value;
+        private readonly ObservableAsPropertyHelper<IEnvironmentErrorVm?> _activeError;
+        public IEnvironmentErrorVm? ActiveError => _activeError.Value;
 
         public EnvironmentErrorsVm(
             ILogger logger,
@@ -33,7 +33,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 logger.Warning("No environment errors registered");
             }
             
-            _ActiveError =
+            _activeError =
                 Observable.CombineLatest(
                         envErrorsArr.Select(env =>
                         {
@@ -42,11 +42,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                                 .Select(inErr => inErr ? env : default);
                         }),
                         (errs) => errs.FirstOrDefault(e => e != null))
-                    .ToGuiProperty(this, nameof(ActiveError), default);
+                    .ToGuiProperty(this, nameof(ActiveError), default, deferSubscription: true);
 
-            _InError = this.WhenAnyValue(x => x.ActiveError)
+            _inError = this.WhenAnyValue(x => x.ActiveError)
                 .Select(x => x == null)
-                .ToGuiProperty(this, nameof(InError));
+                .ToGuiProperty(this, nameof(InError), deferSubscription: true);
         }
     }
 }

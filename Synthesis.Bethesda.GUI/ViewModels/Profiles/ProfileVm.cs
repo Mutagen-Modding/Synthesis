@@ -11,6 +11,7 @@ using DynamicData;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
+using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Noggog;
 using Noggog.WPF;
@@ -60,24 +61,24 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         public IProfileDataFolderVm DataFolderOverride { get; }
         public IProfileVersioning Versioning { get; }
 
-        private readonly ObservableAsPropertyHelper<DirectoryPath> _DataFolder;
-        public DirectoryPath DataFolder => _DataFolder.Value;
+        private readonly ObservableAsPropertyHelper<DirectoryPath> _dataFolder;
+        public DirectoryPath DataFolder => _dataFolder.Value;
 
-        private readonly ObservableAsPropertyHelper<ErrorResponse> _State;
-        public ErrorResponse State => _State.Value;
+        private readonly ObservableAsPropertyHelper<ErrorResponse> _state;
+        public ErrorResponse State => _state.Value;
 
-        private readonly ObservableAsPropertyHelper<GetResponse<ViewModel>> _BlockingError;
-        public GetResponse<ViewModel> BlockingError => _BlockingError.Value;
+        private readonly ObservableAsPropertyHelper<GetResponse<ViewModel>> _blockingError;
+        public GetResponse<ViewModel> BlockingError => _blockingError.Value;
 
         public IObservableList<ReadOnlyModListingVM> LoadOrder { get; }
 
-        private readonly ObservableAsPropertyHelper<bool> _IsActive;
-        public bool IsActive => _IsActive.Value;
+        private readonly ObservableAsPropertyHelper<bool> _isActive;
+        public bool IsActive => _isActive.Value;
 
         public ICommand SetAllToProfileCommand { get; }
 
-        private readonly ObservableAsPropertyHelper<PatcherVm?> _SelectedPatcher;
-        public PatcherVm? SelectedPatcher => _SelectedPatcher.Value;
+        private readonly ObservableAsPropertyHelper<PatcherVm?> _selectedPatcher;
+        public PatcherVm? SelectedPatcher => _selectedPatcher.Value;
 
         [Reactive]
         public bool ConsiderPrereleaseNugets { get; set; }
@@ -101,6 +102,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 
         [Reactive]
         public bool IgnoreMissingMods { get; set; }
+        
+        [Reactive]
+        public bool Localize { get; set; }
+        
+        [Reactive]
+        public Language TargetLanguage { get; set; }
 
         public IEnvironmentErrorsVm EnvironmentErrors { get; }
 
@@ -145,12 +152,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             
             EnvironmentErrors = environmentErrors;
 
-            _DataFolder = dataFolder.WhenAnyValue(x => x.Path)
-                .ToGuiProperty<DirectoryPath>(this, nameof(DataFolder), string.Empty);
+            _dataFolder = dataFolder.WhenAnyValue(x => x.Path)
+                .ToGuiProperty<DirectoryPath>(this, nameof(DataFolder), string.Empty, deferSubscription: true);
 
             LoadOrder = loadOrder.LoadOrder;
 
             var enabledGroups = Groups.Connect()
+                .ObserveOnGui()
                 .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
                 .RefCount();
 
@@ -159,7 +167,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 .QueryWhenChanged(q => q.ToHashSet())
                 .Replay(1).RefCount();
 
-            _BlockingError = Observable.CombineLatest(
+            _blockingError = Observable.CombineLatest(
                     dataFolder.WhenAnyValue(x => x.DataFolderResult),
                     loadOrder.WhenAnyValue(x => x.State),
                     enabledGroups
@@ -209,9 +217,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                         logger.Warning($"Encountered blocking overall error: {x.Reason}");
                     }
                 })
-                .ToGuiProperty(this, nameof(BlockingError), GetResponse<ViewModel>.Fail("Uninitialized blocking error"));
+                .ToGuiProperty(this, nameof(BlockingError), GetResponse<ViewModel>.Fail("Uninitialized blocking error"), deferSubscription: true);
             
-            _State = Observable.CombineLatest(
+            _state = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.BlockingError),
                     Groups.Connect()
                         .ObserveOnGui()
@@ -230,11 +238,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                     if (!overall.Succeeded) return overall;
                     return patcherState;
                 })
-                .ToGuiProperty<ErrorResponse>(this, nameof(State), ErrorResponse.Fail("Uninitialized state error"));
+                .ToGuiProperty<ErrorResponse>(this, nameof(State), ErrorResponse.Fail("Uninitialized state error"), deferSubscription: true);
 
-            _IsActive = selProfile.WhenAnyValue(x => x.SelectedProfile)
+            _isActive = selProfile.WhenAnyValue(x => x.SelectedProfile)
                 .Select(x => x == this)
-                .ToGuiProperty(this, nameof(IsActive));
+                .ToGuiProperty(this, nameof(IsActive), deferSubscription: true);
 
             GoToErrorCommand = OverallErrorVm.CreateCommand(this.WhenAnyValue(x => x.BlockingError));
 
@@ -253,9 +261,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 })
                 .DisposeWith(this);
             
-            _SelectedPatcher = this.WhenAnyValue(x => x.DisplayController.SelectedObject)
+            _selectedPatcher = this.WhenAnyValue(x => x.DisplayController.SelectedObject)
                 .Select(x => x as PatcherVm)
-                .ToGuiProperty(this, nameof(SelectedPatcher), default);
+                .ToGuiProperty(this, nameof(SelectedPatcher), default, deferSubscription: true);
 
             SetAllToProfileCommand = ReactiveCommand.Create(
                 execute: () =>
@@ -300,6 +308,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             });
 
             var allCommands = Groups.Connect()
+                .ObserveOnGui()
                 .Transform(x => CommandVM.Factory(x.UpdateAllPatchersCommand))
                 .AsObservableList();
             UpdateAllPatchersCommand = ReactiveCommand.CreateFromTask(
@@ -380,6 +389,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 LockToCurrentVersioning = LockSetting.Lock,
                 FormIdPersistence = SelectedPersistenceMode,
                 IgnoreMissingMods = IgnoreMissingMods,
+                Localize = Localize,
+                TargetLanguage = TargetLanguage
             };
         }
 

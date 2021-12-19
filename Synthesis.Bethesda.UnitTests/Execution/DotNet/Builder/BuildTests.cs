@@ -39,23 +39,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.Builder
         }
         
         [Theory, SynthAutoData]
-        public async Task StartAndAccumulatorPassedToRun(
-            FilePath targetPath,
-            CancellationToken cancel,
-            ProcessStartInfo start,
-            [Frozen]IBuildOutputAccumulator accumulator,
-            Build sut)
-        {
-            sut.BuildStartInfoProvider.Construct(default).ReturnsForAnyArgs(start);
-            await sut.Compile(targetPath, cancel);
-            await sut.ProcessRunner.Received(1).RunWithCallback(
-                start,
-                accumulator.Process,
-                Arg.Any<Action<string>>(),
-                cancel);
-        }
-        
-        [Theory, SynthAutoData]
         public async Task RunnerSuccessReturnsSuccess(
             FilePath targetPath,
             CancellationToken cancel,
@@ -76,7 +59,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.Builder
             sut.ProcessRunner.RunWithCallback(default!, default!, default!, default)
                 .ReturnsForAnyArgs(0);
             await sut.Compile(targetPath, cancel);
-            sut.ResultsProcessor.DidNotReceiveWithAnyArgs().GetResults(default, default, default!);
+            sut.ResultsProcessor.DidNotReceiveWithAnyArgs().GetResults(default, default, default, default!);
         }
         
         [Theory, SynthAutoData]
@@ -89,7 +72,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.Builder
             sut.ProcessRunner.RunWithCallback(default!, default!, default!, default)
                 .ReturnsForAnyArgs(-1);
             await sut.Compile(targetPath, cancel);
-            sut.ResultsProcessor.Received(1).GetResults(targetPath, cancel, accumulator);
+            sut.ResultsProcessor.Received(1).GetResults(targetPath, -1, cancel, accumulator);
         }
 
         public static IEnumerable<object[]> ErrorResponses => ErrorResponseSuccessFailData.Data;
@@ -103,7 +86,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.Builder
         {
             sut.ProcessRunner.RunWithCallback(default!, default!, default!, default)
                 .ReturnsForAnyArgs(-1);
-            sut.ResultsProcessor.GetResults(default, default, default!)
+            sut.ResultsProcessor.GetResults(default, default, default, default!)
                 .ReturnsForAnyArgs(errorResponse);
             var result = await sut.Compile(targetPath, cancel);
             result.Should().Be(errorResponse);

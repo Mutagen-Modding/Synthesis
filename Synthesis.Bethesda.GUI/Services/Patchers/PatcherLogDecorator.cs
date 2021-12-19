@@ -26,7 +26,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers
                         .ForContext(FunnelNames.Profile, profile))
                 .ToGuiProperty(this, nameof(Logger), Log.Logger
                     .ForContext(FunnelNames.Patcher, patcherNameVm.Name)
-                    .ForContext(FunnelNames.Profile, profileNameProvider.Name));
+                    .ForContext(FunnelNames.Profile, profileNameProvider.Name), deferSubscription: true);
         }
         
         public void Write(LogEvent logEvent)

@@ -84,7 +84,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
                     {
                         WorkingDirectory = ExePath.Path.Directory!
                     },
-                    cancel);
+                    cancel).ConfigureAwait(false);
                 if (result != 0)
                 {
                     throw new CliUnsuccessfulRunException(

@@ -30,20 +30,11 @@ namespace Synthesis.Bethesda.GUI.Views
                 this.WhenAnyValue(x => x.ViewModel!.Confirmation.ConfirmActionCommand)
                     .BindTo(this, x => x.AcceptButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.Confirmation.ConfirmActionCommand)
-                    .Select(x => x?.CanExecute ?? Observable.Return(false))
-                    .Switch()
-                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindTo(this, x => x.AcceptButton.Visibility)
-                    .DisposeWith(disposable);
                 this.WhenAnyValue(x => x.ViewModel!.Confirmation.DiscardActionCommand)
                     .BindTo(this, x => x.CancelButton.Command)
                     .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.Confirmation.DiscardActionCommand)
-                    .Select(x => x?.CanExecute ?? Observable.Return(false))
-                    .Switch()
-                    .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                    .BindTo(this, x => x.CancelButton.Visibility)
+                this.WhenAnyValue(x => x.ViewModel!.Confirmation.TargetConfirmation)
+                    .BindTo(this, x => x.CustomContent.Content)
                     .DisposeWith(disposable);
             });
         }

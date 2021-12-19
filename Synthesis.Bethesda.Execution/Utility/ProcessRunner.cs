@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -54,7 +54,7 @@ namespace Synthesis.Bethesda.Execution.Utility
                 startInfo,
                 i => outs.Add(i),
                 i => errs.Add(i),
-                cancel);
+                cancel).ConfigureAwait(false);
             return new(ret, outs, errs);
         }
 
@@ -67,18 +67,18 @@ namespace Synthesis.Bethesda.Execution.Utility
                 startInfo.WorkingDirectory,
                 startInfo.FileName,
                 startInfo.Arguments);
-            return await proc.Run();
+            return await proc.Run().ConfigureAwait(false);
         }
 
         public async Task<int> Run(ProcessStartInfo startInfo, CancellationToken cancel, bool logOutput)
         {
             if (logOutput)
             {
-                return await RunWithCallback(startInfo, Logger.Information, Logger.Error, cancel);
+                return await RunWithCallback(startInfo, Logger.Information, Logger.Error, cancel).ConfigureAwait(false);
             }
             else
             {
-                return await RunNoLog(startInfo, cancel);
+                return await RunNoLog(startInfo, cancel).ConfigureAwait(false);
             }
         }
 
@@ -96,8 +96,19 @@ namespace Synthesis.Bethesda.Execution.Utility
                 startInfo.FileName,
                 startInfo.Arguments);
             using var outSub = proc.Output.Subscribe(outputCallback);
-            using var errSub = proc.Error.Subscribe(errorCallback);
-            return await proc.Run();
+            List<string> errs = new();
+            using var errSub = proc.Error.Subscribe(errs.Add);
+            try
+            {
+                return await proc.Run().ConfigureAwait(false);
+            }
+            finally
+            {
+                foreach (var err in errs)
+                {
+                    errorCallback(err);
+                }
+            }
         }
 
         public async Task<int> RunWithCallback(
@@ -109,7 +120,7 @@ namespace Synthesis.Bethesda.Execution.Utility
                 startInfo,
                 callback,
                 callback,
-                cancel);
+                cancel).ConfigureAwait(false);;
         }
     }
 }

@@ -3,7 +3,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
   Determining projects to restore...
   Restored C:\Repos\Patchers\khajiitearsshow\KhajiitEarsShow\KhajiitEarsShow.csproj (in 185 ms).
-  KhajiitEarsShow -> C:\Repos\Patchers\khajiitearsshow\KhajiitEarsShow\bin\Debug\net5.0\KhajiitEarsShow.dll
+  KhajiitEarsShow -> C:\Repos\Patchers\khajiitearsshow\KhajiitEarsShow\bin\Debug\net6.0\KhajiitEarsShow.dll
 
 Build succeeded.
     0 Warning(s)

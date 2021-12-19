@@ -39,7 +39,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
                         return true;
                     }
                 })
-                .ToGuiProperty(this, nameof(InError));
+                .ToGuiProperty(this, nameof(InError), deferSubscription: true);
 
             ErrorString = $"Could not find plugin file to read the load order from. \n\n" +
                           $"- Run your game once, to generate the file\n" +

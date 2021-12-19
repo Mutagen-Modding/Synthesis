@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
@@ -7,6 +7,7 @@ using System.Windows;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using ReactiveUI;
 using Serilog;
+using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 using Synthesis.Bethesda.GUI.Views;
 
@@ -44,9 +45,15 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
         
         public async void Initialize()
         {
-            AppDomain.CurrentDomain.UnhandledException += (o, e) =>
+            AppDomain.CurrentDomain.UnhandledException += (_, e) =>
             {
-                _logger.Error(e.ExceptionObject as Exception, "Crashing");
+                var ex = e.ExceptionObject as Exception;
+                _logger.Error(ex, "Crashing");
+                while (ex?.InnerException != null)
+                {
+                    ex = ex.InnerException;
+                    _logger.Error(ex, "Inner Exception");
+                }
             };
 
             var versionLine = $"============== Opening Synthesis v{Versions.SynthesisVersion} ==============";
@@ -58,18 +65,19 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             
             try
             {
-                await Observable.FromAsync(() =>
-                        Task.WhenAll(_startupTasks
-                            .Select(x => Task.Run(x.Do))))
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .Do(_ =>
-                    {
-                        var mainVM = _mainVm.Value;
-                        mainVM.Load();
-
-                        _window.DataContext = mainVM;
-                        mainVM.Init();
-                    });
+                foreach (var startupTask in _startupTasks)
+                {
+                    startupTask.Start();
+                }
+                _logger.Information("Loading settings");
+                _mainVm.Value.Load();
+                _logger.Information("Loaded settings");
+                _logger.Information("Setting Main VM");
+                _window.DataContext = _mainVm.Value;
+                _logger.Information("Set Main VM");
+                _logger.Information("Initializing Main VM");
+                _mainVm.Value.Init();
+                _logger.Information("Initialized Main VM");
                 _tracker.Initialized = true;
             }
             catch (Exception e)

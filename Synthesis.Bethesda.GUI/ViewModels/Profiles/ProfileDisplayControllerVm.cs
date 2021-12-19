@@ -12,15 +12,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
     {
         private bool _midSwap;
 
-        private ViewModel? _SelectedObject;
+        private ViewModel? _selectedObject;
         public ViewModel? SelectedObject
         {
-            get => _SelectedObject;
+            get => _selectedObject;
             set
             {
                 if (_midSwap) return;
                 _midSwap = true;
-                this.RaiseAndSetIfChanged(ref _SelectedObject, value);
+                this.RaiseAndSetIfChanged(ref _selectedObject, value);
                 _midSwap = false;
             } 
         }

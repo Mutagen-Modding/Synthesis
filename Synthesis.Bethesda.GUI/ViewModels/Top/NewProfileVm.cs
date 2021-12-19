@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using Mutagen.Bethesda;
@@ -10,49 +11,55 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
-using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
     public class NewProfileVm : ViewModel
     {
-        private ConfigurationVm _config;
-        private readonly IProfileFactory _ProfileFactory;
+        private readonly ProfileManagerVm _config;
 
-        public ObservableCollectionExtended<GameRelease> ReleaseOptions { get; } = new();
+        public ObservableCollectionExtended<GameCategory> CategoryOptions { get; } = new();
+
+        public IObservableCollection<GameRelease> ReleaseOptions { get; }
 
         [Reactive]
-        public GameRelease? SelectedGame { get; set; }
+        public GameCategory? SelectedCategory { get; set; }
 
         [Reactive]
         public string Nickname { get; set; } = string.Empty;
 
+        [Reactive]
+        public GameRelease? SelectedRelease { get; set; }
+
         public NewProfileVm(
-            ConfigurationVm config, 
+            ProfileManagerVm config, 
             IProfileFactory profileFactory,
             Action<ProfileVm>? postRun = null)
         {
             _config = config;
-            _ProfileFactory = profileFactory;
-            ReleaseOptions.AddRange(EnumExt.GetValues<GameRelease>()
-                .Where(x =>
-                {
-                    switch (x)
-                    {
-                        case GameRelease.EnderalLE:
-                        case GameRelease.EnderalSE:
-                        case GameRelease.Fallout4:
-                            return false;
-                        default:
-                            return true;
-                    }
-                }));
+            CategoryOptions.AddRange(EnumExt.GetValues<GameCategory>());
 
-            this.WhenAnyValue(x => x.SelectedGame)
+            ReleaseOptions = this.WhenAnyValue(x => x.SelectedCategory)
+                .Select(x => x?.GetRelatedReleases().AsObservableChangeSet() ?? Observable.Return(ChangeSet<GameRelease>.Empty))
+                .Switch()
+                .ObserveOnGui()
+                .ToObservableCollection(this);
+
+            this.WhenAnyValue(x => x.SelectedCategory)
+                .NotNull()
+                .Select(x => x.GetRelatedReleases())
+                .Where(x => x.Count() == 1)
+                .Subscribe(rel =>
+                {
+                    SelectedRelease = rel.FirstOrDefault();
+                })
+                .DisposeWith(this);
+
+            this.WhenAnyValue(x => x.SelectedRelease)
                 .Subscribe(game =>
                 {
                     if (game == null) return;
-                    var profile = _ProfileFactory.Get(game.Value, GetNewProfileId(), Nickname.IsNullOrWhitespace() ? game.Value.ToDescriptionString() : Nickname);
+                    var profile = profileFactory.Get(game.Value, GetNewProfileId(), Nickname.IsNullOrWhitespace() ? game.Value.ToDescriptionString() : Nickname);
                     config.Profiles.AddOrUpdate(profile);
                     postRun?.Invoke(profile);
                 })

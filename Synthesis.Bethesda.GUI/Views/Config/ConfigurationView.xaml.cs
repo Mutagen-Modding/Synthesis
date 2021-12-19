@@ -7,7 +7,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
-    public class ConfigurationViewBase : NoggogUserControl<ConfigurationVm> { }
+    public class ConfigurationViewBase : NoggogUserControl<ProfileManagerVm> { }
 
     /// <summary>
     /// Interaction logic for ConfigurationView.xaml

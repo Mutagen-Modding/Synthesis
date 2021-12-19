@@ -20,7 +20,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Versioning
             QueryNewestLibraryVersions sut)
         {
             await sut.GetLatestVersions(cancel);
-            sut.PrepLatestVersionProject.Received(1).Prep();
+            await sut.PrepLatestVersionProject.Received(1).Prep(cancel);
         }
         
         [Theory, SynthAutoData]
@@ -28,7 +28,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Versioning
             CancellationToken cancel,
             QueryNewestLibraryVersions sut)
         {
-            sut.PrepLatestVersionProject.When(x => x.Prep())
+            sut.PrepLatestVersionProject.When(x => x.Prep(cancel))
                 .Do(_ => throw new NotImplementedException());
             (await sut.GetLatestVersions(cancel))
                 .Should().Be(new NugetVersionOptions(

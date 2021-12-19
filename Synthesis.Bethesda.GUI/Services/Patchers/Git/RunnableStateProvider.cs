@@ -34,7 +34,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                     GetResponse<RunnerRepoInfo>.Fail("Constructing runnable state"))
                 {
                     IsHaltingError = false
-                });
+                }, deferSubscription: true);
         }
             
         FilePath IPathToProjProvider.Path => State?.Item?.ProjPath ??

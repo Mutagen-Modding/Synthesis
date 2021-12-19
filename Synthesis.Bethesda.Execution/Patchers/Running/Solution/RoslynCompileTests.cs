@@ -21,7 +21,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
 
             foreach (ProjectId projectId in projectGraph.GetTopologicallySortedProjects())
             {
-                Compilation? compilation = await solution.GetProject(projectId)!.GetCompilationAsync();
+                Compilation? compilation = await solution.GetProject(projectId)!.GetCompilationAsync().ConfigureAwait(false);
                 if (compilation == null || string.IsNullOrEmpty(compilation.AssemblyName))
                 {
                     return (false, default);

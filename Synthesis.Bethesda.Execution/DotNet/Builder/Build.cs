@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Noggog;
 using Synthesis.Bethesda.Execution.Utility;
+using Synthesis.Bethesda.Execution.WorkEngine;
 
 namespace Synthesis.Bethesda.Execution.DotNet.Builder
 {
@@ -13,6 +14,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.Builder
 
     public class Build : IBuild
     {
+        public IWorkDropoff Dropoff { get; }
         public Func<IBuildOutputAccumulator> OutputAccumulatorFactory { get; }
         public IBuildResultsProcessor ResultsProcessor { get; }
         public IProcessRunner ProcessRunner { get; }
@@ -20,10 +22,12 @@ namespace Synthesis.Bethesda.Execution.DotNet.Builder
 
         public Build(
             IProcessRunner processRunner,
+            IWorkDropoff workDropoff,
             Func<IBuildOutputAccumulator> outputAccumulatorFactory,
             IBuildResultsProcessor resultsProcessor,
             IBuildStartInfoProvider buildStartInfoProvider)
         {
+            Dropoff = workDropoff;
             OutputAccumulatorFactory = outputAccumulatorFactory;
             ResultsProcessor = resultsProcessor;
             ProcessRunner = processRunner;
@@ -36,17 +40,21 @@ namespace Synthesis.Bethesda.Execution.DotNet.Builder
             start.WorkingDirectory = targetPath.Directory!;
 
             var accumulator = OutputAccumulatorFactory();
-            
-            var result = await ProcessRunner.RunWithCallback(
-                start,
-                outputCallback: accumulator.Process,
-                errorCallback: e => {},
-                cancel: cancel);
+
+            var result = await Dropoff.EnqueueAndWait(() =>
+            {
+                return ProcessRunner.RunWithCallback(
+                    start,
+                    outputCallback: accumulator.Process,
+                    errorCallback: e => {},
+                    cancel: cancel);
+            }, cancel).ConfigureAwait(false);
             
             if (result == 0) return ErrorResponse.Success;
 
             return ResultsProcessor.GetResults(
                 targetPath,
+                result,
                 cancel,
                 accumulator);
         }

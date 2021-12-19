@@ -9,7 +9,6 @@ using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
@@ -21,8 +20,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         public ILifetimeScope Scope { get; }
         public IPatcherNameVm NameVm { get; }
 
-        private readonly ObservableAsPropertyHelper<bool> _IsSelected;
-        public bool IsSelected => _IsSelected.Value;
+        private readonly ObservableAsPropertyHelper<bool> _isSelected;
+        public bool IsSelected => _isSelected.Value;
 
         public Guid InternalID { get; }
 
@@ -30,6 +29,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         public bool IsOn { get; set; } = true;
 
         public ICommand DeleteCommand { get; }
+
+        public ICommand RenameCommand { get; }
 
         public abstract ConfigurationState State { get; }
 
@@ -46,6 +47,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
             IProfileDisplayControllerVm selPatcher,
             IConfirmationPanelControllerVm confirmation,
             IPatcherIdProvider idProvider,
+            PatcherRenameActionVm.Factory renameFactory,
             PatcherSettings? settings)
         {
             Scope = scope;
@@ -53,13 +55,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
             NameVm = nameVm;
             InternalID = idProvider.InternalId;
 
-            _IsSelected = selPatcher.WhenAnyValue(x => x.SelectedObject)
+            _isSelected = selPatcher.WhenAnyValue(x => x.SelectedObject)
                 .Select(x => x == this)
                 // Not GuiProperty, as it interacts with drag/drop oddly
                 .ToProperty(this, nameof(IsSelected));
 
-            // Set to settings
-            IsOn = settings?.On ?? false;
+            if (settings != null)
+            {
+                CopyInSettings(settings);
+            }
 
             DeleteCommand = ReactiveCommand.Create(() =>
             {
@@ -67,6 +71,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
                     "Confirm",
                     $"Are you sure you want to delete {NameVm.Name}?",
                     Delete);
+            });
+
+            RenameCommand = ReactiveCommand.Create(() =>
+            {
+                confirmation.TargetConfirmation = renameFactory();
             });
             
             ErrorDisplayVm = new ErrorDisplayVm(this, this.WhenAnyValue(x => x.State));
@@ -78,6 +87,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
         {
             settings.On = IsOn;
             settings.Nickname = NameVm.Name;
+        }
+
+        protected void CopyInSettings(PatcherSettings settings)
+        {
+            IsOn = settings.On;
+            NameVm.Nickname = settings.Nickname;
         }
 
         public virtual void Delete()

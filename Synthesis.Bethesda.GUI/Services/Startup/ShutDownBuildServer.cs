@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Noggog.Utility;
 using Serilog;
@@ -29,9 +30,9 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             {
                 using var process = _processFactory.Create(
                     new ProcessStartInfo(_dotNetCommandPathProvider.Path, $"build-server shutdown"));
-                using var output = process.Output.Subscribe(x => _logger.Information(x));
-                using var error = process.Error.Subscribe(x => _logger.Information(x));
-                var ret = await process.Run();
+                using var error = process.Output.Concat(process.Error)
+                    .Subscribe(x => _logger.Information(x));
+                await process.Run().ConfigureAwait(false);
             }
             catch (Exception e)
             {

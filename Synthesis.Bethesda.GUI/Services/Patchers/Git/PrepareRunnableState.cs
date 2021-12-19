@@ -64,7 +64,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                             checkoutInput.Proj.Value,
                             checkoutInput.PatcherVersioning,
                             checkoutInput.LibraryNugets.Value),
-                        cancel: cancel);
+                        cancel: cancel).ConfigureAwait(false);
 
                     if (runInfo.RunnableState.Failed)
                     {

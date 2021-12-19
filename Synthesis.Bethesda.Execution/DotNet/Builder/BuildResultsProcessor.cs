@@ -8,6 +8,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.Builder
     {
         ErrorResponse GetResults(
             FilePath targetPath,
+            int result,
             CancellationToken cancel,
             IBuildOutputAccumulator accumulator);
     }
@@ -18,6 +19,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.Builder
         
         public ErrorResponse GetResults(
             FilePath targetPath,
+            int result,
             CancellationToken cancel,
             IBuildOutputAccumulator accumulator)
         {
@@ -27,7 +29,7 @@ namespace Synthesis.Bethesda.Execution.DotNet.Builder
             {
                 firstError = "Cancelled";
             }
-            return ErrorResponse.Fail(reason: firstError ?? $"Unknown Error: {string.Join(Environment.NewLine, accumulator.Output)}");
+            return ErrorResponse.Fail(reason: firstError ?? $"Unknown Error ({result}): {string.Join(Environment.NewLine, accumulator.Output)}");
         }
     }
 }

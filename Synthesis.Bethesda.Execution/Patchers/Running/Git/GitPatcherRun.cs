@@ -76,7 +76,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Git
                 throw new SynthesisBuildFailure(cloneResult.Reason);
             }
 
-            await SolutionPatcherRun.Prep(cancel);
+            await SolutionPatcherRun.Prep(cancel).ConfigureAwait(false);
         }
 
         public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)

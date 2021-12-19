@@ -23,11 +23,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 {
     public class RunVm : ViewModel
     {
-        private readonly ILogger _Logger;
+        private readonly ILogger _logger;
         private readonly IExecuteGuiRun _executeRun;
         public RunDisplayControllerVm RunDisplayControllerVm { get; }
         public IRunReporter Reporter { get; }
-        public readonly Dictionary<Guid, PatcherRunVm> _patchers;
+        private readonly Dictionary<Guid, PatcherRunVm> _patchers;
 
         public ProfileVm RunningProfile { get; }
 
@@ -46,8 +46,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 
         public ReactiveCommand<Unit, Unit> ShowOverallErrorCommand { get; } = ReactiveCommand.Create(ActionExt.Nothing);
 
-        private readonly ObservableAsPropertyHelper<object?> _DetailDisplay;
-        public object? DetailDisplay => _DetailDisplay.Value;
+        private readonly ObservableAsPropertyHelper<object?> _detailDisplay;
+        public object? DetailDisplay => _detailDisplay.Value;
 
         private PatcherRunVm? _previousPatcher;
 
@@ -55,7 +55,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
         
         public RunVm(
             ActiveRunVm activeRunVm,
-            ConfigurationVm configuration,
+            ProfileManagerVm profileManager,
             RunDisplayControllerVm runDisplayControllerVm,
             ILogger logger,
             IGroupRunVmFactory runVmFactory,
@@ -66,7 +66,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
             IEnumerable<GroupVm> groups,
             ProfileVm profile)
         {
-            _Logger = logger;
+            _logger = logger;
             _executeRun = executeRun;
             RunDisplayControllerVm = runDisplayControllerVm;
             Reporter = reporter;
@@ -84,7 +84,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
             BackCommand = ReactiveCommand.Create(() =>
             {
                 profile.DisplayController.SelectedObject = runDisplayControllerVm.SelectedObject?.SourceVm;
-                activePanelController.ActivePanel = configuration;
+                activePanelController.ActivePanel = profileManager;
                 activeRunVm.CurrentRun = null;
             },
             canExecute: this.WhenAnyValue(x => x.Running)
@@ -93,11 +93,33 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 execute: Cancel,
                 canExecute: this.WhenAnyValue(x => x.Running));
 
-            reporterWatcher.Overall
+            reporterWatcher.Output
+                .Where(x => x.Run == null)
+                .Subscribe(i =>
+                {
+                    logger.Information(i.String);
+                })
+                .DisposeWith(this);
+            reporterWatcher.Error
+                .Where(x => x.Run == null)
+                .Subscribe(i =>
+                {
+                    logger.Error(i.String);
+                })
+                .DisposeWith(this);
+            reporterWatcher.Exceptions
+                .Do(ex => logger.Error(ex, "Error while running patcher pipeline"))
                 .ObserveOnGui()
                 .Subscribe(ex =>
                 {
-                    logger.Error(ex, "Error while running patcher pipeline");
+                    ResultError = ex;
+                })
+                .DisposeWith(this);
+            reporterWatcher.Exceptions
+                .Do(ex => logger.Error(ex, "Error while running patcher pipeline"))
+                .ObserveOnGui()
+                .Subscribe(ex =>
+                {
                     ResultError = ex;
                 })
                 .DisposeWith(this);
@@ -105,26 +127,32 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .Select(data => (data, type: "prepping"))
                 .Merge(reporterWatcher.RunProblem
                     .Select(data => (data, type: "running")))
+                .Do(i =>
+                {
+                    logger
+                        .ForContext(nameof(IPatcherNameVm.Name), i.data.Run)
+                        .Error(i.data.Error, $"Error while {i.type}");
+                })
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
                     var vm = _patchers[i.data.Key];
                     vm.State = GetResponse<RunState>.Fail(RunState.Error, i.data.Error);
                     runDisplayControllerVm.SelectedObject = vm;
-                    logger
-                        .ForContext(nameof(IPatcherNameVm.Name), i.data.Run)
-                        .Error(i.data.Error, $"Error while {i.type}");
                 })
                 .DisposeWith(this);
             reporterWatcher.Starting
+                .Do(i =>
+                {
+                    logger
+                        .ForContext(nameof(IPatcherNameVm.Name), i.Run)
+                        .Information($"Starting");
+                })
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
                     var vm = _patchers[i.Key];
                     vm.State = GetResponse<RunState>.Succeed(RunState.Started);
-                    logger
-                        .ForContext(nameof(IPatcherNameVm.Name), i.Run)
-                        .Information($"Starting");
 
                     // Handle automatic selection advancement
                     if (_previousPatcher == runDisplayControllerVm.SelectedObject
@@ -136,14 +164,18 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 })
                 .DisposeWith(this);
             reporterWatcher.RunSuccessful
+                .Do(i =>
+                {
+                    var vm = _patchers[i.Key];
+                    logger
+                        .ForContext(nameof(IPatcherNameVm.Name), i.Run)
+                        .Information("Finished {RunTime}", vm.RunTime);
+                })
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
                     var vm = _patchers[i.Key];
                     vm.State = GetResponse<RunState>.Succeed(RunState.Finished);
-                    logger
-                        .ForContext(nameof(IPatcherNameVm.Name), i.Run)
-                        .Information("Finished {RunTime}", vm.RunTime);
                 })
                 .DisposeWith(this);
 
@@ -152,12 +184,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .Subscribe(_ => runDisplayControllerVm.SelectedObject = null)
                 .DisposeWith(this);
 
-            _DetailDisplay = Observable.Merge(
+            _detailDisplay = Observable.Merge(
                     runDisplayControllerVm.WhenAnyValue(x => x.SelectedObject)
                         .Select(i => i as object),
                     this.ShowOverallErrorCommand.EndingExecution()
                         .Select(_ => ResultError == null ? null : new ErrorVM("Patching Error", ResultError.ToString())))
-                .ToGuiProperty(this, nameof(DetailDisplay), default);
+                .ToGuiProperty(this, nameof(DetailDisplay), default, deferSubscription: true);
         }
 
         public async Task Run()
@@ -173,7 +205,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                         await _executeRun.Run(
                             Groups.Select(vm => vm.Run),
                             RunningProfile.SelectedPersistenceMode,
-                            _cancel.Token);
+                            RunningProfile.Localize,
+                            RunningProfile.TargetLanguage,
+                            _cancel.Token).ConfigureAwait(false);
                     }
                     catch (TaskCanceledException)
                     {
@@ -188,7 +222,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 {
                     Running = false;
                 });
-            _Logger.Information("Finished patcher run");
+            _logger.Information("Finished patcher run");
         }
 
         public async Task Cancel()

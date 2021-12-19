@@ -84,6 +84,26 @@ namespace Synthesis.Bethesda.GUI
                 });
         }
 
+        public static ReactiveCommand<Unit, Unit> CreateFromObjectz<TObject>(
+            IObservable<TObject> objectSource,
+            Func<TObject, IObservable<bool>> canExecute,
+            Action<TObject> execute,
+            IDisposableDropoff disposable)
+        {
+            TObject latest = default!;
+            objectSource
+                .Subscribe(l => latest = l)
+                .DisposeWith(disposable);
+            return ReactiveCommand.Create(
+                canExecute: objectSource
+                    .Select(canExecute)
+                    .Switch(),
+                execute: () =>
+                {
+                    execute(latest);
+                });
+        }
+
         public static ReactiveCommand<Unit, Unit> CreateFromObject<TObject>(
             IObservable<TObject> objectSource,
             Func<TObject, bool> canExecute,

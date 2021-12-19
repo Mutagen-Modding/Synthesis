@@ -1,8 +1,11 @@
+using System;
 using System.Linq;
+using System.Reactive.Linq;
 using Noggog;
 using Autofac;
 using DynamicData;
 using Mutagen.Bethesda;
+using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Settings;
@@ -23,16 +26,16 @@ namespace Synthesis.Bethesda.GUI.Services.Main
     public class ProfileFactory : IProfileFactory
     {
         private readonly ILifetimeScope _scope;
-        private readonly INewestLibraryVersionsVm _newestLibraryVersionsVm;
+        private readonly INewestLibraryVersionsVm _newestLibraryVersions;
         private readonly ILogger _logger;
 
         public ProfileFactory(
             ILifetimeScope scope,
-            INewestLibraryVersionsVm newestLibraryVersionsVm,
+            INewestLibraryVersionsVm newestLibraryVersions,
             ILogger logger)
         {
             _scope = scope;
-            _newestLibraryVersionsVm = newestLibraryVersionsVm;
+            _newestLibraryVersions = newestLibraryVersions;
             _logger = logger;
         }
         
@@ -65,6 +68,8 @@ namespace Synthesis.Bethesda.GUI.Services.Main
             profile.ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
             profile.LockSetting.Lock = settings.LockToCurrentVersioning;
             profile.SelectedPersistenceMode = settings.FormIdPersistence;
+            profile.TargetLanguage = settings.TargetLanguage;
+            profile.Localize = settings.Localize;
 
             profile.Groups.AddRange(settings.Groups.Select(x => factory.Get(x)));
 
@@ -93,8 +98,16 @@ namespace Synthesis.Bethesda.GUI.Services.Main
                         .AsImplementedInterfaces();
                 });
             var profile = scope.Resolve<ProfileVm>();
-            profile.Versioning.ManualMutagenVersion = _newestLibraryVersionsVm.NewestMutagenVersion;
-            profile.Versioning.ManualMutagenVersion = _newestLibraryVersionsVm.NewestMutagenVersion;
+            _newestLibraryVersions.WhenAnyValue(x => x.Versions)
+                .Select(x => x.Normal.Mutagen)
+                .TakeUntil(x => x != null)
+                .Subscribe(x => profile.Versioning.ManualMutagenVersion = x)
+                .DisposeWith(profile);
+            _newestLibraryVersions.WhenAnyValue(x => x.Versions)
+                .Select(x => x.Normal.Synthesis)
+                .TakeUntil(x => x != null)
+                .Subscribe(x => profile.Versioning.ManualSynthesisVersion = x)
+                .DisposeWith(profile);
             var newGroup = scope.Resolve<INewGroupCreator>();
 
             scope.DisposeWith(profile);

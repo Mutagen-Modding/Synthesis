@@ -18,11 +18,13 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Installs;
+using Mutagen.Bethesda.Installs.DI;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using SynthesisBase = Synthesis.Bethesda;
 using Mutagen.Bethesda.Plugins.Binary.Parameters;
 using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
+using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Synthesis.States;
 using Mutagen.Bethesda.Synthesis.States.DI;
 using Synthesis.Bethesda.Commands;
@@ -74,7 +76,7 @@ namespace Mutagen.Bethesda.Synthesis
             where TModGetter : class, IContextGetterMod<TMod, TModGetter>
         {
             var cata = GameCategoryHelper.FromModType<TModGetter>();
-            if (_patchers.TryGetValue(cata, out var _))
+            if (_patchers.TryGetValue(cata, out _))
             {
                 throw new ArgumentException($"Cannot add two patch callbacks for the same game category: {cata}");
             }
@@ -120,16 +122,30 @@ namespace Mutagen.Bethesda.Synthesis
             return this;
         }
 
-        private async Task<int> CheckRunnability(CheckRunnability args, IFileSystem fileSystem)
+        private async Task<Codes> CheckRunnability(CheckRunnability args, IFileSystem fileSystem)
         {
+            if (_runnabilityChecks.Count == 0) return Codes.NotNeeded;
             var patcher = _patchers.GetOrDefault(args.GameRelease.ToCategory());
             var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
+            var categoryContext = new GameCategoryContext(gameReleaseInjection);
+            var dataDir = new DataDirectoryInjection(args.DataFolderPath);
             var loadOrder = new GetStateLoadOrder(
                     new ImplicitListingsProvider(
                         fileSystem,
-                        new DataDirectoryInjection(args.DataFolderPath),
+                        dataDir,
                         new ImplicitListingModKeyProvider(
                             gameReleaseInjection)),
+                    new OrderListings(),
+                    new CreationClubListingsProvider(
+                        fileSystem,
+                        dataDir,
+                        new CreationClubListingsPathProvider(
+                            categoryContext,
+                            new CreationClubEnabledProvider(categoryContext),
+                            new GameDirectoryProvider(
+                                gameReleaseInjection,
+                                new GameLocator())),
+                        new CreationClubRawListingsReader()),
                     new StatePluginsListingProvider(
                         args.LoadOrderFilePath,
                         new PluginRawListingsReader(
@@ -138,7 +154,7 @@ namespace Mutagen.Bethesda.Synthesis
                                 new ModListingParser(
                                     new HasEnabledMarkersProvider(
                                         gameReleaseInjection))))))
-                .GetLoadOrder(patcher?.Prefs)
+                .GetLoadOrder(false, patcher?.Prefs)
                 .ToLoadOrder();
             var state = new RunnabilityState(args, loadOrder);
             try
@@ -146,12 +162,12 @@ namespace Mutagen.Bethesda.Synthesis
                 await Task.WhenAll(_runnabilityChecks.Select(check =>
                 {
                     return check(state);
-                }));
+                })).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 System.Console.Error.Write(ex);
-                return (int)Codes.NotRunnable;
+                return Codes.NotRunnable;
             }
             return 0;
         }
@@ -211,7 +227,7 @@ namespace Mutagen.Bethesda.Synthesis
                     x: args.Left,
                     y: args.Top,
                     width: args.Width,
-                    height: args.Height));
+                    height: args.Height)).ConfigureAwait(false);
             return 0;
         }
 
@@ -264,7 +280,7 @@ namespace Mutagen.Bethesda.Synthesis
 
                 await Run(
                     GetDefaultRun(targetRelease, identifyingModKey),
-                    identifyingModKey);
+                    identifyingModKey).ConfigureAwait(false);
                 return 0;
             });
             return this;
@@ -281,7 +297,7 @@ namespace Mutagen.Bethesda.Synthesis
                     x: args.Left,
                     y: args.Top,
                     width: args.Width,
-                    height: args.Height));
+                    height: args.Height)).ConfigureAwait(false);
             return 0;
         }
         #endregion
@@ -314,14 +330,14 @@ namespace Mutagen.Bethesda.Synthesis
             string[] args,
             RunPreferences? preferences)
         {
-            return HandleOnShutdown(await InternalRun(args, preferences));
+            return HandleOnShutdown(await InternalRun(args, preferences).ConfigureAwait(false));
         }
 
         public async Task<int> Run(
             string[] args,
             IFileSystem? fileSystem = null)
         {
-            return HandleOnShutdown(await InternalRun(args, null, fileSystem: fileSystem));
+            return HandleOnShutdown(await InternalRun(args, null, fileSystem: fileSystem).ConfigureAwait(false));
         }
 
         private async Task<int> InternalRun(
@@ -329,7 +345,7 @@ namespace Mutagen.Bethesda.Synthesis
             RunPreferences? preferences = null,
             IFileSystem? fileSystem = null)
         {
-            await using var throttler = new ConsoleThrottler();
+            await using var throttler = new ConsoleThrottler().ConfigureAwait(false);
             if (_argumentAdjustment != null)
             {
                 args = _argumentAdjustment(args);
@@ -367,11 +383,11 @@ namespace Mutagen.Bethesda.Synthesis
                 {
                     if (_openTypical != null)
                     {
-                        return await OpenTypical(openSettings);
+                        return await OpenTypical(openSettings).ConfigureAwait(false);
                     }
                     else if (_openForSettings != null)
                     {
-                        return await OpenForSettings(openSettings);
+                        return await OpenForSettings(openSettings).ConfigureAwait(false);
                     }
                 }
                 catch (Exception ex)
@@ -397,7 +413,7 @@ namespace Mutagen.Bethesda.Synthesis
                     {
                         try
                         {
-                            await Run(settings, fileSystem: fileSystem);
+                            await Run(settings, fileSystem: fileSystem).ConfigureAwait(false);
                         }
                         catch (Exception ex)
                         {
@@ -411,7 +427,7 @@ namespace Mutagen.Bethesda.Synthesis
                         }
                         return 0;
                     },
-                    (CheckRunnability checkRunnability) => CheckRunnability(checkRunnability, fileSystem),
+                    async (CheckRunnability checkRunnability) => (int)await CheckRunnability(checkRunnability, fileSystem),
                     (OpenForSettings openForSettings) => OpenForSettings(openForSettings),
                     (SettingsQuery settingsQuery) => QuerySettings(settingsQuery),
                     async _ =>
@@ -425,7 +441,19 @@ namespace Mutagen.Bethesda.Synthesis
             RunSynthesisMutagenPatcher args,
             IFileSystem? fileSystem = null)
         {
-            await Run(args, SynthesisBase.Constants.SynthesisModKey, fileSystem);
+            ModKey modKey;
+            if (args.ModKey.IsNullOrWhitespace())
+            {
+                modKey = SynthesisBase.Constants.SynthesisModKey;
+            }
+            else
+            {
+                modKey = ModKey.FromNameAndExtension(args.ModKey);
+            }
+            await Run(
+                args, 
+                modKey,
+                fileSystem).ConfigureAwait(false);
         }
 
         [Obsolete("Using SetTypicalOpen is the new preferred API for supplying RunDefaultPatcher preferences")]
@@ -435,7 +463,7 @@ namespace Mutagen.Bethesda.Synthesis
         {
             try
             {
-                await Run(args);
+                await Run(args).ConfigureAwait(false);
             }
             catch (Exception ex)
             when (Environment.GetCommandLineArgs().Length == 0
@@ -449,7 +477,7 @@ namespace Mutagen.Bethesda.Synthesis
 
         private async Task Run(
             RunSynthesisMutagenPatcher args,
-            ModKey exportKey,
+            ModKey? exportKey,
             IFileSystem? fileSystem = null)
         {
             fileSystem = fileSystem.GetOrDefault();
@@ -459,36 +487,36 @@ namespace Mutagen.Bethesda.Synthesis
             Console.WriteLine($"Synthesis sha: {Versions.SynthesisSha}");
             System.Console.WriteLine(Parser.Default.FormatCommandLine(args));
             SetReflectionSettingsAnchorPaths(args.ExtraDataFolder);
+            
             var cat = args.GameRelease.ToCategory();
             if (!_patchers.TryGetValue(cat, out var patcher))
             {
                 throw new ArgumentException($"No applicable patchers for {cat}");
             }
+            
             if (_runnabilityChecks.Count > 0)
             {
                 System.Console.WriteLine("Checking runnability");
-                await CheckRunnability(
+                var runnabilityResult = await CheckRunnability(
                     new CheckRunnability()
                     {
                         DataFolderPath = args.DataFolderPath,
                         GameRelease = args.GameRelease,
                         LoadOrderFilePath = args.LoadOrderFilePath
                     },
-                    fileSystem: fileSystem);
+                    fileSystem: fileSystem).ConfigureAwait(false);
+                if (runnabilityResult == Codes.NotRunnable)
+                {
+                    throw new ArgumentException("Patcher responded that it was not runnable.");
+                }
                 System.Console.WriteLine("Checking runnability complete");
             }
+            
             WarmupAll.Init();
             System.Console.WriteLine("Prepping state.");
             var prefs = patcher.Prefs ?? new PatcherPreferences();
             var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
-            var dataDirectoryInjection = new DataDirectoryInjection(args.DataFolderPath);
-            var pluginRawListingsReader = new PluginRawListingsReader(
-                fileSystem,
-                new PluginListingsParser(
-                    new ModListingParser(
-                        new HasEnabledMarkersProvider(
-                            gameReleaseInjection))));
-            var pluginListingsPathProvider = new PluginListingsPathProvider(gameReleaseInjection);
+            var categoryContext = new GameCategoryContext(gameReleaseInjection);
             var stateFactory = new StateFactory(
                 fileSystem,
                 new LoadOrderImporterFactory(
@@ -496,21 +524,42 @@ namespace Mutagen.Bethesda.Synthesis
                 new GetStateLoadOrder(
                     new ImplicitListingsProvider(
                         fileSystem,
-                        dataDirectoryInjection,
+                        new DataDirectoryInjection(args.DataFolderPath),
                         new ImplicitListingModKeyProvider(
                             gameReleaseInjection)),
+                    new OrderListings(),
+                    new CreationClubListingsProvider(
+                        fileSystem,
+                        new DataDirectoryInjection(args.DataFolderPath),
+                        new CreationClubListingsPathProvider(
+                            categoryContext,
+                            new CreationClubEnabledProvider(categoryContext),
+                            new GameDirectoryProvider(
+                                gameReleaseInjection,
+                                new GameLocator())),
+                        new CreationClubRawListingsReader()),
                     new StatePluginsListingProvider(
                         args.LoadOrderFilePath,
-                        pluginRawListingsReader)),
+                        new PluginRawListingsReader(
+                            fileSystem,
+                            new PluginListingsParser(
+                                new ModListingParser(
+                                    new HasEnabledMarkersProvider(
+                                        gameReleaseInjection)))))),
                 new EnableImplicitMastersFactory(fileSystem));
-            using var state = stateFactory.ToState(cat, args, prefs, exportKey);
-            await patcher.Patcher(state).ConfigureAwait(false);
+            
+            exportKey = exportKey == null || exportKey.Value.IsNull ? SynthesisBase.Constants.SynthesisModKey : exportKey.Value;
+            using var state = stateFactory.ToState(cat, args, prefs, exportKey.Value);
+            
             System.Console.WriteLine("Running patch.");
-            if (!prefs.NoPatch)
-            {
-                System.Console.WriteLine($"Writing to output: {args.OutputPath}");
-                state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)), fileSystem: fileSystem);
-            }
+            await patcher.Patcher(state).ConfigureAwait(false);
+            System.Console.WriteLine("Finished patch.");
+            
+            if (prefs.NoPatch) return;
+            
+            System.Console.WriteLine($"Writing to output: {args.OutputPath}");
+            Directory.CreateDirectory(Path.GetDirectoryName(args.OutputPath)!);
+            state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)), fileSystem: fileSystem);
         }
         #endregion
 
@@ -674,8 +723,9 @@ namespace Mutagen.Bethesda.Synthesis
                 LoadOrderFilePath = path.Path,
                 ExtraDataFolder = Path.GetFullPath("./Data"),
                 DefaultDataFolderPath = null,
+                LoadOrderIncludesCreationClub = false,
                 PatcherName = targetModKey.Name,
-                PersistencePath = "Persistence"
+                PersistencePath = "Persistence",
             };
         }
 

@@ -18,18 +18,18 @@ namespace Synthesis.Bethesda.Execution.DotNet
 
     public class QueryLibraryVersions : IQueryLibraryVersions
     {
-        private readonly IQueryNugetListing _QueryNuget;
+        private readonly IQueryNugetListing _queryNuget;
 
         public QueryLibraryVersions(IQueryNugetListing queryNuget)
         {
-            _QueryNuget = queryNuget;
+            _queryNuget = queryNuget;
         }
         
         public async Task<NugetVersionPair> Query(
             FilePath projectPath, bool current, bool includePrerelease, CancellationToken cancel)
         {
             string? mutagenVersion = null, synthesisVersion = null;
-            var queries = await _QueryNuget.Query(projectPath, outdated: !current, includePrerelease: includePrerelease, cancel: cancel);
+            var queries = await _queryNuget.Query(projectPath, outdated: !current, includePrerelease: includePrerelease, cancel: cancel).ConfigureAwait(false);
             foreach (var item in queries)
             {
                 if (item.Package.StartsWith("Mutagen.Bethesda")

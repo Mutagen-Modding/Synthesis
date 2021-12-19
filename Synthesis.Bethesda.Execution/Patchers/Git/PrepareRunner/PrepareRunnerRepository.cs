@@ -21,6 +21,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
     public class PrepareRunnerRepository : IPrepareRunnerRepository
     {
         private readonly ILogger _logger;
+        private readonly IBuildMetaFilePathProvider _metaFilePathProvider;
         public IResetToTarget ResetToTarget { get; }
         public ISolutionFileLocator SolutionFileLocator { get; }
         public IRunnerRepoProjectPathRetriever RunnerRepoProjectPathRetriever { get; }
@@ -34,10 +35,12 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
             IRunnerRepoProjectPathRetriever runnerRepoProjectPathRetriever,
             IModifyRunnerProjects modifyRunnerProjects,
             IResetToTarget resetToTarget,
+            IBuildMetaFilePathProvider metaFilePathProvider,
             IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
             IProvideRepositoryCheckouts repoCheckouts)
         {
             _logger = logger;
+            _metaFilePathProvider = metaFilePathProvider;
             ResetToTarget = resetToTarget;
             SolutionFileLocator = solutionFileLocator;
             RunnerRepoProjectPathRetriever = runnerRepoProjectPathRetriever;
@@ -82,6 +85,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
                 var runInfo = new RunnerRepoInfo(
                     SolutionPath: slnPath,
                     ProjPath: foundProjSubPath.FullPath,
+                    MetaPath: _metaFilePathProvider.Path,
                     Target: target.Value.Target,
                     CommitMessage: target.Value.CommitMessage,
                     CommitDate: target.Value.CommitDate,

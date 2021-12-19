@@ -21,10 +21,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Cli
 
         public IShowHelpSetting ShowHelpSetting { get; }
 
-        private readonly ObservableAsPropertyHelper<ErrorResponse> _CanCompleteConfiguration;
+        private readonly ObservableAsPropertyHelper<ErrorResponse> _canCompleteConfiguration;
         public ICommand CompleteConfiguration => _init.CompleteConfiguration;
         public ICommand CancelConfiguration => _init.CancelConfiguration;
-        public ErrorResponse CanCompleteConfiguration => _CanCompleteConfiguration.Value;
+        public ErrorResponse CanCompleteConfiguration => _canCompleteConfiguration.Value;
 
         public CliPatcherInitVm(
             IPatcherNameVm nameVm, 
@@ -38,7 +38,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Cli
             NameVm = nameVm;
             ShowHelpSetting = showHelpSetting;
             ExecutableInput = executableInputVm;
-            _CanCompleteConfiguration = executableInputVm.WhenAnyValue(x => x.Picker.ErrorState)
+            _canCompleteConfiguration = executableInputVm.WhenAnyValue(x => x.Picker.ErrorState)
                 .Cast<ErrorResponse, ErrorResponse>()
                 .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
         }

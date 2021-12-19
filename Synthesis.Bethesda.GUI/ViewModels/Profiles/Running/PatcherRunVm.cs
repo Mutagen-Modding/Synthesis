@@ -24,17 +24,17 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
 
         public TextDocument OutputDisplay { get; } = new();
 
-        private readonly ObservableAsPropertyHelper<TimeSpan> _RunTime;
-        public TimeSpan RunTime => _RunTime.Value;
+        private readonly ObservableAsPropertyHelper<TimeSpan> _runTime;
+        public TimeSpan RunTime => _runTime.Value;
 
-        private readonly ObservableAsPropertyHelper<string> _RunTimeString;
-        public string RunTimeString => _RunTimeString.Value;
+        private readonly ObservableAsPropertyHelper<string> _runTimeString;
+        public string RunTimeString => _runTimeString.Value;
 
-        private readonly ObservableAsPropertyHelper<bool> _IsRunning;
-        public bool IsRunning => _IsRunning.Value;
+        private readonly ObservableAsPropertyHelper<bool> _isRunning;
+        public bool IsRunning => _isRunning.Value;
 
-        private readonly ObservableAsPropertyHelper<bool> _IsErrored;
-        public bool IsErrored => _IsErrored.Value;
+        private readonly ObservableAsPropertyHelper<bool> _isErrored;
+        public bool IsErrored => _isErrored.Value;
 
         [Reactive]
         public bool IsSelected { get; set; }
@@ -73,23 +73,23 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 })
                 .DisposeWith(this);
 
-            _IsRunning = this.WhenAnyValue(x => x.State)
+            _isRunning = this.WhenAnyValue(x => x.State)
                 .Select(x => x.Value == RunState.Started)
-                .ToGuiProperty(this, nameof(IsRunning));
+                .ToGuiProperty(this, nameof(IsRunning), deferSubscription: true);
 
-            _IsErrored = this.WhenAnyValue(x => x.State)
+            _isErrored = this.WhenAnyValue(x => x.State)
                 .Select(x => x.Value == RunState.Error)
-                .ToGuiProperty(this, nameof(IsErrored));
+                .ToGuiProperty(this, nameof(IsErrored), deferSubscription: true);
 
             var runTime = Noggog.ObservableExt.TimePassed(TimeSpan.FromMilliseconds(100), RxApp.MainThreadScheduler)
                 .FlowSwitch(this.WhenAnyValue(x => x.IsRunning))
                 .Publish()
                 .RefCount();
 
-            _RunTime = runTime
+            _runTime = runTime
                 .ToProperty(this, nameof(RunTime));
 
-            _RunTimeString = runTime
+            _runTimeString = runTime
                 .Select(time =>
                 {
                     if (time.TotalDays > 1)
@@ -106,7 +106,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                     }
                     return $"{time.TotalSeconds:n1}s";
                 })
-                .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty);
+                .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty, deferSubscription: true);
 
             this.WhenAnyValue(x => x.State)
                 .Where(x => x.Succeeded && x.Value == RunState.Finished)

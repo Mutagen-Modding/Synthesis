@@ -6,7 +6,7 @@ using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
-using Synthesis.Bethesda.GUI.ViewModels.Top;
+using Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
 {
@@ -31,6 +31,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
         {
             var nonImplicit = profileLoadOrder.LoadOrder.Connect()
                 .Filter(x => !implicitListingsProvider.Listings.Contains(x.ModKey))
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .AsObservableList();
             
             _InError = nonImplicit.CountChanged
@@ -40,18 +41,18 @@ namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
                         .FilterOnObservable(i => i.WhenAnyValue(x => x.Exists))
                         .QueryWhenChanged(q => q.Count > 0),
                     (hasAny, anyExist) => hasAny && !anyExist)
-                .ToGuiProperty(this, nameof(InError));
+                .ToGuiProperty(this, nameof(InError), deferSubscription: true);
 
             _ErrorString = nonImplicit.CountChanged
                 .Select(count =>
                 {
                     return $"Load order listed {count} mods, but none were found in the game's data folder";
                 })
-                .ToGuiProperty(this, nameof(ErrorString), default(string?));
+                .ToGuiProperty(this, nameof(ErrorString), default(string?), deferSubscription: true);
 
             _DataFolderPath = dataFolderVm.WhenAnyValue(x => x.Path)
                 .Select(x => x.Path)
-                .ToGuiProperty(this, nameof(DataFolderPath), string.Empty);
+                .ToGuiProperty(this, nameof(DataFolderPath), string.Empty, deferSubscription: true);
 
             GoToProfileSettingsCommand = openProfileSettings.OpenCommand;
         }

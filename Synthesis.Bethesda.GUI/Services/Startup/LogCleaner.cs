@@ -3,6 +3,7 @@ using System.IO.Abstractions;
 using Noggog;
 using Noggog.Time;
 using Serilog;
+using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.GUI.Logging;
 
 namespace Synthesis.Bethesda.GUI.Services.Startup
@@ -28,7 +29,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             _logger = logger;
         }
         
-        public void Do()
+        public void Start()
         {
             foreach (var dir in _fileSystem.Directory.EnumerateDirectoryPaths(LogSettings.LogFolder, includeSelf: false, recursive: false))
             {

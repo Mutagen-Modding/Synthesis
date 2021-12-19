@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
     }
 
     [ExcludeFromCodeCoverage]
-    public record ResetResults(string? Target, string CommitMessage, DateTime CommitDate);
+    public record ResetResults(RepoTarget Target, string CommitMessage, DateTime CommitDate);
 
     public class ResetToTarget : IResetToTarget
     {
@@ -57,11 +57,14 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
             if (commit.Failed) return commit.BubbleFailure<ResetResults>();
 
             cancel.ThrowIfCancellationRequested();
-                
-            _logger.Information("Checking out {TargetSha}", targets.Value.TargetSha);
-            repo.ResetHard(commit.Value);
 
-            return new ResetResults(targets.Value.Target, commit.Value.CommitMessage, commit.Value.CommitDate);
+            if (repo.CurrentSha != commit.Value.Sha)
+            {
+                _logger.Information("Checking out {TargetSha}", targets.Value.TargetSha);
+                repo.ResetHard(commit.Value);
+            }
+
+            return new ResetResults(targets.Value, commit.Value.CommitMessage, commit.Value.CommitDate);
         }
     }
 }

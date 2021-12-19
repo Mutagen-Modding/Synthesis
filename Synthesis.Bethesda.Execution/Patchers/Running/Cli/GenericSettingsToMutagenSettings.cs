@@ -1,7 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Common;
+using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
 {
@@ -32,7 +35,10 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
                 SourcePath = settings.SourcePath,
                 PersistencePath = settings.PersistencePath,
                 PatcherName = settings.PatcherName,
-                ExtraDataFolder = ExtraDataPathProvider.Path
+                ExtraDataFolder = ExtraDataPathProvider.Path,
+                Localize = settings.Localize,
+                TargetLanguage = Enum.Parse<Language>(settings.TargetLanguage),
+                ModKey = settings.ModKey,
             };
         }
     }

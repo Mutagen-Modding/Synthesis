@@ -14,27 +14,23 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             IGroupRun[] groups,
             CancellationToken cancel,
             DirectoryPath outputDir,
-            FilePath? sourcePath = null,
-            PersistenceMode persistenceMode = PersistenceMode.None,
-            string? persistencePath = null);
+            RunParameters runParameters,
+            FilePath? sourcePath = null);
     }
 
     public class ExecuteRun : IExecuteRun
     {
-        private readonly ILogger _logger;
         private readonly IPrintRunStart _print;
         public IResetWorkingDirectory ResetWorkingDirectory { get; }
         public IRunAllGroups RunAllGroups { get; }
         public IEnsureSourcePathExists EnsureSourcePathExists { get; }
 
         public ExecuteRun(
-            ILogger logger,
             IResetWorkingDirectory resetWorkingDirectory,
             IRunAllGroups runAllGroups,
             IPrintRunStart print,
             IEnsureSourcePathExists ensureSourcePathExists)
         {
-            _logger = logger;
             _print = print;
             ResetWorkingDirectory = resetWorkingDirectory;
             RunAllGroups = runAllGroups;
@@ -45,9 +41,8 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
             IGroupRun[] groups,
             CancellationToken cancellation,
             DirectoryPath outputDir,
-            FilePath? sourcePath = null,
-            PersistenceMode persistenceMode = PersistenceMode.None,
-            string? persistencePath = null)
+            RunParameters runParameters,
+            FilePath? sourcePath = null)
         {
             _print.Print(groups);
             
@@ -65,9 +60,8 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                 groups,
                 cancellation,
                 outputDir,
-                sourcePath,
-                persistenceMode,
-                persistencePath);
+                runParameters,
+                sourcePath).ConfigureAwait(false);
         }
     }
 }

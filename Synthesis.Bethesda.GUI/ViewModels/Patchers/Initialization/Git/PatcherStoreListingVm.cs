@@ -16,8 +16,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
         public PatcherListing Raw { get; }
         public string Name { get; }
 
-        private readonly ObservableAsPropertyHelper<bool> _IsSelected;
-        public bool IsSelected => _IsSelected.Value;
+        private readonly ObservableAsPropertyHelper<bool> _isSelected;
+        public bool IsSelected => _isSelected.Value;
 
         public ICommand OpenWebsite { get; }
         public ICommand AddCommand { get; }
@@ -45,13 +45,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             {
                 Name = "Error";
             }
-            _IsSelected = gitInit.WhenAnyValue(x => x.SelectedPatcher)
+            _isSelected = gitInit.WhenAnyValue(x => x.SelectedPatcher)
                 .Select(x => x == this)
                 .ToGuiProperty(this, nameof(IsSelected));
             OpenWebsite = ReactiveCommand.Create(() => navigate.Navigate(RepoPath));
-            AddCommand = ReactiveCommand.Create(() =>
+            AddCommand = ReactiveCommand.CreateFromTask(async () =>
             {
-                gitInit.AddStorePatcher(this);
+                await gitInit.AddStorePatcher(this);
             });
         }
 

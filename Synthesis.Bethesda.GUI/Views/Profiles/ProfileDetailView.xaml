@@ -47,6 +47,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -113,8 +114,7 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"
                     Margin="0,8,0,0"
-                    FontSize="14"
-                    FontWeight="Bold"
+                    Style="{StaticResource SettingSectionHeaderStyle}"
                     Text="Nuget Versions" />
                 <local:NugetsVersioningView Grid.Row="1"
                     x:Name="Nugets"
@@ -148,8 +148,7 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"
                     Margin="0,16,0,0"
-                    FontSize="14"
-                    FontWeight="Bold"
+                    Style="{StaticResource SettingSectionHeaderStyle}"
                     Text="Data Folder Location" />
                 <TextBox Grid.Row="1"
                     x:Name="DataFolderOverrideBox"
@@ -164,8 +163,7 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"
                     Margin="0,16,0,0"
-                    FontSize="14"
-                    FontWeight="Bold"
+                    Style="{StaticResource SettingSectionHeaderStyle}"
                     Text="FormID Persistence" />
                 <ComboBox Grid.Row="1"
                     x:Name="PersistenceStyleSelector"
@@ -177,11 +175,31 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"
                            Margin="0,16,0,0"
-                           FontSize="14"
-                           FontWeight="Bold"
+                           Style="{StaticResource SettingSectionHeaderStyle}"
+                           Text="Language" />
+                <CheckBox Grid.Row="1" x:Name="Localize"
+                          Content="Localize" 
+                          Margin="0,4,0,0"
+                          ToolTip="Whether to use STRINGS files during export" />
+                <ComboBox Grid.Row="2"
+                          Margin="0,4,0,0"
+                          x:Name="TargetLanguage"
+                          ItemsSource="{Binding Languages}"
+                          SelectedItem="{Binding Profile.TargetLanguage}"
+                          ToolTip="What language to view as the default language" />
+            </Grid>
+            <Grid Grid.Row="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0"
+                           Margin="0,16,0,0"
+                           Style="{StaticResource SettingSectionHeaderStyle}"
                            Text="Other" />
                 <CheckBox Grid.Row="1"
                           x:Name="IgnoreMissingModsCheckbox"

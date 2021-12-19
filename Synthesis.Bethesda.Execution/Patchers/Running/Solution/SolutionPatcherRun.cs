@@ -24,7 +24,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
         public IPathToProjProvider PathToProjProvider { get; }
         public ISolutionPatcherRunner SolutionPatcherRunner { get; }
         public ISolutionPatcherPrep PrepService { get; }
-        public IExecuteRunnabilityCheck CheckRunnability { get; }
         public IPrintShaIfApplicable PrintShaIfApplicable { get; }
         public string Name => NameProvider.Name;
 
@@ -35,7 +34,6 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
             IPatcherIdProvider idProvider,
             ISolutionPatcherPrep prep,
             IIndexDisseminator indexDisseminator,
-            IExecuteRunnabilityCheck checkRunnability,
             IPrintShaIfApplicable printShaIfApplicable)
         {
             Key = idProvider.InternalId;
@@ -43,32 +41,20 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution
             PathToProjProvider = pathToProjProvider;
             SolutionPatcherRunner = solutionPatcherRunner;
             PrepService = prep;
-            CheckRunnability = checkRunnability;
             PrintShaIfApplicable = printShaIfApplicable;
             Index = indexDisseminator.GetNext();
         }
 
-        public Task Prep(CancellationToken cancel)
+        public async Task Prep(CancellationToken cancel)
         {
-            return PrepService.Prep(cancel);
+            await PrepService.Prep(cancel).ConfigureAwait(false);
         }
 
         public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)
         {
             PrintShaIfApplicable.Print();
             
-            var runnability = await CheckRunnability.Check(
-                PathToProjProvider.Path,
-                directExe: false,
-                loadOrderPath: settings.LoadOrderFilePath,
-                cancel: cancel);
-
-            if (runnability.Failed)
-            {
-                throw new CliUnsuccessfulRunException((int)Codes.NotRunnable, runnability.Reason);
-            }
-            
-            await SolutionPatcherRunner.Run(settings, cancel);
+            await SolutionPatcherRunner.Run(settings, cancel).ConfigureAwait(false);
         }
 
         public void Dispose()

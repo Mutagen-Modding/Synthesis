@@ -29,6 +29,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
             var group = _groupCreator();
             group.Name = groupSettings.Name;
             group.IsOn = groupSettings.On;
+            group.BlacklistedModKeys.AddRange(groupSettings.BlacklistedMods);
             group.Expanded = groupSettings.Expanded;
             group.Patchers.AddRange(
                 groupSettings.Patchers

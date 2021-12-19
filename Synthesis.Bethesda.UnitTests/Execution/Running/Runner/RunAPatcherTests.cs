@@ -7,6 +7,7 @@ using Noggog;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Synthesis.Bethesda.Commands;
+using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -18,184 +19,184 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
     {
         [Theory, SynthAutoData]
         public async Task PrepExceptionReturnsNull(
-            ModKey outputKey,
+            IGroupRun groupRun,
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunAPatcher sut)
         {
             (await sut.Run(
-                    outputKey,
+                    groupRun,
                     new PatcherPrepBundle(
                         patcher,
                         Task.FromResult<Exception?>(new NotImplementedException())),
                     cancellation,
                     sourcePath,
-                    persistencePath))
+                    runParameters))
                 .Should().BeNull();
         }
         
         [Theory, SynthAutoData]
         public async Task CancelledReturnsNull(
-            ModKey outputKey,
+            IGroupRun groupRun,
             IPatcherRun patcher,
             CancellationToken cancelled,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunAPatcher sut)
         {
             (await sut.Run(
-                    outputKey,
+                    groupRun,
                     new PatcherPrepBundle(
                         patcher,
                         Task.FromResult<Exception?>(new NotImplementedException())),
                     cancelled,
                     sourcePath,
-                    persistencePath))
+                    runParameters))
                 .Should().BeNull();
         }
         
         [Theory, SynthAutoData]
         public async Task RetrievesArgs(
-            ModKey outputKey,
+            IGroupRun groupRun,
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunSynthesisPatcher args,
             RunAPatcher sut)
         {
-            sut.GetRunArgs.GetArgs(default!, default, default, default)
+            sut.GetRunArgs.GetArgs(default!, default!, default, default!)
                 .ReturnsForAnyArgs(args);
             await sut.Run(
-                outputKey,
+                groupRun,
                 new PatcherPrepBundle(
                     patcher,
                     Task.FromResult<Exception?>(null)),
                 cancellation,
                 sourcePath,
-                persistencePath);
+                runParameters);
             sut.GetRunArgs.Received(1).GetArgs(
+                groupRun,
                 patcher,
-                outputKey,
                 sourcePath,
-                persistencePath);
+                runParameters);
         }
         
         [Theory, SynthAutoData]
         public async Task PassesArgsToRun(
-            ModKey outputKey,
+            IGroupRun groupRun,
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
             ModPath outputPath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunSynthesisPatcher args,
             RunAPatcher sut)
         {
             args.OutputPath = outputPath;
-            sut.GetRunArgs.GetArgs(default!, default, default, default)
+            sut.GetRunArgs.GetArgs(default!, default!, default, default!)
                 .ReturnsForAnyArgs(args);
             await sut.Run(
-                outputKey,
+                groupRun,
                 new PatcherPrepBundle(
                     patcher,
                     Task.FromResult<Exception?>(null)),
                 cancellation,
                 sourcePath,
-                persistencePath);
+                runParameters);
             await patcher.Received(1).Run(args, cancellation);
         }
         
         [Theory, SynthAutoData]
         public async Task GetArgsThrowsReturnsNull(
-            ModKey outputKey,
+            IGroupRun groupRun,
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunAPatcher sut)
         {
-            sut.GetRunArgs.GetArgs(default!, default, default, default)
+            sut.GetRunArgs.GetArgs(default!, default!, default, default!)
                 .ThrowsForAnyArgs<NotImplementedException>();
             (await sut.Run(
-                outputKey,
+                groupRun,
                 new PatcherPrepBundle(
                     patcher,
                     Task.FromResult<Exception?>(null)),
                 cancellation,
                 sourcePath,
-                persistencePath)).Should().BeNull();
+                runParameters)).Should().BeNull();
         }
         
         [Theory, SynthAutoData]
         public async Task RunThrowsReturnsNull(
-            ModKey outputKey,
+            IGroupRun groupRun,
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunAPatcher sut)
         {
             patcher.Run(default!, default)
                 .ThrowsForAnyArgs<NotImplementedException>();
             (await sut.Run(
-                outputKey,
+                groupRun,
                 new PatcherPrepBundle(
                     patcher,
                     Task.FromResult<Exception?>(null)),
                 cancellation,
                 sourcePath,
-                persistencePath)).Should().BeNull();
+                runParameters)).Should().BeNull();
         }
 
         [Theory, SynthAutoData]
         public async Task PassesArgsToFinalize(
-            ModKey outputKey,
+            IGroupRun groupRun,
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             RunSynthesisPatcher args,
             FilePath outputPath,
             RunAPatcher sut)
         {
-            sut.GetRunArgs.GetArgs(default!, default, default, default)
+            sut.GetRunArgs.GetArgs(default!, default!, default, default!)
                 .ReturnsForAnyArgs(args);
             args.OutputPath = outputPath;
             await sut.Run(
-                outputKey,
+                groupRun,
                 new PatcherPrepBundle(
                     patcher,
                     Task.FromResult<Exception?>(null)),
                 cancellation,
                 sourcePath,
-                persistencePath);
+                runParameters);
             sut.FinalizePatcherRun.Received(1)
                 .Finalize(patcher, args.OutputPath);
         }
 
         [Theory, SynthAutoData]
         public async Task ReturnsFinalizedResults(
-            ModKey outputKey,
+            IGroupRun groupRun,
             IPatcherRun patcher,
             CancellationToken cancellation,
             FilePath? sourcePath,
-            string? persistencePath,
+            RunParameters runParameters,
             FilePath ret,
             RunAPatcher sut)
         {
             sut.FinalizePatcherRun.Finalize(default!, default)
                 .ReturnsForAnyArgs(ret);
             (await sut.Run(
-                    outputKey,
+                    groupRun,
                     new PatcherPrepBundle(
                         patcher,
                         Task.FromResult<Exception?>(null)),
                     cancellation,
                     sourcePath,
-                    persistencePath))
+                    runParameters))
                 .Should().Be(ret);
         }
     }

@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.DotNet.NugetListing;
+using Synthesis.Bethesda.Execution.WorkEngine;
 
 namespace Synthesis.Bethesda.Execution.Versioning.Query
 {
@@ -14,6 +16,7 @@ namespace Synthesis.Bethesda.Execution.Versioning.Query
     public class QueryNewestLibraryVersions : IQueryNewestLibraryVersions
     {
         private readonly ILogger _logger;
+        private readonly IWorkDropoff _workDropoff;
         public IQueryVersionProjectPathing Pathing { get; }
         public IPrepLatestVersionProject PrepLatestVersionProject { get; }
         public IQueryLibraryVersions QueryLibraryVersions { get; }
@@ -21,10 +24,12 @@ namespace Synthesis.Bethesda.Execution.Versioning.Query
         public QueryNewestLibraryVersions(
             ILogger logger,
             IQueryVersionProjectPathing pathing, 
+            IWorkDropoff workDropoff,
             IPrepLatestVersionProject prepLatestVersionProject,
             IQueryLibraryVersions queryLibraryVersions)
         {
             _logger = logger;
+            _workDropoff = workDropoff;
             Pathing = pathing;
             PrepLatestVersionProject = prepLatestVersionProject;
             QueryLibraryVersions = queryLibraryVersions;
@@ -35,32 +40,32 @@ namespace Synthesis.Bethesda.Execution.Versioning.Query
             try
             {
                 _logger.Information("Querying for latest published library versions");
-                PrepLatestVersionProject.Prep();
-                return new NugetVersionOptions(
-                    await Task.Run(async () =>
-                    {
-                        var ret = await QueryLibraryVersions.Query(
-                            Pathing.ProjectFile, 
-                            current: false,
-                            includePrerelease: false, 
-                            cancel);
-                        _logger.Information("Latest published library versions:");
-                        _logger.Information("  Mutagen: {MutagenVersion}", ret.Mutagen);
-                        _logger.Information("  Synthesis: {SynthesisVersion}", ret.Synthesis);
-                        return ret;
-                    }),
-                    await Task.Run(async () =>
-                    {
-                        var ret = await QueryLibraryVersions.Query(
-                            Pathing.ProjectFile, 
-                            current: false,
-                            includePrerelease: true,
-                            cancel);
-                        _logger.Information("Latest published prerelease library versions:");
-                        _logger.Information("  Mutagen: {MutagenVersion}", ret.Mutagen);
-                        _logger.Information("  Synthesis: {SynthesisVersion}", ret.Synthesis);
-                        return ret;
-                    }));
+                await _workDropoff.EnqueueAndWait(() => PrepLatestVersionProject.Prep(cancel), cancel);
+
+                var normalTask = _workDropoff.EnqueueAndWait(() =>
+                    QueryLibraryVersions.Query(
+                        Pathing.ProjectFile,
+                        current: false,
+                        includePrerelease: false,
+                        cancel), cancel);
+                var prereleaseTask = _workDropoff.EnqueueAndWait(() =>
+                    QueryLibraryVersions.Query(
+                        Pathing.ProjectFile,
+                        current: false,
+                        includePrerelease: true,
+                        cancel), cancel);
+
+                var normal = await normalTask.ConfigureAwait(false);
+                var prerelease = await prereleaseTask.ConfigureAwait(false);
+                
+                _logger.Information("Latest published library versions:");
+                _logger.Information("  Mutagen: {MutagenVersion}", normal.Mutagen);
+                _logger.Information("  Synthesis: {SynthesisVersion}", normal.Synthesis);
+                _logger.Information("Latest published prerelease library versions:");
+                _logger.Information("  Mutagen: {MutagenVersion}", prerelease.Mutagen);
+                _logger.Information("  Synthesis: {SynthesisVersion}", prerelease.Synthesis);
+                
+                return new NugetVersionOptions(normal, prerelease);
             }
             catch (Exception ex)
             {

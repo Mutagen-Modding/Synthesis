@@ -49,7 +49,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.0.1" />
-    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.34.0" />
+    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.34.1" />
     <PackageReference Include="Noggog.Autofac" Version="2.35.0" />
     <PackageReference Include="NuGet.Versioning" Version="6.0.0" />
     <PackageReference Include="NuGetizer" Version="0.7.5">
@@ -113,6 +113,21 @@
       <BuildAction>Compile</BuildAction>
     </Compile>
     <Compile Update="Modules\LifetimeScopes.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="WorkEngine\WorkDropoff.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Utility\IStartupTask.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Patchers\Git\IShortCircuitSettingsProvider.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>

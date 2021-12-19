@@ -3,6 +3,8 @@ using Newtonsoft.Json.Converters;
 using Synthesis.Bethesda.Execution.Settings;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection.Metadata;
+using Mutagen.Bethesda.Json;
 using Synthesis.Bethesda.Execution.Settings.V2;
 
 namespace Synthesis.Bethesda.Execution
@@ -20,6 +22,11 @@ namespace Synthesis.Bethesda.Execution
                 new AbstractConverter<SynthesisProfile, ISynthesisProfileSettings>(),
             }
         };
+
+        static Constants()
+        {
+            JsonSettings.AddMutagenConverters();
+        }
 
         static void ErrorHandler(object? sender, Newtonsoft.Json.Serialization.ErrorEventArgs args)
         {

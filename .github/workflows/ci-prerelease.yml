@@ -1,0 +1,25 @@
+name: Prerelease
+
+on:
+  push:
+    branches: [ pre-release ]
+  pull_request:
+    branches: [ pre-release ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.*
+    - name: Install dependencies
+      run: dotnet restore Synthesis.Bethesda.sln
+    - name: Build
+      run: dotnet build Synthesis.Bethesda.sln -c Release --no-restore
+    - name: Test
+      run: dotnet test Synthesis.Bethesda.sln -c Release --no-build

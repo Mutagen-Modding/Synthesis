@@ -9,6 +9,7 @@ using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.Services.Profile;
 using Synthesis.Bethesda.GUI.Services.Versioning;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
@@ -50,15 +51,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
         public ProfileVersioning(
             ILogger logger,
             IProfileNameProvider nameProvider,
-            INewestLibraryVersionsVm newestLibs)
+            INewestProfileLibraryVersionsVm libs)
         {
             ActiveVersioning = Observable.CombineLatest(
                     this.WhenAnyValue(x => x.MutagenVersioning),
                     this.WhenAnyValue(x => x.ManualMutagenVersion),
-                    newestLibs.WhenAnyValue(x => x.NewestMutagenVersion),
+                    libs.WhenAnyValue(x => x.NewestMutagenVersion),
                     this.WhenAnyValue(x => x.SynthesisVersioning),
                     this.WhenAnyValue(x => x.ManualSynthesisVersion),
-                    newestLibs.WhenAnyValue(x => x.NewestSynthesisVersion),
+                    libs.WhenAnyValue(x => x.NewestSynthesisVersion),
                     (mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
                     {
                         return new ActiveNugetVersioning(
@@ -71,7 +72,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                 .RefCount();
 
             // Set manual if empty
-            newestLibs.WhenAnyValue(x => x.NewestMutagenVersion)
+            libs.WhenAnyValue(x => x.NewestMutagenVersion)
                 .Subscribe(x =>
                 {
                     if (ManualMutagenVersion == null)
@@ -80,7 +81,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                     }
                 })
                 .DisposeWith(this);
-            newestLibs.WhenAnyValue(x => x.NewestSynthesisVersion)
+            libs.WhenAnyValue(x => x.NewestSynthesisVersion)
                 .Subscribe(x =>
                 {
                     if (ManualSynthesisVersion == null)
@@ -91,7 +92,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                 .DisposeWith(this);
 
             UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(
-                objectSource: newestLibs.WhenAnyValue(x => x.NewestMutagenVersion)
+                objectSource: libs.WhenAnyValue(x => x.NewestMutagenVersion)
                     .ObserveOnGui(),
                 canExecute: v =>
                 {
@@ -109,7 +110,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                 execute: v => ManualMutagenVersion = v ?? string.Empty,
                 disposable: this);
             UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
-                objectSource: newestLibs.WhenAnyValue(x => x.NewestSynthesisVersion)
+                objectSource: libs.WhenAnyValue(x => x.NewestSynthesisVersion)
                     .ObserveOnGui(),
                 canExecute: v =>
                 {
