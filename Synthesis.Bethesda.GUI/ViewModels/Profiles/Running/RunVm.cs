@@ -93,11 +93,33 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 execute: Cancel,
                 canExecute: this.WhenAnyValue(x => x.Running));
 
-            reporterWatcher.Overall
+            reporterWatcher.Output
+                .Where(x => x.Run == null)
+                .Subscribe(i =>
+                {
+                    logger.Information(i.String);
+                })
+                .DisposeWith(this);
+            reporterWatcher.Error
+                .Where(x => x.Run == null)
+                .Subscribe(i =>
+                {
+                    logger.Error(i.String);
+                })
+                .DisposeWith(this);
+            reporterWatcher.Exceptions
+                .Do(ex => logger.Error(ex, "Error while running patcher pipeline"))
                 .ObserveOnGui()
                 .Subscribe(ex =>
                 {
-                    logger.Error(ex, "Error while running patcher pipeline");
+                    ResultError = ex;
+                })
+                .DisposeWith(this);
+            reporterWatcher.Exceptions
+                .Do(ex => logger.Error(ex, "Error while running patcher pipeline"))
+                .ObserveOnGui()
+                .Subscribe(ex =>
+                {
                     ResultError = ex;
                 })
                 .DisposeWith(this);
@@ -105,26 +127,32 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 .Select(data => (data, type: "prepping"))
                 .Merge(reporterWatcher.RunProblem
                     .Select(data => (data, type: "running")))
+                .Do(i =>
+                {
+                    logger
+                        .ForContext(nameof(IPatcherNameVm.Name), i.data.Run)
+                        .Error(i.data.Error, $"Error while {i.type}");
+                })
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
                     var vm = _patchers[i.data.Key];
                     vm.State = GetResponse<RunState>.Fail(RunState.Error, i.data.Error);
                     runDisplayControllerVm.SelectedObject = vm;
-                    logger
-                        .ForContext(nameof(IPatcherNameVm.Name), i.data.Run)
-                        .Error(i.data.Error, $"Error while {i.type}");
                 })
                 .DisposeWith(this);
             reporterWatcher.Starting
+                .Do(i =>
+                {
+                    logger
+                        .ForContext(nameof(IPatcherNameVm.Name), i.Run)
+                        .Information($"Starting");
+                })
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
                     var vm = _patchers[i.Key];
                     vm.State = GetResponse<RunState>.Succeed(RunState.Started);
-                    logger
-                        .ForContext(nameof(IPatcherNameVm.Name), i.Run)
-                        .Information($"Starting");
 
                     // Handle automatic selection advancement
                     if (_previousPatcher == runDisplayControllerVm.SelectedObject
@@ -136,14 +164,18 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running
                 })
                 .DisposeWith(this);
             reporterWatcher.RunSuccessful
+                .Do(i =>
+                {
+                    var vm = _patchers[i.Key];
+                    logger
+                        .ForContext(nameof(IPatcherNameVm.Name), i.Run)
+                        .Information("Finished {RunTime}", vm.RunTime);
+                })
                 .ObserveOnGui()
                 .Subscribe(i =>
                 {
                     var vm = _patchers[i.Key];
                     vm.State = GetResponse<RunState>.Succeed(RunState.Finished);
-                    logger
-                        .ForContext(nameof(IPatcherNameVm.Name), i.Run)
-                        .Information("Finished {RunTime}", vm.RunTime);
                 })
                 .DisposeWith(this);
 

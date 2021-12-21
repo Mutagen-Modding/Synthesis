@@ -18,10 +18,6 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
     public class CompilationProvider : ICompilationProvider
     {
-        private readonly IGitPatcherCompilation _build;
-        private readonly ILogger _logger;
-        private readonly IRunnableStateProvider _runnableStateProvider;
-        
         public IObservable<ConfigurationState<RunnerRepoInfo>> State { get; }
 
         public CompilationProvider(
@@ -31,11 +27,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
             IShortCircuitSettingsProvider shortCircuitSettingsProvider,
             IRunnableStateProvider runnableStateProvider)
         {
-            _build = build;
-            _logger = logger;
-            _runnableStateProvider = runnableStateProvider;
-            
-            State = _runnableStateProvider.WhenAnyValue(x => x.State)
+            State = runnableStateProvider.WhenAnyValue(x => x.State)
                 .CombineLatest(
                     shortCircuitSettingsProvider.WhenAnyValue(x => x.Shortcircuit),
                     (state, _) => state)
@@ -51,7 +43,7 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
 
                         try
                         {
-                            _logger.Information("Compiling");
+                            logger.Information("Compiling");
                             // Return early with the values, but mark not complete
                             observer.OnNext(new ConfigurationState<RunnerRepoInfo>(state.Item)
                             {
@@ -60,10 +52,10 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                             });
 
                             // Compile to help prep
-                            var compileResp = await _build.Compile(state.Item, cancel).ConfigureAwait(false);
+                            var compileResp = await build.Compile(state.Item, cancel).ConfigureAwait(false);
                             if (compileResp.Failed)
                             {
-                                _logger.Information("Compiling failed: {Reason}", compileResp.Reason);
+                                logger.Information("Compiling failed: {Reason}", compileResp.Reason);
                                 var errs = new List<string>();
                                 printErrorMessage.Print(compileResp.Reason,
                                     $"{Path.GetDirectoryName(state.Item.ProjPath)}\\", (s, _) =>
@@ -76,12 +68,12 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git
                             }
 
                             // Return things again, without error
-                            _logger.Information("Finished compiling");
+                            logger.Information("Finished compiling");
                             observer.OnNext(state);
                         }
                         catch (Exception ex)
                         {
-                            _logger.Error(ex, "Error compiling");
+                            logger.Error(ex, "Error compiling");
                             observer.OnNext(ErrorResponse.Fail($"Error compiling: {ex}").BubbleFailure<RunnerRepoInfo>());
                         }
 

@@ -26,13 +26,13 @@ namespace Synthesis.Bethesda.Execution.GitRepository
         void Checkout(IBranch branch);
         void Pull();
         void Stage(string path);
-        void Commit(string message, Signature signature);
+        void Commit(string message);
     }
 
     [ExcludeFromCodeCoverage]
     public class GitRepository : IGitRepository
     {
-        private static Signature PlaceholderSignature = new("please", "whymustidothis@gmail.com", DateTimeOffset.Now);
+        private static Signature PlaceholderSignature = new("synthesis", "someemail@gmail.com", DateTimeOffset.Now);
         private readonly Repository _Repository;
 
         public IEnumerable<IBranch> Branches => _Repository.Branches.Select(x => new BranchWrapper(x));
@@ -122,9 +122,9 @@ namespace Synthesis.Bethesda.Execution.GitRepository
             LibGit2Sharp.Commands.Stage(_Repository, path);
         }
 
-        public void Commit(string message, Signature signature)
+        public void Commit(string message)
         {
-            _Repository.Commit(message, signature, signature);
+            _Repository.Commit(message, PlaceholderSignature, PlaceholderSignature);
         }
 
         public void Dispose()

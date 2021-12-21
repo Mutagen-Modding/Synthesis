@@ -6,6 +6,7 @@ using Mutagen.Bethesda.Strings;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
+using Serilog;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
@@ -37,6 +38,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         
         public ProfileDisplayVm(
             ProfilesDisplayVm parent,
+            ILogger logger,
             INavigateTo navigate, 
             ISelectedProfileControllerVm selProfile,
             IConfirmationPanelControllerVm confirmation,
@@ -59,11 +61,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 {
                     var profile = this.Profile;
                     if (profile.IsActive) return;
+                    logger.Information("Asking if user wants to delete profile {ID} {Name}", profile.ID, profile.NameVm.Name);
                     confirmation.TargetConfirmation = new ConfirmationActionVm(
                         "Confirm",
                         $"Are you sure you want to delete {profile.NameVm.Name}?",
                         () =>
                         {
+                            logger.Information("Deleting profile {ID} {Name}", profile.ID, profile.NameVm.Name);
                             parent.Config.Profiles.Remove(profile);
                             Parent.SwitchToActive();
                         });

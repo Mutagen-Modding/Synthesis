@@ -13,8 +13,8 @@ namespace Mutagen.Bethesda.Synthesis.WPF
     public class ReflectionSettingsVM : Mutagen.Bethesda.WPF.Reflection.ReflectionSettingsVM
     {
         private readonly IPatcherExtraDataPathProvider _extraDataPathProvider;
-        private readonly ILogger _Logger;
-        private readonly IFileSystem _FileSystem;
+        private readonly ILogger _logger;
+        private readonly IFileSystem _fileSystem;
         public string SettingsFolder => _extraDataPathProvider.Path;
         public string SettingsSubPath { get; }
         public string SettingsPath => Path.Combine(_extraDataPathProvider.Path, SettingsSubPath);
@@ -35,8 +35,8 @@ namespace Mutagen.Bethesda.Synthesis.WPF
             : base(param)
         {
             _extraDataPathProvider = extraDataPathProvider;
-            _Logger = logger;
-            _FileSystem = fileSystem;
+            _logger = logger;
+            _fileSystem = fileSystem;
             Nickname = nickname;
             SettingsSubPath = settingsSubPath;
         }
@@ -44,28 +44,28 @@ namespace Mutagen.Bethesda.Synthesis.WPF
         public async Task Import(
             CancellationToken cancel)
         {
-            if (!_FileSystem.File.Exists(SettingsPath)) return;
-            var txt = await _FileSystem.File.ReadAllTextAsync(SettingsPath, cancel).ConfigureAwait(false);
+            if (!_fileSystem.File.Exists(SettingsPath)) return;
+            var txt = await _fileSystem.File.ReadAllTextAsync(SettingsPath, cancel).ConfigureAwait(false);
             var json = JsonDocument.Parse(txt, new JsonDocumentOptions()
             {
                 AllowTrailingCommas = true
             });
-            ObjVM.Import(json.RootElement, _Logger.Information);
+            ObjVM.Import(json.RootElement, _logger.Information);
         }
 
         public void Persist()
         {
-            _Logger.Information($"Reflection settings folder: {_extraDataPathProvider.Path}");
-            _Logger.Information($"Reflection settings subpath: {SettingsSubPath}");
+            _logger.Information($"Reflection settings folder: {_extraDataPathProvider.Path}");
+            _logger.Information($"Reflection settings subpath: {SettingsSubPath}");
             var doc = new JObject();
-            ObjVM.Persist(doc, _Logger.Information);
-            if (!_FileSystem.Directory.Exists(_extraDataPathProvider.Path))
+            ObjVM.Persist(doc, _logger.Information);
+            if (!_fileSystem.Directory.Exists(_extraDataPathProvider.Path))
             {
-                _Logger.Information($"Creating reflection settings directory");
-                _FileSystem.Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
+                _logger.Information($"Creating reflection settings directory");
+                _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
             }
-            _Logger.Information($"Writing reflection settings to: {SettingsPath}");
-            _FileSystem.File.WriteAllText(SettingsPath, doc.ToString());
+            _logger.Information($"Writing reflection settings to: {SettingsPath}");
+            _fileSystem.File.WriteAllText(SettingsPath, doc.ToString());
         }
     }
 }
