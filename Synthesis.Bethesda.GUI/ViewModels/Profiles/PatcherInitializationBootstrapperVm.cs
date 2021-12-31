@@ -131,7 +131,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             if (patchersToAdd.Count == 0) return;
             if (_selectedGroupControllerVm.SelectedGroup == null)
             {
-                throw new ArgumentNullException("Selected group unexpectedly null");
+                throw new ArgumentNullException(
+                    nameof(ISelectedGroupControllerVm.SelectedGroup),
+                    "Selected group unexpectedly null");
             }
             patchersToAdd.ForEach(p =>
             {
