@@ -33,7 +33,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         void AddNewPatchers(List<PatcherVm> patchersToAdd);
     }
 
-    public class PatcherInitializationVm : ViewModel, IPatcherInitializationVm
+    public class PatcherInitializationBootstrapperVm : ViewModel, IPatcherInitializationVm
     {
         private readonly ILifetimeScope _scope;
         private readonly ISelectedGroupControllerVm _selectedGroupControllerVm;
@@ -50,7 +50,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         [Reactive]
         public IPatcherInitVm? NewPatcher { get; set; }
         
-        public PatcherInitializationVm(
+        public PatcherInitializationBootstrapperVm(
             ILifetimeScope scope,
             IProfileGroupsList groupsList,
             INewGroupCreator groupCreator,
