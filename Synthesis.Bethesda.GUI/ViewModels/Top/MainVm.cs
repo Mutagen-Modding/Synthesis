@@ -88,7 +88,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _activePanelControllerVm = activePanelControllerVm;
             _profileFactory = profileFactory;
             _logger = logger;
-            _activePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
+            _activePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel!.ViewModel)
                 .ToGuiProperty(this, nameof(ActivePanel), default, deferSubscription: true);
             ProfileManager = profileManager;
             activePanelControllerVm.ActivePanel = ProfileManager;
