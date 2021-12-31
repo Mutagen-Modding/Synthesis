@@ -29,6 +29,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
     public class GitPatcherInitVm : ViewModel, IPatcherInitVm
     {
         private readonly IPatcherInitializationVm _init;
+        private readonly IAddNewPatchers _addNewPatchers;
         private readonly IPatcherFactory _patcherFactory;
         private readonly PatcherInitRenameValidator _renamer;
         private readonly IPathSanitation _pathSanitation;
@@ -71,6 +72,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
 
         public GitPatcherInitVm(
             IPatcherInitializationVm init,
+            IAddNewPatchers addNewPatchers,
             ILogger logger,
             IPatcherFactory patcherFactory,
             INavigateTo navigateTo, 
@@ -80,6 +82,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             PatcherInitRenameValidator renamer)
         {
             _init = init;
+            _addNewPatchers = addNewPatchers;
             _patcherFactory = patcherFactory;
             _renamer = renamer;
             _pathSanitation = pathSanitation;
@@ -174,7 +177,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             });
             if (await _renamer.ConfirmNameUnique(patcher))
             {
-                _init.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
+                _addNewPatchers.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
             }
         }
 

@@ -21,6 +21,11 @@ using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
+    public interface IAddNewPatchers
+    {
+        void AddNewPatchers(List<PatcherVm> patchersToAdd);
+    }
+    
     public interface IPatcherInitializationVm
     {
         ICommand AddGitPatcherCommand { get; }
@@ -30,10 +35,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         ICommand CompleteConfiguration { get; }
         ICommand CancelConfiguration { get; }
         IPatcherInitVm? NewPatcher { get; set; }
-        void AddNewPatchers(List<PatcherVm> patchersToAdd);
     }
 
-    public class PatcherInitializationBootstrapperVm : ViewModel, IPatcherInitializationVm
+    public class PatcherInitializationBootstrapperVm : ViewModel, IPatcherInitializationVm, IAddNewPatchers
     {
         private readonly ILifetimeScope _scope;
         private readonly ISelectedGroupControllerVm _selectedGroupControllerVm;
