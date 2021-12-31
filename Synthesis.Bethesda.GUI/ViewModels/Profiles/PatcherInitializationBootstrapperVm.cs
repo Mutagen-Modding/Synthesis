@@ -16,15 +16,10 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Cli;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
-    public interface IAddNewPatchers
-    {
-        void AddNewPatchers(List<PatcherVm> patchersToAdd);
-    }
     
     public interface IPatcherInitializationVm
     {
@@ -37,11 +32,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         IPatcherInitVm? NewPatcher { get; set; }
     }
 
-    public class PatcherInitializationBootstrapperVm : ViewModel, IPatcherInitializationVm, IAddNewPatchers
+    public class PatcherInitializationBootstrapperVm : ViewModel, IPatcherInitializationVm
     {
         private readonly ILifetimeScope _scope;
-        private readonly ISelectedGroupControllerVm _selectedGroupControllerVm;
-        private readonly IProfileDisplayControllerVm _displayControllerVm;
 
         public ICommand AddGitPatcherCommand { get; }
         public ICommand AddSolutionPatcherCommand { get; }
@@ -58,13 +51,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             ILifetimeScope scope,
             IProfileGroupsList groupsList,
             INewGroupCreator groupCreator,
-            ISelectedGroupControllerVm selectedGroupControllerVm,
+            IAddPatchersToSelectedGroupVm addNewPatchersVm,
             IProfileDisplayControllerVm displayControllerVm,
             PatcherInitRenameValidator renamer)
         {
             _scope = scope;
-            _selectedGroupControllerVm = selectedGroupControllerVm;
-            _displayControllerVm = displayControllerVm;
 
             var hasAnyGroups = groupsList.Groups.CountChanged
                 .Select(x => x > 0)
@@ -89,14 +80,18 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             CompleteConfiguration = ReactiveCommand.CreateFromTask(
                 async () =>
                 {
-                    var initializer = this.NewPatcher;
+                    var initializer = NewPatcher;
                     if (initializer == null) return;
                     var list = await initializer.Construct().ToListAsync().ConfigureAwait(false);
                     foreach (var item in list)
                     {
                         if (!await renamer.ConfirmNameUnique(item)) return;
                     }
-                    AddNewPatchers(list);
+
+                    NewPatcher = null;
+                    if (list.Count == 0) return;
+                    addNewPatchersVm.AddNewPatchers(list);
+                    displayControllerVm.SelectedObject = list.First();
                 },
                 canExecute: this.WhenAnyValue(x => x.NewPatcher)
                     .Select(patcher =>
@@ -105,9 +100,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                         return patcher.WhenAnyValue(x => x.CanCompleteConfiguration)
                             .Select(e => e.Succeeded)
                             .CombineLatest(
-                                _selectedGroupControllerVm.WhenAnyValue(x => x.SelectedGroup)
-                                    .Select(x => x != null),
-                                (canComplete, groupExists) => canComplete && groupExists);
+                                addNewPatchersVm.WhenAnyValue(x => x.CanAddPatchers),
+                                (canComplete, canAdd) => canComplete && canAdd);
                     })
                     .Switch());
 
@@ -123,25 +117,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 .DisposePrevious()
                 .Subscribe()
                 .DisposeWith(this);
-        }
-
-        public void AddNewPatchers(List<PatcherVm> patchersToAdd)
-        {
-            NewPatcher = null;
-            if (patchersToAdd.Count == 0) return;
-            if (_selectedGroupControllerVm.SelectedGroup == null)
-            {
-                throw new ArgumentNullException(
-                    nameof(ISelectedGroupControllerVm.SelectedGroup),
-                    "Selected group unexpectedly null");
-            }
-            patchersToAdd.ForEach(p =>
-            {
-                p.IsOn = true;
-                p.Group = _selectedGroupControllerVm.SelectedGroup;
-            });
-            _selectedGroupControllerVm.SelectedGroup.Patchers.AddRange(patchersToAdd);
-            _displayControllerVm.SelectedObject = patchersToAdd.First();
         }
 
         private TInit Resolve<TInit, TModule, TSettings>()

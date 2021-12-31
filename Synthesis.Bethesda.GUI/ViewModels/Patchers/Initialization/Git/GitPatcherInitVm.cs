@@ -29,10 +29,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
     public class GitPatcherInitVm : ViewModel, IPatcherInitVm
     {
         private readonly IPatcherInitializationVm _init;
-        private readonly IAddNewPatchers _addNewPatchers;
+        private readonly IAddPatchersToSelectedGroupVm _addNewPatchers;
         private readonly IPatcherFactory _patcherFactory;
         private readonly PatcherInitRenameValidator _renamer;
         private readonly IPathSanitation _pathSanitation;
+        private readonly IProfileDisplayControllerVm _displayControllerVm;
 
         public ICommand CompleteConfiguration => _init.CompleteConfiguration;
         public ICommand CancelConfiguration => _init.CancelConfiguration;
@@ -72,12 +73,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
 
         public GitPatcherInitVm(
             IPatcherInitializationVm init,
-            IAddNewPatchers addNewPatchers,
+            IAddPatchersToSelectedGroupVm addNewPatchers,
             ILogger logger,
             IPatcherFactory patcherFactory,
             INavigateTo navigateTo, 
             IPathSanitation pathSanitation,
             PatcherStoreListingVm.Factory listingVmFactory,
+            IProfileDisplayControllerVm displayControllerVm,
             IRegistryListingsProvider listingsProvider,
             PatcherInitRenameValidator renamer)
         {
@@ -86,6 +88,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             _patcherFactory = patcherFactory;
             _renamer = renamer;
             _pathSanitation = pathSanitation;
+            _displayControllerVm = displayControllerVm;
             Patcher = patcherFactory.GetGitPatcher();
 
             _canCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid.Valid)
@@ -175,9 +178,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
                 RemoteRepoPath = listing.RepoPath,
                 SelectedProjectSubpath = _pathSanitation.Sanitize(listing.Raw.ProjectPath)
             });
-            if (await _renamer.ConfirmNameUnique(patcher))
+            if (_addNewPatchers.CanAddPatchers && await _renamer.ConfirmNameUnique(patcher))
             {
+                _init.NewPatcher = null;
                 _addNewPatchers.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
+                _displayControllerVm.SelectedObject = patcher;
             }
         }
 
