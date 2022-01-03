@@ -181,7 +181,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             if (_addNewPatchers.CanAddPatchers && await _renamer.ConfirmNameUnique(patcher))
             {
                 _init.NewPatcher = null;
-                _addNewPatchers.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
+                _addNewPatchers.AddNewPatchers(patcher);
                 _displayControllerVm.SelectedObject = patcher;
             }
         }

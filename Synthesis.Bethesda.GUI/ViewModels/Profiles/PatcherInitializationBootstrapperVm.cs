@@ -82,14 +82,14 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 {
                     var initializer = NewPatcher;
                     if (initializer == null) return;
-                    var list = await initializer.Construct().ToListAsync().ConfigureAwait(false);
+                    var list = await initializer.Construct().ToArrayAsync().ConfigureAwait(false);
                     foreach (var item in list)
                     {
                         if (!await renamer.ConfirmNameUnique(item)) return;
                     }
 
                     NewPatcher = null;
-                    if (list.Count == 0) return;
+                    if (list.Length == 0) return;
                     addNewPatchersVm.AddNewPatchers(list);
                     displayControllerVm.SelectedObject = list.First();
                 },

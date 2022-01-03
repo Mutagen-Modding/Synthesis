@@ -13,7 +13,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles;
 public interface IAddPatchersToSelectedGroupVm
 {
     bool CanAddPatchers { get; }
-    void AddNewPatchers(IReadOnlyCollection<PatcherVm> patchersToAdd);
+    void AddNewPatchers(params PatcherVm[] patchersToAdd);
 }
 
 public class AddPatchersToSelectedGroupVm : ViewModel, IAddPatchersToSelectedGroupVm
@@ -33,7 +33,7 @@ public class AddPatchersToSelectedGroupVm : ViewModel, IAddPatchersToSelectedGro
             .ToGuiProperty(this, nameof(CanAddPatchers));
     }
 
-    public void AddNewPatchers(IReadOnlyCollection<PatcherVm> patchersToAdd)
+    public void AddNewPatchers(params PatcherVm[] patchersToAdd)
     {
         if (_selectedGroupControllerVm.SelectedGroup == null)
         {

@@ -52,6 +52,9 @@
                     x:Name="OpenGitButton"
                     Margin="4,0,0,0"
                     ToolTip="Go to repository website">
+                    <Button.Resources>
+                        <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#44FFFFFF" />
+                    </Button.Resources>
                     <icon:PackIconMaterial Kind="OpenInApp" />
                 </Button>
             </Grid>
@@ -62,16 +65,29 @@
             FontSize="14"
             FontWeight="Bold"
             Text="Project" />
-        <Button Grid.Row="2" Grid.ColumnSpan="2"
-            x:Name="OpenPatcherInternalFilesButton"
-            Margin="8,0"
-            HorizontalAlignment="Right"
-            ToolTip="Go to patcher internal files location">
-            <Button.Resources>
-                <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#44FFFFFF" />
-            </Button.Resources>
-            <icon:PackIconModern Kind="FolderEllipsis" />
-        </Button>
+        <StackPanel Grid.Row="2" Grid.ColumnSpan="2"
+                    HorizontalAlignment="Right"
+                    Margin="8,0"
+                    Orientation="Horizontal">
+            <Button
+                x:Name="OpenPatcherInternalFilesButton"
+                Margin="0,0,6,0"
+                ToolTip="Go to patcher internal files location">
+                <Button.Resources>
+                    <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#44FFFFFF" />
+                </Button.Resources>
+                <icon:PackIconModern Kind="FolderEllipsis" />
+            </Button>
+            <Button
+                x:Name="ExportToMetaFileButton"
+                HorizontalAlignment="Right"
+                ToolTip="Export .synth file that will add this patcher">
+                <Button.Resources>
+                    <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#44FFFFFF" />
+                </Button.Resources>
+                <icon:PackIconZondicons Kind="SaveDisk" />
+            </Button>
+        </StackPanel>
         <ComboBox Grid.Row="3" Grid.ColumnSpan="2"
             x:Name="ProjectsPickerBox">
             <ComboBox.ItemTemplate>

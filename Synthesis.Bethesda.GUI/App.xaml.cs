@@ -22,6 +22,7 @@ public partial class App : Application
 
         if (!singleApp.IsFirstApplication)
         {
+            singleApp.ForwardArgs(e.Args);
             Application.Current.Shutdown();
             return;
         }
@@ -36,7 +37,8 @@ public partial class App : Application
                 .AsSelf()
                 .As<IWindowPlacement>()
                 .As<IMainWindow>();
-            builder.RegisterInstance(singleApp);
+            builder.RegisterInstance(singleApp)
+                .AsImplementedInterfaces();
             var container = builder.Build();
 
             container.Resolve<IStartup>()
