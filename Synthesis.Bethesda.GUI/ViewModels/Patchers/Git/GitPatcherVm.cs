@@ -234,6 +234,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                 var dialog = new SaveFileDialog();
                 dialog.Filter = "Synth file|*.synth";
                 dialog.Title = "Save a synth file";
+                dialog.FileName = $"{NameVm.Name}.synth";
                 dialog.ShowDialog();
 
                 if (dialog.FileName == "") return;
