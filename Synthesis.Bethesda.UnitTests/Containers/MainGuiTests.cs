@@ -4,6 +4,7 @@ using FluentAssertions;
 using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Noggog.Autofac;
+using Noggog.IO;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Placement;
@@ -24,10 +25,7 @@ namespace Synthesis.Bethesda.UnitTests.Containers
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MainModule>();
-            builder.RegisterMock<IMainWindow>();
-            builder.RegisterMock<IWindowPlacement>();
-            builder.RegisterMock<IGithubPatcherIdentifier>();
-            builder.RegisterMock<ISynthesisProfileSettings>();
+            ContainerTestUtil.RegisterCommonMocks(builder);
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
                 .As<IGameReleaseContext>();

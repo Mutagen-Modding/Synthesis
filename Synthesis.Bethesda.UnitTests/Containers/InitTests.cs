@@ -2,6 +2,7 @@ using Autofac;
 using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Noggog.Autofac;
+using Noggog.IO;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -25,12 +26,9 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             var builder = new ContainerBuilder();
             builder.RegisterModule<MainModule>();
             builder.RegisterModule<GuiGitPatcherModule>();
-            builder.RegisterMock<IMainWindow>();
-            builder.RegisterMock<IWindowPlacement>();
-            builder.RegisterMock<IGithubPatcherIdentifier>();
+            ContainerTestUtil.RegisterCommonMocks(builder);
             builder.RegisterMock<IPatcherIdProvider>();
             builder.RegisterMock<GithubPatcherSettings>();
-            builder.RegisterMock<ISynthesisProfileSettings>();
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
                 .As<IGameReleaseContext>();
@@ -45,11 +43,7 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             var builder = new ContainerBuilder();
             builder.RegisterModule<MainModule>();
             builder.RegisterModule<GuiSolutionPatcherModule>();
-            builder.RegisterMock<IMainWindow>();
-            builder.RegisterMock<IWindowPlacement>();
-            builder.RegisterMock<IGithubPatcherIdentifier>();
-            builder.RegisterMock<IPatcherIdProvider>();
-            builder.RegisterMock<ISynthesisProfileSettings>();
+            ContainerTestUtil.RegisterCommonMocks(builder);
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
                 .As<IGameReleaseContext>();
@@ -64,12 +58,9 @@ namespace Synthesis.Bethesda.UnitTests.Containers
             var builder = new ContainerBuilder();
             builder.RegisterModule<MainModule>();
             builder.RegisterModule<GuiCliModule>();
-            builder.RegisterMock<IMainWindow>();
-            builder.RegisterMock<IWindowPlacement>();
-            builder.RegisterMock<IGithubPatcherIdentifier>();
+            ContainerTestUtil.RegisterCommonMocks(builder);
             builder.RegisterMock<IPatcherIdProvider>();
             builder.RegisterMock<CliPatcherSettings>();
-            builder.RegisterMock<ISynthesisProfileSettings>();
             builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
                 .As<IProfileIdentifier>()
                 .As<IGameReleaseContext>();
