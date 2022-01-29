@@ -32,8 +32,6 @@ public class FinalizePatcherRun : IFinalizePatcherRun
     {
         if (!_fileSystem.File.Exists(outputPath))
         {
-            _reporter.ReportRunProblem(patcher.Key, patcher.Name,
-                new ArgumentException($"Patcher {patcher.Name} did not produce output file."));
             return null;
         }
 

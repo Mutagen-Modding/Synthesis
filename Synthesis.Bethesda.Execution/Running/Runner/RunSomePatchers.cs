@@ -43,9 +43,10 @@ namespace Synthesis.Bethesda.Execution.Running.Runner
                     sourcePath,
                     runParameters).ConfigureAwait(false);
 
-                if (nextPath == null) return null;
-                
-                sourcePath = nextPath;
+                if (nextPath != null)
+                {
+                    sourcePath = nextPath;
+                }
             }
 
             return sourcePath;
