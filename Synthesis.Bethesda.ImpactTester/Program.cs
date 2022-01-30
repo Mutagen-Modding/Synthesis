@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Synthesis.Bethesda.Execution.Versioning;
+using Synthesis.Bethesda.Execution.WorkEngine;
 
 namespace Synthesis.Bethesda.ImpactTester
 {
@@ -18,6 +19,7 @@ namespace Synthesis.Bethesda.ImpactTester
                     {
                         var builder = new ContainerBuilder();
                         builder.RegisterModule<MainModule>();
+                        builder.RegisterType<InlineWorkDropoff>().As<IWorkDropoff>();
                         var tester = builder.Build().Resolve<Tester>();
                         if (args.Length == 2)
                         {
