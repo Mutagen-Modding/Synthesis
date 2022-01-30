@@ -28,6 +28,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
 {
     public class GitPatcherInitVm : ViewModel, IPatcherInitVm
     {
+        public InitializationSettingsVm InitializationSettingsVm { get; }
         private readonly IPatcherInitializationVm _init;
         private readonly IAddPatchersToSelectedGroupVm _addNewPatchers;
         private readonly IPatcherFactory _patcherFactory;
@@ -66,9 +67,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
         [Reactive]
         public PatcherStoreListingVm? SelectedPatcher { get; set; }
 
-        [Reactive]
-        public bool ShowAll { get; set; }
-
         private bool _wasAdded = false;
 
         public GitPatcherInitVm(
@@ -81,8 +79,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
             PatcherStoreListingVm.Factory listingVmFactory,
             IProfileDisplayControllerVm displayControllerVm,
             IRegistryListingsProvider listingsProvider,
+            InitializationSettingsVm initializationSettingsVm,
             PatcherInitRenameValidator renamer)
         {
+            InitializationSettingsVm = initializationSettingsVm;
             _init = init;
             _addNewPatchers = addNewPatchers;
             _patcherFactory = patcherFactory;
@@ -125,7 +125,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
                 })
                 .Switch()
                 .Sort(Comparer<PatcherStoreListingVm>.Create((x, y) => x.Name.CompareTo(y.Name)))
-                .Filter(this.WhenAnyValue(x => x.ShowAll)
+                .Filter(this.WhenAnyValue(x => x.InitializationSettingsVm.ShowAllGitPatchersInBrowser)
                     .DistinctUntilChanged()
                     .Select(show => new Func<PatcherStoreListingVm, bool>(
                         (p) =>

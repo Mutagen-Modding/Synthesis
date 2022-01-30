@@ -64,11 +64,6 @@ public class ProfileManagerVm : ViewModel, ISelectedProfileControllerVm, IModify
 
     public void Load(ISynthesisGuiSettings settings, IPipelineSettings pipeSettings)
     {
-        var parser = new Parser((s) =>
-        {
-            s.IgnoreUnknownArguments = true;
-        });
-
         settings.SelectedProfile = _startingProfileOverrideProvider.Get(settings, pipeSettings);
             
         Profiles.Clear();
