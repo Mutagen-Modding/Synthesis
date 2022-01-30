@@ -91,7 +91,7 @@ namespace Mutagen.Bethesda.Synthesis.States.DI
                     settings.DataFolderPath,
                     loadOrderListing,
                     settings.GameRelease)
-                .Import();
+                .Import(settings.TargetLanguage, stringsParam: null);
 
             // Create or import patch mod
             TModSetter patchMod;
