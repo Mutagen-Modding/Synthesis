@@ -14,8 +14,6 @@ public class BackupSettings : IStartupTask
     private readonly IFileSystem _fileSystem;
     private readonly IInitRepository _initRepository;
     private readonly IProvideRepositoryCheckouts _repositoryCheckouts;
-    private readonly IGuiSettingsPath _guiPaths;
-    private readonly IPipelineSettingsPath _paths;
 
     private DirectoryPath RepoDirectory => Directory.GetCurrentDirectory();
     private FilePath GitIgnorePath => Path.Combine(RepoDirectory, ".gitignore");
@@ -25,15 +23,11 @@ public class BackupSettings : IStartupTask
     public BackupSettings(
         IFileSystem fileSystem,
         IInitRepository initRepository,
-        IProvideRepositoryCheckouts repositoryCheckouts,
-        IGuiSettingsPath guiPaths,
-        IPipelineSettingsPath paths)
+        IProvideRepositoryCheckouts repositoryCheckouts)
     {
         _fileSystem = fileSystem;
         _initRepository = initRepository;
         _repositoryCheckouts = repositoryCheckouts;
-        _guiPaths = guiPaths;
-        _paths = paths;
     }
     
     public void Start()

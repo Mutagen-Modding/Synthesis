@@ -24,7 +24,7 @@ using System.Diagnostics;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
-    public class MainVm : ViewModel
+    public class MainVm : ViewModel, IModifySavingSettings
     {
         private readonly ISelectedProfileControllerVm _selectedProfileController;
         private readonly ISettingsSingleton _settingsSingleton;
@@ -75,7 +75,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             IConfirmationPanelControllerVm confirmationControllerVm,
             IProvideCurrentVersions currentVersions,
             ISelectedProfileControllerVm selectedProfile,
-            ISaveSignal saveSignal,
             ISettingsSingleton settingsSingleton,
             INewestLibraryVersionsVm libVersionsVm,
             IActivePanelControllerVm activePanelControllerVm,
@@ -160,10 +159,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _inModal = this.WhenAnyValue(x => x.ActiveConfirmation)
                 .Select(x => x != null)
                 .ToGuiProperty(this, nameof(InModal), deferSubscription: true);
-
-            saveSignal.Saving
-                .Subscribe((x) => Save(x.Gui, x.Pipe))
-                .DisposeWith(this);
         }
 
         public async Task Load()
@@ -173,7 +168,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _logger.Information("Settings applied");
         }
 
-        private void Save(SynthesisGuiSettings guiSettings, PipelineSettings _)
+        public void Save(SynthesisGuiSettings guiSettings, PipelineSettings _)
         {
             guiSettings.MainRepositoryFolder = _settingsSingleton.Gui.MainRepositoryFolder;
             guiSettings.OpenIdeAfterCreating = _settingsSingleton.Gui.OpenIdeAfterCreating;
