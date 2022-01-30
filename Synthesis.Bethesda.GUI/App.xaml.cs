@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows;
 using Autofac;
-using Noggog;
 using Noggog.IO;
 using Serilog;
 using Synthesis.Bethesda.Execution.Placement;

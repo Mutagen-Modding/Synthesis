@@ -67,7 +67,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             {
                 Task.WhenAll(_startupTasks.Select(x => Task.Run(() => x.Start()))).Wait();
                 _logger.Information("Loading settings");
-                _mainVm.Value.Load();
+                await _mainVm.Value.Load();
                 _logger.Information("Loaded settings");
                 _logger.Information("Setting Main VM");
                 _window.DataContext = _mainVm.Value;

@@ -2,14 +2,18 @@ using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using CommandLine;
 using DynamicData;
+using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
+using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.V2;
+using Synthesis.Bethesda.GUI.Args;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
@@ -24,6 +28,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
     public class ProfileManagerVm : ViewModel, ISelectedProfileControllerVm
     {
         private readonly IProfileFactory _profileFactory;
+        private readonly StartingProfileOverrideProvider _startingProfileOverrideProvider;
 
         public SourceCache<ProfileVm, string> Profiles { get; } = new(p => p.ID);
 
@@ -38,10 +43,12 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         public ProfileManagerVm(
             ISaveSignal saveSignal,
             IProfileFactory profileFactory,
+            StartingProfileOverrideProvider startingProfileOverrideProvider,
             ILogger logger)
         {
             logger.Information("Creating ConfigurationVM");
             _profileFactory = profileFactory;
+            _startingProfileOverrideProvider = startingProfileOverrideProvider;
 
             _displayedObject = this.WhenAnyValue(x => x.SelectedProfile!.DisplayController.SelectedObject)
                 .ToGuiProperty(this, nameof(DisplayedObject), default, deferSubscription: true);
@@ -65,6 +72,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 
         public void Load(ISynthesisGuiSettings settings, IPipelineSettings pipeSettings)
         {
+            var parser = new Parser((s) =>
+            {
+                s.IgnoreUnknownArguments = true;
+            });
+
+            settings.SelectedProfile = _startingProfileOverrideProvider.Get(settings, pipeSettings);
+            
             Profiles.Clear();
             Profiles.AddOrUpdate(pipeSettings.Profiles.Select(p =>
             {

@@ -166,7 +166,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 .DisposeWith(this);
         }
 
-        public void Load()
+        public async Task Load()
         {
             _logger.Information("Applying settings");
             ProfileManager.Load(_settingsSingleton.Gui, _settingsSingleton.Pipeline);
