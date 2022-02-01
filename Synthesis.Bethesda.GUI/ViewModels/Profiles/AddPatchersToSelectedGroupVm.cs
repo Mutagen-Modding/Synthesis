@@ -18,24 +18,29 @@ public interface IAddPatchersToSelectedGroupVm
 
 public class AddPatchersToSelectedGroupVm : ViewModel, IAddPatchersToSelectedGroupVm
 {
+    private readonly IProfileGroupsList _groupsList;
     private readonly ISelectedGroupControllerVm _selectedGroupControllerVm;
 
     private readonly ObservableAsPropertyHelper<bool> _canAddPatchers;
     public bool CanAddPatchers => _canAddPatchers.Value;
     
     public AddPatchersToSelectedGroupVm(
+        IProfileGroupsList groupsList,
         ISelectedGroupControllerVm selectedGroupControllerVm)
     {
+        _groupsList = groupsList;
         _selectedGroupControllerVm = selectedGroupControllerVm;
 
         _canAddPatchers = _selectedGroupControllerVm.WhenAnyValue(x => x.SelectedGroup)
-            .Select(x => x != null)
+            .CombineLatest(groupsList.Groups.Connect().QueryWhenChanged())
+            .Select(x => (x.First ?? x.Second.LastOrDefault()) != null)
             .ToGuiProperty(this, nameof(CanAddPatchers));
     }
 
     public void AddNewPatchers(params PatcherVm[] patchersToAdd)
     {
-        if (_selectedGroupControllerVm.SelectedGroup == null)
+        var group = _selectedGroupControllerVm.SelectedGroup ?? _groupsList.Groups.Items.LastOrDefault();
+        if (group == null)
         {
             throw new ArgumentNullException(
                 nameof(ISelectedGroupControllerVm.SelectedGroup),
@@ -46,6 +51,6 @@ public class AddPatchersToSelectedGroupVm : ViewModel, IAddPatchersToSelectedGro
             p.IsOn = true;
             p.Group = _selectedGroupControllerVm.SelectedGroup;
         });
-        _selectedGroupControllerVm.SelectedGroup.Patchers.AddRange(patchersToAdd);
+        group.Patchers.AddRange(patchersToAdd);
     }
 }

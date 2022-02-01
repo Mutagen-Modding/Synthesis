@@ -61,7 +61,7 @@ public partial class App : Application
                 .AsSelf()
                 .As<IWindowPlacement>()
                 .As<IMainWindow>();
-            builder.RegisterInstance(singleApp)
+            builder.RegisterInstance(new ArgumentReceiver(singleApp, e.Args))
                 .AsImplementedInterfaces();
             var container = builder.Build();
 
