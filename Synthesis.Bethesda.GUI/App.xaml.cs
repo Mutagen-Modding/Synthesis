@@ -1,8 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using Autofac;
+using Microsoft.Build.Logging.StructuredLogger;
 using Noggog.IO;
 using Serilog;
+using Serilog.Core;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Views;
@@ -25,6 +28,27 @@ public partial class App : Application
             singleApp.ForwardArgs(e.Args);
             Application.Current.Shutdown();
             return;
+        }
+        else
+        {
+            var args = Environment.GetCommandLineArgs();
+            if (args.Length == 0)
+            {
+                Logging.Log.Logger.Warning("Expected args with start directory as first argument");
+            }
+            else
+            {
+                var parentDir = Path.GetDirectoryName(args[0]);
+                if (parentDir == null)
+                {
+                    Logging.Log.Logger.Warning("Could not find parent directory of exe");
+                }
+                else if (!parentDir.Equals(Environment.CurrentDirectory, StringComparison.OrdinalIgnoreCase))
+                {
+                    Environment.CurrentDirectory = parentDir;
+                    Logging.Log.Logger.Information($"Changed current directory to: {parentDir}");
+                }
+            }
         }
             
         var window = new MainWindow();

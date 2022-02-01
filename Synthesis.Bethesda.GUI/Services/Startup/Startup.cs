@@ -62,6 +62,8 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             _logger.Information(versionLine);
             _logger.Information(bars);
             _logger.Information(DateTime.Now.ToString());
+            _logger.Information($"Start Path: {string.Join(' ', Environment.GetCommandLineArgs().FirstOrDefault())}");
+            _logger.Information($"Args: {string.Join(' ', Environment.GetCommandLineArgs().Skip(1))}");
             
             try
             {
