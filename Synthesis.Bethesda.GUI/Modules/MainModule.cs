@@ -96,6 +96,7 @@ namespace Synthesis.Bethesda.GUI.Modules
                     typeof(IGuiSettingsImporter),
                     typeof(INewestLibraryVersionsVm),
                     typeof(ISynthesisGuiSettings))
+                .Except<ArgumentReceiver>()
                 .AsImplementedInterfaces()
                 .AsSelf()
                 .SingleInstance();
