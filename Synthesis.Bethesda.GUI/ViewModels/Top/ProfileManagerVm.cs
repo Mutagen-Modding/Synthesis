@@ -42,7 +42,6 @@ public class ProfileManagerVm : ViewModel, ISelectedProfileControllerVm, IModify
         StartingProfileOverrideProvider startingProfileOverrideProvider,
         ILogger logger)
     {
-        logger.Information("Creating ConfigurationVM");
         _profileFactory = profileFactory;
         _startingProfileOverrideProvider = startingProfileOverrideProvider;
 

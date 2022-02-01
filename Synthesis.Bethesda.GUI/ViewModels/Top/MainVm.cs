@@ -81,7 +81,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             IProfileFactory profileFactory,
             ILogger logger)
         {
-            logger.Information("Creating MainVM");
             _selectedProfileController = selectedProfile;
             _settingsSingleton = settingsSingleton;
             _activePanelControllerVm = activePanelControllerVm;
