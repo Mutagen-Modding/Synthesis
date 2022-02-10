@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -43,25 +43,25 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Humanizer.Core" Version="2.13.14" />
-    <PackageReference Include="Loqui" Version="2.35.0" />
-    <PackageReference Include="Loqui.Generation" Version="2.35.0" />
-    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.34.1" />
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.34.1" />
-    <PackageReference Include="Noggog.Autofac" Version="2.35.0" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.35.0" />
-    <PackageReference Include="Noggog.WPF" Version="2.35.0" />
+    <PackageReference Include="Loqui" Version="2.39.0" />
+    <PackageReference Include="Loqui.Generation" Version="2.39.0" />
+    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.36.0" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.36.0" />
+    <PackageReference Include="Noggog.Autofac" Version="2.39.0" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.39.0" />
+    <PackageReference Include="Noggog.CSharpExt.Windows" Version="2.39.0" />
+    <PackageReference Include="Noggog.WPF" Version="2.39.0" />
     <PackageReference Include="NuGetizer" Version="0.7.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="reactiveui" Version="16.3.10" />
-    <PackageReference Include="ReactiveUI.Fody" Version="16.3.10" />
-    <PackageReference Include="Scrutor" Version="3.3.0" />
+    <PackageReference Include="reactiveui" Version="17.1.17" />
+    <PackageReference Include="ReactiveUI.Fody" Version="17.1.17" />
+    <PackageReference Include="ReactiveUI.WPF" Version="17.1.17" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.Map" Version="1.0.2" />
-    <PackageReference Include="System.IO.Abstractions" Version="13.2.47" />
     <PackageReference Include="System.Linq.Async" Version="5.1.0" />
   </ItemGroup>
 
@@ -86,117 +86,6 @@
 
   <ItemGroup>
     <SplashScreen Include="Resources\Splashscreen.png" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Page Update="Views\Run\GroupRunListingView.xaml">
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Page</BuildAction>
-    </Page>
-    <Page Update="Views\Config\Group\GroupConfigView.xaml">
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Page</BuildAction>
-    </Page>
-    <Page Update="Views\Config\AddNewItemsView.xaml">
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Page</BuildAction>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\Errors\MissingPluginsFileView.xaml">
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Page</BuildAction>
-    </Page>
-    <Page Update="Views\Errors\AllModsMissingView.xaml">
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Page</BuildAction>
-    </Page>
-    <Page Update="Views\Config\Group\GroupDetailPaneView.xaml">
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Page</BuildAction>
-    </Page>
-    <Page Update="Views\Config\AdvancedSettingsView.xaml">
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Page</BuildAction>
-    </Page>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Compile Update="ViewModels\Profiles\SelectedGroupControllerVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Groups\GroupVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Top\NewProfileVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Views\Config\Group\GroupConfigView.xaml.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Views\Config\AddNewItemsView.xaml.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\Errors\MissingPluginsFileView.xaml.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Views\Errors\AllModsMissingView.xaml.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Services\Startup\ClearLoading.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Services\Startup\LogCleaner.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Views\Config\Group\GroupDetailPaneView.xaml.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Top\Settings\GlobalSettingsPaneVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Top\Settings\OpenProfileSettings.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="ViewModels\Top\Settings\ProfilesDisplayVm.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Services\Profile\TopLevel\ConsiderPrereleasePreference.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Views\Config\AdvancedSettingsView.xaml.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
   </ItemGroup>
 
   <!-- Replace inherited target -->

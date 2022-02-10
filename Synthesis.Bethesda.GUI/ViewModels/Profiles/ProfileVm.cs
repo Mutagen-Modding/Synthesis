@@ -23,6 +23,7 @@ using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.GUI.Services.Profile.Exporter;
+using Synthesis.Bethesda.GUI.Services.Profile.TopLevel;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
@@ -32,7 +33,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
 {
-    public class ProfileVm : ViewModel, IProfilePatcherEnumerable
+    public class ProfileVm : ViewModel
     {
         private readonly StartRun _startRun;
         private readonly ILogger _logger;
@@ -42,8 +43,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
         public SourceList<GroupVm> Groups { get; }
 
         public SourceListUiFunnel<GroupVm> GroupsDisplay { get; }
-
-        IEnumerable<PatcherVm> IProfilePatcherEnumerable.Patchers => Groups.Items.SelectMany(x => x.Patchers.Items);
 
         public ICommand GoToErrorCommand { get; }
         public ICommand EnableAllGroupsCommand { get; }
@@ -128,6 +127,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
             IEnvironmentErrorsVm environmentErrors,
             OverallErrorVm overallErrorVm,
             StartRun startRun,
+            AddGitPatcherResponder addGitPatcherResponder,
             ILogger logger)
         {
             Scope = scope;
@@ -370,6 +370,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 .RefCount();
 
             ExportCommand = ReactiveCommand.Create(Export);
+
+            addGitPatcherResponder.Connect()
+                .FlowSwitch(this.WhenAnyValue(x => x.IsActive))
+                .Subscribe()
+                .DisposeWith(this);
         }
         
         public SynthesisProfile Save()

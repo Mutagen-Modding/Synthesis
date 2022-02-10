@@ -1,12 +1,6 @@
-using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using System.Windows;
-using Autofac;
-using Serilog;
 using Synthesis.Bethesda.Execution.Placement;
-using Synthesis.Bethesda.GUI.Modules;
-using Synthesis.Bethesda.GUI.Services.Startup;
 
 namespace Synthesis.Bethesda.GUI.Views
 {
@@ -25,25 +19,6 @@ namespace Synthesis.Bethesda.GUI.Views
         public MainWindow()
         {
             InitializeComponent();
-
-            try
-            {
-                var builder = new ContainerBuilder();
-                builder.RegisterModule<MainModule>();
-                builder.RegisterInstance(this)
-                    .AsSelf()
-                    .As<IWindowPlacement>()
-                    .As<IMainWindow>();
-                var container = builder.Build();
-
-                container.Resolve<IStartup>()
-                    .Initialize();
-            }
-            catch (Exception ex)
-            {
-                Log.Logger.Error(ex, "Error constructing container");
-                throw;
-            }
         }
     }
 }

@@ -58,8 +58,10 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindTo(this, x => x.OpenGitButton.Command)
                     .DisposeWith(disposable);
 
-                this.WhenAnyValue(x => x.ViewModel!.NavigateToInternalFilesCommand)
-                    .BindTo(this, x => x.OpenPatcherInternalFilesButton.Command)
+                this.OneWayBind(ViewModel, x => x.NavigateToInternalFilesCommand, x => x.OpenPatcherInternalFilesButton.Command)
+                    .DisposeWith(disposable);
+
+                this.OneWayBind(ViewModel, x => x.ExportSynthFileCommand, x => x.ExportToMetaFileButton.Command)
                     .DisposeWith(disposable);
 
                 #region Versioning Lock

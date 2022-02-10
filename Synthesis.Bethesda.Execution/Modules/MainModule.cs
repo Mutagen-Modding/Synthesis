@@ -3,6 +3,7 @@ using Noggog.Autofac;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
 using Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget;
+using Synthesis.Bethesda.Execution.FileAssociations;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Running;
@@ -34,10 +35,12 @@ namespace Synthesis.Bethesda.Execution.Modules
                     typeof(ILinesToReflectionConfigsParser),
                     typeof(INugetErrorSolution),
                     typeof(IRunProfileProvider),
+                    typeof(ExportGitAddFile),
                     typeof(IProjectRunProcessStartInfoProvider),
                     typeof(IBuild))
                 .NotInNamespacesOf(typeof(IInstalledSdkFollower))
-                .TypicalRegistrations();
+                .TypicalRegistrations()
+                .AsSelf();
             
             builder.RegisterAssemblyTypes(typeof(IWorkDropoff).Assembly)
                 .InNamespacesOf(

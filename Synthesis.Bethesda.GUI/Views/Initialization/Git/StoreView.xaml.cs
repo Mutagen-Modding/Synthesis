@@ -48,7 +48,7 @@ namespace Synthesis.Bethesda.GUI.Views
                     .BindTo(this, v => v.DetailView.Visibility)
                     .DisposeWith(dispose);
 
-                this.Bind(this.ViewModel, vm => vm.ShowAll, v => v.ShowAllCheckbox.IsChecked)
+                this.Bind(this.ViewModel, vm => vm.InitializationSettingsVm.ShowAllGitPatchersInBrowser, v => v.ShowAllCheckbox.IsChecked)
                     .DisposeWith(dispose);
 
             });

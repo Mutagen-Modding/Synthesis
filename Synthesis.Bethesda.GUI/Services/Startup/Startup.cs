@@ -62,15 +62,14 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
             _logger.Information(versionLine);
             _logger.Information(bars);
             _logger.Information(DateTime.Now.ToString());
+            _logger.Information($"Start Path: {string.Join(' ', Environment.GetCommandLineArgs().FirstOrDefault())}");
+            _logger.Information($"Args: {string.Join(' ', Environment.GetCommandLineArgs().Skip(1))}");
             
             try
             {
-                foreach (var startupTask in _startupTasks)
-                {
-                    startupTask.Start();
-                }
+                Task.WhenAll(_startupTasks.Select(x => Task.Run(() => x.Start()))).Wait();
                 _logger.Information("Loading settings");
-                _mainVm.Value.Load();
+                await _mainVm.Value.Load();
                 _logger.Information("Loaded settings");
                 _logger.Information("Setting Main VM");
                 _window.DataContext = _mainVm.Value;

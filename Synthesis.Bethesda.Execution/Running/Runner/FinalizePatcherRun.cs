@@ -4,41 +4,38 @@ using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Reporters;
 
-namespace Synthesis.Bethesda.Execution.Running.Runner
+namespace Synthesis.Bethesda.Execution.Running.Runner;
+
+public interface IFinalizePatcherRun
 {
-    public interface IFinalizePatcherRun
+    FilePath? Finalize(
+        IPatcherRun patcher,
+        FilePath outputPath);
+}
+
+public class FinalizePatcherRun : IFinalizePatcherRun
+{
+    private readonly IFileSystem _fileSystem;
+    private readonly IRunReporter _reporter;
+
+    public FinalizePatcherRun(
+        IFileSystem fileSystem,
+        IRunReporter reporter)
     {
-        FilePath? Finalize(
-            IPatcherRun patcher,
-            FilePath outputPath);
+        _fileSystem = fileSystem;
+        _reporter = reporter;
     }
-
-    public class FinalizePatcherRun : IFinalizePatcherRun
-    {
-        private readonly IFileSystem _fileSystem;
-        private readonly IRunReporter _reporter;
-
-        public FinalizePatcherRun(
-            IFileSystem fileSystem,
-            IRunReporter reporter)
-        {
-            _fileSystem = fileSystem;
-            _reporter = reporter;
-        }
         
-        public FilePath? Finalize(
-            IPatcherRun patcher,
-            FilePath outputPath)
+    public FilePath? Finalize(
+        IPatcherRun patcher,
+        FilePath outputPath)
+    {
+        if (!_fileSystem.File.Exists(outputPath))
         {
-            if (!_fileSystem.File.Exists(outputPath))
-            {
-                _reporter.ReportRunProblem(patcher.Key, patcher.Name,
-                    new ArgumentException($"Patcher {patcher.Name} did not produce output file."));
-                return null;
-            }
-
-            _reporter.ReportRunSuccessful(patcher.Key, patcher.Name, outputPath);
-            return outputPath;
+            return null;
         }
+
+        _reporter.ReportRunSuccessful(patcher.Key, patcher.Name, outputPath);
+        return outputPath;
     }
 }

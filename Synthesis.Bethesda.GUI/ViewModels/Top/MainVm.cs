@@ -24,7 +24,7 @@ using System.Diagnostics;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top
 {
-    public class MainVm : ViewModel
+    public class MainVm : ViewModel, IModifySavingSettings
     {
         private readonly ISelectedProfileControllerVm _selectedProfileController;
         private readonly ISettingsSingleton _settingsSingleton;
@@ -75,20 +75,18 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             IConfirmationPanelControllerVm confirmationControllerVm,
             IProvideCurrentVersions currentVersions,
             ISelectedProfileControllerVm selectedProfile,
-            ISaveSignal saveSignal,
             ISettingsSingleton settingsSingleton,
             INewestLibraryVersionsVm libVersionsVm,
             IActivePanelControllerVm activePanelControllerVm,
             IProfileFactory profileFactory,
             ILogger logger)
         {
-            logger.Information("Creating MainVM");
             _selectedProfileController = selectedProfile;
             _settingsSingleton = settingsSingleton;
             _activePanelControllerVm = activePanelControllerVm;
             _profileFactory = profileFactory;
             _logger = logger;
-            _activePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel)
+            _activePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel!.ViewModel)
                 .ToGuiProperty(this, nameof(ActivePanel), default, deferSubscription: true);
             ProfileManager = profileManager;
             activePanelControllerVm.ActivePanel = ProfileManager;
@@ -160,20 +158,16 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _inModal = this.WhenAnyValue(x => x.ActiveConfirmation)
                 .Select(x => x != null)
                 .ToGuiProperty(this, nameof(InModal), deferSubscription: true);
-
-            saveSignal.Saving
-                .Subscribe((x) => Save(x.Gui, x.Pipe))
-                .DisposeWith(this);
         }
 
-        public void Load()
+        public async Task Load()
         {
             _logger.Information("Applying settings");
             ProfileManager.Load(_settingsSingleton.Gui, _settingsSingleton.Pipeline);
             _logger.Information("Settings applied");
         }
 
-        private void Save(SynthesisGuiSettings guiSettings, PipelineSettings _)
+        public void Save(SynthesisGuiSettings guiSettings, PipelineSettings _)
         {
             guiSettings.MainRepositoryFolder = _settingsSingleton.Gui.MainRepositoryFolder;
             guiSettings.OpenIdeAfterCreating = _settingsSingleton.Gui.OpenIdeAfterCreating;

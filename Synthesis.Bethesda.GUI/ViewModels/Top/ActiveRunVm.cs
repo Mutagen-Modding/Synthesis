@@ -20,28 +20,21 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 {
                     if (run != null)
                     {
-                        activePanelController.ActivePanel = run;
+                        activePanelController.ActivePanel = new ActiveViewModel(run,
+                            async () =>
+                            {
+                                if (run.Running)
+                                {
+                                    await run.Cancel().ConfigureAwait(false);
+                                }
+                                run.Dispose();
+                            });
                     }
                 })
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .StartWith(default(RunVm?))
-                .Pairwise()
-                .Subscribe(async r =>
-                {
-                    if (r.Previous != null)
-                    {
-                        if (r.Previous.Running)
-                        {
-                            await r.Previous.Cancel().ConfigureAwait(false);
-                        }
-                        r.Previous.Dispose();
-                    }
-                    
-                    if (r.Current != null)
-                    {
-                        await r.Current.Run().ConfigureAwait(false); 
-                    }
-                })
+                .NotNull()
+                .Subscribe(x => x.Run())
                 .DisposeWith(this);
         }
     }

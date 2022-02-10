@@ -4,11 +4,13 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using Autofac;
 using DynamicData.Binding;
+using Microsoft.Win32;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
+using Synthesis.Bethesda.Execution.FileAssociations;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
@@ -55,6 +57,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
         public ICommand OpenGitPageToVersionCommand { get; }
 
         public ICommand NavigateToInternalFilesCommand { get; }
+
+        public ICommand ExportSynthFileCommand { get; }
 
         private readonly ObservableAsPropertyHelper<bool> _attemptedCheckout;
         public bool AttemptedCheckout => _attemptedCheckout.Value;
@@ -107,6 +111,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
             IAttemptedCheckout attemptedCheckout,
             IPatcherIdProvider idProvider,
             ICopyOverExtraData copyOverExtraData,
+            ExportGitAddFile exportGitAddFile,
             PatcherRenameActionVm.Factory renameFactory,
             DeleteUserData deleteUserData,
             PatcherUserSettingsVm.Factory settingsVmFactory,
@@ -223,6 +228,22 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Git
                     this.NugetTargeting.SynthesisVersioning = PatcherNugetVersioningEnum.Manual;
                     this.NugetTargeting.MutagenVersioning = PatcherNugetVersioningEnum.Manual;
                 });
+
+            ExportSynthFileCommand = ReactiveCommand.Create(() =>
+            {
+                var dialog = new SaveFileDialog();
+                dialog.Filter = "Synth file|*.synth";
+                dialog.Title = "Save a synth file";
+                dialog.FileName = $"{NameVm.Name}.synth";
+                dialog.ShowDialog();
+
+                if (dialog.FileName == "") return;
+                
+                exportGitAddFile.ExportAsFile(
+                    dialog.FileName,
+                    remoteRepoPathInputVm.RemoteRepoPath,
+                    selectedProjectInput.ProjectSubpath);
+            });
         }
 
         public override PatcherSettings Save()

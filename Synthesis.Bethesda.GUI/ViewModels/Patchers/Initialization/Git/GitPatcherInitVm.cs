@@ -28,10 +28,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
 {
     public class GitPatcherInitVm : ViewModel, IPatcherInitVm
     {
+        public InitializationSettingsVm InitializationSettingsVm { get; }
         private readonly IPatcherInitializationVm _init;
+        private readonly IAddPatchersToSelectedGroupVm _addNewPatchers;
         private readonly IPatcherFactory _patcherFactory;
         private readonly PatcherInitRenameValidator _renamer;
         private readonly IPathSanitation _pathSanitation;
+        private readonly IProfileDisplayControllerVm _displayControllerVm;
 
         public ICommand CompleteConfiguration => _init.CompleteConfiguration;
         public ICommand CancelConfiguration => _init.CancelConfiguration;
@@ -64,25 +67,28 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
         [Reactive]
         public PatcherStoreListingVm? SelectedPatcher { get; set; }
 
-        [Reactive]
-        public bool ShowAll { get; set; }
-
         private bool _wasAdded = false;
 
         public GitPatcherInitVm(
             IPatcherInitializationVm init,
+            IAddPatchersToSelectedGroupVm addNewPatchers,
             ILogger logger,
             IPatcherFactory patcherFactory,
             INavigateTo navigateTo, 
             IPathSanitation pathSanitation,
             PatcherStoreListingVm.Factory listingVmFactory,
+            IProfileDisplayControllerVm displayControllerVm,
             IRegistryListingsProvider listingsProvider,
+            InitializationSettingsVm initializationSettingsVm,
             PatcherInitRenameValidator renamer)
         {
+            InitializationSettingsVm = initializationSettingsVm;
             _init = init;
+            _addNewPatchers = addNewPatchers;
             _patcherFactory = patcherFactory;
             _renamer = renamer;
             _pathSanitation = pathSanitation;
+            _displayControllerVm = displayControllerVm;
             Patcher = patcherFactory.GetGitPatcher();
 
             _canCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid.Valid)
@@ -119,7 +125,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
                 })
                 .Switch()
                 .Sort(Comparer<PatcherStoreListingVm>.Create((x, y) => x.Name.CompareTo(y.Name)))
-                .Filter(this.WhenAnyValue(x => x.ShowAll)
+                .Filter(this.WhenAnyValue(x => x.InitializationSettingsVm.ShowAllGitPatchersInBrowser)
                     .DistinctUntilChanged()
                     .Select(show => new Func<PatcherStoreListingVm, bool>(
                         (p) =>
@@ -172,9 +178,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git
                 RemoteRepoPath = listing.RepoPath,
                 SelectedProjectSubpath = _pathSanitation.Sanitize(listing.Raw.ProjectPath)
             });
-            if (await _renamer.ConfirmNameUnique(patcher))
+            if (_addNewPatchers.CanAddPatchers && await _renamer.ConfirmNameUnique(patcher))
             {
-                _init.AddNewPatchers(patcher.AsEnumerable<PatcherVm>().ToList());
+                _init.NewPatcher = null;
+                _addNewPatchers.AddNewPatchers(patcher);
+                _displayControllerVm.SelectedObject = patcher;
             }
         }
 

@@ -1,38 +1,34 @@
-﻿using System;
-using System.Windows.Input;
-using Noggog;
+﻿using System.Windows.Input;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Synthesis.Bethesda.Execution.Settings.V2;
 
-namespace Synthesis.Bethesda.GUI.Settings
+namespace Synthesis.Bethesda.GUI.Settings;
+
+public interface IShowHelpSetting
 {
-    public interface IShowHelpSetting
+    bool ShowHelp { get; set; }
+    ICommand ShowHelpToggleCommand { get; }
+}
+
+public class ShowHelpSetting : ViewModel, IShowHelpSetting, IModifySavingSettings
+{
+    [Reactive]
+    public bool ShowHelp { get; set; }
+
+    public ICommand ShowHelpToggleCommand { get; }
+        
+    public ShowHelpSetting(
+        ISettingsSingleton settings)
     {
-        bool ShowHelp { get; set; }
-        ICommand ShowHelpToggleCommand { get; }
+        ShowHelpToggleCommand = ReactiveCommand.Create(() => ShowHelp = !ShowHelp);
+
+        ShowHelp = settings.Gui.ShowHelp;
     }
 
-    public class ShowHelpSetting : ViewModel, IShowHelpSetting
+    public void Save(SynthesisGuiSettings gui, PipelineSettings pipe)
     {
-        public ISaveSignal SaveSignal { get; }
-
-        [Reactive]
-        public bool ShowHelp { get; set; }
-
-        public ICommand ShowHelpToggleCommand { get; }
-        
-        public ShowHelpSetting(
-            ISaveSignal saveSignal,
-            ISettingsSingleton settings)
-        {
-            SaveSignal = saveSignal;
-            ShowHelpToggleCommand = ReactiveCommand.Create(() => ShowHelp = !ShowHelp);
-
-            ShowHelp = settings.Gui.ShowHelp;
-            saveSignal.Saving
-                .Subscribe(x => x.Gui.ShowHelp = ShowHelp)
-                .DisposeWith(this);
-        }
+        gui.ShowHelp = ShowHelp;
     }
 }

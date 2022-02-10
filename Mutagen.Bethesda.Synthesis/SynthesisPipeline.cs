@@ -559,7 +559,7 @@ namespace Mutagen.Bethesda.Synthesis
             
             System.Console.WriteLine($"Writing to output: {args.OutputPath}");
             Directory.CreateDirectory(Path.GetDirectoryName(args.OutputPath)!);
-            state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(state.RawLoadOrder.Select(x => x.ModKey)), fileSystem: fileSystem);
+            state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(args, state.RawLoadOrder.Select(x => x.ModKey)), fileSystem: fileSystem);
         }
         #endregion
 
@@ -692,12 +692,13 @@ namespace Mutagen.Bethesda.Synthesis
         }
         #endregion
 
-        private BinaryWriteParameters GetWriteParams(IEnumerable<ModKey> loadOrder)
+        private BinaryWriteParameters GetWriteParams(RunSynthesisMutagenPatcher args, IEnumerable<ModKey> loadOrder)
         {
             return new BinaryWriteParameters()
             {
                 ModKey = ModKeyOption.NoCheck,
                 MastersListOrdering = new MastersListOrderingByLoadOrder(loadOrder),
+                TargetLanguageOverride = args.TargetLanguage
             };
         }
 

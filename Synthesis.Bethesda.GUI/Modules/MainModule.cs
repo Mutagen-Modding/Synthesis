@@ -14,6 +14,7 @@ using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Reporters;
+using Synthesis.Bethesda.GUI.Args;
 using Synthesis.Bethesda.GUI.Json;
 using Synthesis.Bethesda.GUI.Logging;
 using Synthesis.Bethesda.GUI.Services.Main;
@@ -90,10 +91,12 @@ namespace Synthesis.Bethesda.GUI.Modules
                     typeof(MainVm),
                     typeof(INavigateTo),
                     typeof(IStartup),
+                    typeof(ArgClassProvider),
                     typeof(ILogSettings),
                     typeof(IGuiSettingsImporter),
                     typeof(INewestLibraryVersionsVm),
                     typeof(ISynthesisGuiSettings))
+                .Except<ArgumentReceiver>()
                 .AsImplementedInterfaces()
                 .AsSelf()
                 .SingleInstance();
