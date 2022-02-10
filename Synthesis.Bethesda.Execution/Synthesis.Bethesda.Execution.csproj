@@ -49,7 +49,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.0.1" />
-    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.36.0-pr001" />
+    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.36.0" />
     <PackageReference Include="Noggog.CSharpExt.Json" Version="2.39.0" />
     <PackageReference Include="Noggog.Autofac" Version="2.39.0" />
     <PackageReference Include="NuGet.Versioning" Version="6.0.0" />
