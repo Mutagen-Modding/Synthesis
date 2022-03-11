@@ -94,7 +94,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
                     });
                 })
                 .Switch()
-                .ToGuiProperty(this, nameof(SettingsConfiguration), new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()), deferSubscription: true);
+                .ToGuiProperty(this, nameof(SettingsConfiguration), new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()));
 
             OpenSettingsCommand = NoggogCommand.CreateFromObject(
                 objectSource: Observable.CombineLatest(
