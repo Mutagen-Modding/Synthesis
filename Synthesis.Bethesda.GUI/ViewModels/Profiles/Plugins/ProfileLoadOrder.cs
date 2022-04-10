@@ -53,6 +53,17 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                 .StartWith((Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(), State: Observable.Return(ErrorResponse.Fail("Load order uninitialized"))))
                 .Replay(1)
                 .RefCount();
+
+            LoadOrder = loadOrderResult
+                .Select(x => x.Results)
+                .Switch()
+                .ObserveOnGui()
+                .AsObservableList();
+
+            _state = loadOrderResult
+                .Select(x => x.State)
+                .Switch()
+                .ToGuiProperty(this, nameof(State), ErrorResponse.Success, deferSubscription: true);
             
             loadOrderResult.Select(lo => lo.State)
                 // Skip the uninitialized state
@@ -70,17 +81,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                     }
                 })
                 .DisposeWith(this);
-
-            LoadOrder = loadOrderResult
-                .Select(x => x.Results)
-                .Switch()
-                .ObserveOnGui()
-                .AsObservableList();
-
-            _state = loadOrderResult
-                .Select(x => x.State)
-                .Switch()
-                .ToGuiProperty(this, nameof(State), ErrorResponse.Success, deferSubscription: true);
         }
 
         public IEnumerable<IModListingGetter> Get()
