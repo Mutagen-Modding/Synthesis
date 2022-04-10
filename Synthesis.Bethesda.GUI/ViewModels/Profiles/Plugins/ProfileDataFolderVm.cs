@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -104,7 +104,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
 
             _path = DataFolderResult
                 .Select(x => x.Value)
-                .ToGuiProperty(this, nameof(Path), deferSubscription: true);
+                // Don't want another dispatch onto UI thread
+                .ToProperty(this, nameof(Path), deferSubscription: true);
         }
     }
 }
