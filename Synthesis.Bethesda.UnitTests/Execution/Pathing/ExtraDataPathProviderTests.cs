@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using FluentAssertions;
 using Noggog;
+using Noggog.IO;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -12,13 +13,11 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Pathing
     {
         [Theory, SynthAutoData]
         public void CombinesCurrentDirectoryAndData(
-            DirectoryPath currentDir,
             ExtraDataPathProvider sut)
         {
-            sut.CurrentDirectoryProvider.CurrentDirectory.Returns(currentDir);
             sut.Path.Should().Be(
                 new DirectoryPath(
-                    Path.Combine(currentDir, "Data")));
+                    Path.Combine(sut.CurrentDirectoryProvider.CurrentDirectory, "Data")));
         }
     }
 }
