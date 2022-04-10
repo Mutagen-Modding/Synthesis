@@ -31,6 +31,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
             ILogger logger,
             ILiveLoadOrderProvider liveLoadOrderProvider,
             IPluginListingsPathProvider listingsPathProvider,
+            ICreationClubListingsPathProvider cccLstingsPathProvider,
             IProfileIdentifier ident,
             IProfileDataFolderVm dataFolder)
         {
@@ -42,7 +43,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                     {
                         return (Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
                     }
-                    logger.Error("Getting live load order for {Release}. DataDirectory: {DataDirectory}, Plugin File Path: {PluginFilePath}", ident.Release, x.Value, listingsPathProvider.Path);
+                    logger.Error("Getting live load order for {Release}. DataDirectory: {DataDirectory}, Plugin File Path: {PluginFilePath}, CCC Plugin File Path: {CccPluginFilePath}", ident.Release, x.Value, listingsPathProvider.Path, cccLstingsPathProvider.Path);
                     var liveLo = liveLoadOrderProvider.Get(out var errors)
                         .Transform(listing => new ReadOnlyModListingVM(listing, x.Value))
                         .DisposeMany();
