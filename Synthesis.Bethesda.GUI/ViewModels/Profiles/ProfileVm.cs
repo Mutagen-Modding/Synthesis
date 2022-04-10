@@ -168,7 +168,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
                 .Replay(1).RefCount();
 
             _blockingError = Observable.CombineLatest(
-                    dataFolder.WhenAnyValue(x => x.DataFolderResult),
+                    dataFolder.DataFolderResult,
                     loadOrder.WhenAnyValue(x => x.State),
                     enabledGroups
                         .QueryWhenChanged(q => q)

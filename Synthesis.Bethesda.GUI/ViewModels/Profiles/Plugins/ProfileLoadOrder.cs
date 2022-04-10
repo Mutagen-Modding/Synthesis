@@ -35,7 +35,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
             IProfileIdentifier ident,
             IProfileDataFolderVm dataFolder)
         {
-            var loadOrderResult = dataFolder.WhenAnyValue(x => x.DataFolderResult)
+            var loadOrderResult = dataFolder.DataFolderResult
+                .DistinctUntilChanged()
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .Select(x =>
                 {
@@ -54,6 +55,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
                 .RefCount();
             
             loadOrderResult.Select(lo => lo.State)
+                // Skip the uninitialized state
+                .Skip(1)
                 .Switch()
                 .Subscribe(loErr =>
                 {
