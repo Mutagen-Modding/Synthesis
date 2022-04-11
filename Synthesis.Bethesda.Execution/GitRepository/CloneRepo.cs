@@ -2,19 +2,18 @@
 using LibGit2Sharp;
 using Noggog;
 
-namespace Synthesis.Bethesda.Execution.GitRepository
-{
-    public interface ICloneRepo
-    {
-        DirectoryPath Clone(string repoPath, DirectoryPath localDir);
-    }
+namespace Synthesis.Bethesda.Execution.GitRepository;
 
-    [ExcludeFromCodeCoverage]
-    public class CloneRepo : ICloneRepo
+public interface ICloneRepo
+{
+    DirectoryPath Clone(string repoPath, DirectoryPath localDir);
+}
+
+[ExcludeFromCodeCoverage]
+public class CloneRepo : ICloneRepo
+{
+    public DirectoryPath Clone(string repoPath, DirectoryPath localDir)
     {
-        public DirectoryPath Clone(string repoPath, DirectoryPath localDir)
-        {
-            return Repository.Clone(repoPath, localDir);
-        }
+        return Repository.Clone(repoPath, localDir);
     }
 }

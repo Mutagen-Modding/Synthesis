@@ -16,92 +16,91 @@ using System.Windows.Shapes;
 using System.Reactive.Linq;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
-namespace Synthesis.Bethesda.GUI.Views
+namespace Synthesis.Bethesda.GUI.Views;
+
+public class SolutionConfigViewBase : NoggogUserControl<SolutionPatcherVm> { }
+
+/// <summary>
+/// Interaction logic for SolutionConfigView.xaml
+/// </summary>
+public partial class SolutionConfigView : SolutionConfigViewBase
 {
-    public class SolutionConfigViewBase : NoggogUserControl<SolutionPatcherVm> { }
-
-    /// <summary>
-    /// Interaction logic for SolutionConfigView.xaml
-    /// </summary>
-    public partial class SolutionConfigView : SolutionConfigViewBase
+    public SolutionConfigView()
     {
-        public SolutionConfigView()
+        InitializeComponent();
+        this.WhenActivated(disposable =>
         {
-            InitializeComponent();
-            this.WhenActivated(disposable =>
-            {
-                this.WhenAnyValue(x => x.ViewModel!.SolutionPathInput.Picker)
-                    .BindTo(this, view => view.SolutionPathPicker.PickerVM)
-                    .DisposeWith(disposable);
+            this.WhenAnyValue(x => x.ViewModel!.SolutionPathInput.Picker)
+                .BindTo(this, view => view.SolutionPathPicker.PickerVM)
+                .DisposeWith(disposable);
 
-                // Hide project picker if sln invalid
-                var hasProjs = this.WhenAnyValue(x => x.ViewModel!.AvailableProjects.Count)
-                    .Select(x => x > 0)
-                    .Replay(1)
-                    .RefCount();
-                var projOpacity = hasProjs
-                    .Select(x => x ? 1.0d : 0.2d);
-                hasProjs.BindTo(this, x => x.ProjectLabel.IsEnabled)
-                    .DisposeWith(disposable);
-                hasProjs.BindTo(this, x => x.ProjectsPickerBox.IsEnabled)
-                    .DisposeWith(disposable);
-                projOpacity.BindTo(this, x => x.ProjectLabel.Opacity)
-                    .DisposeWith(disposable);
-                projOpacity.BindTo(this, x => x.ProjectsPickerBox.Opacity)
-                    .DisposeWith(disposable);
+            // Hide project picker if sln invalid
+            var hasProjs = this.WhenAnyValue(x => x.ViewModel!.AvailableProjects.Count)
+                .Select(x => x > 0)
+                .Replay(1)
+                .RefCount();
+            var projOpacity = hasProjs
+                .Select(x => x ? 1.0d : 0.2d);
+            hasProjs.BindTo(this, x => x.ProjectLabel.IsEnabled)
+                .DisposeWith(disposable);
+            hasProjs.BindTo(this, x => x.ProjectsPickerBox.IsEnabled)
+                .DisposeWith(disposable);
+            projOpacity.BindTo(this, x => x.ProjectLabel.Opacity)
+                .DisposeWith(disposable);
+            projOpacity.BindTo(this, x => x.ProjectsPickerBox.Opacity)
+                .DisposeWith(disposable);
 
-                // Bind project picker
-                this.Bind(this.ViewModel, vm => vm.SelectedProjectInput.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
-                    .DisposeWith(disposable);
-                this.OneWayBind(this.ViewModel, vm => vm.AvailableProjects, view => view.ProjectsPickerBox.ItemsSource)
-                    .DisposeWith(disposable);
+            // Bind project picker
+            this.Bind(this.ViewModel, vm => vm.SelectedProjectInput.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
+                .DisposeWith(disposable);
+            this.OneWayBind(this.ViewModel, vm => vm.AvailableProjects, view => view.ProjectsPickerBox.ItemsSource)
+                .DisposeWith(disposable);
 
-                // Set project picker tooltips
-                this.WhenAnyValue(x => x.ViewModel!.SelectedProjectInput.Picker.ErrorState)
-                    .Select(e =>
-                    {
-                        if (e.Succeeded) return "Project in the solution to run";
-                        return $"Project in the solution to run was invalid: {e.Reason}";
-                    })
-                    .BindTo(this, x => x.ProjectsPickerBox.ToolTip)
-                    .DisposeWith(disposable);
+            // Set project picker tooltips
+            this.WhenAnyValue(x => x.ViewModel!.SelectedProjectInput.Picker.ErrorState)
+                .Select(e =>
+                {
+                    if (e.Succeeded) return "Project in the solution to run";
+                    return $"Project in the solution to run was invalid: {e.Reason}";
+                })
+                .BindTo(this, x => x.ProjectsPickerBox.ToolTip)
+                .DisposeWith(disposable);
 
-                // Set up open solution button
-                this.WhenAnyValue(x => x.ViewModel!.OpenSolutionCommand)
-                    .BindTo(this, x => x.OpenSolutionButton.Command)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.VersioningOptions)
-                    .BindTo(this, view => view.PreferredVersioningPicker.ItemsSource)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.VisibilityOptions)
-                    .BindTo(this, view => view.VisibilityOptionPicker.ItemsSource)
-                    .DisposeWith(disposable);
+            // Set up open solution button
+            this.WhenAnyValue(x => x.ViewModel!.OpenSolutionCommand)
+                .BindTo(this, x => x.OpenSolutionButton.Command)
+                .DisposeWith(disposable);
+            this.WhenAnyValue(x => x.ViewModel!.VersioningOptions)
+                .BindTo(this, view => view.PreferredVersioningPicker.ItemsSource)
+                .DisposeWith(disposable);
+            this.WhenAnyValue(x => x.ViewModel!.VisibilityOptions)
+                .BindTo(this, view => view.VisibilityOptionPicker.ItemsSource)
+                .DisposeWith(disposable);
 
 
-                // Bind settings
-                this.Bind(this.ViewModel, vm => vm.LongDescription, view => view.DescriptionBox.Text)
-                    .DisposeWith(disposable);
-                this.Bind(this.ViewModel, vm => vm.ShortDescription, view => view.OneLineDescriptionBox.Text)
-                    .DisposeWith(disposable);
-                this.Bind(this.ViewModel, vm => vm.Visibility, view => view.VisibilityOptionPicker.SelectedItem)
-                    .DisposeWith(disposable);
-                this.Bind(this.ViewModel, vm => vm.Versioning, view => view.PreferredVersioningPicker.SelectedItem)
-                    .DisposeWith(disposable);
+            // Bind settings
+            this.Bind(this.ViewModel, vm => vm.LongDescription, view => view.DescriptionBox.Text)
+                .DisposeWith(disposable);
+            this.Bind(this.ViewModel, vm => vm.ShortDescription, view => view.OneLineDescriptionBox.Text)
+                .DisposeWith(disposable);
+            this.Bind(this.ViewModel, vm => vm.Visibility, view => view.VisibilityOptionPicker.SelectedItem)
+                .DisposeWith(disposable);
+            this.Bind(this.ViewModel, vm => vm.Versioning, view => view.PreferredVersioningPicker.SelectedItem)
+                .DisposeWith(disposable);
 
-                this.WhenAnyValue(x => x.ViewModel!.RequiredMods)
-                    .BindTo(this, x => x.RequiredMods.ModKeys)
-                    .DisposeWith(disposable);
-                this.WhenAnyValue(x => x.ViewModel!.DetectedMods)
-                    .BindTo(this, x => x.RequiredMods.SearchableMods)
-                    .DisposeWith(disposable);
+            this.WhenAnyValue(x => x.ViewModel!.RequiredMods)
+                .BindTo(this, x => x.RequiredMods.ModKeys)
+                .DisposeWith(disposable);
+            this.WhenAnyValue(x => x.ViewModel!.DetectedMods)
+                .BindTo(this, x => x.RequiredMods.SearchableMods)
+                .DisposeWith(disposable);
 
-                this.WhenAnyValue(x => x.ViewModel!.ReloadAutogeneratedSettingsCommand)
-                    .BindTo(this, x => x.ReloadAutogeneratedSettingsButton.Command)
-                    .DisposeWith(disposable);
-                this.WhenAnyFallback(x => x.ViewModel!.PatcherSettings)
-                    .BindTo(this, x => x.PatcherSettings.DataContext)
-                    .DisposeWith(disposable);
-            });
-        }
+            this.WhenAnyValue(x => x.ViewModel!.ReloadAutogeneratedSettingsCommand)
+                .BindTo(this, x => x.ReloadAutogeneratedSettingsButton.Command)
+                .DisposeWith(disposable);
+            this.WhenAnyFallback(x => x.ViewModel!.PatcherSettings)
+                .BindTo(this, x => x.PatcherSettings.DataContext)
+                .DisposeWith(disposable);
+        });
     }
 }

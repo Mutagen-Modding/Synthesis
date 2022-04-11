@@ -1,48 +1,47 @@
 ﻿using System.Collections.Generic;
 using Synthesis.Bethesda.Execution.DotNet.Dto;
 
-namespace Synthesis.Bethesda.Execution.DotNet.NugetListing
+namespace Synthesis.Bethesda.Execution.DotNet.NugetListing;
+
+public interface IProcessNugetQueryResults
 {
-    public interface IProcessNugetQueryResults
+    IEnumerable<NugetListingQuery> Process(IReadOnlyList<string> output);
+}
+
+public class ProcessNugetQueryResults : IProcessNugetQueryResults
+{
+    public const string Prefix = "   > ";
+    public INugetListingParser LineParser { get; }
+        
+    public ProcessNugetQueryResults(
+        INugetListingParser lineParser)
     {
-        IEnumerable<NugetListingQuery> Process(IReadOnlyList<string> output);
+        LineParser = lineParser;
     }
-
-    public class ProcessNugetQueryResults : IProcessNugetQueryResults
+        
+    public IEnumerable<NugetListingQuery> Process(IReadOnlyList<string> output)
     {
-        public const string Prefix = "   > ";
-        public INugetListingParser LineParser { get; }
-        
-        public ProcessNugetQueryResults(
-            INugetListingParser lineParser)
+        var lines = new List<string>();
+        foreach (var s in output)
         {
-            LineParser = lineParser;
+            if (!s.StartsWith(Prefix)) continue;
+            lines.Add(s);
         }
-        
-        public IEnumerable<NugetListingQuery> Process(IReadOnlyList<string> output)
-        {
-            var lines = new List<string>();
-            foreach (var s in output)
-            {
-                if (!s.StartsWith(Prefix)) continue;
-                lines.Add(s);
-            }
 
-            var ret = new List<NugetListingQuery>();
-            foreach (var line in lines)
-            {
-                if (!LineParser.TryParse(
+        var ret = new List<NugetListingQuery>();
+        foreach (var line in lines)
+        {
+            if (!LineParser.TryParse(
                     line, 
                     out var package,
                     out var requested, 
                     out var resolved, 
                     out var latest))
-                {
-                    continue;
-                }
-                ret.Add(new(package, requested, resolved, latest));
+            {
+                continue;
             }
-            return ret;
+            ret.Add(new(package, requested, resolved, latest));
         }
+        return ret;
     }
 }

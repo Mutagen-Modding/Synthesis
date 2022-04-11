@@ -4,71 +4,70 @@ using Newtonsoft.Json.Converters;
 using System;
 using System.IO;
 
-namespace Mutagen.Bethesda.Synthesis.Internal
+namespace Mutagen.Bethesda.Synthesis.Internal;
+
+public interface IReflectionSettingsTarget
 {
-    public interface IReflectionSettingsTarget
+    string? AnchorPath { get; set; }
+}
+
+public class ReflectionSettingsTarget<TSetting> : IReflectionSettingsTarget
+    where TSetting : class, new()
+{
+    private static readonly JsonSerializerSettings JsonSettings;
+
+    public readonly Lazy<TSetting> Value;
+    public string? AnchorPath { get; set; }
+    public string SettingsPath { get; }
+    public bool ThrowIfMissing { get; }
+
+    static ReflectionSettingsTarget()
     {
-        string? AnchorPath { get; set; }
+        JsonSettings = new JsonSerializerSettings();
+        JsonSettings.Converters.Add(new StringEnumConverter());
+        JsonSettings.AddMutagenConverters();
+        JsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
     }
 
-    public class ReflectionSettingsTarget<TSetting> : IReflectionSettingsTarget
-        where TSetting : class, new()
+    public ReflectionSettingsTarget(
+        string settingsPath,
+        bool throwIfMissing)
     {
-        private static readonly JsonSerializerSettings JsonSettings;
+        SettingsPath = settingsPath;
+        Value = new Lazy<TSetting>(Get);
+        ThrowIfMissing = throwIfMissing;
+    }
 
-        public readonly Lazy<TSetting> Value;
-        public string? AnchorPath { get; set; }
-        public string SettingsPath { get; }
-        public bool ThrowIfMissing { get; }
-
-        static ReflectionSettingsTarget()
+    private TSetting Get()
+    {
+        if (AnchorPath == null)
         {
-            JsonSettings = new JsonSerializerSettings();
-            JsonSettings.Converters.Add(new StringEnumConverter());
-            JsonSettings.AddMutagenConverters();
-            JsonSettings.ObjectCreationHandling = ObjectCreationHandling.Replace;
+            if (ThrowIfMissing)
+            {
+                throw new FileNotFoundException("No extra data folder path specified");
+            }
+            return new TSetting();
         }
-
-        public ReflectionSettingsTarget(
-            string settingsPath,
-            bool throwIfMissing)
+        var path = Path.Combine(AnchorPath, SettingsPath);
+        if (File.Exists(path))
         {
-            SettingsPath = settingsPath;
-            Value = new Lazy<TSetting>(Get);
-            ThrowIfMissing = throwIfMissing;
+            System.Console.WriteLine($"Reading settings: {path}");
+            var text = File.ReadAllText(path);
+            var settings = JsonConvert.DeserializeObject<TSetting>(text, JsonSettings);
+            if (settings == null)
+            {
+                throw new FileNotFoundException("Could not import the settings file to be an object", path);
+            }
+            return settings;
         }
-
-        private TSetting Get()
+        else
         {
-            if (AnchorPath == null)
+            System.Console.WriteLine($"No settings file found.  Using defaults.  Path: {path}");
+            if (ThrowIfMissing)
             {
-                if (ThrowIfMissing)
-                {
-                    throw new FileNotFoundException("No extra data folder path specified");
-                }
-                return new TSetting();
+                throw new FileNotFoundException("Cannot find required setting", path);
             }
-            var path = Path.Combine(AnchorPath, SettingsPath);
-            if (File.Exists(path))
-            {
-                System.Console.WriteLine($"Reading settings: {path}");
-                var text = File.ReadAllText(path);
-                var settings = JsonConvert.DeserializeObject<TSetting>(text, JsonSettings);
-                if (settings == null)
-                {
-                    throw new FileNotFoundException("Could not import the settings file to be an object", path);
-                }
-                return settings;
-            }
-            else
-            {
-                System.Console.WriteLine($"No settings file found.  Using defaults.  Path: {path}");
-                if (ThrowIfMissing)
-                {
-                    throw new FileNotFoundException("Cannot find required setting", path);
-                }
-                return new TSetting();
-            }
+            return new TSetting();
         }
     }
 }

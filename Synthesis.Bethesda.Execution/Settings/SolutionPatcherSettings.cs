@@ -3,21 +3,20 @@ using System.Diagnostics.CodeAnalysis;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
-namespace Synthesis.Bethesda.Execution.Settings
+namespace Synthesis.Bethesda.Execution.Settings;
+
+[ExcludeFromCodeCoverage]
+public class SolutionPatcherSettings : PatcherSettings, 
+    IPathToSolutionFileProvider, 
+    IProjectSubpathDefaultSettings
 {
-    [ExcludeFromCodeCoverage]
-    public class SolutionPatcherSettings : PatcherSettings, 
-        IPathToSolutionFileProvider, 
-        IProjectSubpathDefaultSettings
+    public FilePath SolutionPath { get; set; } = string.Empty;
+    public string ProjectSubpath { get; set; } = string.Empty;
+
+    public override void Print(ILogger logger)
     {
-        public FilePath SolutionPath { get; set; } = string.Empty;
-        public string ProjectSubpath { get; set; } = string.Empty;
-
-        public override void Print(ILogger logger)
-        {
-            logger.Information($"[Solution] {Nickname.Decorate(x => $"{x} => ")}{SolutionPath} => {ProjectSubpath}");
-        }
-
-        FilePath IPathToSolutionFileProvider.Path => SolutionPath;
+        logger.Information($"[Solution] {Nickname.Decorate(x => $"{x} => ")}{SolutionPath} => {ProjectSubpath}");
     }
+
+    FilePath IPathToSolutionFileProvider.Path => SolutionPath;
 }

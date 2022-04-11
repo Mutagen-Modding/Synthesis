@@ -1,10 +1,9 @@
 using Mutagen.Bethesda.Oblivion;
 using System.Threading.Tasks;
 
-namespace Mutagen.Bethesda.Synthesis
+namespace Mutagen.Bethesda.Synthesis;
+
+public interface IOblivionPatcher : IPatcher
 {
-    public interface IOblivionPatcher : IPatcher
-    {
-        Task RunPatch(SynthesisState<IOblivionMod, IOblivionModGetter> state);
-    }
+    Task RunPatch(SynthesisState<IOblivionMod, IOblivionModGetter> state);
 }

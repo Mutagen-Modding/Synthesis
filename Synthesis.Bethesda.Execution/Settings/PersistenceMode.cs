@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Synthesis.Bethesda.Execution.Settings
+namespace Synthesis.Bethesda.Execution.Settings;
+
+public enum PersistenceMode
 {
-    public enum PersistenceMode
-    {
-        None,
-        Text
-    }
+    None,
+    Text
 }

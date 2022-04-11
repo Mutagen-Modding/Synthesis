@@ -5,17 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Synthesis.Bethesda
-{
-    public record SettingsConfiguration(
-        SettingsStyle Style,
-        ReflectionSettingsConfig[] Targets);
+namespace Synthesis.Bethesda;
 
-    public enum SettingsStyle
-    {
-        None,
-        Open,
-        Host,
-        SpecifiedClass
-    }
+public record SettingsConfiguration(
+    SettingsStyle Style,
+    ReflectionSettingsConfig[] Targets);
+
+public enum SettingsStyle
+{
+    None,
+    Open,
+    Host,
+    SpecifiedClass
 }

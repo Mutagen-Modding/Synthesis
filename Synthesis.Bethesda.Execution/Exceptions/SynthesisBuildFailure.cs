@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace Synthesis.Bethesda.Execution
+namespace Synthesis.Bethesda.Execution;
+
+[ExcludeFromCodeCoverage]
+public class SynthesisBuildFailure : Exception
 {
-    [ExcludeFromCodeCoverage]
-    public class SynthesisBuildFailure : Exception
+    public SynthesisBuildFailure(string firstError)
+        : base(firstError)
     {
-        public SynthesisBuildFailure(string firstError)
-            : base(firstError)
-        {
-        }
     }
 }

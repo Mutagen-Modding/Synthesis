@@ -11,16 +11,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Synthesis.Bethesda.GUI.Views
+namespace Synthesis.Bethesda.GUI.Views;
+
+/// <summary>
+/// Interaction logic for VerticalSlicer.xaml
+/// </summary>
+public partial class VerticalSlicer : UserControl
 {
-    /// <summary>
-    /// Interaction logic for VerticalSlicer.xaml
-    /// </summary>
-    public partial class VerticalSlicer : UserControl
+    public VerticalSlicer()
     {
-        public VerticalSlicer()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

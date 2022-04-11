@@ -12,105 +12,104 @@ using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.Execution.WorkEngine;
 
-namespace Synthesis.Bethesda.Execution.PatcherCommands
+namespace Synthesis.Bethesda.Execution.PatcherCommands;
+
+public interface IGetSettingsStyle
 {
-    public interface IGetSettingsStyle
+    Task<SettingsConfiguration> Get(
+        string path,
+        bool directExe,
+        FilePath? buildMetaPath,
+        CancellationToken cancel,
+        bool build);
+}
+
+public class GetSettingsStyle : IGetSettingsStyle
+{
+    private readonly ILogger _logger;
+    private readonly IWorkDropoff _workDropoff;
+    private readonly IBuildMetaFileReader _metaFileReader;
+    private readonly IBuild _build;
+    private readonly IShortCircuitSettingsProvider _shortCircuitSettingsProvider;
+    private readonly IWriteShortCircuitMeta _writeShortCircuitMeta;
+    public ILinesToReflectionConfigsParser LinesToConfigsParser { get; }
+    public IProcessRunner ProcessRunner { get; }
+    public IRunProcessStartInfoProvider GetRunProcessStartInfoProvider { get; }
+
+    public GetSettingsStyle(
+        ILogger logger,
+        IProcessRunner processRunner,
+        IWorkDropoff workDropoff,
+        IBuildMetaFileReader metaFileReader,
+        IBuild build,
+        IShortCircuitSettingsProvider shortCircuitSettingsProvider,
+        ILinesToReflectionConfigsParser linesToConfigsParser,
+        IWriteShortCircuitMeta writeShortCircuitMeta,
+        IRunProcessStartInfoProvider getRunProcessStartInfoProvider)
     {
-        Task<SettingsConfiguration> Get(
-            string path,
-            bool directExe,
-            FilePath? buildMetaPath,
-            CancellationToken cancel,
-            bool build);
+        _logger = logger;
+        _workDropoff = workDropoff;
+        _metaFileReader = metaFileReader;
+        _build = build;
+        _shortCircuitSettingsProvider = shortCircuitSettingsProvider;
+        _writeShortCircuitMeta = writeShortCircuitMeta;
+        LinesToConfigsParser = linesToConfigsParser;
+        ProcessRunner = processRunner;
+        GetRunProcessStartInfoProvider = getRunProcessStartInfoProvider;
+    }
+        
+    public async Task<SettingsConfiguration> Get(
+        string path,
+        bool directExe,
+        FilePath? buildMetaPath,
+        CancellationToken cancel,
+        bool build)
+    {
+        var meta = buildMetaPath != null ? _metaFileReader.Read(buildMetaPath.Value) : default;
+
+        if (_shortCircuitSettingsProvider.Shortcircuit && meta?.SettingsConfiguration != null) return meta.SettingsConfiguration;
+
+        var settingsConfig = await ExecuteSettingsRetrieval(path, directExe, cancel, build);
+
+        if (meta != null
+            && buildMetaPath != null)
+        {
+            meta.SettingsConfiguration = settingsConfig;
+            _writeShortCircuitMeta.WriteMeta(buildMetaPath.Value, meta);
+        }
+
+        return settingsConfig;
     }
 
-    public class GetSettingsStyle : IGetSettingsStyle
+    private async Task<SettingsConfiguration> ExecuteSettingsRetrieval(string path, bool directExe, CancellationToken cancel, bool build)
     {
-        private readonly ILogger _logger;
-        private readonly IWorkDropoff _workDropoff;
-        private readonly IBuildMetaFileReader _metaFileReader;
-        private readonly IBuild _build;
-        private readonly IShortCircuitSettingsProvider _shortCircuitSettingsProvider;
-        private readonly IWriteShortCircuitMeta _writeShortCircuitMeta;
-        public ILinesToReflectionConfigsParser LinesToConfigsParser { get; }
-        public IProcessRunner ProcessRunner { get; }
-        public IRunProcessStartInfoProvider GetRunProcessStartInfoProvider { get; }
-
-        public GetSettingsStyle(
-            ILogger logger,
-            IProcessRunner processRunner,
-            IWorkDropoff workDropoff,
-            IBuildMetaFileReader metaFileReader,
-            IBuild build,
-            IShortCircuitSettingsProvider shortCircuitSettingsProvider,
-            ILinesToReflectionConfigsParser linesToConfigsParser,
-            IWriteShortCircuitMeta writeShortCircuitMeta,
-            IRunProcessStartInfoProvider getRunProcessStartInfoProvider)
+        return await _workDropoff.EnqueueAndWait(async () =>
         {
-            _logger = logger;
-            _workDropoff = workDropoff;
-            _metaFileReader = metaFileReader;
-            _build = build;
-            _shortCircuitSettingsProvider = shortCircuitSettingsProvider;
-            _writeShortCircuitMeta = writeShortCircuitMeta;
-            LinesToConfigsParser = linesToConfigsParser;
-            ProcessRunner = processRunner;
-            GetRunProcessStartInfoProvider = getRunProcessStartInfoProvider;
-        }
-        
-        public async Task<SettingsConfiguration> Get(
-            string path,
-            bool directExe,
-            FilePath? buildMetaPath,
-            CancellationToken cancel,
-            bool build)
-        {
-            var meta = buildMetaPath != null ? _metaFileReader.Read(buildMetaPath.Value) : default;
-
-            if (_shortCircuitSettingsProvider.Shortcircuit && meta?.SettingsConfiguration != null) return meta.SettingsConfiguration;
-
-            var settingsConfig = await ExecuteSettingsRetrieval(path, directExe, cancel, build);
-
-            if (meta != null
-                && buildMetaPath != null)
+            if (build)
             {
-                meta.SettingsConfiguration = settingsConfig;
-                _writeShortCircuitMeta.WriteMeta(buildMetaPath.Value, meta);
+                var buildResult = await _build.Compile(path, cancel);
+                if (buildResult.Failed)
+                {
+                    _logger.Error("Could not build solution patcher in order to query for settings: {Error}", buildResult);
+                    return new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>());
+                }
             }
-
-            return settingsConfig;
-        }
-
-        private async Task<SettingsConfiguration> ExecuteSettingsRetrieval(string path, bool directExe, CancellationToken cancel, bool build)
-        {
-            return await _workDropoff.EnqueueAndWait(async () =>
+                
+            var result = await ProcessRunner.RunAndCapture(
+                GetRunProcessStartInfoProvider.GetStart(path, directExe, new SettingsQuery(), build: false),
+                cancel: cancel);
+                
+            switch ((Codes)result.Result)
             {
-                if (build)
-                {
-                    var buildResult = await _build.Compile(path, cancel);
-                    if (buildResult.Failed)
-                    {
-                        _logger.Error("Could not build solution patcher in order to query for settings: {Error}", buildResult);
-                        return new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>());
-                    }
-                }
-                
-                var result = await ProcessRunner.RunAndCapture(
-                    GetRunProcessStartInfoProvider.GetStart(path, directExe, new SettingsQuery(), build: false),
-                    cancel: cancel);
-                
-                switch ((Codes)result.Result)
-                {
-                    case Codes.OpensForSettings:
-                        return new SettingsConfiguration(SettingsStyle.Open, Array.Empty<ReflectionSettingsConfig>());
-                    case Codes.AutogeneratedSettingsClass:
-                        return new SettingsConfiguration(
-                            SettingsStyle.SpecifiedClass,
-                            LinesToConfigsParser.Parse(result.Out).Configs);
-                    default:
-                        return new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>());
-                }
-            }, cancel).ConfigureAwait(false);
-        }
+                case Codes.OpensForSettings:
+                    return new SettingsConfiguration(SettingsStyle.Open, Array.Empty<ReflectionSettingsConfig>());
+                case Codes.AutogeneratedSettingsClass:
+                    return new SettingsConfiguration(
+                        SettingsStyle.SpecifiedClass,
+                        LinesToConfigsParser.Parse(result.Out).Configs);
+                default:
+                    return new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>());
+            }
+        }, cancel).ConfigureAwait(false);
     }
 }

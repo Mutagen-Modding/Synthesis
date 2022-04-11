@@ -1,12 +1,11 @@
 ﻿using System.Windows.Controls;
 
-namespace Synthesis.Bethesda.GUI.Views
+namespace Synthesis.Bethesda.GUI.Views;
+
+public partial class MainLoadingView : UserControl
 {
-    public partial class MainLoadingView : UserControl
+    public MainLoadingView()
     {
-        public MainLoadingView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

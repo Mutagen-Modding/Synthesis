@@ -9,62 +9,61 @@ using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.GUI.Json;
 using Synthesis.Bethesda.GUI.Services.Main;
 
-namespace Synthesis.Bethesda.GUI.Settings
+namespace Synthesis.Bethesda.GUI.Settings;
+
+public interface ISettingsSingleton
 {
-    public interface ISettingsSingleton
-    {
-        ISynthesisGuiSettings Gui { get; }
-        IPipelineSettings Pipeline { get; }
-    }
+    ISynthesisGuiSettings Gui { get; }
+    IPipelineSettings Pipeline { get; }
+}
 
-    public class SettingsSingleton : ISettingsSingleton
-    {
-        public ISynthesisGuiSettings Gui { get; }
-        public IPipelineSettings Pipeline { get; }
+public class SettingsSingleton : ISettingsSingleton
+{
+    public ISynthesisGuiSettings Gui { get; }
+    public IPipelineSettings Pipeline { get; }
 
-        public SettingsSingleton(
-            IFileSystem fileSystem,
-            IGuiSettingsPath guiPaths,
-            IGuiSettingsImporter guiSettingsImporter,
-            IPipelineSettingsImporter pipelineSettingsImporter,
-            IPipelineSettingsPath paths)
-        {
-            ISynthesisGuiSettings? guiSettings = null;
-            IPipelineSettings? pipeSettings = null;
-            Task.WhenAll(
-                Task.Run(async () =>
+    public SettingsSingleton(
+        IFileSystem fileSystem,
+        IGuiSettingsPath guiPaths,
+        IGuiSettingsImporter guiSettingsImporter,
+        IPipelineSettingsImporter pipelineSettingsImporter,
+        IPipelineSettingsPath paths)
+    {
+        ISynthesisGuiSettings? guiSettings = null;
+        IPipelineSettings? pipeSettings = null;
+        Task.WhenAll(
+            Task.Run(async () =>
+            {
+                if (fileSystem.File.Exists(guiPaths.Path))
                 {
-                    if (fileSystem.File.Exists(guiPaths.Path))
-                    {
-                        guiSettings = guiSettingsImporter.Import(guiPaths.Path);
-                    }
-                }),
-                Task.Run(async () =>
+                    guiSettings = guiSettingsImporter.Import(guiPaths.Path);
+                }
+            }),
+            Task.Run(async () =>
+            {
+                if (fileSystem.File.Exists(paths.Path))
                 {
-                    if (fileSystem.File.Exists(paths.Path))
-                    {
-                        pipeSettings = pipelineSettingsImporter.Import(paths.Path);
-                    }
-                })
-            ).Wait();
-            Gui = guiSettings ?? new SynthesisGuiSettings();
-            Pipeline = pipeSettings ?? new PipelineSettings();
-        }
+                    pipeSettings = pipelineSettingsImporter.Import(paths.Path);
+                }
+            })
+        ).Wait();
+        Gui = guiSettings ?? new SynthesisGuiSettings();
+        Pipeline = pipeSettings ?? new PipelineSettings();
     }
+}
 
-    public class SettingsLoader : IStartupTask
+public class SettingsLoader : IStartupTask
+{
+    private readonly Lazy<ISettingsSingleton> _settings;
+
+    public SettingsLoader(
+        Lazy<ISettingsSingleton> settings)
     {
-        private readonly Lazy<ISettingsSingleton> _settings;
-
-        public SettingsLoader(
-            Lazy<ISettingsSingleton> settings)
-        {
-            _settings = settings;
-        }
+        _settings = settings;
+    }
         
-        public void Start()
-        {
-            _settings.Value.GetType();
-        }
+    public void Start()
+    {
+        _settings.Value.GetType();
     }
 }

@@ -7,62 +7,61 @@ using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.Execution.Running.Cli
+namespace Synthesis.Bethesda.Execution.Running.Cli;
+
+public interface IPatcherSettingsToRunnerFactory
 {
-    public interface IPatcherSettingsToRunnerFactory
+    IPatcherRun Convert(PatcherSettings patcherSettings);
+}
+
+public class PatcherSettingsToRunnerFactory : IPatcherSettingsToRunnerFactory
+{
+    private readonly ILifetimeScope _scope;
+
+    public PatcherSettingsToRunnerFactory(ILifetimeScope scope)
     {
-        IPatcherRun Convert(PatcherSettings patcherSettings);
+        _scope = scope;
     }
-
-    public class PatcherSettingsToRunnerFactory : IPatcherSettingsToRunnerFactory
-    {
-        private readonly ILifetimeScope _scope;
-
-        public PatcherSettingsToRunnerFactory(ILifetimeScope scope)
-        {
-            _scope = scope;
-        }
         
-        public IPatcherRun Convert(PatcherSettings patcherSettings)
+    public IPatcherRun Convert(PatcherSettings patcherSettings)
+    {
+        switch (patcherSettings)
         {
-            switch (patcherSettings)
+            case CliPatcherSettings cliPatcherSettings:
             {
-                case CliPatcherSettings cliPatcherSettings:
+                var scope = _scope.BeginLifetimeScope(c =>
                 {
-                    var scope = _scope.BeginLifetimeScope(c =>
-                    {
-                        c.RegisterModule<PatcherModule>();
-                        c.RegisterInstance(cliPatcherSettings)
-                            .AsSelf()
-                            .AsImplementedInterfaces();
-                    });
-                    return scope.Resolve<ICliPatcherRun>();
-                }
-                case GithubPatcherSettings githubPatcherSettings:
-                {
-                    var scope = _scope.BeginLifetimeScope(c =>
-                    {
-                        c.RegisterModule<GitPatcherModule>();
-                        c.RegisterInstance(githubPatcherSettings)
-                            .AsSelf()
-                            .AsImplementedInterfaces();
-                    });
-                    return scope.Resolve<IGitPatcherRun>();
-                }
-                case SolutionPatcherSettings solutionPatcherSettings:
-                {
-                    var scope = _scope.BeginLifetimeScope(c =>
-                    {
-                        c.RegisterModule<SolutionPatcherModule>();
-                        c.RegisterInstance(solutionPatcherSettings)
-                            .AsSelf()
-                            .AsImplementedInterfaces();
-                    });
-                    return scope.Resolve<ISolutionPatcherRun>();
-                }
-                default:
-                    throw new NotImplementedException();
+                    c.RegisterModule<PatcherModule>();
+                    c.RegisterInstance(cliPatcherSettings)
+                        .AsSelf()
+                        .AsImplementedInterfaces();
+                });
+                return scope.Resolve<ICliPatcherRun>();
             }
+            case GithubPatcherSettings githubPatcherSettings:
+            {
+                var scope = _scope.BeginLifetimeScope(c =>
+                {
+                    c.RegisterModule<GitPatcherModule>();
+                    c.RegisterInstance(githubPatcherSettings)
+                        .AsSelf()
+                        .AsImplementedInterfaces();
+                });
+                return scope.Resolve<IGitPatcherRun>();
+            }
+            case SolutionPatcherSettings solutionPatcherSettings:
+            {
+                var scope = _scope.BeginLifetimeScope(c =>
+                {
+                    c.RegisterModule<SolutionPatcherModule>();
+                    c.RegisterInstance(solutionPatcherSettings)
+                        .AsSelf()
+                        .AsImplementedInterfaces();
+                });
+                return scope.Resolve<ISolutionPatcherRun>();
+            }
+            default:
+                throw new NotImplementedException();
         }
     }
 }

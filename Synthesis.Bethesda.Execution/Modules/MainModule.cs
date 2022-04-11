@@ -17,54 +17,53 @@ using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.Execution.Versioning.Query;
 using Synthesis.Bethesda.Execution.WorkEngine;
 
-namespace Synthesis.Bethesda.Execution.Modules
+namespace Synthesis.Bethesda.Execution.Modules;
+
+public class MainModule : Module
 {
-    public class MainModule : Module
+    protected override void Load(ContainerBuilder builder)
     {
-        protected override void Load(ContainerBuilder builder)
-        {
-            builder.RegisterAssemblyTypes(typeof(IProcessRunner).Assembly)
-                .InNamespacesOf(
-                    typeof(IQueryNewestLibraryVersions),
-                    typeof(IProcessRunner),
-                    typeof(IWorkingDirectorySubPaths),
-                    typeof(IPatcherRun),
-                    typeof(IInstalledSdkFollower),
-                    typeof(IConsiderPrereleasePreference),
-                    typeof(IPatcherNameSanitizer),
-                    typeof(ILinesToReflectionConfigsParser),
-                    typeof(INugetErrorSolution),
-                    typeof(IRunProfileProvider),
-                    typeof(ExportGitAddFile),
-                    typeof(IProjectRunProcessStartInfoProvider),
-                    typeof(IBuild))
-                .NotInNamespacesOf(typeof(IInstalledSdkFollower))
-                .TypicalRegistrations()
-                .AsSelf();
+        builder.RegisterAssemblyTypes(typeof(IProcessRunner).Assembly)
+            .InNamespacesOf(
+                typeof(IQueryNewestLibraryVersions),
+                typeof(IProcessRunner),
+                typeof(IWorkingDirectorySubPaths),
+                typeof(IPatcherRun),
+                typeof(IInstalledSdkFollower),
+                typeof(IConsiderPrereleasePreference),
+                typeof(IPatcherNameSanitizer),
+                typeof(ILinesToReflectionConfigsParser),
+                typeof(INugetErrorSolution),
+                typeof(IRunProfileProvider),
+                typeof(ExportGitAddFile),
+                typeof(IProjectRunProcessStartInfoProvider),
+                typeof(IBuild))
+            .NotInNamespacesOf(typeof(IInstalledSdkFollower))
+            .TypicalRegistrations()
+            .AsSelf();
             
-            builder.RegisterAssemblyTypes(typeof(IWorkDropoff).Assembly)
-                .InNamespacesOf(
-                    typeof(IWorkDropoff))
-                .SingleInstance()
-                .AsImplementedInterfaces();
+        builder.RegisterAssemblyTypes(typeof(IWorkDropoff).Assembly)
+            .InNamespacesOf(
+                typeof(IWorkDropoff))
+            .SingleInstance()
+            .AsImplementedInterfaces();
             
-            builder.RegisterAssemblyTypes(typeof(IProcessRunner).Assembly)
-                .InNamespacesOf(
-                    typeof(IExecuteRun))
-                .InstancePerMatchingLifetimeScope(LifetimeScopes.RunNickname)
-                .TypicalRegistrations();
+        builder.RegisterAssemblyTypes(typeof(IProcessRunner).Assembly)
+            .InNamespacesOf(
+                typeof(IExecuteRun))
+            .InstancePerMatchingLifetimeScope(LifetimeScopes.RunNickname)
+            .TypicalRegistrations();
             
-            builder.RegisterAssemblyTypes(typeof(IProcessRunner).Assembly)
-                .InNamespacesOf(
-                    typeof(IInstalledSdkFollower))
-                .SingleInstance()
-                .AsMatchingInterface();
+        builder.RegisterAssemblyTypes(typeof(IProcessRunner).Assembly)
+            .InNamespacesOf(
+                typeof(IInstalledSdkFollower))
+            .SingleInstance()
+            .AsMatchingInterface();
             
-            builder.RegisterAssemblyTypes(typeof(IProcessRunner).Assembly)
-                .InNamespacesOf(
-                    typeof(ICheckOrCloneRepo))
-                .SingleInstance()
-                .AsMatchingInterface();
-        }
+        builder.RegisterAssemblyTypes(typeof(IProcessRunner).Assembly)
+            .InNamespacesOf(
+                typeof(ICheckOrCloneRepo))
+            .SingleInstance()
+            .AsMatchingInterface();
     }
 }

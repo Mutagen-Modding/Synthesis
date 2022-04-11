@@ -13,16 +13,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Synthesis.Bethesda.GUI.Views
+namespace Synthesis.Bethesda.GUI.Views;
+
+/// <summary>
+/// Interaction logic for GroupAddPatchersHelpView.xaml
+/// </summary>
+public partial class GroupAddPatchersHelpView : UserControl
 {
-    /// <summary>
-    /// Interaction logic for GroupAddPatchersHelpView.xaml
-    /// </summary>
-    public partial class GroupAddPatchersHelpView : UserControl
+    public GroupAddPatchersHelpView()
     {
-        public GroupAddPatchersHelpView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

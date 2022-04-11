@@ -1,23 +1,22 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
-{
-    public interface IShouldFetchIfMissing
-    {
-        bool Should(GitPatcherVersioning patcherVersioning);
-    }
+namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner;
 
-    [ExcludeFromCodeCoverage]
-    public class ShouldFetchIfMissing : IShouldFetchIfMissing
+public interface IShouldFetchIfMissing
+{
+    bool Should(GitPatcherVersioning patcherVersioning);
+}
+
+[ExcludeFromCodeCoverage]
+public class ShouldFetchIfMissing : IShouldFetchIfMissing
+{
+    public bool Should(GitPatcherVersioning patcherVersioning)
     {
-        public bool Should(GitPatcherVersioning patcherVersioning)
+        return patcherVersioning.Versioning switch
         {
-            return patcherVersioning.Versioning switch
-            {
-                PatcherVersioningEnum.Commit => true,
-                _ => false
-            };
-        }
+            PatcherVersioningEnum.Commit => true,
+            _ => false
+        };
     }
 }

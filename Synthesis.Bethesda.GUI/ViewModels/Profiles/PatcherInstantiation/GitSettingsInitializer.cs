@@ -7,54 +7,53 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
+
+public interface IGitSettingsInitializer
 {
-    public interface IGitSettingsInitializer
+    GithubPatcherSettings Get(GithubPatcherSettings? settings);
+}
+
+public class GitSettingsInitializer : IGitSettingsInitializer
+{
+    private readonly IProfilePatcherEnumerable _patchersList;
+
+    public GitSettingsInitializer(
+        IProfilePatcherEnumerable patchersList)
     {
-        GithubPatcherSettings Get(GithubPatcherSettings? settings);
+        _patchersList = patchersList;
     }
-
-    public class GitSettingsInitializer : IGitSettingsInitializer
+        
+    public GithubPatcherSettings Get(GithubPatcherSettings? settings)
     {
-        private readonly IProfilePatcherEnumerable _patchersList;
-
-        public GitSettingsInitializer(
-            IProfilePatcherEnumerable patchersList)
-        {
-            _patchersList = patchersList;
-        }
+        settings ??= new GithubPatcherSettings();
+        settings.ID = string.IsNullOrWhiteSpace(settings.ID) ? GetNewId() : settings.ID;
+        return settings;
+    }
         
-        public GithubPatcherSettings Get(GithubPatcherSettings? settings)
+    private string GetNewId()
+    {
+        bool IsValid(string id)
         {
-            settings ??= new GithubPatcherSettings();
-            settings.ID = string.IsNullOrWhiteSpace(settings.ID) ? GetNewId() : settings.ID;
-            return settings;
-        }
-        
-        private string GetNewId()
-        {
-            bool IsValid(string id)
+            foreach (var patcher in _patchersList.Patchers.WhereCastable<PatcherVm, GitPatcherVm>())
             {
-                foreach (var patcher in _patchersList.Patchers.WhereCastable<PatcherVm, GitPatcherVm>())
+                if (patcher.ID == id)
                 {
-                    if (patcher.ID == id)
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            for (int i = 0; i < 15; i++)
-            {
-                var attempt = Path.GetRandomFileName();
-                if (IsValid(attempt))
-                {
-                    return attempt;
+                    return false;
                 }
             }
-
-            throw new ArgumentException("Could not allocate a new profile");
+            return true;
         }
+
+        for (int i = 0; i < 15; i++)
+        {
+            var attempt = Path.GetRandomFileName();
+            if (IsValid(attempt))
+            {
+                return attempt;
+            }
+        }
+
+        throw new ArgumentException("Could not allocate a new profile");
     }
 }

@@ -6,46 +6,45 @@ using Autofac;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Running.Cli;
 
-namespace Synthesis.Bethesda.CLI
+namespace Synthesis.Bethesda.CLI;
+
+class Program
 {
-    class Program
+    static async Task<int> Main(string[] args)
     {
-        static async Task<int> Main(string[] args)
-        {
-            return await Parser.Default.ParseArguments(args, typeof(RunPatcherPipelineInstructions))
-                .MapResult(
-                    async (RunPatcherPipelineInstructions settings) =>
+        return await Parser.Default.ParseArguments(args, typeof(RunPatcherPipelineInstructions))
+            .MapResult(
+                async (RunPatcherPipelineInstructions settings) =>
+                {
+                    try
                     {
-                        try
+                        var builder = new ContainerBuilder();
+                        builder.RegisterModule(
+                            new MainModule(settings));
+                        var container = builder.Build();
+
+                        var profile = container.Resolve<IRunProfileProvider>();
+
+                        using var runScope = container.BeginLifetimeScope(c =>
                         {
-                            var builder = new ContainerBuilder();
-                            builder.RegisterModule(
-                                new MainModule(settings));
-                            var container = builder.Build();
-
-                            var profile = container.Resolve<IRunProfileProvider>();
-
-                            using var runScope = container.BeginLifetimeScope(c =>
-                            {
-                                c.RegisterInstance(profile.Get())
-                                    .AsImplementedInterfaces();
-                            });
+                            c.RegisterInstance(profile.Get())
+                                .AsImplementedInterfaces();
+                        });
                             
-                            await runScope
-                                .Resolve<IRunPatcherPipeline>()
-                                .Run(CancellationToken.None).ConfigureAwait(false);
-                        }
-                        catch (Exception ex)
-                        {
-                            System.Console.Error.WriteLine(ex);
-                            return -1;
-                        }
-                        return 0;
-                    },
-                    async _ =>
+                        await runScope
+                            .Resolve<IRunPatcherPipeline>()
+                            .Run(CancellationToken.None).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
                     {
+                        System.Console.Error.WriteLine(ex);
                         return -1;
-                    }).ConfigureAwait(false);
-        }
+                    }
+                    return 0;
+                },
+                async _ =>
+                {
+                    return -1;
+                }).ConfigureAwait(false);
     }
 }

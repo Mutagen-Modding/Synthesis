@@ -1,110 +1,109 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Synthesis.Bethesda.Execution.WorkEngine
+namespace Synthesis.Bethesda.Execution.WorkEngine;
+
+public interface IToDo
 {
-    public interface IToDo
-    {
-        bool IsAsync { get; }
-        public void Do();
-        public Task DoAsync();
-    }
+    bool IsAsync { get; }
+    public void Do();
+    public Task DoAsync();
+}
     
-    public class ToDo : IToDo
+public class ToDo : IToDo
+{
+    public readonly Action? Action;
+    public readonly Func<Task>? Task;
+    public readonly TaskCompletionSource? Complete;
+
+    public bool IsAsync => Task != null;
+
+    public ToDo(Action? action, TaskCompletionSource? tcs)
     {
-        public readonly Action? Action;
-        public readonly Func<Task>? Task;
-        public readonly TaskCompletionSource? Complete;
+        Action = action;
+        Complete = tcs;
+        Task = null;
+    }
 
-        public bool IsAsync => Task != null;
+    public ToDo(Func<Task>? action, TaskCompletionSource? tcs)
+    {
+        Action = null;
+        Complete = tcs;
+        Task = action;
+    }
 
-        public ToDo(Action? action, TaskCompletionSource? tcs)
+    public void Do()
+    {
+        try
         {
-            Action = action;
-            Complete = tcs;
-            Task = null;
+            Action!();
+            Complete?.SetResult();
         }
-
-        public ToDo(Func<Task>? action, TaskCompletionSource? tcs)
+        catch (Exception e)
         {
-            Action = null;
-            Complete = tcs;
-            Task = action;
-        }
-
-        public void Do()
-        {
-            try
-            {
-                Action!();
-                Complete?.SetResult();
-            }
-            catch (Exception e)
-            {
-                Complete?.SetException(e);
-            }
-        }
-
-        public async Task DoAsync()
-        {
-            try
-            {
-                await Task!().ConfigureAwait(false);
-                Complete?.SetResult();
-            }
-            catch (Exception e)
-            {
-                Complete?.SetException(e);
-            }
+            Complete?.SetException(e);
         }
     }
-    
-    public class ToDo<T> : IToDo
+
+    public async Task DoAsync()
     {
-        public readonly Func<T>? Action;
-        public readonly Func<Task<T>>? Task;
-        public readonly TaskCompletionSource<T>? Complete;
-
-        public bool IsAsync => Task != null;
-
-        public ToDo(Func<T>? action, TaskCompletionSource<T>? tcs)
+        try
         {
-            Action = action;
-            Complete = tcs;
-            Task = null;
+            await Task!().ConfigureAwait(false);
+            Complete?.SetResult();
         }
-
-        public ToDo(Func<Task<T>>? action, TaskCompletionSource<T>? tcs)
+        catch (Exception e)
         {
-            Action = null;
-            Complete = tcs;
-            Task = action;
+            Complete?.SetException(e);
         }
+    }
+}
+    
+public class ToDo<T> : IToDo
+{
+    public readonly Func<T>? Action;
+    public readonly Func<Task<T>>? Task;
+    public readonly TaskCompletionSource<T>? Complete;
 
-        public void Do()
+    public bool IsAsync => Task != null;
+
+    public ToDo(Func<T>? action, TaskCompletionSource<T>? tcs)
+    {
+        Action = action;
+        Complete = tcs;
+        Task = null;
+    }
+
+    public ToDo(Func<Task<T>>? action, TaskCompletionSource<T>? tcs)
+    {
+        Action = null;
+        Complete = tcs;
+        Task = action;
+    }
+
+    public void Do()
+    {
+        try
         {
-            try
-            {
-                var ret = Action!();
-                Complete?.SetResult(ret);
-            }
-            catch (Exception e)
-            {
-                Complete?.SetException(e);
-            }
+            var ret = Action!();
+            Complete?.SetResult(ret);
         }
-
-        public async Task DoAsync()
+        catch (Exception e)
         {
-            try
-            {
-                var ret = await Task!().ConfigureAwait(false);
-                Complete?.SetResult(ret);
-            }
-            catch (Exception e)
-            {
-                Complete?.SetException(e);
-            }
+            Complete?.SetException(e);
+        }
+    }
+
+    public async Task DoAsync()
+    {
+        try
+        {
+            var ret = await Task!().ConfigureAwait(false);
+            Complete?.SetResult(ret);
+        }
+        catch (Exception e)
+        {
+            Complete?.SetException(e);
         }
     }
 }

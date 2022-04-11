@@ -4,43 +4,42 @@ using System.Linq;
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver
+namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver;
+
+[ExcludeFromCodeCoverage]
+public record DriverPaths(FilePath SolutionPath, List<string> AvailableProjects);
+
+public interface IGetDriverPaths
 {
-    [ExcludeFromCodeCoverage]
-    public record DriverPaths(FilePath SolutionPath, List<string> AvailableProjects);
+    GetResponse<DriverPaths> Get();
+}
 
-    public interface IGetDriverPaths
+public class GetDriverPaths : IGetDriverPaths
+{
+    public ISolutionFileLocator SolutionFileLocator { get; }
+    public IDriverRepoDirectoryProvider DriverRepoDirectoryProvider { get; }
+    public IAvailableProjectsRetriever AvailableProjectsRetriever { get; }
+
+    public GetDriverPaths(
+        ISolutionFileLocator solutionFileLocator,
+        IDriverRepoDirectoryProvider driverRepoDirectoryProvider,
+        IAvailableProjectsRetriever availableProjectsRetriever)
     {
-        GetResponse<DriverPaths> Get();
+        SolutionFileLocator = solutionFileLocator;
+        DriverRepoDirectoryProvider = driverRepoDirectoryProvider;
+        AvailableProjectsRetriever = availableProjectsRetriever;
     }
-
-    public class GetDriverPaths : IGetDriverPaths
-    {
-        public ISolutionFileLocator SolutionFileLocator { get; }
-        public IDriverRepoDirectoryProvider DriverRepoDirectoryProvider { get; }
-        public IAvailableProjectsRetriever AvailableProjectsRetriever { get; }
-
-        public GetDriverPaths(
-            ISolutionFileLocator solutionFileLocator,
-            IDriverRepoDirectoryProvider driverRepoDirectoryProvider,
-            IAvailableProjectsRetriever availableProjectsRetriever)
-        {
-            SolutionFileLocator = solutionFileLocator;
-            DriverRepoDirectoryProvider = driverRepoDirectoryProvider;
-            AvailableProjectsRetriever = availableProjectsRetriever;
-        }
         
-        public GetResponse<DriverPaths> Get()
+    public GetResponse<DriverPaths> Get()
+    {
+        var slnPath = SolutionFileLocator.GetPath(DriverRepoDirectoryProvider.Path);
+        if (slnPath == null)
         {
-            var slnPath = SolutionFileLocator.GetPath(DriverRepoDirectoryProvider.Path);
-            if (slnPath == null)
-            {
-                return GetResponse<DriverPaths>.Fail("Could not locate solution to run.");
-            }
-
-            var availableProjs = AvailableProjectsRetriever.Get(slnPath.Value).ToList();
-
-            return new DriverPaths(slnPath.Value, availableProjs);
+            return GetResponse<DriverPaths>.Fail("Could not locate solution to run.");
         }
+
+        var availableProjs = AvailableProjectsRetriever.Get(slnPath.Value).ToList();
+
+        return new DriverPaths(slnPath.Value, availableProjs);
     }
 }

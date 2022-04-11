@@ -11,16 +11,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Synthesis.Bethesda.GUI.Views
+namespace Synthesis.Bethesda.GUI.Views;
+
+/// <summary>
+/// Interaction logic for PatcherVersioningView.xaml
+/// </summary>
+public partial class PatcherVersioningView : UserControl
 {
-    /// <summary>
-    /// Interaction logic for PatcherVersioningView.xaml
-    /// </summary>
-    public partial class PatcherVersioningView : UserControl
+    public PatcherVersioningView()
     {
-        public PatcherVersioningView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

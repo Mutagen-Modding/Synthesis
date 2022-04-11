@@ -4,34 +4,33 @@ using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
+namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner;
+
+public class EnsureSourcePathExistsTests
 {
-    public class EnsureSourcePathExistsTests
+    [Theory, SynthAutoData]
+    public void SourcePathNullDoesNotThrow(
+        EnsureSourcePathExists sut)
     {
-        [Theory, SynthAutoData]
-        public void SourcePathNullDoesNotThrow(
-            EnsureSourcePathExists sut)
-        {
-            sut.Ensure(null);
-        }
+        sut.Ensure(null);
+    }
 
-        [Theory, SynthAutoData]
-        public void HasValueButDoesNotExistThrows(
-            ModPath missingPath,
-            EnsureSourcePathExists sut)
+    [Theory, SynthAutoData]
+    public void HasValueButDoesNotExistThrows(
+        ModPath missingPath,
+        EnsureSourcePathExists sut)
+    {
+        Assert.Throws<FileNotFoundException>(() =>
         {
-            Assert.Throws<FileNotFoundException>(() =>
-            {
-                sut.Ensure(missingPath);
-            });
-        }
+            sut.Ensure(missingPath);
+        });
+    }
 
-        [Theory, SynthAutoData]
-        public void HasValueAndExistDoesNotThrow(
-            ModPath existingPath,
-            EnsureSourcePathExists sut)
-        {
-            sut.Ensure(existingPath);
-        }
+    [Theory, SynthAutoData]
+    public void HasValueAndExistDoesNotThrow(
+        ModPath existingPath,
+        EnsureSourcePathExists sut)
+    {
+        sut.Ensure(existingPath);
     }
 }

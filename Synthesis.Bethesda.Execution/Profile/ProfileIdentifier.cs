@@ -2,10 +2,9 @@
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 
-namespace Synthesis.Bethesda.Execution.Profile
+namespace Synthesis.Bethesda.Execution.Profile;
+
+public interface IProfileIdentifier : IGameReleaseContext
 {
-    public interface IProfileIdentifier : IGameReleaseContext
-    {
-        string ID { get; }
-    }
+    string ID { get; }
 }

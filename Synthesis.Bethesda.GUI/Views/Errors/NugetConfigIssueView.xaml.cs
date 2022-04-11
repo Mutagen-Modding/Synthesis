@@ -4,28 +4,27 @@ using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
 
-namespace Synthesis.Bethesda.GUI.Views
-{
-    public class NugetConfigIssueViewBase : NoggogUserControl<NugetConfigErrorVm> { }
+namespace Synthesis.Bethesda.GUI.Views;
 
-    public partial class NugetConfigIssueView : NugetConfigIssueViewBase
+public class NugetConfigIssueViewBase : NoggogUserControl<NugetConfigErrorVm> { }
+
+public partial class NugetConfigIssueView : NugetConfigIssueViewBase
+{
+    public NugetConfigIssueView()
     {
-        public NugetConfigIssueView()
+        InitializeComponent();
+        this.WhenActivated(dispose =>
         {
-            InitializeComponent();
-            this.WhenActivated(dispose =>
-            {
-                this.WhenAnyFallback(x => x.ViewModel!.Error!.RunFix)
-                    .BindTo(this, x => x.AttemptFixButton.Command)
-                    .DisposeWith(dispose);
-                this.WhenAnyFallback(x => x.ViewModel!.Error!.ErrorText)
-                    .BindTo(this, x => x.CustomTextBlock.Text)
-                    .DisposeWith(dispose);
-                this.WhenAnyFallback(x => x.ViewModel!.NugetConfigPath)
-                    .Select(x => x.Path)
-                    .BindTo(this, x => x.ConfigPathBlock.Text)
-                    .DisposeWith(dispose);
-            });
-        }
+            this.WhenAnyFallback(x => x.ViewModel!.Error!.RunFix)
+                .BindTo(this, x => x.AttemptFixButton.Command)
+                .DisposeWith(dispose);
+            this.WhenAnyFallback(x => x.ViewModel!.Error!.ErrorText)
+                .BindTo(this, x => x.CustomTextBlock.Text)
+                .DisposeWith(dispose);
+            this.WhenAnyFallback(x => x.ViewModel!.NugetConfigPath)
+                .Select(x => x.Path)
+                .BindTo(this, x => x.ConfigPathBlock.Text)
+                .DisposeWith(dispose);
+        });
     }
 }

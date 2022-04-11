@@ -3,17 +3,16 @@ using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Synthesis.Bethesda.Execution.Profile;
 
-namespace Synthesis.Bethesda.CLI.Services
+namespace Synthesis.Bethesda.CLI.Services;
+
+public class ProfileLoadOrderProvider : IProfileLoadOrderProvider
 {
-    public class ProfileLoadOrderProvider : IProfileLoadOrderProvider
+    private readonly ILoadOrderListingsProvider _listingsProvider;
+
+    public ProfileLoadOrderProvider(ILoadOrderListingsProvider listingsProvider)
     {
-        private readonly ILoadOrderListingsProvider _listingsProvider;
-
-        public ProfileLoadOrderProvider(ILoadOrderListingsProvider listingsProvider)
-        {
-            _listingsProvider = listingsProvider;
-        }
-
-        public IEnumerable<IModListingGetter> Get() => _listingsProvider.Get();
+        _listingsProvider = listingsProvider;
     }
+
+    public IEnumerable<IModListingGetter> Get() => _listingsProvider.Get();
 }

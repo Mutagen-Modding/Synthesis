@@ -4,46 +4,45 @@ using System;
 using System.Collections.Generic;
 using Serilog;
 
-namespace Mutagen.Bethesda.Synthesis.WPF
+namespace Mutagen.Bethesda.Synthesis.WPF;
+
+public class ReflectionSettingsBundleVm : ViewModel
 {
-    public class ReflectionSettingsBundleVm : ViewModel
+    private readonly ILogger? _logger;
+    private readonly TempFolder? _tempFolder;
+
+    public ICollection<ReflectionSettingsVM>? Settings { get; private set; }
+
+    public ReflectionSettingsBundleVm(
+        ICollection<ReflectionSettingsVM> settings,
+        TempFolder tempFolder,
+        ILogger logger)
     {
-        private readonly ILogger? _logger;
-        private readonly TempFolder? _tempFolder;
+        _tempFolder = tempFolder;
+        _logger = logger;
+        Settings = settings;
+    }
 
-        public ICollection<ReflectionSettingsVM>? Settings { get; private set; }
+    public ReflectionSettingsBundleVm()
+    {
+    }
 
-        public ReflectionSettingsBundleVm(
-            ICollection<ReflectionSettingsVM> settings,
-            TempFolder tempFolder,
-            ILogger logger)
+    public override void Dispose()
+    {
+        base.Dispose();
+        Settings = null;
+
+        if (_tempFolder != null)
         {
-            _tempFolder = tempFolder;
-            _logger = logger;
-            Settings = settings;
-        }
-
-        public ReflectionSettingsBundleVm()
-        {
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-            Settings = null;
-
-            if (_tempFolder != null)
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            try
             {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                try
-                {
-                    _tempFolder.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    _logger?.Error(ex, "Could not clean up reflection settings");
-                }
+                _tempFolder.Dispose();
+            }
+            catch (Exception ex)
+            {
+                _logger?.Error(ex, "Could not clean up reflection settings");
             }
         }
     }

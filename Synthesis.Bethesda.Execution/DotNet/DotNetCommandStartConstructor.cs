@@ -1,29 +1,28 @@
 ﻿using System.Diagnostics;
 using Noggog;
 
-namespace Synthesis.Bethesda.Execution.DotNet
+namespace Synthesis.Bethesda.Execution.DotNet;
+
+public interface IDotNetCommandStartConstructor
 {
-    public interface IDotNetCommandStartConstructor
+    ProcessStartInfo Construct(string command, FilePath path, params string?[] args);
+}
+
+public class DotNetCommandStartConstructor : IDotNetCommandStartConstructor
+{
+    public IDotNetCommandPathProvider DotNetPathProvider { get; }
+    public ICommandStringConstructor Constructor { get; }
+
+    public DotNetCommandStartConstructor(
+        IDotNetCommandPathProvider dotNetPathProvider,
+        ICommandStringConstructor constructor)
     {
-        ProcessStartInfo Construct(string command, FilePath path, params string?[] args);
+        DotNetPathProvider = dotNetPathProvider;
+        Constructor = constructor;
     }
 
-    public class DotNetCommandStartConstructor : IDotNetCommandStartConstructor
+    public ProcessStartInfo Construct(string command, FilePath path, params string?[] args)
     {
-        public IDotNetCommandPathProvider DotNetPathProvider { get; }
-        public ICommandStringConstructor Constructor { get; }
-
-        public DotNetCommandStartConstructor(
-            IDotNetCommandPathProvider dotNetPathProvider,
-            ICommandStringConstructor constructor)
-        {
-            DotNetPathProvider = dotNetPathProvider;
-            Constructor = constructor;
-        }
-
-        public ProcessStartInfo Construct(string command, FilePath path, params string?[] args)
-        {
-            return new ProcessStartInfo(DotNetPathProvider.Path, Constructor.Get(command, path, args));
-        }
+        return new ProcessStartInfo(DotNetPathProvider.Path, Constructor.Get(command, path, args));
     }
 }

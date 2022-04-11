@@ -3,27 +3,26 @@ using System.IO.Abstractions;
 using System.Linq;
 using Noggog;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Solution
+namespace Synthesis.Bethesda.Execution.Patchers.Solution;
+
+public interface ISolutionFileLocator
 {
-    public interface ISolutionFileLocator
+    FilePath? GetPath(DirectoryPath repositoryPath);
+}
+
+public class SolutionFileLocator : ISolutionFileLocator
+{
+    private readonly IFileSystem _fs;
+
+    public SolutionFileLocator(IFileSystem fs)
     {
-        FilePath? GetPath(DirectoryPath repositoryPath);
+        _fs = fs;
     }
-
-    public class SolutionFileLocator : ISolutionFileLocator
-    {
-        private readonly IFileSystem _fs;
-
-        public SolutionFileLocator(IFileSystem fs)
-        {
-            _fs = fs;
-        }
         
-        public FilePath? GetPath(DirectoryPath repositoryPath)
-        {
-            return _fs.Directory.EnumerateFiles(repositoryPath.Path, "*.sln")
-                .Select<string, FilePath?>(x => new FilePath(x))
-                .FirstOrDefault();
-        }
+    public FilePath? GetPath(DirectoryPath repositoryPath)
+    {
+        return _fs.Directory.EnumerateFiles(repositoryPath.Path, "*.sln")
+            .Select<string, FilePath?>(x => new FilePath(x))
+            .FirstOrDefault();
     }
 }

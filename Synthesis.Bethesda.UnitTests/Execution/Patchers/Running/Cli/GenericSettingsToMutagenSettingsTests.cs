@@ -5,19 +5,18 @@ using Synthesis.Bethesda.Execution.Patchers.Running.Cli;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Running.Cli
+namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Running.Cli;
+
+public class GenericSettingsToMutagenSettingsTests
 {
-    public class GenericSettingsToMutagenSettingsTests
+    [Theory, SynthAutoData]
+    public void SetsExtraDataFolder(
+        RunSynthesisPatcher settings,
+        Language language,
+        GenericSettingsToMutagenSettings sut)
     {
-        [Theory, SynthAutoData]
-        public void SetsExtraDataFolder(
-            RunSynthesisPatcher settings,
-            Language language,
-            GenericSettingsToMutagenSettings sut)
-        {
-            settings.TargetLanguage = language.ToString();
-            sut.Convert(settings)
-                .ExtraDataFolder.Should().Be(sut.ExtraDataPathProvider.Path);
-        }
+        settings.TargetLanguage = language.ToString();
+        sut.Convert(settings)
+            .ExtraDataFolder.Should().Be(sut.ExtraDataPathProvider.Path);
     }
 }

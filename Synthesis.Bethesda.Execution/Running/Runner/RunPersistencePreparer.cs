@@ -3,37 +3,36 @@ using System.IO.Abstractions;
 using Mutagen.Bethesda.Plugins.Allocators;
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.Execution.Running.Runner
+namespace Synthesis.Bethesda.Execution.Running.Runner;
+
+public interface IRunPersistencePreparer
 {
-    public interface IRunPersistencePreparer
+    string? Prepare(PersistenceMode persistenceMode, string? persistencePath);
+}
+
+public class RunPersistencePreparer : IRunPersistencePreparer
+{
+    private readonly IFileSystem _fileSystem;
+
+    public RunPersistencePreparer(
+        IFileSystem fileSystem)
     {
-        string? Prepare(PersistenceMode persistenceMode, string? persistencePath);
+        _fileSystem = fileSystem;
     }
-
-    public class RunPersistencePreparer : IRunPersistencePreparer
-    {
-        private readonly IFileSystem _fileSystem;
-
-        public RunPersistencePreparer(
-            IFileSystem fileSystem)
-        {
-            _fileSystem = fileSystem;
-        }
         
-        public string? Prepare(PersistenceMode persistenceMode, string? persistencePath)
+    public string? Prepare(PersistenceMode persistenceMode, string? persistencePath)
+    {
+        switch (persistenceMode)
         {
-            switch (persistenceMode)
-            {
-                case PersistenceMode.None:
-                    return null;
-                case PersistenceMode.Text:
-                    TextFileSharedFormKeyAllocator.Initialize(persistencePath ?? throw new ArgumentNullException("Persistence mode specified, but no path provided"), _fileSystem);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            return persistencePath;
+            case PersistenceMode.None:
+                return null;
+            case PersistenceMode.Text:
+                TextFileSharedFormKeyAllocator.Initialize(persistencePath ?? throw new ArgumentNullException("Persistence mode specified, but no path provided"), _fileSystem);
+                break;
+            default:
+                throw new NotImplementedException();
         }
+
+        return persistencePath;
     }
 }

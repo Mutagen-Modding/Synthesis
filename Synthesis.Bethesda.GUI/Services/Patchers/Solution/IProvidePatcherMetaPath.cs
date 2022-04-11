@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
+namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution;
+
+public interface IProvidePatcherMetaPath
 {
-    public interface IProvidePatcherMetaPath
-    {
-        IObservable<string> Path { get; }
-    }
+    IObservable<string> Path { get; }
 }

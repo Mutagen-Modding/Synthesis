@@ -1,17 +1,16 @@
 ﻿using CommandLine;
 
-namespace Synthesis.Bethesda.Execution.Utility
-{
-    public interface IFormatCommandLine
-    {
-        string Format<T>(T obj);
-    }
+namespace Synthesis.Bethesda.Execution.Utility;
 
-    public class FormatCommandLine : IFormatCommandLine
+public interface IFormatCommandLine
+{
+    string Format<T>(T obj);
+}
+
+public class FormatCommandLine : IFormatCommandLine
+{
+    public string Format<T>(T obj)
     {
-        public string Format<T>(T obj)
-        {
-            return Parser.Default.FormatCommandLine<T>(obj);
-        }
+        return Parser.Default.FormatCommandLine<T>(obj);
     }
 }

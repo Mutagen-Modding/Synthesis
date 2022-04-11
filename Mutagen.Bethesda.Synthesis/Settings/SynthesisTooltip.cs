@@ -1,12 +1,11 @@
 using Mutagen.Bethesda.WPF.Reflection.Attributes;
 
-namespace Mutagen.Bethesda.Synthesis.Settings
+namespace Mutagen.Bethesda.Synthesis.Settings;
+
+public class SynthesisTooltip : Tooltip
 {
-    public class SynthesisTooltip : Tooltip
+    public SynthesisTooltip(string text)
+        : base(text)
     {
-        public SynthesisTooltip(string text)
-            : base(text)
-        {
-        }
     }
 }

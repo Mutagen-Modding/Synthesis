@@ -1,9 +1,8 @@
-namespace Synthesis.Bethesda.Execution.Modules
+namespace Synthesis.Bethesda.Execution.Modules;
+
+public class LifetimeScopes
 {
-    public class LifetimeScopes
-    {
-        public const string ProfileNickname = "Profile";
-        public const string PatcherNickname = "Patcher";
-        public const string RunNickname = "Run";
-    }
+    public const string ProfileNickname = "Profile";
+    public const string PatcherNickname = "Patcher";
+    public const string RunNickname = "Run";
 }

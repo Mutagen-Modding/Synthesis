@@ -2,31 +2,30 @@
 using Noggog;
 using Synthesis.Bethesda.Execution.Commands;
 
-namespace Synthesis.Bethesda.Execution.Running.Cli.Settings
+namespace Synthesis.Bethesda.Execution.Running.Cli.Settings;
+
+public class DataFolderPathDecorator : IDataDirectoryProvider
 {
-    public class DataFolderPathDecorator : IDataDirectoryProvider
-    {
-        public IDataDirectoryProvider DataDirectoryProvider { get; }
-        public RunPatcherPipelineInstructions Instructions { get; }
+    public IDataDirectoryProvider DataDirectoryProvider { get; }
+    public RunPatcherPipelineInstructions Instructions { get; }
 
-        public DirectoryPath Path => GetPath();
+    public DirectoryPath Path => GetPath();
         
-        public DataFolderPathDecorator(
-            IDataDirectoryProvider dataDirectoryProvider,
-            RunPatcherPipelineInstructions instructions)
+    public DataFolderPathDecorator(
+        IDataDirectoryProvider dataDirectoryProvider,
+        RunPatcherPipelineInstructions instructions)
+    {
+        DataDirectoryProvider = dataDirectoryProvider;
+        Instructions = instructions;
+    }
+
+    private DirectoryPath GetPath()
+    {
+        if (Instructions.DataFolderPath != default(DirectoryPath))
         {
-            DataDirectoryProvider = dataDirectoryProvider;
-            Instructions = instructions;
+            return Instructions.DataFolderPath;
         }
 
-        private DirectoryPath GetPath()
-        {
-            if (Instructions.DataFolderPath != default(DirectoryPath))
-            {
-                return Instructions.DataFolderPath;
-            }
-
-            return DataDirectoryProvider.Path;
-        }
+        return DataDirectoryProvider.Path;
     }
 }

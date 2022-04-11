@@ -2,19 +2,18 @@
 using LibGit2Sharp;
 using Noggog;
 
-namespace Synthesis.Bethesda.Execution.GitRepository
-{
-    public interface ICheckLocalRepoIsValid
-    {
-        bool IsValidRepository([NotNullWhen(true)]DirectoryPath? dir);
-    }
+namespace Synthesis.Bethesda.Execution.GitRepository;
 
-    public class CheckLocalRepoIsValid : ICheckLocalRepoIsValid
+public interface ICheckLocalRepoIsValid
+{
+    bool IsValidRepository([NotNullWhen(true)]DirectoryPath? dir);
+}
+
+public class CheckLocalRepoIsValid : ICheckLocalRepoIsValid
+{
+    public bool IsValidRepository([NotNullWhen(true)]DirectoryPath? dir)
     {
-        public bool IsValidRepository([NotNullWhen(true)]DirectoryPath? dir)
-        {
-            if (dir == null) return false;
-            return Repository.IsValid(dir);
-        }
+        if (dir == null) return false;
+        return Repository.IsValid(dir);
     }
 }

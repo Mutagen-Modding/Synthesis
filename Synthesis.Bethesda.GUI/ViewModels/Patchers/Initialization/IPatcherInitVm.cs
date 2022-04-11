@@ -3,14 +3,13 @@ using System.Windows.Input;
 using Noggog;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
+
+public interface IPatcherInitVm : IDisposableDropoff
 {
-    public interface IPatcherInitVm : IDisposableDropoff
-    {
-        ICommand CompleteConfiguration { get; }
-        ICommand CancelConfiguration { get; }
-        ErrorResponse CanCompleteConfiguration { get; }
-        IAsyncEnumerable<PatcherVm> Construct();
-        void Cancel();
-    }
+    ICommand CompleteConfiguration { get; }
+    ICommand CancelConfiguration { get; }
+    ErrorResponse CanCompleteConfiguration { get; }
+    IAsyncEnumerable<PatcherVm> Construct();
+    void Cancel();
 }

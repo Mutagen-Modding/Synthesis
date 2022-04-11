@@ -6,45 +6,44 @@ using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Utility;
 using Path = System.IO.Path;
 
-namespace Synthesis.Bethesda.Execution.PatcherCommands
+namespace Synthesis.Bethesda.Execution.PatcherCommands;
+
+public interface ITemporaryLoadOrderProvider
 {
-    public interface ITemporaryLoadOrderProvider
+    ITempFile Get(IEnumerable<IModListingGetter> loadOrder);
+}
+
+public class TemporaryLoadOrderProvider : ITemporaryLoadOrderProvider
+{
+    public const string Folder = "TemporaryRuns";
+        
+    public ITempFileProvider TempFileProvider { get; }
+    public ILoadOrderWriter LoadOrderWriter { get; }
+    public IRandomFileNameProvider RandomFileNameProvider { get; }
+    public IWorkingDirectoryProvider Paths { get; }
+
+    public TemporaryLoadOrderProvider(
+        ITempFileProvider tempFileProvider,
+        ILoadOrderWriter loadOrderWriter,
+        IWorkingDirectoryProvider paths,
+        IRandomFileNameProvider randomFileNameProvider)
     {
-        ITempFile Get(IEnumerable<IModListingGetter> loadOrder);
+        TempFileProvider = tempFileProvider;
+        LoadOrderWriter = loadOrderWriter;
+        RandomFileNameProvider = randomFileNameProvider;
+        Paths = paths;
     }
-
-    public class TemporaryLoadOrderProvider : ITemporaryLoadOrderProvider
+        
+    public ITempFile Get(IEnumerable<IModListingGetter> loadOrder)
     {
-        public const string Folder = "TemporaryRuns";
-        
-        public ITempFileProvider TempFileProvider { get; }
-        public ILoadOrderWriter LoadOrderWriter { get; }
-        public IRandomFileNameProvider RandomFileNameProvider { get; }
-        public IWorkingDirectoryProvider Paths { get; }
+        var loadOrderFile = TempFileProvider.Create(
+            Path.Combine(Paths.WorkingDirectory, Folder, RandomFileNameProvider.Get()));
 
-        public TemporaryLoadOrderProvider(
-            ITempFileProvider tempFileProvider,
-            ILoadOrderWriter loadOrderWriter,
-            IWorkingDirectoryProvider paths,
-            IRandomFileNameProvider randomFileNameProvider)
-        {
-            TempFileProvider = tempFileProvider;
-            LoadOrderWriter = loadOrderWriter;
-            RandomFileNameProvider = randomFileNameProvider;
-            Paths = paths;
-        }
-        
-        public ITempFile Get(IEnumerable<IModListingGetter> loadOrder)
-        {
-            var loadOrderFile = TempFileProvider.Create(
-                Path.Combine(Paths.WorkingDirectory, Folder, RandomFileNameProvider.Get()));
+        LoadOrderWriter.Write(
+            loadOrderFile.File.Path,
+            loadOrder,
+            removeImplicitMods: true);
 
-            LoadOrderWriter.Write(
-                loadOrderFile.File.Path,
-                loadOrder,
-                removeImplicitMods: true);
-
-            return loadOrderFile;
-        }
+        return loadOrderFile;
     }
 }

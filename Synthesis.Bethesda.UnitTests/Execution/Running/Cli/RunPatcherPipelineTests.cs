@@ -13,52 +13,51 @@ using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli
+namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli;
+
+public class RunPatcherPipelineTests
 {
-    public class RunPatcherPipelineTests
+    [Theory, SynthAutoData]
+    public async Task PassesGetGroupRunnersToRun(
+        IGroupRun[] groupRuns,
+        CancellationToken cancel,
+        RunPatcherPipeline sut)
     {
-        [Theory, SynthAutoData]
-        public async Task PassesGetGroupRunnersToRun(
-            IGroupRun[] groupRuns,
-            CancellationToken cancel,
-            RunPatcherPipeline sut)
-        {
-            sut.GetGroupRunners.Get(cancel).ReturnsForAnyArgs(groupRuns);
-            await sut.Run(cancel);
-            await sut.ExecuteRun.Received(1).Run(
-                groupRuns, Arg.Any<CancellationToken>(), Arg.Any<DirectoryPath>(),
-                Arg.Any<RunParameters>(), Arg.Any<FilePath?>());
-        }
+        sut.GetGroupRunners.Get(cancel).ReturnsForAnyArgs(groupRuns);
+        await sut.Run(cancel);
+        await sut.ExecuteRun.Received(1).Run(
+            groupRuns, Arg.Any<CancellationToken>(), Arg.Any<DirectoryPath>(),
+            Arg.Any<RunParameters>(), Arg.Any<FilePath?>());
+    }
         
-        [Theory, SynthAutoData]
-        public async Task PassesTypicalSettings(
-            CancellationToken cancel,
-            RunPatcherPipeline sut)
-        {
-            sut.Instructions.PersistenceMode = PersistenceMode.None;
-            await sut.Run(cancel);
-            await sut.ExecuteRun.Received(1).Run(
-                Arg.Any<IGroupRun[]>(),
-                Arg.Any<CancellationToken>(),
-                outputDir: sut.Instructions.OutputDirectory,
-                runParameters: new RunParameters(
-                    sut.ProfileSettings.TargetLanguage,
-                    sut.ProfileSettings.Localize,
-                    sut.Instructions.PersistenceMode.Value,
-                    sut.Instructions.PersistencePath),
-                sourcePath: sut.Instructions.SourcePath);
-        }
+    [Theory, SynthAutoData]
+    public async Task PassesTypicalSettings(
+        CancellationToken cancel,
+        RunPatcherPipeline sut)
+    {
+        sut.Instructions.PersistenceMode = PersistenceMode.None;
+        await sut.Run(cancel);
+        await sut.ExecuteRun.Received(1).Run(
+            Arg.Any<IGroupRun[]>(),
+            Arg.Any<CancellationToken>(),
+            outputDir: sut.Instructions.OutputDirectory,
+            runParameters: new RunParameters(
+                sut.ProfileSettings.TargetLanguage,
+                sut.ProfileSettings.Localize,
+                sut.Instructions.PersistenceMode.Value,
+                sut.Instructions.PersistencePath),
+            sourcePath: sut.Instructions.SourcePath);
+    }
         
-        [Theory, SynthAutoData]
-        public async Task NullPersistenceModeFallsBackToNone(
-            CancellationToken cancel,
-            RunPatcherPipeline sut)
-        {
-            sut.Instructions.PersistenceMode = null;
-            await sut.Run(cancel);
-            await sut.ExecuteRun.Received(1).Run(
-                Arg.Any<IGroupRun[]>(), Arg.Any<CancellationToken>(), Arg.Any<DirectoryPath>(),
-                Arg.Any<RunParameters>(), Arg.Any<FilePath?>());
-        }
+    [Theory, SynthAutoData]
+    public async Task NullPersistenceModeFallsBackToNone(
+        CancellationToken cancel,
+        RunPatcherPipeline sut)
+    {
+        sut.Instructions.PersistenceMode = null;
+        await sut.Run(cancel);
+        await sut.ExecuteRun.Received(1).Run(
+            Arg.Any<IGroupRun[]>(), Arg.Any<CancellationToken>(), Arg.Any<DirectoryPath>(),
+            Arg.Any<RunParameters>(), Arg.Any<FilePath?>());
     }
 }

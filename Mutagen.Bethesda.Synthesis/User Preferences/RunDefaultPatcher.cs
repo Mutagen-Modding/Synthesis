@@ -1,22 +1,21 @@
 using Mutagen.Bethesda.Plugins;
 
-namespace Mutagen.Bethesda.Synthesis
+namespace Mutagen.Bethesda.Synthesis;
+
+public class RunDefaultPatcher
 {
-    public class RunDefaultPatcher
-    {
-        /// <summary>
-        /// ModKey to export to the data folder under
-        /// </summary>
-        public ModKey IdentifyingModKey { get; set; }
+    /// <summary>
+    /// ModKey to export to the data folder under
+    /// </summary>
+    public ModKey IdentifyingModKey { get; set; }
 
-        /// <summary>
-        /// GameRelease to target
-        /// </summary>
-        public GameRelease TargetRelease { get; set; }
+    /// <summary>
+    /// GameRelease to target
+    /// </summary>
+    public GameRelease TargetRelease { get; set; }
 
-        /// <summary>
-        /// Whether to block automatic exit and wait for user to press return before exiting
-        /// </summary>
-        public bool BlockAutomaticExit { get; set; } = false;
-    }
+    /// <summary>
+    /// Whether to block automatic exit and wait for user to press return before exiting
+    /// </summary>
+    public bool BlockAutomaticExit { get; set; } = false;
 }

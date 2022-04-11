@@ -4,27 +4,26 @@ using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository
+namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository;
+
+public class CheckIfRepositoryDesirableTests
 {
-    public class CheckIfRepositoryDesirableTests
+    [Theory, SynthAutoData]
+    public void RepositoryUndesirableIfNoMainBranch(
+        IGitRepository repo,
+        CheckIfRepositoryDesirable sut)
     {
-        [Theory, SynthAutoData]
-        public void RepositoryUndesirableIfNoMainBranch(
-            IGitRepository repo,
-            CheckIfRepositoryDesirable sut)
-        {
-            repo.MainBranch.Returns(default(IBranch?));
-            sut.IsDesirable(repo)
-                .Should().BeFalse();
-        }
+        repo.MainBranch.Returns(default(IBranch?));
+        sut.IsDesirable(repo)
+            .Should().BeFalse();
+    }
         
-        [Theory, SynthAutoData]
-        public void RepositoryDesirableOtherwise(
-            IGitRepository repo,
-            CheckIfRepositoryDesirable sut)
-        {
-            sut.IsDesirable(repo)
-                .Should().BeTrue();
-        }
+    [Theory, SynthAutoData]
+    public void RepositoryDesirableOtherwise(
+        IGitRepository repo,
+        CheckIfRepositoryDesirable sut)
+    {
+        sut.IsDesirable(repo)
+            .Should().BeTrue();
     }
 }

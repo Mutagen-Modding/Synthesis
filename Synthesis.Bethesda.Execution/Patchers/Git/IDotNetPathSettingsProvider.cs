@@ -1,12 +1,11 @@
-﻿namespace Synthesis.Bethesda.Execution.Patchers.Git
-{
-    public interface IDotNetPathSettingsProvider
-    {
-        string DotNetPathOverride { get; }
-    }
+﻿namespace Synthesis.Bethesda.Execution.Patchers.Git;
 
-    public class DotNetPathSettingsProvider : IDotNetPathSettingsProvider
-    {
-        public string DotNetPathOverride => string.Empty;
-    }
+public interface IDotNetPathSettingsProvider
+{
+    string DotNetPathOverride { get; }
+}
+
+public class DotNetPathSettingsProvider : IDotNetPathSettingsProvider
+{
+    public string DotNetPathOverride => string.Empty;
 }

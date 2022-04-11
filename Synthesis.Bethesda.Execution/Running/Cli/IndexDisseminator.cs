@@ -1,14 +1,13 @@
-﻿namespace Synthesis.Bethesda.Execution.Running.Cli
+﻿namespace Synthesis.Bethesda.Execution.Running.Cli;
+
+public interface IIndexDisseminator
 {
-    public interface IIndexDisseminator
-    {
-        int GetNext();
-    }
+    int GetNext();
+}
 
-    public class IndexDisseminator : IIndexDisseminator
-    {
-        private int _index = 1;
+public class IndexDisseminator : IIndexDisseminator
+{
+    private int _index = 1;
 
-        public int GetNext() => _index++;
-    }
+    public int GetNext() => _index++;
 }

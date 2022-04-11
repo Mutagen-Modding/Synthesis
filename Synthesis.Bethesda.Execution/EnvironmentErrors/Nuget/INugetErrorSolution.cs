@@ -1,11 +1,10 @@
 ﻿using System;
 using Noggog;
 
-namespace Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget
+namespace Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget;
+
+public interface INugetErrorSolution
 {
-    public interface INugetErrorSolution
-    {
-        string ErrorText { get; }
-        void RunFix(FilePath path);
-    }
+    string ErrorText { get; }
+    void RunFix(FilePath path);
 }

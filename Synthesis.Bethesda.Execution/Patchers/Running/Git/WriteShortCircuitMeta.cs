@@ -2,38 +2,37 @@
 using Newtonsoft.Json;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Running.Git
+namespace Synthesis.Bethesda.Execution.Patchers.Running.Git;
+
+public interface IWriteShortCircuitMeta
 {
-    public interface IWriteShortCircuitMeta
+    void WriteMeta(RunnerRepoInfo info);
+    void WriteMeta(string metaPath, GitCompilationMeta meta);
+}
+
+public class WriteShortCircuitMeta : IWriteShortCircuitMeta
+{
+    private readonly IFileSystem _fs;
+
+    public WriteShortCircuitMeta(IFileSystem fs)
     {
-        void WriteMeta(RunnerRepoInfo info);
-        void WriteMeta(string metaPath, GitCompilationMeta meta);
+        _fs = fs;
     }
-
-    public class WriteShortCircuitMeta : IWriteShortCircuitMeta
+        
+    public void WriteMeta(RunnerRepoInfo info)
     {
-        private readonly IFileSystem _fs;
-
-        public WriteShortCircuitMeta(IFileSystem fs)
+        WriteMeta(info.MetaPath, new GitCompilationMeta()
         {
-            _fs = fs;
-        }
+            MutagenVersion = info.TargetVersions.Mutagen ?? string.Empty,
+            SynthesisVersion = info.TargetVersions.Synthesis ?? string.Empty,
+            Sha = info.Target.TargetSha
+        });
+    }
         
-        public void WriteMeta(RunnerRepoInfo info)
-        {
-            WriteMeta(info.MetaPath, new GitCompilationMeta()
-            {
-                MutagenVersion = info.TargetVersions.Mutagen ?? string.Empty,
-                SynthesisVersion = info.TargetVersions.Synthesis ?? string.Empty,
-                Sha = info.Target.TargetSha
-            });
-        }
-        
-        public void WriteMeta(string metaPath, GitCompilationMeta meta)
-        {
-            _fs.File.WriteAllText(
-                metaPath,
-                JsonConvert.SerializeObject(meta));
-        }
+    public void WriteMeta(string metaPath, GitCompilationMeta meta)
+    {
+        _fs.File.WriteAllText(
+            metaPath,
+            JsonConvert.SerializeObject(meta));
     }
 }

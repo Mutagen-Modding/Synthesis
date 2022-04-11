@@ -3,35 +3,34 @@ using ReactiveUI;
 using System.Reactive.Disposables;
 using Synthesis.Bethesda.GUI.Services.Patchers.Cli;
 
-namespace Synthesis.Bethesda.GUI.Views
+namespace Synthesis.Bethesda.GUI.Views;
+
+public class CliConfigViewBase : NoggogUserControl<ICliInputSourceVm> { }
+
+/// <summary>
+/// Interaction logic for CliConfigView.xaml
+/// </summary>
+public partial class CliConfigView : CliConfigViewBase
 {
-    public class CliConfigViewBase : NoggogUserControl<ICliInputSourceVm> { }
-
-    /// <summary>
-    /// Interaction logic for CliConfigView.xaml
-    /// </summary>
-    public partial class CliConfigView : CliConfigViewBase
+    public CliConfigView()
     {
-        public CliConfigView()
+        InitializeComponent();
+        this.WhenActivated(disposable =>
         {
-            InitializeComponent();
-            this.WhenActivated(disposable =>
-            {
-                this.Bind(this.ViewModel, vm => vm.ExecutableInput.Picker, view => view.ExecutablePathPicker.PickerVM)
-                    .DisposeWith(disposable);
+            this.Bind(this.ViewModel, vm => vm.ExecutableInput.Picker, view => view.ExecutablePathPicker.PickerVM)
+                .DisposeWith(disposable);
 
-                // ToDo
-                // Re-enable
+            // ToDo
+            // Re-enable
                 
-                // var isNewPatcher = this.WhenAnyFallback(x => x.ViewModel!.Profile.Config.NewPatcher, default)
-                //     .Select(newPatcher => newPatcher != null)
-                //     .Replay(1)
-                //     .RefCount();
+            // var isNewPatcher = this.WhenAnyFallback(x => x.ViewModel!.Profile.Config.NewPatcher, default)
+            //     .Select(newPatcher => newPatcher != null)
+            //     .Replay(1)
+            //     .RefCount();
                 
-                // Hide help box if not in initialization
-                UtilityBindings.HelpWiring(this.ViewModel!.ShowHelpSetting, this.HelpButton, this.HelpText)
-                    .DisposeWith(disposable);
-            });
-        }
+            // Hide help box if not in initialization
+            UtilityBindings.HelpWiring(this.ViewModel!.ShowHelpSetting, this.HelpButton, this.HelpText)
+                .DisposeWith(disposable);
+        });
     }
 }

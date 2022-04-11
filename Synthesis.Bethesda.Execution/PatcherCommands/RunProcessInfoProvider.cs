@@ -1,37 +1,36 @@
 ﻿using System.Diagnostics;
 using Synthesis.Bethesda.Execution.Utility;
 
-namespace Synthesis.Bethesda.Execution.PatcherCommands
+namespace Synthesis.Bethesda.Execution.PatcherCommands;
+
+public interface IRunProcessStartInfoProvider
 {
-    public interface IRunProcessStartInfoProvider
+    ProcessStartInfo GetStart<T>(string path, bool directExe, T args, bool build = false);
+}
+
+public class RunProcessStartInfoProvider : IRunProcessStartInfoProvider
+{
+    public IFormatCommandLine Format { get; }
+    public IProjectRunProcessStartInfoProvider ProjectRunProcessStartInfoProvider { get; }
+
+    public RunProcessStartInfoProvider(
+        IFormatCommandLine format,
+        IProjectRunProcessStartInfoProvider projectRunProcessStartInfoProvider)
     {
-        ProcessStartInfo GetStart<T>(string path, bool directExe, T args, bool build = false);
+        Format = format;
+        ProjectRunProcessStartInfoProvider = projectRunProcessStartInfoProvider;
     }
-
-    public class RunProcessStartInfoProvider : IRunProcessStartInfoProvider
-    {
-        public IFormatCommandLine Format { get; }
-        public IProjectRunProcessStartInfoProvider ProjectRunProcessStartInfoProvider { get; }
-
-        public RunProcessStartInfoProvider(
-            IFormatCommandLine format,
-            IProjectRunProcessStartInfoProvider projectRunProcessStartInfoProvider)
-        {
-            Format = format;
-            ProjectRunProcessStartInfoProvider = projectRunProcessStartInfoProvider;
-        }
         
-        public ProcessStartInfo GetStart<T>(string path, bool directExe, T args, bool build = false)
+    public ProcessStartInfo GetStart<T>(string path, bool directExe, T args, bool build = false)
+    {
+        var formattedArgs = Format.Format(args);
+        if (directExe)
         {
-            var formattedArgs = Format.Format(args);
-            if (directExe)
-            {
-                return new ProcessStartInfo(path, formattedArgs);
-            }
-            else
-            {
-                return ProjectRunProcessStartInfoProvider.GetStart(path, formattedArgs, build);
-            }
+            return new ProcessStartInfo(path, formattedArgs);
+        }
+        else
+        {
+            return ProjectRunProcessStartInfoProvider.GetStart(path, formattedArgs, build);
         }
     }
 }

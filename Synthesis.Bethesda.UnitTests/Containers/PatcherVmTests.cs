@@ -16,68 +16,67 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 using Synthesis.Bethesda.GUI.Views;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Containers
+namespace Synthesis.Bethesda.UnitTests.Containers;
+
+public class PatcherVmTests
 {
-    public class PatcherVmTests
+    [Fact]
+    public void GitPatcherVm()
     {
-        [Fact]
-        public void GitPatcherVm()
-        {
-            var builder = new ContainerBuilder();
-            builder.RegisterModule<MainModule>();
-            builder.RegisterModule<GuiGitPatcherModule>();
-            builder.RegisterMock<IMainWindow>();
-            builder.RegisterMock<IWindowPlacement>();
-            builder.RegisterMock<IGithubPatcherIdentifier>();
-            builder.RegisterMock<IPatcherIdProvider>();
-            builder.RegisterMock<GithubPatcherSettings>();
-            builder.RegisterMock<ISynthesisProfileSettings>();
-            builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
-                .As<IProfileIdentifier>()
-                .As<IGameReleaseContext>();
-            var cont = builder.Build();
-            cont.Validate(
-                typeof(GitPatcherVm));
-        }
+        var builder = new ContainerBuilder();
+        builder.RegisterModule<MainModule>();
+        builder.RegisterModule<GuiGitPatcherModule>();
+        builder.RegisterMock<IMainWindow>();
+        builder.RegisterMock<IWindowPlacement>();
+        builder.RegisterMock<IGithubPatcherIdentifier>();
+        builder.RegisterMock<IPatcherIdProvider>();
+        builder.RegisterMock<GithubPatcherSettings>();
+        builder.RegisterMock<ISynthesisProfileSettings>();
+        builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
+            .As<IProfileIdentifier>()
+            .As<IGameReleaseContext>();
+        var cont = builder.Build();
+        cont.Validate(
+            typeof(GitPatcherVm));
+    }
         
-        [Fact]
-        public void SolutionPatcherVm()
-        {
-            var builder = new ContainerBuilder();
-            builder.RegisterModule<MainModule>();
-            builder.RegisterModule<GuiSolutionPatcherModule>();
-            builder.RegisterMock<IMainWindow>();
-            builder.RegisterMock<IWindowPlacement>();
-            builder.RegisterMock<IGithubPatcherIdentifier>();
-            builder.RegisterMock<IPatcherIdProvider>();
-            builder.RegisterMock<ISynthesisProfileSettings>();
-            builder.RegisterMock<IProjectSubpathDefaultSettings>();
-            builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
-                .As<IProfileIdentifier>()
-                .As<IGameReleaseContext>();
-            var cont = builder.Build();
-            cont.Validate(
-                typeof(SolutionPatcherVm));
-        }
+    [Fact]
+    public void SolutionPatcherVm()
+    {
+        var builder = new ContainerBuilder();
+        builder.RegisterModule<MainModule>();
+        builder.RegisterModule<GuiSolutionPatcherModule>();
+        builder.RegisterMock<IMainWindow>();
+        builder.RegisterMock<IWindowPlacement>();
+        builder.RegisterMock<IGithubPatcherIdentifier>();
+        builder.RegisterMock<IPatcherIdProvider>();
+        builder.RegisterMock<ISynthesisProfileSettings>();
+        builder.RegisterMock<IProjectSubpathDefaultSettings>();
+        builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
+            .As<IProfileIdentifier>()
+            .As<IGameReleaseContext>();
+        var cont = builder.Build();
+        cont.Validate(
+            typeof(SolutionPatcherVm));
+    }
         
-        [Fact]
-        public void CliPatcherVm()
-        {
-            var builder = new ContainerBuilder();
-            builder.RegisterModule<MainModule>();
-            builder.RegisterModule<GuiCliPatcherModule>();
-            builder.RegisterMock<IMainWindow>();
-            builder.RegisterMock<IWindowPlacement>();
-            builder.RegisterMock<IGithubPatcherIdentifier>();
-            builder.RegisterMock<IPatcherIdProvider>();
-            builder.RegisterMock<CliPatcherSettings>();
-            builder.RegisterMock<ISynthesisProfileSettings>();
-            builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
-                .As<IProfileIdentifier>()
-                .As<IGameReleaseContext>();
-            var cont = builder.Build();
-            cont.Validate(
-                typeof(CliPatcherVm));
-        }
+    [Fact]
+    public void CliPatcherVm()
+    {
+        var builder = new ContainerBuilder();
+        builder.RegisterModule<MainModule>();
+        builder.RegisterModule<GuiCliPatcherModule>();
+        builder.RegisterMock<IMainWindow>();
+        builder.RegisterMock<IWindowPlacement>();
+        builder.RegisterMock<IGithubPatcherIdentifier>();
+        builder.RegisterMock<IPatcherIdProvider>();
+        builder.RegisterMock<CliPatcherSettings>();
+        builder.RegisterMock<ISynthesisProfileSettings>();
+        builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
+            .As<IProfileIdentifier>()
+            .As<IGameReleaseContext>();
+        var cont = builder.Build();
+        cont.Validate(
+            typeof(CliPatcherVm));
     }
 }

@@ -2,22 +2,21 @@
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 
-namespace Synthesis.Bethesda.Execution.DotNet
+namespace Synthesis.Bethesda.Execution.DotNet;
+
+public interface IDotNetCommandPathProvider
 {
-    public interface IDotNetCommandPathProvider
-    {
-        string Path { get; }
-    }
+    string Path { get; }
+}
 
-    [ExcludeFromCodeCoverage]
-    public class DotNetCommandPathProvider : IDotNetCommandPathProvider
-    {
-        private readonly IDotNetPathSettingsProvider _settings;
-        public string Path => _settings.DotNetPathOverride.IsNullOrWhitespace() ? "dotnet" : _settings.DotNetPathOverride;
+[ExcludeFromCodeCoverage]
+public class DotNetCommandPathProvider : IDotNetCommandPathProvider
+{
+    private readonly IDotNetPathSettingsProvider _settings;
+    public string Path => _settings.DotNetPathOverride.IsNullOrWhitespace() ? "dotnet" : _settings.DotNetPathOverride;
 
-        public DotNetCommandPathProvider(IDotNetPathSettingsProvider settings)
-        {
-            _settings = settings;
-        }
+    public DotNetCommandPathProvider(IDotNetPathSettingsProvider settings)
+    {
+        _settings = settings;
     }
 }

@@ -6,40 +6,39 @@ using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli
+namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli;
+
+public interface IGenericSettingsToMutagenSettings
 {
-    public interface IGenericSettingsToMutagenSettings
+    RunSynthesisMutagenPatcher Convert(RunSynthesisPatcher settings);
+}
+
+public class GenericSettingsToMutagenSettings : IGenericSettingsToMutagenSettings
+{
+    public IPatcherExtraDataPathProvider ExtraDataPathProvider { get; }
+
+    [ExcludeFromCodeCoverage]
+    public GenericSettingsToMutagenSettings(
+        IPatcherExtraDataPathProvider extraDataPathProvider)
     {
-        RunSynthesisMutagenPatcher Convert(RunSynthesisPatcher settings);
+        ExtraDataPathProvider = extraDataPathProvider;
     }
-
-    public class GenericSettingsToMutagenSettings : IGenericSettingsToMutagenSettings
-    {
-        public IPatcherExtraDataPathProvider ExtraDataPathProvider { get; }
-
-        [ExcludeFromCodeCoverage]
-        public GenericSettingsToMutagenSettings(
-            IPatcherExtraDataPathProvider extraDataPathProvider)
-        {
-            ExtraDataPathProvider = extraDataPathProvider;
-        }
         
-        public RunSynthesisMutagenPatcher Convert(RunSynthesisPatcher settings)
+    public RunSynthesisMutagenPatcher Convert(RunSynthesisPatcher settings)
+    {
+        return new RunSynthesisMutagenPatcher()
         {
-            return new RunSynthesisMutagenPatcher()
-            {
-                DataFolderPath = settings.DataFolderPath,
-                GameRelease = settings.GameRelease,
-                LoadOrderFilePath = settings.LoadOrderFilePath,
-                OutputPath = settings.OutputPath,
-                SourcePath = settings.SourcePath,
-                PersistencePath = settings.PersistencePath,
-                PatcherName = settings.PatcherName,
-                ExtraDataFolder = ExtraDataPathProvider.Path,
-                Localize = settings.Localize,
-                TargetLanguage = Enum.Parse<Language>(settings.TargetLanguage),
-                ModKey = settings.ModKey,
-            };
-        }
+            DataFolderPath = settings.DataFolderPath,
+            GameRelease = settings.GameRelease,
+            LoadOrderFilePath = settings.LoadOrderFilePath,
+            OutputPath = settings.OutputPath,
+            SourcePath = settings.SourcePath,
+            PersistencePath = settings.PersistencePath,
+            PatcherName = settings.PatcherName,
+            ExtraDataFolder = ExtraDataPathProvider.Path,
+            Localize = settings.Localize,
+            TargetLanguage = Enum.Parse<Language>(settings.TargetLanguage),
+            ModKey = settings.ModKey,
+        };
     }
 }

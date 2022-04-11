@@ -5,34 +5,33 @@ using Serilog;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Utility;
 
-namespace Synthesis.Bethesda.GUI.Services.Startup
-{
-    public class ClearLoading : IStartupTask
-    {
-        private readonly IWorkingDirectorySubPaths _paths;
-        private readonly ILogger _logger;
+namespace Synthesis.Bethesda.GUI.Services.Startup;
 
-        public ClearLoading(
-            IWorkingDirectorySubPaths paths,
-            ILogger logger)
-        {
-            _paths = paths;
-            _logger = logger;
-        }
+public class ClearLoading : IStartupTask
+{
+    private readonly IWorkingDirectorySubPaths _paths;
+    private readonly ILogger _logger;
+
+    public ClearLoading(
+        IWorkingDirectorySubPaths paths,
+        ILogger logger)
+    {
+        _paths = paths;
+        _logger = logger;
+    }
         
-        public void Start()
+    public void Start()
+    {
+        try
         {
-            try
-            {
-                var loadingDir = new DirectoryInfo(_paths.LoadingFolder);
-                if (!loadingDir.Exists) return;
-                _logger.Information("Clearing Loading folder");
-                loadingDir.DeleteEntireFolder(deleteFolderItself: false);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error clearing Loading folder");
-            }
+            var loadingDir = new DirectoryInfo(_paths.LoadingFolder);
+            if (!loadingDir.Exists) return;
+            _logger.Information("Clearing Loading folder");
+            loadingDir.DeleteEntireFolder(deleteFolderItself: false);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error clearing Loading folder");
         }
     }
 }

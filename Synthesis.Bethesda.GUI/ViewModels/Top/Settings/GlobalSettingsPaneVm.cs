@@ -3,41 +3,40 @@ using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
+namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
+
+public class GlobalSettingsPaneVm : ViewModel
 {
-    public class GlobalSettingsPaneVm : ViewModel
+    public enum SettingsPages
     {
-        public enum SettingsPages
-        {
-            Profile,
-            Advanced,
-        };
+        Profile,
+        Advanced,
+    };
 
-        public ICommand GoBackCommand { get; }
+    public ICommand GoBackCommand { get; }
         
-        [Reactive] public SettingsPages SelectedSettings { get; set; }
+    [Reactive] public SettingsPages SelectedSettings { get; set; }
 
-        private ViewModel? _previous;
+    private ViewModel? _previous;
 
-        public ProfilesDisplayVm Profiles { get; }
-        public GlobalSettingsVm GlobalSettingsVm { get; }
+    public ProfilesDisplayVm Profiles { get; }
+    public GlobalSettingsVm GlobalSettingsVm { get; }
 
-        public GlobalSettingsPaneVm(
-            ProfilesDisplayVm profilesDisplayVm,
-            GlobalSettingsVm globalSettingsVm,
-            IActivePanelControllerVm activePanelController)
+    public GlobalSettingsPaneVm(
+        ProfilesDisplayVm profilesDisplayVm,
+        GlobalSettingsVm globalSettingsVm,
+        IActivePanelControllerVm activePanelController)
+    {
+        GoBackCommand = ReactiveCommand.Create(() =>
         {
-            GoBackCommand = ReactiveCommand.Create(() =>
-            {
-                activePanelController.ActivePanel = _previous;
-            });
-            Profiles = profilesDisplayVm;
-            GlobalSettingsVm = globalSettingsVm;
-        }
+            activePanelController.ActivePanel = _previous;
+        });
+        Profiles = profilesDisplayVm;
+        GlobalSettingsVm = globalSettingsVm;
+    }
 
-        public void SetPrevious(ViewModel? previous)
-        {
-            _previous = previous;
-        }
+    public void SetPrevious(ViewModel? previous)
+    {
+        _previous = previous;
     }
 }

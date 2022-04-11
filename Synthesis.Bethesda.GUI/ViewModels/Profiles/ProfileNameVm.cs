@@ -4,21 +4,20 @@ using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.V2;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Profiles
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles;
+
+public interface IProfileNameVm
 {
-    public interface IProfileNameVm
-    {
-        string Name { get; set; }
-    }
+    string Name { get; set; }
+}
 
-    public class ProfileNameVm : ViewModel, IProfileNameProvider, IProfileNameVm
-    {
-        [Reactive]
-        public string Name { get; set; }
+public class ProfileNameVm : ViewModel, IProfileNameProvider, IProfileNameVm
+{
+    [Reactive]
+    public string Name { get; set; }
 
-        public ProfileNameVm(ISynthesisProfileSettings settings)
-        {
-            Name = settings.Nickname;
-        }
+    public ProfileNameVm(ISynthesisProfileSettings settings)
+    {
+        Name = settings.Nickname;
     }
 }

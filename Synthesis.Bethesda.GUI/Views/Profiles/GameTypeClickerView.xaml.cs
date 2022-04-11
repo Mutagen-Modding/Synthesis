@@ -11,16 +11,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Synthesis.Bethesda.GUI.Views
+namespace Synthesis.Bethesda.GUI.Views;
+
+/// <summary>
+/// Interaction logic for GameTypeClickerView.xaml
+/// </summary>
+public partial class GameTypeClickerView : UserControl
 {
-    /// <summary>
-    /// Interaction logic for GameTypeClickerView.xaml
-    /// </summary>
-    public partial class GameTypeClickerView : UserControl
+    public GameTypeClickerView()
     {
-        public GameTypeClickerView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

@@ -1,32 +1,31 @@
 ﻿using System;
 
-namespace Synthesis.Bethesda.Execution.GitRepository
+namespace Synthesis.Bethesda.Execution.GitRepository;
+
+public interface IRepositoryCheckout : IDisposable
 {
-    public interface IRepositoryCheckout : IDisposable
+    IGitRepository Repository { get; }
+}
+
+public class RepositoryCheckout : IRepositoryCheckout
+{
+    private Lazy<IGitRepository> _Repository { get; }
+    public IGitRepository Repository => _Repository.Value;
+        
+    private readonly IDisposable _Cleanup;
+
+    public RepositoryCheckout(Lazy<IGitRepository> repo, IDisposable cleanup)
     {
-        IGitRepository Repository { get; }
+        _Repository = repo;
+        _Cleanup = cleanup;
     }
 
-    public class RepositoryCheckout : IRepositoryCheckout
+    public void Dispose()
     {
-        private Lazy<IGitRepository> _Repository { get; }
-        public IGitRepository Repository => _Repository.Value;
-        
-        private readonly IDisposable _Cleanup;
-
-        public RepositoryCheckout(Lazy<IGitRepository> repo, IDisposable cleanup)
+        if (_Repository.IsValueCreated)
         {
-            _Repository = repo;
-            _Cleanup = cleanup;
+            _Repository.Value.Dispose();
         }
-
-        public void Dispose()
-        {
-            if (_Repository.IsValueCreated)
-            {
-                _Repository.Value.Dispose();
-            }
-            _Cleanup.Dispose();
-        }
+        _Cleanup.Dispose();
     }
 }

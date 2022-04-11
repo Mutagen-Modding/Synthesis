@@ -1,9 +1,8 @@
 ﻿using Synthesis.Bethesda.Execution.Patchers.Common;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
+
+public interface IPatcherNameVm : IPatcherNameProvider
 {
-    public interface IPatcherNameVm : IPatcherNameProvider
-    {
-        public string Nickname { get; set; }
-    }
+    public string Nickname { get; set; }
 }

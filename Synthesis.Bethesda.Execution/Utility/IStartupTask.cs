@@ -1,7 +1,6 @@
-﻿namespace Synthesis.Bethesda.Execution.Utility
+﻿namespace Synthesis.Bethesda.Execution.Utility;
+
+public interface IStartupTask
 {
-    public interface IStartupTask
-    {
-        void Start();
-    }
+    void Start();
 }

@@ -1,8 +1,7 @@
-﻿namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors
+﻿namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
+
+public interface IEnvironmentErrorVm
 {
-    public interface IEnvironmentErrorVm
-    {
-        bool InError { get; }
-        string? ErrorString { get; }
-    }
+    bool InError { get; }
+    string? ErrorString { get; }
 }

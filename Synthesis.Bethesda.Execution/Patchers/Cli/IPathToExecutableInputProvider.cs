@@ -1,9 +1,8 @@
 ﻿using Noggog;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Cli
+namespace Synthesis.Bethesda.Execution.Patchers.Cli;
+
+public interface IPathToExecutableInputProvider
 {
-    public interface IPathToExecutableInputProvider
-    {
-        public FilePath Path { get; }
-    }
+    public FilePath Path { get; }
 }

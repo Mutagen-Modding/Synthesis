@@ -1,7 +1,6 @@
-﻿namespace Synthesis.Bethesda.Execution.Patchers.Git
+﻿namespace Synthesis.Bethesda.Execution.Patchers.Git;
+
+public interface IShortCircuitSettingsProvider
 {
-    public interface IShortCircuitSettingsProvider
-    {
-        bool Shortcircuit { get; set; }
-    }
+    bool Shortcircuit { get; set; }
 }
