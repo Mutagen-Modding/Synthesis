@@ -512,7 +512,6 @@ namespace Mutagen.Bethesda.Synthesis
                 System.Console.WriteLine("Checking runnability complete");
             }
             
-            WarmupAll.Init();
             System.Console.WriteLine("Prepping state.");
             var prefs = patcher.Prefs ?? new PatcherPreferences();
             var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
