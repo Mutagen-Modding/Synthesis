@@ -1,29 +1,29 @@
 ﻿using System.IO.Abstractions.TestingHelpers;
 using FluentAssertions;
 using Noggog;
-using Synthesis.Bethesda.Execution.Settings.Json.Pipeline;
+using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Execution.Json.Pipeline;
+namespace Synthesis.Bethesda.UnitTests.Execution.Json;
 
-public class PipelineSettingsVersionRetrieverTests
+public class SettingsVersionRetrieverTests
 {
     [Theory, SynthAutoData]
-    public void NoVersionReturnsOne(
+    public void NoVersionReturnsNull(
         MockFileSystem fileSystem,
         FilePath path,
-        PipelineSettingsVersionRetriever sut)
+        SettingsVersionRetriever sut)
     {
         fileSystem.File.WriteAllText(path, "{}");
-        sut.GetVersion(path).Should().Be(1);
+        sut.GetVersion(path).Should().BeNull();
     }
         
     [Theory, SynthAutoData]
     public void ParsesVersion(
         MockFileSystem fileSystem,
         FilePath path,
-        PipelineSettingsVersionRetriever sut)
+        SettingsVersionRetriever sut)
     {
         fileSystem.File.WriteAllText(path, "{ \"Version\": \"3\" }");
         sut.GetVersion(path).Should().Be(3);

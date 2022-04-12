@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V1;
 using Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V2;
@@ -16,14 +16,14 @@ public class PipelineSettingsImporter : IPipelineSettingsImporter
     private readonly IPipelineSettingsV2Reader _v2Reader;
     private readonly IPipelineSettingsUpgrader _upgrader;
     private readonly IPipelineSettingsBackup _backup;
-    private readonly IPipelineSettingsVersionRetriever _versionRetriever;
+    private readonly ISettingsVersionRetriever _versionRetriever;
 
     public PipelineSettingsImporter(
         IPipelineSettingsV1Reader v1Reader,
         IPipelineSettingsV2Reader v2Reader,
         IPipelineSettingsUpgrader upgrader,
         IPipelineSettingsBackup backup,
-        IPipelineSettingsVersionRetriever versionRetriever)
+        ISettingsVersionRetriever versionRetriever)
     {
         _v1Reader = v1Reader;
         _v2Reader = v2Reader;
@@ -34,7 +34,7 @@ public class PipelineSettingsImporter : IPipelineSettingsImporter
 
     public IPipelineSettings Import(FilePath path)
     {
-        var vers = _versionRetriever.GetVersion(path);
+        var vers = _versionRetriever.GetVersion(path) ?? 1;
             
         object o;
         switch (vers)

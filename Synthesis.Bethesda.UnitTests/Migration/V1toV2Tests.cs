@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using FluentAssertions;
 using Newtonsoft.Json;
 using Noggog;
 using Synthesis.Bethesda.Execution.Pathing;
+using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.Execution.Settings.Json.Pipeline;
 using Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V1;
 using Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V2;
@@ -35,7 +35,7 @@ public class V1toV2Tests
                     fileSystem,
                     extraDataPathProvider)),
             new PipelineSettingsBackup(fileSystem),
-            new PipelineSettingsVersionRetriever(fileSystem));
+            new SettingsVersionRetriever(fileSystem));
     }
 
     [Theory, SynthAutoData]
