@@ -31,22 +31,14 @@ public class SettingsSingleton : ISettingsSingleton
     {
         ISynthesisGuiSettings? guiSettings = null;
         IPipelineSettings? pipeSettings = null;
-        Task.WhenAll(
-            Task.Run(async () =>
-            {
-                if (fileSystem.File.Exists(guiPaths.Path))
-                {
-                    guiSettings = guiSettingsImporter.Import(guiPaths.Path);
-                }
-            }),
-            Task.Run(async () =>
-            {
-                if (fileSystem.File.Exists(paths.Path))
-                {
-                    pipeSettings = pipelineSettingsImporter.Import(paths.Path);
-                }
-            })
-        ).Wait();
+        if (fileSystem.File.Exists(guiPaths.Path))
+        {
+            guiSettings = guiSettingsImporter.Import(guiPaths.Path);
+        }
+        if (fileSystem.File.Exists(paths.Path))
+        {
+            pipeSettings = pipelineSettingsImporter.Import(paths.Path);
+        }
         Gui = guiSettings ?? new SynthesisGuiSettings();
         Pipeline = pipeSettings ?? new PipelineSettings();
     }
