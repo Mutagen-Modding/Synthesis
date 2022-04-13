@@ -1,6 +1,7 @@
 ﻿using System.IO.Abstractions;
 using Mutagen.Bethesda.Environments.DI;
 using Noggog;
+using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Reporters;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner;
@@ -15,16 +16,16 @@ public interface IMoveFinalResults
 public class MoveFinalResults : IMoveFinalResults
 {
     private readonly IRunReporter _reporter;
-    private readonly IDataDirectoryProvider _dataDirectoryProvider;
+    private readonly IProfileDirectories _profileDirectories;
     public IFileSystem FileSystem { get; }
 
     public MoveFinalResults(
         IRunReporter reporter,
-        IDataDirectoryProvider dataDirectoryProvider,
+        IProfileDirectories profileDirectories,
         IFileSystem fileSystem)
     {
         _reporter = reporter;
-        _dataDirectoryProvider = dataDirectoryProvider;
+        _profileDirectories = profileDirectories;
         FileSystem = fileSystem;
     }
         
@@ -32,9 +33,10 @@ public class MoveFinalResults : IMoveFinalResults
         FilePath finalPatch,
         DirectoryPath outputPath)
     {
-        if (!FileSystem.Directory.Exists(outputPath))
+        var workspaceOutput = _profileDirectories.OutputDirectory;
+        if (!FileSystem.Directory.Exists(workspaceOutput))
         {
-            FileSystem.Directory.CreateDirectory(outputPath);
+            FileSystem.Directory.CreateDirectory(workspaceOutput);
         }
             
         var finalPatchFolder = finalPatch.Directory!;
@@ -45,9 +47,9 @@ public class MoveFinalResults : IMoveFinalResults
             _reporter.WriteOverall($"   {file.GetRelativePathTo(finalPatchFolder.Value)}");
         }
             
-        FileSystem.Directory.DeepCopy(finalPatchFolder.Value.Path, outputPath);
-        _reporter.WriteOverall($"Exported patch to workspace: {outputPath}");
-        FileSystem.Directory.DeepCopy(finalPatchFolder.Value.Path, _dataDirectoryProvider.Path, overwrite: true);
-        _reporter.WriteOverall($"Exported patch to final destination: {_dataDirectoryProvider.Path}");
+        FileSystem.Directory.DeepCopy(finalPatchFolder.Value.Path, workspaceOutput);
+        _reporter.WriteOverall($"Exported patch to workspace: {workspaceOutput}");
+        FileSystem.Directory.DeepCopy(finalPatchFolder.Value.Path, outputPath.Path, overwrite: true);
+        _reporter.WriteOverall($"Exported patch to final destination: {outputPath.Path}");
     }
 }

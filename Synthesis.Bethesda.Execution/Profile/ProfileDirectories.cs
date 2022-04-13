@@ -9,6 +9,7 @@ public interface IProfileDirectories
 {
     DirectoryPath ProfileDirectory { get; }
     DirectoryPath WorkingDirectory { get; }
+    DirectoryPath OutputDirectory { get; }
 }
 
 public class ProfileDirectories : IProfileDirectories
@@ -19,6 +20,7 @@ public class ProfileDirectories : IProfileDirectories
 
     public DirectoryPath ProfileDirectory => Path.Combine(Paths.WorkingDirectory, Ident.ID);
     public DirectoryPath WorkingDirectory => WorkingDirectorySubPaths.ProfileWorkingDirectory(Ident.ID);
+    public DirectoryPath OutputDirectory => Path.Combine(WorkingDirectory, "Output");
 
     [ExcludeFromCodeCoverage]
     public ProfileDirectories(

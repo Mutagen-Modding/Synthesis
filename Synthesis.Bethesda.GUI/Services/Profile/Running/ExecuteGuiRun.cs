@@ -29,15 +29,18 @@ public class ExecuteGuiRun : IExecuteGuiRun
 {
     private readonly IFileSystem _fileSystem;
     private readonly IExecuteRun _executeRun;
+    private readonly IDataDirectoryProvider _dataDirectoryProvider;
     private readonly IProfileDirectories _profileDirectories;
 
     public ExecuteGuiRun(
         IFileSystem fileSystem,
         IExecuteRun executeRun,
+        IDataDirectoryProvider dataDirectoryProvider,
         IProfileDirectories profileDirectories)
     {
         _fileSystem = fileSystem;
         _executeRun = executeRun;
+        _dataDirectoryProvider = dataDirectoryProvider;
         _profileDirectories = profileDirectories;
     }
         
@@ -48,8 +51,7 @@ public class ExecuteGuiRun : IExecuteGuiRun
         Language targetLanguage,
         CancellationToken cancel)
     {
-        var outputDir = new DirectoryPath(Path.Combine(_profileDirectories.WorkingDirectory, "Output"));
-        _fileSystem.Directory.DeleteEntireFolder(outputDir.Path);
+        var outputDir = _dataDirectoryProvider.Path;
         await _executeRun.Run(
             groups: groupRuns.ToArray(),
             cancel: cancel,
