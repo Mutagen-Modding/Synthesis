@@ -1,0 +1,11 @@
+{
+  "ShowHelp": true,
+  "OpenIdeAfterCreating": false,
+  "Ide": "SystemDefault",
+  "MainRepositoryFolder": "",
+  "SelectedProfile": "xxcrjcg1.x4x",
+  "WorkingDirectory": "Testing123",
+  "BuildCorePercentage": 0.123,
+  "DotNetPathOverride": "HelloWorld",
+  "ShowAllGitPatchersInBrowser": false
+}

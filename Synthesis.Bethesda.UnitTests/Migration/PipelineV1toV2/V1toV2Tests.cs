@@ -12,7 +12,7 @@ using Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V2;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Migration;
+namespace Synthesis.Bethesda.UnitTests.Migration.PipelineV1toV2;
 
 public class V1toV2Tests
 {
@@ -25,7 +25,7 @@ public class V1toV2Tests
     {
         fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>()
         {
-            { V1FilePath, File.ReadAllText("Migration/PipelineSettings.json") }
+            { V1FilePath, File.ReadAllText(Path.Combine("Migration", "PipelineV1toV2", "PipelineSettings.json")) }
         });
         return new PipelineSettingsImporter(
             new PipelineSettingsV1Reader(fileSystem),
@@ -44,7 +44,7 @@ public class V1toV2Tests
         var import = MakeImporter(extraDataPathProvider, out var mockFileSystem)
             .Import(V1FilePath);
         mockFileSystem.File.WriteAllText("C:/Test", JsonConvert.SerializeObject(import, Formatting.Indented, Synthesis.Bethesda.Execution.Constants.JsonSettings));
-        var expected = IFileSystemExt.DefaultFilesystem.File.ReadAllText("Migration/PipelineSettings.v2.json");
+        var expected = IFileSystemExt.DefaultFilesystem.File.ReadAllText(Path.Combine("Migration", "PipelineV1toV2", "PipelineSettings.v2.json"));
         var reimport = mockFileSystem.File.ReadAllText("C:/Test");
         reimport.Should().Be(expected);
     }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO.Abstractions;
-using System.Threading.Tasks;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.Json.Pipeline;
@@ -27,20 +26,23 @@ public class SettingsSingleton : ISettingsSingleton
         IGuiSettingsPath guiPaths,
         IGuiSettingsImporter guiSettingsImporter,
         IPipelineSettingsImporter pipelineSettingsImporter,
+        PipelineSettingsMigration pipelineSettingsMigration,
         IPipelineSettingsPath paths)
     {
         ISynthesisGuiSettings? guiSettings = null;
         IPipelineSettings? pipeSettings = null;
-        if (fileSystem.File.Exists(guiPaths.Path))
-        {
-            guiSettings = guiSettingsImporter.Import(guiPaths.Path);
-        }
         if (fileSystem.File.Exists(paths.Path))
         {
             pipeSettings = pipelineSettingsImporter.Import(paths.Path);
         }
-        Gui = guiSettings ?? new SynthesisGuiSettings();
         Pipeline = pipeSettings ?? new PipelineSettings();
+        
+        if (fileSystem.File.Exists(guiPaths.Path))
+        {
+            guiSettings = guiSettingsImporter.Import(guiPaths.Path);
+            pipelineSettingsMigration.Upgrade(Pipeline, guiPaths.Path);
+        }
+        Gui = guiSettings ?? new SynthesisGuiSettings();
     }
 }
 

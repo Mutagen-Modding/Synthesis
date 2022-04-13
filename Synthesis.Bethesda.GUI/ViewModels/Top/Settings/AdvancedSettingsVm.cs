@@ -3,7 +3,6 @@ using System.Reactive.Linq;
 using Noggog;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Settings;
 using Noggog.WPF;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -30,8 +29,8 @@ public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider, IDotNe
         ISettingsSingleton settingsSingleton)
     {
         Shortcircuit = settingsSingleton.Pipeline.Shortcircuit;
-        DotNetPathOverride = settingsSingleton.Gui.DotNetPathOverride;
-        BuildCorePercentage = settingsSingleton.Gui.BuildCorePercentage;
+        DotNetPathOverride = settingsSingleton.Pipeline.DotNetPathOverride;
+        BuildCorePercentage = settingsSingleton.Pipeline.BuildCorePercentage;
             
         NumProcessors = (byte)Math.Min(byte.MaxValue, Environment.ProcessorCount);
 
@@ -45,8 +44,8 @@ public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider, IDotNe
 
     public void Save(SynthesisGuiSettings gui, PipelineSettings pipe)
     {
-        gui.BuildCorePercentage = BuildCorePercentage;
-        gui.DotNetPathOverride = DotNetPathOverride;
+        pipe.BuildCorePercentage = BuildCorePercentage;
+        pipe.DotNetPathOverride = DotNetPathOverride;
         pipe.Shortcircuit = Shortcircuit;
     }
 }

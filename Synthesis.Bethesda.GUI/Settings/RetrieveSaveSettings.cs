@@ -29,6 +29,6 @@ public class RetrieveSaveSettings : IRetrieveSaveSettings
         {
             saver.Save(gui, pipe);
         }
-        gui.WorkingDirectory = _settingsSingleton.Gui.WorkingDirectory;
+        pipe.WorkingDirectory = _settingsSingleton.Pipeline.WorkingDirectory;
     }
 }

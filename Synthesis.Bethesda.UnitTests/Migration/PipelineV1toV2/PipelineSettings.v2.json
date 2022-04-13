@@ -122,5 +122,8 @@
       "TargetLanguage": "English"
     }
   ],
-  "Shortcircuit": true
+  "Shortcircuit": true,
+  "WorkingDirectory": "",
+  "BuildCorePercentage": 0.5,
+  "DotNetPathOverride": ""
 }

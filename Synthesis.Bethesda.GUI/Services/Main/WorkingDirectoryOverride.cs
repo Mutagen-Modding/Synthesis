@@ -13,6 +13,6 @@ public class WorkingDirectoryProviderOverride : IWorkingDirectoryProvider
         Func<WorkingDirectoryProvider> workingDir,
         ISettingsSingleton settings)
     {
-        WorkingDirectory = settings.Gui.WorkingDirectory.IsNullOrWhitespace() ? workingDir().WorkingDirectory : settings.Gui.WorkingDirectory;
+        WorkingDirectory = settings.Pipeline.WorkingDirectory.IsNullOrWhitespace() ? workingDir().WorkingDirectory : settings.Pipeline.WorkingDirectory;
     }
 }

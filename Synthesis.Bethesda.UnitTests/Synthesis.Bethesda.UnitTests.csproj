@@ -85,15 +85,24 @@
       <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Migration\PipelineSettings.json">
+    <None Update="Migration\Pipeline\PipelineSettings.v2.json">
       <DefaultPackFolder>none</DefaultPackFolder>
       <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Migration\PipelineSettings.v2.json">
+    <None Update="Migration\Pipeline\PipelineSettings.json">
       <DefaultPackFolder>none</DefaultPackFolder>
       <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Migration\PipelineV1toV2\PipelineSettings.v2.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Migration\PipelineV1toV2\PipelineSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Migration\GuiV1toV2\GuiSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
@@ -104,6 +113,16 @@
       <BuildAction>Compile</BuildAction>
     </Compile>
     <Compile Update="Execution\Json\SettingsVersionRetrieverTests.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Migration\Pipeline\V1toV2Tests.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Migration\Pipeline\PipelineSettingsBackupTests.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>

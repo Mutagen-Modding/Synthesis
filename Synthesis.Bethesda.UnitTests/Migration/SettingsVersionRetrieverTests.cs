@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.IO;
+using FluentAssertions;
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings.Json;
 using Xunit;
@@ -11,7 +12,7 @@ public class SettingsVersionRetrieverTests
     public void NoVersionDetection()
     {
         new SettingsVersionRetriever(IFileSystemExt.DefaultFilesystem)
-            .GetVersion("Migration/PipelineSettings.json")
+            .GetVersion(Path.Combine("Migration", "PipelineV1toV2", "PipelineSettings.json"))
             .Should().BeNull();
     }
         
@@ -19,7 +20,7 @@ public class SettingsVersionRetrieverTests
     public void Version2Detection()
     {
         new SettingsVersionRetriever(IFileSystemExt.DefaultFilesystem)
-            .GetVersion("Migration/PipelineSettings.v2.json")
+            .GetVersion(Path.Combine("Migration", "PipelineV1toV2", "PipelineSettings.v2.json"))
             .Should().Be(2);
     }
 }
