@@ -1,7 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using CommandLine;
-using Mutagen.Bethesda;
-using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -13,7 +11,6 @@ namespace Synthesis.Bethesda.Execution.Commands;
 [Verb("run-pipeline", HelpText = "Run the patcher pipeline")]
 [ExcludeFromCodeCoverage]
 public class RunPatcherPipelineInstructions :
-    IGameReleaseContext,
     IProfileDefinitionPathProvider,
     IProfileNameProvider
 {
@@ -22,9 +19,6 @@ public class RunPatcherPipelineInstructions :
 
     [Option('o', "OutputDirectory", Required = true, HelpText = "Path where the patcher should place its resulting file(s).")]
     public DirectoryPath OutputDirectory { get; set; }
-
-    [Option('g', "GameRelease", Required = true, HelpText = "GameRelease data folder is related to.")]
-    public GameRelease GameRelease { get; set; }
 
     [Option('d', "DataFolderPath", Required = false, HelpText = "Path to the data folder.")]
     public DirectoryPath DataFolderPath { get; set; } = string.Empty;
@@ -52,7 +46,6 @@ public class RunPatcherPipelineInstructions :
         return $"\n{nameof(RunSynthesisPatcher)} => \n"
                + $"  {nameof(SourcePath)} => {this.SourcePath} \n"
                + $"  {nameof(OutputDirectory)} => {this.OutputDirectory} \n"
-               + $"  {nameof(GameRelease)} => {this.GameRelease} \n"
                + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
                + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
                + $"  {nameof(ProfileDefinitionPath)} => {this.ProfileDefinitionPath} \n"
@@ -61,8 +54,7 @@ public class RunPatcherPipelineInstructions :
                + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
                + $"  {nameof(PersistenceMode)} => {this.PersistenceMode}";
     }
-
-    GameRelease IGameReleaseContext.Release => GameRelease;
+    
     FilePath IProfileDefinitionPathProvider.Path => ProfileDefinitionPath;
     string IProfileNameProvider.Name => ProfileName;
 }

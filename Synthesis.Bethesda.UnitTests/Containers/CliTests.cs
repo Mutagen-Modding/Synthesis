@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Noggog;
 using Noggog.Autofac;
+using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Patchers.Cli;
@@ -11,7 +12,6 @@ using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Profile;
-using Synthesis.Bethesda.Execution.Running.Cli;
 using Synthesis.Bethesda.Execution.Settings;
 using Xunit;
 
@@ -24,7 +24,7 @@ public class CliTests
     {
         var builder = new ContainerBuilder();
         builder.RegisterModule(
-            new Synthesis.Bethesda.CLI.MainModule(
+            new RunPipelineModule(
                 new RunPatcherPipelineInstructions()));
         var cont = builder.Build();
         cont.Validate(typeof(IRunProfileProvider));
@@ -35,7 +35,7 @@ public class CliTests
     {
         var builder = new ContainerBuilder();
         builder.RegisterModule(
-            new Synthesis.Bethesda.CLI.MainModule(
+            new RunPipelineModule(
                 new RunPatcherPipelineInstructions()));
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<ISynthesisProfileSettings>();
@@ -48,14 +48,15 @@ public class CliTests
     {
         var builder = new ContainerBuilder();
         builder.RegisterModule(
-            new Synthesis.Bethesda.CLI.MainModule(
+            new RunPipelineModule(
                 new RunPatcherPipelineInstructions()));
         builder.RegisterModule<PatcherModule>();
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<IPatcherIdProvider>();
         builder.RegisterMock<CliPatcherSettings>()
             .As<IPathToExecutableInputProvider>()
-            .As<IPatcherNameProvider>();
+            .As<IPatcherNameProvider>()
+            .As<IPatcherNicknameProvider>();
         var cont = builder.Build();
         cont.Validate(typeof(ICliPatcherRun));
     }
@@ -65,17 +66,16 @@ public class CliTests
     {
         var builder = new ContainerBuilder();
         builder.RegisterModule(
-            new Synthesis.Bethesda.CLI.MainModule(
+            new RunPipelineModule(
                 new RunPatcherPipelineInstructions()));
         builder.RegisterModule<SolutionPatcherModule>();
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<IPatcherIdProvider>();
-        builder.RegisterMock<IPatcherNameProvider>();
         builder.RegisterMock<IShortCircuitSettingsProvider>();
-        builder.RegisterMock<IDotNetPathSettingsProvider>();
         builder.RegisterMock<SolutionPatcherSettings>()
             .As<IPathToSolutionFileProvider>()
-            .As<IProjectSubpathProvider>();
+            .As<IProjectSubpathProvider>()
+            .As<IPatcherNicknameProvider>();
         var cont = builder.Build();
         cont.Validate(typeof(ISolutionPatcherRun));
     }
@@ -85,17 +85,16 @@ public class CliTests
     {
         var builder = new ContainerBuilder();
         builder.RegisterModule(
-            new Synthesis.Bethesda.CLI.MainModule(
+            new RunPipelineModule(
                 new RunPatcherPipelineInstructions()));
         builder.RegisterModule<GitPatcherModule>();
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<IPatcherIdProvider>();
-        builder.RegisterMock<IPatcherNameProvider>();
         builder.RegisterMock<IShortCircuitSettingsProvider>();
-        builder.RegisterMock<IDotNetPathSettingsProvider>();
         builder.RegisterMock<GithubPatcherSettings>()
             .As<IGithubPatcherIdentifier>()
-            .As<IProjectSubpathProvider>();
+            .As<IProjectSubpathProvider>()
+            .As<IPatcherNicknameProvider>();
         var cont = builder.Build();
         cont.Validate(typeof(IGitPatcherRun));
     }

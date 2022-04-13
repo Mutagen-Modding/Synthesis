@@ -5,7 +5,10 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.GUI.Settings;
 using Noggog.WPF;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Settings.Calculators;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.Execution.WorkEngine;
 
@@ -22,20 +25,17 @@ public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider, IDotNe
         
     [Reactive] public double BuildCorePercentage { get; set; }
 
-    public byte NumProcessors { get; }
-
     public GlobalSettingsVm(
         IWorkConsumerSettings workConsumerSettings,
-        ISettingsSingleton settingsSingleton)
+        ISettingsSingleton settingsSingleton,
+        BuildCoreCalculator calculator)
     {
         Shortcircuit = settingsSingleton.Pipeline.Shortcircuit;
         DotNetPathOverride = settingsSingleton.Pipeline.DotNetPathOverride;
         BuildCorePercentage = settingsSingleton.Pipeline.BuildCorePercentage;
-            
-        NumProcessors = (byte)Math.Min(byte.MaxValue, Environment.ProcessorCount);
 
         _buildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
-            .Select(x => (byte)Math.Min(byte.MaxValue, Environment.ProcessorCount * Percent.FactoryPutInRange(x)))
+            .Select(calculator.Calculate)
             .ToGuiProperty(this, nameof(BuildCores), deferSubscription: true);
             
         ObservableExtensions.Subscribe(this.WhenAnyValue(x => x.BuildCores), x => workConsumerSettings.SetNumThreads(x))

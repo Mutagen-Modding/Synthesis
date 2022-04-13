@@ -3,7 +3,7 @@ using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Synthesis.Bethesda.Execution.Profile;
 
-namespace Synthesis.Bethesda.CLI.Services;
+namespace Synthesis.Bethesda.CLI.RunPipeline;
 
 public class ProfileLoadOrderProvider : IProfileLoadOrderProvider
 {

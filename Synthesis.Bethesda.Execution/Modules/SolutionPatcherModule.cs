@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Noggog.Autofac;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
@@ -16,6 +17,7 @@ public class SolutionPatcherModule : Module
                 typeof(IPathToProjProvider),
                 typeof(IGithubPatcherIdentifier))
             .NotInjection()
-            .AsImplementedInterfaces();
+            .AsImplementedInterfaces()
+            .AsSelf();
     }
 }

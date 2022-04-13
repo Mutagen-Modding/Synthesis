@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Reactive.Linq;
-using Noggog;
+﻿using System.Reactive.Linq;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -20,27 +17,13 @@ public class SolutionPatcherNameVm : ViewModel, IPatcherNameVm
 
     public SolutionPatcherNameVm(
         IProjectSubpathDefaultSettings defaultSettings,
+        SolutionNameConstructor nameConstructor,
         ISelectedProjectInputVm selectedProjectInputVm)
     {
         _name = selectedProjectInputVm.WhenAnyValue(x => x.Picker.TargetPath)
-            .Select(GetNameFromPath)
             .CombineLatest(
                 this.WhenAnyValue(x => x.Nickname),
-                (auto, nickname) => nickname.IsNullOrWhitespace() ? auto : nickname)
-            .ToGuiProperty<string>(this, nameof(Name), GetNameFromPath(defaultSettings.ProjectSubpath), deferSubscription: true);
-    }
-
-    private string GetNameFromPath(string path)
-    {
-        try
-        {
-            var name = Path.GetFileName(Path.GetDirectoryName(path));
-            if (string.IsNullOrWhiteSpace(name)) return string.Empty;
-            return name;
-        }
-        catch (Exception)
-        {
-            return string.Empty;
-        }
+                (path, nickname) => nameConstructor.Construct(nickname, path))
+            .ToGuiProperty<string>(this, nameof(Name), nameConstructor.Construct(Nickname, defaultSettings.ProjectSubpath), deferSubscription: true);
     }
 }

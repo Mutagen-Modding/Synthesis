@@ -2,7 +2,6 @@
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
-public interface IPatcherNameVm : IPatcherNameProvider
+public interface IPatcherNameVm : IPatcherNameProvider, IPatcherNicknameProvider
 {
-    public string Nickname { get; set; }
 }

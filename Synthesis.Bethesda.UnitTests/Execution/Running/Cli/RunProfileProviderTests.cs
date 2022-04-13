@@ -4,7 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using Noggog;
 using NSubstitute;
-using Synthesis.Bethesda.Execution.Running.Cli;
+using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.UnitTests.AutoData;

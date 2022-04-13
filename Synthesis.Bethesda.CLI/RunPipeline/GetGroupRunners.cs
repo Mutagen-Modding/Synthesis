@@ -1,12 +1,13 @@
 using System.Linq;
 using System.Threading;
+using Mutagen.Bethesda.Plugins;
 using Serilog;
 using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.V2;
 
-namespace Synthesis.Bethesda.Execution.Running.Cli;
+namespace Synthesis.Bethesda.CLI.RunPipeline;
 
 public interface IGetGroupRunners
 {
@@ -40,7 +41,7 @@ public class GetGroupRunners : IGetGroupRunners
             .Select<PatcherGroupSettings, IGroupRun>(settings =>
             {
                 return new GroupRun(
-                    settings.Name,
+                    ModKey.FromName(settings.Name, ModType.Plugin),
                     _getPatcherRunners.Get(settings.Patchers).Select(patcher =>
                     {
                         return _prepPatcherForRun.Prep(patcher, cancellation);

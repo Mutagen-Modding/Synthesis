@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.Execution.Settings.V2;
 
-namespace Synthesis.Bethesda.Execution.Running.Cli;
+namespace Synthesis.Bethesda.CLI.RunPipeline;
 
 public interface IGetPatcherRunners
 {

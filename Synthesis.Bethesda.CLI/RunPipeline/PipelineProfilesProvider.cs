@@ -1,23 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.Json.Pipeline;
-using Synthesis.Bethesda.Execution.Settings.V2;
 
-namespace Synthesis.Bethesda.Execution.Running.Cli;
+namespace Synthesis.Bethesda.CLI.RunPipeline;
 
 public interface IPipelineProfilesProvider
 {
     IEnumerable<ISynthesisProfileSettings> Get();
 }
 
-public class PipelineProfilesProvider : IPipelineProfilesProvider
+public interface IPipelineSettingsProvider
 {
+    IPipelineSettings Settings { get; }
+}
+
+public class PipelineProfilesProvider : IPipelineProfilesProvider, IPipelineSettingsProvider
+{
+    private readonly Lazy<IPipelineSettings> _settings;
+
+    public IPipelineSettings Settings => _settings.Value;
     public IPipelineSettingsImporter PipelineSettingsImporter { get; }
     public IProfileDefinitionPathProvider ProfileDefinitionPathProvider { get; }
-    private readonly IFileSystem _fileSystem;
 
     public PipelineProfilesProvider(
         IFileSystem fileSystem,
@@ -26,17 +33,19 @@ public class PipelineProfilesProvider : IPipelineProfilesProvider
     {
         PipelineSettingsImporter = pipelineSettingsImporter;
         ProfileDefinitionPathProvider = profileDefinitionPathProvider;
-        _fileSystem = fileSystem;
+        _settings = new Lazy<IPipelineSettings>(() =>
+        {
+            if (!fileSystem.File.Exists(ProfileDefinitionPathProvider.Path))
+            {
+                throw new FileNotFoundException("Could not locate pipeline settings to run", ProfileDefinitionPathProvider.Path);
+            }
+            
+            return PipelineSettingsImporter.Import(ProfileDefinitionPathProvider.Path);
+        });
     }
         
     public IEnumerable<ISynthesisProfileSettings> Get()
     {
-        // Locate profile
-        if (!_fileSystem.File.Exists(ProfileDefinitionPathProvider.Path))
-        {
-            throw new FileNotFoundException("Could not locate profile to run", ProfileDefinitionPathProvider.Path);
-        }
-            
-        return PipelineSettingsImporter.Import(ProfileDefinitionPathProvider.Path).Profiles;
+        return _settings.Value.Profiles;
     }
 }

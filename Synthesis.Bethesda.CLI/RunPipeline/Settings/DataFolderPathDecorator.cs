@@ -2,7 +2,7 @@
 using Noggog;
 using Synthesis.Bethesda.Execution.Commands;
 
-namespace Synthesis.Bethesda.Execution.Running.Cli.Settings;
+namespace Synthesis.Bethesda.CLI.RunPipeline.Settings;
 
 public class DataFolderPathDecorator : IDataDirectoryProvider
 {

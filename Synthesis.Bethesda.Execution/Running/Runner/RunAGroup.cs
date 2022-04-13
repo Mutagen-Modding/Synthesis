@@ -1,12 +1,9 @@
-using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.Groups;
-using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner;
 

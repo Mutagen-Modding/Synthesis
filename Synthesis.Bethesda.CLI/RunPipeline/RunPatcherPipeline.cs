@@ -4,7 +4,7 @@ using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.Execution.Running.Cli;
+namespace Synthesis.Bethesda.CLI.RunPipeline;
 
 public interface IRunPatcherPipeline
 {

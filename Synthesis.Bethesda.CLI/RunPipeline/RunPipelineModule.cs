@@ -5,17 +5,18 @@ using Mutagen.Bethesda.Autofac;
 using Noggog.Autofac;
 using Noggog.Autofac.Modules;
 using Serilog;
-using Synthesis.Bethesda.CLI.Services;
+using Synthesis.Bethesda.CLI.RunPipeline.Settings;
 using Synthesis.Bethesda.Execution.Commands;
+using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Reporters;
 
-namespace Synthesis.Bethesda.CLI;
+namespace Synthesis.Bethesda.CLI.RunPipeline;
 
-public class MainModule : Module
+public class RunPipelineModule : Module
 {
     public RunPatcherPipelineInstructions Settings { get; }
 
-    public MainModule(RunPatcherPipelineInstructions settings)
+    public RunPipelineModule(RunPatcherPipelineInstructions settings)
     {
         Settings = settings;
     }
@@ -31,11 +32,16 @@ public class MainModule : Module
             
         builder.Register(_ => CancellationToken.None).AsSelf();
         builder.RegisterInstance(new ConsoleReporter()).As<IRunReporter>();
+
+        builder.RegisterType<PatcherIdProvider>().AsImplementedInterfaces()
+            .InstancePerMatchingLifetimeScope(LifetimeScopes.RunNickname);
             
         builder.RegisterAssemblyTypes(typeof(ProfileLoadOrderProvider).Assembly)
             .InNamespacesOf(
                 typeof(ProfileLoadOrderProvider))
-            .AsMatchingInterface();
+            .NotInNamespacesOf(typeof(DataFolderPathDecorator))
+            .AsImplementedInterfaces()
+            .AsSelf();
             
         // Settings
         builder.RegisterInstance(Settings)

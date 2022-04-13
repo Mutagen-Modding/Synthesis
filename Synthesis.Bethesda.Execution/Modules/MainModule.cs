@@ -9,8 +9,8 @@ using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Pathing;
-using Synthesis.Bethesda.Execution.Running.Cli;
 using Synthesis.Bethesda.Execution.Running.Runner;
+using Synthesis.Bethesda.Execution.Settings.Calculators;
 using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.Execution.Versioning;
@@ -30,11 +30,11 @@ public class MainModule : Module
                 typeof(IWorkingDirectorySubPaths),
                 typeof(IPatcherRun),
                 typeof(IInstalledSdkFollower),
+                typeof(BuildCoreCalculator),
                 typeof(IConsiderPrereleasePreference),
                 typeof(IPatcherNameSanitizer),
                 typeof(ILinesToReflectionConfigsParser),
                 typeof(INugetErrorSolution),
-                typeof(IRunProfileProvider),
                 typeof(ExportGitAddFile),
                 typeof(IProjectRunProcessStartInfoProvider),
                 typeof(IBuild))

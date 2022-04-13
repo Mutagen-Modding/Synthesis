@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Noggog;
 using NSubstitute;
-using Synthesis.Bethesda.Execution.Running.Cli.Settings;
+using Synthesis.Bethesda.CLI.RunPipeline.Settings;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 

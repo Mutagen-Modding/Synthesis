@@ -1,21 +1,24 @@
 ﻿using System;
 using System.Linq;
+using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.Execution.Settings.V2;
 
-namespace Synthesis.Bethesda.Execution.Running.Cli;
+namespace Synthesis.Bethesda.CLI.RunPipeline;
 
 public interface IRunProfileProvider
 {
     ISynthesisProfileSettings Get();
 }
 
-public class RunProfileProvider : IRunProfileProvider
+public class RunProfileProvider : IRunProfileProvider, IGameReleaseContext
 {
     public IProfileNameProvider ProfileNameProvider { get; }
     public IPipelineProfilesProvider PipelineProfilesProvider { get; }
+
+    private Lazy<ISynthesisProfileSettings> _profileSettings;
 
     public RunProfileProvider(
         IProfileNameProvider profileNameProvider,
@@ -23,9 +26,10 @@ public class RunProfileProvider : IRunProfileProvider
     {
         ProfileNameProvider = profileNameProvider;
         PipelineProfilesProvider = pipelineProfilesProvider;
+        _profileSettings = new Lazy<ISynthesisProfileSettings>(GetInternal);
     }
 
-    public ISynthesisProfileSettings Get()
+    private ISynthesisProfileSettings GetInternal()
     {
         var profiles = PipelineProfilesProvider.Get().ToArray();
 
@@ -58,4 +62,7 @@ public class RunProfileProvider : IRunProfileProvider
 
         return profile;
     }
+
+    public ISynthesisProfileSettings Get() => _profileSettings.Value;
+    public GameRelease Release => _profileSettings.Value.TargetRelease;
 }

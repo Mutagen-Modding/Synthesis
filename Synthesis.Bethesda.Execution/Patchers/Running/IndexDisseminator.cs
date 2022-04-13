@@ -1,4 +1,4 @@
-﻿namespace Synthesis.Bethesda.Execution.Running.Cli;
+﻿namespace Synthesis.Bethesda.Execution.Patchers.Running;
 
 public interface IIndexDisseminator
 {

@@ -3,10 +3,8 @@ using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Synthesis.Bethesda.Commands;
-using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
-using Synthesis.Bethesda.Execution.Running.Cli;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 
