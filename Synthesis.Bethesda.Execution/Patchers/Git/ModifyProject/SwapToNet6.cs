@@ -16,7 +16,7 @@ public class SwapOffNetCore : ISwapOffNetCore
             foreach (var elem in group.Elements())
             {
                 if (elem.Name.LocalName.Equals("TargetFramework")
-                    && elem.Value.Equals("netcoreapp3.1"))
+                    && (elem.Value.Equals("netcoreapp3.1") || elem.Value.StartsWith("net5")))
                 {
                     elem.Value = "net6.0";
                 }
