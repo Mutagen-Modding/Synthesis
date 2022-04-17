@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 
-namespace Synthesis.Bethesda.Execution.DotNet.Builder;
+namespace Synthesis.Bethesda.Execution.DotNet.Builder.Transient;
 
 public interface IBuildOutputAccumulator
 {
@@ -20,6 +21,11 @@ public class BuildOutputAccumulator : IBuildOutputAccumulator
     public string? FirstError { get; private set; }
     public bool BuildFailed { get; private set; }
     public int Limit { get; set; } = 10_000;
+
+    public BuildOutputAccumulator()
+    {
+        
+    }
 
     public void Process(string line)
     {

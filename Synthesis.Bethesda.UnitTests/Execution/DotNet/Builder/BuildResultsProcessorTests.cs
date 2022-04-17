@@ -4,6 +4,7 @@ using FluentAssertions;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
+using Synthesis.Bethesda.Execution.DotNet.Builder.Transient;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 

@@ -1,7 +1,10 @@
-﻿using Autofac;
+﻿using System;
+using System.Linq;
+using Autofac;
 using Noggog.Autofac;
 using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.Execution.DotNet.Builder;
+using Synthesis.Bethesda.Execution.DotNet.Builder.Transient;
+using Synthesis.Bethesda.Execution.DotNet.Singleton;
 using Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget;
 using Synthesis.Bethesda.Execution.FileAssociations;
 using Synthesis.Bethesda.Execution.GitRepository;
@@ -29,6 +32,7 @@ public class MainModule : Module
                 typeof(IProcessRunner),
                 typeof(IWorkingDirectorySubPaths),
                 typeof(IPatcherRun),
+                typeof(IIsApplicableErrorLine),
                 typeof(IInstalledSdkFollower),
                 typeof(BuildCoreCalculator),
                 typeof(IConsiderPrereleasePreference),
@@ -36,9 +40,11 @@ public class MainModule : Module
                 typeof(ILinesToReflectionConfigsParser),
                 typeof(INugetErrorSolution),
                 typeof(ExportGitAddFile),
-                typeof(IProjectRunProcessStartInfoProvider),
-                typeof(IBuild))
-            .NotInNamespacesOf(typeof(IInstalledSdkFollower))
+                typeof(IBuildOutputAccumulator),
+                typeof(IProjectRunProcessStartInfoProvider))
+            .NotInNamespacesOf(
+                typeof(IInstalledSdkFollower),
+                typeof(IBuildOutputAccumulator))
             .TypicalRegistrations()
             .AsSelf();
             
@@ -47,6 +53,12 @@ public class MainModule : Module
                 typeof(IWorkDropoff))
             .SingleInstance()
             .AsImplementedInterfaces();
+            
+        builder.RegisterAssemblyTypes(typeof(IProcessRunner).Assembly)
+            .InNamespacesOf(
+                typeof(IBuildOutputAccumulator))
+            .InstancePerDependency()
+            .TypicalRegistrations();
             
         builder.RegisterAssemblyTypes(typeof(IProcessRunner).Assembly)
             .InNamespacesOf(

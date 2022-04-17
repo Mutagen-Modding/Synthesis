@@ -7,7 +7,7 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
-using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.DotNet.Singleton;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.Execution.Versioning.Query;
 

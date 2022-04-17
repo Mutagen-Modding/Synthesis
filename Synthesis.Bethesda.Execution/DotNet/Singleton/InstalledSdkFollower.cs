@@ -6,7 +6,7 @@ using Noggog.Reactive;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet.Dto;
 
-namespace Synthesis.Bethesda.Execution.DotNet;
+namespace Synthesis.Bethesda.Execution.DotNet.Singleton;
 
 public interface IInstalledSdkFollower
 {

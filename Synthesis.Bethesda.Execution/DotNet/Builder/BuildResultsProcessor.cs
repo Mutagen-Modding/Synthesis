@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Noggog;
+using Synthesis.Bethesda.Execution.DotNet.Builder.Transient;
 
 namespace Synthesis.Bethesda.Execution.DotNet.Builder;
 

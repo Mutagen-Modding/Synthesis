@@ -4,6 +4,7 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.DotNet.Singleton;
 using Synthesis.Bethesda.GUI.Services.Main;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;

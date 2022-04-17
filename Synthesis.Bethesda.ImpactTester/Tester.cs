@@ -137,7 +137,7 @@ public class Tester
                         var compile = await _build.Compile(path, cancel);
                         if (compile.Failed)
                         {
-                            System.Console.WriteLine("Failed compilation");
+                            System.Console.WriteLine($"Failed compilation {group.Key}/{dependency.Repository}:{proj}");
                         }
                         projResults.Add(new ProjectResult(
                             dependency,
@@ -183,7 +183,7 @@ public class Tester
                          .CreateOrderedEnumerable(d => d.Dependent.Repository, null, true)
                          .CreateOrderedEnumerable(d => d.ProjSubPath, null, true))
             {
-                System.Console.WriteLine($"{f.Dependent}: {f.ProjSubPath}");
+                System.Console.WriteLine($"  {f.Dependent}: {f.ProjSubPath}");
                 _printErrorMessage.Print(f.Compile.Reason, f.SolutionFolderPath, (s, _) =>
                 {
                     Console.WriteLine(s.ToString());

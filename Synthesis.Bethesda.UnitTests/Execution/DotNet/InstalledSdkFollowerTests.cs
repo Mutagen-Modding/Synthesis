@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Reactive.Testing;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.DotNet.Dto;
+using Synthesis.Bethesda.Execution.DotNet.Singleton;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
