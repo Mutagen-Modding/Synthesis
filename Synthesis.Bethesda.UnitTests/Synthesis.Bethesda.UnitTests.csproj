@@ -19,9 +19,9 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Include="Mutagen.Bethesda" Version="0.37.0.1-dev" />
     <PackageReference Include="Mutagen.Bethesda.Testing" Version="0.37.0.1-dev" />
-    <PackageReference Include="Noggog.Autofac" Version="2.41.0.1-dev" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.41.0.1-dev" />
-    <PackageReference Include="Noggog.Testing" Version="2.41.0.1-dev" />
+    <PackageReference Include="Noggog.Autofac" Version="2.42.0.1-dev" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.42.0.1-dev" />
+    <PackageReference Include="Noggog.Testing" Version="2.42.0.1-dev" />
     <PackageReference Include="NSubstitute" Version="4.3.0" />
     <PackageReference Include="NuGetizer" Version="0.7.5">
       <PrivateAssets>all</PrivateAssets>
