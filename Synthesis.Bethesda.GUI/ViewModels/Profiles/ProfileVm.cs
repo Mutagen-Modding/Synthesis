@@ -218,7 +218,7 @@ public class ProfileVm : ViewModel
                     if (erroredEnabledGroups.Count > 0)
                     {
                         var errGroup = erroredEnabledGroups.First();
-                        return GetResponse<ViewModel>.Fail(errGroup, $"\"{errGroup.Name}\" has a blocking error: {errGroup.State}");
+                        return GetResponse<ViewModel>.Fail(errGroup.State.Item, $"\"{errGroup.Name}\" has a blocking error: {errGroup.State}");
                     }
                     return GetResponse<ViewModel>.Succeed(null!);
                 })
