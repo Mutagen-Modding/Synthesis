@@ -66,6 +66,9 @@ public class ProfileVm : ViewModel
     private readonly ObservableAsPropertyHelper<ErrorResponse> _state;
     public ErrorResponse State => _state.Value;
 
+    private readonly ObservableAsPropertyHelper<GetResponse<ViewModel>> _globalError;
+    public GetResponse<ViewModel> GlobalError => _globalError.Value;
+
     private readonly ObservableAsPropertyHelper<GetResponse<ViewModel>> _blockingError;
     public GetResponse<ViewModel> BlockingError => _blockingError.Value;
 
@@ -167,16 +170,9 @@ public class ProfileVm : ViewModel
             .QueryWhenChanged(q => q.ToHashSet())
             .Replay(1).RefCount();
 
-        _blockingError = Observable.CombineLatest(
+        _globalError = Observable.CombineLatest(
                 dataFolder.DataFolderResult,
                 loadOrder.WhenAnyValue(x => x.State),
-                enabledGroups
-                    .QueryWhenChanged(q => q)
-                    .StartWith(Noggog.ListExt.Empty<GroupVm>()),
-                enabledGroups
-                    .FilterOnObservable(g => g.WhenAnyValue(x => x.State).Select(x => x.IsHaltingError))
-                    .QueryWhenChanged(q => q)
-                    .StartWith(Noggog.ListExt.Empty<GroupVm>()),
                 LoadOrder.Connect()
                     .FilterOnObservable(
                         x =>
@@ -187,25 +183,42 @@ public class ProfileVm : ViewModel
                                 enabledGroupModKeys
                                     .Select(groupModKeys => groupModKeys.Contains(x.ModKey)),
                                 (exists, isEnabledGroupKey) => !exists && !isEnabledGroupKey);
-                        }, 
+                        },
                         scheduler: RxApp.MainThreadScheduler)
                     .QueryWhenChanged(q => q)
                     .StartWith(Noggog.ListExt.Empty<ReadOnlyModListingVM>())
                     .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler),
                 this.WhenAnyValue(x => x.IgnoreMissingMods),
-                (dataFolder, loadOrder, enabledGroups, erroredEnabledGroups, missingMods, ignoreMissingMods) =>
+                (dataFolder, loadOrder, missingMods, ignoreMissingMods) =>
                 {
-                    if (enabledGroups.Count == 0) return GetResponse<ViewModel>.Fail("There are no enabled groups to run.");
                     if (!dataFolder.Succeeded) return dataFolder.BubbleFailure<ViewModel>();
                     if (!loadOrder.Succeeded) return loadOrder.BubbleFailure<ViewModel>();
                     if (!ignoreMissingMods && missingMods.Count > 0)
                     {
-                        return GetResponse<ViewModel>.Fail($"Load order had mods that were missing:{Environment.NewLine}{string.Join(Environment.NewLine, missingMods.Select(x => x.ModKey))}");
+                        return GetResponse<ViewModel>.Fail(
+                            $"Load order had mods that were missing:{Environment.NewLine}{string.Join(Environment.NewLine, missingMods.Select(x => x.ModKey))}");
                     }
+
+                    return GetResponse<ViewModel>.Succeed(null!);
+                })
+            .ToGuiProperty(this, nameof(GlobalError), GetResponse<ViewModel>.Fail("Uninitialized global error"), deferSubscription: true);
+
+        _blockingError = Observable.CombineLatest(
+                this.WhenAnyValue(x => x.GlobalError),
+                enabledGroups
+                    .QueryWhenChanged(q => q)
+                    .StartWith(Noggog.ListExt.Empty<GroupVm>()),
+                enabledGroups
+                    .FilterOnObservable(g => g.WhenAnyValue(x => x.State).Select(x => x.IsHaltingError))
+                    .QueryWhenChanged(q => q)
+                    .StartWith(Noggog.ListExt.Empty<GroupVm>()),
+                (global, enabledGroups, erroredEnabledGroups) =>
+                {
+                    if (enabledGroups.Count == 0) return GetResponse<ViewModel>.Fail("There are no enabled groups to run.");
                     if (erroredEnabledGroups.Count > 0)
                     {
                         var errGroup = erroredEnabledGroups.First();
-                        return GetResponse<ViewModel>.Fail(errGroup, $"\"{errGroup.Name}\" has a blocking error: {errGroup.State}");
+                        return GetResponse<ViewModel>.Fail(errGroup.State.Item, $"\"{errGroup.Name}\" has a blocking error: {errGroup.State}");
                     }
                     return GetResponse<ViewModel>.Succeed(null!);
                 })

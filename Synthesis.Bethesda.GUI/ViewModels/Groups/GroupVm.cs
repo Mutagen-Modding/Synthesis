@@ -142,7 +142,8 @@ public class GroupVm : ViewModel, ISelected
                     .QueryWhenChanged(q => q)
                     .StartWith(Noggog.ListExt.Empty<PatcherVm>()),
                 this.WhenAnyValue(x => x.ModKey),
-                (numEnabledPatchers, processingPatchers, haltedPatchers, modKey) =>
+                this.WhenAnyValue(x => x.ProfileVm.GlobalError),
+                (numEnabledPatchers, processingPatchers, haltedPatchers, modKey, overallBlocking) =>
                 {
                     if (modKey.Failed)
                     {
@@ -162,6 +163,11 @@ public class GroupVm : ViewModel, ISelected
                         {
                             IsHaltingError = failedPatcher.State.IsHaltingError
                         };
+                    }
+
+                    if (overallBlocking.Failed)
+                    {
+                        return overallBlocking;
                     }
 
                     return new ConfigurationState<ViewModel>(this);
