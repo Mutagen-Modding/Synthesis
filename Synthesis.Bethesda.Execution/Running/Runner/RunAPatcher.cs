@@ -79,7 +79,7 @@ public class RunAPatcher : IRunAPatcher
         catch (Exception ex)
         {
             _reporter.ReportRunProblem(prepBundle.Run.Key, prepBundle.Run.Name, ex);
-            return null;
+            throw;
         }
     }
 }
