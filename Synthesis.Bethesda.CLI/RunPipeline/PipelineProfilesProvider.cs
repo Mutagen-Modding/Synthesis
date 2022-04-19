@@ -48,4 +48,9 @@ public class PipelineProfilesProvider : IPipelineProfilesProvider, IPipelineSett
     {
         return _settings.Value.Profiles;
     }
+
+    public override string ToString()
+    {
+        return nameof(PipelineProfilesProvider);
+    }
 }

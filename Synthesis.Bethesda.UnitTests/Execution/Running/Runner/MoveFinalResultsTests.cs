@@ -3,6 +3,7 @@ using System.IO.Abstractions;
 using FluentAssertions;
 using Mutagen.Bethesda.Environments.DI;
 using Noggog;
+using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
@@ -44,31 +45,29 @@ public class MoveFinalResultsTests
     }
         
     [Theory, SynthAutoData]
-    public void MovesFilesToDataDir(
+    public void MovesFilesToWorkspaceDir(
         IFileSystem fs,
-        IDataDirectoryProvider dataDirectoryProvider,
         DirectoryPath missingOutputPath,
         MoveFinalResults sut)
     {
         PrepFileSystem(fs);
         sut.Move(SourcePatchPath, missingOutputPath);
-        fs.File.Exists(Path.Combine(dataDirectoryProvider.Path, "Synthesis.esp")).Should().BeTrue();
-        fs.File.Exists(Path.Combine(dataDirectoryProvider.Path, "Strings", "Synthesis_English.STRINGS")).Should().BeTrue();
+        fs.File.Exists(Path.Combine(sut.ProfileDirectories.OutputDirectory.Path, "Synthesis.esp")).Should().BeTrue();
+        fs.File.Exists(Path.Combine(sut.ProfileDirectories.OutputDirectory.Path, "Strings", "Synthesis_English.STRINGS")).Should().BeTrue();
     }
         
     [Theory, SynthAutoData]
-    public void OverwritesFilesInDataDir(
+    public void OverwritesFilesInFinalDestination(
         IFileSystem fs,
-        IDataDirectoryProvider dataDirectoryProvider,
-        DirectoryPath missingOutputPath,
+        DirectoryPath existingOutputDir,
         MoveFinalResults sut)
     {
         PrepFileSystem(fs);
-        fs.File.WriteAllText(Path.Combine(dataDirectoryProvider.Path, "Synthesis.esp"), "Hello");
-        fs.Directory.CreateDirectory(Path.Combine(dataDirectoryProvider.Path, "Strings"));
-        fs.File.WriteAllText(Path.Combine(dataDirectoryProvider.Path, "Strings", "Synthesis_English.STRINGS"), "World");
-        sut.Move(SourcePatchPath, missingOutputPath);
-        fs.File.ReadAllText(Path.Combine(dataDirectoryProvider.Path, "Synthesis.esp")).Should().Be(string.Empty);
-        fs.File.ReadAllText(Path.Combine(dataDirectoryProvider.Path, "Strings", "Synthesis_English.STRINGS")).Should().Be(string.Empty);
+        fs.File.WriteAllText(Path.Combine(existingOutputDir.Path, "Synthesis.esp"), "Hello");
+        fs.Directory.CreateDirectory(Path.Combine(existingOutputDir.Path, "Strings"));
+        fs.File.WriteAllText(Path.Combine(existingOutputDir.Path, "Strings", "Synthesis_English.STRINGS"), "World");
+        sut.Move(SourcePatchPath, existingOutputDir);
+        fs.File.ReadAllText(Path.Combine(existingOutputDir.Path, "Synthesis.esp")).Should().Be(string.Empty);
+        fs.File.ReadAllText(Path.Combine(existingOutputDir.Path, "Strings", "Synthesis_English.STRINGS")).Should().Be(string.Empty);
     }
 }

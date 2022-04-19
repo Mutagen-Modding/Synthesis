@@ -1,5 +1,4 @@
 ﻿using System.IO.Abstractions;
-using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Reporters;
@@ -16,16 +15,16 @@ public interface IMoveFinalResults
 public class MoveFinalResults : IMoveFinalResults
 {
     private readonly IRunReporter _reporter;
-    private readonly IProfileDirectories _profileDirectories;
+    public IProfileDirectories ProfileDirectories { get; }
     public IFileSystem FileSystem { get; }
 
     public MoveFinalResults(
         IRunReporter reporter,
-        IProfileDirectories profileDirectories,
+        IProfileDirectories profileProfileDirectories,
         IFileSystem fileSystem)
     {
         _reporter = reporter;
-        _profileDirectories = profileDirectories;
+        ProfileDirectories = profileProfileDirectories;
         FileSystem = fileSystem;
     }
         
@@ -33,7 +32,7 @@ public class MoveFinalResults : IMoveFinalResults
         FilePath finalPatch,
         DirectoryPath outputPath)
     {
-        var workspaceOutput = _profileDirectories.OutputDirectory;
+        var workspaceOutput = ProfileDirectories.OutputDirectory;
         if (!FileSystem.Directory.Exists(workspaceOutput))
         {
             FileSystem.Directory.CreateDirectory(workspaceOutput);

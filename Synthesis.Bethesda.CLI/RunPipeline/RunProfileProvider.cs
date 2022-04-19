@@ -65,4 +65,9 @@ public class RunProfileProvider : IRunProfileProvider, IGameReleaseContext
 
     public ISynthesisProfileSettings Get() => _profileSettings.Value;
     public GameRelease Release => _profileSettings.Value.TargetRelease;
+
+    public override string ToString()
+    {
+        return nameof(RunProfileProvider);
+    }
 }
