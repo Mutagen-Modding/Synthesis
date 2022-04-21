@@ -79,16 +79,16 @@ public partial class SolutionConfigView : SolutionConfigViewBase
 
 
             // Bind settings
-            this.Bind(this.ViewModel, vm => vm.LongDescription, view => view.DescriptionBox.Text)
+            this.Bind(this.ViewModel, vm => vm.Settings.LongDescription, view => view.DescriptionBox.Text)
                 .DisposeWith(disposable);
-            this.Bind(this.ViewModel, vm => vm.ShortDescription, view => view.OneLineDescriptionBox.Text)
+            this.Bind(this.ViewModel, vm => vm.Settings.ShortDescription, view => view.OneLineDescriptionBox.Text)
                 .DisposeWith(disposable);
-            this.Bind(this.ViewModel, vm => vm.Visibility, view => view.VisibilityOptionPicker.SelectedItem)
+            this.Bind(this.ViewModel, vm => vm.Settings.Visibility, view => view.VisibilityOptionPicker.SelectedItem)
                 .DisposeWith(disposable);
-            this.Bind(this.ViewModel, vm => vm.Versioning, view => view.PreferredVersioningPicker.SelectedItem)
+            this.Bind(this.ViewModel, vm => vm.Settings.Versioning, view => view.PreferredVersioningPicker.SelectedItem)
                 .DisposeWith(disposable);
 
-            this.WhenAnyValue(x => x.ViewModel!.RequiredMods)
+            this.WhenAnyValue(x => x.ViewModel!.Settings.RequiredMods)
                 .BindTo(this, x => x.RequiredMods.ModKeys)
                 .DisposeWith(disposable);
             this.WhenAnyValue(x => x.ViewModel!.DetectedMods)
