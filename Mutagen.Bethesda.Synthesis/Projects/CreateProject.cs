@@ -41,6 +41,7 @@ public class CreateProject : ICreateProject
         fg.AppendLine($"    <OutputType>Exe</OutputType>");
         fg.AppendLine($"    <TargetFramework>{(targetFramework ?? "net6.0")}</TargetFramework>");
         fg.AppendLine($"    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>");
+        fg.AppendLine($"    <ImplicitUsings>true</ImplicitUsings>");
         fg.AppendLine($"  </PropertyGroup>");
         fg.AppendLine();
         fg.AppendLine($"  <ItemGroup>");
@@ -52,13 +53,9 @@ public class CreateProject : ICreateProject
 
         // Generate Program.cs
         fg = new FileGeneration();
-        fg.AppendLine("using System;");
-        fg.AppendLine("using System.Collections.Generic;");
-        fg.AppendLine("using System.Linq;");
         fg.AppendLine("using Mutagen.Bethesda;");
         fg.AppendLine("using Mutagen.Bethesda.Synthesis;");
         fg.AppendLine($"using Mutagen.Bethesda.{category};");
-        fg.AppendLine("using System.Threading.Tasks;");
         fg.AppendLine(); 
         fg.AppendLine($"namespace {projName}");
         using (new BraceWrapper(fg))
