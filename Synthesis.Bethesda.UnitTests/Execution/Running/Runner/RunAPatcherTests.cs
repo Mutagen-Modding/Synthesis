@@ -107,7 +107,7 @@ public class RunAPatcherTests
     }
         
     [Theory, SynthAutoData]
-    public async Task GetArgsThrowsReturnsNull(
+    public async Task GetArgsThrowsShouldThrow(
         IGroupRun groupRun,
         IPatcherRun patcher,
         CancellationToken cancellation,
@@ -117,18 +117,21 @@ public class RunAPatcherTests
     {
         sut.GetRunArgs.GetArgs(default!, default!, default, default!)
             .ThrowsForAnyArgs<NotImplementedException>();
-        (await sut.Run(
-            groupRun,
-            new PatcherPrepBundle(
-                patcher,
-                Task.FromResult<Exception?>(null)),
-            cancellation,
-            sourcePath,
-            runParameters)).Should().BeNull();
+        await Assert.ThrowsAsync<NotImplementedException>(() =>
+        {
+            return sut.Run(
+                groupRun,
+                new PatcherPrepBundle(
+                    patcher,
+                    Task.FromResult<Exception?>(null)),
+                cancellation,
+                sourcePath,
+                runParameters);
+        });
     }
         
     [Theory, SynthAutoData]
-    public async Task RunThrowsReturnsNull(
+    public async Task RunThrowsShouldThrow(
         IGroupRun groupRun,
         IPatcherRun patcher,
         CancellationToken cancellation,
@@ -138,14 +141,17 @@ public class RunAPatcherTests
     {
         patcher.Run(default!, default)
             .ThrowsForAnyArgs<NotImplementedException>();
-        (await sut.Run(
-            groupRun,
-            new PatcherPrepBundle(
-                patcher,
-                Task.FromResult<Exception?>(null)),
-            cancellation,
-            sourcePath,
-            runParameters)).Should().BeNull();
+        await Assert.ThrowsAsync<NotImplementedException>(() =>
+        {
+            return sut.Run(
+                groupRun,
+                new PatcherPrepBundle(
+                    patcher,
+                    Task.FromResult<Exception?>(null)),
+                cancellation,
+                sourcePath,
+                runParameters);
+        });
     }
 
     [Theory, SynthAutoData]
