@@ -3,9 +3,6 @@ using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Synthesis.CLI;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace Mutagen.Bethesda.Synthesis;
 // Note:  Keep named as-is, as there's patchers out there that reference this class directly that would break

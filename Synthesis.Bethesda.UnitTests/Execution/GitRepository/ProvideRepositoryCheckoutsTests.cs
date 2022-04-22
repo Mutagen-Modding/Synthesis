@@ -1,10 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-using AutoFixture;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Noggog;
 using NSubstitute;
-using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;

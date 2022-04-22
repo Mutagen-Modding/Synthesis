@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Mutagen.Bethesda;
-using Mutagen.Bethesda.Environments.DI;
+﻿using Mutagen.Bethesda.Environments.DI;
 
 namespace Synthesis.Bethesda.Execution.Profile;
 

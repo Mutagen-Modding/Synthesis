@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO.Abstractions;
-using Noggog;
+﻿using System.IO.Abstractions;
 using Noggog.IO;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Common;

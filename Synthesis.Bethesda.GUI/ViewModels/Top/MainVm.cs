@@ -1,6 +1,4 @@
-using System;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Synthesis.Versioning;

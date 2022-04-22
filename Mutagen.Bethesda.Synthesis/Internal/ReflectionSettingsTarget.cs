@@ -1,8 +1,6 @@
 using Mutagen.Bethesda.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
-using System.IO;
 
 namespace Mutagen.Bethesda.Synthesis.Internal;
 

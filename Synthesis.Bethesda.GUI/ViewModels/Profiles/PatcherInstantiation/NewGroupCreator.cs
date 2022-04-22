@@ -1,5 +1,4 @@
-﻿using System;
-using Synthesis.Bethesda.GUI.ViewModels.Groups;
+﻿using Synthesis.Bethesda.GUI.ViewModels.Groups;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
 

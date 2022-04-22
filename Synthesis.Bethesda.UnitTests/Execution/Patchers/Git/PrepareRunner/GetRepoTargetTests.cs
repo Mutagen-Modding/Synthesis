@@ -1,5 +1,4 @@
-﻿using System;
-using AutoFixture.Xunit2;
+﻿using AutoFixture.Xunit2;
 using FluentAssertions;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.GitRepository;

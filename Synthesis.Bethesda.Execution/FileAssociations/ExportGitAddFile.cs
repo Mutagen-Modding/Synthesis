@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO.Abstractions;
-using Microsoft.Build.Logging.StructuredLogger;
+﻿using System.IO.Abstractions;
 using Newtonsoft.Json;
 using Noggog;
 

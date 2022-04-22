@@ -1,5 +1,3 @@
-using System;
-
 namespace Synthesis.Bethesda.Execution.Reporters;
 
 public interface IRunReporter

@@ -1,5 +1,4 @@
 using Mutagen.Bethesda.Oblivion;
-using System.Threading.Tasks;
 
 namespace Mutagen.Bethesda.Synthesis;
 

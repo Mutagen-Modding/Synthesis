@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using Mutagen.Bethesda.Environments.DI;
-using Mutagen.Bethesda.Plugins;
+﻿using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Groups;

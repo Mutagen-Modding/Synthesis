@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Mutagen.Bethesda.Plugins.Order;
+﻿using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Order.DI;
-using Noggog;
 
 namespace Mutagen.Bethesda.Synthesis.States;
 

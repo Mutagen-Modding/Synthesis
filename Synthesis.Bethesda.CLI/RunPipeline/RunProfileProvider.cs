@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Mutagen.Bethesda;
+﻿using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Synthesis.Bethesda.Execution.Profile;

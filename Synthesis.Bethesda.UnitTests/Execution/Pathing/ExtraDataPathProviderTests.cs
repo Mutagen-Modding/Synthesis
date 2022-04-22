@@ -1,8 +1,5 @@
-﻿using System.IO;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Noggog;
-using Noggog.IO;
-using NSubstitute;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;

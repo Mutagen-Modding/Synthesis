@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.IO.Abstractions.TestingHelpers;
+﻿using System.IO.Abstractions.TestingHelpers;
 using AutoFixture.Xunit2;
 using FluentAssertions;
 using Noggog;

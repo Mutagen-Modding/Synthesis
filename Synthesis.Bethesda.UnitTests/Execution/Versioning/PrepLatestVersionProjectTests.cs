@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Mutagen.Bethesda;
+﻿using Mutagen.Bethesda;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Versioning.Query;

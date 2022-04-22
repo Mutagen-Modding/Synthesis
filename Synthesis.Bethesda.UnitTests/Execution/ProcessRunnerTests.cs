@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using AutoFixture.Xunit2;
 using FluentAssertions;
 using Noggog.Utility;
 using NSubstitute;
-using Serilog;
-using Synthesis.Bethesda.Execution.Logging;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;

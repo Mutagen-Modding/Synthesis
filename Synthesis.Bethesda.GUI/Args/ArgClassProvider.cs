@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using CommandLine;
+﻿using CommandLine;
 using Noggog;
 
 namespace Synthesis.Bethesda.GUI.Args;

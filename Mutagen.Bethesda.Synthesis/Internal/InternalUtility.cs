@@ -1,5 +1,4 @@
 using Mutagen.Bethesda.Plugins.Records;
-using System;
 
 namespace Mutagen.Bethesda.Synthesis.Internal;
 

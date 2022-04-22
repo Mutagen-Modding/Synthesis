@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reactive;
+﻿using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using Noggog;
@@ -10,9 +8,6 @@ using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.Execution.Versioning;
-using Synthesis.Bethesda.GUI.Services.Profile;
-using Synthesis.Bethesda.GUI.Services.Versioning;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 

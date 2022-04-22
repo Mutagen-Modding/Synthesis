@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Noggog;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;

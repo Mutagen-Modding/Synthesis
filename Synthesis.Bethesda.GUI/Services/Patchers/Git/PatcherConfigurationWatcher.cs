@@ -1,5 +1,4 @@
-﻿using System;
-using Path = System.IO.Path;
+﻿using Path = System.IO.Path;
 using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Linq;

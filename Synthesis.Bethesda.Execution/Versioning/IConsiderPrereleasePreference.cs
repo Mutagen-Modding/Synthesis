@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Synthesis.Bethesda.Execution.Versioning;
+﻿namespace Synthesis.Bethesda.Execution.Versioning;
 
 public interface IConsiderPrereleasePreference
 {

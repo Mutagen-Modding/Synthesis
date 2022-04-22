@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using Mutagen.Bethesda.Synthesis.Versioning;
-using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.GUI.ViewModels.Top;

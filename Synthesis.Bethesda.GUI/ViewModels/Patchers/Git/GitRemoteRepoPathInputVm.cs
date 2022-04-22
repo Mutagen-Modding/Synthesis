@@ -1,8 +1,6 @@
-﻿using System;
-using Noggog.WPF;
+﻿using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Patchers.Git;
 

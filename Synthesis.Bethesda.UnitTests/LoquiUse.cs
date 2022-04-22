@@ -1,5 +1,4 @@
-﻿using System;
-using Loqui;
+﻿using Loqui;
 
 namespace Synthesis.Bethesda.UnitTests;
 

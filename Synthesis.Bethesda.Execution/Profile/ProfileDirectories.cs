@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using Noggog;
 using Synthesis.Bethesda.Execution.Pathing;
 

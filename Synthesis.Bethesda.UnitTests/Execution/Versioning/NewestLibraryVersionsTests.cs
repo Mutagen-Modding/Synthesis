@@ -1,17 +1,4 @@
-﻿using System.Reactive.Linq;
-using AutoFixture;
-using NSubstitute;
-using Serilog;
-using System;
-using FluentAssertions;
-using Noggog;
-using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.Execution.Versioning;
-using Synthesis.Bethesda.GUI.Services.Versioning;
-using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
-
-namespace Synthesis.Bethesda.UnitTests.Execution.Versioning;
+﻿namespace Synthesis.Bethesda.UnitTests.Execution.Versioning;
 
 public class NewestLibraryVersionsTests
 {

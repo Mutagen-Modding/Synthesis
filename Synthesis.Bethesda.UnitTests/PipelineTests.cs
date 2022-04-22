@@ -1,8 +1,6 @@
 using FluentAssertions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Order;
-using System.IO;
-using System.Linq;
 using Noggog;
 using Xunit;
 

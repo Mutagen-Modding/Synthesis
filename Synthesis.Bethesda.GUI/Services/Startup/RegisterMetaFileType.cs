@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Noggog.IO;
 using Serilog;
 using Synthesis.Bethesda.Execution.Utility;

@@ -1,5 +1,4 @@
-﻿using System;
-using Noggog;
+﻿using Noggog;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.GUI.Settings;
 

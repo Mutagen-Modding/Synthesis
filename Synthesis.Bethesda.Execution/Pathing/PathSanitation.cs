@@ -1,7 +1,4 @@
-﻿using System.IO;
-using Noggog;
-
-namespace Synthesis.Bethesda.Execution.Pathing;
+﻿namespace Synthesis.Bethesda.Execution.Pathing;
 
 public interface IPathSanitation
 {

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reactive.Disposables;
-using System.Threading.Tasks;
+﻿using System.Reactive.Disposables;
 using Noggog;
 using Serilog;
 

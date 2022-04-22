@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Serilog;
+﻿using Serilog;
 using Synthesis.Bethesda.Execution.Groups;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner;

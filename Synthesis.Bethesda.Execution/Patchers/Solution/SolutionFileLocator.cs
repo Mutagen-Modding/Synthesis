@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.IO.Abstractions;
-using System.Linq;
+﻿using System.IO.Abstractions;
 using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Solution;

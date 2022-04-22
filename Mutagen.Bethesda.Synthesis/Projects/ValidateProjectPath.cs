@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using Noggog;
 
 namespace Mutagen.Bethesda.Synthesis.Projects;

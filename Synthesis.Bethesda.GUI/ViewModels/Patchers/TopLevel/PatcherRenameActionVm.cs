@@ -1,7 +1,5 @@
-using System;
 using System.IO;
 using System.IO.Abstractions;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using Noggog.WPF;

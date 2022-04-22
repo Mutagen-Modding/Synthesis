@@ -1,7 +1,5 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using LibGit2Sharp;
-using Noggog;
 
 namespace Synthesis.Bethesda.Execution.GitRepository;
 

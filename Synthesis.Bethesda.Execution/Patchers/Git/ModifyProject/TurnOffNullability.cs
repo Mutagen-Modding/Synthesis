@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
 

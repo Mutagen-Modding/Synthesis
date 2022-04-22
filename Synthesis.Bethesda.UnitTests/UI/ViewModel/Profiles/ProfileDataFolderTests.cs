@@ -1,17 +1,10 @@
 ﻿using System.IO.Abstractions;
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using AutoFixture;
-using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
 using FluentAssertions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Noggog;
-using Noggog.Reactive;
 using NSubstitute;
-using Serilog;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.UnitTests.AutoData;

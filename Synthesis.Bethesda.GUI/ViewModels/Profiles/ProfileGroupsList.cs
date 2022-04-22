@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using DynamicData;
 using Noggog.WPF;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;

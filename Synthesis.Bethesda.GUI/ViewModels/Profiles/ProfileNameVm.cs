@@ -2,7 +2,6 @@
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.Execution.Settings.V2;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles;
 

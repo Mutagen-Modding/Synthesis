@@ -1,5 +1,4 @@
-﻿using System;
-using Synthesis.Bethesda.Execution.DotNet.Dto;
+﻿using Synthesis.Bethesda.Execution.DotNet.Dto;
 
 namespace Synthesis.Bethesda.Execution.DotNet;
 

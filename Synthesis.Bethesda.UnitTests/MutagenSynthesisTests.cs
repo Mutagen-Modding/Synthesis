@@ -6,8 +6,6 @@ using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
-using System;
-using System.Threading.Tasks;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Masters.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;

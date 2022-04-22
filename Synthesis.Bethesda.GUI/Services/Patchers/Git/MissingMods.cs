@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using DynamicData;
 using Mutagen.Bethesda.Plugins;
 using Noggog;

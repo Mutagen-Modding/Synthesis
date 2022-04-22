@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reactive;
+﻿using System.Reactive;
 using FluentAssertions;
 using Microsoft.Reactive.Testing;
 using NSubstitute;

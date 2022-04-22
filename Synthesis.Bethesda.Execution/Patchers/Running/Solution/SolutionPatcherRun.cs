@@ -1,7 +1,4 @@
-using System;
 using System.Reactive.Disposables;
-using System.Threading;
-using System.Threading.Tasks;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Solution;

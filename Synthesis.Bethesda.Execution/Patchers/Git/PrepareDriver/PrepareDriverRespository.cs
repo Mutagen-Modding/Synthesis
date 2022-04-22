@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using Noggog;
+﻿using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;
 

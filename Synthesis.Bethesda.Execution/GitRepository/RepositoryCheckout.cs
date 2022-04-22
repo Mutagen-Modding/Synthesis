@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Synthesis.Bethesda.Execution.GitRepository;
+﻿namespace Synthesis.Bethesda.Execution.GitRepository;
 
 public interface IRepositoryCheckout : IDisposable
 {

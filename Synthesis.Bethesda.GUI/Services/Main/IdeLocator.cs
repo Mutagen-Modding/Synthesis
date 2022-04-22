@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.IO.Abstractions;
-using System.Linq;
 using Microsoft.Win32;
 using Serilog;
 using Path = System.IO.Path;

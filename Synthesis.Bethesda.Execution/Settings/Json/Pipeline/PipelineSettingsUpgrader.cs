@@ -1,5 +1,4 @@
-﻿using System;
-using Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V1;
+﻿using Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V1;
 using Vers1 = Synthesis.Bethesda.Execution.Settings.V1.PipelineSettings;
 using Vers2 = Synthesis.Bethesda.Execution.Settings.V2.PipelineSettings;
 

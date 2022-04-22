@@ -1,8 +1,6 @@
-﻿using System;
-using System.Reactive;
+﻿using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Threading;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;

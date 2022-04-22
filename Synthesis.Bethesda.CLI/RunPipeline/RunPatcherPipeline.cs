@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Synthesis.Bethesda.Execution.Commands;
+﻿using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
 

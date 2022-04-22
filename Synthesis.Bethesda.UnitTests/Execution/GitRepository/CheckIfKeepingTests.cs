@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using Serilog;
-using Xunit;
-using AutoFixture;
+﻿using Xunit;
 using FluentAssertions;
 using LibGit2Sharp;
 using Noggog;

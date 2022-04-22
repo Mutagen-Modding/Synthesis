@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
-using Noggog;
+﻿using Noggog;
 using Synthesis.Bethesda.Execution.DotNet.NugetListing;
 using Synthesis.Bethesda.Execution.Versioning;
 

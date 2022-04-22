@@ -1,15 +1,8 @@
-using System.Linq;
 using FluentAssertions;
 using Mutagen.Bethesda;
-using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
-using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.CLI;
-using Mutagen.Bethesda.Plugins.Masters;
-using Mutagen.Bethesda.Plugins.Order.DI;
-using Mutagen.Bethesda.Synthesis.States;
-using Mutagen.Bethesda.Synthesis.States.DI;
 using Xunit;
 using Path = System.IO.Path;
 

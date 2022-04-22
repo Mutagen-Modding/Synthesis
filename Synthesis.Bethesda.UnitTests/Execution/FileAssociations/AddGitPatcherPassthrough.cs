@@ -1,6 +1,4 @@
-﻿using System.IO.Abstractions;
-using AutoFixture.Xunit2;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Noggog;
 using Synthesis.Bethesda.Execution.FileAssociations;
 using Synthesis.Bethesda.UnitTests.AutoData;

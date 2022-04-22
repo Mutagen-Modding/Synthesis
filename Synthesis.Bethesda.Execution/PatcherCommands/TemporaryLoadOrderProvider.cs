@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Mutagen.Bethesda.Plugins.Order;
+﻿using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog.Utility;
 using Synthesis.Bethesda.Execution.Pathing;

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
 using Autofac;
-using Newtonsoft.Json;
 using Serilog;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings.Json.Pipeline;

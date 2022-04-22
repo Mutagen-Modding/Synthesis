@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Mutagen.Bethesda.Plugins;
+﻿using Mutagen.Bethesda.Plugins;
 using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Settings;
 

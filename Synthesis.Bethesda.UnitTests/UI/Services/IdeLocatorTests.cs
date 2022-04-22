@@ -1,8 +1,4 @@
-﻿using System.IO.Abstractions.TestingHelpers;
-using AutoFixture;
-using FluentAssertions;
-using Serilog;
-using Synthesis.Bethesda.GUI.Services;
+﻿using FluentAssertions;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;

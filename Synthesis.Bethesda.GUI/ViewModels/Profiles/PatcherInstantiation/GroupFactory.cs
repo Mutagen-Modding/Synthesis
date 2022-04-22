@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using DynamicData;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;

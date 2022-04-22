@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;

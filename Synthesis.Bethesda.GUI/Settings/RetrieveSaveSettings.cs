@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Synthesis.Bethesda.Execution.Settings.V2;
+﻿using Synthesis.Bethesda.Execution.Settings.V2;
 
 namespace Synthesis.Bethesda.GUI.Settings;
 

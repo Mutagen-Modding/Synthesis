@@ -1,5 +1,4 @@
-﻿using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.Execution.Settings.Calculators;
+﻿using Synthesis.Bethesda.Execution.Settings.Calculators;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.Execution.WorkEngine;
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Synthesis.Bethesda.Execution.WorkEngine;
+﻿namespace Synthesis.Bethesda.Execution.WorkEngine;
 
 public interface IToDo
 {

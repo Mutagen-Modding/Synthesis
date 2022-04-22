@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading;
+﻿using System.Diagnostics.CodeAnalysis;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;

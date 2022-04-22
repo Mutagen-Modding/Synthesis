@@ -1,5 +1,4 @@
 ﻿using System.Reactive.Linq;
-using System.Windows.Input;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;

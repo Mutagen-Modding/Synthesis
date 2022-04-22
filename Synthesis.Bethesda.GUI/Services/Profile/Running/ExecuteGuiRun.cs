@@ -1,13 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.IO.Abstractions;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Strings;
-using Noggog;
-using Serilog;
 using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Running.Runner;

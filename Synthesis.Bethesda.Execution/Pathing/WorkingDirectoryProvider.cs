@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Noggog;
+﻿using Noggog;
 using Noggog.IO;
 
 namespace Synthesis.Bethesda.Execution.Pathing;

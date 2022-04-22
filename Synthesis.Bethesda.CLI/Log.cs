@@ -1,5 +1,4 @@
-﻿using System;
-using Serilog;
+﻿using Serilog;
 
 namespace Synthesis.Bethesda.CLI;
 

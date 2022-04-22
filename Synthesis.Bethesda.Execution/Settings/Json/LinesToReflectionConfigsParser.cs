@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Synthesis.Bethesda.DTO;
 
 namespace Synthesis.Bethesda.Execution.Settings.Json;

@@ -1,5 +1,4 @@
 ﻿using System.IO.Abstractions;
-using System.Threading;
 using Autofac;
 using Mutagen.Bethesda.Autofac;
 using Noggog.Autofac;

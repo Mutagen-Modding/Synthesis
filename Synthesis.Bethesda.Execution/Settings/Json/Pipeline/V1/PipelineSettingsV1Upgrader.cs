@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Abstractions;
-using System.Linq;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.Pathing;

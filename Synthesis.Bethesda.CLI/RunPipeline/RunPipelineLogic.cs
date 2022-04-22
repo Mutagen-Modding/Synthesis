@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Autofac;
+﻿using Autofac;
 using Noggog;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Utility;

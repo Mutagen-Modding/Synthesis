@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Synthesis.Bethesda.Execution.Patchers.Running;
+﻿using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.WorkEngine;
 

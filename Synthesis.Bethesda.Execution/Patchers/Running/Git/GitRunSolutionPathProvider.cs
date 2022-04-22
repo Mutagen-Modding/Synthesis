@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Noggog;
+﻿using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 

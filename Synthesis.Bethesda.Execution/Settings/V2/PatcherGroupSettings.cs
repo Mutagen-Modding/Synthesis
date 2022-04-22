@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Mutagen.Bethesda.Plugins;
 
 namespace Synthesis.Bethesda.Execution.Settings.V2;

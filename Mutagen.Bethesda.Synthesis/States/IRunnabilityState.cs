@@ -1,7 +1,6 @@
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Noggog;
-using Synthesis.Bethesda;
 using System.ComponentModel;
 using Mutagen.Bethesda.Environments;
 using Synthesis.Bethesda.Commands;

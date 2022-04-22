@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.DotNet.ExecutablePath;

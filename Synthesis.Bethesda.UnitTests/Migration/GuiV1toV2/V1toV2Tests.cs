@@ -1,7 +1,5 @@
-﻿using System.IO;
-using System.IO.Abstractions.TestingHelpers;
+﻿using System.IO.Abstractions.TestingHelpers;
 using FluentAssertions;
-using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings.Json;

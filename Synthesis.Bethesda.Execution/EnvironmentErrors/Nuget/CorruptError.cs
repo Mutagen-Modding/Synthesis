@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 
 namespace Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget;
 

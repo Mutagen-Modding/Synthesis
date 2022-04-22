@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using Noggog.Autofac;
-using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.Services.Patchers;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli;
 

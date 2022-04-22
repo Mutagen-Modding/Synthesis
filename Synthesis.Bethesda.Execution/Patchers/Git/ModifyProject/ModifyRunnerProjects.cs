@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 using Noggog;
 using NuGet.Versioning;
 using Synthesis.Bethesda.Execution.Patchers.Solution;

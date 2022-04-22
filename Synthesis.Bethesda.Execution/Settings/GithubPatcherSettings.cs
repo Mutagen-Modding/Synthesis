@@ -1,5 +1,4 @@
 using Noggog;
-using System;
 using System.Diagnostics.CodeAnalysis;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;

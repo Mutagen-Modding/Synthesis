@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using Noggog;
+﻿using Noggog;
 using Synthesis.Bethesda.Execution.GitRepository;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.Registry;

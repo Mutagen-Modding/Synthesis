@@ -1,9 +1,6 @@
-﻿using System.IO;
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using FluentAssertions;
-using Mutagen.Bethesda.Environments.DI;
 using Noggog;
-using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;

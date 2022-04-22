@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoFixture.Xunit2;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Noggog;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Synthesis.Bethesda.Execution.DotNet.Dto;
 using Synthesis.Bethesda.Execution.DotNet.NugetListing;
 using Synthesis.Bethesda.Execution.Utility;

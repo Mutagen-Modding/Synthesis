@@ -1,4 +1,3 @@
-using System;
 using System.Reactive.Linq;
 using System.Text;
 using ICSharpCode.AvalonEdit.Document;
@@ -8,7 +7,6 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Running;
-using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;

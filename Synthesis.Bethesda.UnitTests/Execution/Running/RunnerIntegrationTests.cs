@@ -1,8 +1,5 @@
-using System;
 using System.IO.Abstractions;
 using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 

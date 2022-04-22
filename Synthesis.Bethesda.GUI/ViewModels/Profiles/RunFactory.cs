@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Autofac;
 using Noggog;
 using Synthesis.Bethesda.Execution.Modules;

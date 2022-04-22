@@ -1,10 +1,5 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Mutagen.Bethesda.Plugins;
-using Noggog;
+﻿using Noggog;
 using Synthesis.Bethesda.Execution.Groups;
-using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner;
 

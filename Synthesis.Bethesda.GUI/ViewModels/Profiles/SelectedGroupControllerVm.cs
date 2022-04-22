@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Reactive.Linq;
 using DynamicData;
 using Noggog.WPF;

@@ -1,5 +1,4 @@
 using Noggog;
-using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Synthesis.Bethesda.Execution.Reporters;

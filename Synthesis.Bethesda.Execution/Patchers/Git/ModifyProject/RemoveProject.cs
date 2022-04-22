@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;

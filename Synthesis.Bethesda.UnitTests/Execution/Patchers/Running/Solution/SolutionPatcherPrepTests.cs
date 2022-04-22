@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Noggog;
+﻿using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;

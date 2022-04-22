@@ -1,8 +1,4 @@
 using CommandLine;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Autofac;
 using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Commands;
 

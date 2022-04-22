@@ -1,8 +1,4 @@
-﻿using System;
-using System.Data;
-using System.IO;
-using System.IO.Abstractions;
-using System.Linq;
+﻿using System.IO.Abstractions;
 using System.Xml.Linq;
 using Noggog;
 

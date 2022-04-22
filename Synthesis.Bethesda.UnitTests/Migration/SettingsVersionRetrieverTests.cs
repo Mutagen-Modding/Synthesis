@@ -1,5 +1,4 @@
-﻿using System.IO;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings.Json;
 using Xunit;

@@ -1,5 +1,4 @@
-﻿using System;
-using Synthesis.Bethesda.Execution.Patchers.Common;
+﻿using Synthesis.Bethesda.Execution.Patchers.Common;
 
 namespace Synthesis.Bethesda.CLI.RunPipeline;
 

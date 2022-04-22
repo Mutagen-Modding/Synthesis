@@ -1,12 +1,10 @@
 using Noggog.WPF;
 using Noggog;
 using ReactiveUI;
-using System;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Reactive.Disposables;
 using System.Windows.Controls;
-using System.Linq;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 

@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Synthesis.Bethesda.Execution.Settings;
-using System;
 using System.Diagnostics.CodeAnalysis;
 using Mutagen.Bethesda.Json;
 using Noggog.Json;

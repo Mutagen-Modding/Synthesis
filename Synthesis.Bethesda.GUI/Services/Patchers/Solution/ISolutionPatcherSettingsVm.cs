@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using DynamicData;
+﻿using System.Collections.ObjectModel;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Noggog.WPF;

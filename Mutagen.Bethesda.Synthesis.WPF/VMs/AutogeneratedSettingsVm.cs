@@ -3,8 +3,6 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda;
-using System;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using Mutagen.Bethesda.Plugins.Cache;

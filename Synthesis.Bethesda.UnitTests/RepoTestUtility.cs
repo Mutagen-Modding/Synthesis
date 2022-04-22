@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using LibGit2Sharp;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis.Projects;

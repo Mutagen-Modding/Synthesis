@@ -1,6 +1,5 @@
 using Mutagen.Bethesda.Plugins;
 using Noggog;
-using System.Linq;
 using System.Reflection;
 using BaseSynthesis = Synthesis.Bethesda;
 

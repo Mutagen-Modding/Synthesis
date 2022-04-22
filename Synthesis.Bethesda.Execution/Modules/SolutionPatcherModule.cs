@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using Noggog.Autofac;
-using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 

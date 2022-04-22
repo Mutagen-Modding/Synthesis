@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Noggog;
 using Noggog.WPF;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;

@@ -1,11 +1,3 @@
-using Noggog;
-using Noggog.WPF;
-using System;
-using ReactiveUI;
-using Synthesis.Bethesda.Execution.Settings;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Controls;
 
 namespace Synthesis.Bethesda.GUI.Views;

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Synthesis.Bethesda.Execution.DotNet;
+﻿namespace Synthesis.Bethesda.Execution.DotNet;
 
 public interface ITrimErrorMessage
 {

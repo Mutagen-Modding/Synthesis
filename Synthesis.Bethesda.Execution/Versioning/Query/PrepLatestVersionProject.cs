@@ -1,6 +1,4 @@
 ﻿using System.IO.Abstractions;
-using System.Threading;
-using System.Threading.Tasks;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis.Projects;
 using Noggog.IO;

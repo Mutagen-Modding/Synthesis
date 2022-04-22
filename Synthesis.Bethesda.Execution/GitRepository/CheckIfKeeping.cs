@@ -1,7 +1,6 @@
 ﻿using System.IO.Abstractions;
 using LibGit2Sharp;
 using Noggog;
-using Noggog.IO;
 using Serilog;
 
 namespace Synthesis.Bethesda.Execution.GitRepository;

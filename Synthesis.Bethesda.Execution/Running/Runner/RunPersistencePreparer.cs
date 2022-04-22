@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using Mutagen.Bethesda.Plugins.Allocators;
 using Synthesis.Bethesda.Execution.Settings;
 

@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using Mutagen.Bethesda.Plugins.Order;
+﻿using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
 using Serilog;
-using Synthesis.Bethesda.Execution.Reporters;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner;
 

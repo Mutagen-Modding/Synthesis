@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.IO.Abstractions;
-using System.Linq;
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 

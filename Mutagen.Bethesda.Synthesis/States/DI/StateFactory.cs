@@ -1,8 +1,5 @@
-﻿using System;
-using Noggog;
-using System.IO;
+﻿using Noggog;
 using System.IO.Abstractions;
-using System.Linq;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Allocators;
 using Mutagen.Bethesda.Plugins.Cache;

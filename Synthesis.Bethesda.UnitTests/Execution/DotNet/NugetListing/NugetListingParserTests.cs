@@ -1,5 +1,4 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Synthesis.Bethesda.Execution.DotNet.NugetListing;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;

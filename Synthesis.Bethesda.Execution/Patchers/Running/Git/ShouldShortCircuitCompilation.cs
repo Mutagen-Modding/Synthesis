@@ -1,6 +1,4 @@
-﻿using System.IO.Abstractions;
-using Newtonsoft.Json;
-using Synthesis.Bethesda.Execution.Patchers.Git;
+﻿using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Git;
 

@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading;
 using Mutagen.Bethesda.Plugins;
 using Serilog;
 using Synthesis.Bethesda.Execution.Groups;

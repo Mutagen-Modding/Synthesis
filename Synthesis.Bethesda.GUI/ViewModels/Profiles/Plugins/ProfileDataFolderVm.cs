@@ -1,4 +1,3 @@
-using System;
 using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Linq;

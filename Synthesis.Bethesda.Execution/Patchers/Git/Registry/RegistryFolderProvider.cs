@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Noggog;
+﻿using Noggog;
 using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.Registry;

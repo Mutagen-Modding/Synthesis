@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Noggog;
+﻿using Noggog;
 
 namespace Synthesis.Bethesda.Execution.DotNet;
 

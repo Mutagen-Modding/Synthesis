@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner;

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using Noggog;
 using Noggog.Reactive;
 using Synthesis.Bethesda.Execution.GitRepository;

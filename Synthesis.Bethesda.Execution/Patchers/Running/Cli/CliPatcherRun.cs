@@ -1,11 +1,7 @@
-using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Reactive.Disposables;
-using System.Threading;
-using System.Threading.Tasks;
 using Serilog;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Cli;

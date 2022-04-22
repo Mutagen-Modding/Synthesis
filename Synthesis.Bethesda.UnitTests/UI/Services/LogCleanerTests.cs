@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.IO.Abstractions.TestingHelpers;
+﻿using System.IO.Abstractions.TestingHelpers;
 using FluentAssertions;
 using Noggog;
 using NSubstitute;

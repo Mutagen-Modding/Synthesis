@@ -3,7 +3,6 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Synthesis.Bethesda.GUI.ViewModels.Top;

@@ -3,7 +3,6 @@ using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Noggog;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Cli;
 
 namespace Synthesis.Bethesda.GUI.Views;

@@ -1,5 +1,4 @@
-﻿using System;
-using Noggog;
+﻿using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Cli;
 

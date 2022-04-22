@@ -1,7 +1,5 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Mutagen.Bethesda;
-using Mutagen.Bethesda.Plugins;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Groups;

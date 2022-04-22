@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using Newtonsoft.Json;
 using Noggog;
 using Synthesis.Bethesda.Execution.Pathing;

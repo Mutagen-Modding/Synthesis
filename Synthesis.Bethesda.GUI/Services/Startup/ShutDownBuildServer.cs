@@ -1,7 +1,5 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;

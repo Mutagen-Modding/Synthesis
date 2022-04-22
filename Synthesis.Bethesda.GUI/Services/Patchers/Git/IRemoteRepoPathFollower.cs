@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;
+﻿namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;
 
 public interface IRemoteRepoPathFollower
 {

@@ -1,6 +1,4 @@
-﻿using System.IO;
-using FluentAssertions;
-using Noggog;
+﻿using FluentAssertions;
 using Synthesis.Bethesda.Execution.DotNet.ExecutablePath;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;

@@ -1,8 +1,5 @@
-using System;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Threading;
 using DynamicData;
 using LibGit2Sharp;
 using Mutagen.Bethesda.Plugins.Order;

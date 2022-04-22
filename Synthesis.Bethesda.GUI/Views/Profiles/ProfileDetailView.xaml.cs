@@ -3,11 +3,9 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Settings;
-using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
-using Mutagen.Bethesda.Strings;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 
 namespace Synthesis.Bethesda.GUI.Views;

@@ -1,7 +1,5 @@
 using Noggog.Utility;
 using Noggog.WPF;
-using System;
-using System.Collections.Generic;
 using Serilog;
 
 namespace Mutagen.Bethesda.Synthesis.WPF;
