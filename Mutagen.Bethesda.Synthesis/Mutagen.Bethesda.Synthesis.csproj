@@ -46,7 +46,7 @@
     <PackageReference Include="Mutagen.Bethesda.Json" Version="0.37.0.1-dev" />
     <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.37.0.1-dev" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.42.0.1-dev" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.43.0" />
     <PackageReference Include="NuGetizer" Version="0.7.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
