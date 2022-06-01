@@ -46,7 +46,7 @@ public class PrepareDriverRespository : IPrepareDriverRespository
             cancel);
         if (state.Failed)
         {
-            _logger.Error("Failed to check out driver repository: {Reason}", state.Reason);
+            _logger.Error("Failed to check out driver repository because the remote path was not supplied: {Reason}", state.Reason);
             return state.BubbleFailure<DriverRepoInfo>();
         }
 
@@ -63,7 +63,7 @@ public class PrepareDriverRespository : IPrepareDriverRespository
             var masterBranchGet = ResetToLatestMain.TryReset(repoCheckout.Repository);
             if (masterBranchGet.Failed)
             {
-                _logger.Error("Failed to check out driver repository: {Reason}", masterBranchGet.Reason);
+                _logger.Error("Failed to check out driver repository because the master branch was unable to be retrieved {Repo}: {Reason}", remotePath.Value, masterBranchGet.Reason);
                 return masterBranchGet.BubbleFailure<DriverRepoInfo>();
             }
 
@@ -73,14 +73,14 @@ public class PrepareDriverRespository : IPrepareDriverRespository
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to check out driver repository");
+            _logger.Error(ex, "Failed to check out driver repository due to unexpected exception {Repo}", remotePath.Value);
             return GetResponse<DriverRepoInfo>.Fail(ex);
         }
 
         var paths = GetDriverPaths.Get();
         if (paths.Failed)
         {
-            _logger.Error("Failed to check out driver repository: {Reason}", paths.Reason);
+            _logger.Error("Failed to check out driver repository because driver paths could not be retrieved {Repo}: {Reason}", remotePath.Value, paths.Reason);
             return paths.BubbleFailure<DriverRepoInfo>();
         }
             

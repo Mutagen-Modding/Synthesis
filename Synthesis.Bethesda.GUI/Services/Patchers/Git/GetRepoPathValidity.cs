@@ -13,9 +13,6 @@ public interface IGetRepoPathValidity
 
 public class GetRepoPathValidity : IGetRepoPathValidity
 {
-    private readonly IRemoteRepoPathFollower _remoteRepoPathFollower;
-    private readonly ICheckOriginRepoIsValid _checkOriginRepoIsValid;
-    private readonly ISchedulerProvider _schedulerProvider;
     public IObservable<ConfigurationState<string>> RepoPath { get; }
 
     public GetRepoPathValidity(
@@ -23,12 +20,7 @@ public class GetRepoPathValidity : IGetRepoPathValidity
         ICheckOriginRepoIsValid checkOriginRepoIsValid,
         ISchedulerProvider schedulerProvider)
     {
-        _remoteRepoPathFollower = remoteRepoPathFollower;
-        _checkOriginRepoIsValid = checkOriginRepoIsValid;
-        _schedulerProvider = schedulerProvider;
-            
-            
-        var replay = _remoteRepoPathFollower.Path
+        var replay = remoteRepoPathFollower.Path
             .Replay()
             .AutoConnect(2);
             
@@ -43,15 +35,16 @@ public class GetRepoPathValidity : IGetRepoPathValidity
             // But merge in the work of checking the repo on that same path to get the eventual result
             .Merge(replay
                 .DistinctUntilChanged()
-                .Debounce(TimeSpan.FromMilliseconds(300), _schedulerProvider.MainThread)
-                .ObserveOn(_schedulerProvider.TaskPool)
+                .Debounce(TimeSpan.FromMilliseconds(300), schedulerProvider.MainThread)
+                .ObserveOn(schedulerProvider.TaskPool)
                 .Select(p =>
                 {
-                    if (_checkOriginRepoIsValid.IsValidRepository(p))
+                    var err = checkOriginRepoIsValid.IsValidRepository(p);
+                    if (err.Succeeded)
                     {
                         return new ConfigurationState<string>(p);
                     }
-                    return new ConfigurationState<string>(string.Empty, ErrorResponse.Fail("Path does not point to a valid repository."));
+                    return new ConfigurationState<string>(string.Empty, ErrorResponse.Fail($"Path does not point to a valid repository. {err.Reason}"));
                 }))
             .Replay(1)
             .RefCount();

@@ -120,8 +120,12 @@ public class QueryNewestLibraryVersions : IQueryNewestLibraryVersions
             cancel: cancel).ConfigureAwait(false);
         if (result.Result != 0)
         {
-            _logger.Error("Failed to restore Version Query Project:");
+            _logger.Error("Failed to restore Version Query Project: {Result}", result.Result);
             foreach (var err in result.Out)
+            {
+                _logger.Error(err);
+            }
+            foreach (var err in result.Errors)
             {
                 _logger.Error(err);
             }
