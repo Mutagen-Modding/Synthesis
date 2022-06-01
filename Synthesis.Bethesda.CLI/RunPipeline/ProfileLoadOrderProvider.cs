@@ -13,5 +13,5 @@ public class ProfileLoadOrderProvider : IProfileLoadOrderProvider
         _listingsProvider = listingsProvider;
     }
 
-    public IEnumerable<IModListingGetter> Get() => _listingsProvider.Get();
+    public IEnumerable<ILoadOrderListingGetter> Get() => _listingsProvider.Get();
 }

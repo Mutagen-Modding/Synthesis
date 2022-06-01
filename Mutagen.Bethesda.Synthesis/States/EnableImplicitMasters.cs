@@ -5,7 +5,7 @@ namespace Mutagen.Bethesda.Synthesis.States;
 
 public interface IEnableImplicitMasters
 {
-    void Add(IList<IModListingGetter> loadOrderListing);
+    void Add(IList<ILoadOrderListingGetter> loadOrderListing);
 }
 
 public class EnableImplicitMasters : IEnableImplicitMasters
@@ -18,7 +18,7 @@ public class EnableImplicitMasters : IEnableImplicitMasters
         _findImplicitlyIncludedMods = findImplicitlyIncludedMods;
     }
 
-    public void Add(IList<IModListingGetter> loadOrderListing)
+    public void Add(IList<ILoadOrderListingGetter> loadOrderListing)
     {
         var implicitlyAdded = _findImplicitlyIncludedMods.Find(loadOrderListing, skipMissingMods: true)
             .ToHashSet();
@@ -27,7 +27,7 @@ public class EnableImplicitMasters : IEnableImplicitMasters
             var listing = loadOrderListing[i];
             if (!listing.Enabled && implicitlyAdded.Contains(listing.ModKey))
             {
-                loadOrderListing[i] = new ModListing(listing.ModKey, enabled: true);
+                loadOrderListing[i] = new LoadOrderListing(listing.ModKey, enabled: true);
             }
         }
     }

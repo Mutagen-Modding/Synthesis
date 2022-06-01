@@ -2,6 +2,9 @@
 using Loqui;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
+using Noggog.IO;
+using Noggog.StructuredStrings;
+using Noggog.StructuredStrings.CSharp;
 
 namespace Mutagen.Bethesda.Synthesis.Projects;
 
@@ -16,12 +19,15 @@ public interface ICreateProject
 
 public class CreateProject : ICreateProject
 {
-    private readonly IFileSystem _FileSystem;
+    private readonly IFileSystem _fileSystem;
+    private readonly IExportStringToFile _exportStringToFile;
 
     public CreateProject(
-        IFileSystem fileSystem)
+        IFileSystem fileSystem,
+        IExportStringToFile exportStringToFile)
     {
-        _FileSystem = fileSystem;
+        _fileSystem = fileSystem;
+        _exportStringToFile = exportStringToFile;
     }
         
     public string[] Create(
@@ -30,59 +36,59 @@ public class CreateProject : ICreateProject
         bool insertOldVersion = false,
         string? targetFramework = null)
     {
-        _FileSystem.Directory.CreateDirectory(projPath.Directory);
+        _fileSystem.Directory.CreateDirectory(projPath.Directory);
         var projName = projPath.NameWithoutExtension;
 
         // Generate Project File
-        FileGeneration fg = new();
-        fg.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk\">");
-        fg.AppendLine($"  <PropertyGroup>");
-        fg.AppendLine($"    <OutputType>Exe</OutputType>");
-        fg.AppendLine($"    <TargetFramework>{(targetFramework ?? "net6.0")}</TargetFramework>");
-        fg.AppendLine($"    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>");
-        fg.AppendLine($"    <ImplicitUsings>true</ImplicitUsings>");
-        fg.AppendLine($"  </PropertyGroup>");
-        fg.AppendLine();
-        fg.AppendLine($"  <ItemGroup>");
-        fg.AppendLine($"    <PackageReference Include=\"Mutagen.Bethesda\" Version=\"{(insertOldVersion ? Versions.OldMutagenVersion : Versions.MutagenVersion)}\" />");
-        fg.AppendLine($"    <PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{(insertOldVersion ? Versions.OldSynthesisVersion : Versions.SynthesisVersion)}\" />");
-        fg.AppendLine($"  </ItemGroup>");
-        fg.AppendLine("</Project>");
-        fg.Generate(projPath);
+        StructuredStringBuilder sb = new();
+        sb.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk\">");
+        sb.AppendLine($"  <PropertyGroup>");
+        sb.AppendLine($"    <OutputType>Exe</OutputType>");
+        sb.AppendLine($"    <TargetFramework>{(targetFramework ?? "net6.0")}</TargetFramework>");
+        sb.AppendLine($"    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>");
+        sb.AppendLine($"    <ImplicitUsings>true</ImplicitUsings>");
+        sb.AppendLine($"  </PropertyGroup>");
+        sb.AppendLine();
+        sb.AppendLine($"  <ItemGroup>");
+        sb.AppendLine($"    <PackageReference Include=\"Mutagen.Bethesda\" Version=\"{(insertOldVersion ? Versions.OldMutagenVersion : Versions.MutagenVersion)}\" />");
+        sb.AppendLine($"    <PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{(insertOldVersion ? Versions.OldSynthesisVersion : Versions.SynthesisVersion)}\" />");
+        sb.AppendLine($"  </ItemGroup>");
+        sb.AppendLine("</Project>");
+        _exportStringToFile.ExportToFile(projPath, sb.GetString());
 
         // Generate Program.cs
-        fg = new FileGeneration();
-        fg.AppendLine("using Mutagen.Bethesda;");
-        fg.AppendLine("using Mutagen.Bethesda.Synthesis;");
-        fg.AppendLine($"using Mutagen.Bethesda.{category};");
-        fg.AppendLine(); 
-        fg.AppendLine($"namespace {projName}");
-        using (new BraceWrapper(fg))
+        sb = new StructuredStringBuilder();
+        sb.AppendLine("using Mutagen.Bethesda;");
+        sb.AppendLine("using Mutagen.Bethesda.Synthesis;");
+        sb.AppendLine($"using Mutagen.Bethesda.{category};");
+        sb.AppendLine(); 
+        sb.AppendLine($"namespace {projName}");
+        using (sb.CurlyBrace())
         {
-            fg.AppendLine($"public class Program");
-            using (new BraceWrapper(fg))
+            sb.AppendLine($"public class Program");
+            using (sb.CurlyBrace())
             {
-                fg.AppendLine("public static async Task<int> Main(string[] args)");
-                using (new BraceWrapper(fg))
+                sb.AppendLine("public static async Task<int> Main(string[] args)");
+                using (sb.CurlyBrace())
                 {
-                    fg.AppendLine($"return await SynthesisPipeline.Instance");
-                    using (new DepthWrapper(fg))
+                    sb.AppendLine($"return await SynthesisPipeline.Instance");
+                    using (sb.IncreaseDepth())
                     {
-                        fg.AppendLine($".AddPatch<I{category}Mod, I{category}ModGetter>(RunPatch)");
-                        fg.AppendLine($".SetTypicalOpen({nameof(GameRelease)}.{category.DefaultRelease()}, \"YourPatcher.esp\")");
-                        fg.AppendLine($".Run(args);");
+                        sb.AppendLine($".AddPatch<I{category}Mod, I{category}ModGetter>(RunPatch)");
+                        sb.AppendLine($".SetTypicalOpen({nameof(GameRelease)}.{category.DefaultRelease()}, \"YourPatcher.esp\")");
+                        sb.AppendLine($".Run(args);");
                     }
                 }
-                fg.AppendLine();
+                sb.AppendLine();
 
-                fg.AppendLine($"public static void RunPatch({nameof(IPatcherState)}<I{category}Mod, I{category}ModGetter> state)");
-                using (new BraceWrapper(fg))
+                sb.AppendLine($"public static void RunPatch({nameof(IPatcherState)}<I{category}Mod, I{category}ModGetter> state)");
+                using (sb.CurlyBrace())
                 {
-                    fg.AppendLine($"//Your code here!");
+                    sb.AppendLine($"//Your code here!");
                 }
             }
         }
-        fg.Generate(Path.Combine(Path.GetDirectoryName(projPath)!, "Program.cs"));
+        _exportStringToFile.ExportToFile(Path.Combine(Path.GetDirectoryName(projPath)!, "Program.cs"), sb.GetString());
 
         return new string[]
         {

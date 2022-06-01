@@ -82,8 +82,8 @@ public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, IProfileLoadOrderP
             .DisposeWith(this);
     }
 
-    public IEnumerable<IModListingGetter> Get()
+    public IEnumerable<ILoadOrderListingGetter> Get()
     {
-        return LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(x => x);
+        return LoadOrder.Items.Select<ReadOnlyModListingVM, ILoadOrderListingGetter>(x => x);
     }
 }

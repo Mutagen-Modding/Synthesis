@@ -73,11 +73,11 @@ public class AddImplicitMastersTests
             new Listing(ModA),
             new Listing(ModB, ModA, ModC),
             new Listing(ModC)));
-        var list = new List<IModListingGetter>()
+        var list = new List<ILoadOrderListingGetter>()
         {
-            new ModListing(ModA, true),
-            new ModListing(ModC, true),
-            new ModListing(ModB, true),
+            new LoadOrderListing(ModA, true),
+            new LoadOrderListing(ModC, true),
+            new LoadOrderListing(ModB, true),
         };
         adder.Add(list);
         list.Should().HaveCount(3);
@@ -95,11 +95,11 @@ public class AddImplicitMastersTests
             new Listing(ModA),
             new Listing(ModB, ModA, ModC),
             new Listing(ModC)));
-        var list = new List<IModListingGetter>()
+        var list = new List<ILoadOrderListingGetter>()
         {
-            new ModListing(ModA, true),
-            new ModListing(ModC, false),
-            new ModListing(ModB, true),
+            new LoadOrderListing(ModA, true),
+            new LoadOrderListing(ModC, false),
+            new LoadOrderListing(ModB, true),
         };
         adder.Add(list);
         list.Should().HaveCount(3);
@@ -116,11 +116,11 @@ public class AddImplicitMastersTests
             dataDirectoryProvider,
             new Listing(ModA),
             new Listing(ModB, ModA)));
-        var list = new List<IModListingGetter>()
+        var list = new List<ILoadOrderListingGetter>()
         {
-            new ModListing(ModA, true),
-            new ModListing(ModC, false),
-            new ModListing(ModB, true),
+            new LoadOrderListing(ModA, true),
+            new LoadOrderListing(ModC, false),
+            new LoadOrderListing(ModB, true),
         };
         adder.Add(list);
         list.Should().HaveCount(3);
@@ -140,12 +140,12 @@ public class AddImplicitMastersTests
             new Listing(ModB, ModA, ModC),
             new Listing(ModC, ModD),
             new Listing(ModD)));
-        var list = new List<IModListingGetter>()
+        var list = new List<ILoadOrderListingGetter>()
         {
-            new ModListing(ModA, true),
-            new ModListing(ModD, false),
-            new ModListing(ModC, false),
-            new ModListing(ModB, true),
+            new LoadOrderListing(ModA, true),
+            new LoadOrderListing(ModD, false),
+            new LoadOrderListing(ModC, false),
+            new LoadOrderListing(ModB, true),
         };
         adder.Add(list);
         list.Should().HaveCount(4);
@@ -164,12 +164,12 @@ public class AddImplicitMastersTests
             new Listing(ModB, ModA, ModC),
             new Listing(ModC, ModD),
             new Listing(ModD)));
-        var list = new List<IModListingGetter>()
+        var list = new List<ILoadOrderListingGetter>()
         {
-            new ModListing(ModA, true),
-            new ModListing(ModC, false),
-            new ModListing(ModB, true),
-            new ModListing(ModD, false),
+            new LoadOrderListing(ModA, true),
+            new LoadOrderListing(ModC, false),
+            new LoadOrderListing(ModB, true),
+            new LoadOrderListing(ModD, false),
         };
         adder.Add(list);
         list.Should().HaveCount(4);

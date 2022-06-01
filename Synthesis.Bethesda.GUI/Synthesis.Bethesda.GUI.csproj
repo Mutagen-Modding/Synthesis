@@ -43,22 +43,22 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Humanizer.Core" Version="2.14.1" />
-    <PackageReference Include="Loqui" Version="2.43.0" />
-    <PackageReference Include="Loqui.Generation" Version="2.43.0" />
-    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.37-pr006" />
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.37-pr006" />
-    <PackageReference Include="Noggog.Autofac" Version="2.43.0" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.43.0" />
-    <PackageReference Include="Noggog.CSharpExt.Windows" Version="2.43.0" />
-    <PackageReference Include="Noggog.WPF" Version="2.43.0" />
+    <PackageReference Include="Loqui" Version="2.46.0" />
+    <PackageReference Include="Loqui.Generation" Version="2.46.0" />
+    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.37-pr010" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.37-pr010" />
+    <PackageReference Include="Noggog.Autofac" Version="2.46.0" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.46.0" />
+    <PackageReference Include="Noggog.CSharpExt.Windows" Version="2.46.0" />
+    <PackageReference Include="Noggog.WPF" Version="2.46.0" />
     <PackageReference Include="NuGetizer" Version="0.7.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="reactiveui" Version="18.0.4" />
-    <PackageReference Include="ReactiveUI.Fody" Version="18.0.4" />
-    <PackageReference Include="ReactiveUI.WPF" Version="18.0.4" />
-    <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="reactiveui" Version="18.0.10" />
+    <PackageReference Include="ReactiveUI.Fody" Version="18.0.10" />
+    <PackageReference Include="ReactiveUI.WPF" Version="18.0.10" />
+    <PackageReference Include="Serilog" Version="2.11.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.Map" Version="1.0.2" />

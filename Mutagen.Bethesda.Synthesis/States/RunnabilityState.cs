@@ -19,7 +19,7 @@ public class RunnabilityState : IRunnabilityState
     /// <summary>
     /// Current Load Order 
     /// </summary>
-    public ILoadOrderGetter<IModListingGetter> LoadOrder { get; }
+    public ILoadOrderGetter<ILoadOrderListingGetter> LoadOrder { get; }
 
     public FilePath LoadOrderFilePath => Settings.LoadOrderFilePath;
 
@@ -29,7 +29,7 @@ public class RunnabilityState : IRunnabilityState
 
     public RunnabilityState(
         CheckRunnability settings,
-        ILoadOrderGetter<IModListingGetter> loadOrder)
+        ILoadOrderGetter<ILoadOrderListingGetter> loadOrder)
     {
         Settings = settings;
         LoadOrder = loadOrder;

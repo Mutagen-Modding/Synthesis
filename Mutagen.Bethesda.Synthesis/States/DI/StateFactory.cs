@@ -61,7 +61,7 @@ public class StateFactory : IStateFactory
         // Get load order
         var loadOrderListing = _getStateLoadOrder.GetLoadOrder(!settings.LoadOrderIncludesCreationClub, userPrefs)
             .ToExtendedList();
-        var rawLoadOrder = loadOrderListing.Select(x => new ModListing(x.ModKey, x.Enabled)).ToExtendedList();
+        var rawLoadOrder = loadOrderListing.Select(x => new LoadOrderListing(x.ModKey, x.Enabled)).ToExtendedList();
 
         // Trim past export key
         var synthIndex = loadOrderListing.IndexOf(exportKey, (listing, key) => listing.ModKey == key);
@@ -112,7 +112,7 @@ public class StateFactory : IStateFactory
                 readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease, fileSystem: _fileSystem);
             }
             loadOrder.Add(new ModListing<TModGetter>(readOnlyPatchMod, enabled: true));
-            rawLoadOrder.Add(new ModListing(readOnlyPatchMod.ModKey, enabled: true));
+            rawLoadOrder.Add(new LoadOrderListing(readOnlyPatchMod.ModKey, enabled: true));
             cache = loadOrder.ToImmutableLinkCache<TModSetter, TModGetter>();
         }
         else
@@ -144,7 +144,7 @@ public class StateFactory : IStateFactory
             }
             cache = loadOrder.ToMutableLinkCache(patchMod);
             loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));
-            rawLoadOrder.Add(new ModListing(patchMod.ModKey, enabled: true));
+            rawLoadOrder.Add(new LoadOrderListing(patchMod.ModKey, enabled: true));
 
             System.Console.WriteLine($"Can use localization: {patchMod.CanUseLocalization}");
             if (patchMod.CanUseLocalization)

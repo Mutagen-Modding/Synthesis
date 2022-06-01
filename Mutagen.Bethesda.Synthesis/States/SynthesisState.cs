@@ -18,7 +18,7 @@ public class SynthesisState<TModSetter, TModGetter> : IPatcherState<TModSetter, 
     public ILoadOrder<IModListing<TModGetter>> LoadOrder { get; }
 
     /// <inheritdoc />
-    public IReadOnlyList<IModListingGetter> RawLoadOrder { get; }
+    public IReadOnlyList<ILoadOrderListingGetter> RawLoadOrder { get; }
 
     /// <inheritdoc />
     public ILinkCache<TModSetter, TModGetter> LinkCache { get; }
@@ -59,7 +59,7 @@ public class SynthesisState<TModSetter, TModGetter> : IPatcherState<TModSetter, 
 
     public SynthesisState(
         RunSynthesisMutagenPatcher runArguments,
-        IReadOnlyList<IModListingGetter> rawLoadOrder,
+        IReadOnlyList<ILoadOrderListingGetter> rawLoadOrder,
         ILoadOrder<IModListing<TModGetter>> loadOrder,
         ILinkCache<TModSetter, TModGetter> linkCache,
         TModSetter patchMod,

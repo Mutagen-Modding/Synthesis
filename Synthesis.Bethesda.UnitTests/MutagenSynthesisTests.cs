@@ -229,9 +229,9 @@ public class MutagenSynthesisTests
             Synthesis.Bethesda.Constants.SynthesisModKey);
         state.LoadOrder.PriorityOrder.Should().HaveCount(2);
         state.RawLoadOrder.Should().HaveCount(3);
-        state.RawLoadOrder[0].Should().Be(new ModListing(Utility.TestModKey, true));
-        state.RawLoadOrder[1].Should().Be(new ModListing(Utility.OverrideModKey, false));
-        state.RawLoadOrder[2].Should().Be(new ModListing(Utility.SynthesisModKey, true));
+        state.RawLoadOrder[0].Should().Be(new LoadOrderListing(Utility.TestModKey, true));
+        state.RawLoadOrder[1].Should().Be(new LoadOrderListing(Utility.OverrideModKey, false));
+        state.RawLoadOrder[2].Should().Be(new LoadOrderListing(Utility.SynthesisModKey, true));
     }
 
     [Fact]
@@ -263,10 +263,10 @@ public class MutagenSynthesisTests
         mod2.Npcs.Add(new Npc(mod.GetNextFormKey()));
         mod2.WriteToBinary(Path.Combine(env.DataFolder, Utility.OverrideModKey.FileName), fileSystem: env.FileSystem);
 
-        var list = new ExtendedList<IModListingGetter>()
+        var list = new ExtendedList<ILoadOrderListingGetter>()
         {
-            new ModListing(Utility.TestModKey, false),
-            new ModListing(Utility.OverrideModKey, true),
+            new LoadOrderListing(Utility.TestModKey, false),
+            new LoadOrderListing(Utility.OverrideModKey, true),
         };
         new EnableImplicitMasters(
                 new FindImplicitlyIncludedMods(
@@ -278,8 +278,8 @@ public class MutagenSynthesisTests
             .Add(list);
 
         list.Should().HaveCount(2);
-        list[0].Should().Be(new ModListing(Utility.TestModKey, true));
-        list[1].Should().Be(new ModListing(Utility.OverrideModKey, true));
+        list[0].Should().Be(new LoadOrderListing(Utility.TestModKey, true));
+        list[1].Should().Be(new LoadOrderListing(Utility.OverrideModKey, true));
     }
 
     [Fact]

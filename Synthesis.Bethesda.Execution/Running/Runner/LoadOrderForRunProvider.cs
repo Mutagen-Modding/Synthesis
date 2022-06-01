@@ -7,7 +7,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner;
 
 public interface ILoadOrderForRunProvider
 {
-    IList<IModListingGetter> Get(ModKey modKey, IReadOnlySet<ModKey> blacklist);
+    IList<ILoadOrderListingGetter> Get(ModKey modKey, IReadOnlySet<ModKey> blacklist);
 }
 
 public class LoadOrderForRunProvider : ILoadOrderForRunProvider
@@ -20,7 +20,7 @@ public class LoadOrderForRunProvider : ILoadOrderForRunProvider
         LoadOrderListingsProvider = loadOrderListingsProvider;
     }
         
-    public IList<IModListingGetter> Get(ModKey modKey, IReadOnlySet<ModKey> blacklist)
+    public IList<ILoadOrderListingGetter> Get(ModKey modKey, IReadOnlySet<ModKey> blacklist)
     {
         // Copy plugins text to working directory, trimming synthesis and anything after
         var loadOrderList = LoadOrderListingsProvider.Get(blacklist).ToList();

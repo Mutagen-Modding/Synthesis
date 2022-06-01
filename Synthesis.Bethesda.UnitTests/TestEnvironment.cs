@@ -17,7 +17,7 @@ public record TestEnvironment(
     string DataFolder,
     string PluginPath)
 {
-    public IEnumerable<IModListingGetter> GetTypicalLoadOrder()
+    public IEnumerable<ILoadOrderListingGetter> GetTypicalLoadOrder()
     {
         return StatePluginListings().Get();
     }
@@ -63,7 +63,7 @@ public record TestEnvironment(
             new PluginRawListingsReader(
                 FileSystem,
                 new PluginListingsParser(
-                    new ModListingParser(
+                    new LoadOrderListingParser(
                         new HasEnabledMarkersProvider(
                             new GameReleaseInjection(Release))))));
     }

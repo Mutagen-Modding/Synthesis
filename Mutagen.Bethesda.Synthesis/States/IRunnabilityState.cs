@@ -18,7 +18,7 @@ public interface IRunnabilityState
     /// <summary>
     /// A list of ModKeys as they appeared, and whether they were enabled
     /// </summary>
-    ILoadOrderGetter<IModListingGetter> LoadOrder { get; }
+    ILoadOrderGetter<ILoadOrderListingGetter> LoadOrder { get; }
 
     /// <summary>
     /// Path to the plugins.txt used

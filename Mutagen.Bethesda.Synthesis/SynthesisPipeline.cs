@@ -145,7 +145,7 @@ public class SynthesisPipeline
                     new PluginRawListingsReader(
                         fileSystem,
                         new PluginListingsParser(
-                            new ModListingParser(
+                            new LoadOrderListingParser(
                                 new HasEnabledMarkersProvider(
                                     gameReleaseInjection))))))
             .GetLoadOrder(false, patcher?.Prefs)
@@ -536,7 +536,7 @@ public class SynthesisPipeline
                     new PluginRawListingsReader(
                         fileSystem,
                         new PluginListingsParser(
-                            new ModListingParser(
+                            new LoadOrderListingParser(
                                 new HasEnabledMarkersProvider(
                                     gameReleaseInjection)))))),
             new EnableImplicitMastersFactory(fileSystem));

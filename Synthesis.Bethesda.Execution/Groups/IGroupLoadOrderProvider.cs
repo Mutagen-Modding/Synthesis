@@ -6,7 +6,7 @@ namespace Synthesis.Bethesda.Execution.Groups;
 
 public interface IGroupLoadOrderProvider
 {
-    IEnumerable<IModListingGetter> Get(IReadOnlySet<ModKey> blacklisted);
+    IEnumerable<ILoadOrderListingGetter> Get(IReadOnlySet<ModKey> blacklisted);
 }
 
 public class GroupLoadOrderProvider : IGroupLoadOrderProvider
@@ -19,7 +19,7 @@ public class GroupLoadOrderProvider : IGroupLoadOrderProvider
         _profileLoadOrderProvider = profileLoadOrderProvider;
     }
         
-    public IEnumerable<IModListingGetter> Get(IReadOnlySet<ModKey> blacklisted)
+    public IEnumerable<ILoadOrderListingGetter> Get(IReadOnlySet<ModKey> blacklisted)
     {
         return _profileLoadOrderProvider.Get()
             .Where(x => !blacklisted.Contains(x.ModKey));

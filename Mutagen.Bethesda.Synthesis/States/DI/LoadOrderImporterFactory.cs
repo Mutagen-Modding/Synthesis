@@ -11,7 +11,7 @@ public interface ILoadOrderImporterFactory
 {
     ILoadOrderImporter<TModGetter> Get<TModGetter> (
         string dataFolder,
-        IEnumerable<IModListingGetter> listings,
+        IEnumerable<ILoadOrderListingGetter> listings,
         GameRelease release)
         where TModGetter : class, IModGetter;
 }
@@ -27,7 +27,7 @@ public class LoadOrderImporterFactory : ILoadOrderImporterFactory
         
     public ILoadOrderImporter<TModGetter> Get<TModGetter>(
         string dataFolder,
-        IEnumerable<IModListingGetter> listings,
+        IEnumerable<ILoadOrderListingGetter> listings,
         GameRelease release)
         where TModGetter : class, IModGetter
     {

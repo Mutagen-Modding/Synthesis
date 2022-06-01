@@ -30,14 +30,14 @@ public class RunLoadOrderPreparerTests
         sut.LoadOrderWriter.Received(1)
             .Write(
                 Arg.Any<FilePath>(),
-                Arg.Any<IEnumerable<IModListingGetter>>(),
+                Arg.Any<IEnumerable<ILoadOrderListingGetter>>(),
                 removeImplicitMods: true);
     }
         
     [Theory, SynthAutoData]
     public void PassesLoadOrderToWriter(
         IGroupRun groupRun,
-        IList<IModListingGetter> loadOrder,
+        IList<ILoadOrderListingGetter> loadOrder,
         GroupRunLoadOrderPreparer sut)
     {
         sut.LoadOrderForRunProvider.Get(default!, default!)
@@ -61,7 +61,7 @@ public class RunLoadOrderPreparerTests
         sut.LoadOrderWriter.Received(1)
             .Write(
                 path,
-                Arg.Any<IEnumerable<IModListingGetter>>(),
+                Arg.Any<IEnumerable<ILoadOrderListingGetter>>(),
                 Arg.Any<bool>());
     }
 }

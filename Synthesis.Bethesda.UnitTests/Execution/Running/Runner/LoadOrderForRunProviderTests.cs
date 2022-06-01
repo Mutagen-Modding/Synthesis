@@ -13,7 +13,7 @@ public class LoadOrderForRunProviderTests
 {
     [Theory, SynthAutoData]
     public void ReturnsListFromProvider(
-        IEnumerable<IModListingGetter> listings,
+        IEnumerable<ILoadOrderListingGetter> listings,
         IReadOnlySet<ModKey> blacklist,
         ModPath outputPath,
         LoadOrderForRunProvider sut)
@@ -25,13 +25,13 @@ public class LoadOrderForRunProviderTests
         
     [Theory, SynthAutoData]
     public void TrimsPastOutputPath(
-        IEnumerable<IModListingGetter> listingsFirst,
-        IEnumerable<IModListingGetter> listingsSecond,
+        IEnumerable<ILoadOrderListingGetter> listingsFirst,
+        IEnumerable<ILoadOrderListingGetter> listingsSecond,
         IReadOnlySet<ModKey> blacklist,
         ModPath outputPath,
         LoadOrderForRunProvider sut)
     {
-        var modListingGetter = new ModListing(outputPath, true);
+        var modListingGetter = new LoadOrderListing(outputPath, true);
         sut.LoadOrderListingsProvider.Get(blacklist).Returns(
             listingsFirst
                 .And(modListingGetter)

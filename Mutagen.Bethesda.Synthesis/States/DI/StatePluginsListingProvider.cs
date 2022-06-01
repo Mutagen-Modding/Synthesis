@@ -17,7 +17,7 @@ public class StatePluginsListingProvider : IPluginListingsProvider
         _Reader = reader;
     }
         
-    public IEnumerable<IModListingGetter> Get()
+    public IEnumerable<ILoadOrderListingGetter> Get()
     {
         if (_PluginPath.IsNullOrWhitespace()) return Enumerable.Empty<IModListingGetter>();
         return _Reader.Read(_PluginPath);

@@ -4,5 +4,5 @@ namespace Synthesis.Bethesda.Execution.Profile;
 
 public interface IProfileLoadOrderProvider
 {
-    IEnumerable<IModListingGetter> Get();
+    IEnumerable<ILoadOrderListingGetter> Get();
 }

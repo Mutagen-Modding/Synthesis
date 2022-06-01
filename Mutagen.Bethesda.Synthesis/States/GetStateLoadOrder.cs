@@ -6,7 +6,7 @@ namespace Mutagen.Bethesda.Synthesis.States;
 
 public interface IGetStateLoadOrder
 {
-    IEnumerable<IModListingGetter> GetLoadOrder(bool addCcMods, PatcherPreferences? userPrefs = null);
+    IEnumerable<ILoadOrderListingGetter> GetLoadOrder(bool addCcMods, PatcherPreferences? userPrefs = null);
 }
 
 public class GetStateLoadOrder : IGetStateLoadOrder
@@ -28,7 +28,7 @@ public class GetStateLoadOrder : IGetStateLoadOrder
         _pluginListings = pluginListings;
     }
         
-    public IEnumerable<IModListingGetter> GetLoadOrder(bool addCcMods, PatcherPreferences? userPrefs = null)
+    public IEnumerable<ILoadOrderListingGetter> GetLoadOrder(bool addCcMods, PatcherPreferences? userPrefs = null)
     {
         if (addCcMods)
         {
@@ -61,7 +61,7 @@ public class GetStateLoadOrder : IGetStateLoadOrder
         {
             // This call will implicitly get Creation Club entries, too, as the Synthesis systems should be merging
             // things into a singular load order file for consumption here
-            var loadOrderListing = _implicitListing.Get();
+            var loadOrderListing = _implicitListing.Get().Cast<ILoadOrderListingGetter>();
             loadOrderListing = loadOrderListing.Concat(_pluginListings.Get());
             loadOrderListing = loadOrderListing.Distinct(x => x.ModKey);
             if (userPrefs?.InclusionMods != null)

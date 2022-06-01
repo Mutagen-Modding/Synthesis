@@ -174,7 +174,7 @@ public class ProfileVm : ViewModel
                         x =>
                         {
                             return Observable.CombineLatest(
-                                x.WhenAnyValue(y => y.Exists)
+                                x.WhenAnyValue(y => y.ExistsOnDisk)
                                     .DistinctUntilChanged(),
                                 enabledGroupModKeys
                                     .Select(groupModKeys => groupModKeys.Contains(x.ModKey)),

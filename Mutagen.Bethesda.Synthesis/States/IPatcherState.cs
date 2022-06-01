@@ -24,7 +24,7 @@ public interface IPatcherState : IDisposable
     /// <summary>
     /// A list of ModKeys as they appeared, and whether they were enabled
     /// </summary>
-    IReadOnlyList<IModListingGetter> RawLoadOrder { get; }
+    IReadOnlyList<ILoadOrderListingGetter> RawLoadOrder { get; }
 
     /// <summary>
     /// Cancellation token that signals whether to stop patching and exit early

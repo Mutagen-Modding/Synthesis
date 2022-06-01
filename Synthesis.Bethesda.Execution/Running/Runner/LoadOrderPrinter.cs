@@ -6,7 +6,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner;
 
 public interface ILoadOrderPrinter
 {
-    void Print(IEnumerable<IModListingGetter> loadOrder);
+    void Print(IEnumerable<ILoadOrderListingGetter> loadOrder);
 }
 
 public class LoadOrderPrinter : ILoadOrderPrinter
@@ -18,7 +18,7 @@ public class LoadOrderPrinter : ILoadOrderPrinter
         _logger = logger;
     }
         
-    public void Print(IEnumerable<IModListingGetter> loadOrder)
+    public void Print(IEnumerable<ILoadOrderListingGetter> loadOrder)
     {
         _logger.Information("Load Order:");
         loadOrder.WithIndex().ForEach(i => _logger.Information($" [{i.Index,3}] {i.Item}"));

@@ -34,11 +34,11 @@ public class PipelineTests
         var getStateLoadOrder = testEnv.GetStateLoadOrder();
         var listings = getStateLoadOrder.GetLoadOrder(false).ToList();
         listings.Should().HaveCount(3);
-        listings.Should().BeEquivalentTo(new IModListingGetter[]
+        listings.Should().BeEquivalentTo(new ILoadOrderListingGetter[]
         {
-            new ModListing(Mutagen.Bethesda.Skyrim.Constants.Skyrim, true),
-            new ModListing(Utility.TestModKey, true),
-            new ModListing(Utility.OverrideModKey, false),
+            new LoadOrderListing(Mutagen.Bethesda.Skyrim.Constants.Skyrim, true),
+            new LoadOrderListing(Utility.TestModKey, true),
+            new LoadOrderListing(Utility.OverrideModKey, false),
         });
     }
 
