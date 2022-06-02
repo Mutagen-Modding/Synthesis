@@ -5,6 +5,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using NSubstitute;
+using ReactiveUI;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -27,7 +28,7 @@ public class ProfileDataFolderTests
         sut.DataPathOverride = folder;
                 
         GetResponse<DirectoryPath> result = GetResponse<DirectoryPath>.Failure;
-        sut.DataFolderResult.Subscribe(x => result = x);
+        sut.WhenAnyValue(x => x.DataFolderResult).Subscribe(x => result = x);
             
         result.Succeeded.Should().Be(r == Utility.Return.True);
         if (r == Utility.Return.True)
@@ -47,10 +48,12 @@ public class ProfileDataFolderTests
     [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false, OmitAutoProperties: true)]
     public void GameLocation(
         Utility.Return r,
-        ProfileDataFolderVm sut)
+        Lazy<ProfileDataFolderVm> sutGetter,
+        [Frozen] IFileSystem fileSystem,
+        [Frozen] IGameDirectoryLookup gameLocator)
     {
-        sut.FileSystem.Directory.Exists(Arg.Any<string>()).Returns(true);
-        sut.GameLocator.TryGet(Arg.Any<GameRelease>(), out Arg.Any<DirectoryPath>())
+        fileSystem.Directory.Exists(Arg.Any<string>()).Returns(true);
+        gameLocator.TryGet(Arg.Any<GameRelease>(), out Arg.Any<DirectoryPath>())
             .Returns(x =>
             {
                 switch (r)
@@ -64,9 +67,11 @@ public class ProfileDataFolderTests
                         throw new Exception();
                 }
             });
+
+        var sut = sutGetter.Value;
             
         GetResponse<DirectoryPath> result = GetResponse<DirectoryPath>.Failure;
-        sut.DataFolderResult.Subscribe(x => result = x);
+        sut.WhenAnyValue(x => x.DataFolderResult).Subscribe(x => result = x);
             
         result.Succeeded.Should().Be(r == Utility.Return.True);
         if (r == Utility.Return.True)
@@ -78,7 +83,7 @@ public class ProfileDataFolderTests
             sut.Path.Path.Should().BeNullOrWhiteSpace();
         }
     }
-
+    
     [Theory]
     [SynthCustomInlineData(ExtraParameters: Utility.Return.True, UseMockFileSystem: false, OmitAutoProperties: true)]
     [SynthCustomInlineData(ExtraParameters: Utility.Return.False, UseMockFileSystem: false, OmitAutoProperties: true)]
@@ -89,7 +94,7 @@ public class ProfileDataFolderTests
         [Frozen]IFileSystem fs,
         [Frozen]IProfileIdentifier ident,
         [Frozen]IGameDirectoryLookup lookup,
-        Func<ProfileDataFolderVm> sutF)
+        Lazy<ProfileDataFolderVm> sutF)
     {
         lookup.TryGet(ident.Release, out Arg.Any<DirectoryPath>())
             .Returns(x =>
@@ -99,10 +104,10 @@ public class ProfileDataFolderTests
             });
         var dataFolder = Path.Combine(folder.Path, "Data");
         fs.Directory.Exists(dataFolder).Returns(r);
-        var sut = sutF();
+        var sut = sutF.Value;
             
         GetResponse<DirectoryPath> result = GetResponse<DirectoryPath>.Failure;
-        sut.DataFolderResult.Subscribe(x => result = x);
+        sut.WhenAnyValue(x => x.DataFolderResult).Subscribe(x => result = x);
                 
         result.Succeeded.Should().Be(r == Utility.Return.True);
         if (r == Utility.Return.True)
