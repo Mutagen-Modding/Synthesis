@@ -151,7 +151,7 @@ public class ProfileVm : ViewModel
             
         EnvironmentErrors = environmentErrors;
 
-        _dataFolder = dataFolder.WhenAnyValue(x => x.Path)
+        _dataFolder = dataFolder.WhenAnyValue(x => x.DataFolderResult.Value)
             .ToGuiProperty<DirectoryPath>(this, nameof(DataFolder), string.Empty, deferSubscription: true);
 
         LoadOrder = loadOrder.LoadOrder;
@@ -167,7 +167,7 @@ public class ProfileVm : ViewModel
             .Replay(1).RefCount();
 
         _globalError = Observable.CombineLatest(
-                dataFolder.DataFolderResult,
+                dataFolder.WhenAnyValue(x => x.DataFolderResult),
                 loadOrder.WhenAnyValue(x => x.State),
                 LoadOrder.Connect()
                     .FilterOnObservable(

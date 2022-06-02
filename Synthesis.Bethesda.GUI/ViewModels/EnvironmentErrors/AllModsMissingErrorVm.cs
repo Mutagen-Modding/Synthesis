@@ -49,7 +49,7 @@ public class AllModsMissingErrorVm : ViewModel, IEnvironmentErrorVm
             })
             .ToGuiProperty(this, nameof(ErrorString), default(string?), deferSubscription: true);
 
-        _DataFolderPath = dataFolderVm.WhenAnyValue(x => x.Path)
+        _DataFolderPath = dataFolderVm.WhenAnyValue(x => x.DataFolderResult.Value)
             .Select(x => x.Path)
             .ToGuiProperty(this, nameof(DataFolderPath), string.Empty, deferSubscription: true);
 

@@ -1,5 +1,6 @@
 using System.Reactive.Linq;
 using DynamicData;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Mutagen.Bethesda.WPF.Plugins.Order;
@@ -30,11 +31,11 @@ public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, IProfileLoadOrderP
         ISchedulerProvider schedulerProvider,
         ILiveLoadOrderProvider liveLoadOrderProvider,
         IPluginListingsPathProvider listingsPathProvider,
-        ICreationClubListingsPathProvider cccLstingsPathProvider,
+        ICreationClubListingsPathProvider cccListingsPathProvider,
         IProfileIdentifier ident,
         IProfileDataFolderVm dataFolder)
     {
-        var loadOrderResult = dataFolder.DataFolderResult
+        var loadOrderResult = dataFolder.WhenAnyValue(x => x.DataFolderResult)
             .DistinctUntilChanged()
             .ObserveOn(schedulerProvider.TaskPool)
             .Select(x =>
@@ -43,7 +44,8 @@ public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, IProfileLoadOrderP
                 {
                     return (Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
                 }
-                logger.Error("Getting live load order for {Release}. DataDirectory: {DataDirectory}, Plugin File Path: {PluginFilePath}, CCC Plugin File Path: {CccPluginFilePath}", ident.Release, x.Value, listingsPathProvider.Path, cccLstingsPathProvider.Path);
+
+                logger.Information("Getting live load order for {Release}. DataDirectory: {DataDirectory}, Plugin File Path: {PluginFilePath}, CCC Plugin File Path: {CccPluginFilePath}", ident.Release, x.Value, listingsPathProvider.Path, cccListingsPathProvider.Path);
                 var liveLo = liveLoadOrderProvider.Get(out var errors)
                     .Transform(listing => new ReadOnlyModListingVM(listing, x.Value))
                     .DisposeMany();

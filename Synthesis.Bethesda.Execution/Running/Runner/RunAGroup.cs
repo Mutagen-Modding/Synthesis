@@ -40,7 +40,7 @@ public class RunAGroup : IRunAGroup
         RunParameters runParameters,
         FilePath? sourcePath = null)
     {
-        _logger.Information("================= Starting Group {Group} Run =================", groupRun.ModKey.Name);
+        _logger.Information("================= Starting Group Run: {Group} =================", groupRun.ModKey.Name);
         if (groupRun.BlacklistedMods.Count > 0)
         {
             _logger.Information("Blacklisting mods:");

@@ -15,8 +15,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 public interface IProfileDataFolderVm
 {
     string? DataPathOverride { get; set; }
-    IObservable<GetResponse<DirectoryPath>> DataFolderResult { get; }
-    DirectoryPath Path { get; }
+    GetResponse<DirectoryPath> DataFolderResult { get; }
 }
 
 public class ProfileDataFolderVm : ViewModel, IProfileDataFolderVm, IDataDirectoryProvider
@@ -27,10 +26,10 @@ public class ProfileDataFolderVm : ViewModel, IProfileDataFolderVm, IDataDirecto
     [Reactive]
     public string? DataPathOverride { get; set; }
 
-    public IObservable<GetResponse<DirectoryPath>> DataFolderResult { get; }
-
-    private readonly ObservableAsPropertyHelper<DirectoryPath> _path;
-    public DirectoryPath Path => _path.Value;
+    private readonly ObservableAsPropertyHelper<GetResponse<DirectoryPath>> _dataFolderResult;
+    public GetResponse<DirectoryPath> DataFolderResult => _dataFolderResult.Value;
+    
+    public DirectoryPath Path => _dataFolderResult.Value.Value;
 
     public ProfileDataFolderVm(
         ILogger logger,
@@ -42,7 +41,8 @@ public class ProfileDataFolderVm : ViewModel, IProfileDataFolderVm, IDataDirecto
     {
         FileSystem = fileSystem;
         GameLocator = gameLocator;
-        DataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
+        
+        _dataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
             .Select(path =>
             {
                 if (path != null) return Observable.Return(GetResponse<DirectoryPath>.Succeed(path));
@@ -99,11 +99,7 @@ public class ProfileDataFolderVm : ViewModel, IProfileDataFolderVm, IDataDirecto
                     logger.Information("Data Folder: {DataFolderPath}", d.Value);
                 }
             })
-            .Replay(1).RefCount();
+            .ToProperty(this, nameof(DataFolderResult), scheduler: schedulerProvider.MainThread, deferSubscription: true);
 
-        _path = DataFolderResult
-            .Select(x => x.Value)
-            // Don't want another dispatch onto UI thread
-            .ToProperty(this, nameof(Path), deferSubscription: true);
     }
 }

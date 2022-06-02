@@ -30,7 +30,7 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
     {
         Runnable = Observable.CombineLatest(
                 compilationProvider.State,
-                dataFolder.WhenAnyValue(x => x.Path),
+                dataFolder.WhenAnyValue(x => x.DataFolderResult.Value),
                 loadOrder.LoadOrder.Connect()
                     .QueryWhenChanged()
                     .StartWith(ListExt.Empty<ReadOnlyModListingVM>()),
