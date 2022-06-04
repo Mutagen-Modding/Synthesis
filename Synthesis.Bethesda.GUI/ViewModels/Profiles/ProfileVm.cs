@@ -182,7 +182,7 @@ public class ProfileVm : ViewModel
                         },
                         scheduler: RxApp.MainThreadScheduler)
                     .QueryWhenChanged(q => q)
-                    .StartWith(Noggog.ListExt.Empty<ReadOnlyModListingVM>())
+                    .StartWith(Array.Empty<ReadOnlyModListingVM>())
                     .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler),
                 this.WhenAnyValue(x => x.IgnoreMissingMods),
                 (dataFolder, loadOrder, missingMods, ignoreMissingMods) =>
@@ -203,11 +203,11 @@ public class ProfileVm : ViewModel
                 this.WhenAnyValue(x => x.GlobalError),
                 enabledGroups
                     .QueryWhenChanged(q => q)
-                    .StartWith(Noggog.ListExt.Empty<GroupVm>()),
+                    .StartWith(Array.Empty<GroupVm>()),
                 enabledGroups
                     .FilterOnObservable(g => g.WhenAnyValue(x => x.State).Select(x => x.IsHaltingError))
                     .QueryWhenChanged(q => q)
-                    .StartWith(Noggog.ListExt.Empty<GroupVm>()),
+                    .StartWith(Array.Empty<GroupVm>()),
                 (global, enabledGroups, erroredEnabledGroups) =>
                 {
                     if (enabledGroups.Count == 0) return GetResponse<ViewModel>.Fail("There are no enabled groups to run.");

@@ -45,7 +45,7 @@ public class GitPatcherState : IGitPatcherState
                 missingMods.Missing
                     .QueryWhenChanged()
                     .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
-                    .StartWith(ListExt.Empty<ModKey>()),
+                    .StartWith(Array.Empty<ModKey>()),
                 (driver, runner, checkout, runnability, dotnet, envError, reqModsMissing) =>
                 {
                     if (driver.IsHaltingError) return driver;

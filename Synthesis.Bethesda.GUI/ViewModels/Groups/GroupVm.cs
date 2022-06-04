@@ -109,7 +109,7 @@ public class GroupVm : ViewModel, ISelected
             .FilterOnObservable(group => group.WhenAnyValue(x => x.IsOn),
                 scheduler: RxApp.MainThreadScheduler)
             .QueryWhenChanged(q => q)
-            .StartWith(Noggog.ListExt.Empty<PatcherVm>())
+            .StartWith(Array.Empty<PatcherVm>())
             .Select(x => x.Count)
             .ToGuiProperty(this, nameof(NumEnabledPatchers), deferSubscription: true);
 
@@ -122,7 +122,7 @@ public class GroupVm : ViewModel, ISelected
             .FilterOnObservable(p => p.WhenAnyValue(x => x.State)
                 .Select(x => x.RunnableState.Failed && !x.IsHaltingError))
             .QueryWhenChanged(q => q)
-            .StartWith(Noggog.ListExt.Empty<PatcherVm>())
+            .StartWith(Array.Empty<PatcherVm>())
             .Replay(1)
             .RefCount();
 
@@ -137,7 +137,7 @@ public class GroupVm : ViewModel, ISelected
                     .FilterOnObservable(p => p.WhenAnyValue(x => x.State)
                         .Select(x => x.RunnableState.Failed && x.IsHaltingError))
                     .QueryWhenChanged(q => q)
-                    .StartWith(Noggog.ListExt.Empty<PatcherVm>()),
+                    .StartWith(Array.Empty<PatcherVm>()),
                 this.WhenAnyValue(x => x.ModKey),
                 this.WhenAnyValue(x => x.ProfileVm.GlobalError),
                 (numEnabledPatchers, processingPatchers, haltedPatchers, modKey, overallBlocking) =>

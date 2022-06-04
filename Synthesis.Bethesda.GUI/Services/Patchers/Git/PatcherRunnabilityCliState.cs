@@ -33,7 +33,7 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
                 dataFolder.WhenAnyValue(x => x.DataFolderResult.Value),
                 loadOrder.LoadOrder.Connect()
                     .QueryWhenChanged()
-                    .StartWith(ListExt.Empty<ReadOnlyModListingVM>()),
+                    .StartWith(Array.Empty<ReadOnlyModListingVM>()),
                 (comp, data, loadOrder) => (comp, data, loadOrder))
             .Select(i =>
             {
