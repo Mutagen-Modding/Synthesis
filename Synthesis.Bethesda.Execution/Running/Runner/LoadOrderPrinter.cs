@@ -22,5 +22,6 @@ public class LoadOrderPrinter : ILoadOrderPrinter
     {
         _logger.Information("Load Order:");
         loadOrder.WithIndex().ForEach(i => _logger.Information($" [{i.Index,3}] {i.Item}"));
+        _logger.Information("Remaining load order after the patch was trimmed");
     }
 }
