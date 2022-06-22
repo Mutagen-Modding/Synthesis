@@ -41,12 +41,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.37-pr011" />
-    <PackageReference Include="NuGetizer" Version="0.7.5">
+    <PackageReference Include="NuGetizer" Version="0.8.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="reactiveui" Version="18.0.10" />
-    <PackageReference Include="ReactiveUI.Fody" Version="18.0.10" />
+    <PackageReference Include="reactiveui" Version="18.1.8" />
+    <PackageReference Include="ReactiveUI.Fody" Version="18.1.8" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
   </ItemGroup>
 
