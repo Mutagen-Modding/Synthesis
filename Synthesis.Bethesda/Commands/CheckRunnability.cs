@@ -15,11 +15,15 @@ public record CheckRunnability
     [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
     public string LoadOrderFilePath { get; set; } = string.Empty;
 
+    [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to the user data folder dedicated for a patcher")]
+    public string? ExtraDataFolder { get; set; }
+
     public override string ToString()
     {
         return $"{nameof(CheckRunnability)} => \n"
                + $"  {nameof(GameRelease)} => {this.GameRelease} \n"
                + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
-               + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}";
+               + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath} \n"
+               + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}";
     }
 }

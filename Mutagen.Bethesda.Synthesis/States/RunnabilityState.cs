@@ -26,6 +26,8 @@ public class RunnabilityState : IRunnabilityState
     public DirectoryPath DataFolderPath => Settings.DataFolderPath;
 
     public GameRelease GameRelease => Settings.GameRelease;
+    
+    public string? ExtraSettingsDataPath { get; }
 
     public RunnabilityState(
         CheckRunnability settings,
@@ -33,6 +35,7 @@ public class RunnabilityState : IRunnabilityState
     {
         Settings = settings;
         LoadOrder = loadOrder;
+        ExtraSettingsDataPath = settings.ExtraDataFolder;
     }
 
     public GameEnvironmentState<TModSetter, TModGetter> GetEnvironmentState<TModSetter, TModGetter>()
