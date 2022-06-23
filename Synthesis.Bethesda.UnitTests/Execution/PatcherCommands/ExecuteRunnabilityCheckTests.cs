@@ -40,7 +40,8 @@ public class CheckRunnabilityTests
         {
             DataFolderPath = sut.DataDirectoryProvider.Path,
             GameRelease = sut.GameReleaseContext.Release,
-            LoadOrderFilePath = loadOrderPath
+            LoadOrderFilePath = loadOrderPath,
+            ExtraDataFolder = sut.ExtraDataPathProvider.Path
         });
     }
 

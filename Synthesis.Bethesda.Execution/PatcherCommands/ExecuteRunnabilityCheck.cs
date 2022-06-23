@@ -23,7 +23,6 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
 {
     private readonly IShortCircuitSettingsProvider _shortCircuitSettingsProvider;
     private readonly IWriteShortCircuitMeta _writeShortCircuitMeta;
-    private readonly IPatcherExtraDataPathProvider _patcherExtraDataPathProvider;
     public const int MaxLines = 100;
         
     public IWorkDropoff Dropoff { get; }
@@ -32,6 +31,7 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
     public IRunProcessStartInfoProvider RunProcessStartInfoProvider { get; }
     public IDataDirectoryProvider DataDirectoryProvider { get; }
     public IBuildMetaFileReader MetaFileReader { get; }
+    public IPatcherExtraDataPathProvider ExtraDataPathProvider { get; }
 
     public ExecuteRunnabilityCheck(
         IGameReleaseContext gameReleaseContext,
@@ -47,7 +47,7 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
         MetaFileReader = metaFileReader;
         _shortCircuitSettingsProvider = shortCircuitSettingsProvider;
         _writeShortCircuitMeta = writeShortCircuitMeta;
-        _patcherExtraDataPathProvider = patcherExtraDataPathProvider;
+        ExtraDataPathProvider = patcherExtraDataPathProvider;
         Dropoff = workDropoff;
         DataDirectoryProvider = dataDirectoryProvider;
         GameReleaseContext = gameReleaseContext;
@@ -80,7 +80,7 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
             DataFolderPath = DataDirectoryProvider.Path,
             GameRelease = GameReleaseContext.Release,
             LoadOrderFilePath = loadOrderPath,
-            ExtraDataFolder = _patcherExtraDataPathProvider.Path,
+            ExtraDataFolder = ExtraDataPathProvider.Path,
         };
 
         var result = (Codes)await Dropoff.EnqueueAndWait(() =>
