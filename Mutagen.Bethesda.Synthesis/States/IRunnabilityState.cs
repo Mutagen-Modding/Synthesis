@@ -35,6 +35,11 @@ public interface IRunnabilityState
     /// </summary>
     GameRelease GameRelease { get; }
 
+    /// <summary>
+    /// Path to the supplemental data folder dedicated to storing patcher specific user settings/files
+    /// </summary>
+    string? ExtraSettingsDataPath { get; }
+
     GameEnvironmentState<TModSetter, TModGetter> GetEnvironmentState<TModSetter, TModGetter>()
         where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
         where TModGetter : class, IContextGetterMod<TModSetter, TModGetter>;

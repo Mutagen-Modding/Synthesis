@@ -496,7 +496,8 @@ public class SynthesisPipeline
                 {
                     DataFolderPath = args.DataFolderPath,
                     GameRelease = args.GameRelease,
-                    LoadOrderFilePath = args.LoadOrderFilePath
+                    LoadOrderFilePath = args.LoadOrderFilePath,
+                    ExtraDataFolder = args.ExtraDataFolder,
                 },
                 fileSystem: fileSystem).ConfigureAwait(false);
             if (runnabilityResult == Codes.NotRunnable)

@@ -1,6 +1,7 @@
 ﻿using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Synthesis.Bethesda.Commands;
+using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.Execution.Utility;
@@ -22,6 +23,7 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
 {
     private readonly IShortCircuitSettingsProvider _shortCircuitSettingsProvider;
     private readonly IWriteShortCircuitMeta _writeShortCircuitMeta;
+    private readonly IPatcherExtraDataPathProvider _patcherExtraDataPathProvider;
     public const int MaxLines = 100;
         
     public IWorkDropoff Dropoff { get; }
@@ -39,11 +41,13 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
         IBuildMetaFileReader metaFileReader,
         IShortCircuitSettingsProvider shortCircuitSettingsProvider,
         IWriteShortCircuitMeta writeShortCircuitMeta,
+        IPatcherExtraDataPathProvider patcherExtraDataPathProvider,
         IRunProcessStartInfoProvider runProcessStartInfoProvider)
     {
         MetaFileReader = metaFileReader;
         _shortCircuitSettingsProvider = shortCircuitSettingsProvider;
         _writeShortCircuitMeta = writeShortCircuitMeta;
+        _patcherExtraDataPathProvider = patcherExtraDataPathProvider;
         Dropoff = workDropoff;
         DataDirectoryProvider = dataDirectoryProvider;
         GameReleaseContext = gameReleaseContext;
@@ -75,7 +79,8 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
         {
             DataFolderPath = DataDirectoryProvider.Path,
             GameRelease = GameReleaseContext.Release,
-            LoadOrderFilePath = loadOrderPath
+            LoadOrderFilePath = loadOrderPath,
+            ExtraDataFolder = _patcherExtraDataPathProvider.Path,
         };
 
         var result = (Codes)await Dropoff.EnqueueAndWait(() =>
