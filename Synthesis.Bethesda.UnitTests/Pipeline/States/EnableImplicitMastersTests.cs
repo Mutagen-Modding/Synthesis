@@ -34,7 +34,7 @@ public class AddImplicitMastersTests
             masterReaderFactory.FromPath(Path.Combine(dataDirectoryProvider.Path, listing.Mod))
                 .Returns(_ =>
                 {
-                    var reader = Substitute.For<IMasterReferenceReader>();
+                    var reader = Substitute.For<IReadOnlyMasterReferenceCollection>();
                     reader.Masters.Returns(_ =>
                     {
                         return new List<IMasterReferenceGetter>(listing.Masters.Select(m =>
