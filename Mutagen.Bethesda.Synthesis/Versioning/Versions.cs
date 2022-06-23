@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using System.Reflection;
@@ -26,11 +27,7 @@ public static class Versions
 
     public static string GetVersion(this Assembly assemb)
     {
-        var version = assemb.GetName().Version!;
-        if (version.Revision == 1)
-        {
-            return $"{version}-dev";
-        }
-        return version.ToString().TrimEnd(".0").TrimEnd(".0");
+        var version = FileVersionInfo.GetVersionInfo(assemb.Location).ProductVersion;
+        return version!.TrimEnd(".0").TrimEnd(".0");
     }
 }
