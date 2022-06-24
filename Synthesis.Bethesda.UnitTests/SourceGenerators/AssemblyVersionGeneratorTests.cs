@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.CodeAnalysis.Testing;
 using Xunit;
 using AssemblyVersionGenerator;
@@ -46,14 +47,8 @@ using System.Reflection;
 
 #nullable enable
 
-public record AssemblyVersions(string FullName, string PrettyName, string? ProductVersion)
+public record AssemblyVersions(string PrettyName, string? ProductVersion)
 {
-
-    private static AssemblyVersions From(Assembly assemb)
-    {
-        var version = FileVersionInfo.GetVersionInfo(assemb.Location).ProductVersion;
-        return new(assemb.FullName!, assemb.FullName!, version);
-    }
 
     public static AssemblyVersions For<TTypeFromAssembly>()
     {
@@ -86,23 +81,18 @@ namespace System.Runtime.CompilerServices
     {
     }
 }";
-			var expected = @"using SomeNamespace;
+			StringBuilder sb = new();
+			sb.AppendLine(@"using SomeNamespace;
 using System;
 using System.Diagnostics;
 using System.Reflection;
 
 #nullable enable
 
-public record AssemblyVersions(string FullName, string PrettyName, string? ProductVersion)
-{
-    private static readonly AssemblyVersions _MyClass = From(typeof(MyClass).Assembly);
-
-    private static AssemblyVersions From(Assembly assemb)
-    {
-        var version = FileVersionInfo.GetVersionInfo(assemb.Location).ProductVersion;
-        return new(assemb.FullName!, assemb.FullName!, version);
-    }
-
+public record AssemblyVersions(string PrettyName, string? ProductVersion)
+{");
+			sb.AppendLine("    private static readonly AssemblyVersions _MyClass = new(\"<global assembly>\", \"0.0.0.0\");");
+			sb.AppendLine(@"
     public static AssemblyVersions For<TTypeFromAssembly>()
     {
         var t = typeof(TTypeFromAssembly);
@@ -110,11 +100,10 @@ public record AssemblyVersions(string FullName, string PrettyName, string? Produ
 
         throw new NotImplementedException();
     }
-}
-";
+}");
 
 			await TypicalTest(source, 
-				(typeof(Generator), "AssemblyVersions.g.cs", expected));
+				(typeof(Generator), "AssemblyVersions.g.cs", sb.ToString()));
 		}
 
 		[Fact]
@@ -135,23 +124,18 @@ namespace System.Runtime.CompilerServices
     {
     }
 }";
-			var expected = @"using SomeNamespace;
+			StringBuilder sb = new();
+			sb.AppendLine(@"using SomeNamespace;
 using System;
 using System.Diagnostics;
 using System.Reflection;
 
 #nullable enable
 
-public record AssemblyVersions(string FullName, string PrettyName, string? ProductVersion)
-{
-    private static readonly AssemblyVersions _MyClass = From(typeof(MyClass).Assembly);
-
-    private static AssemblyVersions From(Assembly assemb)
-    {
-        var version = FileVersionInfo.GetVersionInfo(assemb.Location).ProductVersion;
-        return new(assemb.FullName!, assemb.FullName!, version);
-    }
-
+public record AssemblyVersions(string PrettyName, string? ProductVersion)
+{");
+			sb.AppendLine("    private static readonly AssemblyVersions _MyClass = new(\"<global assembly>\", \"0.0.0.0\");");
+			sb.AppendLine(@"
     public static AssemblyVersions For<TTypeFromAssembly>()
     {
         var t = typeof(TTypeFromAssembly);
@@ -159,11 +143,10 @@ public record AssemblyVersions(string FullName, string PrettyName, string? Produ
 
         throw new NotImplementedException();
     }
-}
-";
+}");
 
 			await TypicalTest(source, 
-				(typeof(Generator), "AssemblyVersions.g.cs", expected));
+				(typeof(Generator), "AssemblyVersions.g.cs", sb.ToString()));
 		}
 
 		[Fact]
@@ -190,14 +173,8 @@ using System.Reflection;
 
 #nullable enable
 
-public record AssemblyVersions(string FullName, string PrettyName, string? ProductVersion)
+public record AssemblyVersions(string PrettyName, string? ProductVersion)
 {
-
-    private static AssemblyVersions From(Assembly assemb)
-    {
-        var version = FileVersionInfo.GetVersionInfo(assemb.Location).ProductVersion;
-        return new(assemb.FullName!, assemb.FullName!, version);
-    }
 
     public static AssemblyVersions For<TTypeFromAssembly>()
     {

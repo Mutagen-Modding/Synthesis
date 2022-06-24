@@ -72,14 +72,15 @@ public record AssemblyVersions(string PrettyName, string? ProductVersion)
                 {
                     if (first == null)
                     {
+                        var attrs = item.ContainingAssembly.GetAttributes();
                         var vers = item.ContainingAssembly.GetAttributes()
                             .Where(x => x.AttributeClass?.Name == "AssemblyInformationalVersionAttribute")
-                            .First()
-                            .ConstructorArguments[0].Value?.ToString();
+                            .FirstOrDefault()?
+                            .ConstructorArguments[0].Value?.ToString() ?? "0.0.0.0";
                         var pretty = item.ContainingAssembly.GetAttributes()
                             .Where(x => x.AttributeClass?.Name == "AssemblyTitleAttribute")
-                            .First()
-                            .ConstructorArguments[0].Value?.ToString();
+                            .FirstOrDefault()?
+                            .ConstructorArguments[0].Value?.ToString() ?? "<global assembly>";
                         sb.AppendLine($"    private static readonly AssemblyVersions _{item.Name} = new(\"{pretty}\", \"{vers}\");");
                         first = item;
                     }
