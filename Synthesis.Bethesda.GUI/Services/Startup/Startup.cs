@@ -19,6 +19,7 @@ public class Startup : IStartup
     private readonly Lazy<MainVm> _mainVm;
     private readonly IMainWindow _window;
     private readonly IStartupTracker _tracker;
+    private readonly IProvideCurrentVersions _provideCurrentVersions;
     private readonly IShutdown _shutdown;
 
     public Startup(
@@ -27,6 +28,7 @@ public class Startup : IStartup
         Lazy<MainVm> mainVm,
         IMainWindow window,
         IStartupTracker tracker,
+        IProvideCurrentVersions provideCurrentVersions,
         IShutdown shutdown)
     {
         _logger = logger;
@@ -34,6 +36,7 @@ public class Startup : IStartup
         _mainVm = mainVm;
         _window = window;
         _tracker = tracker;
+        _provideCurrentVersions = provideCurrentVersions;
         _shutdown = shutdown;
     }
         
@@ -50,7 +53,7 @@ public class Startup : IStartup
             }
         };
 
-        var versionLine = $"============== Opening Synthesis v{Versions.SynthesisVersion} ==============";
+        var versionLine = $"============== Opening Synthesis v{_provideCurrentVersions.SynthesisVersion} ==============";
         var bars = new string('=', versionLine.Length);
         _logger.Information(bars);
         _logger.Information(versionLine);

@@ -1,5 +1,6 @@
 using System.IO.Abstractions;
 using Autofac;
+using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog.Autofac;
 using Noggog.Autofac.Modules;
 using Serilog;
@@ -25,6 +26,11 @@ public class MainModule : Module
             .InNamespacesOf(
                 typeof(DotNetVersion),
                 typeof(IProcessRunner))
+            .AsImplementedInterfaces();
+            
+        builder.RegisterAssemblyTypes(typeof(IProvideCurrentVersions).Assembly)
+            .InNamespacesOf(
+                typeof(IProvideCurrentVersions))
             .AsImplementedInterfaces();
             
         builder.RegisterType<Tester>().AsSelf();

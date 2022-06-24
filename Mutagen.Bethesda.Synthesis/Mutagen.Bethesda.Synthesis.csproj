@@ -54,15 +54,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AssemblyVersionGenerator\AssemblyVersionGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\Synthesis.Bethesda\Synthesis.Bethesda.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Versioning\Versions.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
     <Compile Update="States\DI\StateFactory.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>

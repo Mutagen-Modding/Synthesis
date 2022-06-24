@@ -22,6 +22,7 @@ public class Tester
     private readonly IPrintErrorMessage _printErrorMessage;
     private readonly IAvailableProjectsRetriever _availableProjectsRetriever;
     private readonly IModifyRunnerProjects _modifyRunnerProjects;
+    private readonly IProvideCurrentVersions _provideCurrentVersions;
     private readonly IBuild _build;
 
     public Tester(
@@ -31,6 +32,7 @@ public class Tester
         IPrintErrorMessage printErrorMessage,
         IAvailableProjectsRetriever availableProjectsRetriever,
         IModifyRunnerProjects modifyRunnerProjects,
+        IProvideCurrentVersions provideCurrentVersions,
         IBuild build)
     {
         _fileSystem = fileSystem;
@@ -39,6 +41,7 @@ public class Tester
         _printErrorMessage = printErrorMessage;
         _availableProjectsRetriever = availableProjectsRetriever;
         _modifyRunnerProjects = modifyRunnerProjects;
+        _provideCurrentVersions = provideCurrentVersions;
         _build = build;
     }
         
@@ -58,8 +61,8 @@ public class Tester
 
         versions = versions with
         {
-            Mutagen = versions.Mutagen ?? Versions.MutagenVersion,
-            Synthesis = versions.Synthesis ?? Versions.SynthesisVersion,
+            Mutagen = versions.Mutagen ?? _provideCurrentVersions.MutagenVersion,
+            Synthesis = versions.Synthesis ?? _provideCurrentVersions.SynthesisVersion,
         };
 
         System.Console.WriteLine($"Mutagen: {versions.Mutagen}");

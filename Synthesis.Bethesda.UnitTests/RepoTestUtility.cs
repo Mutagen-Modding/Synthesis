@@ -2,6 +2,7 @@
 using LibGit2Sharp;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis.Projects;
+using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using Noggog.IO;
 using Noggog.Utility;
@@ -40,7 +41,12 @@ public class RepoTestUtility
         if (createPatcherFiles)
         {
             var files = new CreateSolutionFile(IFileSystemExt.DefaultFilesystem, new ExportStringToFile()).Create(Path.Combine(local, SlnPath))
-                .And(new CreateProject(IFileSystemExt.DefaultFilesystem, new ExportStringToFile()).Create(GameCategory.Skyrim, Path.Combine(local, ProjPath)));
+                .And(
+                    new CreateProject(
+                        IFileSystemExt.DefaultFilesystem,
+                        new ProvideCurrentVersions(),
+                        new ExportStringToFile())
+                        .Create(GameCategory.Skyrim, Path.Combine(local, ProjPath)));
             new AddProjectToSolution(IFileSystemExt.DefaultFilesystem).Add(Path.Combine(local, SlnPath), Path.Combine(local, ProjPath));
             foreach (var path in files)
             {

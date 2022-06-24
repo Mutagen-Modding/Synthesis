@@ -14,8 +14,14 @@ public interface IAddNewtonsoftToOldSetups
 
 public class AddNewtonsoftToOldSetups : IAddNewtonsoftToOldSetups
 {
-    public readonly static System.Version NewtonSoftAddMutaVersion = new(0, 26);
-    public readonly static System.Version NewtonSoftAddSynthVersion = new(0, 14, 1);
+    private readonly IProvideCurrentVersions _provideCurrentVersions;
+    public static readonly System.Version NewtonSoftAddMutaVersion = new(0, 26);
+    public static readonly System.Version NewtonSoftAddSynthVersion = new(0, 14, 1);
+
+    public AddNewtonsoftToOldSetups(IProvideCurrentVersions provideCurrentVersions)
+    {
+        _provideCurrentVersions = provideCurrentVersions;
+    }
         
     public void Add(
         XElement proj, 
@@ -40,7 +46,7 @@ public class AddNewtonsoftToOldSetups : IAddNewtonsoftToOldSetups
             proj.Add(new XElement("ItemGroup",
                 new XElement("PackageReference",
                     new XAttribute("Include", "Newtonsoft.Json"),
-                    new XAttribute("Version", Versions.NewtonsoftVersion))));
+                    new XAttribute("Version", _provideCurrentVersions.NewtonsoftVersion))));
         }
     }
 }

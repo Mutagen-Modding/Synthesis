@@ -20,13 +20,16 @@ public interface ICreateProject
 public class CreateProject : ICreateProject
 {
     private readonly IFileSystem _fileSystem;
+    private readonly IProvideCurrentVersions _currentVersions;
     private readonly IExportStringToFile _exportStringToFile;
 
     public CreateProject(
         IFileSystem fileSystem,
+        IProvideCurrentVersions currentVersions,
         IExportStringToFile exportStringToFile)
     {
         _fileSystem = fileSystem;
+        _currentVersions = currentVersions;
         _exportStringToFile = exportStringToFile;
     }
         
@@ -50,8 +53,8 @@ public class CreateProject : ICreateProject
         sb.AppendLine($"  </PropertyGroup>");
         sb.AppendLine();
         sb.AppendLine($"  <ItemGroup>");
-        sb.AppendLine($"    <PackageReference Include=\"Mutagen.Bethesda\" Version=\"{(insertOldVersion ? Versions.OldMutagenVersion : Versions.MutagenVersion)}\" />");
-        sb.AppendLine($"    <PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{(insertOldVersion ? Versions.OldSynthesisVersion : Versions.SynthesisVersion)}\" />");
+        sb.AppendLine($"    <PackageReference Include=\"Mutagen.Bethesda\" Version=\"{(insertOldVersion ? _currentVersions.OldMutagenVersion : _currentVersions.MutagenVersion)}\" />");
+        sb.AppendLine($"    <PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{(insertOldVersion ? _currentVersions.OldSynthesisVersion : _currentVersions.SynthesisVersion)}\" />");
         sb.AppendLine($"  </ItemGroup>");
         sb.AppendLine("</Project>");
         _exportStringToFile.ExportToFile(projPath, sb.GetString());

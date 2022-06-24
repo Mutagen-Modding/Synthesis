@@ -475,10 +475,11 @@ public class SynthesisPipeline
         IFileSystem? fileSystem = null)
     {
         fileSystem = fileSystem.GetOrDefault();
-        Console.WriteLine($"Mutagen version: {Versions.MutagenVersion}");
-        Console.WriteLine($"Mutagen sha: {Versions.MutagenSha}");
-        Console.WriteLine($"Synthesis version: {Versions.SynthesisVersion}");
-        Console.WriteLine($"Synthesis sha: {Versions.SynthesisSha}");
+        var versions = new ProvideCurrentVersions();
+        Console.WriteLine($"Mutagen version: {versions.MutagenVersion}");
+        Console.WriteLine($"Mutagen sha: {versions.MutagenSha}");
+        Console.WriteLine($"Synthesis version: {versions.SynthesisVersion}");
+        Console.WriteLine($"Synthesis sha: {versions.SynthesisSha}");
         System.Console.WriteLine(Parser.Default.FormatCommandLine(args));
         SetReflectionSettingsAnchorPaths(args.ExtraDataFolder);
             
