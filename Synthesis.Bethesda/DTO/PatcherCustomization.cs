@@ -76,4 +76,10 @@ public record PatcherCustomization
     /// Mods that must be on the user's load order for the patcher to be able to run
     /// </summary>
     public string[] RequiredMods { get; set; } = Array.Empty<string>();
+    
+    /// <summary>
+    /// What Game Releases the patcher intends to support.  If left empty, the Mutagen libraries referenced by the
+    /// project are used to determine viable targets.
+    /// </summary>
+    public GameRelease[] TargetedReleases { get; set; } = Array.Empty<GameRelease>();
 }
