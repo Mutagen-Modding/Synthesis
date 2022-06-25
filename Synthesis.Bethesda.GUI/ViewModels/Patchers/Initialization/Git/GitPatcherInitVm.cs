@@ -135,10 +135,13 @@ public class GitPatcherInitVm : ViewModel, IPatcherInitVm
                 .Select(show => new Func<PatcherStoreListingVm, bool>(
                     (p) =>
                     {
-                        if (p.Raw.Customization?.Visibility is VisibilityOptions.Visible) return true;
-                        else if (p.Raw.Customization?.Visibility is VisibilityOptions.IncludeButHide) return show;
-                        else if (p.Raw.Customization?.Visibility is VisibilityOptions.Exclude) return false; // just in case.
-                        else return true;
+                        return p.Raw.Customization?.Visibility switch
+                        {
+                            VisibilityOptions.Exclude => false,
+                            VisibilityOptions.IncludeButHide => show,
+                            VisibilityOptions.Visible => true,
+                            _ => true
+                        };
                     })))
             .Filter(
                 this.WhenAnyValue(x => x.InitializationSettingsVm.ShowInstalled)
