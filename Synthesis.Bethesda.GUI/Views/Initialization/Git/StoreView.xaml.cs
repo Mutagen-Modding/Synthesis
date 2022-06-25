@@ -47,7 +47,10 @@ public partial class StoreView : StoreViewBase
                 .BindTo(this, v => v.DetailView.Visibility)
                 .DisposeWith(dispose);
 
-            this.Bind(this.ViewModel, vm => vm.InitializationSettingsVm.ShowAllGitPatchersInBrowser, v => v.ShowAllCheckbox.IsChecked)
+            this.Bind(this.ViewModel, vm => vm.InitializationSettingsVm.ShowUnlisted, v => v.ShowUnlistedCheckbox.IsChecked)
+                .DisposeWith(dispose);
+
+            this.Bind(this.ViewModel, vm => vm.InitializationSettingsVm.ShowInstalled, v => v.InstalledCheckbox.IsChecked)
                 .DisposeWith(dispose);
 
         });

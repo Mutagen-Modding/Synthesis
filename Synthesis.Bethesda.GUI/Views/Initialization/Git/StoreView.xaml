@@ -66,13 +66,45 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <CheckBox Grid.Row="2"
-            x:Name="ShowAllCheckbox"
-            Margin="0,5"
-            Content="Show All"
-            ToolTip="Some patchers opt to not show regularly" />
-        <local:PatcherStoreDetailView Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
-            x:Name="DetailView"
-            Margin="15,0,15,0" />
+        
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                Padding="10,0" 
+                Margin="0,6,0,4"
+                MinHeight="30"
+                Background="{StaticResource TransparentGrayBackgroundBrush}"
+                BorderBrush="{StaticResource GrayBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="5">
+            <Grid>
+                <Grid.Resources>
+                    <Style TargetType="Rectangle" x:Key="SeparatorStyle" >
+                        <Setter Property="Width" Value="1" />
+                        <Setter Property="Fill" Value="White" />
+                        <Setter Property="Margin" Value="15,6" />
+                    </Style>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Filters" Grid.Column="0" VerticalAlignment="Center" FontWeight="Bold" />
+                <Rectangle Grid.Column="1" Style="{StaticResource SeparatorStyle}" />
+                <CheckBox Grid.Column="2" x:Name="InstalledCheckbox"
+                    VerticalAlignment="Center"
+                    Content="Installed"
+                    ToolTip="Show already installed patchers" />
+                <Rectangle Grid.Column="3" Style="{StaticResource SeparatorStyle}" />
+                <CheckBox Grid.Column="4" x:Name="ShowUnlistedCheckbox"
+                          VerticalAlignment="Center"
+                          Content="Unlisted"
+                          ToolTip="Some patchers opt to not show regularly" />
+            </Grid>
+        </Border>
+        <local:PatcherStoreDetailView Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                                      x:Name="DetailView"
+                                      Margin="15,0,15,0" />
     </Grid>
 </local:StoreViewBase>

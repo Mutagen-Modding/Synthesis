@@ -7,7 +7,7 @@ public interface ISynthesisGuiSettings
     IDE Ide { get; set; }
     string MainRepositoryFolder { get; set; }
     string SelectedProfile { get; set; }
-    bool ShowAllGitPatchersInBrowser { get; set; }
+    BrowserSettings BrowserSettings { get; set; }
 }
 
 public record SynthesisGuiSettings : ISynthesisGuiSettings
@@ -18,5 +18,7 @@ public record SynthesisGuiSettings : ISynthesisGuiSettings
     public IDE Ide { get; set; } = IDE.SystemDefault;
     public string MainRepositoryFolder { get; set; } = string.Empty;
     public string SelectedProfile { get; set; } = string.Empty;
-    public bool ShowAllGitPatchersInBrowser { get; set; }
+    public BrowserSettings BrowserSettings { get; set; } = new(ShowUnlisted: false, ShowInstalled: true);
 }
+
+public record BrowserSettings(bool ShowUnlisted, bool ShowInstalled);

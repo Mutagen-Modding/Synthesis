@@ -1,8 +1,10 @@
+using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
+using Mutagen.Bethesda;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -17,6 +19,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.PatcherInstantiation;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 
@@ -73,6 +76,7 @@ public class GitPatcherInitVm : ViewModel, IPatcherInitVm
         PatcherStoreListingVm.Factory listingVmFactory,
         IProfileDisplayControllerVm displayControllerVm,
         IRegistryListingsProvider listingsProvider,
+        IProfileGroupsList groups,
         InitializationSettingsVm initializationSettingsVm,
         PatcherInitRenameValidator renamer)
     {
@@ -88,6 +92,14 @@ public class GitPatcherInitVm : ViewModel, IPatcherInitVm
         _canCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid.Valid)
             .Select(x => ErrorResponse.Create(x))
             .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
+
+        var installedPatcherPaths =
+            groups.Groups.Items
+                .SelectMany(g => g.Patchers.Items)
+                .WhereCastable<PatcherVm, GitPatcherVm>()
+                .Select(p => p.RemoteRepoPathInput.RemoteRepoPath)
+                .Distinct()
+                .ToHashSet();
 
         PatcherRepos = Observable.Return(Unit.Default)
             .ObserveOn(RxApp.TaskpoolScheduler)
@@ -118,16 +130,27 @@ public class GitPatcherInitVm : ViewModel, IPatcherInitVm
                 return Observable.Empty<IChangeSet<PatcherStoreListingVm>>();
             })
             .Switch()
-            .Sort(Comparer<PatcherStoreListingVm>.Create((x, y) => x.Name.CompareTo(y.Name)))
-            .Filter(this.WhenAnyValue(x => x.InitializationSettingsVm.ShowAllGitPatchersInBrowser)
+            .Filter(this.WhenAnyValue(x => x.InitializationSettingsVm.ShowUnlisted)
                 .DistinctUntilChanged()
                 .Select(show => new Func<PatcherStoreListingVm, bool>(
                     (p) =>
                     {
-                        if (p.Raw.Customization?.Visibility is VisibilityOptions.Visible) return true;
-                        else if (p.Raw.Customization?.Visibility is VisibilityOptions.IncludeButHide) return show;
-                        else if (p.Raw.Customization?.Visibility is VisibilityOptions.Exclude) return false; // just in case.
-                        else return true;
+                        return p.Raw.Customization?.Visibility switch
+                        {
+                            VisibilityOptions.Exclude => false,
+                            VisibilityOptions.IncludeButHide => show,
+                            VisibilityOptions.Visible => true,
+                            _ => true
+                        };
+                    })))
+            .Filter(
+                this.WhenAnyValue(x => x.InitializationSettingsVm.ShowInstalled)
+                    .DistinctUntilChanged()
+                .Select(show => new Func<PatcherStoreListingVm, bool>(
+                    (p) =>
+                    {
+                        if (show) return true;
+                        return !installedPatcherPaths.Contains(p.RepoPath);
                     })))
             .Filter(this.WhenAnyValue(x => x.Search)
                 .Debounce(TimeSpan.FromMilliseconds(350), RxApp.MainThreadScheduler)
@@ -147,6 +170,7 @@ public class GitPatcherInitVm : ViewModel, IPatcherInitVm
                             return false;
                         });
                 }))
+            .Sort(Comparer<PatcherStoreListingVm>.Create((x, y) => x.Name.CompareTo(y.Name)))
             .ObserveOn(RxApp.MainThreadScheduler)
             .ToObservableCollection(this);
 
