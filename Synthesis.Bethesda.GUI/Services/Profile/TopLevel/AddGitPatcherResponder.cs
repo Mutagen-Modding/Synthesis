@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reactive;
+﻿using System.Reactive;
 using System.Reactive.Linq;
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings;

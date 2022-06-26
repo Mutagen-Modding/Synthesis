@@ -1,24 +1,19 @@
-﻿using System.IO;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Noggog;
-using NSubstitute;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Execution.Pathing
+namespace Synthesis.Bethesda.UnitTests.Execution.Pathing;
+
+public class ExtraDataPathProviderTests
 {
-    public class ExtraDataPathProviderTests
+    [Theory, SynthAutoData]
+    public void CombinesCurrentDirectoryAndData(
+        ExtraDataPathProvider sut)
     {
-        [Theory, SynthAutoData]
-        public void CombinesCurrentDirectoryAndData(
-            DirectoryPath currentDir,
-            ExtraDataPathProvider sut)
-        {
-            sut.CurrentDirectoryProvider.CurrentDirectory.Returns(currentDir);
-            sut.Path.Should().Be(
-                new DirectoryPath(
-                    Path.Combine(currentDir, "Data")));
-        }
+        sut.Path.Should().Be(
+            new DirectoryPath(
+                Path.Combine(sut.CurrentDirectoryProvider.CurrentDirectory, "Data")));
     }
 }

@@ -3,17 +3,16 @@ using Noggog.Autofac;
 using Synthesis.Bethesda.ImpactTester;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Containers
+namespace Synthesis.Bethesda.UnitTests.Containers;
+
+public class ImpactTests
 {
-    public class ImpactTests
+    [Fact]
+    public void ImpactModule()
     {
-        [Fact]
-        public void ImpactModule()
-        {
-            var builder = new ContainerBuilder();
-            builder.RegisterModule<Synthesis.Bethesda.ImpactTester.MainModule>();
-            var cont = builder.Build();
-            cont.Validate(typeof(Tester));
-        }
+        var builder = new ContainerBuilder();
+        builder.RegisterModule<Synthesis.Bethesda.ImpactTester.MainModule>();
+        var cont = builder.Build();
+        cont.Validate(typeof(Tester));
     }
 }

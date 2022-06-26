@@ -1,7 +1,6 @@
-﻿namespace Synthesis.Bethesda.Execution.Patchers.Git
+﻿namespace Synthesis.Bethesda.Execution.Patchers.Git;
+
+public interface IGithubPatcherIdentifier
 {
-    public interface IGithubPatcherIdentifier
-    {
-        string Id { get; }
-    }
+    string Id { get; }
 }

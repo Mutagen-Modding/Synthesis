@@ -1,14 +1,13 @@
 ﻿using Noggog;
 
-namespace Synthesis.Bethesda.GUI.Services.Main
-{
-    public interface IGuiSettingsPath
-    {
-        FilePath Path { get; }
-    }
+namespace Synthesis.Bethesda.GUI.Services.Main;
 
-    public class GuiSettingsPath : IGuiSettingsPath
-    {
-        public FilePath Path { get; } = "GuiSettings.json";
-    }
+public interface IGuiSettingsPath
+{
+    FilePath Path { get; }
+}
+
+public class GuiSettingsPath : IGuiSettingsPath
+{
+    public FilePath Path { get; } = "GuiSettings.json";
 }

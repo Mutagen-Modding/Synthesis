@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reactive.Linq;
 using Noggog;
 using Noggog.IO;

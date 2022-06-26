@@ -1,18 +1,16 @@
-﻿using System.IO;
-using Noggog;
+﻿using Noggog;
 
-namespace Synthesis.Bethesda.Execution.Utility
+namespace Synthesis.Bethesda.Execution.Utility;
+
+public interface IRandomFileNameProvider
 {
-    public interface IRandomFileNameProvider
-    {
-        FileName Get();
-    }
+    FileName Get();
+}
 
-    public class RandomFileNameProvider : IRandomFileNameProvider
+public class RandomFileNameProvider : IRandomFileNameProvider
+{
+    public FileName Get()
     {
-        public FileName Get()
-        {
-            return Path.GetRandomFileName();
-        }
+        return Path.GetRandomFileName();
     }
 }

@@ -3,27 +3,25 @@ using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
-using System.Windows.Controls;
 
-namespace Synthesis.Bethesda.GUI.Views
+namespace Synthesis.Bethesda.GUI.Views;
+
+public class BottomDecisionButtonsViewBase : NoggogUserControl<object> { }
+
+/// <summary>
+/// Interaction logic for BottomDecisionButtonsView.xaml
+/// </summary>
+public partial class BottomDecisionButtonsView : BottomDecisionButtonsViewBase
 {
-    public class BottomDecisionButtonsViewBase : NoggogUserControl<object> { }
-
-    /// <summary>
-    /// Interaction logic for BottomDecisionButtonsView.xaml
-    /// </summary>
-    public partial class BottomDecisionButtonsView : BottomDecisionButtonsViewBase
+    public BottomDecisionButtonsView()
     {
-        public BottomDecisionButtonsView()
+        InitializeComponent();
+        this.WhenActivated(dispose =>
         {
-            InitializeComponent();
-            this.WhenActivated(dispose =>
-            {
-                this.WhenAnyValue(x => x.ConfirmAdditionButton.IsMouseOver)
-                    .Select(over => over ? Visibility.Visible : Visibility.Hidden)
-                    .BindTo(this, x => x.ConfirmAdditionText.Visibility)
-                    .DisposeWith(dispose);
-            });
-        }
+            this.WhenAnyValue(x => x.ConfirmAdditionButton.IsMouseOver)
+                .Select(over => over ? Visibility.Visible : Visibility.Hidden)
+                .BindTo(this, x => x.ConfirmAdditionText.Visibility)
+                .DisposeWith(dispose);
+        });
     }
 }

@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Noggog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Execution.DotNet
+namespace Synthesis.Bethesda.UnitTests.Execution.DotNet;
+
+public class IsApplicableErrorLineTests
 {
-    public class IsApplicableErrorLineTests
+    [Theory, SynthAutoData]
+    public void Typical(IsApplicableErrorLine sut)
     {
-        [Theory, SynthAutoData]
-        public void Typical(IsApplicableErrorLine sut)
-        {
-            var rawMessage = @"Unknown Error: Microsoft (R) Build Engine version 16.9.0+57a23d249 for .NET
+        var rawMessage = @"Unknown Error: Microsoft (R) Build Engine version 16.9.0+57a23d249 for .NET
 Copyright (C) Microsoft Corporation. All rights reserved.
 
   Determining projects to restore...
@@ -35,20 +33,19 @@ C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisR
 C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\ArmorAnalyzer.cs(79,32): warning CA1416: This call site is reachable on all platforms. 'IPatcherState<ISkyrimMod, ISkyrimModGetter>.LoadOrder.get' is only supported on: 'Windows' 7.0 and later. [C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\HalgarisRPGLoot.csproj]
 C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\WeaponAnalyer.cs(51,31): warning CA1416: This call site is reachable on all platforms. 'IPatcherState<ISkyrimMod, ISkyrimModGetter>.LoadOrder.get' is only supported on: 'Windows' 7.0 and later. [C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\HalgarisRPGLoot.csproj]";
 
-            List<string> lines = new();
-            foreach (var line in rawMessage.AsSpan().SplitLines())
+        List<string> lines = new();
+        foreach (var line in rawMessage.AsSpan().SplitLines())
+        {
+            if (sut.IsApplicable(line.Line))
             {
-                if (sut.IsApplicable(line.Line))
-                {
-                    lines.Add(line.Line.ToString());
-                }
+                lines.Add(line.Line.ToString());
             }
-            lines
-                .Should().BeEquivalentTo(new string[]
-                {
-                    @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\ArmorAnalyzer.cs(151,49): error CS0029: Cannot implicitly convert type 'Mutagen.Bethesda.FormKey' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>' [C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\HalgarisRPGLoot.csproj]",
-                    @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\ArmorAnalyzer.cs(158,50): error CS0266: Cannot implicitly convert type 'Mutagen.Bethesda.Skyrim.LeveledItem' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>'. An explicit conversion exists (are you missing a cast?) [C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\HalgarisRPGLoot.csproj]"
-                });
         }
+        lines
+            .Should().BeEquivalentTo(new string[]
+            {
+                @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\ArmorAnalyzer.cs(151,49): error CS0029: Cannot implicitly convert type 'Mutagen.Bethesda.FormKey' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>' [C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\HalgarisRPGLoot.csproj]",
+                @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\ArmorAnalyzer.cs(158,50): error CS0266: Cannot implicitly convert type 'Mutagen.Bethesda.Skyrim.LeveledItem' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>'. An explicit conversion exists (are you missing a cast?) [C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\HalgarisRPGLoot.csproj]"
+            });
     }
 }

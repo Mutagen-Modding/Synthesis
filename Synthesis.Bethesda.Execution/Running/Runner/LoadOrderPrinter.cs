@@ -1,29 +1,27 @@
-﻿using System.Collections.Generic;
-using Mutagen.Bethesda.Plugins.Order;
+﻿using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
 using Serilog;
-using Synthesis.Bethesda.Execution.Reporters;
 
-namespace Synthesis.Bethesda.Execution.Running.Runner
+namespace Synthesis.Bethesda.Execution.Running.Runner;
+
+public interface ILoadOrderPrinter
 {
-    public interface ILoadOrderPrinter
+    void Print(IEnumerable<ILoadOrderListingGetter> loadOrder);
+}
+
+public class LoadOrderPrinter : ILoadOrderPrinter
+{
+    private readonly ILogger _logger;
+
+    public LoadOrderPrinter(ILogger logger)
     {
-        void Print(IEnumerable<IModListingGetter> loadOrder);
+        _logger = logger;
     }
-
-    public class LoadOrderPrinter : ILoadOrderPrinter
-    {
-        private readonly ILogger _logger;
-
-        public LoadOrderPrinter(ILogger logger)
-        {
-            _logger = logger;
-        }
         
-        public void Print(IEnumerable<IModListingGetter> loadOrder)
-        {
-            _logger.Information("Load Order:");
-            loadOrder.WithIndex().ForEach(i => _logger.Information($" [{i.Index,3}] {i.Item}"));
-        }
+    public void Print(IEnumerable<ILoadOrderListingGetter> loadOrder)
+    {
+        _logger.Information("Load Order:");
+        loadOrder.WithIndex().ForEach(i => _logger.Information($" [{i.Index,3}] {i.Item}"));
+        _logger.Information("Remaining load order after the patch was trimmed");
     }
 }

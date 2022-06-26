@@ -1,135 +1,131 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
 using LibGit2Sharp;
 using Noggog;
 
-namespace Synthesis.Bethesda.Execution.GitRepository
+namespace Synthesis.Bethesda.Execution.GitRepository;
+
+public interface IGitRepository : IDisposable
 {
-    public interface IGitRepository : IDisposable
+    IEnumerable<IBranch> Branches { get; }
+    IEnumerable<ITag> Tags { get; }
+    string CurrentSha { get; }
+    IBranch CurrentBranch { get; }
+    IBranch? MainBranch { get; }
+    string WorkingDirectory { get; }
+    string? MainRemoteUrl { get; }
+    void Fetch();
+    void ResetHard();
+    void ResetHard(ICommit commit);
+    ICommit? TryGetCommit(string sha, out bool validSha);
+    IBranch TryCreateBranch(string branchName);
+    bool TryGetBranch(string branchName, [MaybeNullWhen(false)] out IBranch branch);
+    bool TryGetTagSha(string tagName, [MaybeNullWhen(false)] out string sha);
+    void Checkout(IBranch branch);
+    void Pull();
+    void Stage(string path);
+    void Commit(string message);
+}
+
+[ExcludeFromCodeCoverage]
+public class GitRepository : IGitRepository
+{
+    private static Signature PlaceholderSignature = new("synthesis", "someemail@gmail.com", DateTimeOffset.Now);
+    private readonly Repository _Repository;
+
+    public IEnumerable<IBranch> Branches => _Repository.Branches.Select(x => new BranchWrapper(x));
+    public IEnumerable<ITag> Tags => _Repository.Tags.Select(x => new TagWrapper(x));
+    public string CurrentSha => _Repository.Head.Tip.Sha;
+    public IBranch CurrentBranch => new BranchWrapper(_Repository.Head);
+
+    public IBranch? MainBranch
     {
-        IEnumerable<IBranch> Branches { get; }
-        IEnumerable<ITag> Tags { get; }
-        string CurrentSha { get; }
-        IBranch CurrentBranch { get; }
-        IBranch? MainBranch { get; }
-        string WorkingDirectory { get; }
-        string? MainRemoteUrl { get; }
-        void Fetch();
-        void ResetHard();
-        void ResetHard(ICommit commit);
-        ICommit? TryGetCommit(string sha, out bool validSha);
-        IBranch TryCreateBranch(string branchName);
-        bool TryGetBranch(string branchName, [MaybeNullWhen(false)] out IBranch branch);
-        bool TryGetTagSha(string tagName, [MaybeNullWhen(false)] out string sha);
-        void Checkout(IBranch branch);
-        void Pull();
-        void Stage(string path);
-        void Commit(string message);
+        get
+        {
+            var ret = _Repository.Branches.FirstOrDefault(b => b.IsCurrentRepositoryHead);
+            if (ret == null) return null;
+            return new BranchWrapper(ret);
+        }
+    }
+        
+    public string WorkingDirectory => _Repository.Info.WorkingDirectory;
+    public string? MainRemoteUrl => _Repository.Network.Remotes.FirstOrDefault()?.Url;
+
+    public GitRepository(Repository repository)
+    {
+        _Repository = repository;
     }
 
-    [ExcludeFromCodeCoverage]
-    public class GitRepository : IGitRepository
+    public void Fetch()
     {
-        private static Signature PlaceholderSignature = new("synthesis", "someemail@gmail.com", DateTimeOffset.Now);
-        private readonly Repository _Repository;
+        _Repository.Fetch();
+    }
 
-        public IEnumerable<IBranch> Branches => _Repository.Branches.Select(x => new BranchWrapper(x));
-        public IEnumerable<ITag> Tags => _Repository.Tags.Select(x => new TagWrapper(x));
-        public string CurrentSha => _Repository.Head.Tip.Sha;
-        public IBranch CurrentBranch => new BranchWrapper(_Repository.Head);
+    public void ResetHard()
+    {
+        _Repository.Reset(ResetMode.Hard);
+    }
 
-        public IBranch? MainBranch
+    public void ResetHard(ICommit commit)
+    {
+        _Repository.Reset(ResetMode.Hard, commit.GetUnderlying(), new CheckoutOptions());
+    }
+
+    public ICommit? TryGetCommit(string sha, out bool validSha)
+    {
+        validSha = ObjectId.TryParse(sha, out var objId);
+        if (!validSha) return null;
+        var ret = _Repository.Lookup(objId, ObjectType.Commit) as Commit;
+        if (ret == null) return null;
+        return new CommitWrapper(ret);
+    }
+
+    public IBranch TryCreateBranch(string branchName)
+    {
+        return new BranchWrapper(
+            _Repository.Branches[branchName] ?? _Repository.CreateBranch(branchName));
+    }
+
+    public bool TryGetBranch(string branchName, [MaybeNullWhen(false)] out IBranch branch)
+    {
+        var branchDirect = _Repository.Branches[branchName];
+        if (branchDirect != null)
         {
-            get
-            {
-                var ret = _Repository.Branches.FirstOrDefault(b => b.IsCurrentRepositoryHead);
-                if (ret == null) return null;
-                return new BranchWrapper(ret);
-            }
+            branch = new BranchWrapper(branchDirect);
+            return true;
         }
+
+        branch = default;
+        return false;
+    }
+
+    public bool TryGetTagSha(string tagName, [MaybeNullWhen(false)] out string sha)
+    {
+        sha = _Repository.Tags[tagName]?.Target.Sha;
+        return !sha.IsNullOrWhitespace();
+    }
+
+    public void Checkout(IBranch branch)
+    {
+        LibGit2Sharp.Commands.Checkout(_Repository, branch.GetUnderlying());
+    }
         
-        public string WorkingDirectory => _Repository.Info.WorkingDirectory;
-        public string? MainRemoteUrl => _Repository.Network.Remotes.FirstOrDefault()?.Url;
+    public void Pull()
+    {
+        LibGit2Sharp.Commands.Pull(_Repository, PlaceholderSignature, null);
+    }
 
-        public GitRepository(Repository repository)
-        {
-            _Repository = repository;
-        }
+    public void Stage(string path)
+    {
+        LibGit2Sharp.Commands.Stage(_Repository, path);
+    }
 
-        public void Fetch()
-        {
-            _Repository.Fetch();
-        }
+    public void Commit(string message)
+    {
+        _Repository.Commit(message, PlaceholderSignature, PlaceholderSignature);
+    }
 
-        public void ResetHard()
-        {
-            _Repository.Reset(ResetMode.Hard);
-        }
-
-        public void ResetHard(ICommit commit)
-        {
-            _Repository.Reset(ResetMode.Hard, commit.GetUnderlying(), new CheckoutOptions());
-        }
-
-        public ICommit? TryGetCommit(string sha, out bool validSha)
-        {
-            validSha = ObjectId.TryParse(sha, out var objId);
-            if (!validSha) return null;
-            var ret = _Repository.Lookup(objId, ObjectType.Commit) as Commit;
-            if (ret == null) return null;
-            return new CommitWrapper(ret);
-        }
-
-        public IBranch TryCreateBranch(string branchName)
-        {
-            return new BranchWrapper(
-                _Repository.Branches[branchName] ?? _Repository.CreateBranch(branchName));
-        }
-
-        public bool TryGetBranch(string branchName, [MaybeNullWhen(false)] out IBranch branch)
-        {
-            var branchDirect = _Repository.Branches[branchName];
-            if (branchDirect != null)
-            {
-                branch = new BranchWrapper(branchDirect);
-                return true;
-            }
-
-            branch = default;
-            return false;
-        }
-
-        public bool TryGetTagSha(string tagName, [MaybeNullWhen(false)] out string sha)
-        {
-            sha = _Repository.Tags[tagName]?.Target.Sha;
-            return !sha.IsNullOrWhitespace();
-        }
-
-        public void Checkout(IBranch branch)
-        {
-            LibGit2Sharp.Commands.Checkout(_Repository, branch.GetUnderlying());
-        }
-        
-        public void Pull()
-        {
-            LibGit2Sharp.Commands.Pull(_Repository, PlaceholderSignature, null);
-        }
-
-        public void Stage(string path)
-        {
-            LibGit2Sharp.Commands.Stage(_Repository, path);
-        }
-
-        public void Commit(string message)
-        {
-            _Repository.Commit(message, PlaceholderSignature, PlaceholderSignature);
-        }
-
-        public void Dispose()
-        {
-            _Repository.Dispose();
-        }
+    public void Dispose()
+    {
+        _Repository.Dispose();
     }
 }

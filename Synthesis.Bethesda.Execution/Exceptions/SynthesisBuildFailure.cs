@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Synthesis.Bethesda.Execution
+namespace Synthesis.Bethesda.Execution;
+
+[ExcludeFromCodeCoverage]
+public class SynthesisBuildFailure : Exception
 {
-    [ExcludeFromCodeCoverage]
-    public class SynthesisBuildFailure : Exception
+    public SynthesisBuildFailure(string firstError)
+        : base(firstError)
     {
-        public SynthesisBuildFailure(string firstError)
-            : base(firstError)
-        {
-        }
     }
 }

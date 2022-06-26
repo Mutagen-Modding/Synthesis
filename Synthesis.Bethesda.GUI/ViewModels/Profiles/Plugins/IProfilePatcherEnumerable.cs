@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
+﻿using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins
+namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
+
+public interface IProfilePatcherEnumerable
 {
-    public interface IProfilePatcherEnumerable
-    {
-        IEnumerable<PatcherVm> Patchers { get; }
-    }
+    IEnumerable<PatcherVm> Patchers { get; }
 }

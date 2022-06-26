@@ -1,18 +1,17 @@
 ﻿using System.ComponentModel;
 
-namespace Synthesis.Bethesda.GUI.Settings
+namespace Synthesis.Bethesda.GUI.Settings;
+
+public enum IDE
 {
-    public enum IDE
-    {
-        [Description("None")]
-        None,
-        [Description("System Default")]
-        SystemDefault,
-        [Description("Visual Studio")]
-        VisualStudio,
-        [Description("Rider")]
-        Rider,
-        [Description("Visual Code")]
-        VisualCode
-    }
+    [Description("None")]
+    None,
+    [Description("System Default")]
+    SystemDefault,
+    [Description("Visual Studio")]
+    VisualStudio,
+    [Description("Rider")]
+    Rider,
+    [Description("Visual Code")]
+    VisualCode
 }

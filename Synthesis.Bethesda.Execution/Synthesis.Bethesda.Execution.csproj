@@ -37,28 +37,28 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="6.3.0" />
-    <PackageReference Include="Buildalyzer" Version="3.2.8" />
+    <PackageReference Include="Autofac" Version="6.4.0" />
+    <PackageReference Include="Buildalyzer" Version="4.1.4" />
     <PackageReference Include="GitInfo" Version="2.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
-    <PackageReference Include="Microsoft.Build" Version="17.0.0" />
-    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="17.0.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.0.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.0.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.0.1" />
-    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.36.0" />
-    <PackageReference Include="Noggog.CSharpExt.Json" Version="2.39.0" />
-    <PackageReference Include="Noggog.Autofac" Version="2.39.0" />
-    <PackageReference Include="NuGet.Versioning" Version="6.0.0" />
-    <PackageReference Include="NuGetizer" Version="0.7.5">
+    <PackageReference Include="Microsoft.Build" Version="17.2.0" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="17.2.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.2.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.2.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.2.0" />
+    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.37.0" />
+    <PackageReference Include="Noggog.CSharpExt.Json" Version="2.48" />
+    <PackageReference Include="Noggog.Autofac" Version="2.48" />
+    <PackageReference Include="NuGet.Versioning" Version="6.2.1" />
+    <PackageReference Include="NuGetizer" Version="0.8.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Noggog.CSharpExt" Version="2.39.0" />
-    <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.48" />
+    <PackageReference Include="Serilog" Version="2.11.0" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
@@ -68,67 +68,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Json\PipelineSettings\PipelineSettingsImporter.cs">
+    <Compile Update="Patchers\Running\IndexDisseminator.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
-    <Compile Update="Json\PipelineSettings\PipelineSettingsExporter.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Settings\V1\SynthesisProfile.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Settings\V1\PipelineSettings.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Settings\V2\PipelineSettings.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Settings\V2\SynthesisProfile.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Settings\Json\Pipeline\V1\PipelineSettingsV1Reader.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Patchers\Solution\IProjectSubpathDefaultSettings.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Commands\RunPatcherPipelineInstructions.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Modules\LifetimeScopes.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="WorkEngine\WorkDropoff.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Utility\IStartupTask.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Patchers\Git\IShortCircuitSettingsProvider.cs">
+    <Compile Update="Settings\Calculators\BuildCoreCalculator.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>

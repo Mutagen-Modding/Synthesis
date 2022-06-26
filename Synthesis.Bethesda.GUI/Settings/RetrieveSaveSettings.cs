@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Synthesis.Bethesda.Execution.Settings.V2;
+﻿using Synthesis.Bethesda.Execution.Settings.V2;
 
 namespace Synthesis.Bethesda.GUI.Settings;
 
@@ -29,6 +28,6 @@ public class RetrieveSaveSettings : IRetrieveSaveSettings
         {
             saver.Save(gui, pipe);
         }
-        gui.WorkingDirectory = _settingsSingleton.Gui.WorkingDirectory;
+        pipe.WorkingDirectory = _settingsSingleton.Pipeline.WorkingDirectory;
     }
 }

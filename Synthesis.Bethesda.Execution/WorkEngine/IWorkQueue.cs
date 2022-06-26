@@ -1,9 +1,8 @@
 ﻿using System.Threading.Channels;
 
-namespace Synthesis.Bethesda.Execution.WorkEngine
+namespace Synthesis.Bethesda.Execution.WorkEngine;
+
+public interface IWorkQueue
 {
-    public interface IWorkQueue
-    {
-        ChannelReader<IToDo> Reader { get; }
-    }
+    ChannelReader<IToDo> Reader { get; }
 }

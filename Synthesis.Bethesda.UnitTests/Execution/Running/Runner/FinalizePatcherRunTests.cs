@@ -1,34 +1,31 @@
-﻿using System;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Mutagen.Bethesda.Plugins;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner
+namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner;
+
+public class FinalizePatcherRunTests
 {
-    public class FinalizePatcherRunTests
+    [Theory, SynthAutoData]
+    public async Task OutputFileMissingReturnsNull(
+        IPatcherRun patcher,
+        ModPath missingOutput,
+        FinalizePatcherRun sut)
     {
-        [Theory, SynthAutoData]
-        public async Task OutputFileMissingReturnsNull(
-            IPatcherRun patcher,
-            ModPath missingOutput,
-            FinalizePatcherRun sut)
-        {
-            sut.Finalize(patcher, missingOutput)
-                .Should().BeNull();
-        }
+        sut.Finalize(patcher, missingOutput)
+            .Should().BeNull();
+    }
         
-        [Theory, SynthAutoData]
-        public async Task OutputFileExistsReturnsOutputPath(
-            IPatcherRun patcher,
-            ModPath existingOutput,
-            FinalizePatcherRun sut)
-        {
-            sut.Finalize(patcher, existingOutput)
-                .Should().Be(existingOutput.Path);
-        }
+    [Theory, SynthAutoData]
+    public async Task OutputFileExistsReturnsOutputPath(
+        IPatcherRun patcher,
+        ModPath existingOutput,
+        FinalizePatcherRun sut)
+    {
+        sut.Finalize(patcher, existingOutput)
+            .Should().Be(existingOutput.Path);
     }
 }

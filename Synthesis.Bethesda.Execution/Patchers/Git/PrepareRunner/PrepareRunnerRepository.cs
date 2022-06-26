@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;
@@ -9,99 +5,98 @@ using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Versioning;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner
+namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner;
+
+public interface IPrepareRunnerRepository
 {
-    public interface IPrepareRunnerRepository
+    Task<ConfigurationState<RunnerRepoInfo>> Checkout(
+        CheckoutInput checkoutInput,
+        CancellationToken cancel);
+}
+
+public class PrepareRunnerRepository : IPrepareRunnerRepository
+{
+    private readonly ILogger _logger;
+    private readonly IBuildMetaFilePathProvider _metaFilePathProvider;
+    public IResetToTarget ResetToTarget { get; }
+    public ISolutionFileLocator SolutionFileLocator { get; }
+    public IRunnerRepoProjectPathRetriever RunnerRepoProjectPathRetriever { get; }
+    public IModifyRunnerProjects ModifyRunnerProjects { get; }
+    public IRunnerRepoDirectoryProvider RunnerRepoDirectoryProvider { get; }
+    public IProvideRepositoryCheckouts RepoCheckouts { get; }
+
+    public PrepareRunnerRepository(
+        ILogger logger,
+        ISolutionFileLocator solutionFileLocator,
+        IRunnerRepoProjectPathRetriever runnerRepoProjectPathRetriever,
+        IModifyRunnerProjects modifyRunnerProjects,
+        IResetToTarget resetToTarget,
+        IBuildMetaFilePathProvider metaFilePathProvider,
+        IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
+        IProvideRepositoryCheckouts repoCheckouts)
     {
-        Task<ConfigurationState<RunnerRepoInfo>> Checkout(
-            CheckoutInput checkoutInput,
-            CancellationToken cancel);
+        _logger = logger;
+        _metaFilePathProvider = metaFilePathProvider;
+        ResetToTarget = resetToTarget;
+        SolutionFileLocator = solutionFileLocator;
+        RunnerRepoProjectPathRetriever = runnerRepoProjectPathRetriever;
+        ModifyRunnerProjects = modifyRunnerProjects;
+        RunnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
+        RepoCheckouts = repoCheckouts;
     }
-
-    public class PrepareRunnerRepository : IPrepareRunnerRepository
-    {
-        private readonly ILogger _logger;
-        private readonly IBuildMetaFilePathProvider _metaFilePathProvider;
-        public IResetToTarget ResetToTarget { get; }
-        public ISolutionFileLocator SolutionFileLocator { get; }
-        public IRunnerRepoProjectPathRetriever RunnerRepoProjectPathRetriever { get; }
-        public IModifyRunnerProjects ModifyRunnerProjects { get; }
-        public IRunnerRepoDirectoryProvider RunnerRepoDirectoryProvider { get; }
-        public IProvideRepositoryCheckouts RepoCheckouts { get; }
-
-        public PrepareRunnerRepository(
-            ILogger logger,
-            ISolutionFileLocator solutionFileLocator,
-            IRunnerRepoProjectPathRetriever runnerRepoProjectPathRetriever,
-            IModifyRunnerProjects modifyRunnerProjects,
-            IResetToTarget resetToTarget,
-            IBuildMetaFilePathProvider metaFilePathProvider,
-            IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
-            IProvideRepositoryCheckouts repoCheckouts)
-        {
-            _logger = logger;
-            _metaFilePathProvider = metaFilePathProvider;
-            ResetToTarget = resetToTarget;
-            SolutionFileLocator = solutionFileLocator;
-            RunnerRepoProjectPathRetriever = runnerRepoProjectPathRetriever;
-            ModifyRunnerProjects = modifyRunnerProjects;
-            RunnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
-            RepoCheckouts = repoCheckouts;
-        }
         
-        public async Task<ConfigurationState<RunnerRepoInfo>> Checkout(
-            CheckoutInput checkoutInput,
-            CancellationToken cancel)
+    public async Task<ConfigurationState<RunnerRepoInfo>> Checkout(
+        CheckoutInput checkoutInput,
+        CancellationToken cancel)
+    {
+        try
         {
-            try
-            {
-                cancel.ThrowIfCancellationRequested();
+            cancel.ThrowIfCancellationRequested();
 
-                _logger.Information("Targeting {PatcherVersioning}", checkoutInput.PatcherVersioning);
+            _logger.Information("Targeting {PatcherVersioning}", checkoutInput.PatcherVersioning);
 
-                using var repoCheckout = RepoCheckouts.Get(RunnerRepoDirectoryProvider.Path);
+            using var repoCheckout = RepoCheckouts.Get(RunnerRepoDirectoryProvider.Path);
 
-                var target = ResetToTarget.Reset(repoCheckout.Repository, checkoutInput.PatcherVersioning, cancel);
-                if (target.Failed) return target.BubbleFailure<RunnerRepoInfo>();
+            var target = ResetToTarget.Reset(repoCheckout.Repository, checkoutInput.PatcherVersioning, cancel);
+            if (target.Failed) return target.BubbleFailure<RunnerRepoInfo>();
 
-                cancel.ThrowIfCancellationRequested();
+            cancel.ThrowIfCancellationRequested();
 
-                checkoutInput.LibraryNugets.Log(_logger);
+            checkoutInput.LibraryNugets.Log(_logger);
                 
-                var slnPath = SolutionFileLocator.GetPath(RunnerRepoDirectoryProvider.Path);
-                if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
+            var slnPath = SolutionFileLocator.GetPath(RunnerRepoDirectoryProvider.Path);
+            if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
 
-                var foundProjSubPath = RunnerRepoProjectPathRetriever.Get(slnPath.Value, checkoutInput.Proj);
-                if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {checkoutInput.Proj}.");
+            var foundProjSubPath = RunnerRepoProjectPathRetriever.Get(slnPath.Value, checkoutInput.Proj);
+            if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {checkoutInput.Proj}.");
 
-                cancel.ThrowIfCancellationRequested();
+            cancel.ThrowIfCancellationRequested();
                 
-                ModifyRunnerProjects.Modify(
-                    slnPath.Value,
-                    drivingProjSubPath: foundProjSubPath.SubPath,
-                    versions: checkoutInput.LibraryNugets.ReturnIfMatch(new NugetVersionPair(null, null)),
-                    listedVersions: out var listedVersions);
+            ModifyRunnerProjects.Modify(
+                slnPath.Value,
+                drivingProjSubPath: foundProjSubPath.SubPath,
+                versions: checkoutInput.LibraryNugets.ReturnIfMatch(new NugetVersionPair(null, null)),
+                listedVersions: out var listedVersions);
 
-                var runInfo = new RunnerRepoInfo(
-                    SolutionPath: slnPath,
-                    ProjPath: foundProjSubPath.FullPath,
-                    MetaPath: _metaFilePathProvider.Path,
-                    Target: target.Value.Target,
-                    CommitMessage: target.Value.CommitMessage,
-                    CommitDate: target.Value.CommitDate,
-                    ListedVersions: listedVersions,
-                    TargetVersions: checkoutInput.LibraryNugets.ReturnIfMatch(listedVersions));
+            var runInfo = new RunnerRepoInfo(
+                SolutionPath: slnPath,
+                ProjPath: foundProjSubPath.FullPath,
+                MetaPath: _metaFilePathProvider.Path,
+                Target: target.Value.Target,
+                CommitMessage: target.Value.CommitMessage,
+                CommitDate: target.Value.CommitDate,
+                ListedVersions: listedVersions,
+                TargetVersions: checkoutInput.LibraryNugets.ReturnIfMatch(listedVersions));
 
-                return GetResponse<RunnerRepoInfo>.Succeed(runInfo);
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                return GetResponse<RunnerRepoInfo>.Fail(ex);
-            }
+            return GetResponse<RunnerRepoInfo>.Succeed(runInfo);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            return GetResponse<RunnerRepoInfo>.Fail(ex);
         }
     }
 }

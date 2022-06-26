@@ -1,111 +1,111 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Mutagen.Bethesda.Environments.DI;
+﻿using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Synthesis.Bethesda.Commands;
+using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.Execution.WorkEngine;
 
-namespace Synthesis.Bethesda.Execution.PatcherCommands
+namespace Synthesis.Bethesda.Execution.PatcherCommands;
+
+public interface IExecuteRunnabilityCheck
 {
-    public interface IExecuteRunnabilityCheck
+    Task<ErrorResponse> Check(
+        string path,
+        bool directExe,
+        string loadOrderPath,
+        FilePath? buildMetaPath,
+        CancellationToken cancel);
+}
+
+public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
+{
+    private readonly IShortCircuitSettingsProvider _shortCircuitSettingsProvider;
+    private readonly IWriteShortCircuitMeta _writeShortCircuitMeta;
+    public const int MaxLines = 100;
+        
+    public IWorkDropoff Dropoff { get; }
+    public IGameReleaseContext GameReleaseContext { get; }
+    public IProcessRunner ProcessRunner { get; }
+    public IRunProcessStartInfoProvider RunProcessStartInfoProvider { get; }
+    public IDataDirectoryProvider DataDirectoryProvider { get; }
+    public IBuildMetaFileReader MetaFileReader { get; }
+    public IPatcherExtraDataPathProvider ExtraDataPathProvider { get; }
+
+    public ExecuteRunnabilityCheck(
+        IGameReleaseContext gameReleaseContext,
+        IWorkDropoff workDropoff,
+        IProcessRunner processRunner,
+        IDataDirectoryProvider dataDirectoryProvider,
+        IBuildMetaFileReader metaFileReader,
+        IShortCircuitSettingsProvider shortCircuitSettingsProvider,
+        IWriteShortCircuitMeta writeShortCircuitMeta,
+        IPatcherExtraDataPathProvider patcherExtraDataPathProvider,
+        IRunProcessStartInfoProvider runProcessStartInfoProvider)
     {
-        Task<ErrorResponse> Check(
-            string path,
-            bool directExe,
-            string loadOrderPath,
-            FilePath? buildMetaPath,
-            CancellationToken cancel);
+        MetaFileReader = metaFileReader;
+        _shortCircuitSettingsProvider = shortCircuitSettingsProvider;
+        _writeShortCircuitMeta = writeShortCircuitMeta;
+        ExtraDataPathProvider = patcherExtraDataPathProvider;
+        Dropoff = workDropoff;
+        DataDirectoryProvider = dataDirectoryProvider;
+        GameReleaseContext = gameReleaseContext;
+        ProcessRunner = processRunner;
+        RunProcessStartInfoProvider = runProcessStartInfoProvider;
     }
 
-    public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
+    public async Task<ErrorResponse> Check(
+        string path,
+        bool directExe,
+        string loadOrderPath,
+        FilePath? buildMetaPath,
+        CancellationToken cancel)
     {
-        private readonly IShortCircuitSettingsProvider _shortCircuitSettingsProvider;
-        private readonly IWriteShortCircuitMeta _writeShortCircuitMeta;
-        public const int MaxLines = 100;
-        
-        public IWorkDropoff Dropoff { get; }
-        public IGameReleaseContext GameReleaseContext { get; }
-        public IProcessRunner ProcessRunner { get; }
-        public IRunProcessStartInfoProvider RunProcessStartInfoProvider { get; }
-        public IDataDirectoryProvider DataDirectoryProvider { get; }
-        public IBuildMetaFileReader MetaFileReader { get; }
+        var meta = buildMetaPath != null ? MetaFileReader.Read(buildMetaPath.Value) : default;
 
-        public ExecuteRunnabilityCheck(
-            IGameReleaseContext gameReleaseContext,
-            IWorkDropoff workDropoff,
-            IProcessRunner processRunner,
-            IDataDirectoryProvider dataDirectoryProvider,
-            IBuildMetaFileReader metaFileReader,
-            IShortCircuitSettingsProvider shortCircuitSettingsProvider,
-            IWriteShortCircuitMeta writeShortCircuitMeta,
-            IRunProcessStartInfoProvider runProcessStartInfoProvider)
+        if (_shortCircuitSettingsProvider.Shortcircuit && meta is { DoesNotHaveRunnability: true }) return ErrorResponse.Success;
+
+        var results = new List<string>();
+        void AddResult(string s)
         {
-            MetaFileReader = metaFileReader;
-            _shortCircuitSettingsProvider = shortCircuitSettingsProvider;
-            _writeShortCircuitMeta = writeShortCircuitMeta;
-            Dropoff = workDropoff;
-            DataDirectoryProvider = dataDirectoryProvider;
-            GameReleaseContext = gameReleaseContext;
-            ProcessRunner = processRunner;
-            RunProcessStartInfoProvider = runProcessStartInfoProvider;
+            if (results.Count < 100)
+            {
+                results.Add(s);
+            }
         }
 
-        public async Task<ErrorResponse> Check(
-            string path,
-            bool directExe,
-            string loadOrderPath,
-            FilePath? buildMetaPath,
-            CancellationToken cancel)
+        var checkState = new CheckRunnability()
         {
-            var meta = buildMetaPath != null ? MetaFileReader.Read(buildMetaPath.Value) : default;
+            DataFolderPath = DataDirectoryProvider.Path,
+            GameRelease = GameReleaseContext.Release,
+            LoadOrderFilePath = loadOrderPath,
+            ExtraDataFolder = ExtraDataPathProvider.Path,
+        };
 
-            if (_shortCircuitSettingsProvider.Shortcircuit && meta is { DoesNotHaveRunnability: true }) return ErrorResponse.Success;
+        var result = (Codes)await Dropoff.EnqueueAndWait(() =>
+        {
+            return ProcessRunner.RunWithCallback(
+                RunProcessStartInfoProvider.GetStart(path, directExe, checkState),
+                AddResult,
+                cancel: cancel);
+        }).ConfigureAwait(false);
 
-            var results = new List<string>();
-            void AddResult(string s)
-            {
-                if (results.Count < 100)
-                {
-                    results.Add(s);
-                }
-            }
-
-            var checkState = new CheckRunnability()
-            {
-                DataFolderPath = DataDirectoryProvider.Path,
-                GameRelease = GameReleaseContext.Release,
-                LoadOrderFilePath = loadOrderPath
-            };
-
-            var result = (Codes)await Dropoff.EnqueueAndWait(() =>
-            {
-                return ProcessRunner.RunWithCallback(
-                    RunProcessStartInfoProvider.GetStart(path, directExe, checkState),
-                    AddResult,
-                    cancel: cancel);
-            }).ConfigureAwait(false);
-
-            if (result == Codes.NotRunnable)
-            {
-                return ErrorResponse.Fail(string.Join(Environment.NewLine, results));
-            }
-
-            if (result == Codes.NotNeeded 
-                && meta != null
-                && buildMetaPath != null)
-            {
-                meta.DoesNotHaveRunnability = true;
-                _writeShortCircuitMeta.WriteMeta(buildMetaPath, meta);
-            }
-
-            // Other error codes are likely the target app just not handling runnability checks, so return as runnable unless
-            // explicitly told otherwise with the above error code
-            return ErrorResponse.Success;
+        if (result == Codes.NotRunnable)
+        {
+            return ErrorResponse.Fail(string.Join(Environment.NewLine, results));
         }
+
+        if (result == Codes.NotNeeded 
+            && meta != null
+            && buildMetaPath != null)
+        {
+            meta.DoesNotHaveRunnability = true;
+            _writeShortCircuitMeta.WriteMeta(buildMetaPath, meta);
+        }
+
+        // Other error codes are likely the target app just not handling runnability checks, so return as runnable unless
+        // explicitly told otherwise with the above error code
+        return ErrorResponse.Success;
     }
 }

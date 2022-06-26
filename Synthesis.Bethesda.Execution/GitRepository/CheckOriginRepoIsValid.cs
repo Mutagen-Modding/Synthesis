@@ -1,29 +1,28 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using LibGit2Sharp;
 using Noggog;
 
-namespace Synthesis.Bethesda.Execution.GitRepository
+namespace Synthesis.Bethesda.Execution.GitRepository;
+
+public interface ICheckOriginRepoIsValid
 {
-    public interface ICheckOriginRepoIsValid
-    {
-        bool IsValidRepository(string path);
-    }
+    ErrorResponse IsValidRepository(string path);
+}
 
-    [ExcludeFromCodeCoverage]
-    public class CheckOriginRepoIsValid : ICheckOriginRepoIsValid
+[ExcludeFromCodeCoverage]
+public class CheckOriginRepoIsValid : ICheckOriginRepoIsValid
+{
+    public ErrorResponse IsValidRepository(string path)
     {
-        public bool IsValidRepository(string path)
+        try
         {
-            try
-            {
-                if (Repository.ListRemoteReferences(path).Any()) return true;
-            }
-            catch (Exception)
-            {
-            }
+            if (Repository.ListRemoteReferences(path).Any()) return ErrorResponse.Success;
 
-            return false;
+            return ErrorResponse.Fail("No remote references found");
+        }
+        catch (Exception ex)
+        {
+            return ErrorResponse.Fail(ex);
         }
     }
 }

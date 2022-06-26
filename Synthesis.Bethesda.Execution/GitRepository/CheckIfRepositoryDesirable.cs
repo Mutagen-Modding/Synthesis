@@ -1,30 +1,29 @@
 ﻿using Serilog;
 
-namespace Synthesis.Bethesda.Execution.GitRepository
+namespace Synthesis.Bethesda.Execution.GitRepository;
+
+public interface ICheckIfRepositoryDesirable
 {
-    public interface ICheckIfRepositoryDesirable
+    bool IsDesirable(IGitRepository repo);
+}
+
+public class CheckIfRepositoryDesirable : ICheckIfRepositoryDesirable
+{
+    private readonly ILogger _logger;
+
+    public CheckIfRepositoryDesirable(ILogger logger)
     {
-        bool IsDesirable(IGitRepository repo);
+        _logger = logger;
     }
-
-    public class CheckIfRepositoryDesirable : ICheckIfRepositoryDesirable
-    {
-        private readonly ILogger _logger;
-
-        public CheckIfRepositoryDesirable(ILogger logger)
-        {
-            _logger = logger;
-        }
         
-        public bool IsDesirable(IGitRepository repo)
+    public bool IsDesirable(IGitRepository repo)
+    {
+        var master = repo.MainBranch;
+        if (master == null)
         {
-            var master = repo.MainBranch;
-            if (master == null)
-            {
-                _logger.Warning("Could not locate master branch in {LocalDirectory}", repo.WorkingDirectory);
-                return false;
-            }
-            return true;
+            _logger.Warning("Could not locate master branch in {LocalDirectory}", repo.WorkingDirectory);
+            return false;
         }
+        return true;
     }
 }

@@ -1,20 +1,18 @@
-﻿using System;
-using Loqui;
+﻿using Loqui;
 
-namespace Synthesis.Bethesda.UnitTests
+namespace Synthesis.Bethesda.UnitTests;
+
+public class LoquiUse : IDisposable
 {
-    public class LoquiUse : IDisposable
+    public LoquiRegister? Register;
+
+    public LoquiUse()
     {
-        public LoquiRegister? Register;
+        Register = LoquiRegistration.StaticRegister;
+    }
 
-        public LoquiUse()
-        {
-            Register = LoquiRegistration.StaticRegister;
-        }
-
-        public void Dispose()
-        {
-            Register= null;
-        }
+    public void Dispose()
+    {
+        Register= null;
     }
 }

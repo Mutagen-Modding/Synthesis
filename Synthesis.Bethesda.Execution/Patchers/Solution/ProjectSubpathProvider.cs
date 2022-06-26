@@ -1,7 +1,6 @@
-﻿namespace Synthesis.Bethesda.Execution.Patchers.Solution
+﻿namespace Synthesis.Bethesda.Execution.Patchers.Solution;
+
+public interface IProjectSubpathProvider
 {
-    public interface IProjectSubpathProvider
-    {
-        string ProjectSubpath { get; }
-    }
+    string ProjectSubpath { get; }
 }

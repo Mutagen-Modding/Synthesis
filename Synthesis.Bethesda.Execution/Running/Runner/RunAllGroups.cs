@@ -1,52 +1,46 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Mutagen.Bethesda.Plugins;
-using Noggog;
+﻿using Noggog;
 using Synthesis.Bethesda.Execution.Groups;
-using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.Execution.Running.Runner
+namespace Synthesis.Bethesda.Execution.Running.Runner;
+
+public interface IRunAllGroups
 {
-    public interface IRunAllGroups
+    Task Run(
+        IGroupRun[] groups,
+        CancellationToken cancellation,
+        DirectoryPath outputDir,
+        RunParameters runParameters,
+        FilePath? sourcePath = null);
+}
+
+public class RunAllGroups : IRunAllGroups
+{
+    public IRunAGroup RunAGroup { get; }
+
+    public RunAllGroups(IRunAGroup runAGroup)
     {
-        Task Run(
-            IGroupRun[] groups,
-            CancellationToken cancellation,
-            DirectoryPath outputDir,
-            RunParameters runParameters,
-            FilePath? sourcePath = null);
+        RunAGroup = runAGroup;
     }
 
-    public class RunAllGroups : IRunAllGroups
+    public async Task Run(
+        IGroupRun[] groups,
+        CancellationToken cancellation,
+        DirectoryPath outputDir,
+        RunParameters runParameters,
+        FilePath? sourcePath = null)
     {
-        public IRunAGroup RunAGroup { get; }
-
-        public RunAllGroups(IRunAGroup runAGroup)
+        for (int i = 0; i < groups.Length; i++)
         {
-            RunAGroup = runAGroup;
-        }
+            var group = groups[i];
 
-        public async Task Run(
-            IGroupRun[] groups,
-            CancellationToken cancellation,
-            DirectoryPath outputDir,
-            RunParameters runParameters,
-            FilePath? sourcePath = null)
-        {
-            for (int i = 0; i < groups.Length; i++)
-            {
-                var group = groups[i];
+            var succeeded = await RunAGroup.Run(
+                group,
+                cancellation,
+                outputDir,
+                runParameters,
+                sourcePath).ConfigureAwait(false);
 
-                var succeeded = await RunAGroup.Run(
-                    group,
-                    cancellation,
-                    outputDir,
-                    runParameters,
-                    sourcePath).ConfigureAwait(false);
-
-                if (!succeeded) break;
-            }
+            if (!succeeded) break;
         }
     }
 }

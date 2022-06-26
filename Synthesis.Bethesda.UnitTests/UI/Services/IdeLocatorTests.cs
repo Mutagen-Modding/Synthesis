@@ -1,21 +1,16 @@
-﻿using System.IO.Abstractions.TestingHelpers;
-using AutoFixture;
-using FluentAssertions;
-using Serilog;
-using Synthesis.Bethesda.GUI.Services;
+﻿using FluentAssertions;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 
-namespace Synthesis.Bethesda.UnitTests.UI.Services
+namespace Synthesis.Bethesda.UnitTests.UI.Services;
+
+public class IdeLocatorTests
 {
-    public class IdeLocatorTests
+    [Theory, SynthAutoData]
+    public void MissingPathsDoesNotThrow(IdeLocator sut)
     {
-        [Theory, SynthAutoData]
-        public void MissingPathsDoesNotThrow(IdeLocator sut)
-        {
-            sut.VSPath.Should().BeNull();
-            sut.RiderPath.Should().BeNull();
-        }
+        sut.VSPath.Should().BeNull();
+        sut.RiderPath.Should().BeNull();
     }
 }

@@ -1,10 +1,8 @@
-﻿using System;
-using Noggog;
+﻿using Noggog;
 
-namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution
+namespace Synthesis.Bethesda.GUI.Services.Patchers.Solution;
+
+public interface ISolutionFilePathFollower
 {
-    public interface ISolutionFilePathFollower
-    {
-        IObservable<FilePath> Path { get; }
-    }
+    IObservable<FilePath> Path { get; }
 }

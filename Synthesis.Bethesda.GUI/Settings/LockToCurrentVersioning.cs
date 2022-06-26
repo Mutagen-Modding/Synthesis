@@ -1,16 +1,15 @@
 ﻿using Noggog.WPF;
 using ReactiveUI.Fody.Helpers;
 
-namespace Synthesis.Bethesda.GUI.Settings
-{
-    public interface ILockToCurrentVersioning
-    {
-        bool Lock { get; set; }
-    }
+namespace Synthesis.Bethesda.GUI.Settings;
 
-    public class LockToCurrentVersioning : ViewModel, ILockToCurrentVersioning
-    {
-        [Reactive]
-        public bool Lock { get; set; }
-    }
+public interface ILockToCurrentVersioning
+{
+    bool Lock { get; set; }
+}
+
+public class LockToCurrentVersioning : ViewModel, ILockToCurrentVersioning
+{
+    [Reactive]
+    public bool Lock { get; set; }
 }

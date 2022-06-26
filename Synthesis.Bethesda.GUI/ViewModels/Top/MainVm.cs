@@ -1,7 +1,6 @@
-using System;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
+using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using Noggog.WPF;
@@ -123,7 +122,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                         .Select(x => x is ProfilesDisplayVm),
                     (running, isProfile) => !running && !isProfile);
 
-            Task.Run(() => Mutagen.Bethesda.WarmupAll.Init()).FireAndForget();
+            Task.Run(Warmup.Init).FireAndForget();
 
             SynthesisVersion = currentVersions.SynthesisVersion;
             MutagenVersion = currentVersions.MutagenVersion;

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -11,31 +11,34 @@
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.17.0" />
     <PackageReference Include="AutoFixture.AutoNSubstitute" Version="4.17.0" />
-    <PackageReference Include="FluentAssertions" Version="6.4.0" />
+    <PackageReference Include="FluentAssertions" Version="6.7.0" />
     <PackageReference Include="GitInfo" Version="2.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-    <PackageReference Include="Mutagen.Bethesda" Version="0.36.0" />
-    <PackageReference Include="Mutagen.Bethesda.Testing" Version="0.36.0" />
-    <PackageReference Include="Noggog.Autofac" Version="2.39.0" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.39.0" />
-    <PackageReference Include="Noggog.Testing" Version="2.39.0" />
-    <PackageReference Include="NSubstitute" Version="4.2.2" />
-    <PackageReference Include="NuGetizer" Version="0.7.5">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageReference Include="Mutagen.Bethesda" Version="0.37.0" />
+    <PackageReference Include="Mutagen.Bethesda.Testing" Version="0.37.0" />
+    <PackageReference Include="Noggog.Autofac" Version="2.48" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.48" />
+    <PackageReference Include="Noggog.Testing" Version="2.48" />
+    <PackageReference Include="NSubstitute" Version="4.3.0" />
+    <PackageReference Include="NuGetizer" Version="0.8.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="Serilog" Version="2.11.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+	  <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit" Version="1.1.1" />
+	  <PackageReference Include="Microsoft.CodeAnalysis.SourceGenerators.Testing" Version="1.1.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AssemblyVersionGenerator\AssemblyVersionGenerator.csproj" />
     <ProjectReference Include="..\Mutagen.Bethesda.Synthesis.WPF\Mutagen.Bethesda.Synthesis.WPF.csproj" />
     <ProjectReference Include="..\Mutagen.Bethesda.Synthesis\Mutagen.Bethesda.Synthesis.csproj" />
     <ProjectReference Include="..\Synthesis.Bethesda.CLI\Synthesis.Bethesda.CLI.csproj" />
@@ -85,20 +88,44 @@
       <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Migration\PipelineSettings.json">
+    <None Update="Migration\Pipeline\PipelineSettings.v2.json">
       <DefaultPackFolder>none</DefaultPackFolder>
       <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Migration\PipelineSettings.v2.json">
+    <None Update="Migration\Pipeline\PipelineSettings.json">
       <DefaultPackFolder>none</DefaultPackFolder>
       <BuildAction>None</BuildAction>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Migration\PipelineV1toV2\PipelineSettings.v2.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Migration\PipelineV1toV2\PipelineSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Migration\GuiV1toV2\GuiSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
     <Compile Update="UI\Services\LogCleanerTests.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Execution\Json\SettingsVersionRetrieverTests.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Migration\Pipeline\V1toV2Tests.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Migration\Pipeline\PipelineSettingsBackupTests.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>

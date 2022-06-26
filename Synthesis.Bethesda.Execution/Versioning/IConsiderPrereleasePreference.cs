@@ -1,9 +1,6 @@
-﻿using System;
+﻿namespace Synthesis.Bethesda.Execution.Versioning;
 
-namespace Synthesis.Bethesda.Execution.Versioning
+public interface IConsiderPrereleasePreference
 {
-    public interface IConsiderPrereleasePreference
-    {
-        IObservable<bool> ConsiderPrereleases { get; }
-    }
+    IObservable<bool> ConsiderPrereleases { get; }
 }

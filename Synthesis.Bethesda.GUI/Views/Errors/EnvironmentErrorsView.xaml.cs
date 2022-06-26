@@ -1,12 +1,11 @@
 ﻿using System.Windows.Controls;
 
-namespace Synthesis.Bethesda.GUI.Views
+namespace Synthesis.Bethesda.GUI.Views;
+
+public partial class EnvironmentErrorsView : UserControl
 {
-    public partial class EnvironmentErrorsView : UserControl
+    public EnvironmentErrorsView()
     {
-        public EnvironmentErrorsView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

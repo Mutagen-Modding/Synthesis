@@ -1,32 +1,30 @@
-﻿using System.IO;
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using Noggog;
 
-namespace Synthesis.Bethesda.Execution.Running.Runner
+namespace Synthesis.Bethesda.Execution.Running.Runner;
+
+public interface IEnsureSourcePathExists
 {
-    public interface IEnsureSourcePathExists
+    void Ensure(FilePath? sourcePath);
+}
+
+public class EnsureSourcePathExists : IEnsureSourcePathExists
+{
+    public IFileSystem FileSystem { get; }
+
+    public EnsureSourcePathExists(
+        IFileSystem fileSystem)
     {
-        void Ensure(FilePath? sourcePath);
+        FileSystem = fileSystem;
     }
-
-    public class EnsureSourcePathExists : IEnsureSourcePathExists
-    {
-        public IFileSystem FileSystem { get; }
-
-        public EnsureSourcePathExists(
-            IFileSystem fileSystem)
-        {
-            FileSystem = fileSystem;
-        }
         
-        public void Ensure(FilePath? sourcePath)
+    public void Ensure(FilePath? sourcePath)
+    {
+        if (sourcePath != null)
         {
-            if (sourcePath != null)
+            if (!FileSystem.File.Exists(sourcePath))
             {
-                if (!FileSystem.File.Exists(sourcePath))
-                {
-                    throw new FileNotFoundException($"Source path did not exist: {sourcePath}");
-                }
+                throw new FileNotFoundException($"Source path did not exist: {sourcePath}");
             }
         }
     }

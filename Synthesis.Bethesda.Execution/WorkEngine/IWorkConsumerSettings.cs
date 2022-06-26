@@ -1,7 +1,6 @@
-﻿namespace Synthesis.Bethesda.Execution.WorkEngine
+﻿namespace Synthesis.Bethesda.Execution.WorkEngine;
+
+public interface IWorkConsumerSettings
 {
-    public interface IWorkConsumerSettings
-    {
-        void SetNumThreads(byte? threads);
-    }
+    void SetNumThreads(byte? threads);
 }

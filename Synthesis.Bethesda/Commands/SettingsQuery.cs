@@ -1,9 +1,8 @@
 using CommandLine;
 
-namespace Synthesis.Bethesda.Commands
+namespace Synthesis.Bethesda.Commands;
+
+[Verb("settings-query", HelpText = "Query to check what style of settings the patcher supports.")]
+public record SettingsQuery
 {
-    [Verb("settings-query", HelpText = "Query to check what style of settings the patcher supports.")]
-    public record SettingsQuery
-    {
-    }
 }

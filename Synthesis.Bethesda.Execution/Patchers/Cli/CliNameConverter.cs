@@ -1,25 +1,23 @@
-﻿using System;
-using Noggog;
+﻿using Noggog;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Cli
+namespace Synthesis.Bethesda.Execution.Patchers.Cli;
+
+public interface ICliNameConverter
 {
-    public interface ICliNameConverter
-    {
-        string Convert(FilePath path);
-    }
+    string Convert(FilePath path);
+}
 
-    public class CliNameConverter : ICliNameConverter
+public class CliNameConverter : ICliNameConverter
+{
+    public string Convert(FilePath path)
     {
-        public string Convert(FilePath path)
+        try
         {
-            try
-            {
-                return path.NameWithoutExtension;
-            }
-            catch (Exception)
-            {
-                return "<Naming Error>";
-            }
+            return path.NameWithoutExtension;
+        }
+        catch (Exception)
+        {
+            return "<Naming Error>";
         }
     }
 }

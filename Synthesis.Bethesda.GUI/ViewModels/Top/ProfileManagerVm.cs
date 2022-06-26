@@ -1,7 +1,5 @@
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using CommandLine;
 using DynamicData;
 using Noggog;
 using Noggog.WPF;

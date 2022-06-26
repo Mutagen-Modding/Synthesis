@@ -1,12 +1,12 @@
-﻿using System;
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using Noggog;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Settings;
 using Noggog.WPF;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Settings.Calculators;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.Execution.WorkEngine;
 
@@ -23,20 +23,17 @@ public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider, IDotNe
         
     [Reactive] public double BuildCorePercentage { get; set; }
 
-    public byte NumProcessors { get; }
-
     public GlobalSettingsVm(
         IWorkConsumerSettings workConsumerSettings,
-        ISettingsSingleton settingsSingleton)
+        ISettingsSingleton settingsSingleton,
+        BuildCoreCalculator calculator)
     {
         Shortcircuit = settingsSingleton.Pipeline.Shortcircuit;
-        DotNetPathOverride = settingsSingleton.Gui.DotNetPathOverride;
-        BuildCorePercentage = settingsSingleton.Gui.BuildCorePercentage;
-            
-        NumProcessors = (byte)Math.Min(byte.MaxValue, Environment.ProcessorCount);
+        DotNetPathOverride = settingsSingleton.Pipeline.DotNetPathOverride;
+        BuildCorePercentage = settingsSingleton.Pipeline.BuildCorePercentage;
 
         _buildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
-            .Select(x => (byte)Math.Min(byte.MaxValue, Environment.ProcessorCount * Percent.FactoryPutInRange(x)))
+            .Select(calculator.Calculate)
             .ToGuiProperty(this, nameof(BuildCores), deferSubscription: true);
             
         ObservableExtensions.Subscribe(this.WhenAnyValue(x => x.BuildCores), x => workConsumerSettings.SetNumThreads(x))
@@ -45,8 +42,8 @@ public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider, IDotNe
 
     public void Save(SynthesisGuiSettings gui, PipelineSettings pipe)
     {
-        gui.BuildCorePercentage = BuildCorePercentage;
-        gui.DotNetPathOverride = DotNetPathOverride;
+        pipe.BuildCorePercentage = BuildCorePercentage;
+        pipe.DotNetPathOverride = DotNetPathOverride;
         pipe.Shortcircuit = Shortcircuit;
     }
 }

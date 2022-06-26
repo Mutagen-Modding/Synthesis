@@ -1,19 +1,15 @@
-﻿using System.IO;
-using Noggog;
+﻿namespace Synthesis.Bethesda.Execution.Pathing;
 
-namespace Synthesis.Bethesda.Execution.Pathing
+public interface IPathSanitation
 {
-    public interface IPathSanitation
-    {
-        string Sanitize(string path);
-    }
+    string Sanitize(string path);
+}
 
-    public class PathSanitation : IPathSanitation
+public class PathSanitation : IPathSanitation
+{
+    public string Sanitize(string path)
     {
-        public string Sanitize(string path)
-        {
-            return path.Replace('/', Path.DirectorySeparatorChar)
-                .Replace('\\', Path.DirectorySeparatorChar);
-        }
+        return path.Replace('/', Path.DirectorySeparatorChar)
+            .Replace('\\', Path.DirectorySeparatorChar);
     }
 }

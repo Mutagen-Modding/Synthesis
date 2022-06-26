@@ -1,15 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Synthesis.Bethesda.Execution.DotNet
-{
-    public interface IExecutionParameters
-    {
-        string Parameters { get; }
-    }
+namespace Synthesis.Bethesda.Execution.DotNet;
 
-    [ExcludeFromCodeCoverage]
-    public class ExecutionParameters : IExecutionParameters
-    {
-        public string Parameters => "--runtime win-x64 -c Release";
-    }
+public interface IExecutionParameters
+{
+    string Parameters { get; }
+}
+
+[ExcludeFromCodeCoverage]
+public class ExecutionParameters : IExecutionParameters
+{
+    public string Parameters => "--runtime win-x64 -c Release";
 }

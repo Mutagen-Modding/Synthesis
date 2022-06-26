@@ -1,11 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using Autofac;
-using Microsoft.Build.Logging.StructuredLogger;
 using Noggog.IO;
 using Serilog;
-using Serilog.Core;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Views;

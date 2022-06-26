@@ -1,55 +1,53 @@
-﻿using System.Collections.Generic;
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Synthesis.Bethesda.Execution.Groups;
 
-namespace Synthesis.Bethesda.Execution.Running.Runner
+namespace Synthesis.Bethesda.Execution.Running.Runner;
+
+public interface IGroupRunLoadOrderPreparer
 {
-    public interface IGroupRunLoadOrderPreparer
+    void Write(
+        IGroupRun groupRun,
+        IReadOnlySet<ModKey> blackListedMods);
+}
+
+public class GroupRunLoadOrderPreparer : IGroupRunLoadOrderPreparer
+{
+    private readonly IFileSystem _fileSystem;
+    public ILoadOrderForRunProvider LoadOrderForRunProvider { get; }
+    public ILoadOrderPrinter Printer { get; }
+    public IRunLoadOrderPathProvider LoadOrderPathProvider { get; }
+    public ILoadOrderWriter LoadOrderWriter { get; }
+
+    public GroupRunLoadOrderPreparer(
+        IFileSystem fileSystem,
+        ILoadOrderForRunProvider loadOrderForRunProvider,
+        ILoadOrderPrinter printer,
+        IRunLoadOrderPathProvider runLoadOrderPathProvider,
+        ILoadOrderWriter loadOrderWriter)
     {
-        void Write(
-            IGroupRun groupRun,
-            IReadOnlySet<ModKey> blackListedMods);
+        _fileSystem = fileSystem;
+        LoadOrderForRunProvider = loadOrderForRunProvider;
+        Printer = printer;
+        LoadOrderPathProvider = runLoadOrderPathProvider;
+        LoadOrderWriter = loadOrderWriter;
     }
 
-    public class GroupRunLoadOrderPreparer : IGroupRunLoadOrderPreparer
+    public void Write(
+        IGroupRun groupRun,
+        IReadOnlySet<ModKey> blackListedMods)
     {
-        private readonly IFileSystem _fileSystem;
-        public ILoadOrderForRunProvider LoadOrderForRunProvider { get; }
-        public ILoadOrderPrinter Printer { get; }
-        public IRunLoadOrderPathProvider LoadOrderPathProvider { get; }
-        public ILoadOrderWriter LoadOrderWriter { get; }
-
-        public GroupRunLoadOrderPreparer(
-            IFileSystem fileSystem,
-            ILoadOrderForRunProvider loadOrderForRunProvider,
-            ILoadOrderPrinter printer,
-            IRunLoadOrderPathProvider runLoadOrderPathProvider,
-            ILoadOrderWriter loadOrderWriter)
-        {
-            _fileSystem = fileSystem;
-            LoadOrderForRunProvider = loadOrderForRunProvider;
-            Printer = printer;
-            LoadOrderPathProvider = runLoadOrderPathProvider;
-            LoadOrderWriter = loadOrderWriter;
-        }
-
-        public void Write(
-            IGroupRun groupRun,
-            IReadOnlySet<ModKey> blackListedMods)
-        {
-            var loadOrderList = LoadOrderForRunProvider.Get(groupRun.ModKey, blackListedMods);
+        var loadOrderList = LoadOrderForRunProvider.Get(groupRun.ModKey, blackListedMods);
             
-            Printer.Print(loadOrderList);
+        Printer.Print(loadOrderList);
 
-            var loadOrderPath = LoadOrderPathProvider.PathFor(groupRun);
-            _fileSystem.Directory.CreateDirectory(loadOrderPath.Directory);
+        var loadOrderPath = LoadOrderPathProvider.PathFor(groupRun);
+        _fileSystem.Directory.CreateDirectory(loadOrderPath.Directory);
             
-            LoadOrderWriter.Write(
-                loadOrderPath,
-                loadOrderList,
-                removeImplicitMods: true);
-        }
+        LoadOrderWriter.Write(
+            loadOrderPath,
+            loadOrderList,
+            removeImplicitMods: true);
     }
 }

@@ -1,31 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Synthesis.Bethesda.Execution.DotNet.ExecutablePath
+namespace Synthesis.Bethesda.Execution.DotNet.ExecutablePath;
+
+public interface ILiftExecutablePath
 {
-    public interface ILiftExecutablePath
-    {
-        bool TryGet(IEnumerable<string> lines, [MaybeNullWhen(false)] out string output);
-    }
+    bool TryGet(IEnumerable<string> lines, [MaybeNullWhen(false)] out string output);
+}
 
-    public class LiftExecutablePath : ILiftExecutablePath
-    {
-        public const string Delimiter = " -> ";
+public class LiftExecutablePath : ILiftExecutablePath
+{
+    public const string Delimiter = " -> ";
         
-        public bool TryGet(IEnumerable<string> lines, [MaybeNullWhen(false)] out string output)
+    public bool TryGet(IEnumerable<string> lines, [MaybeNullWhen(false)] out string output)
+    {
+        foreach (var line in lines)
         {
-            foreach (var line in lines)
-            {
-                var trimmed = line.Trim();
-                if (!trimmed.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)) continue;
-                var index = trimmed.IndexOf(Delimiter, StringComparison.Ordinal);
-                if (index == -1) continue;
-                output = trimmed.Substring(index + Delimiter.Length).Trim();
-                return true;
-            }
-            output = null;
-            return false;
+            var trimmed = line.Trim();
+            if (!trimmed.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)) continue;
+            var index = trimmed.IndexOf(Delimiter, StringComparison.Ordinal);
+            if (index == -1) continue;
+            output = trimmed.Substring(index + Delimiter.Length).Trim();
+            return true;
         }
+        output = null;
+        return false;
     }
 }

@@ -1,75 +1,79 @@
-﻿using System.IO;
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using Loqui;
 using Noggog;
+using Noggog.IO;
+using Noggog.StructuredStrings;
 
-namespace Mutagen.Bethesda.Synthesis.Projects
+namespace Mutagen.Bethesda.Synthesis.Projects;
+
+public interface ICreateSolutionFile
 {
-    public interface ICreateSolutionFile
+    string[] Create(
+        FilePath solutionPath);
+}
+
+public class CreateSolutionFile : ICreateSolutionFile
+{
+    private readonly IFileSystem _fileSystem;
+    private readonly IExportStringToFile _exportStringToFile;
+
+    public CreateSolutionFile(
+        IFileSystem fileSystem,
+        IExportStringToFile exportStringToFile)
     {
-        string[] Create(
-            FilePath solutionPath);
+        _fileSystem = fileSystem;
+        _exportStringToFile = exportStringToFile;
     }
-
-    public class CreateSolutionFile : ICreateSolutionFile
-    {
-        private readonly IFileSystem _FileSystem;
-
-        public CreateSolutionFile(IFileSystem fileSystem)
-        {
-            _FileSystem = fileSystem;
-        }
         
-        public string[] Create(FilePath solutionPath)
+    public string[] Create(FilePath solutionPath)
+    {
+        var slnDir = Path.GetDirectoryName(solutionPath)!;
+        _fileSystem.Directory.CreateDirectory(solutionPath.Directory);
+
+        // Create solution
+        StructuredStringBuilder sb = new();
+        sb.AppendLine($"Microsoft Visual Studio Solution File, Format Version 12.00");
+        sb.AppendLine($"# Visual Studio Version 16");
+        sb.AppendLine($"VisualStudioVersion = 16.0.30330.147");
+        sb.AppendLine($"MinimumVisualStudioVersion = 10.0.40219.1");
+        _exportStringToFile.ExportToFile(solutionPath, sb.GetString());
+
+        // Create editorconfig
+        sb = new StructuredStringBuilder();
+        sb.AppendLine("[*]");
+        sb.AppendLine("charset = utf-8");
+        sb.AppendLine("end_of_line = crlf");
+        sb.AppendLine();
+        sb.AppendLine("[*.cs]");
+        sb.AppendLine();
+        sb.AppendLine("# CS4014: Task not awaited");
+        sb.AppendLine("dotnet_diagnostic.CS4014.severity = error");
+        sb.AppendLine();
+        sb.AppendLine("# CS1998: Async function does not contain await");
+        sb.AppendLine("dotnet_diagnostic.CS1998.severity = silent");
+        _exportStringToFile.ExportToFile(Path.Combine(slnDir, ".editorconfig"), sb.GetString());
+
+        // Add nullability errors
+        sb = new StructuredStringBuilder();
+        sb.AppendLine("<Project>");
+        using (sb.IncreaseDepth())
         {
-            var slnDir = Path.GetDirectoryName(solutionPath)!;
-            _FileSystem.Directory.CreateDirectory(solutionPath.Directory);
-
-            // Create solution
-            FileGeneration fg = new();
-            fg.AppendLine($"Microsoft Visual Studio Solution File, Format Version 12.00");
-            fg.AppendLine($"# Visual Studio Version 16");
-            fg.AppendLine($"VisualStudioVersion = 16.0.30330.147");
-            fg.AppendLine($"MinimumVisualStudioVersion = 10.0.40219.1");
-            fg.Generate(solutionPath);
-
-            // Create editorconfig
-            fg = new FileGeneration();
-            fg.AppendLine("[*]");
-            fg.AppendLine("charset = utf-8");
-            fg.AppendLine("end_of_line = crlf");
-            fg.AppendLine();
-            fg.AppendLine("[*.cs]");
-            fg.AppendLine();
-            fg.AppendLine("# CS4014: Task not awaited");
-            fg.AppendLine("dotnet_diagnostic.CS4014.severity = error");
-            fg.AppendLine();
-            fg.AppendLine("# CS1998: Async function does not contain await");
-            fg.AppendLine("dotnet_diagnostic.CS1998.severity = silent");
-            fg.Generate(Path.Combine(slnDir, ".editorconfig"));
-
-            // Add nullability errors
-            fg = new FileGeneration();
-            fg.AppendLine("<Project>");
-            using (new DepthWrapper(fg))
+            sb.AppendLine("<PropertyGroup>");
+            using (sb.IncreaseDepth())
             {
-                fg.AppendLine("<PropertyGroup>");
-                using (new DepthWrapper(fg))
-                {
-                    fg.AppendLine("<Nullable>enable</Nullable>");
-                    fg.AppendLine("<WarningsAsErrors>nullable</WarningsAsErrors>");
-                }
-                fg.AppendLine("</PropertyGroup>");
+                sb.AppendLine("<Nullable>enable</Nullable>");
+                sb.AppendLine("<WarningsAsErrors>nullable</WarningsAsErrors>");
             }
-            fg.AppendLine("</Project>");
-            fg.Generate(Path.Combine(slnDir, "Directory.Build.props"), fileSystem: _FileSystem);
-
-            return new string[]
-            {
-                solutionPath,
-                Path.Combine(slnDir, ".editorconfig"),
-                Path.Combine(slnDir, "Directory.Build.props"),
-            };
+            sb.AppendLine("</PropertyGroup>");
         }
+        sb.AppendLine("</Project>");
+        _exportStringToFile.ExportToFile(Path.Combine(slnDir, "Directory.Build.props"), sb.GetString());
+
+        return new string[]
+        {
+            solutionPath,
+            Path.Combine(slnDir, ".editorconfig"),
+            Path.Combine(slnDir, "Directory.Build.props"),
+        };
     }
 }

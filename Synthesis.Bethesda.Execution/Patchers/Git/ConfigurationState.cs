@@ -1,104 +1,100 @@
 using Noggog;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
-using System.Text;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git
+namespace Synthesis.Bethesda.Execution.Patchers.Git;
+
+public interface IConfigurationState
 {
-    public interface IConfigurationState
-    {
-        bool IsHaltingError { get; }
-        ErrorResponse RunnableState { get; }
-    }
+    bool IsHaltingError { get; }
+    ErrorResponse RunnableState { get; }
+}
     
-    public class ConfigurationState : ConfigurationState<Unit>
+public class ConfigurationState : ConfigurationState<Unit>
+{
+    public static readonly ConfigurationState Success = new();
+
+    public ConfigurationState() 
+        : base(Unit.Default)
     {
-        public static readonly ConfigurationState Success = new();
-
-        public ConfigurationState() 
-            : base(Unit.Default)
-        {
-        }
-
-        public ConfigurationState(ErrorResponse err)
-            : base(Unit.Default, err)
-        {
-        }
-
-        public static implicit operator ConfigurationState(ErrorResponse err)
-        {
-            return new ConfigurationState(err);
-        }
     }
 
-    [ExcludeFromCodeCoverage]
-    public class ConfigurationState<T> : IConfigurationState
+    public ConfigurationState(ErrorResponse err)
+        : base(Unit.Default, err)
     {
-        public bool IsHaltingError { get; set; }
-        public ErrorResponse RunnableState { get; set; } = ErrorResponse.Success;
-        public T Item { get; }
+    }
 
-        public ConfigurationState(T item)
-        {
-            Item = item;
-        }
+    public static implicit operator ConfigurationState(ErrorResponse err)
+    {
+        return new ConfigurationState(err);
+    }
+}
 
-        public ConfigurationState(T item, ErrorResponse err)
-            : this(item)
-        {
-            IsHaltingError = err.Failed;
-            RunnableState = err;
-        }
+[ExcludeFromCodeCoverage]
+public class ConfigurationState<T> : IConfigurationState
+{
+    public bool IsHaltingError { get; set; }
+    public ErrorResponse RunnableState { get; set; } = ErrorResponse.Success;
+    public T Item { get; }
 
-        public ConfigurationState(GetResponse<T> resp)
-            : this(resp.Value)
-        {
-            IsHaltingError = resp.Failed;
-            RunnableState = resp;
-        }
+    public ConfigurationState(T item)
+    {
+        Item = item;
+    }
 
-        public ConfigurationState ToUnit()
-        {
-            return new ConfigurationState()
-            {
-                IsHaltingError = this.IsHaltingError,
-                RunnableState = this.RunnableState,
-            };
-        }
+    public ConfigurationState(T item, ErrorResponse err)
+        : this(item)
+    {
+        IsHaltingError = err.Failed;
+        RunnableState = err;
+    }
 
-        public ConfigurationState<R> BubbleError<R>()
-        {
-            return new ConfigurationState<R>(default!)
-            {
-                IsHaltingError = this.IsHaltingError,
-                RunnableState = this.RunnableState
-            };
-        }
+    public ConfigurationState(GetResponse<T> resp)
+        : this(resp.Value)
+    {
+        IsHaltingError = resp.Failed;
+        RunnableState = resp;
+    }
 
-        public ConfigurationState BubbleError()
+    public ConfigurationState ToUnit()
+    {
+        return new ConfigurationState()
         {
-            return new ConfigurationState(default!)
-            {
-                IsHaltingError = this.IsHaltingError,
-                RunnableState = this.RunnableState
-            };
-        }
+            IsHaltingError = this.IsHaltingError,
+            RunnableState = this.RunnableState,
+        };
+    }
 
-        public GetResponse<T> ToGetResponse()
+    public ConfigurationState<R> BubbleError<R>()
+    {
+        return new ConfigurationState<R>(default!)
         {
-            return GetResponse<T>.Create(RunnableState.Succeeded, Item, RunnableState.Reason);
-        }
+            IsHaltingError = this.IsHaltingError,
+            RunnableState = this.RunnableState
+        };
+    }
 
-        public static implicit operator ConfigurationState<T>(GetResponse<T> err)
+    public ConfigurationState BubbleError()
+    {
+        return new ConfigurationState(default!)
         {
-            return new ConfigurationState<T>(err);
-        }
+            IsHaltingError = this.IsHaltingError,
+            RunnableState = this.RunnableState
+        };
+    }
 
-        public override string ToString()
-        {
-            return $"{RunnableState}, Halting: {IsHaltingError}";
-        }
+    public GetResponse<T> ToGetResponse()
+    {
+        return GetResponse<T>.Create(RunnableState.Succeeded, Item, RunnableState.Reason);
+    }
+
+    public static implicit operator ConfigurationState<T>(GetResponse<T> err)
+    {
+        return new ConfigurationState<T>(err);
+    }
+
+    public override string ToString()
+    {
+        return $"{RunnableState}, Halting: {IsHaltingError}";
     }
 }

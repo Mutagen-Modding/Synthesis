@@ -1,43 +1,46 @@
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Noggog;
-using Synthesis.Bethesda;
 using System.ComponentModel;
 using Mutagen.Bethesda.Environments;
 using Synthesis.Bethesda.Commands;
 
-namespace Mutagen.Bethesda.Synthesis
+namespace Mutagen.Bethesda.Synthesis;
+
+/// <summary>
+/// An interface housing all the tools, parameters, and entry points for checking if a patcher is runnable
+/// </summary>
+public interface IRunnabilityState
 {
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    CheckRunnability Settings { get; }
+
     /// <summary>
-    /// An interface housing all the tools, parameters, and entry points for checking if a patcher is runnable
+    /// A list of ModKeys as they appeared, and whether they were enabled
     /// </summary>
-    public interface IRunnabilityState
-    {
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        CheckRunnability Settings { get; }
+    ILoadOrderGetter<ILoadOrderListingGetter> LoadOrder { get; }
 
-        /// <summary>
-        /// A list of ModKeys as they appeared, and whether they were enabled
-        /// </summary>
-        ILoadOrderGetter<IModListingGetter> LoadOrder { get; }
+    /// <summary>
+    /// Path to the plugins.txt used
+    /// </summary>
+    FilePath LoadOrderFilePath { get; }
 
-        /// <summary>
-        /// Path to the plugins.txt used
-        /// </summary>
-        FilePath LoadOrderFilePath { get; }
+    /// <summary>
+    /// Path to the game data folder
+    /// </summary>
+    DirectoryPath DataFolderPath { get; }
 
-        /// <summary>
-        /// Path to the game data folder
-        /// </summary>
-        DirectoryPath DataFolderPath { get; }
+    /// <summary>
+    /// GameRelease targeted for patching
+    /// </summary>
+    GameRelease GameRelease { get; }
 
-        /// <summary>
-        /// GameRelease targeted for patching
-        /// </summary>
-        GameRelease GameRelease { get; }
+    /// <summary>
+    /// Path to the supplemental data folder dedicated to storing patcher specific user settings/files
+    /// </summary>
+    string? ExtraSettingsDataPath { get; }
 
-        GameEnvironmentState<TModSetter, TModGetter> GetEnvironmentState<TModSetter, TModGetter>()
-            where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
-            where TModGetter : class, IContextGetterMod<TModSetter, TModGetter>;
-    }
+    GameEnvironmentState<TModSetter, TModGetter> GetEnvironmentState<TModSetter, TModGetter>()
+        where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
+        where TModGetter : class, IContextGetterMod<TModSetter, TModGetter>;
 }

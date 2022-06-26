@@ -1,21 +1,20 @@
 using System.Windows.Input;
 using ReactiveUI;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings
-{
-    public class OpenProfileSettings
-    {
-        public ICommand OpenCommand { get; }
+namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
-        public OpenProfileSettings(
-            OpenGlobalSettings openGlobalSettings,
-            GlobalSettingsPaneVm globalSettingsPaneVm)
+public class OpenProfileSettings
+{
+    public ICommand OpenCommand { get; }
+
+    public OpenProfileSettings(
+        OpenGlobalSettings openGlobalSettings,
+        GlobalSettingsPaneVm globalSettingsPaneVm)
+    {
+        OpenCommand = ReactiveCommand.Create(() =>
         {
-            OpenCommand = ReactiveCommand.Create(() =>
-            {
-                openGlobalSettings.Open();
-                globalSettingsPaneVm.SelectedSettings = GlobalSettingsPaneVm.SettingsPages.Profile;
-            });
-        }
+            openGlobalSettings.Open();
+            globalSettingsPaneVm.SelectedSettings = GlobalSettingsPaneVm.SettingsPages.Profile;
+        });
     }
 }

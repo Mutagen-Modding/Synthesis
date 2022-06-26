@@ -1,13 +1,11 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Common
+namespace Synthesis.Bethesda.Execution.Patchers.Common;
+
+public interface IPatcherIdProvider
 {
-    public interface IPatcherIdProvider
-    {
-        Guid InternalId { get; }
-    }
-
-    [ExcludeFromCodeCoverage]
-    public record PatcherIdInjection(Guid InternalId) : IPatcherIdProvider;
+    Guid InternalId { get; }
 }
+
+[ExcludeFromCodeCoverage]
+public record PatcherIdInjection(Guid InternalId) : IPatcherIdProvider;

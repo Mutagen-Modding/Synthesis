@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+namespace Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.Execution.Settings
+public enum PatcherVersioningEnum
 {
-    public enum PatcherVersioningEnum
-    {
-        Tag,
-        Branch,
-        Commit,
-    }
+    Tag,
+    Branch,
+    Commit,
 }

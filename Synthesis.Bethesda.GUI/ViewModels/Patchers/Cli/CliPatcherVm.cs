@@ -12,52 +12,51 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli
+namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli;
+
+public class CliPatcherVm : PatcherVm, ICliInputSourceVm
 {
-    public class CliPatcherVm : PatcherVm, ICliInputSourceVm
+    public IPathToExecutableInputVm ExecutableInput { get; }
+    public IShowHelpSetting ShowHelpSetting { get; }
+
+    private readonly ObservableAsPropertyHelper<ConfigurationState> _state;
+    public override ConfigurationState State => _state?.Value ?? ConfigurationState.Success;
+
+    public CliPatcherVm(
+        IPatcherIdProvider idProvider,
+        IPatcherNameVm nameVm,
+        IPathToExecutableInputVm pathToExecutableInputVm,
+        IProfileDisplayControllerVm selPatcher,
+        IConfirmationPanelControllerVm confirmation,
+        IShowHelpSetting showHelpSetting,
+        ILifetimeScope scope,
+        PatcherRenameActionVm.Factory renameFactory,
+        CliPatcherSettings? settings = null)
+        : base(scope, nameVm, selPatcher, confirmation, idProvider, renameFactory, settings)
     {
-        public IPathToExecutableInputVm ExecutableInput { get; }
-        public IShowHelpSetting ShowHelpSetting { get; }
+        ExecutableInput = pathToExecutableInputVm;
+        ShowHelpSetting = showHelpSetting;
 
-        private readonly ObservableAsPropertyHelper<ConfigurationState> _state;
-        public override ConfigurationState State => _state?.Value ?? ConfigurationState.Success;
-
-        public CliPatcherVm(
-            IPatcherIdProvider idProvider,
-            IPatcherNameVm nameVm,
-            IPathToExecutableInputVm pathToExecutableInputVm,
-            IProfileDisplayControllerVm selPatcher,
-            IConfirmationPanelControllerVm confirmation,
-            IShowHelpSetting showHelpSetting,
-            ILifetimeScope scope,
-            PatcherRenameActionVm.Factory renameFactory,
-            CliPatcherSettings? settings = null)
-            : base(scope, nameVm, selPatcher, confirmation, idProvider, renameFactory, settings)
-        {
-            ExecutableInput = pathToExecutableInputVm;
-            ShowHelpSetting = showHelpSetting;
-
-            _state = pathToExecutableInputVm.WhenAnyValue(x => x.Picker.ErrorState)
-                .Select(e =>
+        _state = pathToExecutableInputVm.WhenAnyValue(x => x.Picker.ErrorState)
+            .Select(e =>
+            {
+                return new ConfigurationState()
                 {
-                    return new ConfigurationState()
-                    {
-                        IsHaltingError = !e.Succeeded,
-                        RunnableState = e
-                    };
-                })
-                .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
-                {
-                    IsHaltingError = false
-                }, deferSubscription: true);
-        }
+                    IsHaltingError = !e.Succeeded,
+                    RunnableState = e
+                };
+            })
+            .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
+            {
+                IsHaltingError = false
+            }, deferSubscription: true);
+    }
 
-        public override PatcherSettings Save()
-        {
-            var ret = new CliPatcherSettings();
-            CopyOverSave(ret);
-            ret.PathToExecutable = ExecutableInput.Picker.TargetPath;
-            return ret;
-        }
+    public override PatcherSettings Save()
+    {
+        var ret = new CliPatcherSettings();
+        CopyOverSave(ret);
+        ret.PathToExecutable = ExecutableInput.Picker.TargetPath;
+        return ret;
     }
 }

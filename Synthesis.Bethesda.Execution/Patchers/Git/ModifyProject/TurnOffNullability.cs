@@ -1,27 +1,24 @@
-﻿using System;
-using System.Linq;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject
+namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
+
+public interface ITurnOffNullability
 {
-    public interface ITurnOffNullability
-    {
-        void TurnOff(XElement proj);
-    }
+    void TurnOff(XElement proj);
+}
 
-    public class TurnOffNullability : ITurnOffNullability
+public class TurnOffNullability : ITurnOffNullability
+{
+    public void TurnOff(XElement proj)
     {
-        public void TurnOff(XElement proj)
+        foreach (var group in proj.Elements("PropertyGroup"))
         {
-            foreach (var group in proj.Elements("PropertyGroup"))
+            foreach (var elem in @group.Elements())
             {
-                foreach (var elem in @group.Elements())
+                if (elem.Name.LocalName.Equals("WarningsAsErrors"))
                 {
-                    if (elem.Name.LocalName.Equals("WarningsAsErrors"))
-                    {
-                        var warnings = elem.Value.Split(',');
-                        elem.Value = string.Join(',', warnings.Where(x => !x.Contains("nullable", StringComparison.OrdinalIgnoreCase)));
-                    }
+                    var warnings = elem.Value.Split(',');
+                    elem.Value = string.Join(',', warnings.Where(x => !x.Contains("nullable", StringComparison.OrdinalIgnoreCase)));
                 }
             }
         }

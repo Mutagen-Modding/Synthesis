@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO.Abstractions;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.IO.Abstractions;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.Groups;
@@ -79,7 +76,7 @@ public class RunAPatcher : IRunAPatcher
         catch (Exception ex)
         {
             _reporter.ReportRunProblem(prepBundle.Run.Key, prepBundle.Run.Name, ex);
-            return null;
+            throw;
         }
     }
 }
