@@ -12,9 +12,4 @@ public class PatcherListing
     /// What libraries are imported into the patcher (Mutagen.Bethesda.Skyrim, for example)
     /// </summary>
     public GameCategory[] IncludedLibraries { get; set; } = Array.Empty<GameCategory>();
-    
-    /// <summary>
-    /// What Game Releases the patcher intends to support.
-    /// </summary>
-    public GameRelease[] TargetedReleases { get; set; } = Array.Empty<GameRelease>();
 }
