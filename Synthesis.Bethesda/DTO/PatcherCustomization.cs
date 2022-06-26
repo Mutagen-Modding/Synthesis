@@ -1,11 +1,12 @@
 using System.ComponentModel;
+using Mutagen.Bethesda;
 
 namespace Synthesis.Bethesda.DTO;
 
 public enum PreferredAutoVersioning
 {
     /// <summary>
-    /// Will perfer latest tag, if any tags exist
+    /// Will prefer latest tag, if any tags exist
     /// </summary>
     [Description("Default")]
     Default,
@@ -46,10 +47,39 @@ public enum VisibilityOptions
 
 public record PatcherCustomization
 {
+    /// <summary>
+    /// Nickname to use for display
+    /// </summary>
     public string? Nickname { get; set; }
+    
+    /// <summary>
+    /// Whether to include the patcher in the listing systems
+    /// </summary>
     public VisibilityOptions Visibility { get; set; } = VisibilityOptions.Visible;
+    
+    /// <summary>
+    /// Quick one-line summary description of the patcher
+    /// </summary>
     public string? OneLineDescription { get; set; }
+    
+    /// <summary>
+    /// Extensive multi-line description of the patcher
+    /// </summary>
     public string? LongDescription { get; set; }
+    
+    /// <summary>
+    /// What versioning pattern to prefer
+    /// </summary>
     public PreferredAutoVersioning PreferredAutoVersioning { get; set; }
+    
+    /// <summary>
+    /// Mods that must be on the user's load order for the patcher to be able to run
+    /// </summary>
     public string[] RequiredMods { get; set; } = Array.Empty<string>();
+    
+    /// <summary>
+    /// What Game Releases the patcher intends to support.  If left empty, the Mutagen libraries referenced by the
+    /// project are used to determine viable targets.
+    /// </summary>
+    public GameRelease[] TargetedReleases { get; set; } = Array.Empty<GameRelease>();
 }
