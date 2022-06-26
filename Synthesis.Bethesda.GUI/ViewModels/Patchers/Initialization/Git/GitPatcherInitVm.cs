@@ -1,8 +1,10 @@
+using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
+using Mutagen.Bethesda;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -73,7 +75,7 @@ public class GitPatcherInitVm : ViewModel, IPatcherInitVm
         IPathSanitation pathSanitation,
         PatcherStoreListingVm.Factory listingVmFactory,
         IProfileDisplayControllerVm displayControllerVm,
-        ApplicablePatcherListingsProvider listingsProvider,
+        IRegistryListingsProvider listingsProvider,
         IProfileGroupsList groups,
         InitializationSettingsVm initializationSettingsVm,
         PatcherInitRenameValidator renamer)
@@ -110,7 +112,14 @@ public class GitPatcherInitVm : ViewModel, IPatcherInitVm
                     if (customization.Failed) return Observable.Empty<IChangeSet<PatcherStoreListingVm>>();
                         
                     return customization.Value
-                        .Select(x => listingVmFactory(this, x.Patcher, x.Repository))
+                        .SelectMany(repo =>
+                        {
+                            return repo.Patchers
+                                .Select(p =>
+                                {
+                                    return listingVmFactory(this, p, repo);
+                                });
+                        })
                         .AsObservableChangeSet();
                 }
                 catch (Exception ex)
