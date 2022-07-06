@@ -42,9 +42,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Mutagen.Bethesda" Version="0.38.0" />
-    <PackageReference Include="Mutagen.Bethesda.Json" Version="0.38.0" />
-    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.38.0" />
+    <PackageReference Include="Mutagen.Bethesda" Version="0.38.1" />
+    <PackageReference Include="Mutagen.Bethesda.Json" Version="0.38.1" />
+    <PackageReference Include="Mutagen.Bethesda.Kernel" Version="0.38.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Noggog.CSharpExt" Version="2.49.0" />
     <PackageReference Include="NuGetizer" Version="0.8.0">
