@@ -106,6 +106,9 @@ public class ProfileVm : ViewModel
         
     [Reactive]
     public Language TargetLanguage { get; set; }
+        
+    [Reactive]
+    public bool UseUtf8InEmbedded { get; set; }
 
     public IEnvironmentErrorsVm EnvironmentErrors { get; }
 
@@ -404,7 +407,8 @@ public class ProfileVm : ViewModel
             FormIdPersistence = SelectedPersistenceMode,
             IgnoreMissingMods = IgnoreMissingMods,
             Localize = Localize,
-            TargetLanguage = TargetLanguage
+            TargetLanguage = TargetLanguage,
+            UseUtf8ForEmbeddedStrings = UseUtf8InEmbedded
         };
     }
 

@@ -31,13 +31,14 @@ public class RunSynthesisPatcher
     [Option('k', "ModKey", Required = false, HelpText = "ModKey associated with the patch being generated")]
     public string? ModKey { get; set; }
 
-    [Option("TargetLanguage", Required = false,
-        HelpText = "What language to view as the default language")]
+    [Option("TargetLanguage", Required = false, HelpText = "What language to view as the default language")]
     public string TargetLanguage { get; set; } = "English";
         
-    [Option("Localize", Required = false,
-        HelpText = "Whether to use STRINGS files during export")]
+    [Option("Localize", Required = false, HelpText = "Whether to use STRINGS files during export")]
     public bool Localize { get; set; }
+        
+    [Option("UseUtf8ForEmbeddedStrings", Required = false, HelpText = "Use UTF8 encoding when reading/writing localizable mod strings that are embedded")]
+    public bool UseUtf8ForEmbeddedStrings { get; set; }
         
     public override string ToString()
     {
@@ -50,7 +51,8 @@ public class RunSynthesisPatcher
                + $"  {nameof(PersistencePath)} => {PersistencePath} \n"
                + $"  {nameof(PatcherName)} => {PatcherName} \n"
                + $"  {nameof(TargetLanguage)} => {this.TargetLanguage}\n"
-               + $"  {nameof(Localize)} => {this.Localize}\n"
-               + $"  {nameof(ModKey)} => {ModKey}";
+               + $"  {nameof(Localize)} => {Localize}\n"
+               + $"  {nameof(ModKey)} => {ModKey}\n"
+               + $"  {nameof(UseUtf8ForEmbeddedStrings)} => {UseUtf8ForEmbeddedStrings}";
     }
 }

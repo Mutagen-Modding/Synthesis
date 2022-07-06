@@ -38,6 +38,7 @@ public class RunPatcherPipelineTests
             runParameters: new RunParameters(
                 sut.ProfileSettings.TargetLanguage,
                 sut.ProfileSettings.Localize,
+                sut.ProfileSettings.UseUtf8ForEmbeddedStrings,
                 sut.Instructions.PersistenceMode.Value,
                 sut.Instructions.PersistencePath),
             sourcePath: sut.Instructions.SourcePath);

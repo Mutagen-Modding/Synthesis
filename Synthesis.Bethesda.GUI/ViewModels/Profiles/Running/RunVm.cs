@@ -198,11 +198,12 @@ public class RunVm : ViewModel
                 try
                 {
                     await _executeRun.Run(
-                        Groups.Select(vm => vm.Run),
-                        RunningProfile.SelectedPersistenceMode,
-                        RunningProfile.Localize,
-                        RunningProfile.TargetLanguage,
-                        _cancel.Token).ConfigureAwait(false);
+                        groupRuns: Groups.Select(vm => vm.Run),
+                        persistenceMode: RunningProfile.SelectedPersistenceMode,
+                        localize: RunningProfile.Localize,
+                        utf8InEmbeddedStrings: RunningProfile.UseUtf8InEmbedded,
+                        targetLanguage: RunningProfile.TargetLanguage,
+                        cancel: _cancel.Token).ConfigureAwait(false);
                 }
                 catch (TaskCanceledException)
                 {

@@ -17,8 +17,10 @@ using Mutagen.Bethesda.Installs.DI;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using SynthesisBase = Synthesis.Bethesda;
 using Mutagen.Bethesda.Plugins.Binary.Parameters;
+using Mutagen.Bethesda.Plugins.Binary.Streams;
 using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
+using Mutagen.Bethesda.Strings.DI;
 using Mutagen.Bethesda.Synthesis.States;
 using Mutagen.Bethesda.Synthesis.States.DI;
 using Synthesis.Bethesda.Commands;
@@ -693,7 +695,10 @@ public class SynthesisPipeline
         {
             ModKey = ModKeyOption.NoCheck,
             MastersListOrdering = new MastersListOrderingByLoadOrder(loadOrder),
-            TargetLanguageOverride = args.TargetLanguage
+            TargetLanguageOverride = args.TargetLanguage,
+            Encodings = args.UseUtf8ForEmbeddedStrings 
+                ? new EncodingBundle(NonTranslated: MutagenEncodingProvider._1252, NonLocalized: MutagenEncodingProvider._utf8)
+                : null
         };
     }
 

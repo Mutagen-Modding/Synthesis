@@ -180,6 +180,9 @@ public partial class ProfileDetailView : ProfileDetailViewBase
             this.Bind(ViewModel, x => x.Profile!.Localize, x => x.Localize.IsChecked)
                 .DisposeWith(disposable);
 
+            this.Bind(ViewModel, x => x.Profile!.UseUtf8InEmbedded, x => x.Utf8ForEmbeddedStrings.IsChecked)
+                .DisposeWith(disposable);
+
             //this.WhenAnyValue(x => x.ViewModel!.PersistenceModes)
             //    .BindTo(this, x => x.PersistenceStyleSelector.ItemsSource)
             //    .DisposeWith(disposable);

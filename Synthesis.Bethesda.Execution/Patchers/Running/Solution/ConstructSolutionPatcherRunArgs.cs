@@ -50,6 +50,7 @@ public class ConstructSolutionPatcherRunArgs : IConstructSolutionPatcherRunArgs
             TargetLanguage = Enum.Parse<Language>(settings.TargetLanguage),
             Localize = settings.Localize,
             ModKey = settings.ModKey,
+            UseUtf8ForEmbeddedStrings = settings.UseUtf8ForEmbeddedStrings
         };
     }
 }

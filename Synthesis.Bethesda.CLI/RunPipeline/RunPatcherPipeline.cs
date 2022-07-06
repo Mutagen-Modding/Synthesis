@@ -37,9 +37,10 @@ public class RunPatcherPipeline : IRunPatcherPipeline
                 outputDir: Instructions.OutputDirectory,
                 cancel: cancel,
                 runParameters: new RunParameters(
-                    ProfileSettings.TargetLanguage,
-                    ProfileSettings.Localize,
-                    Instructions.PersistenceMode ?? PersistenceMode.None, 
-                    Instructions.PersistencePath)).ConfigureAwait(false);
+                    TargetLanguage: ProfileSettings.TargetLanguage,
+                    Localize: ProfileSettings.Localize,
+                    UseUtf8ForEmbeddedStrings: ProfileSettings.UseUtf8ForEmbeddedStrings,
+                    PersistenceMode: Instructions.PersistenceMode ?? PersistenceMode.None, 
+                    PersistencePath: Instructions.PersistencePath)).ConfigureAwait(false);
     }
 }

@@ -176,6 +176,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0"
                            Margin="0,16,0,0"
@@ -191,6 +192,10 @@
                           ItemsSource="{Binding Languages}"
                           SelectedItem="{Binding Profile.TargetLanguage}"
                           ToolTip="What language to view as the default language" />
+                <CheckBox Grid.Row="3" x:Name="Utf8ForEmbeddedStrings"
+                          Content="Use UTF8 For Embedded Strings" 
+                          Margin="0,4,0,0"
+                          ToolTip="Use UTF8 encoding when reading/writing localizable mod strings that are embedded" />
             </Grid>
             <Grid Grid.Row="5">
                 <Grid.RowDefinitions>

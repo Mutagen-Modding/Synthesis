@@ -25,4 +25,5 @@ public class SynthesisProfile : ISynthesisProfileSettings
     public Language TargetLanguage { get; set; } = Language.English;
 
     GameRelease IGameReleaseContext.Release => TargetRelease;
+    public bool UseUtf8ForEmbeddedStrings { get; set; }
 }

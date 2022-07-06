@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.IO.Abstractions;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Strings;
 using Synthesis.Bethesda.Execution.Groups;
@@ -15,24 +14,22 @@ public interface IExecuteGuiRun
         IEnumerable<IGroupRun> groupRuns,
         PersistenceMode persistenceMode,
         bool localize,
+        bool utf8InEmbeddedStrings,
         Language targetLanguage,
         CancellationToken cancel);
 }
 
 public class ExecuteGuiRun : IExecuteGuiRun
 {
-    private readonly IFileSystem _fileSystem;
     private readonly IExecuteRun _executeRun;
     private readonly IDataDirectoryProvider _dataDirectoryProvider;
     private readonly IProfileDirectories _profileDirectories;
 
     public ExecuteGuiRun(
-        IFileSystem fileSystem,
         IExecuteRun executeRun,
         IDataDirectoryProvider dataDirectoryProvider,
         IProfileDirectories profileDirectories)
     {
-        _fileSystem = fileSystem;
         _executeRun = executeRun;
         _dataDirectoryProvider = dataDirectoryProvider;
         _profileDirectories = profileDirectories;
@@ -42,6 +39,7 @@ public class ExecuteGuiRun : IExecuteGuiRun
         IEnumerable<IGroupRun> groupRuns,
         PersistenceMode persistenceMode,
         bool localize,
+        bool utf8InEmbeddedStrings,
         Language targetLanguage,
         CancellationToken cancel)
     {
@@ -51,9 +49,10 @@ public class ExecuteGuiRun : IExecuteGuiRun
             cancel: cancel,
             outputDir: outputDir,
             runParameters: new RunParameters(
-                targetLanguage,
+                TargetLanguage: targetLanguage,
                 Localize: localize,
-                persistenceMode,
-                Path.Combine(_profileDirectories.ProfileDirectory, "Persistence"))).ConfigureAwait(false);
+                UseUtf8ForEmbeddedStrings: utf8InEmbeddedStrings,
+                PersistenceMode: persistenceMode,
+                PersistencePath: Path.Combine(_profileDirectories.ProfileDirectory, "Persistence"))).ConfigureAwait(false);
     }
 }
