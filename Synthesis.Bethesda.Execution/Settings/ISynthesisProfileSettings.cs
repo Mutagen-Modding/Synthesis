@@ -22,4 +22,5 @@ public interface ISynthesisProfileSettings : IProfileIdentifier
     bool IgnoreMissingMods { get; set; }
     bool Localize { get; set; }
     Language TargetLanguage { get; set; }
+    public bool UseUtf8ForEmbeddedStrings { get; set; }
 }

@@ -37,6 +37,7 @@ public class GenericSettingsToMutagenSettings : IGenericSettingsToMutagenSetting
             Localize = settings.Localize,
             TargetLanguage = Enum.Parse<Language>(settings.TargetLanguage),
             ModKey = settings.ModKey,
+            UseUtf8ForEmbeddedStrings = settings.UseUtf8ForEmbeddedStrings
         };
     }
 }

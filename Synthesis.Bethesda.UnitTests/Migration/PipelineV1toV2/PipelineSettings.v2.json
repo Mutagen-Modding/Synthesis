@@ -72,7 +72,8 @@
       "FormIdPersistence": "Text",
       "IgnoreMissingMods": false,
       "Localize": false,
-      "TargetLanguage": "English"
+      "TargetLanguage": "English",
+      "UseUtf8ForEmbeddedStrings": false
     },
     {
       "$type": "Synthesis.Bethesda.Execution.Settings.V2.SynthesisProfile, Synthesis.Bethesda.Execution",
@@ -119,7 +120,8 @@
       "FormIdPersistence": "Text",
       "IgnoreMissingMods": false,
       "Localize": false,
-      "TargetLanguage": "English"
+      "TargetLanguage": "English",
+      "UseUtf8ForEmbeddedStrings": false
     }
   ],
   "Shortcircuit": true,

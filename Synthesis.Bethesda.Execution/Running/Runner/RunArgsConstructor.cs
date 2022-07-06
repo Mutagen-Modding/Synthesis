@@ -62,6 +62,7 @@ public class RunArgsConstructor : IRunArgsConstructor
             PersistencePath = runParameters.PersistenceMode == PersistenceMode.None ? null : runParameters.PersistencePath,
             PatcherName = fileName,
             ModKey = groupRun.ModKey.FileName,
+            UseUtf8ForEmbeddedStrings = runParameters.UseUtf8ForEmbeddedStrings
         };
     }
 }
