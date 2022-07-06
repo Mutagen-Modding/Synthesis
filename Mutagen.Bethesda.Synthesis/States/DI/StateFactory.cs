@@ -1,5 +1,6 @@
 ﻿using Noggog;
 using System.IO.Abstractions;
+using System.Text;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Allocators;
 using Mutagen.Bethesda.Plugins.Cache;
@@ -7,6 +8,7 @@ using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Plugins.Records.Internals;
 using Mutagen.Bethesda.Strings;
+using Mutagen.Bethesda.Strings.DI;
 using Mutagen.Bethesda.Synthesis.CLI;
 
 namespace Mutagen.Bethesda.Synthesis.States.DI;
@@ -37,6 +39,14 @@ public class StateFactory : IStateFactory
         _loadOrderImporter = loadOrderImporter;
         _getStateLoadOrder = getStateLoadOrder;
         _enableImplicitMasters = enableImplicitMasters;
+    }
+
+    private class Utf8EncodingWrapper : IMutagenEncodingProvider
+    {
+        public IMutagenEncoding GetEncoding(GameRelease release, Language language)
+        {
+            return MutagenEncodingProvider._utf8;
+        }
     }
         
     public SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
@@ -91,6 +101,7 @@ public class StateFactory : IStateFactory
             .Import(stringsParam: new StringsReadParameters()
             {
                 TargetLanguage = settings.TargetLanguage,
+                EncodingProvider = settings.UseUtf8ForEmbeddedStrings ? new Utf8EncodingWrapper() : null
             });
 
         // Create or import patch mod
