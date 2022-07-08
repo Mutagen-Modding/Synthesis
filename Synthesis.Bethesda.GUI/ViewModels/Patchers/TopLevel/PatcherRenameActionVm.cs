@@ -62,7 +62,7 @@ public class PatcherRenameActionVm : ViewModel, IConfirmationActionVm
         }
         catch (Exception e)
         {
-            _logger.Error("Could not move settings to new nickname.  Backing out.");
+            _logger.Error(e, "Could not move settings to new nickname {Name} from {Source} to {Target}.  Backing out.", Name, _extraDataPathProvider.Path, _extraDataPathProvider.GetPathForName(Name));
             return;
         }
         _nameVm.Nickname = Name;
