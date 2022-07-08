@@ -89,6 +89,8 @@
             </Button>
         </StackPanel>
         <ComboBox Grid.Row="3" Grid.ColumnSpan="2"
+                  ItemsSource="{Binding AvailableProjects}"
+                  SelectedItem="{Binding SelectedProjectInput.ProjectSubpath}"
             x:Name="ProjectsPickerBox">
             <ComboBox.ItemTemplate>
                 <DataTemplate>

@@ -45,10 +45,8 @@ public partial class GitTargetView : GitTargetViewBase
                 .DisposeWith(disposable);
 
             // Bind project picker
-            this.Bind(this.ViewModel, vm => vm.SelectedProjectInput.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
-                .DisposeWith(disposable);
-            this.OneWayBind(this.ViewModel, vm => vm.AvailableProjects, view => view.ProjectsPickerBox.ItemsSource)
-                .DisposeWith(disposable);
+            // ProjectsPickerBox bindings in view, as RxUI bindings seemed desynced,
+            // and would reset the VM's value to null 
             this.WhenAnyValue(x => x.ViewModel!.RepoClonesValid.Valid)
                 .BindTo(this, view => view.ProjectsPickerBox.IsEnabled)
                 .DisposeWith(disposable);
