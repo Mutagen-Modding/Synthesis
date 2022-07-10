@@ -40,7 +40,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.38.1" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.38.2.1-dev" />
     <PackageReference Include="NuGetizer" Version="0.8.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
