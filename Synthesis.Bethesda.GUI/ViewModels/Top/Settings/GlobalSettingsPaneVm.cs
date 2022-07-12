@@ -37,6 +37,7 @@ public class GlobalSettingsPaneVm : ViewModel
 
     public void SetPrevious(ViewModel? previous)
     {
+        if (previous == this) return;
         _previous = previous;
     }
 }
