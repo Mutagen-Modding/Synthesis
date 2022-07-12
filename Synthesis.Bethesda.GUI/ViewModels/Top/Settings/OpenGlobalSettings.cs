@@ -20,7 +20,7 @@ public class OpenGlobalSettings
 
     public void Open()
     {
-        _globalSettingsPaneVm.SelectedSettings = GlobalSettingsPaneVm.SettingsPages.Profile;
+        _globalSettingsPaneVm.SelectedSettings = GlobalSettingsPaneVm.SettingsPages.Advanced;
         _globalSettingsPaneVm.SetPrevious(_activePanelControllerVm.ActivePanel?.ViewModel);
         _activePanelControllerVm.ActivePanel = _globalSettingsPaneVm;
     }
