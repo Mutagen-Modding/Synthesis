@@ -35,8 +35,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         private readonly ObservableAsPropertyHelper<ViewModel?> _activePanel;
         public ViewModel? ActivePanel => _activePanel.Value;
 
-        public ICommand OpenProfilesPageCommand { get; }
-
         public IConfirmationPanelControllerVm Confirmation { get; }
 
         // Whether to show red glow in background
@@ -65,11 +63,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         public bool InitialLoading { get; set; } = true;
         
         public ICommand OpenGlobalSettingsCommand { get; }
+        public ICommand OpenProfilesPageCommand { get; }
 
         public MainVm(
             ActiveRunVm activeRunVm,
             ProfileManagerVm profileManager,
-            OpenProfileSettings openProfileSettings,
             OpenGlobalSettings openGlobalSettings,
             IConfirmationPanelControllerVm confirmationControllerVm,
             IProvideCurrentVersions currentVersions,
@@ -94,7 +92,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _selectedProfile = _selectedProfileController.WhenAnyValue(x => x.SelectedProfile)
                 .ToGuiProperty(this, nameof(SelectedProfile), default, deferSubscription: true);
 
-            OpenGlobalSettingsCommand = openGlobalSettings.OpenCommand;
+            OpenGlobalSettingsCommand = openGlobalSettings.OpenGlobalSettingsCommand;
+            OpenProfilesPageCommand = openGlobalSettings.OpenProfilesPageCommand;
             
             _hot = this.WhenAnyValue(x => x.ActivePanel)
                 .Select(x =>
@@ -113,8 +112,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 .Switch()
                 .DistinctUntilChanged()
                 .ToGuiProperty(this, nameof(Hot), deferSubscription: true);
-
-            OpenProfilesPageCommand = openProfileSettings.OpenCommand;
             
             canExecute: Observable.CombineLatest(
                     activeRunVm.WhenAnyFallback(x => x.CurrentRun!.Running, fallback: false),

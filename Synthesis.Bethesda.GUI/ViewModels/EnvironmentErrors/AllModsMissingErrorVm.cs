@@ -24,7 +24,7 @@ public class AllModsMissingErrorVm : ViewModel, IEnvironmentErrorVm
         
     public AllModsMissingErrorVm(
         IProfileDataFolderVm dataFolderVm,
-        OpenProfileSettings openProfileSettings,
+        OpenGlobalSettings openProfileSettings,
         IImplicitListingModKeyProvider implicitListingsProvider,
         IProfileLoadOrder profileLoadOrder)
     {
@@ -53,6 +53,6 @@ public class AllModsMissingErrorVm : ViewModel, IEnvironmentErrorVm
             .Select(x => x.Path)
             .ToGuiProperty(this, nameof(DataFolderPath), string.Empty, deferSubscription: true);
 
-        GoToProfileSettingsCommand = openProfileSettings.OpenCommand;
+        GoToProfileSettingsCommand = openProfileSettings.OpenProfilesPageCommand;
     }
 }

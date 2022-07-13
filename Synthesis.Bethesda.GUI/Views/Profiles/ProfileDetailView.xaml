@@ -145,6 +145,7 @@
                               ToolTip="Will disable all interaction with versioning systems, to help keep everything in its current state">
                     <ToggleButton.Style>
                         <Style TargetType="ToggleButton" BasedOn="{StaticResource BaseToggleButtonStyle}" >
+                            <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray4}"></Setter>
                             <Setter Property="Content">
                                 <Setter.Value>
                                     <icon:PackIconFontAwesome Kind="UnlockAltSolid"
@@ -164,6 +165,13 @@
                                         </Setter.Value>
                                     </Setter>
                                 </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="False" />
+                                        <Condition Property="IsChecked" Value="True" />
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.ThemeForeground}" />
+                                </MultiTrigger>
                             </Style.Triggers>
                         </Style>
                     </ToggleButton.Style>
