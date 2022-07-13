@@ -10,11 +10,11 @@ public interface INavigateTo
 
 public class NavigateTo : INavigateTo
 {
-    private readonly ILogger _Logger;
+    private readonly ILogger _logger;
 
     public NavigateTo(ILogger logger)
     {
-        _Logger = logger;
+        _logger = logger;
     }
         
     public void Navigate(string path)
@@ -28,7 +28,7 @@ public class NavigateTo : INavigateTo
         }
         catch (Exception ex)
         {
-            _Logger.Error(ex, $"Error navigating to path: {path}");
+            _logger.Error(ex, "Error navigating to path: {Path}", path);
         }
     }
 }

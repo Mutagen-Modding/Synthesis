@@ -110,35 +110,64 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0"
                     Margin="0,8,0,0"
                     Style="{StaticResource SettingSectionHeaderStyle}"
                     Text="Nuget Versions" />
-                <local:NugetsVersioningView Grid.Row="1"
-                    x:Name="Nugets"
-                    Margin="0,8,0,0" />
-                <StackPanel Grid.Row="2"
+                <local:NugetsVersioningView Grid.Row="1" Grid.Column="0"
+                    x:Name="Nugets" 
+                    Margin="10,8,0,0" />
+                <StackPanel Grid.Row="2" Grid.Column="0"
                     x:Name="ResetVersioningGrid"
+                    Margin="15,5,5,5"
                     Orientation="Horizontal">
+                    <CheckBox x:Name="PrereleaseCheckbox">
+                        Consider Prereleases
+                    </CheckBox>
                     <Button
                         x:Name="ResetPatchersToProfile"
                         Padding="5"
+                        Margin="20,0,0,0"
                         HorizontalAlignment="Left"
                         ToolTip="Sets all contained patchers to match and follow profile settings">
                         Reset Patchers to Profile
                     </Button>
-                    <CheckBox x:Name="PrereleaseCheckbox" Margin="20,0,0,0">
-                        Prereleases
-                    </CheckBox>
                 </StackPanel>
-                <CheckBox Grid.Row="3"
-                    x:Name="LockToCurrentVersioning"
-                    Margin="0,15,0,0"
-                    ToolTip="Will disable all interaction with versioning systems, to help keep everything in its current state">
-                    Lock To Current Versioning
-                </CheckBox>
+                <ToggleButton Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
+                              x:Name="LockToCurrentVersioning"
+                              Margin="5,0,0,0"
+                              VerticalAlignment="Center"
+                              ToolTip="Will disable all interaction with versioning systems, to help keep everything in its current state">
+                    <ToggleButton.Style>
+                        <Style TargetType="ToggleButton" BasedOn="{StaticResource BaseToggleButtonStyle}" >
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <icon:PackIconFontAwesome Kind="UnlockAltSolid"
+                                                              Width="20"
+                                                              Height="20"
+                                                              VerticalAlignment="Center" />
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <icon:PackIconFontAwesome Kind="LockSolid"
+                                                                      Width="20"
+                                                                      Height="20"
+                                                                      VerticalAlignment="Center" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ToggleButton.Style>
+                </ToggleButton>
             </Grid>
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
@@ -152,7 +181,7 @@
                     Text="Data Folder Location" />
                 <TextBox Grid.Row="1"
                     x:Name="DataFolderOverrideBox"
-                    Margin="0,4,0,0"
+                    Margin="10,8,0,0"
                     mahapps:TextBoxHelper.Watermark="Automatic detection"
                     ToolTip="Location of your data folder.  Default setting is to locate it automatically." />
             </Grid>
@@ -167,7 +196,7 @@
                     Text="FormID Persistence" />
                 <ComboBox Grid.Row="1"
                     x:Name="PersistenceStyleSelector"
-                    Margin="0,4,0,0"
+                    Margin="10,8,0,0"
                     ItemsSource="{Binding PersistenceModes}"
                     ToolTip="What type of persistence system to use for keeping FormIDs in sync" />
             </Grid>
@@ -184,17 +213,17 @@
                            Text="Language" />
                 <CheckBox Grid.Row="1" x:Name="Localize"
                           Content="Localize" 
-                          Margin="0,4,0,0"
+                          Margin="10,8,0,0"
                           ToolTip="Whether to use STRINGS files during export" />
                 <ComboBox Grid.Row="2"
-                          Margin="0,4,0,0"
+                          Margin="10,8,0,0"
                           x:Name="TargetLanguage"
                           ItemsSource="{Binding Languages}"
                           SelectedItem="{Binding Profile.TargetLanguage}"
                           ToolTip="What language to view as the default language" />
                 <CheckBox Grid.Row="3" x:Name="Utf8ForEmbeddedStrings"
                           Content="Use UTF8 For Embedded Strings" 
-                          Margin="0,4,0,0"
+                          Margin="10,8,0,0"
                           ToolTip="Use UTF8 encoding when reading/writing localizable mod strings that are embedded" />
             </Grid>
             <Grid Grid.Row="5">
@@ -208,7 +237,7 @@
                            Text="Other" />
                 <CheckBox Grid.Row="1"
                           x:Name="IgnoreMissingModsCheckbox"
-                          Margin="0,4,0,0"
+                          Margin="10,8,0,0"
                           Content="Ignore Missing Mods"
                           ToolTip="Whether to allow pipeline execution even if there are missing mods" />
             </Grid>
