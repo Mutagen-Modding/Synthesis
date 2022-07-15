@@ -31,6 +31,9 @@
             <TabItem Header="Profiles">
                 <local:ProfilesView x:Name="ProfilesView" />
             </TabItem>
+            <TabItem Header="UI Version">
+                <local:UiVersionView x:Name="UiVersionView" />
+            </TabItem>
             <TabItem Header="Advanced">
                 <local:AdvancedSettingsView x:Name="AdvancedSettingsView" />
             </TabItem>

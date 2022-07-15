@@ -21,6 +21,8 @@ public partial class GlobalSettingsPaneView : GlobalSettingsPaneViewBase
                 .DisposeWith(dispose);
             this.OneWayBind(ViewModel, x => x.GlobalSettingsVm, x => x.AdvancedSettingsView.DataContext)
                 .DisposeWith(dispose);
+            this.OneWayBind(ViewModel, x => x.UiUpdateVm, x => x.UiVersionView.DataContext)
+                .DisposeWith(dispose);
             this.OneWayBind(ViewModel, x => x.GoBackCommand, x => x.BackButton.Command)
                 .DisposeWith(dispose);
             this.Bind(ViewModel, x => x.SelectedSettings, x => x.TabControl.SelectedIndex,

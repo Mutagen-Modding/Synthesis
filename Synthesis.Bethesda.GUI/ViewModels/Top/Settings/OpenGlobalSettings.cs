@@ -10,6 +10,7 @@ public class OpenGlobalSettings
         
     public ICommand OpenProfilesPageCommand { get; }
     public ICommand OpenGlobalSettingsCommand { get; }
+    public ICommand OpenUiVersionPageCommand { get; }
 
     public OpenGlobalSettings(
         GlobalSettingsPaneVm globalSettingsPaneVm,
@@ -20,6 +21,7 @@ public class OpenGlobalSettings
 
         OpenGlobalSettingsCommand = ReactiveCommand.Create(() => Open(GlobalSettingsPaneVm.SettingsPages.Advanced));
         OpenProfilesPageCommand = ReactiveCommand.Create(() => Open(GlobalSettingsPaneVm.SettingsPages.Profile));
+        OpenUiVersionPageCommand = ReactiveCommand.Create(() => Open(GlobalSettingsPaneVm.SettingsPages.UiVersion));
     }
 
     public void Open(GlobalSettingsPaneVm.SettingsPages page)

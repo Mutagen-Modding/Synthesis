@@ -42,13 +42,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         public bool Hot => _hot.Value;
 
         public string SynthesisVersion { get; }
-        public string MutagenVersion { get; }
-
-        private readonly ObservableAsPropertyHelper<string?> _newestSynthesisVersion;
-        public string? NewestSynthesisVersion => _newestSynthesisVersion.Value;
-
-        private readonly ObservableAsPropertyHelper<string?> _newestMutagenVersion;
-        public string? NewestMutagenVersion => _newestMutagenVersion.Value;
 
         private readonly ObservableAsPropertyHelper<IConfirmationActionVm?> _activeConfirmation;
         public IConfirmationActionVm? ActiveConfirmation => _activeConfirmation.Value;
@@ -64,6 +57,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         
         public ICommand OpenGlobalSettingsCommand { get; }
         public ICommand OpenProfilesPageCommand { get; }
+        public ICommand OpenUiVersionPageCommand { get; }
+
+        public UiUpdateVm UiUpdateVm { get; }
 
         public MainVm(
             ActiveRunVm activeRunVm,
@@ -73,16 +69,17 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             IProvideCurrentVersions currentVersions,
             ISelectedProfileControllerVm selectedProfile,
             ISettingsSingleton settingsSingleton,
-            INewestLibraryVersionsVm libVersionsVm,
             IActivePanelControllerVm activePanelControllerVm,
             IProfileFactory profileFactory,
-            ILogger logger)
+            ILogger logger, 
+            UiUpdateVm uiUpdateVm)
         {
             _selectedProfileController = selectedProfile;
             _settingsSingleton = settingsSingleton;
             _activePanelControllerVm = activePanelControllerVm;
             _profileFactory = profileFactory;
             _logger = logger;
+            UiUpdateVm = uiUpdateVm;
             _activePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel!.ViewModel)
                 .ToGuiProperty(this, nameof(ActivePanel), default, deferSubscription: true);
             ProfileManager = profileManager;
@@ -94,6 +91,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
 
             OpenGlobalSettingsCommand = openGlobalSettings.OpenGlobalSettingsCommand;
             OpenProfilesPageCommand = openGlobalSettings.OpenProfilesPageCommand;
+            OpenUiVersionPageCommand = openGlobalSettings.OpenUiVersionPageCommand;
             
             _hot = this.WhenAnyValue(x => x.ActivePanel)
                 .Select(x =>
@@ -122,13 +120,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             Task.Run(Warmup.Init).FireAndForget();
 
             SynthesisVersion = currentVersions.SynthesisVersion;
-            MutagenVersion = currentVersions.MutagenVersion;
-            _newestMutagenVersion = libVersionsVm.WhenAnyValue(x => x.Versions)
-                .Select(x => x.Normal.Mutagen)
-                .ToGuiProperty(this, nameof(NewestMutagenVersion), default, deferSubscription: true);
-            _newestSynthesisVersion = libVersionsVm.WhenAnyValue(x => x.Versions)
-                .Select(x => x.Normal.Synthesis)
-                .ToGuiProperty(this, nameof(NewestSynthesisVersion), default, deferSubscription: true);
 
             _activeConfirmation = Observable.CombineLatest(
                     this.WhenAnyFallback(x => x.ProfileManager.SelectedProfile!.SelectedPatcher)

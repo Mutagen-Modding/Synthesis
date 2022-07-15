@@ -10,6 +10,7 @@ public class GlobalSettingsPaneVm : ViewModel
     public enum SettingsPages
     {
         Profile,
+        UiVersion,
         Advanced,
     };
 
@@ -21,10 +22,12 @@ public class GlobalSettingsPaneVm : ViewModel
 
     public ProfilesDisplayVm Profiles { get; }
     public GlobalSettingsVm GlobalSettingsVm { get; }
+    public UiUpdateVm UiUpdateVm { get; }
 
     public GlobalSettingsPaneVm(
         ProfilesDisplayVm profilesDisplayVm,
         GlobalSettingsVm globalSettingsVm,
+        UiUpdateVm uiUpdateVm,
         IActivePanelControllerVm activePanelController)
     {
         GoBackCommand = ReactiveCommand.Create(() =>
@@ -33,6 +36,7 @@ public class GlobalSettingsPaneVm : ViewModel
         });
         Profiles = profilesDisplayVm;
         GlobalSettingsVm = globalSettingsVm;
+        UiUpdateVm = uiUpdateVm;
     }
 
     public void SetPrevious(ViewModel? previous)
