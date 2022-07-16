@@ -35,8 +35,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         private readonly ObservableAsPropertyHelper<ViewModel?> _activePanel;
         public ViewModel? ActivePanel => _activePanel.Value;
 
-        public ICommand OpenProfilesPageCommand { get; }
-
         public IConfirmationPanelControllerVm Confirmation { get; }
 
         // Whether to show red glow in background
@@ -44,13 +42,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         public bool Hot => _hot.Value;
 
         public string SynthesisVersion { get; }
-        public string MutagenVersion { get; }
-
-        private readonly ObservableAsPropertyHelper<string?> _newestSynthesisVersion;
-        public string? NewestSynthesisVersion => _newestSynthesisVersion.Value;
-
-        private readonly ObservableAsPropertyHelper<string?> _newestMutagenVersion;
-        public string? NewestMutagenVersion => _newestMutagenVersion.Value;
 
         private readonly ObservableAsPropertyHelper<IConfirmationActionVm?> _activeConfirmation;
         public IConfirmationActionVm? ActiveConfirmation => _activeConfirmation.Value;
@@ -65,26 +56,30 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         public bool InitialLoading { get; set; } = true;
         
         public ICommand OpenGlobalSettingsCommand { get; }
+        public ICommand OpenProfilesPageCommand { get; }
+        public ICommand OpenUiVersionPageCommand { get; }
+
+        public UiUpdateVm UiUpdateVm { get; }
 
         public MainVm(
             ActiveRunVm activeRunVm,
             ProfileManagerVm profileManager,
-            OpenProfileSettings openProfileSettings,
             OpenGlobalSettings openGlobalSettings,
             IConfirmationPanelControllerVm confirmationControllerVm,
             IProvideCurrentVersions currentVersions,
             ISelectedProfileControllerVm selectedProfile,
             ISettingsSingleton settingsSingleton,
-            INewestLibraryVersionsVm libVersionsVm,
             IActivePanelControllerVm activePanelControllerVm,
             IProfileFactory profileFactory,
-            ILogger logger)
+            ILogger logger, 
+            UiUpdateVm uiUpdateVm)
         {
             _selectedProfileController = selectedProfile;
             _settingsSingleton = settingsSingleton;
             _activePanelControllerVm = activePanelControllerVm;
             _profileFactory = profileFactory;
             _logger = logger;
+            UiUpdateVm = uiUpdateVm;
             _activePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel!.ViewModel)
                 .ToGuiProperty(this, nameof(ActivePanel), default, deferSubscription: true);
             ProfileManager = profileManager;
@@ -94,7 +89,9 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _selectedProfile = _selectedProfileController.WhenAnyValue(x => x.SelectedProfile)
                 .ToGuiProperty(this, nameof(SelectedProfile), default, deferSubscription: true);
 
-            OpenGlobalSettingsCommand = openGlobalSettings.OpenCommand;
+            OpenGlobalSettingsCommand = openGlobalSettings.OpenGlobalSettingsCommand;
+            OpenProfilesPageCommand = openGlobalSettings.OpenProfilesPageCommand;
+            OpenUiVersionPageCommand = openGlobalSettings.OpenUiVersionPageCommand;
             
             _hot = this.WhenAnyValue(x => x.ActivePanel)
                 .Select(x =>
@@ -113,8 +110,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 .Switch()
                 .DistinctUntilChanged()
                 .ToGuiProperty(this, nameof(Hot), deferSubscription: true);
-
-            OpenProfilesPageCommand = openProfileSettings.OpenCommand;
             
             canExecute: Observable.CombineLatest(
                     activeRunVm.WhenAnyFallback(x => x.CurrentRun!.Running, fallback: false),
@@ -125,13 +120,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             Task.Run(Warmup.Init).FireAndForget();
 
             SynthesisVersion = currentVersions.SynthesisVersion;
-            MutagenVersion = currentVersions.MutagenVersion;
-            _newestMutagenVersion = libVersionsVm.WhenAnyValue(x => x.Versions)
-                .Select(x => x.Normal.Mutagen)
-                .ToGuiProperty(this, nameof(NewestMutagenVersion), default, deferSubscription: true);
-            _newestSynthesisVersion = libVersionsVm.WhenAnyValue(x => x.Versions)
-                .Select(x => x.Normal.Synthesis)
-                .ToGuiProperty(this, nameof(NewestSynthesisVersion), default, deferSubscription: true);
 
             _activeConfirmation = Observable.CombineLatest(
                     this.WhenAnyFallback(x => x.ProfileManager.SelectedProfile!.SelectedPatcher)

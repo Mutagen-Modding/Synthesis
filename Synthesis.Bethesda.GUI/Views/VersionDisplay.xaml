@@ -8,50 +8,10 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <Grid>
-        <Button x:Name="VersionButton" VerticalAlignment="Center">
-            <Button.ToolTip>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0"
-                        Margin="0,0,5,0"
-                        Text="Synthesis:" />
-                    <TextBlock Grid.Row="0" Grid.Column="1"
-                        x:Name="CurrentSynthesisVersionText"
-                        HorizontalAlignment="Right" />
-                    <TextBlock Grid.Row="0" Grid.Column="2"
-                        x:Name="SynthesisArrow"
-                        Text=" -&gt; " />
-                    <TextBlock Grid.Row="0" Grid.Column="3"
-                        x:Name="LatestSynthesisVersionText" />
-                    <TextBlock Grid.Row="1" Grid.Column="0"
-                        Text="Mutagen:" />
-                    <TextBlock Grid.Row="1" Grid.Column="1"
-                        x:Name="CurrentMutagenVersionText"
-                        HorizontalAlignment="Right" />
-                    <TextBlock Grid.Row="1" Grid.Column="2"
-                        x:Name="MutagenArrow"
-                        Text=" -&gt; " />
-                    <TextBlock Grid.Row="1" Grid.Column="3"
-                        x:Name="LatestMutagenVersionText" />
-                </Grid>
-            </Button.ToolTip>
-        </Button>
-        <Viewbox
-            x:Name="CopiedText"
-            Margin="8"
-            VerticalAlignment="Center"
-            Visibility="Collapsed">
-            <TextBlock Text="Copied" />
-        </Viewbox>
-    </Grid>
+    <StackPanel Orientation="Horizontal">
+        <Button x:Name="VersionButton" VerticalAlignment="Center" ToolTip="UI Version" />
+        <local:UpdateButtonControl x:Name="DownloadUpdateButton"
+                                   Margin="6"
+                                   ToolTip="Download new version of UI"/>
+    </StackPanel>
 </local:VersionDisplayBase>

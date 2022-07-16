@@ -7,7 +7,10 @@ public class OpenGlobalSettings
 {
     private readonly GlobalSettingsPaneVm _globalSettingsPaneVm;
     private readonly IActivePanelControllerVm _activePanelControllerVm;
-    public ICommand OpenCommand { get; }
+        
+    public ICommand OpenProfilesPageCommand { get; }
+    public ICommand OpenGlobalSettingsCommand { get; }
+    public ICommand OpenUiVersionPageCommand { get; }
 
     public OpenGlobalSettings(
         GlobalSettingsPaneVm globalSettingsPaneVm,
@@ -15,12 +18,15 @@ public class OpenGlobalSettings
     {
         _globalSettingsPaneVm = globalSettingsPaneVm;
         _activePanelControllerVm = activePanelControllerVm;
-        OpenCommand = ReactiveCommand.Create(Open);
+
+        OpenGlobalSettingsCommand = ReactiveCommand.Create(() => Open(GlobalSettingsPaneVm.SettingsPages.Advanced));
+        OpenProfilesPageCommand = ReactiveCommand.Create(() => Open(GlobalSettingsPaneVm.SettingsPages.Profile));
+        OpenUiVersionPageCommand = ReactiveCommand.Create(() => Open(GlobalSettingsPaneVm.SettingsPages.UiVersion));
     }
 
-    public void Open()
+    public void Open(GlobalSettingsPaneVm.SettingsPages page)
     {
-        _globalSettingsPaneVm.SelectedSettings = GlobalSettingsPaneVm.SettingsPages.Profile;
+        _globalSettingsPaneVm.SelectedSettings = page;
         _globalSettingsPaneVm.SetPrevious(_activePanelControllerVm.ActivePanel?.ViewModel);
         _activePanelControllerVm.ActivePanel = _globalSettingsPaneVm;
     }
