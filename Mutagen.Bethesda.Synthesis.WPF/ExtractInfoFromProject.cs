@@ -1,4 +1,4 @@
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using Path = System.IO.Path;
 using System.Reflection;
 using System.Runtime.Loader;
@@ -51,14 +51,16 @@ public class ExtractInfoFromProject : IExtractInfoFromProject
         // Copy to a temp folder for build + loading, just to keep the main one free to be swapped/modified as needed
         var tempFolder = TempFolder.FactoryByPath(Path.Combine(_paths.LoadingFolder, Path.GetRandomFileName()));
         if (cancel.IsCancellationRequested) return GetResponse<(TRet Item, TempFolder Temp)>.Fail("Cancelled");
-        var projDir = Path.GetDirectoryName(targetProject.ProjPath)!;
-        _logger.Information($"Starting project assembly info extraction.  Copying project from {projDir} to {tempFolder.Dir.Path}");
-        _copyDirectory.Copy(projDir, tempFolder.Dir.Path, cancel);
-        var projPath = Path.Combine(tempFolder.Dir.Path, Path.GetFileName(targetProject.ProjPath));
-        _logger.Information($"Retrieving executable path from {projPath}");
+        var overallDir = Path.GetDirectoryName(targetProject.SolutionPath)!;
+        _logger.Information("Starting project assembly info extraction.  Copying from {OverallDir} to {TempDirPath}",
+            overallDir,
+            tempFolder.Dir.Path);
+        _copyDirectory.Copy(overallDir, tempFolder.Dir.Path, cancel);
+        var projPath = Path.Combine(tempFolder.Dir.Path, targetProject.ProjSubPath);
+        _logger.Information("Retrieving executable path from {ProjPath}", projPath);
         var exec = await _queryExecutablePath.Query(projPath, cancel).ConfigureAwait(false);
         if (exec.Failed) return exec.BubbleFailure<(TRet Item, TempFolder Temp)>();
-        _logger.Information($"Located executable path for {projPath}: {exec.Value}");
+        _logger.Information("Located executable path for {ProjPath}: {Result}", projPath, exec.Value);
         var ret = ExecuteAndUnload(exec.Value, getter);
         if (ret.Failed) return ret.BubbleFailure<(TRet Item, TempFolder Temp)>();
         return (ret.Value, tempFolder);
