@@ -79,8 +79,10 @@ public class PrepareRunnerRepository : IPrepareRunnerRepository
                 listedVersions: out var listedVersions);
 
             var runInfo = new RunnerRepoInfo(
-                SolutionPath: slnPath,
-                ProjPath: foundProjSubPath.FullPath,
+                Project: new TargetProject(
+                    SolutionPath: slnPath.Value,
+                    ProjPath: foundProjSubPath.FullPath,
+                    ProjSubPath: foundProjSubPath.SubPath),
                 MetaPath: _metaFilePathProvider.Path,
                 Target: target.Value.Target,
                 CommitMessage: target.Value.CommitMessage,

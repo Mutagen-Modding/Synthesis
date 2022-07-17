@@ -230,8 +230,8 @@ public class PrepareRunnerRepositoryTests
         var resp = await sut.Checkout(checkoutInput, cancel);
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
-        resp.Item.SolutionPath.Should().Be(sln);
-        resp.Item.ProjPath.Should().Be(proj.FullPath);
+        resp.Item.Project.SolutionPath.Should().Be(sln);
+        resp.Item.Project.ProjPath.Should().Be(proj.FullPath);
         resp.Item.Target.Should().Be(resetResults.Target);
         resp.Item.CommitMessage.Should().Be(resetResults.CommitMessage);
         resp.Item.CommitDate.Should().Be(resetResults.CommitDate);

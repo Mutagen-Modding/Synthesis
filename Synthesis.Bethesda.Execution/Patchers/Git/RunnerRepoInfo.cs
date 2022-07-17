@@ -5,10 +5,14 @@ using Synthesis.Bethesda.Execution.Versioning;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git;
 
+public record TargetProject(
+    FilePath SolutionPath,
+    FilePath ProjPath,
+    string ProjSubPath);
+
 [ExcludeFromCodeCoverage]
 public record RunnerRepoInfo(
-    string SolutionPath,
-    string ProjPath,
+    TargetProject Project,
     RepoTarget Target,
     string CommitMessage,
     FilePath MetaPath,

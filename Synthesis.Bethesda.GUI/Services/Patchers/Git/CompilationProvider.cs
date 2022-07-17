@@ -56,7 +56,7 @@ public class CompilationProvider : ICompilationProvider
                             logger.Information("Compiling failed: {Reason}", compileResp.Reason);
                             var errs = new List<string>();
                             printErrorMessage.Print(compileResp.Reason,
-                                $"{Path.GetDirectoryName(state.Item.ProjPath)}\\", (s, _) =>
+                                $"{Path.GetDirectoryName(state.Item.Project.ProjPath)}\\", (s, _) =>
                                 {
                                     errs.Add(s.ToString());
                                 });

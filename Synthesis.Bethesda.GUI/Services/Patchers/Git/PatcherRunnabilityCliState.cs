@@ -58,7 +58,7 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
                         using var tmpLoadOrder = temporaryLoadOrderProvider.Get(
                             i.loadOrder.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                         var runnability = await checkRunnability.Check(
-                            path: i.comp.Item.ProjPath,
+                            path: i.comp.Item.Project.ProjPath,
                             directExe: false,
                             cancel: cancel,
                             buildMetaPath: i.comp.Item.MetaPath,
