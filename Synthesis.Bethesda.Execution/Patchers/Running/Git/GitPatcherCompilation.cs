@@ -39,7 +39,7 @@ public class GitPatcherCompilation : IGitPatcherCompilation
         {
             if (_shortCircuitCompilation.ShouldShortCircuit(info))
             {
-                _logger.Information("Short circuiting {Path} compilation because meta matched", info.ProjPath);
+                _logger.Information("Short circuiting {Path} compilation because meta matched", info.Project.ProjPath);
                 return ErrorResponse.Success;
             }
         }
@@ -58,7 +58,7 @@ public class GitPatcherCompilation : IGitPatcherCompilation
             _logger.Error(e, "Failed when clearing short circuit meta");
         }
             
-        var resp = await _build.Compile(info.ProjPath, cancel).ConfigureAwait(false);
+        var resp = await _build.Compile(info.Project.ProjPath, cancel).ConfigureAwait(false);
         if (resp.Failed) return resp;
 
         try

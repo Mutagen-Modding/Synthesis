@@ -7,13 +7,14 @@ using Noggog;
 using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.DTO;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Mutagen.Bethesda.Synthesis.WPF;
 
 public interface IProvideReflectionSettingsBundle
 {
     Task<GetResponse<ReflectionSettingsBundleVm>> ExtractBundle(
-        string projPath,
+        TargetProject targetProject,
         ReflectionSettingsConfig[] targets,
         IObservable<IChangeSet<IModListingGetter>> detectedLoadOrder,
         IObservable<ILinkCache?> linkCache,
@@ -37,14 +38,14 @@ public class ProvideReflectionSettingsBundle : IProvideReflectionSettingsBundle
     }
         
     public async Task<GetResponse<ReflectionSettingsBundleVm>> ExtractBundle(
-        string projPath,
+        TargetProject targetProject,
         ReflectionSettingsConfig[] targets,
         IObservable<IChangeSet<IModListingGetter>> detectedLoadOrder,
         IObservable<ILinkCache?> linkCache,
         CancellationToken cancel)
     {
         var vms = await _Extract.Extract<ReflectionSettingsVM[]>(
-            projPath: projPath,
+            targetProject: targetProject,
             cancel: cancel,
             getter: (assemb) =>
             {

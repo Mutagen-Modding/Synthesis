@@ -1,4 +1,4 @@
-﻿using System.IO.Abstractions;
+using System.IO.Abstractions;
 using Path = System.IO.Path;
 using System.Reflection;
 using System.Runtime.Loader;
@@ -6,22 +6,26 @@ using Noggog;
 using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet.ExecutablePath;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Mutagen.Bethesda.Synthesis.WPF;
 
 public interface IExtractInfoFromProject
 {
-    Task<GetResponse<(TRet Item, TempFolder Temp)>> Extract<TRet>(string projPath, CancellationToken cancel, Func<Assembly, GetResponse<TRet>> getter);
+    Task<GetResponse<(TRet Item, TempFolder Temp)>> Extract<TRet>(
+        TargetProject targetProject,
+        CancellationToken cancel,
+        Func<Assembly, GetResponse<TRet>> getter);
 }
 
 public class ExtractInfoFromProject : IExtractInfoFromProject
 {
-    private readonly IFileSystem _FileSystem;
-    private readonly IWorkingDirectorySubPaths _Paths;
-    private readonly ICopyDirectory _CopyDirectory;
-    private readonly IQueryExecutablePath _QueryExecutablePath;
-    private readonly ILogger _Logger;
+    private readonly IFileSystem _fileSystem;
+    private readonly IWorkingDirectorySubPaths _paths;
+    private readonly ICopyDirectory _copyDirectory;
+    private readonly IQueryExecutablePath _queryExecutablePath;
+    private readonly ILogger _logger;
 
     public ExtractInfoFromProject(
         IFileSystem fileSystem,
@@ -30,31 +34,31 @@ public class ExtractInfoFromProject : IExtractInfoFromProject
         IQueryExecutablePath queryExecutablePath,
         ILogger logger)
     {
-        _FileSystem = fileSystem;
-        _Paths = paths;
-        _CopyDirectory = copyDirectory;
-        _QueryExecutablePath = queryExecutablePath;
-        _Logger = logger;
+        _fileSystem = fileSystem;
+        _paths = paths;
+        _copyDirectory = copyDirectory;
+        _queryExecutablePath = queryExecutablePath;
+        _logger = logger;
     }
 
     public async Task<GetResponse<(TRet Item, TempFolder Temp)>> Extract<TRet>(
-        string projPath,
+        TargetProject targetProject,
         CancellationToken cancel,
         Func<Assembly, GetResponse<TRet>> getter)
     {
         if (cancel.IsCancellationRequested) return GetResponse<(TRet Item, TempFolder Temp)>.Fail("Cancelled");
 
         // Copy to a temp folder for build + loading, just to keep the main one free to be swapped/modified as needed
-        var tempFolder = TempFolder.FactoryByPath(Path.Combine(_Paths.LoadingFolder, Path.GetRandomFileName()));
+        var tempFolder = TempFolder.FactoryByPath(Path.Combine(_paths.LoadingFolder, Path.GetRandomFileName()));
         if (cancel.IsCancellationRequested) return GetResponse<(TRet Item, TempFolder Temp)>.Fail("Cancelled");
-        var projDir = Path.GetDirectoryName(projPath)!;
-        _Logger.Information($"Starting project assembly info extraction.  Copying project from {projDir} to {tempFolder.Dir.Path}");
-        _CopyDirectory.Copy(projDir, tempFolder.Dir.Path, cancel);
-        projPath = Path.Combine(tempFolder.Dir.Path, Path.GetFileName(projPath));
-        _Logger.Information($"Retrieving executable path from {projPath}");
-        var exec = await _QueryExecutablePath.Query(projPath, cancel).ConfigureAwait(false);
+        var projDir = Path.GetDirectoryName(targetProject.ProjPath)!;
+        _logger.Information($"Starting project assembly info extraction.  Copying project from {projDir} to {tempFolder.Dir.Path}");
+        _copyDirectory.Copy(projDir, tempFolder.Dir.Path, cancel);
+        var projPath = Path.Combine(tempFolder.Dir.Path, Path.GetFileName(targetProject.ProjPath));
+        _logger.Information($"Retrieving executable path from {projPath}");
+        var exec = await _queryExecutablePath.Query(projPath, cancel).ConfigureAwait(false);
         if (exec.Failed) return exec.BubbleFailure<(TRet Item, TempFolder Temp)>();
-        _Logger.Information($"Located executable path for {projPath}: {exec.Value}");
+        _logger.Information($"Located executable path for {projPath}: {exec.Value}");
         var ret = ExecuteAndUnload(exec.Value, getter);
         if (ret.Failed) return ret.BubbleFailure<(TRet Item, TempFolder Temp)>();
         return (ret.Value, tempFolder);
@@ -62,7 +66,7 @@ public class ExtractInfoFromProject : IExtractInfoFromProject
         
     private GetResponse<TRet> ExecuteAndUnload<TRet>(string exec, Func<Assembly, GetResponse<TRet>> getter)
     {
-        return AssemblyLoading.ExecuteAndForceUnload(exec, getter, () => new FormKeyAssemblyLoadContext(_FileSystem, exec));
+        return AssemblyLoading.ExecuteAndForceUnload(exec, getter, () => new FormKeyAssemblyLoadContext(_fileSystem, exec));
     }
 
     class FormKeyAssemblyLoadContext : AssemblyLoadContext

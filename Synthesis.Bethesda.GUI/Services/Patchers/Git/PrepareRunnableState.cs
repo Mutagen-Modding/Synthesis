@@ -76,7 +76,7 @@ public class PrepareRunnableState : IPrepareRunnableState
 
                 _copyOverFactory(
                         new DefaultDataPathProvider(
-                            new PathToProjInjection {Path = runInfo.Item.ProjPath}))
+                            new PathToProjInjection {Path = runInfo.Item.Project.ProjPath}))
                     .Copy();
 
                 observer.OnNext(runInfo);

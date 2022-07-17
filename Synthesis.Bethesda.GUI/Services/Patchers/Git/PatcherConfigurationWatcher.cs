@@ -26,7 +26,7 @@ public class PatcherConfigurationWatcher : IPatcherConfigurationWatcher
             .Select(x =>
             {
                 if (x.RunnableState.Failed) return Observable.Return(default(PatcherCustomization?));
-                var confPath = Path.Combine(Path.GetDirectoryName(x.Item.ProjPath)!, Constants.MetaFileName);
+                var confPath = Path.Combine(Path.GetDirectoryName(x.Item.Project.ProjPath)!, Constants.MetaFileName);
                 return Noggog.ObservableExt.WatchFile(confPath)
                     .StartWith(Unit.Default)
                     .Select(_ =>

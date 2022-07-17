@@ -189,9 +189,9 @@ public class GitPatcherVm : PatcherVm, IPathToSolutionFileProvider
                     {
                         if (c.RunnableState.Failed)
                         {
-                            return new PatcherUserSettingsVm.Inputs(c.RunnableState.BubbleFailure<FilePath>(), null, default);
+                            return new PatcherUserSettingsVm.Inputs(c.RunnableState.BubbleFailure<TargetProject>(), null, default);
                         }
-                        return new PatcherUserSettingsVm.Inputs(GetResponse<FilePath>.Succeed(c.Item.ProjPath), c.Item.TargetVersions.Synthesis, c.Item.MetaPath);
+                        return new PatcherUserSettingsVm.Inputs(GetResponse<TargetProject>.Succeed(c.Item.Project), c.Item.TargetVersions.Synthesis, c.Item.MetaPath);
                     })
                     .DistinctUntilChanged())
             .DisposeWith(this);
@@ -346,5 +346,5 @@ public class GitPatcherVm : PatcherVm, IPathToSolutionFileProvider
             SynthesisVersion: NugetDiff.SynthesisVersionDiff.SelectedVersion);
     }
 
-    FilePath IPathToSolutionFileProvider.Path => RunnableData?.SolutionPath ?? throw new ArgumentNullException($"{nameof(IPathToSolutionFileProvider)}.{nameof(IPathToSolutionFileProvider.Path)}");
+    FilePath IPathToSolutionFileProvider.Path => RunnableData?.Project.SolutionPath ?? throw new ArgumentNullException($"{nameof(IPathToSolutionFileProvider)}.{nameof(IPathToSolutionFileProvider.Path)}");
 }
