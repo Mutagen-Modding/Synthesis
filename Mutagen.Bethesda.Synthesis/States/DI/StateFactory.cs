@@ -93,16 +93,18 @@ public class StateFactory : IStateFactory
             loadOrderListing = loadOrderListing.OnlyEnabled().ToExtendedList();
         }
 
+        var stringReadParams = new StringsReadParameters()
+        {
+            TargetLanguage = settings.TargetLanguage,
+            EncodingProvider = settings.UseUtf8ForEmbeddedStrings ? new Utf8EncodingWrapper() : null
+        };
+
         var loadOrder = _loadOrderImporter
             .Get<TModGetter>(
                 settings.DataFolderPath,
                 loadOrderListing,
                 settings.GameRelease)
-            .Import(stringsParam: new StringsReadParameters()
-            {
-                TargetLanguage = settings.TargetLanguage,
-                EncodingProvider = settings.UseUtf8ForEmbeddedStrings ? new Utf8EncodingWrapper() : null
-            });
+            .Import(stringsParam: stringReadParams);
 
         // Create or import patch mod
         TModSetter patchMod;
@@ -120,7 +122,11 @@ public class StateFactory : IStateFactory
             }
             else
             {
-                readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease, fileSystem: _fileSystem);
+                readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(
+                    new ModPath(exportKey, settings.SourcePath),
+                    settings.GameRelease, 
+                    fileSystem: _fileSystem,
+                    stringsParam: stringReadParams);
             }
             loadOrder.Add(new ModListing<TModGetter>(readOnlyPatchMod, enabled: true));
             rawLoadOrder.Add(new LoadOrderListing(readOnlyPatchMod.ModKey, enabled: true));

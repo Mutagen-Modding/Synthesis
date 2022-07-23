@@ -36,6 +36,6 @@ public class RunnableStateProvider : ViewModel, IRunnableStateProvider, IPathToP
             }, deferSubscription: true);
     }
             
-    FilePath IPathToProjProvider.Path => State?.Item?.ProjPath ??
+    FilePath IPathToProjProvider.Path => State?.Item?.Project.ProjPath ??
                                          throw new ArgumentNullException($"{nameof(IPathToProjProvider)}.{nameof(IPathToProjProvider.Path)}");
 }
