@@ -140,7 +140,11 @@ public class StateFactory : IStateFactory
             }
             else
             {
-                patchMod = ModInstantiator<TModSetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease, fileSystem: _fileSystem);
+                patchMod = ModInstantiator<TModSetter>.Importer(
+                    new ModPath(exportKey, settings.SourcePath), 
+                    settings.GameRelease,
+                    fileSystem: _fileSystem,
+                    stringsParam: stringReadParams);
             }
             if (settings.PersistencePath is not null && settings.PatcherName is not null)
             {
