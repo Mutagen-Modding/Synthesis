@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using System.Reflection;
-using Microsoft.Extensions.Logging;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using BaseSynthesis = Synthesis.Bethesda;
@@ -16,33 +14,42 @@ public interface IProvideCurrentVersions
     public string OldSynthesisVersion { get; }
     public string? MutagenSha { get; }
     public string? SynthesisSha { get; }
+    IEnumerable<string> GetVersionPrintouts();
 }
     
 public sealed class ProvideCurrentVersions : IProvideCurrentVersions
 {
-    private readonly Lazy<string?> _mutagenSha;
-    private readonly Lazy<string?> _synthesisSha;
-    private readonly Lazy<string> _newtonsoftVersion;
-    private readonly Lazy<string> _synthesisVersion;
-    private readonly Lazy<string> _mutagenVersion;
+    private record VersionQuery(
+        string? MutagenSha,
+        string? SynthesisSha,
+        string NewtonsoftVersion,
+        string SynthesisVersion,
+        string MutagenVersion);
     
-    public string SynthesisVersion => _synthesisVersion.Value;
+    private readonly Lazy<VersionQuery> _versionQuery;
+    
+    public string SynthesisVersion => _versionQuery.Value.SynthesisVersion;
 
-    public string MutagenVersion => _mutagenVersion.Value;
+    public string MutagenVersion => _versionQuery.Value.MutagenVersion;
 
-    public string NewtonsoftVersion => _newtonsoftVersion.Value;
+    public string NewtonsoftVersion => _versionQuery.Value.NewtonsoftVersion;
     public string OldMutagenVersion => "0.14.0";
     public string OldSynthesisVersion => "0.0.3";
-    public string? MutagenSha => _mutagenSha.Value;
-    public string? SynthesisSha => _synthesisSha.Value;
+    public string? MutagenSha => _versionQuery.Value.MutagenSha;
+    public string? SynthesisSha => _versionQuery.Value.SynthesisSha;
 
     public ProvideCurrentVersions()
     {
-        _mutagenSha = new Lazy<string?>(() => GetGitSha(typeof(FormKey).Assembly), LazyThreadSafetyMode.PublicationOnly);
-        _synthesisSha = new Lazy<string?>(() => GetGitSha(typeof(BaseSynthesis.Constants).Assembly), LazyThreadSafetyMode.PublicationOnly);
-        _mutagenVersion = new Lazy<string>(() => GetVersion(AssemblyVersions.For<FormKey>()), LazyThreadSafetyMode.PublicationOnly);
-        _synthesisVersion = new Lazy<string>(() => GetVersion(AssemblyVersions.For<BaseSynthesis.Codes>()), LazyThreadSafetyMode.PublicationOnly);
-        _newtonsoftVersion = new Lazy<string>(() => GetVersion(AssemblyVersions.For<Newtonsoft.Json.JsonSerializer>()), LazyThreadSafetyMode.PublicationOnly);
+        _versionQuery = new Lazy<VersionQuery>(() =>
+        {
+            return new VersionQuery(
+                MutagenSha: GetGitSha(typeof(FormKey).Assembly),
+                SynthesisSha: GetGitSha(typeof(BaseSynthesis.Constants).Assembly),
+                MutagenVersion: GetVersion(AssemblyVersions.For<FormKey>()),
+                SynthesisVersion: GetVersion(AssemblyVersions.For<BaseSynthesis.Codes>()),
+                NewtonsoftVersion: GetVersion(AssemblyVersions.For<Newtonsoft.Json.JsonSerializer>()));
+
+        }, LazyThreadSafetyMode.ExecutionAndPublication);
     }
 
     private string GetVersion(AssemblyVersions versions)
@@ -76,5 +83,14 @@ public sealed class ProvideCurrentVersions : IProvideCurrentVersions
                 $"Error retrieving git sha for {assemb.FullName}",
                 e);
         }
+    }
+
+    public IEnumerable<string> GetVersionPrintouts()
+    {
+        yield return $"Mutagen version: {MutagenVersion}";
+        yield return $"Mutagen sha: {MutagenSha}";
+        yield return $"Synthesis version: {SynthesisVersion}";
+        yield return $"Synthesis sha: {SynthesisSha}";
+        yield return $"Newtonsoft version: {NewtonsoftVersion}";
     }
 }

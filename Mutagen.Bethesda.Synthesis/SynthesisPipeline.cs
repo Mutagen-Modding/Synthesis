@@ -478,10 +478,10 @@ public class SynthesisPipeline
     {
         fileSystem = fileSystem.GetOrDefault();
         var versions = new ProvideCurrentVersions();
-        Console.WriteLine($"Mutagen version: {versions.MutagenVersion}");
-        Console.WriteLine($"Mutagen sha: {versions.MutagenSha}");
-        Console.WriteLine($"Synthesis version: {versions.SynthesisVersion}");
-        Console.WriteLine($"Synthesis sha: {versions.SynthesisSha}");
+        foreach (var printout in versions.GetVersionPrintouts())
+        {
+            Console.WriteLine(printout);
+        }
         System.Console.WriteLine(Parser.Default.FormatCommandLine(args));
         SetReflectionSettingsAnchorPaths(args.ExtraDataFolder);
             
