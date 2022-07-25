@@ -9,4 +9,5 @@ public record RepositoryListing
     public string? AvatarURL { get; set; }
     public string User { get; set; } = string.Empty;
     public string Repository { get; set; } = string.Empty;
+    public string Sha { get; set; } = string.Empty;
 }
