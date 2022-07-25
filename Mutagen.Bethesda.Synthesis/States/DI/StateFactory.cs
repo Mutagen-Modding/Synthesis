@@ -1,6 +1,5 @@
 ﻿using Noggog;
 using System.IO.Abstractions;
-using System.Text;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Allocators;
 using Mutagen.Bethesda.Plugins.Cache;
@@ -140,7 +139,11 @@ public class StateFactory : IStateFactory
             }
             else
             {
-                patchMod = ModInstantiator<TModSetter>.Importer(new ModPath(exportKey, settings.SourcePath), settings.GameRelease, fileSystem: _fileSystem);
+                patchMod = ModInstantiator<TModSetter>.Importer(
+                    new ModPath(exportKey, settings.SourcePath), 
+                    settings.GameRelease,
+                    fileSystem: _fileSystem,
+                    stringsParam: stringReadParams);
             }
             if (settings.PersistencePath is not null && settings.PatcherName is not null)
             {

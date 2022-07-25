@@ -61,6 +61,10 @@ public class Startup : IStartup
         _logger.Information(DateTime.Now.ToString());
         _logger.Information($"Start Path: {string.Join(' ', Environment.GetCommandLineArgs().FirstOrDefault())}");
         _logger.Information($"Args: {string.Join(' ', Environment.GetCommandLineArgs().Skip(1))}");
+        foreach (var printout in _provideCurrentVersions.GetVersionPrintouts())
+        {
+            _logger.Information(printout);
+        }
             
         try
         {
