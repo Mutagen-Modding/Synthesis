@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using FluentAssertions;
 using Mutagen.Bethesda.Plugins.Order;
-using Noggog.Utility;
+using Noggog.IO;
 using NSubstitute;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.PatcherCommands;

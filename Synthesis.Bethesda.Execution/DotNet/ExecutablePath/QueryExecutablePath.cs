@@ -13,13 +13,13 @@ public interface IQueryExecutablePath
 public class QueryExecutablePath : IQueryExecutablePath
 {
     private readonly ILogger _Logger;
-    public IProcessRunner Runner { get; }
+    public ISynthesisSubProcessRunner Runner { get; }
     public IRetrieveExecutablePath RetrievePath { get; }
     public IBuildStartInfoProvider StartInfoProvider { get; }
 
     public QueryExecutablePath(
         ILogger logger,
-        IProcessRunner processRunner,
+        ISynthesisSubProcessRunner processRunner,
         IRetrieveExecutablePath retrieveExecutablePath,
         IBuildStartInfoProvider buildStartInfoProvider)
     {

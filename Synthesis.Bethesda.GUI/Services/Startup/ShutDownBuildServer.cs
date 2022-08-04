@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reactive.Linq;
-using Noggog.Utility;
+using Noggog.Processes.DI;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
 

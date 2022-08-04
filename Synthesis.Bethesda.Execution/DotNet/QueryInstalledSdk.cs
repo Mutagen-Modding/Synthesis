@@ -10,14 +10,14 @@ public interface IQueryInstalledSdk
 
 public class QueryInstalledSdk : IQueryInstalledSdk
 {
-    public IProcessRunner ProcessRunner { get; }
+    public ISynthesisSubProcessRunner ProcessRunner { get; }
     public IDotNetCommandPathProvider NetCommandPathProvider { get; }
     public IParseNugetVersionString NugetVersionString { get; }
 
     public QueryInstalledSdk(
         IDotNetCommandPathProvider dotNetCommandPathProvider,
         IParseNugetVersionString parseNugetVersionString,
-        IProcessRunner processRunner)
+        ISynthesisSubProcessRunner processRunner)
     {
         ProcessRunner = processRunner;
         NetCommandPathProvider = dotNetCommandPathProvider;

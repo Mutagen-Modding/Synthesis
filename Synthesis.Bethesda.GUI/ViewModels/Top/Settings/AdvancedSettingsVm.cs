@@ -8,11 +8,11 @@ using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings.Calculators;
 using Synthesis.Bethesda.Execution.Settings.V2;
-using Synthesis.Bethesda.Execution.WorkEngine;
+using Noggog.WorkEngine;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
-public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider, IDotNetPathSettingsProvider, IModifySavingSettings
+public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider, IDotNetPathSettingsProvider, IModifySavingSettings, INumWorkThreadsController
 {
     [Reactive] public bool Shortcircuit { get; set; }
 
@@ -24,7 +24,6 @@ public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider, IDotNe
     [Reactive] public double BuildCorePercentage { get; set; }
 
     public GlobalSettingsVm(
-        IWorkConsumerSettings workConsumerSettings,
         ISettingsSingleton settingsSingleton,
         BuildCoreCalculator calculator)
     {
@@ -35,9 +34,6 @@ public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider, IDotNe
         _buildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
             .Select(calculator.Calculate)
             .ToGuiProperty(this, nameof(BuildCores), deferSubscription: true);
-            
-        ObservableExtensions.Subscribe(this.WhenAnyValue(x => x.BuildCores), x => workConsumerSettings.SetNumThreads(x))
-            .DisposeWith(this);
     }
 
     public void Save(SynthesisGuiSettings gui, PipelineSettings pipe)
@@ -46,4 +42,6 @@ public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider, IDotNe
         pipe.DotNetPathOverride = DotNetPathOverride;
         pipe.Shortcircuit = Shortcircuit;
     }
+
+    public IObservable<int?> NumDesiredThreads => this.WhenAnyValue(x => x.BuildCores).Select(x => (int?)x);
 }

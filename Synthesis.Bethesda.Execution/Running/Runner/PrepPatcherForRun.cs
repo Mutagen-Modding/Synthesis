@@ -1,6 +1,6 @@
 ﻿using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Reporters;
-using Synthesis.Bethesda.Execution.WorkEngine;
+using Noggog.WorkEngine;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner;
 

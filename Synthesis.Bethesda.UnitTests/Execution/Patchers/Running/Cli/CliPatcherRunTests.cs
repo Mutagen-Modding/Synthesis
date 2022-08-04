@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
-using Noggog.Utility;
+using Noggog.Processes;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Synthesis.Bethesda.Commands;

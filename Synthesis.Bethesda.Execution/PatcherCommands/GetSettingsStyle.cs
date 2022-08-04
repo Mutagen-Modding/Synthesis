@@ -7,7 +7,7 @@ using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.Execution.Utility;
-using Synthesis.Bethesda.Execution.WorkEngine;
+using Noggog.WorkEngine;
 
 namespace Synthesis.Bethesda.Execution.PatcherCommands;
 
@@ -30,12 +30,12 @@ public class GetSettingsStyle : IGetSettingsStyle
     private readonly IShortCircuitSettingsProvider _shortCircuitSettingsProvider;
     private readonly IWriteShortCircuitMeta _writeShortCircuitMeta;
     public ILinesToReflectionConfigsParser LinesToConfigsParser { get; }
-    public IProcessRunner ProcessRunner { get; }
+    public ISynthesisSubProcessRunner ProcessRunner { get; }
     public IRunProcessStartInfoProvider GetRunProcessStartInfoProvider { get; }
 
     public GetSettingsStyle(
         ILogger logger,
-        IProcessRunner processRunner,
+        ISynthesisSubProcessRunner processRunner,
         IWorkDropoff workDropoff,
         IBuildMetaFileReader metaFileReader,
         IBuild build,

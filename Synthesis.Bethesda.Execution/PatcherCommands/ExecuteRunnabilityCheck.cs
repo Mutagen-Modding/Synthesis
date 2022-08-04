@@ -1,11 +1,11 @@
 ﻿using Mutagen.Bethesda.Environments.DI;
 using Noggog;
+using Noggog.WorkEngine;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.Execution.Utility;
-using Synthesis.Bethesda.Execution.WorkEngine;
 
 namespace Synthesis.Bethesda.Execution.PatcherCommands;
 
@@ -27,7 +27,7 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
         
     public IWorkDropoff Dropoff { get; }
     public IGameReleaseContext GameReleaseContext { get; }
-    public IProcessRunner ProcessRunner { get; }
+    public ISynthesisSubProcessRunner ProcessRunner { get; }
     public IRunProcessStartInfoProvider RunProcessStartInfoProvider { get; }
     public IDataDirectoryProvider DataDirectoryProvider { get; }
     public IBuildMetaFileReader MetaFileReader { get; }
@@ -36,7 +36,7 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
     public ExecuteRunnabilityCheck(
         IGameReleaseContext gameReleaseContext,
         IWorkDropoff workDropoff,
-        IProcessRunner processRunner,
+        ISynthesisSubProcessRunner processRunner,
         IDataDirectoryProvider dataDirectoryProvider,
         IBuildMetaFileReader metaFileReader,
         IShortCircuitSettingsProvider shortCircuitSettingsProvider,

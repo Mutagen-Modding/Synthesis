@@ -25,7 +25,7 @@ public class MainModule : Module
         builder.RegisterAssemblyTypes(typeof(DotNetVersion).Assembly)
             .InNamespacesOf(
                 typeof(DotNetVersion),
-                typeof(IProcessRunner))
+                typeof(ISynthesisSubProcessRunner))
             .AsImplementedInterfaces();
             
         builder.RegisterAssemblyTypes(typeof(IProvideCurrentVersions).Assembly)

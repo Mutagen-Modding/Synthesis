@@ -49,15 +49,15 @@
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.2.0" />
-    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.39.2" />
-    <PackageReference Include="Noggog.CSharpExt.Json" Version="2.49.0" />
-    <PackageReference Include="Noggog.Autofac" Version="2.49.0" />
+    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.39.3.1-dev" />
+    <PackageReference Include="Noggog.CSharpExt.Json" Version="2.50.0" />
+    <PackageReference Include="Noggog.Autofac" Version="2.50.0" />
     <PackageReference Include="NuGet.Versioning" Version="6.2.1" />
     <PackageReference Include="NuGetizer" Version="0.8.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Noggog.CSharpExt" Version="2.49.0" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.50.0" />
     <PackageReference Include="Serilog" Version="2.11.0" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>

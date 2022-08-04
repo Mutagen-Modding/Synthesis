@@ -20,7 +20,7 @@ public class ExecuteOpenForSettings : IExecuteOpenForSettings
 {
     public IGameReleaseContext GameReleaseContext { get; }
     public IDataDirectoryProvider DataDirectoryProvider { get; }
-    public IProcessRunner ProcessRunner { get; }
+    public ISynthesisSubProcessRunner ProcessRunner { get; }
     public ITemporaryLoadOrderProvider LoadOrderProvider { get; }
     public IRunProcessStartInfoProvider RunProcessStartInfoProvider { get; }
     public IWindowPlacement WindowPlacement { get; }
@@ -30,7 +30,7 @@ public class ExecuteOpenForSettings : IExecuteOpenForSettings
         IGameReleaseContext gameReleaseContext,
         IDataDirectoryProvider dataDirectoryProvider,
         ITemporaryLoadOrderProvider loadOrderProvider,
-        IProcessRunner processRunner,
+        ISynthesisSubProcessRunner processRunner,
         IRunProcessStartInfoProvider runProcessStartInfoProvider,
         IWindowPlacement windowPlacement)
     {

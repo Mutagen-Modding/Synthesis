@@ -1,10 +1,10 @@
 using System.Diagnostics;
-using Noggog.Utility;
+using Noggog.Processes.DI;
 using Serilog;
 
 namespace Synthesis.Bethesda.Execution.Utility;
 
-public interface IProcessRunner
+public interface ISynthesisSubProcessRunner
 {
     Task<ProcessRunReturn> RunAndCapture(
         ProcessStartInfo startInfo,
@@ -27,12 +27,12 @@ public interface IProcessRunner
         CancellationToken cancel);
 }
 
-public class ProcessRunner : IProcessRunner
+public class SynthesisSubProcessRunner : ISynthesisSubProcessRunner
 {
     public ILogger Logger { get; }
     public IProcessFactory Factory { get; }
 
-    public ProcessRunner(
+    public SynthesisSubProcessRunner(
         ILogger logger,
         IProcessFactory processFactory)
     {
