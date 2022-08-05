@@ -2,11 +2,7 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DynamicData;
-using DynamicData.Binding;
-using Mutagen.Bethesda.Plugins;
 using Newtonsoft.Json;
-using Noggog;
 using Noggog.Reactive;
 using ReactiveUI;
 using Serilog;
@@ -86,7 +82,6 @@ public class SolutionMetaFileSync : ISolutionMetaFileSync
                     });
             })
             .Switch()
-            .Select(x => x)
             .DistinctUntilChanged()
             .ObserveOn(_schedulerProvider.MainThread)
             .Subscribe(info =>
@@ -122,7 +117,8 @@ public class SolutionMetaFileSync : ISolutionMetaFileSync
                                 Visibility = x.slnSettings.Visibility,
                                 Nickname = x.nickname,
                                 PreferredAutoVersioning = x.slnSettings.PreferredAutoVersioning,
-                                RequiredMods = x.slnSettings.RequiredMods.ToArray()
+                                RequiredMods = x.slnSettings.RequiredMods.ToArray(),
+                                TargetedReleases = x.slnSettings.TargetedReleases.ToArray(),
                             },
                             Formatting.Indented,
                             Execution.Constants.JsonSettings));
