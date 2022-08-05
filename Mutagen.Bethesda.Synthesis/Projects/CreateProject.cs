@@ -53,7 +53,7 @@ public class CreateProject : ICreateProject
         sb.AppendLine($"  </PropertyGroup>");
         sb.AppendLine();
         sb.AppendLine($"  <ItemGroup>");
-        sb.AppendLine($"    <PackageReference Include=\"Mutagen.Bethesda\" Version=\"{(insertOldVersion ? _currentVersions.OldMutagenVersion : _currentVersions.MutagenVersion)}\" />");
+        sb.AppendLine($"    <PackageReference Include=\"Mutagen.Bethesda.{category}\" Version=\"{(insertOldVersion ? _currentVersions.OldMutagenVersion : _currentVersions.MutagenVersion)}\" />");
         sb.AppendLine($"    <PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{(insertOldVersion ? _currentVersions.OldSynthesisVersion : _currentVersions.SynthesisVersion)}\" />");
         sb.AppendLine($"  </ItemGroup>");
         sb.AppendLine("</Project>");

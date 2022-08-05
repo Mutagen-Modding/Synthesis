@@ -88,6 +88,48 @@
     <SplashScreen Include="Resources\Splashscreen.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="Views\Config\Solution\SolutionSourceConfigView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+    <Page Update="Views\Config\Solution\SolutionStoreConfigView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+    <Page Update="Views\Config\Solution\SolutionUserSettingsConfigView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+    <Page Update="Views\Config\Solution\SolutionTargetGamesConfigView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\Config\Solution\SolutionSourceConfigView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Views\Config\Solution\SolutionStoreConfigView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Views\Config\Solution\SolutionUserSettingsConfigView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Views\Config\Solution\SolutionTargetGamesConfigView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+  </ItemGroup>
+
   <!-- Replace inherited target -->
   <Target Name="SetVersion" BeforeTargets="GetAssemblyVersion;GetPackageVersion" DependsOnTargets="GitVersion" Returns="$(PackageVersion)">
     <PropertyGroup>

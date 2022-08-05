@@ -2,11 +2,7 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DynamicData;
-using DynamicData.Binding;
-using Mutagen.Bethesda.Plugins;
 using Newtonsoft.Json;
-using Noggog;
 using Noggog.Reactive;
 using ReactiveUI;
 using Serilog;
@@ -26,7 +22,7 @@ public class SolutionMetaFileSync : ISolutionMetaFileSync
     private readonly ILogger _logger;
     private readonly ISchedulerProvider _schedulerProvider;
     private readonly IPatcherNameVm _nameVm;
-    private readonly ISolutionPatcherSettingsVm _patcherSettingsVm;
+    private readonly ISolutionPatcherSettingsSyncTarget _patcherSettingsVm;
         
     public IObservable<string> MetaPath { get; }
 
@@ -36,7 +32,7 @@ public class SolutionMetaFileSync : ISolutionMetaFileSync
         ISchedulerProvider schedulerProvider,
         IPatcherNameVm nameVm,
         ISelectedProjectInputVm selectedProjectInput,
-        ISolutionPatcherSettingsVm patcherSettingsVm)
+        ISolutionPatcherSettingsSyncTarget patcherSettingsVm)
     {
         _fileSystem = fileSystem;
         _logger = logger;
@@ -95,29 +91,15 @@ public class SolutionMetaFileSync : ISolutionMetaFileSync
                 {
                     _nameVm.Nickname = info.Nickname;
                 }
-                _patcherSettingsVm.LongDescription = info.LongDescription ?? string.Empty;
-                _patcherSettingsVm.ShortDescription = info.OneLineDescription ?? string.Empty;
-                _patcherSettingsVm.Visibility = info.Visibility;
-                _patcherSettingsVm.Versioning = info.PreferredAutoVersioning;
-                _patcherSettingsVm.SetRequiredMods(info.RequiredMods
-                    .SelectWhere(x => TryGet<ModKey>.Create(ModKey.TryFromNameAndExtension(x, out var modKey), modKey)));
+                _patcherSettingsVm.Update(info);
             })
             .DisposeWith(disp);
         
         Observable.CombineLatest(
                 _nameVm.WhenAnyValue(x => x.Nickname),
-                _patcherSettingsVm.WhenAnyValue(x => x.ShortDescription),
-                _patcherSettingsVm.WhenAnyValue(x => x.LongDescription),
-                _patcherSettingsVm.WhenAnyValue(x => x.Visibility),
-                _patcherSettingsVm.WhenAnyValue(x => x.Versioning),
-                _patcherSettingsVm.RequiredMods.ToObservableChangeSet()
-                    .AddKey(x => x)
-                    .Sort(ModKey.Alphabetical, SortOptimisations.ComparesImmutableValuesOnly, resetThreshold: 0)
-                    .QueryWhenChanged()
-                    .Select(x => x.Items)
-                    .StartWith(Enumerable.Empty<ModKey>()),
+                _patcherSettingsVm.Updated,
                 MetaPath,
-                (nickname, shortDesc, desc, visibility, versioning, reqMods, meta) => (nickname, shortDesc, desc, visibility, versioning, reqMods: reqMods.Select(x => x.FileName).OrderBy(x => x).ToArray(), meta))
+                (nickname, slnSettings, meta) => (nickname, slnSettings, meta))
             .DistinctUntilChanged()
             .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
             .Skip(1)
@@ -130,12 +112,13 @@ public class SolutionMetaFileSync : ISolutionMetaFileSync
                         JsonConvert.SerializeObject(
                             new PatcherCustomization()
                             {
-                                OneLineDescription = x.shortDesc,
-                                LongDescription = x.desc,
-                                Visibility = x.visibility,
+                                OneLineDescription = x.slnSettings.OneLineDescription,
+                                LongDescription = x.slnSettings.LongDescription,
+                                Visibility = x.slnSettings.Visibility,
                                 Nickname = x.nickname,
-                                PreferredAutoVersioning = x.versioning,
-                                RequiredMods = x.reqMods.Select(x => x.String).ToArray()
+                                PreferredAutoVersioning = x.slnSettings.PreferredAutoVersioning,
+                                RequiredMods = x.slnSettings.RequiredMods.ToArray(),
+                                TargetedReleases = x.slnSettings.TargetedReleases.ToArray(),
                             },
                             Formatting.Indented,
                             Execution.Constants.JsonSettings));

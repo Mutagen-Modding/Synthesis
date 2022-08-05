@@ -82,4 +82,29 @@ public record PatcherCustomization
     /// project are used to determine viable targets.
     /// </summary>
     public GameRelease[] TargetedReleases { get; set; } = Array.Empty<GameRelease>();
+    
+    public virtual bool Equals(PatcherCustomization? other)
+    {
+        if (ReferenceEquals(null, other)) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return Nickname == other.Nickname 
+               && Visibility == other.Visibility
+               && OneLineDescription == other.OneLineDescription
+               && LongDescription == other.LongDescription 
+               && PreferredAutoVersioning == other.PreferredAutoVersioning 
+               && RequiredMods.SequenceEqual(other.RequiredMods)
+               && TargetedReleases.SequenceEqual(other.TargetedReleases);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(
+            Nickname,
+            (int)Visibility,
+            OneLineDescription,
+            LongDescription, 
+            (int)PreferredAutoVersioning,
+            RequiredMods,
+            TargetedReleases);
+    }
 }
