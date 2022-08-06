@@ -124,6 +124,7 @@ public class SynthAutoDataCustomization : ICustomization
         fixture.Customize(new MutagenBaseCustomization());
         fixture.Customize(new MutagenReleaseCustomization(GameRelease.SkyrimSE));
         fixture.Customize(new DefaultCustomization(_useMockFilesystem));
+        fixture.Customizations.Add(new LazyBuilder());
         if (_useMockRepositoryProvider)
         {
             fixture.Register<IProvideRepositoryCheckouts>(
