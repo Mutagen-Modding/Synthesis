@@ -83,17 +83,6 @@ public class CliTests
     }
 
     [Fact]
-    public void LoggingTest()
-    {
-        var builder = new ContainerBuilder();
-        IServiceCollection services = new ServiceCollection();
-        services.AddLogging();
-        builder.Populate(services);
-        var cont = builder.Build();
-        cont.Validate(typeof(ISolutionPatcherRun));
-    }
-
-    [Fact]
     public void GitPatcher()
     {
         var builder = new ContainerBuilder();
