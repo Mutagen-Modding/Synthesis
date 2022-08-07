@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using FluentAssertions;
 using LibGit2Sharp;
+using Microsoft.Extensions.Logging;
 using Noggog;
 using NSubstitute;
-using Serilog;
-using Synthesis.Bethesda.Execution.GitRepository;
+using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
 using Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner;
@@ -13,6 +13,7 @@ using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
+using ILogger = Serilog.ILogger;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner;
 
@@ -46,7 +47,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
             new BuildMetaFilePathProviderInjection(Path.Combine(local, "Build.meta")),
             runnerRepoDirectoryInjection,
             new ProvideRepositoryCheckouts(
-                Substitute.For<ILogger>(),
+                Substitute.For<ILogger<ProvideRepositoryCheckouts>>(),
                 new GitRepositoryFactory()));
     }
         

@@ -1,5 +1,5 @@
 ﻿using Noggog;
-using Synthesis.Bethesda.Execution.GitRepository;
+using Noggog.GitRepository;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner;
 

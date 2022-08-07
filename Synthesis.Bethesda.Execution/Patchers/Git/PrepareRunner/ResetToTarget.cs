@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Noggog;
 using Serilog;
-using Synthesis.Bethesda.Execution.GitRepository;
+using Noggog.GitRepository;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner;
 

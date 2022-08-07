@@ -10,7 +10,7 @@ using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.DTO;
-using Synthesis.Bethesda.Execution.GitRepository;
+using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;

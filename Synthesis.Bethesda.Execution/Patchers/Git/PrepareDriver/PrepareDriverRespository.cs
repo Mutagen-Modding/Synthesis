@@ -1,5 +1,6 @@
 ﻿using Noggog;
 using Serilog;
+using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.GitRepository;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver;
@@ -12,6 +13,7 @@ public interface IPrepareDriverRespository
 public class PrepareDriverRespository : IPrepareDriverRespository
 {
     private readonly ILogger _logger;
+    private readonly ICheckIfRepositoryDesirable _checkIfRepositoryDesirable;
     public ICheckOrCloneRepo CheckOrClone { get; }
     public IResetToLatestMain ResetToLatestMain { get; }
     public IProvideRepositoryCheckouts RepoCheckouts { get; }
@@ -25,10 +27,12 @@ public class PrepareDriverRespository : IPrepareDriverRespository
         IResetToLatestMain resetToLatestMain,
         IProvideRepositoryCheckouts repoCheckouts,
         IGetDriverPaths getDriverPaths,
+        ICheckIfRepositoryDesirable checkIfRepositoryDesirable,
         IRetrieveRepoVersioningPoints retrieveRepoVersioningPoints,
         IDriverRepoDirectoryProvider driverRepoDirectoryProvider)
     {
         _logger = logger;
+        _checkIfRepositoryDesirable = checkIfRepositoryDesirable;
         CheckOrClone = checkOrClone;
         ResetToLatestMain = resetToLatestMain;
         RepoCheckouts = repoCheckouts;
@@ -43,6 +47,7 @@ public class PrepareDriverRespository : IPrepareDriverRespository
         var state = CheckOrClone.Check(
             remotePath,
             DriverRepoDirectoryProvider.Path,
+            isDesirable: _checkIfRepositoryDesirable.IsDesirable,
             cancel);
         if (state.Failed)
         {

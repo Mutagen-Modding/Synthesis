@@ -1,7 +1,7 @@
 ﻿using AutoFixture.Xunit2;
 using FluentAssertions;
 using NSubstitute;
-using Synthesis.Bethesda.Execution.GitRepository;
+using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner;
 using Synthesis.Bethesda.UnitTests.AutoData;

@@ -2,7 +2,7 @@
 using Noggog;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Synthesis.Bethesda.Execution.GitRepository;
+using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
@@ -18,7 +18,11 @@ public class PrepareDriverRepositoryTests
         PrepareDriverRespository sut)
     {
         sut.Prepare(remotePath, cancel);
-        sut.CheckOrClone.Received(1).Check(remotePath, sut.DriverRepoDirectoryProvider.Path, cancel);
+        sut.CheckOrClone.Received(1).Check(
+            remotePath,
+            sut.DriverRepoDirectoryProvider.Path,
+            Arg.Any<Func<IGitRepository, ErrorResponse>?>(),
+            cancel);
     }
         
     [Theory, SynthAutoData]
@@ -194,6 +198,7 @@ public class PrepareDriverRepositoryTests
             sut.CheckOrClone.Check(
                 Arg.Any<GetResponse<string>>(),
                 Arg.Any<DirectoryPath>(),
+                Arg.Any<Func<IGitRepository, ErrorResponse>?>(),
                 Arg.Any<CancellationToken>());
             sut.RepoCheckouts.Get(Arg.Any<DirectoryPath>());
             sut.ResetToLatestMain.TryReset(

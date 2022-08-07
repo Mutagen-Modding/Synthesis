@@ -1,4 +1,6 @@
 ﻿using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Noggog;
 using Noggog.Autofac;
 using Synthesis.Bethesda.CLI.RunPipeline;
@@ -76,6 +78,17 @@ public class CliTests
             .As<IPathToSolutionFileProvider>()
             .As<IProjectSubpathProvider>()
             .As<IPatcherNicknameProvider>();
+        var cont = builder.Build();
+        cont.Validate(typeof(ISolutionPatcherRun));
+    }
+
+    [Fact]
+    public void LoggingTest()
+    {
+        var builder = new ContainerBuilder();
+        IServiceCollection services = new ServiceCollection();
+        services.AddLogging();
+        builder.Populate(services);
         var cont = builder.Build();
         cont.Validate(typeof(ISolutionPatcherRun));
     }

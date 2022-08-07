@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NSubstitute;
-using Synthesis.Bethesda.Execution.GitRepository;
+using Noggog.GitRepository;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 

@@ -1,6 +1,6 @@
 ﻿using Noggog;
 using NSubstitute;
-using Synthesis.Bethesda.Execution.GitRepository;
+using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;

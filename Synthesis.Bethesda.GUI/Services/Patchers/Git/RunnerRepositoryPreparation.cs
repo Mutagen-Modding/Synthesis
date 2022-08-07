@@ -2,6 +2,7 @@
 using Noggog;
 using Noggog.Reactive;
 using Serilog;
+using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Logging;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -20,6 +21,7 @@ public class RunnerRepositoryPreparation : IRunnerRepositoryPreparation
     public RunnerRepositoryPreparation(
         ILogger logger,
         ICheckOrCloneRepo checkOrClone,
+        ICheckIfRepositoryDesirable checkIfRepositoryDesirable,
         IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
         IGetRepoPathValidity getRepoPathValidity,
         ISchedulerProvider schedulerProvider)
@@ -39,6 +41,7 @@ public class RunnerRepositoryPreparation : IRunnerRepositoryPreparation
                     return (ErrorResponse)checkOrClone.Check(
                         path.ToGetResponse(),
                         runnerRepoDirectoryProvider.Path, 
+                        checkIfRepositoryDesirable.IsDesirable,
                         cancel);
                 })
             .Replay(1)

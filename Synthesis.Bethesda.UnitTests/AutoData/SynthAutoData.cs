@@ -1,11 +1,11 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
+using Microsoft.Extensions.Logging;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Testing.AutoData;
 using Noggog.Testing.AutoFixture;
-using Serilog;
-using Synthesis.Bethesda.Execution.GitRepository;
+using Noggog.GitRepository;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.AutoData;
@@ -129,7 +129,7 @@ public class SynthAutoDataCustomization : ICustomization
         {
             fixture.Register<IProvideRepositoryCheckouts>(
                 () => new ProvideRepositoryCheckouts(
-                    fixture.Create<ILogger>(),
+                    fixture.Create<ILogger<ProvideRepositoryCheckouts>>(),
                     new GitRepositoryFactory()));
         }
     }

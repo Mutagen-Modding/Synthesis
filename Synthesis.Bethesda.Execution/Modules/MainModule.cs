@@ -1,11 +1,13 @@
 ﻿using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Noggog.Autofac;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.DotNet.Builder.Transient;
 using Synthesis.Bethesda.Execution.DotNet.Singleton;
 using Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget;
 using Synthesis.Bethesda.Execution.FileAssociations;
-using Synthesis.Bethesda.Execution.GitRepository;
+using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
@@ -17,6 +19,8 @@ using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.Execution.Versioning.Query;
 using Noggog.WorkEngine;
+using Serilog;
+using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Startup;
 
 namespace Synthesis.Bethesda.Execution.Modules;
@@ -25,6 +29,13 @@ public class MainModule : Module
 {
     protected override void Load(ContainerBuilder builder)
     {
+        IServiceCollection services = new ServiceCollection();
+        services.AddLogging(b =>
+        {
+            b.AddSerilog(dispose: true);
+        });
+        builder.Populate(services);
+        
         builder.RegisterAssemblyTypes(typeof(ISynthesisSubProcessRunner).Assembly)
             .InNamespacesOf(
                 typeof(IQueryNewestLibraryVersions),
@@ -77,9 +88,13 @@ public class MainModule : Module
             .SingleInstance()
             .AsMatchingInterface();
             
-        builder.RegisterAssemblyTypes(typeof(ISynthesisSubProcessRunner).Assembly)
+        builder.RegisterAssemblyTypes(
+                typeof(ICheckOrCloneRepo).Assembly,
+                typeof(ISynthesisSubProcessRunner).Assembly)
             .InNamespacesOf(
-                typeof(ICheckOrCloneRepo))
+                typeof(ICheckOrCloneRepo),
+                typeof(ICheckIfRepositoryDesirable),
+                typeof(ISynthesisSubProcessRunner))
             .SingleInstance()
             .AsMatchingInterface();
     }
