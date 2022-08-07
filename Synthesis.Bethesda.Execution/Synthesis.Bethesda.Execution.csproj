@@ -53,7 +53,7 @@
     <PackageReference Include="Mutagen.Bethesda.Core" Version="0.39.4-pr001" />
     <PackageReference Include="Noggog.CSharpExt.Json" Version="2.50.0" />
     <PackageReference Include="Noggog.Autofac" Version="2.50.0" />
-    <PackageReference Include="Noggog.GitRepository" Version="0.0.0.1-dev" />
+    <PackageReference Include="Noggog.GitRepository" Version="1.0.0" />
     <PackageReference Include="NuGet.Versioning" Version="6.2.1" />
     <PackageReference Include="NuGetizer" Version="0.8.0">
       <PrivateAssets>all</PrivateAssets>
