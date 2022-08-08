@@ -28,11 +28,20 @@ public class CopyDirectory : ICopyDirectory
             foreach (var folder in Directory.GetDirectories(folders.Source))
             {
                 if (cancel.IsCancellationRequested) return;
+                if (IsGitFolder(folder)) continue;
                 stack.Push(new Folders(folder, Path.Combine(folders.Target, Path.GetFileName(folder))));
             }
         }
     }
 
+    private bool IsGitFolder(string folder)
+    {
+        var dirName = Path.GetFileName(folder);
+        if (dirName == ".git") return true;
+        if (dirName.StartsWith("_git2_")) return true;
+        return false;
+    }
+    
     class Folders
     {
         public string Source { get; private set; }
