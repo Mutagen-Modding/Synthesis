@@ -93,8 +93,7 @@ public class MainModule : Module
                 typeof(ISynthesisSubProcessRunner).Assembly)
             .InNamespacesOf(
                 typeof(ICheckOrCloneRepo),
-                typeof(ICheckIfRepositoryDesirable),
-                typeof(ISynthesisSubProcessRunner))
+                typeof(ICheckIfRepositoryDesirable))
             .SingleInstance()
             .AsMatchingInterface();
     }
