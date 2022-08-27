@@ -10,7 +10,7 @@ public interface IGetStateLoadOrder
 {
     GetStateLoadOrder.LoadOrderReturn GetFinalLoadOrder(
         GameRelease gameRelease,
-        ModKey exportKey,
+        ModKey? exportKey,
         string dataFolderPath,
         bool addCcMods,
         PatcherPreferences userPrefs);
@@ -96,10 +96,10 @@ public class GetStateLoadOrder : IGetStateLoadOrder
     
     public LoadOrderReturn GetFinalLoadOrder(
         GameRelease gameRelease,
-        ModKey exportKey,
+        ModKey? exportKey,
         string dataFolderPath,
         bool addCcMods,
-        PatcherPreferences userPrefs)
+        PatcherPreferences? userPrefs)
     {
         // Get load order
         var loadOrderListing = GetUnfilteredLoadOrder(addCcMods, userPrefs)
@@ -107,13 +107,16 @@ public class GetStateLoadOrder : IGetStateLoadOrder
         var rawLoadOrder = loadOrderListing.Select(x => new LoadOrderListing(x.ModKey, x.Enabled)).ToExtendedList();
 
         // Trim past export key
-        var synthIndex = loadOrderListing.IndexOf(exportKey, (listing, key) => listing.ModKey == key);
-        if (synthIndex != -1)
+        if (exportKey != null)
         {
-            loadOrderListing.RemoveToCount(synthIndex);
+            var synthIndex = loadOrderListing.IndexOf(exportKey.Value, (listing, key) => listing.ModKey == key);
+            if (synthIndex != -1)
+            {
+                loadOrderListing.RemoveToCount(synthIndex);
+            }
         }
 
-        if (userPrefs.AddImplicitMasters)
+        if (userPrefs?.AddImplicitMasters ?? true)
         {
             _enableImplicitMasters
                 .Get(dataFolderPath, gameRelease)
@@ -121,7 +124,7 @@ public class GetStateLoadOrder : IGetStateLoadOrder
         }
 
         // Remove disabled mods
-        if (!userPrefs.IncludeDisabledMods)
+        if (!userPrefs?.IncludeDisabledMods ?? true)
         {
             loadOrderListing = loadOrderListing.OnlyEnabled().ToExtendedList();
         }

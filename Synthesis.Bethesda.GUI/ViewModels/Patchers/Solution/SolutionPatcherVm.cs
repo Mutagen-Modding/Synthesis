@@ -63,8 +63,9 @@ public class SolutionPatcherVm : PatcherVm
         IPatcherIdProvider idProvider,
         SolutionPatcherSettingsVm settingsVm,
         PatcherRenameActionVm.Factory renameFactory,
+        PatcherGroupTarget groupTarget,
         SolutionPatcherSettings? settings = null)
-        : base(scope, nameVm, profileDisplay, confirmation, idProvider, renameFactory, settings)
+        : base(scope, nameVm, profileDisplay, confirmation, idProvider, renameFactory, groupTarget, settings)
     {
         SolutionPathInput = solutionPathInput;
         SelectedProjectInput = selectedProjectInput;

@@ -114,10 +114,11 @@ public class GitPatcherVm : PatcherVm, IPathToSolutionFileProvider
         PatcherRenameActionVm.Factory renameFactory,
         DeleteUserData deleteUserData,
         PatcherUserSettingsVm.Factory settingsVmFactory,
+        PatcherGroupTarget groupTarget,
         GithubPatcherSettings? settings = null)
         : base(
             scope, nameVm, selPatcher,
-            confirmation, idProvider, renameFactory, settings)
+            confirmation, idProvider, renameFactory, groupTarget, settings)
     {
         _logger = logger;
         _copyOverExtraData = copyOverExtraData;

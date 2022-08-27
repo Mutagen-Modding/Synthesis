@@ -46,7 +46,7 @@ public class AddPatchersToSelectedGroupVm : ViewModel, IAddPatchersToSelectedGro
         patchersToAdd.ForEach(p =>
         {
             p.IsOn = true;
-            p.Group = _selectedGroupControllerVm.SelectedGroup;
+            p.GroupTarget.Group = _selectedGroupControllerVm.SelectedGroup;
         });
         group.Patchers.AddRange(patchersToAdd);
     }

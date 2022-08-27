@@ -7,6 +7,8 @@ using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.GUI.ViewModels.Groups;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;
@@ -26,6 +28,7 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
         IProfileLoadOrder loadOrder,
         IExecuteRunnabilityCheck checkRunnability,
         ITemporaryLoadOrderProvider temporaryLoadOrderProvider,
+        IModKeyProvider modKeyProvider,
         ILogger logger)
     {
         Runnable = Observable.CombineLatest(
@@ -55,12 +58,25 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
 
                     try
                     {
+                        var modKey = modKeyProvider.ModKey;
+                        if (modKey == null)
+                        {
+                            logger.Information($"Checking runnability failed: No known ModKey");
+                            observer.OnNext(new ConfigurationState<RunnerRepoInfo>(i.comp.Item)
+                            {
+                                IsHaltingError = true,
+                                RunnableState = ErrorResponse.Fail("No known ModKey")
+                            });
+                            return;
+                        }
+                        
                         using var tmpLoadOrder = temporaryLoadOrderProvider.Get(
                             i.loadOrder.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                         var runnability = await checkRunnability.Check(
                             path: i.comp.Item.Project.ProjPath,
                             directExe: false,
                             cancel: cancel,
+                            modKey: modKey.Value,
                             buildMetaPath: i.comp.Item.MetaPath,
                             loadOrderPath: tmpLoadOrder.File).ConfigureAwait(false);
                         if (runnability.Failed)

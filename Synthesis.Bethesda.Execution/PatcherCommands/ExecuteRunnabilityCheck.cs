@@ -1,4 +1,5 @@
 ﻿using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Noggog.WorkEngine;
 using Synthesis.Bethesda.Commands;
@@ -12,6 +13,7 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands;
 public interface IExecuteRunnabilityCheck
 {
     Task<ErrorResponse> Check(
+        ModKey modKey,
         string path,
         bool directExe,
         string loadOrderPath,
@@ -56,6 +58,7 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
     }
 
     public async Task<ErrorResponse> Check(
+        ModKey modKey,
         string path,
         bool directExe,
         string loadOrderPath,
@@ -81,6 +84,7 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
             GameRelease = GameReleaseContext.Release,
             LoadOrderFilePath = loadOrderPath,
             ExtraDataFolder = ExtraDataPathProvider.Path,
+            ModKey = modKey.ToString()
         };
 
         var result = (Codes)await Dropoff.EnqueueAndWait(() =>

@@ -8,7 +8,6 @@ using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
@@ -16,6 +15,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 public abstract class PatcherVm : ViewModel, ISelected
 {
+    public PatcherGroupTarget GroupTarget { get; }
     public ILifetimeScope Scope { get; }
     public IPatcherNameVm NameVm { get; }
 
@@ -34,9 +34,6 @@ public abstract class PatcherVm : ViewModel, ISelected
     public abstract ConfigurationState State { get; }
 
     public virtual bool IsNameEditable => true;
-
-    [Reactive] 
-    public GroupVm? Group { get; set; } 
         
     public ErrorDisplayVm ErrorDisplayVm { get; }
 
@@ -47,8 +44,10 @@ public abstract class PatcherVm : ViewModel, ISelected
         IConfirmationPanelControllerVm confirmation,
         IPatcherIdProvider idProvider,
         PatcherRenameActionVm.Factory renameFactory,
+        PatcherGroupTarget groupTarget,
         PatcherSettings? settings)
     {
+        GroupTarget = groupTarget;
         Scope = scope;
         Scope.DisposeWith(this);
         NameVm = nameVm;
@@ -96,7 +95,7 @@ public abstract class PatcherVm : ViewModel, ISelected
 
     public virtual void Delete()
     {
-        Group?.Remove(this);
+        GroupTarget.Group?.Remove(this);
         this.Dispose();
     }
 

@@ -34,7 +34,7 @@ public class GroupFactory : IGroupFactory
                 .Select(x =>
                 {
                     var ret = _patcherFactory.Get(x);
-                    ret.Group = group;
+                    ret.GroupTarget.Group = group;
                     return ret;
                 }));
         return group;

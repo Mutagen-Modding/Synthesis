@@ -153,9 +153,13 @@ public class SynthesisPipeline
                                 new HasEnabledMarkersProvider(
                                     gameReleaseInjection))))),
                 new EnableImplicitMastersFactory(fileSystem))
-            .GetUnfilteredLoadOrder(false, patcher?.Prefs)
-            .ToLoadOrder();
-        var state = new RunnabilityState(args, loadOrder);
+            .GetFinalLoadOrder(
+                gameRelease: args.GameRelease,
+                exportKey: args.ModKey == null ? default(ModKey?) : ModKey.FromNameAndExtension(args.ModKey),
+                dataFolderPath: args.DataFolderPath,
+                addCcMods: !args.LoadOrderIncludesCreationClub,
+                patcher.Prefs);
+        var state = new RunnabilityState(args, loadOrder.ProcessedLoadOrder.ToLoadOrder());
         try
         {
             await Task.WhenAll(_runnabilityChecks.Select(check =>
