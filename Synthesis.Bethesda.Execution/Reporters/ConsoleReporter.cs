@@ -28,10 +28,17 @@ public class ConsoleReporter : IRunReporter
         System.Console.Error.WriteLine(ex);
     }
 
-    public void ReportRunProblem(Guid key, string name, Exception ex)
+    public void ReportRunProblem(Guid key, string name, Exception? ex)
     {
-        System.Console.Error.WriteLine($"[{name}] Run error:");
-        System.Console.Error.WriteLine(ex);
+        if (ex == null)
+        {
+            System.Console.Error.WriteLine($"[{name}] Run error");
+        }
+        else
+        {
+            System.Console.Error.WriteLine($"[{name}] Run error:");
+            System.Console.Error.WriteLine(ex);
+        }
     }
 
     public void ReportRunSuccessful(Guid key, string name, string outputPath)

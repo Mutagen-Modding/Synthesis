@@ -31,9 +31,9 @@ public class ThrowReporter : IRunReporter
         throw ex;
     }
 
-    public void ReportRunProblem(Guid key, string name, Exception ex)
+    public void ReportRunProblem(Guid key, string name, Exception? ex)
     {
-        throw ex;
+        throw new Exception();
     }
 
     public void ReportStartingRun(Guid key, string name)

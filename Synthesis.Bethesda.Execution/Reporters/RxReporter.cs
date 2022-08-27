@@ -7,7 +7,7 @@ public interface IRunReporterWatcher
 {       
     public IObservable<Exception> Exceptions { get; }
     public IObservable<(Guid Key, string Run, Exception Error)> PrepProblem { get; }
-    public IObservable<(Guid Key, string Run, Exception Error)> RunProblem { get; }
+    public IObservable<(Guid Key, string Run, Exception? Error)> RunProblem { get; }
     public IObservable<(Guid Key, string Run, string OutputPath)> RunSuccessful { get; }
     public IObservable<(Guid Key, string Run)> Starting { get; }
     public IObservable<(Guid Key, string? Run, string String)> Output { get; }
@@ -19,7 +19,7 @@ public class RxReporter : IRunReporter, IRunReporterWatcher
 {
     private readonly Subject<Exception> _overall = new();
     private readonly Subject<(Guid, string, Exception)> _prepProblem = new();
-    private readonly Subject<(Guid, string, Exception)> _runProblem = new();
+    private readonly Subject<(Guid, string, Exception?)> _runProblem = new();
     private readonly Subject<(Guid, string, string)> _runSuccessful = new();
     private readonly Subject<(Guid, string)> _starting = new();
     private readonly Subject<(Guid Key, string? Run, string String)> _output = new();
@@ -27,7 +27,7 @@ public class RxReporter : IRunReporter, IRunReporterWatcher
 
     public IObservable<Exception> Exceptions => _overall;
     public IObservable<(Guid Key, string Run, Exception Error)> PrepProblem => _prepProblem;
-    public IObservable<(Guid Key, string Run, Exception Error)> RunProblem => _runProblem;
+    public IObservable<(Guid Key, string Run, Exception? Error)> RunProblem => _runProblem;
     public IObservable<(Guid Key, string Run, string OutputPath)> RunSuccessful => _runSuccessful;
     public IObservable<(Guid Key, string Run)> Starting => _starting;
     public IObservable<(Guid Key, string? Run, string String)> Output => _output;
@@ -53,7 +53,7 @@ public class RxReporter : IRunReporter, IRunReporterWatcher
         _prepProblem.OnNext((key, name, ex));
     }
 
-    public void ReportRunProblem(Guid key, string name, Exception ex)
+    public void ReportRunProblem(Guid key, string name, Exception? ex)
     {
         _runProblem.OnNext((key, name, ex));
     }
