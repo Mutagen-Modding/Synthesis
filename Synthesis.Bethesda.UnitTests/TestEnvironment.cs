@@ -27,8 +27,7 @@ public record TestEnvironment(
         return new StateFactory(
             FileSystem,
             new LoadOrderImporterFactory(FileSystem),
-            GetStateLoadOrder(),
-            new EnableImplicitMastersFactory(FileSystem));
+            GetStateLoadOrder());
     }
 
     public GetStateLoadOrder GetStateLoadOrder()
@@ -53,7 +52,8 @@ public record TestEnvironment(
                         gameReleaseInjection,
                         new GameLocator())),
                 new CreationClubRawListingsReader()),
-            StatePluginListings());
+            StatePluginListings(),
+            new EnableImplicitMastersFactory(FileSystem));
     }
 
     public IPluginListingsProvider StatePluginListings()

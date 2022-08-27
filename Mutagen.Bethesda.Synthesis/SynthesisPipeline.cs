@@ -150,8 +150,9 @@ public class SynthesisPipeline
                         new PluginListingsParser(
                             new LoadOrderListingParser(
                                 new HasEnabledMarkersProvider(
-                                    gameReleaseInjection))))))
-            .GetLoadOrder(false, patcher?.Prefs)
+                                    gameReleaseInjection))))),
+                new EnableImplicitMastersFactory(fileSystem))
+            .GetUnfilteredLoadOrder(false, patcher?.Prefs)
             .ToLoadOrder();
         var state = new RunnabilityState(args, loadOrder);
         try
@@ -543,8 +544,8 @@ public class SynthesisPipeline
                         new PluginListingsParser(
                             new LoadOrderListingParser(
                                 new HasEnabledMarkersProvider(
-                                    gameReleaseInjection)))))),
-            new EnableImplicitMastersFactory(fileSystem));
+                                    gameReleaseInjection))))),
+                new EnableImplicitMastersFactory(fileSystem)));
             
         exportKey = exportKey == null || exportKey.Value.IsNull ? SynthesisBase.Constants.SynthesisModKey : exportKey.Value;
         using var state = stateFactory.ToState(cat, args, prefs, exportKey.Value);

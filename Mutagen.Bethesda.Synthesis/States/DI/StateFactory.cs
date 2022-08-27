@@ -1,5 +1,4 @@
-﻿using Noggog;
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Allocators;
 using Mutagen.Bethesda.Plugins.Cache;
@@ -26,18 +25,15 @@ public class StateFactory : IStateFactory
     private readonly IFileSystem _fileSystem;
     private readonly ILoadOrderImporterFactory _loadOrderImporter;
     private readonly IGetStateLoadOrder _getStateLoadOrder;
-    private readonly IEnableImplicitMastersFactory _enableImplicitMasters;
 
     public StateFactory(
         IFileSystem fileSystem,
         ILoadOrderImporterFactory loadOrderImporter,
-        IGetStateLoadOrder getStateLoadOrder,
-        IEnableImplicitMastersFactory enableImplicitMasters)
+        IGetStateLoadOrder getStateLoadOrder)
     {
         _fileSystem = fileSystem;
         _loadOrderImporter = loadOrderImporter;
         _getStateLoadOrder = getStateLoadOrder;
-        _enableImplicitMasters = enableImplicitMasters;
     }
 
     private class Utf8EncodingWrapper : IMutagenEncodingProvider
@@ -68,29 +64,12 @@ public class StateFactory : IStateFactory
         TranslatedString.DefaultLanguage = settings.TargetLanguage;
 
         // Get load order
-        var loadOrderListing = _getStateLoadOrder.GetLoadOrder(!settings.LoadOrderIncludesCreationClub, userPrefs)
-            .ToExtendedList();
-        var rawLoadOrder = loadOrderListing.Select(x => new LoadOrderListing(x.ModKey, x.Enabled)).ToExtendedList();
-
-        // Trim past export key
-        var synthIndex = loadOrderListing.IndexOf(exportKey, (listing, key) => listing.ModKey == key);
-        if (synthIndex != -1)
-        {
-            loadOrderListing.RemoveToCount(synthIndex);
-        }
-
-        if (userPrefs.AddImplicitMasters)
-        {
-            _enableImplicitMasters
-                .Get(settings.DataFolderPath, settings.GameRelease)
-                .Add(loadOrderListing);
-        }
-
-        // Remove disabled mods
-        if (!userPrefs.IncludeDisabledMods)
-        {
-            loadOrderListing = loadOrderListing.OnlyEnabled().ToExtendedList();
-        }
+        var loadOrderListing = _getStateLoadOrder.GetFinalLoadOrder(
+            gameRelease: settings.GameRelease,
+            exportKey: exportKey,
+            dataFolderPath: settings.DataFolderPath,
+            addCcMods: !settings.LoadOrderIncludesCreationClub,
+            userPrefs: userPrefs);
 
         var stringReadParams = new StringsReadParameters()
         {
@@ -101,7 +80,7 @@ public class StateFactory : IStateFactory
         var loadOrder = _loadOrderImporter
             .Get<TModGetter>(
                 settings.DataFolderPath,
-                loadOrderListing,
+                loadOrderListing.ProcessedLoadOrder,
                 settings.GameRelease)
             .Import(stringsParam: stringReadParams);
 
@@ -128,7 +107,7 @@ public class StateFactory : IStateFactory
                     stringsParam: stringReadParams);
             }
             loadOrder.Add(new ModListing<TModGetter>(readOnlyPatchMod, enabled: true));
-            rawLoadOrder.Add(new LoadOrderListing(readOnlyPatchMod.ModKey, enabled: true));
+            loadOrderListing.Raw.Add(new LoadOrderListing(readOnlyPatchMod.ModKey, enabled: true));
             cache = loadOrder.ToImmutableLinkCache<TModSetter, TModGetter>();
         }
         else
@@ -164,7 +143,7 @@ public class StateFactory : IStateFactory
             }
             cache = loadOrder.ToMutableLinkCache(patchMod);
             loadOrder.Add(new ModListing<TModGetter>(patchMod, enabled: true));
-            rawLoadOrder.Add(new LoadOrderListing(patchMod.ModKey, enabled: true));
+            loadOrderListing.Raw.Add(new LoadOrderListing(patchMod.ModKey, enabled: true));
 
             System.Console.WriteLine($"Can use localization: {patchMod.CanUseLocalization}");
             if (patchMod.CanUseLocalization)
@@ -177,7 +156,7 @@ public class StateFactory : IStateFactory
         return new SynthesisState<TModSetter, TModGetter>(
             runArguments: settings,
             loadOrder: loadOrder,
-            rawLoadOrder: rawLoadOrder,
+            rawLoadOrder: loadOrderListing.Raw,
             linkCache: cache,
             internalDataPath: settings.InternalDataFolder,
             patchMod: patchMod,
