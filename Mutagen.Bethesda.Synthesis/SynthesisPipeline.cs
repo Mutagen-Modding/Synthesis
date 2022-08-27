@@ -123,6 +123,7 @@ public class SynthesisPipeline
         if (_runnabilityChecks.Count == 0) return Codes.NotNeeded;
         SetReflectionSettingsAnchorPaths(args.ExtraDataFolder);
         var patcher = _patchers.GetOrDefault(args.GameRelease.ToCategory());
+        if (patcher == null) return Codes.NotRunnable;
         var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
         var categoryContext = new GameCategoryContext(gameReleaseInjection);
         var dataDir = new DataDirectoryInjection(args.DataFolderPath);
