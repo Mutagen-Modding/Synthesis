@@ -121,6 +121,7 @@ public class SynthesisPipeline
     private async Task<Codes> CheckRunnability(CheckRunnability args, IFileSystem fileSystem)
     {
         if (_runnabilityChecks.Count == 0) return Codes.NotNeeded;
+        SetReflectionSettingsAnchorPaths(args.ExtraDataFolder);
         var patcher = _patchers.GetOrDefault(args.GameRelease.ToCategory());
         var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
         var categoryContext = new GameCategoryContext(gameReleaseInjection);
