@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Noggog;
 using NSubstitute;
-using Synthesis.Bethesda.Execution.GitRepository;
+using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git.Registry;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
@@ -21,6 +21,7 @@ public class PrepRegistryRepositoryTests
         sut.CheckOrClone.Received(1).Check(
             url,
             Arg.Any<DirectoryPath>(),
+            Arg.Any<Func<IGitRepository, ErrorResponse>?>(),
             cancel);
     }
         
@@ -35,6 +36,7 @@ public class PrepRegistryRepositoryTests
         sut.CheckOrClone.Received(1).Check(
             Arg.Any<GetResponse<string>>(),
             registryFolder,
+            Arg.Any<Func<IGitRepository, ErrorResponse>?>(),
             cancel);
     }
         

@@ -18,12 +18,20 @@ public record CheckRunnability
     [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to the user data folder dedicated for a patcher")]
     public string? ExtraDataFolder { get; set; }
 
+    [Option("LoadOrderIncludesCreationClub", Required = false, HelpText = "Whether the load order path file includes CC mods already")]
+    public bool LoadOrderIncludesCreationClub { get; set; } = true;
+        
+    [Option('k', "ModKey", Required = false, HelpText = "ModKey associated with the patch being generated")]
+    public string? ModKey { get; set; }
+
     public override string ToString()
     {
         return $"{nameof(CheckRunnability)} => \n"
                + $"  {nameof(GameRelease)} => {this.GameRelease} \n"
                + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
                + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath} \n"
-               + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}";
+               + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder} \n"
+               + $"  {nameof(ModKey)} => {this.ModKey} \n"
+               + $"  {nameof(LoadOrderIncludesCreationClub)} => {this.LoadOrderIncludesCreationClub}";
     }
 }

@@ -1,6 +1,6 @@
 using Autofac;
 using Synthesis.Bethesda.Execution.Versioning;
-using Synthesis.Bethesda.Execution.WorkEngine;
+using Noggog.WorkEngine;
 
 namespace Synthesis.Bethesda.ImpactTester;
 

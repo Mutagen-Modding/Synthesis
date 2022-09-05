@@ -3,11 +3,13 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
+using DynamicData.Kernel;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
+using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.GUI.Services.Profile.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
@@ -119,7 +121,7 @@ public class RunVm : ViewModel
             })
             .DisposeWith(this);
         reporterWatcher.PrepProblem
-            .Select(data => (data, type: "prepping"))
+            .Select(data => (data: (data.Key, data.Run, Error: (Exception?)data.Error), type: "prepping"))
             .Merge(reporterWatcher.RunProblem
                 .Select(data => (data, type: "running")))
             .Do(i =>
@@ -132,7 +134,14 @@ public class RunVm : ViewModel
             .Subscribe(i =>
             {
                 var vm = _patchers[i.data.Key];
-                vm.State = GetResponse<RunState>.Fail(RunState.Error, i.data.Error);
+                if (i.data.Error == null)
+                {
+                    vm.State = GetResponse<RunState>.Fail(RunState.Error);
+                }
+                else
+                {
+                    vm.State = GetResponse<RunState>.Fail(RunState.Error, i.data.Error);
+                }
                 runDisplayControllerVm.SelectedObject = vm;
             })
             .DisposeWith(this);
@@ -206,6 +215,9 @@ public class RunVm : ViewModel
                         cancel: _cancel.Token).ConfigureAwait(false);
                 }
                 catch (TaskCanceledException)
+                {
+                }
+                catch (CliUnsuccessfulRunException)
                 {
                 }
                 catch (Exception ex)

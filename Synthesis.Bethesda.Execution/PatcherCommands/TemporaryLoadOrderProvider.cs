@@ -1,6 +1,6 @@
 ﻿using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Order.DI;
-using Noggog.Utility;
+using Noggog.IO;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Utility;
 using Path = System.IO.Path;

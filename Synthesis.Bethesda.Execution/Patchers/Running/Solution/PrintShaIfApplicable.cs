@@ -1,5 +1,5 @@
 ﻿using Serilog;
-using Synthesis.Bethesda.Execution.GitRepository;
+using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution;

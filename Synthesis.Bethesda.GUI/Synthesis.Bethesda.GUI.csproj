@@ -43,14 +43,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Humanizer.Core" Version="2.14.1" />
-    <PackageReference Include="Loqui" Version="2.49.0" />
-    <PackageReference Include="Loqui.Generation" Version="2.49.0" />
-    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.39.2" />
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.39.2" />
-    <PackageReference Include="Noggog.Autofac" Version="2.49.0" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.49.0" />
-    <PackageReference Include="Noggog.CSharpExt.Windows" Version="2.49.0" />
-    <PackageReference Include="Noggog.WPF" Version="2.49.0" />
+    <PackageReference Include="Loqui" Version="2.50.1" />
+    <PackageReference Include="Loqui.Generation" Version="2.50.1" />
+    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.39.4-pr002" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.39.4-pr002" />
+    <PackageReference Include="Noggog.Autofac" Version="2.50.1" />
+    <PackageReference Include="Noggog.CSharpExt" Version="2.50.1" />
+    <PackageReference Include="Noggog.CSharpExt.Windows" Version="2.50.1" />
+    <PackageReference Include="Noggog.WPF" Version="2.50.1" />
     <PackageReference Include="NuGetizer" Version="0.8.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -60,6 +60,7 @@
     <PackageReference Include="ReactiveUI.WPF" Version="18.0.10" />
     <PackageReference Include="Serilog" Version="2.11.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.Map" Version="1.0.2" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
@@ -86,6 +87,48 @@
 
   <ItemGroup>
     <SplashScreen Include="Resources\Splashscreen.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\Config\Solution\SolutionSourceConfigView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+    <Page Update="Views\Config\Solution\SolutionStoreConfigView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+    <Page Update="Views\Config\Solution\SolutionUserSettingsConfigView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+    <Page Update="Views\Config\Solution\SolutionTargetGamesConfigView.xaml">
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Page</BuildAction>
+    </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\Config\Solution\SolutionSourceConfigView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Views\Config\Solution\SolutionStoreConfigView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Views\Config\Solution\SolutionUserSettingsConfigView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Views\Config\Solution\SolutionTargetGamesConfigView.xaml.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
   </ItemGroup>
 
   <!-- Replace inherited target -->

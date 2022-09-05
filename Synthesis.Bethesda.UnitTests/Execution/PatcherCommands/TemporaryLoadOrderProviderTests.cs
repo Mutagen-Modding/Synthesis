@@ -1,6 +1,6 @@
 ﻿using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
-using Noggog.Utility;
+using Noggog.IO;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.UnitTests.AutoData;

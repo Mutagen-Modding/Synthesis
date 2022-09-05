@@ -32,7 +32,7 @@ public class PipelineTests
             dataFolder,
             pluginPath);
         var getStateLoadOrder = testEnv.GetStateLoadOrder();
-        var listings = getStateLoadOrder.GetLoadOrder(false).ToList();
+        var listings = getStateLoadOrder.GetUnfilteredLoadOrder(false).ToList();
         listings.Should().HaveCount(3);
         listings.Should().BeEquivalentTo(new ILoadOrderListingGetter[]
         {
@@ -48,7 +48,7 @@ public class PipelineTests
         var env = Utility.SetupEnvironment(GameRelease.SkyrimSE);
         env = env with {PluginPath = string.Empty};
         var getStateLoadOrder = env.GetStateLoadOrder();
-        var lo = getStateLoadOrder.GetLoadOrder(false);
+        var lo = getStateLoadOrder.GetUnfilteredLoadOrder(false);
         lo.Select(l => l.ModKey).Should().BeEmpty();
     }
 }

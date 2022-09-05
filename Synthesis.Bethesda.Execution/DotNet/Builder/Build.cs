@@ -1,7 +1,7 @@
 ﻿using Noggog;
 using Synthesis.Bethesda.Execution.DotNet.Builder.Transient;
 using Synthesis.Bethesda.Execution.Utility;
-using Synthesis.Bethesda.Execution.WorkEngine;
+using Noggog.WorkEngine;
 
 namespace Synthesis.Bethesda.Execution.DotNet.Builder;
 
@@ -15,11 +15,11 @@ public class Build : IBuild
     public IWorkDropoff Dropoff { get; }
     public Func<IBuildOutputAccumulator> OutputAccumulatorFactory { get; }
     public IBuildResultsProcessor ResultsProcessor { get; }
-    public IProcessRunner ProcessRunner { get; }
+    public ISynthesisSubProcessRunner ProcessRunner { get; }
     public IBuildStartInfoProvider BuildStartInfoProvider { get; }
 
     public Build(
-        IProcessRunner processRunner,
+        ISynthesisSubProcessRunner processRunner,
         IWorkDropoff workDropoff,
         Func<IBuildOutputAccumulator> outputAccumulatorFactory,
         IBuildResultsProcessor resultsProcessor,

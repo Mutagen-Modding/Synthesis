@@ -23,7 +23,7 @@ public class OpenSettingsHost : IOpenSettingsHost
     private readonly IGameReleaseContext _gameReleaseContext;
     private readonly IPatcherNameProvider _nameProvider;
     private readonly ITemporaryLoadOrderProvider _loadOrderProvider;
-    private readonly IProcessRunner _processRunner;
+    private readonly ISynthesisSubProcessRunner _processRunner;
     private readonly IDataDirectoryProvider _dataDirectoryProvider;
     private readonly IRunProcessStartInfoProvider _runProcessStartInfoProvider;
     private readonly IWindowPlacement _windowPlacement;
@@ -32,7 +32,7 @@ public class OpenSettingsHost : IOpenSettingsHost
         IGameReleaseContext gameReleaseContext,
         IPatcherNameProvider nameProvider,
         ITemporaryLoadOrderProvider loadOrderProvider,
-        IProcessRunner processRunner,
+        ISynthesisSubProcessRunner processRunner,
         IDataDirectoryProvider dataDirectoryProvider,
         IRunProcessStartInfoProvider runProcessStartInfoProvider,
         IWindowPlacement windowPlacement)

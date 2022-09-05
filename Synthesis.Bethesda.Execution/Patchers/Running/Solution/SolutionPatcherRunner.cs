@@ -15,7 +15,7 @@ public class SolutionPatcherRunner : ISolutionPatcherRunner
 {
     public IPathToProjProvider PathToProjProvider { get; }
     public IConstructSolutionPatcherRunArgs ConstructArgs { get; }
-    public IProcessRunner ProcessRunner { get; }
+    public ISynthesisSubProcessRunner ProcessRunner { get; }
     public IFormatCommandLine Formatter { get; }
     public IProjectRunProcessStartInfoProvider ProcessRunStartInfoProvider { get; }
     private readonly ILogger _logger;
@@ -24,7 +24,7 @@ public class SolutionPatcherRunner : ISolutionPatcherRunner
         IProjectRunProcessStartInfoProvider processRunStartInfoProvider,
         IPathToProjProvider pathToProjProvider,
         IConstructSolutionPatcherRunArgs constructArgs,
-        IProcessRunner processRunner,
+        ISynthesisSubProcessRunner processRunner,
         IFormatCommandLine formatter,
         ILogger logger)
     {

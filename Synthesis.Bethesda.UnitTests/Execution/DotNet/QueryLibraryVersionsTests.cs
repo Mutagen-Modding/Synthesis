@@ -1,8 +1,7 @@
 ﻿using FluentAssertions;
+using Noggog.DotNetCli.DI;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.Execution.DotNet.Dto;
-using Synthesis.Bethesda.Execution.DotNet.NugetListing;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.DotNet;

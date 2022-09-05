@@ -121,7 +121,9 @@ public class SynthesisPipeline
     private async Task<Codes> CheckRunnability(CheckRunnability args, IFileSystem fileSystem)
     {
         if (_runnabilityChecks.Count == 0) return Codes.NotNeeded;
+        SetReflectionSettingsAnchorPaths(args.ExtraDataFolder);
         var patcher = _patchers.GetOrDefault(args.GameRelease.ToCategory());
+        if (patcher == null) return Codes.NotRunnable;
         var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
         var categoryContext = new GameCategoryContext(gameReleaseInjection);
         var dataDir = new DataDirectoryInjection(args.DataFolderPath);
@@ -149,10 +151,15 @@ public class SynthesisPipeline
                         new PluginListingsParser(
                             new LoadOrderListingParser(
                                 new HasEnabledMarkersProvider(
-                                    gameReleaseInjection))))))
-            .GetLoadOrder(false, patcher?.Prefs)
-            .ToLoadOrder();
-        var state = new RunnabilityState(args, loadOrder);
+                                    gameReleaseInjection))))),
+                new EnableImplicitMastersFactory(fileSystem))
+            .GetFinalLoadOrder(
+                gameRelease: args.GameRelease,
+                exportKey: args.ModKey == null ? default(ModKey?) : ModKey.FromNameAndExtension(args.ModKey),
+                dataFolderPath: args.DataFolderPath,
+                addCcMods: !args.LoadOrderIncludesCreationClub,
+                patcher.Prefs);
+        var state = new RunnabilityState(args, loadOrder.ProcessedLoadOrder.ToLoadOrder());
         try
         {
             await Task.WhenAll(_runnabilityChecks.Select(check =>
@@ -542,8 +549,8 @@ public class SynthesisPipeline
                         new PluginListingsParser(
                             new LoadOrderListingParser(
                                 new HasEnabledMarkersProvider(
-                                    gameReleaseInjection)))))),
-            new EnableImplicitMastersFactory(fileSystem));
+                                    gameReleaseInjection))))),
+                new EnableImplicitMastersFactory(fileSystem)));
             
         exportKey = exportKey == null || exportKey.Value.IsNull ? SynthesisBase.Constants.SynthesisModKey : exportKey.Value;
         using var state = stateFactory.ToState(cat, args, prefs, exportKey.Value);

@@ -1,4 +1,5 @@
 ﻿using Noggog;
+using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.GitRepository;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.Registry;
@@ -10,6 +11,7 @@ public interface IPrepRegistryRepository
 
 public class PrepRegistryRepository : IPrepRegistryRepository
 {
+    private readonly ICheckIfRepositoryDesirable _repositoryDesirable;
     public IResetToLatestMain ResetToLatestMain { get; }
     public IRemoteRegistryUrlProvider RegistryUrlProvider { get; }
     public ICheckOrCloneRepo CheckOrClone { get; }
@@ -21,8 +23,10 @@ public class PrepRegistryRepository : IPrepRegistryRepository
         IRemoteRegistryUrlProvider registryUrlProvider,
         IProvideRepositoryCheckouts repositoryCheckouts,
         IResetToLatestMain resetToLatestMain,
+        ICheckIfRepositoryDesirable repositoryDesirable,
         IRegistryFolderProvider registryFolderProvider)
     {
+        _repositoryDesirable = repositoryDesirable;
         ResetToLatestMain = resetToLatestMain;
         RegistryUrlProvider = registryUrlProvider;
         CheckOrClone = checkOrClone;
@@ -35,6 +39,7 @@ public class PrepRegistryRepository : IPrepRegistryRepository
         var localRepoPath = CheckOrClone.Check(
             RegistryUrlProvider.Url,
             RegistryFolderProvider.RegistryFolder,
+            isDesirable: _repositoryDesirable.IsDesirable,
             cancellationToken);
         if (localRepoPath.Failed) return localRepoPath;
             

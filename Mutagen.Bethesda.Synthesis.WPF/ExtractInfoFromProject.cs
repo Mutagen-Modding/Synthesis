@@ -3,6 +3,7 @@ using Path = System.IO.Path;
 using System.Reflection;
 using System.Runtime.Loader;
 using Noggog;
+using Noggog.IO;
 using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet.ExecutablePath;

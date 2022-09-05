@@ -5,7 +5,7 @@ using Noggog.IO;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Utility;
-using Synthesis.Bethesda.Execution.WorkEngine;
+using Noggog.WorkEngine;
 
 namespace Synthesis.Bethesda.Execution.Versioning.Query;
 
@@ -18,7 +18,7 @@ public class QueryNewestLibraryVersions : IQueryNewestLibraryVersions
 {
     private readonly ILogger _logger;
     private readonly IWorkDropoff _workDropoff;
-    private readonly IProcessRunner _processRunner;
+    private readonly ISynthesisSubProcessRunner _processRunner;
     private readonly IDotNetCommandStartConstructor _dotNetCommandStartConstructor;
     public IQueryVersionProjectPathing Pathing { get; }
     public IQueryLibraryVersions QueryLibraryVersions { get; }
@@ -37,7 +37,7 @@ public class QueryNewestLibraryVersions : IQueryNewestLibraryVersions
         IDeleteEntireDirectory deleteEntireDirectory,
         IAddProjectToSolution addProjectToSolution,
         IWorkDropoff workDropoff,
-        IProcessRunner processRunner,
+        ISynthesisSubProcessRunner processRunner,
         IDotNetCommandStartConstructor dotNetCommandStartConstructor,
         IQueryLibraryVersions queryLibraryVersions)
     {

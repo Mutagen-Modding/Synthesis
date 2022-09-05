@@ -2,7 +2,7 @@
 using System.IO.Abstractions;
 using LibGit2Sharp;
 using Noggog;
-using Synthesis.Bethesda.Execution.GitRepository;
+using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.GUI.Settings;

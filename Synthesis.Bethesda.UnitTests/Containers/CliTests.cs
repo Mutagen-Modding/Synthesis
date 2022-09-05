@@ -1,4 +1,6 @@
 ﻿using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Noggog;
 using Noggog.Autofac;
 using Synthesis.Bethesda.CLI.RunPipeline;

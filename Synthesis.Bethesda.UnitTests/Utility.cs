@@ -1,10 +1,10 @@
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
-using Noggog.Utility;
 using System.Collections;
 using System.IO.Abstractions.TestingHelpers;
 using System.Runtime.CompilerServices;
+using Noggog.IO;
 using NSubstitute;
 using NSubstitute.Core;
 

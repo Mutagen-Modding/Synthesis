@@ -21,7 +21,7 @@ public class CliPatcherRun : ICliPatcherRun
     public Guid Key { get; }
     public int Index { get; }
     public string Name => _name.Name;
-    public IProcessRunner ProcessRunner { get; }
+    public ISynthesisSubProcessRunner ProcessRunner { get; }
     public IPathToExecutableInputProvider ExePath { get; }
 
     public ILogger Logger { get; }
@@ -32,7 +32,7 @@ public class CliPatcherRun : ICliPatcherRun
     [ExcludeFromCodeCoverage]
     public CliPatcherRun(
         ILogger logger,
-        IProcessRunner processRunner,
+        ISynthesisSubProcessRunner processRunner,
         IPatcherIdProvider idProvider,
         IPatcherNameProvider name,
         IPathToExecutableInputProvider exePath,

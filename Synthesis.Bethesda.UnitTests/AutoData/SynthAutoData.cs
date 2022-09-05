@@ -1,12 +1,11 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoNSubstitute;
 using AutoFixture.Xunit2;
+using Microsoft.Extensions.Logging;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Testing.AutoData;
 using Noggog.Testing.AutoFixture;
-using Serilog;
-using Synthesis.Bethesda.Execution.GitRepository;
-using Synthesis.Bethesda.Execution.WorkEngine;
+using Noggog.GitRepository;
 using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.AutoData;
@@ -125,14 +124,12 @@ public class SynthAutoDataCustomization : ICustomization
         fixture.Customize(new MutagenBaseCustomization());
         fixture.Customize(new MutagenReleaseCustomization(GameRelease.SkyrimSE));
         fixture.Customize(new DefaultCustomization(_useMockFilesystem));
-        fixture.Customize(new LazyCustomization());
         if (_useMockRepositoryProvider)
         {
             fixture.Register<IProvideRepositoryCheckouts>(
                 () => new ProvideRepositoryCheckouts(
-                    fixture.Create<ILogger>(),
+                    fixture.Create<ILogger<ProvideRepositoryCheckouts>>(),
                     new GitRepositoryFactory()));
         }
-        fixture.Register<IWorkDropoff>(() => new InlineWorkDropoff());
     }
 }

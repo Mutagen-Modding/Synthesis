@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Commands;
+using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -27,6 +28,7 @@ public class GitPatcherRun : IGitPatcherRun
     private readonly GithubPatcherSettings _settings;
     private readonly ILogger _logger;
     private readonly IRunnerRepoDirectoryProvider _runnerRepoDirectoryProvider;
+    private readonly ICheckIfRepositoryDesirable _checkIfRepositoryDesirable;
     private readonly ICheckOrCloneRepo _checkOrClone;
     public ISolutionPatcherRun SolutionPatcherRun { get; }
 
@@ -36,6 +38,7 @@ public class GitPatcherRun : IGitPatcherRun
         IPatcherIdProvider idProvider,
         IIndexDisseminator indexDisseminator,
         IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
+        ICheckIfRepositoryDesirable checkIfRepositoryDesirable,
         ISolutionPatcherRun solutionPatcherRun,
         ICheckOrCloneRepo checkOrClone)
     {
@@ -44,6 +47,7 @@ public class GitPatcherRun : IGitPatcherRun
         _settings = settings;
         _logger = logger;
         _runnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
+        _checkIfRepositoryDesirable = checkIfRepositoryDesirable;
         _checkOrClone = checkOrClone;
         Index = indexDisseminator.GetNext();
         Name = $"{settings.Nickname.Decorate(x => $"{x} => ")}{settings.RemoteRepoPath} => {Path.GetFileNameWithoutExtension(settings.SelectedProjectSubpath)}";
@@ -65,7 +69,8 @@ public class GitPatcherRun : IGitPatcherRun
         var cloneResult = _checkOrClone.Check(
             GetResponse<string>.Succeed(_settings.RemoteRepoPath),
             _runnerRepoDirectoryProvider.Path,
-            cancel);
+            isDesirable: _checkIfRepositoryDesirable.IsDesirable,
+            cancel: cancel);
         if (cloneResult.Failed)
         {
             throw new SynthesisBuildFailure(cloneResult.Reason);

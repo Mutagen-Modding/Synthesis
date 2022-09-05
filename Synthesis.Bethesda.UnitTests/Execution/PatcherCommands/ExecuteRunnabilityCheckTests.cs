@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using FluentAssertions;
+using Mutagen.Bethesda.Plugins;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Commands;
@@ -17,12 +18,13 @@ public class CheckRunnabilityTests
         string path,
         bool directExe,
         string loadOrderPath,
+        ModKey modKey,
         FilePath buildMetaPath,
         CancellationToken cancel,
         ExecuteRunnabilityCheck sut)
     {
         sut.MetaFileReader.Read(buildMetaPath).Returns(new GitCompilationMeta() { DoesNotHaveRunnability = true });
-        await sut.Check(path, directExe, loadOrderPath, buildMetaPath, cancel);
+        await sut.Check(modKey, path, directExe, loadOrderPath, buildMetaPath, cancel);
         await sut.ProcessRunner.DidNotReceiveWithAnyArgs().RunWithCallback(default!, default(Action<string>)!, default);
     }
         
@@ -31,17 +33,19 @@ public class CheckRunnabilityTests
         string path,
         bool directExe,
         string loadOrderPath,
+        ModKey modKey,
         FilePath buildMetaPath,
         CancellationToken cancel,
         ExecuteRunnabilityCheck sut)
     {
-        await sut.Check(path, directExe, loadOrderPath, buildMetaPath, cancel);
+        await sut.Check(modKey, path, directExe, loadOrderPath, buildMetaPath, cancel);
         sut.RunProcessStartInfoProvider.Received(1).GetStart(path, directExe, new CheckRunnability()
         {
             DataFolderPath = sut.DataDirectoryProvider.Path,
             GameRelease = sut.GameReleaseContext.Release,
             LoadOrderFilePath = loadOrderPath,
-            ExtraDataFolder = sut.ExtraDataPathProvider.Path
+            ExtraDataFolder = sut.ExtraDataPathProvider.Path,
+            ModKey = modKey.ToString()
         });
     }
 
@@ -50,6 +54,7 @@ public class CheckRunnabilityTests
         string path,
         bool directExe,
         string loadOrderPath,
+        ModKey modKey,
         FilePath buildMetaPath,
         CancellationToken cancel,
         ProcessStartInfo start,
@@ -57,7 +62,7 @@ public class CheckRunnabilityTests
     {
         sut.RunProcessStartInfoProvider.GetStart<CheckRunnability>(default!, default, default!)
             .ReturnsForAnyArgs(start);
-        await sut.Check(path, directExe, loadOrderPath, buildMetaPath, cancel);
+        await sut.Check(modKey, path, directExe, loadOrderPath, buildMetaPath, cancel);
         await sut.ProcessRunner.Received(1).RunWithCallback(
             start,
             Arg.Any<Action<string>>(),
@@ -69,13 +74,14 @@ public class CheckRunnabilityTests
         string path,
         bool directExe,
         string loadOrderPath,
+        ModKey modKey,
         FilePath buildMetaPath,
         CancellationToken cancel,
         ExecuteRunnabilityCheck sut)
     {
         sut.ProcessRunner.RunWithCallback(default!, default!, default)
             .ReturnsForAnyArgs((int)Codes.NotRunnable);
-        (await sut.Check(path, directExe, loadOrderPath, buildMetaPath, cancel))
+        (await sut.Check(modKey, path, directExe, loadOrderPath, buildMetaPath, cancel))
             .Succeeded.Should().BeFalse();
     }
 
@@ -84,6 +90,7 @@ public class CheckRunnabilityTests
         string path,
         bool directExe,
         string loadOrderPath,
+        ModKey modKey,
         FilePath buildMetaPath,
         CancellationToken cancel,
         ExecuteRunnabilityCheck sut)
@@ -99,7 +106,7 @@ public class CheckRunnabilityTests
                 }),
                 Arg.Any<CancellationToken>())
             .ReturnsForAnyArgs((int)Codes.NotRunnable);
-        var resp = await sut.Check(path, directExe, loadOrderPath, buildMetaPath, cancel);
+        var resp = await sut.Check(modKey, path, directExe, loadOrderPath, buildMetaPath, cancel);
         resp.Reason.Split(Environment.NewLine).Length.Should().Be(ExecuteRunnabilityCheck.MaxLines);
     }
 
@@ -108,13 +115,14 @@ public class CheckRunnabilityTests
         string path,
         bool directExe,
         string loadOrderPath,
+        ModKey modKey,
         FilePath buildMetaPath,
         CancellationToken cancel,
         ExecuteRunnabilityCheck sut)
     {
         sut.ProcessRunner.RunWithCallback(default!, default!, default)
             .ReturnsForAnyArgs(((int)Codes.NotRunnable) + 1);
-        (await sut.Check(path, directExe, loadOrderPath, buildMetaPath, cancel))
+        (await sut.Check(modKey, path, directExe, loadOrderPath, buildMetaPath, cancel))
             .Succeeded.Should().BeTrue();
     }
 }

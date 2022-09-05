@@ -18,7 +18,7 @@ public class TrackerReporter : IRunReporter
 
     public string? StartingRun { get; private set; }
 
-    public (string Patcher, Exception Exception)? RunProblem { get; private set; }
+    public (string Patcher, Exception? Exception)? RunProblem { get; private set; }
 
     private readonly List<(string Patcher, FilePath OutputPath)> _patcherComplete = new();
     public IReadOnlyList<(string Patcher, FilePath OutputPath)> PatcherComplete => _patcherComplete;
@@ -37,7 +37,7 @@ public class TrackerReporter : IRunReporter
         _prepProblems.Add((name, ex));
     }
 
-    public void ReportRunProblem(Guid key, string name, Exception ex)
+    public void ReportRunProblem(Guid key, string name, Exception? ex)
     {
         if (RunProblem != null)
         {

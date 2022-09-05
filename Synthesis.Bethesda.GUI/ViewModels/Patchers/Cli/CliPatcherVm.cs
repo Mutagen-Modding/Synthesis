@@ -31,8 +31,9 @@ public class CliPatcherVm : PatcherVm, ICliInputSourceVm
         IShowHelpSetting showHelpSetting,
         ILifetimeScope scope,
         PatcherRenameActionVm.Factory renameFactory,
+        PatcherGroupTarget groupTarget,
         CliPatcherSettings? settings = null)
-        : base(scope, nameVm, selPatcher, confirmation, idProvider, renameFactory, settings)
+        : base(scope, nameVm, selPatcher, confirmation, idProvider, renameFactory, groupTarget, settings)
     {
         ExecutableInput = pathToExecutableInputVm;
         ShowHelpSetting = showHelpSetting;

@@ -73,6 +73,11 @@ public class RunAPatcher : IRunAPatcher
         {
             return null;
         }
+        catch (CliUnsuccessfulRunException)
+        {
+            _reporter.ReportRunProblem(prepBundle.Run.Key, prepBundle.Run.Name, null);
+            throw;
+        }
         catch (Exception ex)
         {
             _reporter.ReportRunProblem(prepBundle.Run.Key, prepBundle.Run.Name, ex);
