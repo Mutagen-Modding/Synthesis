@@ -31,6 +31,11 @@ public static class SynthesisWpfMixIn
                     {
                         shutdown = false;
                     }
+                    if (adjustArguments)
+                    {
+                        // First argument is the path to the WPF app
+                        pipe.AdjustArguments(args => args.Skip(1).ToArray());
+                    }
                     break;
                 case RunStyle.OpenForSettings:
                     shutdown = false;
@@ -45,11 +50,6 @@ public static class SynthesisWpfMixIn
                     throw new ArgumentOutOfRangeException(nameof(style), style, null);
             }
         };
-        if (adjustArguments)
-        {
-            // First argument is the path to the WPF app
-            pipe.AdjustArguments(args => args.Skip(1).ToArray());
-        }
         return pipe;
     }
 }
