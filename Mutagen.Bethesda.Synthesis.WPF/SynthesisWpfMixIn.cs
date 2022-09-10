@@ -12,18 +12,24 @@ public static class SynthesisWpfMixIn
         bool shutdown = true;
         pipe._onShutdown = (r) =>
         {
-            System.Windows.Application.Current.Exit += (_, e) => e.ApplicationExitCode = r;
-            if (shutdown)
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                Application.Current.Shutdown(r);
-            }
+                System.Windows.Application.Current.Exit += (_, e) => e.ApplicationExitCode = r;
+                if (shutdown)
+                {
+                    Application.Current.Shutdown(r);
+                }
+            });
         };
         if (openForSettings != null)
         {
-            pipe.SetOpenForSettings((r) =>
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                shutdown = false;
-                return openForSettings(r);
+                pipe.SetOpenForSettings((r) =>
+                {
+                    shutdown = false;
+                    return openForSettings(r);
+                });
             });
         }
         if (adjustArguments)
