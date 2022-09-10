@@ -1,12 +1,13 @@
 using System.Windows;
+using Mutagen.Bethesda.Synthesis.Internal;
 
 namespace Mutagen.Bethesda.Synthesis;
 
 public static class SynthesisWpfMixIn
 {
     public static SynthesisPipeline SetForWpf(
-        this SynthesisPipeline pipe,
-        SynthesisPipeline.OpenFunction? openForSettings,
+        this SynthesisPipeline pipe, 
+        bool stopShutdownForStandaloneRun = true,
         bool adjustArguments = true)
     {
         bool shutdown = true;
@@ -21,40 +22,34 @@ public static class SynthesisWpfMixIn
                 }
             });
         };
-        if (openForSettings != null)
+        pipe._runStyleCallback = (style) =>
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            switch (style)
             {
-                pipe.SetOpenForSettings((r) =>
-                {
+                case RunStyle.Standalone:
+                    if (stopShutdownForStandaloneRun)
+                    {
+                        shutdown = false;
+                    }
+                    break;
+                case RunStyle.OpenForSettings:
                     shutdown = false;
-                    return openForSettings(r);
-                });
-            });
-        }
+                    break;
+                case RunStyle.QueryForSettings:
+                    break;
+                case RunStyle.RunPatcher:
+                    break;
+                case RunStyle.CheckRunnability:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(style), style, null);
+            }
+        };
         if (adjustArguments)
         {
             // First argument is the path to the WPF app
             pipe.AdjustArguments(args => args.Skip(1).ToArray());
         }
         return pipe;
-    }
-
-    public static SynthesisPipeline SetForWpf<TWindow>(
-        this SynthesisPipeline pipe, 
-        bool adjustArguments = true)
-        where TWindow : Window, new()
-    {
-        return SetForWpf(
-            pipe: pipe,
-            openForSettings: (r) =>
-            {
-                var window = new TWindow();
-                window.Left = r.Left;
-                window.Top = r.Top;
-                window.ShowDialog();
-                return 0;
-            },
-            adjustArguments: adjustArguments); 
     }
 }
