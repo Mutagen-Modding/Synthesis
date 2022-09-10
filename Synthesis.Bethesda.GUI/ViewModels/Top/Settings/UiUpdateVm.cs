@@ -43,7 +43,19 @@ public class UiUpdateVm : ViewModel
         SemanticVersion? curVersion;
         try
         {
-            curVersion = SemanticVersion.Parse(SynthesisVersion);
+            if (!SemanticVersion.TryParse(SynthesisVersion, out curVersion))
+            {
+                curVersion = null;
+                int GetNum(int i) => i == -1 ? 0 : i;
+                if (Version.TryParse(SynthesisVersion, out var version))
+                {
+                    curVersion = new SemanticVersion(GetNum(version.Major), GetNum(version.Minor), GetNum(version.Build), version.Revision.ToString());
+                }
+                else
+                {
+                    logger.Error("Error getting current UI semantic version: {String}", SynthesisVersion);
+                }
+            }
         }
         catch (Exception e)
         {
