@@ -51,6 +51,7 @@ public class PatcherRenameActionVm : ViewModel, IConfirmationActionVm
 
     private void Execute()
     {
+        if (_nameVm.Nickname == Name) return;
         try
         {
             if (_fileSystem.Directory.Exists(_extraDataPathProvider.Path))
