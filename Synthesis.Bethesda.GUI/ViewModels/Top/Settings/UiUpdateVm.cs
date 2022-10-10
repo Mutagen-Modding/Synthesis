@@ -82,8 +82,10 @@ public class UiUpdateVm : ViewModel
             .Select(x =>
             {
                 if (curVersion == null) return false;
+                if (x.IsNullOrWhitespace()) return false;
                 try
                 {
+                    logger.Information("Checking if there is a UI update. {Current} -> {Newest}", curVersion, x);
                     return SemanticVersion.Parse(x) > curVersion;
                 }
                 catch (Exception e)
