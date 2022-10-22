@@ -14,25 +14,25 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.ExecutablePath;
 public class QueryExecutablePathTests
 {
     [Theory, SynthAutoData]
-    public void PassesProjPathToStartProvider(
+    public async Task PassesProjPathToStartProvider(
         FilePath projPath,
         CancellationToken cancel,
         QueryExecutablePath sut)
     {
-        sut.Query(projPath, cancel);
+        await sut.Query(projPath, cancel);
         sut.StartInfoProvider.Received(1).Construct(projPath);
     }
         
     [Theory, SynthAutoData]
-    public void StartProviderPassesToRunner(
+    public async Task StartProviderPassesToRunner(
         FilePath projPath,
         CancellationToken cancel,
         [Frozen]ProcessStartInfo startInfo,
         QueryExecutablePath sut)
     {
         sut.StartInfoProvider.Construct(default).ReturnsForAnyArgs(startInfo);
-        sut.Query(projPath, cancel);
-        sut.Runner.Received(1).RunAndCapture(startInfo.ArgIsSame(), cancel);
+        await sut.Query(projPath, cancel);
+        await sut.Runner.Received(1).RunAndCapture(startInfo.ArgIsSame(), cancel);
     }
 
     [Theory, SynthAutoData]
