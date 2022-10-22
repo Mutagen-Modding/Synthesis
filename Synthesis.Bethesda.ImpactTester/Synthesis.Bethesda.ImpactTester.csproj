@@ -16,8 +16,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Noggog.Autofac" Version="2.50.1" />
-    <PackageReference Include="NuGetizer" Version="0.8.0">
+    <PackageReference Include="Noggog.Autofac" Version="2.51" />
+    <PackageReference Include="NuGetizer" Version="0.9.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
