@@ -24,7 +24,7 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
 
     public PatcherRunnabilityCliState(
         ICompilationProvider compilationProvider,
-        IProfileDataFolderVm dataFolder,
+        IProfileOverridesVm overrides,
         IProfileLoadOrder loadOrder,
         IExecuteRunnabilityCheck checkRunnability,
         ITemporaryLoadOrderProvider temporaryLoadOrderProvider,
@@ -33,7 +33,7 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
     {
         Runnable = Observable.CombineLatest(
                 compilationProvider.State,
-                dataFolder.WhenAnyValue(x => x.DataFolderResult.Value),
+                overrides.WhenAnyValue(x => x.DataFolderResult.Value),
                 loadOrder.LoadOrder.Connect()
                     .QueryWhenChanged()
                     .StartWith(Array.Empty<ReadOnlyModListingVM>()),

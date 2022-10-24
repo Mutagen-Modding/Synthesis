@@ -22,7 +22,7 @@ public class ProfileDataFolderTests
     public async Task HasDataPathOverride(
         Utility.Return r,
         DirectoryPath folder,
-        ProfileDataFolderVm sut)
+        ProfileOverridesVm sut)
     {
         sut.FileSystem.Directory.Exists(folder.Path).Returns(r);
         sut.DataPathOverride = folder;
@@ -48,7 +48,7 @@ public class ProfileDataFolderTests
     [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false, OmitAutoProperties: true)]
     public void GameLocation(
         Utility.Return r,
-        Lazy<ProfileDataFolderVm> sutGetter,
+        Lazy<ProfileOverridesVm> sutGetter,
         [Frozen] IFileSystem fileSystem,
         [Frozen] IGameDirectoryLookup gameLocator)
     {
@@ -94,7 +94,7 @@ public class ProfileDataFolderTests
         [Frozen]IFileSystem fs,
         [Frozen]IProfileIdentifier ident,
         [Frozen]IGameDirectoryLookup lookup,
-        Lazy<ProfileDataFolderVm> sutF)
+        Lazy<ProfileOverridesVm> sutF)
     {
         lookup.TryGet(ident.Release, out Arg.Any<DirectoryPath>())
             .Returns(x =>

@@ -33,21 +33,25 @@ public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, IProfileLoadOrderP
         IPluginListingsPathProvider listingsPathProvider,
         ICreationClubListingsPathProvider cccListingsPathProvider,
         IProfileIdentifier ident,
-        IProfileDataFolderVm dataFolder)
+        IProfileOverridesVm overrides)
     {
-        var loadOrderResult = dataFolder.WhenAnyValue(x => x.DataFolderResult)
+        var loadOrderResult = overrides.WhenAnyValue(x => x.DataFolderResult)
             .DistinctUntilChanged()
+            .CombineLatest(
+                overrides.WhenAnyValue(x => x.InstallMode)
+                    .DistinctUntilChanged())
             .ObserveOn(schedulerProvider.TaskPool)
             .Select(x =>
             {
-                if (x.Failed)
+                if (x.First.Failed)
                 {
                     return (Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
                 }
 
-                logger.Information("Getting live load order for {Release}. DataDirectory: {DataDirectory}, Plugin File Path: {PluginFilePath}, CCC Plugin File Path: {CccPluginFilePath}", ident.Release, x.Value, listingsPathProvider.Path, cccListingsPathProvider.Path);
+                logger.Information("Getting live load order for {Release}. DataDirectory: {DataDirectory}, Plugin File Path: {PluginFilePath}, CCC Plugin File Path: {CccPluginFilePath}, Install {Install}",
+                    ident.Release, x.First.Value, listingsPathProvider.Path, cccListingsPathProvider.Path, x.Second);
                 var liveLo = liveLoadOrderProvider.Get(out var errors)
-                    .Transform(listing => new ReadOnlyModListingVM(listing, x.Value))
+                    .Transform(listing => new ReadOnlyModListingVM(listing, x.First.Value))
                     .DisposeMany();
                 return (Results: liveLo, State: errors);
             })

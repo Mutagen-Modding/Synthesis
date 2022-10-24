@@ -25,11 +25,11 @@ public class ProfileSimpleLinkCacheVm : ViewModel, IProfileSimpleLinkCacheVm
     public ProfileSimpleLinkCacheVm(
         ILogger logger,
         IProfileLoadOrder loadOrder,
-        IProfileDataFolderVm dataFolder,
+        IProfileOverridesVm overrides,
         IProfileIdentifier ident)
     {
         _simpleLinkCache = Observable.CombineLatest(
-                dataFolder.WhenAnyValue(x => x.DataFolderResult.Value),
+                overrides.WhenAnyValue(x => x.DataFolderResult.Value),
                 loadOrder.LoadOrder.Connect()
                     .QueryWhenChanged()
                     .Select(q => q.Where(x => x.Enabled).Select(x => x.ModKey).ToArray())

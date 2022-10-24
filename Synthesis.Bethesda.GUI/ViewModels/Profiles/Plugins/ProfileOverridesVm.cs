@@ -1,7 +1,9 @@
 using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Linq;
+using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Installs.DI;
 using Noggog;
 using Noggog.Reactive;
 using Noggog.WPF;
@@ -12,16 +14,20 @@ using Synthesis.Bethesda.Execution.Profile;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
-public interface IProfileDataFolderVm
+public interface IProfileOverridesVm
 {
     string? DataPathOverride { get; set; }
     GetResponse<DirectoryPath> DataFolderResult { get; }
+    GameInstallMode? InstallModeOverride { get; set; }
+    GameInstallMode InstallMode { get; }
 }
 
-public class ProfileDataFolderVm : ViewModel, IProfileDataFolderVm, IDataDirectoryProvider
+public class ProfileOverridesVm : ViewModel,
+    IProfileOverridesVm, 
+    IDataDirectoryProvider,
+    IGameInstallModeProvider
 {
     public IFileSystem FileSystem { get; }
-    public IGameDirectoryLookup GameLocator { get; }
 
     [Reactive]
     public string? DataPathOverride { get; set; }
@@ -31,35 +37,57 @@ public class ProfileDataFolderVm : ViewModel, IProfileDataFolderVm, IDataDirecto
     
     public DirectoryPath Path => _dataFolderResult.Value.Value;
 
-    public ProfileDataFolderVm(
+    [Reactive]
+    public GameInstallMode? InstallModeOverride { get; set; }
+
+    private readonly ObservableAsPropertyHelper<GameInstallMode> _installMode;
+    public GameInstallMode InstallMode => _installMode.Value;
+
+    public ProfileOverridesVm(
         ILogger logger,
         ISchedulerProvider schedulerProvider,
         IWatchDirectory watchDirectory,
         IFileSystem fileSystem,
-        IGameDirectoryLookup gameLocator,
+        IDataDirectoryLookup dataDirLookup,
+        IGameInstallLookup gameInstallModeLookup,
         IProfileIdentifier ident)
     {
         FileSystem = fileSystem;
-        GameLocator = gameLocator;
+        
+        _installMode = this.WhenAnyValue(x => x.InstallModeOverride)
+            .ObserveOn(RxApp.TaskpoolScheduler)
+            .Select(x =>
+            {
+                if (x != null) return x.Value;
+                var installs = gameInstallModeLookup.GetInstallMode(ident.Release);
+
+                foreach (var mode in Enums<GameInstallMode>.Values)
+                {
+                    if (installs.HasFlag(mode)) return mode;
+                }
+
+                return default(GameInstallMode);
+            })
+            .ToProperty(this, nameof(InstallMode), GameInstallMode.Steam, scheduler: schedulerProvider.MainThread, deferSubscription: false);
         
         _dataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
             .Select(path =>
             {
                 if (path != null) return Observable.Return(GetResponse<DirectoryPath>.Succeed(path));
                 logger.Information("Starting to locate data folder");
-                return Observable.Return(ident.Release)
+                return this.WhenAnyValue(x => x.InstallMode)
                     .ObserveOn(schedulerProvider.TaskPool)
-                    .Select(x =>
+                    .Select(installMode =>
                     {
                         try
                         {
-                            if (!gameLocator.TryGet(x, out var gameFolder))
+                            if (!dataDirLookup.TryGet(ident.Release, installMode, out var dataFolder))
                             {
                                 return GetResponse<DirectoryPath>.Fail(
-                                    "Could not automatically locate Data folder.  Run Steam/GoG/etc once to properly register things.");
+                                    $"Could not automatically locate Data folder.  Run {installMode} once to properly register things.");
                             }
 
-                            return GetResponse<DirectoryPath>.Succeed(System.IO.Path.Combine(gameFolder, "Data"));
+                            return GetResponse<DirectoryPath>.Succeed(dataFolder);
                         }
                         catch (Exception ex)
                         {
@@ -100,6 +128,5 @@ public class ProfileDataFolderVm : ViewModel, IProfileDataFolderVm, IDataDirecto
                 }
             })
             .ToProperty(this, nameof(DataFolderResult), scheduler: schedulerProvider.MainThread, deferSubscription: true);
-
     }
 }

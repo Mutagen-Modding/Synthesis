@@ -23,7 +23,7 @@ public class AllModsMissingErrorVm : ViewModel, IEnvironmentErrorVm
     public ICommand GoToProfileSettingsCommand { get; }
         
     public AllModsMissingErrorVm(
-        IProfileDataFolderVm dataFolderVm,
+        IProfileOverridesVm overridesVm,
         OpenGlobalSettings openProfileSettings,
         IImplicitListingModKeyProvider implicitListingsProvider,
         IProfileLoadOrder profileLoadOrder)
@@ -49,7 +49,7 @@ public class AllModsMissingErrorVm : ViewModel, IEnvironmentErrorVm
             })
             .ToGuiProperty(this, nameof(ErrorString), default(string?), deferSubscription: true);
 
-        _DataFolderPath = dataFolderVm.WhenAnyValue(x => x.DataFolderResult.Value)
+        _DataFolderPath = overridesVm.WhenAnyValue(x => x.DataFolderResult.Value)
             .Select(x => x.Path)
             .ToGuiProperty(this, nameof(DataFolderPath), string.Empty, deferSubscription: true);
 

@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
+using Mutagen.Bethesda;
 using Mutagen.Bethesda.Strings;
 using Noggog;
 using Noggog.WPF;
@@ -30,9 +31,16 @@ public class ProfileDisplayVm : ViewModel
     public ICommand SwitchToCommand { get; }
     public ICommand OpenInternalProfileFolderCommand { get; }
 
-    public ObservableCollectionExtended<PersistenceMode> PersistenceModes { get; } = new(EnumExt.GetValues<PersistenceMode>());
+    public ObservableCollectionExtended<PersistenceMode> PersistenceModes { get; } = new(Enums<PersistenceMode>.Values);
 
-    public ObservableCollectionExtended<Language> Languages { get; } = new(EnumExt.GetValues<Language>());
+    public ObservableCollectionExtended<Language> Languages { get; } = new(Enums<Language>.Values);
+    public ObservableCollectionExtended<GameInstallMode> InstallModes { get; } = new(Enums<GameInstallMode>.Values);
+
+    private readonly ObservableAsPropertyHelper<string> _installModeWatermark;
+    public string InstallModeWatermark => _installModeWatermark.Value;
+
+    private readonly ObservableAsPropertyHelper<string> _dataFolderWatermark;
+    public string DataFolderWatermark => _dataFolderWatermark.Value;
 
     public delegate ProfileDisplayVm Factory(ProfilesDisplayVm parent, ProfileVm profile);
         
@@ -86,5 +94,17 @@ public class ProfileDisplayVm : ViewModel
             },
             canExecute: this.WhenAnyValue(x => x.Profile)
                 .Select(x => x != null));
+
+        _installModeWatermark = this.WhenAnyValue(x => x.Profile.Overrides.InstallMode)
+            .Select(x => x.ToString())
+            .ToGuiProperty(this, nameof(InstallModeWatermark), string.Empty);
+
+        _dataFolderWatermark = this.WhenAnyValue(x => x.Profile.Overrides.DataFolderResult)
+            .Select(x =>
+            {
+                if (x.Succeeded) return x.Value.ToString();
+                return "Failed to locate";
+            })
+            .ToGuiProperty(this, nameof(DataFolderWatermark), string.Empty);
     }
 }
