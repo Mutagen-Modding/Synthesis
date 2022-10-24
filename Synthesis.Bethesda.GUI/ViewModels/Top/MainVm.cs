@@ -60,7 +60,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         public ICommand OpenUiVersionPageCommand { get; }
 
         public UiUpdateVm UiUpdateVm { get; }
-
+        
         public MainVm(
             ActiveRunVm activeRunVm,
             ProfileManagerVm profileManager,
@@ -110,12 +110,6 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 .Switch()
                 .DistinctUntilChanged()
                 .ToGuiProperty(this, nameof(Hot), deferSubscription: true);
-            
-            canExecute: Observable.CombineLatest(
-                    activeRunVm.WhenAnyFallback(x => x.CurrentRun!.Running, fallback: false),
-                    this.WhenAnyValue(x => x.ActivePanel)
-                        .Select(x => x is ProfilesDisplayVm),
-                    (running, isProfile) => !running && !isProfile);
 
             Task.Run(Warmup.Init).FireAndForget();
 
