@@ -19,7 +19,7 @@ namespace AssemblyVersionGenerator
             if (context.SyntaxReceiver is not AssemblyVersionReceiver receiver) return;
             if (context.CancellationToken.IsCancellationRequested) return;
 
-            Dictionary<IAssemblySymbol, HashSet<INamedTypeSymbol>> targets = new();
+            Dictionary<IAssemblySymbol, HashSet<INamedTypeSymbol>> targets = new(SymbolEqualityComparer.Default);
             var namespaces = new HashSet<string>()
             {
                 "System",
@@ -47,7 +47,7 @@ namespace AssemblyVersionGenerator
 
                 if (!targets.TryGetValue(namedTypeSymbol.ContainingAssembly, out var set))
                 {
-                    set = new();
+                    set = new(SymbolEqualityComparer.Default);
                     targets[namedTypeSymbol.ContainingAssembly] = set;
                 }
 
