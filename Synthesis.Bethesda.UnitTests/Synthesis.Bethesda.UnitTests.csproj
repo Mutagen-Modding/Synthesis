@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -9,24 +9,24 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="4.17.0" />
-    <PackageReference Include="AutoFixture.AutoNSubstitute" Version="4.17.0" />
-    <PackageReference Include="FluentAssertions" Version="6.8.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
-    <PackageReference Include="Mutagen.Bethesda" Version="0.39.6.1-dev" />
-    <PackageReference Include="Mutagen.Bethesda.Testing" Version="0.39.6.1-dev" />
-    <PackageReference Include="Noggog.Autofac" Version="2.51" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.51" />
-    <PackageReference Include="Noggog.Testing" Version="2.51" />
-    <PackageReference Include="NSubstitute" Version="4.4.0" />
-    <PackageReference Include="Serilog" Version="2.12.0" />
-    <PackageReference Include="xunit" Version="2.4.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+    <PackageReference Include="AutoFixture" />
+    <PackageReference Include="AutoFixture.AutoNSubstitute" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Mutagen.Bethesda" />
+    <PackageReference Include="Mutagen.Bethesda.Testing" />
+    <PackageReference Include="Noggog.Autofac" />
+    <PackageReference Include="Noggog.CSharpExt" />
+    <PackageReference Include="Noggog.Testing" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" >
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-	  <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit" Version="1.1.1" />
-	  <PackageReference Include="Microsoft.CodeAnalysis.SourceGenerators.Testing" Version="1.1.1" />
+	  <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit" />
+	  <PackageReference Include="Microsoft.CodeAnalysis.SourceGenerators.Testing" />
   </ItemGroup>
 
   <ItemGroup>

@@ -9,10 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="6.4.0" />
-    <PackageReference Include="GitHubDependents" Version="1.2.0" />
-    <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
-    <PackageReference Include="Noggog.Autofac" Version="2.51" />
+    <PackageReference Include="Autofac" />
+    <PackageReference Include="GitHubDependents" />
+    <PackageReference Include="LibGit2Sharp" />
+    <PackageReference Include="Noggog.Autofac" />
   </ItemGroup>
 
   <ItemGroup>

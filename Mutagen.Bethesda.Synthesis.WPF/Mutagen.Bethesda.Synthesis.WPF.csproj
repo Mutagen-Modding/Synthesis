@@ -36,10 +36,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.39.6.1-dev" />
-    <PackageReference Include="reactiveui" Version="18.3.1" />
-    <PackageReference Include="ReactiveUI.Fody" Version="18.3.1" />
-    <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" />
+    <PackageReference Include="ReactiveUI" />
+    <PackageReference Include="ReactiveUI.Fody" />
+    <PackageReference Include="LibGit2Sharp" />
   </ItemGroup>
 
   <ItemGroup>

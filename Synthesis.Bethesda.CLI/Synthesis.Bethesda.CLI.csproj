@@ -14,11 +14,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.39.6.1-dev" />
-    <PackageReference Include="Serilog" Version="2.12.0" />
-    <PackageReference Include="Autofac" Version="6.4.0" />
-    <PackageReference Include="Noggog.Autofac" Version="2.51" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
+    <PackageReference Include="Mutagen.Bethesda.Autofac" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Autofac" />
+    <PackageReference Include="Noggog.Autofac" />
+    <PackageReference Include="Serilog.Sinks.Console" />
   </ItemGroup>
 
   <ItemGroup>
