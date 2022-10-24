@@ -38,10 +38,6 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="6.4.0" />
-    <PackageReference Include="GitInfo" Version="2.2.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Humanizer.Core" Version="2.14.1" />
     <PackageReference Include="Loqui" Version="2.51" />
     <PackageReference Include="Loqui.Generation" Version="2.51" />
@@ -51,10 +47,6 @@
     <PackageReference Include="Noggog.CSharpExt" Version="2.51" />
     <PackageReference Include="Noggog.CSharpExt.Windows" Version="2.51" />
     <PackageReference Include="Noggog.WPF" Version="2.51" />
-    <PackageReference Include="NuGetizer" Version="0.9.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="reactiveui" Version="18.3.1" />
     <PackageReference Include="ReactiveUI.Fody" Version="18.3.1" />
     <PackageReference Include="ReactiveUI.WPF" Version="18.3.1" />
