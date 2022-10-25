@@ -50,10 +50,10 @@ public class ProfileDataFolderTests
         Utility.Return r,
         Lazy<ProfileOverridesVm> sutGetter,
         [Frozen] IFileSystem fileSystem,
-        [Frozen] IGameDirectoryLookup gameLocator)
+        [Frozen] IDataDirectoryLookup gameLocator)
     {
         fileSystem.Directory.Exists(Arg.Any<string>()).Returns(true);
-        gameLocator.TryGet(Arg.Any<GameRelease>(), out Arg.Any<DirectoryPath>())
+        gameLocator.TryGet(Arg.Any<GameRelease>(), Arg.Any<GameInstallMode>(), out Arg.Any<DirectoryPath>())
             .Returns(x =>
             {
                 switch (r)
@@ -61,7 +61,7 @@ public class ProfileDataFolderTests
                     case Utility.Return.False:
                         return false;
                     case Utility.Return.True:
-                        x[1] = new DirectoryPath("Something");
+                        x[2] = new DirectoryPath("Something");
                         return true;
                     default:
                         throw new Exception();
@@ -93,17 +93,16 @@ public class ProfileDataFolderTests
         DirectoryPath folder,
         [Frozen]IFileSystem fs,
         [Frozen]IProfileIdentifier ident,
-        [Frozen]IGameDirectoryLookup lookup,
+        [Frozen]IDataDirectoryLookup lookup,
         Lazy<ProfileOverridesVm> sutF)
     {
-        lookup.TryGet(ident.Release, out Arg.Any<DirectoryPath>())
+        lookup.TryGet(ident.Release, Arg.Any<GameInstallMode>(), out Arg.Any<DirectoryPath>())
             .Returns(x =>
             {
-                x[1] = folder;
+                x[2] = folder;
                 return true;
             });
-        var dataFolder = Path.Combine(folder.Path, "Data");
-        fs.Directory.Exists(dataFolder).Returns(r);
+        fs.Directory.Exists(folder).Returns(r);
         var sut = sutF.Value;
             
         GetResponse<DirectoryPath> result = GetResponse<DirectoryPath>.Failure;
@@ -112,7 +111,7 @@ public class ProfileDataFolderTests
         result.Succeeded.Should().Be(r == Utility.Return.True);
         if (r == Utility.Return.True)
         {
-            result.Value.Path.Should().Be(dataFolder);
+            result.Value.Path.Should().Be(folder);
             sut.Path.Path.Should().NotBeNullOrWhiteSpace();
         }
         else
