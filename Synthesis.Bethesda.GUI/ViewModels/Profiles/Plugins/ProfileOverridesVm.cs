@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Installs.DI;
+using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog;
 using Noggog.Reactive;
 using Noggog.WPF;
@@ -20,13 +21,17 @@ public interface IProfileOverridesVm
     GetResponse<DirectoryPath> DataFolderResult { get; }
     GameInstallMode? InstallModeOverride { get; set; }
     GameInstallMode InstallMode { get; }
+    FilePath PluginListingsPath { get; }
 }
 
 public class ProfileOverridesVm : ViewModel,
     IProfileOverridesVm, 
     IDataDirectoryProvider,
-    IGameInstallModeProvider
+    IGameInstallModeContext,
+    IPluginListingsPathContext
 {
+    private readonly IPluginListingsPathProvider _pluginPathProvider;
+    
     public IFileSystem FileSystem { get; }
 
     [Reactive]
@@ -35,7 +40,10 @@ public class ProfileOverridesVm : ViewModel,
     private readonly ObservableAsPropertyHelper<GetResponse<DirectoryPath>> _dataFolderResult;
     public GetResponse<DirectoryPath> DataFolderResult => _dataFolderResult.Value;
     
-    public DirectoryPath Path => _dataFolderResult.Value.Value;
+    DirectoryPath IDataDirectoryProvider.Path =>  _dataFolderResult.Value.Value;
+
+    private readonly ObservableAsPropertyHelper<FilePath> _pluginListingsPath;
+    public FilePath PluginListingsPath => _pluginListingsPath.Value;
 
     [Reactive]
     public GameInstallMode? InstallModeOverride { get; set; }
@@ -43,15 +51,19 @@ public class ProfileOverridesVm : ViewModel,
     private readonly ObservableAsPropertyHelper<GameInstallMode> _installMode;
     public GameInstallMode InstallMode => _installMode.Value;
 
+    FilePath IPluginListingsPathContext.Path => PluginListingsPath;
+    
     public ProfileOverridesVm(
         ILogger logger,
         ISchedulerProvider schedulerProvider,
         IWatchDirectory watchDirectory,
         IFileSystem fileSystem,
         IDataDirectoryLookup dataDirLookup,
-        IGameInstallLookup gameInstallModeLookup,
+        IPluginListingsPathProvider pluginPathProvider,
+        IGameInstallProvider gameInstallModeProvider,
         IProfileIdentifier ident)
     {
+        _pluginPathProvider = pluginPathProvider;
         FileSystem = fileSystem;
         
         _installMode = this.WhenAnyValue(x => x.InstallModeOverride)
@@ -59,7 +71,7 @@ public class ProfileOverridesVm : ViewModel,
             .Select(x =>
             {
                 if (x != null) return x.Value;
-                var installs = gameInstallModeLookup.GetInstallMode(ident.Release);
+                var installs = gameInstallModeProvider.GetInstallMode(ident.Release);
 
                 foreach (var mode in Enums<GameInstallMode>.Values)
                 {
@@ -128,5 +140,9 @@ public class ProfileOverridesVm : ViewModel,
                 }
             })
             .ToProperty(this, nameof(DataFolderResult), scheduler: schedulerProvider.MainThread, deferSubscription: true);
+        
+        _pluginListingsPath = this.WhenAnyValue(x => x.InstallMode)
+            .Select(x => _pluginPathProvider.Get(ident.Release, x))
+            .ToProperty(this, nameof(PluginListingsPath), scheduler: schedulerProvider.MainThread, deferSubscription: true);
     }
 }

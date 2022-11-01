@@ -34,11 +34,11 @@ public class ProfileDataFolderTests
         if (r == Utility.Return.True)
         {
             result.Value.Should().Be(folder);
-            sut.Path.Path.Should().NotBeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.Should().NotBeNullOrWhiteSpace();
         }
         else
         {
-            sut.Path.Path.Should().BeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.Should().BeNullOrWhiteSpace();
         }
     }
 
@@ -76,11 +76,11 @@ public class ProfileDataFolderTests
         result.Succeeded.Should().Be(r == Utility.Return.True);
         if (r == Utility.Return.True)
         {
-            sut.Path.Path.Should().NotBeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.Should().NotBeNullOrWhiteSpace();
         }
         else
         {
-            sut.Path.Path.Should().BeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.Should().BeNullOrWhiteSpace();
         }
     }
     
@@ -112,11 +112,11 @@ public class ProfileDataFolderTests
         if (r == Utility.Return.True)
         {
             result.Value.Path.Should().Be(folder);
-            sut.Path.Path.Should().NotBeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.Should().NotBeNullOrWhiteSpace();
         }
         else
         {
-            sut.Path.Path.Should().BeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.Should().BeNullOrWhiteSpace();
         }
     }
 }

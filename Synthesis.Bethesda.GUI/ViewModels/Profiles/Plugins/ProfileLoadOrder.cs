@@ -30,28 +30,28 @@ public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, IProfileLoadOrderP
         ILogger logger,
         ISchedulerProvider schedulerProvider,
         ILiveLoadOrderProvider liveLoadOrderProvider,
-        IPluginListingsPathProvider listingsPathProvider,
         ICreationClubListingsPathProvider cccListingsPathProvider,
         IProfileIdentifier ident,
         IProfileOverridesVm overrides)
     {
-        var loadOrderResult = overrides.WhenAnyValue(x => x.DataFolderResult)
+        var loadOrderResult = overrides.WhenAnyValue(
+                x => x.DataFolderResult,
+                x => x.PluginListingsPath,
+                x => x.InstallMode,
+                (DataFolder, PluginListingPath, InstallMode) => (DataFolder, PluginListingPath, InstallMode))
             .DistinctUntilChanged()
-            .CombineLatest(
-                overrides.WhenAnyValue(x => x.InstallMode)
-                    .DistinctUntilChanged())
             .ObserveOn(schedulerProvider.TaskPool)
             .Select(x =>
             {
-                if (x.First.Failed)
+                if (x.DataFolder.Failed)
                 {
                     return (Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
                 }
 
                 logger.Information("Getting live load order for {Release}. DataDirectory: {DataDirectory}, Plugin File Path: {PluginFilePath}, CCC Plugin File Path: {CccPluginFilePath}, Install {Install}",
-                    ident.Release, x.First.Value, listingsPathProvider.Path, cccListingsPathProvider.Path, x.Second);
+                    ident.Release, x.DataFolder.Value, x.PluginListingPath, cccListingsPathProvider.Path, x.InstallMode);
                 var liveLo = liveLoadOrderProvider.Get(out var errors)
-                    .Transform(listing => new ReadOnlyModListingVM(listing, x.First.Value))
+                    .Transform(listing => new ReadOnlyModListingVM(listing, x.DataFolder.Value))
                     .DisposeMany();
                 return (Results: liveLo, State: errors);
             })
