@@ -18,6 +18,7 @@ using Mutagen.Bethesda.Synthesis.Versioning;
 using SynthesisBase = Synthesis.Bethesda;
 using Mutagen.Bethesda.Plugins.Binary.Parameters;
 using Mutagen.Bethesda.Plugins.Binary.Streams;
+using Mutagen.Bethesda.Plugins.Exceptions;
 using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Mutagen.Bethesda.Strings.DI;
@@ -569,7 +570,21 @@ public class SynthesisPipeline
             
         System.Console.WriteLine($"Writing to output: {args.OutputPath}");
         Directory.CreateDirectory(Path.GetDirectoryName(args.OutputPath)!);
-        state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(args, state.RawLoadOrder.Select(x => x.ModKey)), fileSystem: fileSystem);
+
+        try
+        {
+            state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(args, state.RawLoadOrder.Select(x => x.ModKey)), fileSystem: fileSystem);
+        }
+        catch (TooManyMastersException tooMany)
+        {
+            System.Console.WriteLine(tooMany.Message);
+            System.Console.WriteLine("Masters:");
+            foreach (var master in tooMany.Masters)
+            {
+                Console.WriteLine($"  {master}");
+            }
+            throw;
+        }
     }
     #endregion
 
