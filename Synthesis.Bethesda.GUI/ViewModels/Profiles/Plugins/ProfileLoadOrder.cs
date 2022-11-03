@@ -34,10 +34,10 @@ public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, IProfileLoadOrderP
         IProfileIdentifier ident,
         IProfileOverridesVm overrides)
     {
-        var loadOrderResult = overrides.WhenAnyValue(
-                x => x.DataFolderResult,
-                x => x.PluginListingsPath,
-                x => x.InstallMode,
+        var loadOrderResult = Observable.CombineLatest(
+                overrides.WhenAnyValue(x => x.DataFolderResult),
+                overrides.WhenAnyValue(x => x.PluginListingsPath),
+                overrides.WhenAnyValue(x => x.InstallMode),
                 (DataFolder, PluginListingPath, InstallMode) => (DataFolder, PluginListingPath, InstallMode))
             .DistinctUntilChanged()
             .ObserveOn(schedulerProvider.TaskPool)
