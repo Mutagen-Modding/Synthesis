@@ -103,7 +103,7 @@ public class ProfileDisplayVm : ViewModel
             .Select(x =>
             {
                 if (x.Succeeded) return x.Value.ToString();
-                return "Failed to locate";
+                return x.Value.Path.IsNullOrWhitespace() ? "Failed to locate" : x.Value;
             })
             .ToGuiProperty(this, nameof(DataFolderWatermark), string.Empty);
     }

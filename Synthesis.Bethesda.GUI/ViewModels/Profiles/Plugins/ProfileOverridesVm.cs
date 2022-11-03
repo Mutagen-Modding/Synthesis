@@ -86,19 +86,20 @@ public class ProfileOverridesVm : ViewModel,
             .Select(path =>
             {
                 if (path != null) return Observable.Return(GetResponse<DirectoryPath>.Succeed(path));
-                logger.Information("Starting to locate data folder");
                 return this.WhenAnyValue(x => x.InstallMode)
                     .ObserveOn(schedulerProvider.TaskPool)
                     .Select(installMode =>
                     {
                         try
                         {
+                            logger.Information("Starting to locate data folder for {Release} {InstallMode}", ident.Release, installMode);
                             if (!dataDirLookup.TryGet(ident.Release, installMode, out var dataFolder))
                             {
                                 return GetResponse<DirectoryPath>.Fail(
                                     $"Could not automatically locate Data folder.  Run {installMode} once to properly register things.");
                             }
 
+                            logger.Information("Found data folder at {DataFolder}", dataFolder);
                             return GetResponse<DirectoryPath>.Succeed(dataFolder);
                         }
                         catch (Exception ex)
@@ -119,7 +120,7 @@ public class ProfileOverridesVm : ViewModel,
                         try
                         {
                             if (fileSystem.Directory.Exists(x.Value)) return x;
-                            return GetResponse<DirectoryPath>.Fail($"Data folder did not exist: {x.Value}");
+                            return GetResponse<DirectoryPath>.Fail(x.Value, $"Data folder did not exist: {x.Value}");
                         }
                         catch (Exception ex)
                         {

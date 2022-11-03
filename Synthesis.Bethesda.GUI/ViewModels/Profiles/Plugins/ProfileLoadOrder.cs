@@ -45,11 +45,14 @@ public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, IProfileLoadOrderP
             {
                 if (x.DataFolder.Failed)
                 {
-                    return (Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
+                    return (
+                        Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(),
+                        State: Observable.Return(ErrorResponse.Fail("Load order could not be retrieved because data folder not set")));
                 }
 
                 logger.Information("Getting live load order for {Release}. DataDirectory: {DataDirectory}, Plugin File Path: {PluginFilePath}, CCC Plugin File Path: {CccPluginFilePath}, Install {Install}",
                     ident.Release, x.DataFolder.Value, x.PluginListingPath, cccListingsPathProvider.Path, x.InstallMode);
+
                 var liveLo = liveLoadOrderProvider.Get(out var errors)
                     .Transform(listing => new ReadOnlyModListingVM(listing, x.DataFolder.Value))
                     .DisposeMany();

@@ -190,8 +190,8 @@ public class ProfileVm : ViewModel
                 this.WhenAnyValue(x => x.IgnoreMissingMods),
                 (dataFolder, loadOrder, missingMods, ignoreMissingMods) =>
                 {
-                    if (!dataFolder.Succeeded) return dataFolder.BubbleFailure<ViewModel>();
-                    if (!loadOrder.Succeeded) return loadOrder.BubbleFailure<ViewModel>();
+                    if (!dataFolder.Succeeded) return GetResponse<ViewModel>.Fail(reason: $"DataFolder: {dataFolder.Reason}");
+                    if (!loadOrder.Succeeded) return GetResponse<ViewModel>.Fail(reason: $"LoadOrder: {dataFolder.Reason}");
                     if (!ignoreMissingMods && missingMods.Count > 0)
                     {
                         return GetResponse<ViewModel>.Fail(
@@ -226,7 +226,11 @@ public class ProfileVm : ViewModel
             {
                 if (x.Failed)
                 {
-                    logger.Warning($"Encountered blocking overall error: {x.Reason}");
+                    logger.Warning("Encountered blocking overall error: {Reason}", x.Reason);
+                }
+                else
+                {
+                    logger.Information("No global error");
                 }
             })
             .ToGuiProperty(this, nameof(BlockingError), GetResponse<ViewModel>.Fail("Uninitialized blocking error"), deferSubscription: true);
