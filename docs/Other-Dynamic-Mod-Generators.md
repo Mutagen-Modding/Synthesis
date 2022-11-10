@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Ones that respect load order](#ones-that-respect-load-order)
+- [Ones that run on the entire load order](#ones-that-run-on-the-entire-load-order)
+- [Specific Thoughts and Suggestions](#specific-thoughts-and-suggestions)
+  - [Bashed Patch](#bashed-patch)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 When running with other programs that generate content, there are two styles:
 
 # Ones that respect load order

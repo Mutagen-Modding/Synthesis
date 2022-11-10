@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [General Workflow](#general-workflow)
+- [Run Patcher CLI](#run-patcher-cli)
+- [Other Commands](#other-commands)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 Most of the documentation so far has been focused on making Mutagen-based patchers, but any program can be a patcher in Synthesis as long as it conforms to a few simple standards.
 
 # General Workflow

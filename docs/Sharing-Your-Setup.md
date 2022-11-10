@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Use the Profile Export](#use-the-profile-export)
+  - [Automatic Update Settings Turned Off](#automatic-update-settings-turned-off)
+  - [Lock To Current Versioning Turned On](#lock-to-current-versioning-turned-on)
+  - [Clears Out Other Profiles](#clears-out-other-profiles)
+  - [Other Tweaks in the Future](#other-tweaks-in-the-future)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 So you have a good set of patchers and settings that you want to share!
 
 # Use the Profile Export

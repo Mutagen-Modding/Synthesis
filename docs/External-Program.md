@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [External Program Patcher](#external-program-patcher)
+  - [Goals and Reasons to Choose](#goals-and-reasons-to-choose)
+  - [Required Input](#required-input)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # External Program Patcher
 This type latches on and executes any executable program (exe).  It will pass along the Synthesis [command line arguments](https://github.com/Mutagen-Modding/Synthesis/wiki/CLI-Specification) to inform the program of what it should be patching, and where to put its results.  
 

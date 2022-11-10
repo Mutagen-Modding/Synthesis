@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [What does Synthesis do?](#what-does-synthesis-do)
+- [For Users:](#for-users)
+- [For Developers:](#for-developers)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ![](https://camo.githubusercontent.com/14645a017d60cc52ae0154e60e512eadf7f75c92/68747470733a2f2f692e696d6775722e636f6d2f576a32664761462e676966)
 
 # What does Synthesis do?

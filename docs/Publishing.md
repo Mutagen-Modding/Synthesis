@@ -1,3 +1,26 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Upload to Github](#upload-to-github)
+  - [Some Resources](#some-resources)
+  - [How to Upload](#how-to-upload)
+    - [Create a GitHub Account](#create-a-github-account)
+    - [Find your preferred Git tool](#find-your-preferred-git-tool)
+    - [Create a Local Git Repository](#create-a-local-git-repository)
+    - [Commit your code](#commit-your-code)
+    - [Upload](#upload)
+  - [Versioning](#versioning)
+    - [Versioned Tags to mark releases](#versioned-tags-to-mark-releases)
+    - [Branches](#branches)
+- [Patcher Browser Registration](#patcher-browser-registration)
+  - [Troubleshooting Registration](#troubleshooting-registration)
+    - [Github Dependency Graph](#github-dependency-graph)
+    - [Error During Scraping](#error-during-scraping)
+- [Build Executable](#build-executable)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 Once you have a patcher that you want to share with the world, there are a few options:
 
 # Upload to Github

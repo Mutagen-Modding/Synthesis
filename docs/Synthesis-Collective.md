@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Ownership](#ownership)
+- [Is the Collective a good fit for you and your patcher?](#is-the-collective-a-good-fit-for-you-and-your-patcher)
+- [Do you have to put patchers in the Collective to contribute?](#do-you-have-to-put-patchers-in-the-collective-to-contribute)
+- [How to become part of the Collective](#how-to-become-part-of-the-collective)
+- [Style and Formatting](#style-and-formatting)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 [The Synthesis Collective](https://github.com/Synthesis-Collective)
 
 This is a side organization related to Synthesis, which houses patchers written and maintained by the community.  

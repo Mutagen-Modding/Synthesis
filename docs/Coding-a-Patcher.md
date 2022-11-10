@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Starting Setup](#starting-setup)
+- [Run Patch Method](#run-patch-method)
+- [Synthesis State Object](#synthesis-state-object)
+- [Typical Simple Code](#typical-simple-code)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Starting Setup
 If you used a Local [Solution Patcher](https://github.com/Mutagen-Modding/Synthesis/wiki/Local-Solution-%28Dev%29) to [[Create a Patcher]], then you will have a project that has a minimal basic setup:
 

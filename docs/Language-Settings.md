@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Language Settings Overview](#language-settings-overview)
+  - [Localize](#localize)
+  - [Language Dropdown](#language-dropdown)
+  - [Use UTF8 for Embedded Strings](#use-utf8-for-embedded-strings)
+- [Typical Recommended Settings](#typical-recommended-settings)
+  - [For English Users](#for-english-users)
+  - [For Non-English Users](#for-non-english-users)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 Synthesis comes with a few profile settings to help users that are targeting a language besides English.  The typical settings you should pick depend on your situation and the patterns that your language translation mods have used.
 
 # Language Settings Overview

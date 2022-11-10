@@ -1,3 +1,20 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Automatic Settings UI System](#automatic-settings-ui-system)
+  - [Define Some Settings](#define-some-settings)
+  - [Use the Settings](#use-the-settings)
+  - [Get a UI For Free](#get-a-ui-for-free)
+  - [More Documentation](#more-documentation)
+- [JSON/XML or Other Raw Config File](#jsonxml-or-other-raw-config-file)
+  - [User Data Folder](#user-data-folder)
+  - [Using Config Files in your Patcher](#using-config-files-in-your-patcher)
+  - [Default Settings](#default-settings)
+- [Opening The Patcher App Itself](#opening-the-patcher-app-itself)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 There are a few ways patchers can retrieve input from the user.
 
 # Automatic Settings UI System

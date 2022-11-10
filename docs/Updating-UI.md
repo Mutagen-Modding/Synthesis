@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Keep the UI Exe Up to Date](#keep-the-ui-exe-up-to-date)
+- [Update .Net SDK](#update-net-sdk)
+- [Updating the UI](#updating-the-ui)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Keep the UI Exe Up to Date
 There are a few [Versioning](https://github.com/Mutagen-Modding/Synthesis/wiki/Versioning) concepts within the Synthesis ecosystem, but the UI itself should generally be kept up to date with the newest version.
 

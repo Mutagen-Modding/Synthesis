@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Local Solution Patcher](#local-solution-patcher)
+  - [Goals and Reasons to Choose](#goals-and-reasons-to-choose)
+  - [Required Input](#required-input)
+  - [New Patcher Wizard](#new-patcher-wizard)
+  - [Patcher Settings](#patcher-settings)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Local Solution Patcher
 ![](https://i.imgur.com/FUGCqsN.png)
 

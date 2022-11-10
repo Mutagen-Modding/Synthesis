@@ -1,3 +1,10 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 Synthesis by default looks at the typical game registry areas to automatically locate the installation folder for the targeted game.   However, if you have multiple installation, you may want to override and have Synthesis target a different location. 
 
 This can be done by editing the profile settings:

@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Load Order](#load-order)
+  - [Patches Only Consider Mods Earlier in the Load Order](#patches-only-consider-mods-earlier-in-the-load-order)
+  - [Not On Load Order](#not-on-load-order)
+- [Patchers Building On Previous Patchers](#patchers-building-on-previous-patchers)
+  - [Within a Group](#within-a-group)
+  - [Between Groups](#between-groups)
+  - [Group Order Should Match Load Order](#group-order-should-match-load-order)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Load Order
 Load Order can affect the results of Synthesis patches in a few ways
 

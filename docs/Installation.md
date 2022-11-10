@@ -1,3 +1,18 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Install .NET 6.0 SDK](#install-net-60-sdk)
+    - [Do NOT install/uninstall multiple SDKs repeatedly](#do-not-installuninstall-multiple-sdks-repeatedly)
+- [Restart](#restart)
+- [Download Synthesis](#download-synthesis)
+- [Run Synthesis](#run-synthesis)
+  - [Having SDK Problems?](#having-sdk-problems)
+  - [Are You a User?](#are-you-a-user)
+  - [Are You a Developer?](#are-you-a-developer)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Install .NET 6.0 SDK
 A good place to go for this is:
 https://dotnet.microsoft.com/download

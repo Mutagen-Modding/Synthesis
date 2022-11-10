@@ -1,3 +1,23 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [UI Version](#ui-version)
+  - [What UI Version to Choose](#what-ui-version-to-choose)
+- [Patcher Library Version Controls](#patcher-library-version-controls)
+  - [Mutagen and Synthesis Libraries](#mutagen-and-synthesis-libraries)
+  - [Controlling a Patcher's Library Versions](#controlling-a-patchers-library-versions)
+    - [Match](#match)
+    - [Manual](#manual)
+    - [Latest](#latest)
+    - [Profile](#profile)
+  - [Recommended Setup](#recommended-setup)
+  - [Using Prerelease Versions](#using-prerelease-versions)
+- [Patcher Versioning Controls](#patcher-versioning-controls)
+  - [Branch](#branch)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 Synthesis has a few distinct versioning concepts.  These are important for determining which code will be run and how when making your patches.  This wiki outlines the different concepts.
 
 # UI Version

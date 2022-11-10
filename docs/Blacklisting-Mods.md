@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [By Group](#by-group)
+- [By Patcher](#by-patcher)
+  - [Patcher Settings](#patcher-settings)
+  - [Synthesis Provided Per-Patcher Blacklist](#synthesis-provided-per-patcher-blacklist)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # By Group
 Synthesis Groups can blacklist mods.  To do so, click on the Group of interest, and a UI should show that lets you pick the mods to not include during patching of that group.
 

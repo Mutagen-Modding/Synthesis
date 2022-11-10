@@ -1,3 +1,19 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Synthesis Groups](#synthesis-groups)
+  - [Adding a Group](#adding-a-group)
+  - [Renaming a Group](#renaming-a-group)
+  - [Adding Patchers to Group](#adding-patchers-to-group)
+  - [Moving Patchers between Groups](#moving-patchers-between-groups)
+- [Running With Multiple Groups](#running-with-multiple-groups)
+  - [Run Whole Pipeline](#run-whole-pipeline)
+  - [Keep Groups In Sync with Load Order](#keep-groups-in-sync-with-load-order)
+- [Running a Single Group](#running-a-single-group)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 By default, Synthesis comes with one large group, named Synthesis.  Putting patchers inside and running them results in all of their content being added to one single mod named `Synthesis.esp`.
 
 # Synthesis Groups

@@ -1,3 +1,12 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Responding to Multiple Game Types](#responding-to-multiple-game-types)
+- [Code Reuse](#code-reuse)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Responding to Multiple Game Types
 
 By adding a [2nd (or more) AddPatch commands](https://github.com/Mutagen-Modding/Synthesis/wiki/Configuring-a-Patcher-at-Startup#addpatch) to your SynthesisPipeline you can have your patcher support different game categories.  Note that the generics will be for a different Mod object, and so a 2nd RunPatch callback with the appropriate mod will be required as an entry point

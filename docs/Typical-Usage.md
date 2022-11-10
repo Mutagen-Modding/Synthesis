@@ -1,3 +1,21 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Adding Patchers](#adding-patchers)
+  - [Select a Patcher Type](#select-a-patcher-type)
+  - [Locate a Patcher](#locate-a-patcher)
+    - [Browse](#browse)
+    - [Input Tab](#input-tab)
+    - [Using .Synth files](#using-synth-files)
+- [Customizing Patcher Input](#customizing-patcher-input)
+- [Familiarize Yourself With the Versioning Systems](#familiarize-yourself-with-the-versioning-systems)
+- [Running the Patcher Pipeline](#running-the-patcher-pipeline)
+- [Enable in your Load Order](#enable-in-your-load-order)
+  - [Placement matters](#placement-matters)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 This clip is a good visual example of typical usage, but this page will be going over it in more detail.
 
 ![Typical Usage](https://i.imgur.com/Wj2fGaF.gif)

@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Internal Data Folder](#internal-data-folder)
+- [Accessing Internal Data](#accessing-internal-data)
+  - [TryRetrieve off State](#tryretrieve-off-state)
+  - [Manual](#manual)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 Synthesis provides a side area if you have internal data that a patcher wants access to, but a user does not need to be aware of.
 
 # Internal Data Folder

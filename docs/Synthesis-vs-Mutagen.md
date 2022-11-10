@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Mutagen](#mutagen)
+- [Synthesis](#synthesis)
+- [Summary](#summary)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 Often newcomers are first introduced to Synthesis.  They install a patcher or want to make their own.
 But what is the term Mutagen, and why is it mentioned often alongside Synthesis?
 

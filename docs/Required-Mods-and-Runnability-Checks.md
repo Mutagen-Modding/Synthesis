@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Runnability Check](#runnability-check)
+  - [Best Practices](#best-practices)
+- [Required Mods](#required-mods)
+  - [Via Meta File](#via-meta-file)
+  - [Via Runnability Check Function](#via-runnability-check-function)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 Often a patcher requires some mods or has some other requirements where it knows it will fail if certain things aren't present or correct.
 
 These can be written into a Runnability check, which Synthesis will run ahead of time before the user has even started a patching run.  If the check fails, then Synthesis will warn the user and block them from starting.   This is helpful, as if you instead put the check inside your RunPatch logic, then the user will find out way later perhaps after they've waited several minutes for patchers earlier in the pipeline to complete.  It's best to fail and warn as early as possible.

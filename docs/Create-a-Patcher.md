@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Install an IDE](#install-an-ide)
+- [Solution Patcher](#solution-patcher)
+- [Locating the Code](#locating-the-code)
+- [Customization](#customization)
+- [More Topics](#more-topics)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Install an IDE
 **Be sure to install an [IDE](https://visualstudio.microsoft.com/vs/community/) for C# development!** You will also need the [DotNet SDK](https://dotnet.microsoft.com/download), but this should come with the IDE.
 

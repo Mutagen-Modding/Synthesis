@@ -1,3 +1,24 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Git Repository Patcher](#git-repository-patcher)
+  - [Goals and Reasons to Choose](#goals-and-reasons-to-choose)
+  - [Required Input](#required-input)
+  - [Patcher Browser](#patcher-browser)
+  - [Versioning](#versioning)
+    - [Mutagen/Synthesis Version](#mutagensynthesis-version)
+      - [Latest](#latest)
+      - [Match](#match)
+      - [Manual](#manual)
+    - [Patcher Version](#patcher-version)
+      - [Latest](#latest-1)
+      - [Tag](#tag)
+      - [Branch](#branch)
+      - [Commit](#commit)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Git Repository Patcher
 **This is the recommended patcher type for typical users.**
 

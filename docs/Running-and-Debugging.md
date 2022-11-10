@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table Of Contents
+
+- [Directly](#directly)
+- [Synthesis GUI](#synthesis-gui)
+- [Side Testing Environment](#side-testing-environment)
+- [Run through MO2](#run-through-mo2)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 While developing a patcher, you will want to be able to run your code, debug, and see results.
 
 # Directly
