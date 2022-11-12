@@ -130,6 +130,7 @@ public class SynthesisPipeline
         var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
         var categoryContext = new GameCategoryContext(gameReleaseInjection);
         var dataDir = new DataDirectoryInjection(args.DataFolderPath);
+        var gameLoc = new GameLocator();
         var loadOrder = new GetStateLoadOrder(
                 new ImplicitListingsProvider(
                     fileSystem,
@@ -145,7 +146,8 @@ public class SynthesisPipeline
                         new CreationClubEnabledProvider(categoryContext),
                         new GameDirectoryProvider(
                             gameReleaseInjection,
-                            new GameLocator())),
+                            gameLoc,
+                            gameLoc)),
                     new CreationClubRawListingsReader()),
                 new StatePluginsListingProvider(
                     args.LoadOrderFilePath,
@@ -528,6 +530,7 @@ public class SynthesisPipeline
         var prefs = patcher.Prefs ?? new PatcherPreferences();
         var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
         var categoryContext = new GameCategoryContext(gameReleaseInjection);
+        var gameLoc = new GameLocator();
         var stateFactory = new StateFactory(
             fileSystem,
             new LoadOrderImporterFactory(
@@ -547,7 +550,8 @@ public class SynthesisPipeline
                         new CreationClubEnabledProvider(categoryContext),
                         new GameDirectoryProvider(
                             gameReleaseInjection,
-                            new GameLocator())),
+                            gameLoc,
+                            gameLoc)),
                     new CreationClubRawListingsReader()),
                 new StatePluginsListingProvider(
                     args.LoadOrderFilePath,

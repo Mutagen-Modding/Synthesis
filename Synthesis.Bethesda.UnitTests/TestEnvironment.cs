@@ -35,6 +35,7 @@ public record TestEnvironment(
         var gameReleaseInjection = new GameReleaseInjection(Release);
         var categoryContext = new GameCategoryContext(gameReleaseInjection);
         var dataDirectoryInjection = new DataDirectoryInjection(DataFolder);
+        var gameLoc = new GameLocator();
         return new GetStateLoadOrder(
             new ImplicitListingsProvider(
                 FileSystem,
@@ -50,7 +51,8 @@ public record TestEnvironment(
                     new CreationClubEnabledProvider(categoryContext),
                     new GameDirectoryProvider(
                         gameReleaseInjection,
-                        new GameLocator())),
+                        gameLoc,
+                        gameLoc)),
                 new CreationClubRawListingsReader()),
             StatePluginListings(),
             new EnableImplicitMastersFactory(FileSystem));
