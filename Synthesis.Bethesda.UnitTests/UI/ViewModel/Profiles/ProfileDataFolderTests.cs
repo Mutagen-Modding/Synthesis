@@ -24,7 +24,18 @@ public class ProfileDataFolderTests
         DirectoryPath folder,
         ProfileOverridesVm sut)
     {
-        sut.FileSystem.Directory.Exists(folder.Path).Returns(r);
+        sut.FileSystem.Directory.Exists(folder.Path).Returns(x =>
+        {
+            switch (r)
+            {
+                case Utility.Return.False:
+                    return false;
+                case Utility.Return.True:
+                    return true;
+                default:
+                    throw new Exception();
+            }
+        });
         sut.DataPathOverride = folder;
                 
         GetResponse<DirectoryPath> result = GetResponse<DirectoryPath>.Failure;
@@ -34,9 +45,13 @@ public class ProfileDataFolderTests
         if (r == Utility.Return.True)
         {
             result.Value.Should().Be(folder);
-            sut.DataFolderResult.Value.Path.Should().NotBeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.Should().Be(folder.Path);
         }
-        else
+        else if (r == Utility.Return.False)
+        {
+            sut.DataFolderResult.Value.Path.Should().Be(folder.Path);
+        }
+        else if (r == Utility.Return.Throw)
         {
             sut.DataFolderResult.Value.Path.Should().BeNullOrWhiteSpace();
         }
@@ -78,7 +93,11 @@ public class ProfileDataFolderTests
         {
             sut.DataFolderResult.Value.Path.Should().NotBeNullOrWhiteSpace();
         }
-        else
+        else if (r == Utility.Return.False)
+        {
+            sut.DataFolderResult.Value.Path.Should().BeNullOrWhiteSpace();
+        }
+        else if (r == Utility.Return.Throw)
         {
             sut.DataFolderResult.Value.Path.Should().BeNullOrWhiteSpace();
         }
@@ -114,7 +133,11 @@ public class ProfileDataFolderTests
             result.Value.Path.Should().Be(folder);
             sut.DataFolderResult.Value.Path.Should().NotBeNullOrWhiteSpace();
         }
-        else
+        else if (r == Utility.Return.False)
+        {
+            sut.DataFolderResult.Value.Path.Should().NotBeNullOrWhiteSpace();
+        }
+        else if (r == Utility.Return.Throw)
         {
             sut.DataFolderResult.Value.Path.Should().BeNullOrWhiteSpace();
         }
