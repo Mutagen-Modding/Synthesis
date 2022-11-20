@@ -60,7 +60,7 @@ public class ProfileOverridesVm : ViewModel,
         IFileSystem fileSystem,
         IDataDirectoryLookup dataDirLookup,
         IPluginListingsPathProvider pluginPathProvider,
-        IGameInstallProvider gameInstallModeProvider,
+        IGameInstallLookup gameInstallModeProvider,
         IProfileIdentifier ident)
     {
         _pluginPathProvider = pluginPathProvider;

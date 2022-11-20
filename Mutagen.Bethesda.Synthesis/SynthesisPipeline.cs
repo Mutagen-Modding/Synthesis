@@ -154,6 +154,7 @@ public class SynthesisPipeline
                     new PluginRawListingsReader(
                         fileSystem,
                         new PluginListingsParser(
+                            new PluginListingCommentTrimmer(),
                             new LoadOrderListingParser(
                                 new HasEnabledMarkersProvider(
                                     gameReleaseInjection))))),
@@ -558,6 +559,7 @@ public class SynthesisPipeline
                     new PluginRawListingsReader(
                         fileSystem,
                         new PluginListingsParser(
+                            new PluginListingCommentTrimmer(),
                             new LoadOrderListingParser(
                                 new HasEnabledMarkersProvider(
                                     gameReleaseInjection))))),

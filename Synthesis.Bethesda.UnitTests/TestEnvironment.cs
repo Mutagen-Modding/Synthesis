@@ -65,6 +65,7 @@ public record TestEnvironment(
             new PluginRawListingsReader(
                 FileSystem,
                 new PluginListingsParser(
+                    new PluginListingCommentTrimmer(),
                     new LoadOrderListingParser(
                         new HasEnabledMarkersProvider(
                             new GameReleaseInjection(Release))))));
