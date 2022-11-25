@@ -22,6 +22,7 @@ public static class ResourceConstants
             GameRelease.Oblivion => OblivionLargeIcon,
             GameRelease.SkyrimLE => SkyrimLeLargeIcon,
             GameRelease.SkyrimSE => SkyrimSseLargeIcon,
+            GameRelease.SkyrimSEGog => SkyrimSseLargeIcon,
             GameRelease.SkyrimVR => SkyrimVrLargeIcon,
             GameRelease.Fallout4 => FalloutLargeIcon,
             GameRelease.EnderalLE => EnderalLeLargeIcon,

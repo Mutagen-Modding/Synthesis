@@ -156,11 +156,6 @@ public partial class ProfileDetailView : ProfileDetailViewBase
                     viewToVmConverter: view => view.IsNullOrWhitespace() ? null : view)
                 .DisposeWith(disposable);
 
-            this.Bind(ViewModel,
-                    x => x.Profile.Overrides.InstallModeOverride,
-                    x => x.InstallationDropDown.SelectedValue)
-                .DisposeWith(disposable);
-
             this.Bind(this.ViewModel, x => x.Profile!.LockSetting.Lock, x => x.LockToCurrentVersioning.IsChecked)
                 .DisposeWith(disposable);
 

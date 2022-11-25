@@ -51,7 +51,6 @@ public record TestEnvironment(
                     new CreationClubEnabledProvider(categoryContext),
                     new GameDirectoryProvider(
                         gameReleaseInjection,
-                        gameLoc,
                         gameLoc)),
                 new CreationClubRawListingsReader()),
             StatePluginListings(),

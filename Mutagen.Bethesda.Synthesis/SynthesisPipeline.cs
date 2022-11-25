@@ -146,7 +146,6 @@ public class SynthesisPipeline
                         new CreationClubEnabledProvider(categoryContext),
                         new GameDirectoryProvider(
                             gameReleaseInjection,
-                            gameLoc,
                             gameLoc)),
                     new CreationClubRawListingsReader()),
                 new StatePluginsListingProvider(
@@ -551,7 +550,6 @@ public class SynthesisPipeline
                         new CreationClubEnabledProvider(categoryContext),
                         new GameDirectoryProvider(
                             gameReleaseInjection,
-                            gameLoc,
                             gameLoc)),
                     new CreationClubRawListingsReader()),
                 new StatePluginsListingProvider(

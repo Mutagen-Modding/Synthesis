@@ -34,10 +34,6 @@ public class ProfileDisplayVm : ViewModel
     public ObservableCollectionExtended<PersistenceMode> PersistenceModes { get; } = new(Enums<PersistenceMode>.Values);
 
     public ObservableCollectionExtended<Language> Languages { get; } = new(Enums<Language>.Values);
-    public ObservableCollectionExtended<GameInstallMode> InstallModes { get; } = new(Enums<GameInstallMode>.Values);
-
-    private readonly ObservableAsPropertyHelper<string> _installModeWatermark;
-    public string InstallModeWatermark => _installModeWatermark.Value;
 
     private readonly ObservableAsPropertyHelper<string> _dataFolderWatermark;
     public string DataFolderWatermark => _dataFolderWatermark.Value;
@@ -94,10 +90,6 @@ public class ProfileDisplayVm : ViewModel
             },
             canExecute: this.WhenAnyValue(x => x.Profile)
                 .Select(x => x != null));
-
-        _installModeWatermark = this.WhenAnyValue(x => x.Profile.Overrides.InstallMode)
-            .Select(x => x.ToString())
-            .ToGuiProperty(this, nameof(InstallModeWatermark), string.Empty);
 
         _dataFolderWatermark = this.WhenAnyValue(x => x.Profile.Overrides.DataFolderResult)
             .Select(x =>

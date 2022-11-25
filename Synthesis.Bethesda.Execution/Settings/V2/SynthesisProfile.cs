@@ -17,7 +17,6 @@ public class SynthesisProfile : ISynthesisProfileSettings
     public NugetVersioningEnum SynthesisVersioning { get; set; } = NugetVersioningEnum.Manual;
     public string? SynthesisManualVersion { get; set; }
     public string? DataPathOverride { get; set; }
-    public GameInstallMode? GameInstallModeOverride { get; set; }
     public bool ConsiderPrereleaseNugets { get; set; }
     public bool LockToCurrentVersioning { get; set; }
     public PersistenceMode FormIdPersistence { get; set; } = PersistenceMode.None;

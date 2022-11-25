@@ -15,46 +15,14 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBox Grid.Row="0"
+        <TextBox Grid.Row="0" 
             Name="PatcherDetailName"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Top"
             mahapps:TextBoxHelper.Watermark="Profile Name"
+            Margin="0,0,0,15"
             FontSize="26"
             FontWeight="Black" />
-        <ListBox Grid.Row="1"
-                 x:Name="GameCategoryOptionsControl"
-                 Margin="20,25"
-                 HorizontalAlignment="Center"
-                 Background="Transparent"
-                 ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}">
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel Margin="100,0" />
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <local:GameTypeClickerView Width="100" Height="120" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <ListBox Grid.Row="2"
-                 x:Name="GameReleaseOptionsControl"
-                 Margin="20,25"
-                 HorizontalAlignment="Center"
-                 Background="Transparent"
-                 ItemContainerStyle="{StaticResource Noggog.Styles.ListBoxItem.Plain}">
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel Margin="100,0" />
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <local:GameTypeClickerView Width="100" Height="120" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <local:GameReleasePickerView Grid.Row="1" x:Name="ReleasePickerView" />
     </Grid>
 </local:NewProfileViewBase>

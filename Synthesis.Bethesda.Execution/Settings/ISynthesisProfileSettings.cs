@@ -16,7 +16,6 @@ public interface ISynthesisProfileSettings : IProfileIdentifier
     NugetVersioningEnum SynthesisVersioning { get; set; }
     string? SynthesisManualVersion { get; set; }
     string? DataPathOverride { get; set; }
-    GameInstallMode? GameInstallModeOverride { get; set; }
     bool ConsiderPrereleaseNugets { get; set; }
     bool LockToCurrentVersioning { get; set; }
     PersistenceMode FormIdPersistence { get; set; }

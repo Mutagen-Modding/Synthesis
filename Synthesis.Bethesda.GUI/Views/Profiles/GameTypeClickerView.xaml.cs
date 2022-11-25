@@ -7,6 +7,8 @@ namespace Synthesis.Bethesda.GUI.Views;
 /// </summary>
 public partial class GameTypeClickerView : UserControl
 {
+    
+    
     public GameTypeClickerView()
     {
         InitializeComponent();

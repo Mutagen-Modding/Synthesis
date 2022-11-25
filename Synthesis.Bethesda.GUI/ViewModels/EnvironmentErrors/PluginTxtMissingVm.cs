@@ -1,6 +1,7 @@
 using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
+using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -16,35 +17,28 @@ public class PluginsTxtMissingVm : ViewModel, IEnvironmentErrorVm
 
     public string? ErrorString { get; }
 
-    private readonly ObservableAsPropertyHelper<FilePath> _pluginFilePath;
-    public FilePath PluginFilePath => _pluginFilePath.Value;
+    public FilePath PluginFilePath { get; }
 
     public PluginsTxtMissingVm(
         ILogger logger,
-        IProfileOverridesVm profile)
+        IPluginListingsPathContext listingsPathProvider)
     {
-        _pluginFilePath = profile.WhenAnyValue(x => x.PluginListingsPath)
-            .ToGuiProperty(this, nameof(PluginFilePath));
+        PluginFilePath = listingsPathProvider.Path;
         
-        _inError = this.WhenAnyValue(x => x.PluginFilePath)
-            .Select(path =>
+        _inError = Noggog.ObservableExt.WatchFile(PluginFilePath)
+            .StartWith(Unit.Default)
+            .Select(_ =>
             {
-                return Noggog.ObservableExt.WatchFile(path)
-                    .StartWith(Unit.Default)
-                    .Select(_ =>
-                    {
-                        try
-                        {
-                            return !File.Exists(path);
-                        }
-                        catch (Exception e)
-                        {
-                            logger.Error(e, "Error checking for plugin.txt existence");
-                            return true;
-                        }
-                    });
+                try
+                {
+                    return !File.Exists(PluginFilePath);
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e, "Error checking for plugin.txt existence");
+                    return true;
+                }
             })
-            .Switch()
             .ToGuiProperty(this, nameof(InError), deferSubscription: true);
 
         ErrorString = $"Could not find plugin file to read the load order from. \n\n" +

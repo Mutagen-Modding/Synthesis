@@ -19,18 +19,15 @@ public partial class NoProfileView : NoProfileViewBase
         InitializeComponent();
         this.WhenActivated(disposable =>
         {
-            this.OneWayBind(ViewModel, x => x.CategoryOptions, x => x.GameCategoryOptionsControl.ItemsSource)
+            this.OneWayBind(ViewModel, x => x.CategoryOptions, x => x.ReleasePickerView.GameCategoryOptionsControl.ItemsSource)
                 .DisposeWith(disposable);
-            this.Bind(this.ViewModel, vm => vm.SelectedCategory, view => view.GameCategoryOptionsControl.SelectedItem)
+            this.Bind(this.ViewModel, vm => vm.SelectedCategory, view => view.ReleasePickerView.GameCategoryOptionsControl.SelectedItem)
                 .DisposeWith(disposable);
-            this.OneWayBind(ViewModel, x => x.ReleaseOptions, x => x.GameReleaseOptionsControl.ItemsSource)
+
+            this.WhenAnyFallback(x => x.ViewModel!.ReleaseOptions, fallback: default)
+                .BindTo(this, x => x.ReleasePickerView.GameReleaseOptionsControl.ItemsSource)
                 .DisposeWith(disposable);
-            this.Bind(this.ViewModel, vm => vm.SelectedRelease, view => view.GameReleaseOptionsControl.SelectedItem)
-                .DisposeWith(disposable);
-                
-            this.WhenAnyValue(x => x.ViewModel!.SelectedCategory)
-                .Select(x => x == null ? Visibility.Collapsed : Visibility.Visible)
-                .BindTo(this, x => x.WhichReleaseLabel.Visibility)
+            this.Bind(this.ViewModel, vm => vm.SelectedRelease, view => view.ReleasePickerView.GameReleaseOptionsControl.SelectedItem)
                 .DisposeWith(disposable);
         });
     }

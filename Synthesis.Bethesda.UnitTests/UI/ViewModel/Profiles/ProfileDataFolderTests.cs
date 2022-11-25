@@ -68,7 +68,7 @@ public class ProfileDataFolderTests
         [Frozen] IDataDirectoryLookup gameLocator)
     {
         fileSystem.Directory.Exists(Arg.Any<string>()).Returns(true);
-        gameLocator.TryGet(Arg.Any<GameRelease>(), Arg.Any<GameInstallMode>(), out Arg.Any<DirectoryPath>())
+        gameLocator.TryGet(Arg.Any<GameRelease>(), out Arg.Any<DirectoryPath>())
             .Returns(x =>
             {
                 switch (r)
@@ -76,7 +76,7 @@ public class ProfileDataFolderTests
                     case Utility.Return.False:
                         return false;
                     case Utility.Return.True:
-                        x[2] = new DirectoryPath("Something");
+                        x[1] = new DirectoryPath("Something");
                         return true;
                     default:
                         throw new Exception();
@@ -115,10 +115,10 @@ public class ProfileDataFolderTests
         [Frozen]IDataDirectoryLookup lookup,
         Lazy<ProfileOverridesVm> sutF)
     {
-        lookup.TryGet(ident.Release, Arg.Any<GameInstallMode>(), out Arg.Any<DirectoryPath>())
+        lookup.TryGet(ident.Release, out Arg.Any<DirectoryPath>())
             .Returns(x =>
             {
-                x[2] = folder;
+                x[1] = folder;
                 return true;
             });
         fs.Directory.Exists(folder).Returns(r);

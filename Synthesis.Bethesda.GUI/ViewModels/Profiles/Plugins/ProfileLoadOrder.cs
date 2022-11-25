@@ -30,31 +30,28 @@ public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, IProfileLoadOrderP
         ILogger logger,
         ISchedulerProvider schedulerProvider,
         ILiveLoadOrderProvider liveLoadOrderProvider,
+        IPluginListingsPathContext pluginListingsPathContext,
         ICreationClubListingsPathProvider cccListingsPathProvider,
         IProfileIdentifier ident,
         IProfileOverridesVm overrides)
     {
-        var loadOrderResult = Observable.CombineLatest(
-                overrides.WhenAnyValue(x => x.DataFolderResult),
-                overrides.WhenAnyValue(x => x.PluginListingsPath),
-                overrides.WhenAnyValue(x => x.InstallMode),
-                (DataFolder, PluginListingPath, InstallMode) => (DataFolder, PluginListingPath, InstallMode))
+        var loadOrderResult = overrides.WhenAnyValue(x => x.DataFolderResult)
             .DistinctUntilChanged()
             .ObserveOn(schedulerProvider.TaskPool)
             .Select(x =>
             {
-                if (x.DataFolder.Failed)
+                if (x.Failed)
                 {
                     return (
                         Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(),
                         State: Observable.Return(ErrorResponse.Fail("Load order could not be retrieved because data folder not set")));
                 }
 
-                logger.Information("Getting live load order for {Release}. DataDirectory: {DataDirectory}, Plugin File Path: {PluginFilePath}, CCC Plugin File Path: {CccPluginFilePath}, Install {Install}",
-                    ident.Release, x.DataFolder.Value, x.PluginListingPath, cccListingsPathProvider.Path, x.InstallMode);
+                logger.Information("Getting live load order for {Release}. DataDirectory: {DataDirectory}, Plugin File Path: {PluginFilePath}, CCC Plugin File Path: {CccPluginFilePath}",
+                    ident.Release, x.Value, pluginListingsPathContext.Path, cccListingsPathProvider.Path);
 
                 var liveLo = liveLoadOrderProvider.Get(out var errors)
-                    .Transform(listing => new ReadOnlyModListingVM(listing, x.DataFolder.Value))
+                    .Transform(listing => new ReadOnlyModListingVM(listing, x.Value))
                     .DisposeMany();
                 return (Results: liveLo, State: errors);
             })

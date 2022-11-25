@@ -406,7 +406,6 @@ public class ProfileVm : ViewModel
             MutagenVersioning = Versioning.MutagenVersioning,
             SynthesisVersioning = Versioning.SynthesisVersioning,
             DataPathOverride = Overrides.DataPathOverride,
-            GameInstallModeOverride = Overrides.InstallModeOverride,
             ConsiderPrereleaseNugets = ConsiderPrereleaseNugets,
             LockToCurrentVersioning = LockSetting.Lock,
             FormIdPersistence = SelectedPersistenceMode,
