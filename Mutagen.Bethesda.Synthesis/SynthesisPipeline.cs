@@ -531,7 +531,7 @@ public class SynthesisPipeline
         var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
         var categoryContext = new GameCategoryContext(gameReleaseInjection);
         var gameLoc = new GameLocator();
-        var stateFactory = new StateFactory(
+        var stateFactory = new PatcherStateFactory(
             fileSystem,
             new LoadOrderImporterFactory(
                 fileSystem),

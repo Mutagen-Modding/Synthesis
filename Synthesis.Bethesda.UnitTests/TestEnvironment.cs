@@ -22,9 +22,9 @@ public record TestEnvironment(
         return StatePluginListings().Get();
     }
 
-    public StateFactory GetStateFactory()
+    public PatcherStateFactory GetStateFactory()
     {
-        return new StateFactory(
+        return new PatcherStateFactory(
             FileSystem,
             new LoadOrderImporterFactory(FileSystem),
             GetStateLoadOrder());

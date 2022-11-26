@@ -11,7 +11,7 @@ using Mutagen.Bethesda.Synthesis.CLI;
 
 namespace Mutagen.Bethesda.Synthesis.States.DI;
 
-public interface IStateFactory
+public interface IPatcherStateFactory
 {
     SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
         where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
@@ -20,13 +20,13 @@ public interface IStateFactory
     IPatcherState ToState(GameCategory category, RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey);
 }
 
-public class StateFactory : IStateFactory
+public class PatcherStateFactory : IPatcherStateFactory
 {
     private readonly IFileSystem _fileSystem;
     private readonly ILoadOrderImporterFactory _loadOrderImporter;
     private readonly IGetStateLoadOrder _getStateLoadOrder;
 
-    public StateFactory(
+    public PatcherStateFactory(
         IFileSystem fileSystem,
         ILoadOrderImporterFactory loadOrderImporter,
         IGetStateLoadOrder getStateLoadOrder)
@@ -169,7 +169,7 @@ public class StateFactory : IStateFactory
     public IPatcherState ToState(GameCategory category, RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
     {
         var regis = category.ToModRegistration();
-        var method = typeof(StateFactory)
+        var method = typeof(PatcherStateFactory)
             .GetMethods()
             .Where(m => m.Name == nameof(ToState))
             .Where(m => m.ContainsGenericParameters)
