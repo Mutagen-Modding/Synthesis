@@ -40,7 +40,7 @@ public interface IRunnabilityState
     /// </summary>
     string? ExtraSettingsDataPath { get; }
 
-    GameEnvironmentState<TModSetter, TModGetter> GetEnvironmentState<TModSetter, TModGetter>()
+    IGameEnvironment<TModSetter, TModGetter> GetEnvironmentState<TModSetter, TModGetter>()
         where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
         where TModGetter : class, IContextGetterMod<TModSetter, TModGetter>;
 }

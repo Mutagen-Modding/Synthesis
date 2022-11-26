@@ -38,7 +38,7 @@ public class RunnabilityState : IRunnabilityState
         ExtraSettingsDataPath = settings.ExtraDataFolder;
     }
 
-    public GameEnvironmentState<TModSetter, TModGetter> GetEnvironmentState<TModSetter, TModGetter>()
+    public IGameEnvironment<TModSetter, TModGetter> GetEnvironmentState<TModSetter, TModGetter>()
         where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
         where TModGetter : class, IContextGetterMod<TModSetter, TModGetter>
     {
