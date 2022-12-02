@@ -1,8 +1,6 @@
-using System.Diagnostics.CodeAnalysis;
 using Mutagen.Bethesda.Plugins.Allocators;
-using Mutagen.Bethesda.Plugins.Cache;
-using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
+using Noggog;
 
 namespace Mutagen.Bethesda.Synthesis;
 
@@ -24,17 +22,22 @@ public interface IPatcherState : IBaseRunState
     /// <summary>
     /// Where Synthesis will eventually output the patch file.
     /// </summary>
-    string OutputPath { get; }
+    FilePath OutputPath { get; }
 
     /// <summary>
     /// Where the patch output file from the previous patcher is located
     /// </summary>
-    string? SourcePath { get; }
+    FilePath? SourcePath { get; }
 
     /// <summary>
     /// A reference to the FormKey allocator assigned to PatchMod
     /// </summary>
     internal IFormKeyAllocator? FormKeyAllocator { get; }
+
+    /// <summary>
+    /// Cancellation token that signals whether to stop patching and exit early
+    /// </summary>
+    CancellationToken Cancel { get; }
 }
 
 public interface IPatcherState<TModSetter, TModGetter> : IBaseRunState<TModSetter, TModGetter>, IPatcherState

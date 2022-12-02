@@ -14,11 +14,14 @@ public static class ConfigRetrievalExt
     /// <returns>True if config file was located that exists</returns>
     public static bool TryRetrieveConfigFile(this IPatcherState state, string relativePath, [MaybeNullWhen(false)] out string resolvedPath)
     {
-        var userPath = Path.Combine(state.ExtraSettingsDataPath, relativePath);
-        if (File.Exists(userPath))
+        if (state.ExtraSettingsDataPath != null)
         {
-            resolvedPath = userPath;
-            return true;
+            var userPath = Path.Combine(state.ExtraSettingsDataPath, relativePath);
+            if (File.Exists(userPath))
+            {
+                resolvedPath = userPath;
+                return true;
+            }
         }
 
         if (state.DefaultSettingsDataPath != null)

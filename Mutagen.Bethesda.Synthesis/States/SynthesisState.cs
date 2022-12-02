@@ -3,6 +3,7 @@ using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Synthesis.CLI;
+using Noggog;
 
 namespace Mutagen.Bethesda.Synthesis;
 // Note:  Keep named as-is, as there's patchers out there that reference this class directly that would break
@@ -10,6 +11,7 @@ namespace Mutagen.Bethesda.Synthesis;
 /// <summary>
 /// A class housing all the tools, parameters, and entry points for a typical Synthesis patcher
 /// </summary>
+[Obsolete("Use IPatcherState instead")]
 public class SynthesisState<TModSetter, TModGetter> : IPatcherState<TModSetter, TModGetter>
     where TModSetter : class, IMod, TModGetter
     where TModGetter : class, IModGetter
@@ -31,27 +33,27 @@ public class SynthesisState<TModSetter, TModGetter> : IPatcherState<TModSetter, 
     public CancellationToken Cancel { get; }
 
     /// <inheritdoc />
-    public string ExtraSettingsDataPath { get; }
+    public DirectoryPath? ExtraSettingsDataPath { get; }
 
     /// <inheritdoc />
-    public string? InternalDataPath { get; }
+    public DirectoryPath? InternalDataPath { get; }
 
     /// <inheritdoc />
-    public string? DefaultSettingsDataPath { get; }
+    public DirectoryPath? DefaultSettingsDataPath { get; }
 
     /// <inheritdoc />
-    public string LoadOrderFilePath { get; }
+    public FilePath LoadOrderFilePath { get; }
 
     /// <inheritdoc />
-    public string DataFolderPath { get; }
+    public DirectoryPath DataFolderPath { get; }
     /// <inheritdoc />
     public GameRelease GameRelease { get; }
 
     /// <inheritdoc />
-    public string OutputPath { get; }
+    public FilePath OutputPath { get; }
 
     /// <inheritdoc />
-    public string? SourcePath { get; }
+    public FilePath? SourcePath { get; }
 
     IFormKeyAllocator? IPatcherState.FormKeyAllocator => _formKeyAllocator;
 
@@ -63,9 +65,9 @@ public class SynthesisState<TModSetter, TModGetter> : IPatcherState<TModSetter, 
         ILoadOrder<IModListing<TModGetter>> loadOrder,
         ILinkCache<TModSetter, TModGetter> linkCache,
         TModSetter patchMod,
-        string extraDataPath,
-        string? internalDataPath,
-        string? defaultDataPath,
+        DirectoryPath? extraDataPath,
+        DirectoryPath? internalDataPath,
+        DirectoryPath? defaultDataPath,
         CancellationToken cancellation,
         IFormKeyAllocator? formKeyAllocator)
     {

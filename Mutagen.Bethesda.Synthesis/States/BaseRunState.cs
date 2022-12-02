@@ -1,6 +1,7 @@
 ﻿using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
+using Noggog;
 
 namespace Mutagen.Bethesda.Synthesis;
 
@@ -12,19 +13,14 @@ public interface IBaseRunState : IDisposable, ISettingsDataConfiguration
     IReadOnlyList<ILoadOrderListingGetter> RawLoadOrder { get; }
 
     /// <summary>
-    /// Cancellation token that signals whether to stop patching and exit early
-    /// </summary>
-    CancellationToken Cancel { get; }
-
-    /// <summary>
     /// Path to the plugins.txt used
     /// </summary>
-    string LoadOrderFilePath { get; }
+    FilePath LoadOrderFilePath { get; }
 
     /// <summary>
     /// Path to the game data folder
     /// </summary>
-    string DataFolderPath { get; }
+    DirectoryPath DataFolderPath { get; }
 
     /// <summary>
     /// GameRelease targeted for patching

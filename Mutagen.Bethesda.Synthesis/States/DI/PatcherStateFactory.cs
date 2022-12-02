@@ -160,7 +160,7 @@ public class PatcherStateFactory : IPatcherStateFactory
             linkCache: cache,
             internalDataPath: settings.InternalDataFolder,
             patchMod: patchMod,
-            extraDataPath: settings.ExtraDataFolder == null ? string.Empty : Path.GetFullPath(settings.ExtraDataFolder),
+            extraDataPath: settings.ExtraDataFolder,
             defaultDataPath: settings.DefaultDataFolderPath,
             cancellation: userPrefs.Cancel,
             formKeyAllocator: formKeyAllocator);
