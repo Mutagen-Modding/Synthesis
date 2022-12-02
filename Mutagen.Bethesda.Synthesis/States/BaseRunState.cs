@@ -1,11 +1,11 @@
-﻿using Mutagen.Bethesda.Plugins.Cache;
+using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Noggog;
 
 namespace Mutagen.Bethesda.Synthesis;
 
-public interface IBaseRunState : IDisposable, ISettingsDataConfiguration
+public interface IBaseRunState : ISettingsDataConfiguration
 {
     /// <summary>
     /// A list of ModKeys as they appeared, and whether they were enabled

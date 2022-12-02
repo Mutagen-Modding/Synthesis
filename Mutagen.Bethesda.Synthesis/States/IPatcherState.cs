@@ -7,7 +7,7 @@ namespace Mutagen.Bethesda.Synthesis;
 /// <summary>
 /// An interface housing all the tools, parameters, and entry points for a typical Synthesis patcher
 /// </summary>
-public interface IPatcherState : IBaseRunState
+public interface IPatcherState : IBaseRunState, IDisposable
 {
     /// <summary>
     /// Patch mod object to modify and make changes to.  The state of this object will be used to
