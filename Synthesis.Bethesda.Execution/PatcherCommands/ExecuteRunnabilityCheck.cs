@@ -1,4 +1,5 @@
-﻿using Mutagen.Bethesda.Environments.DI;
+﻿using System.IO.Abstractions;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Noggog.WorkEngine;
@@ -6,6 +7,7 @@ using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running.Git;
+using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.PatcherCommands;
@@ -23,8 +25,11 @@ public interface IExecuteRunnabilityCheck
 
 public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
 {
+    private readonly IFileSystem _fileSystem;
+    private readonly IDefaultDataPathProvider _defaultDataPathProvider;
     private readonly IShortCircuitSettingsProvider _shortCircuitSettingsProvider;
     private readonly IWriteShortCircuitMeta _writeShortCircuitMeta;
+    private readonly IPatcherInternalDataPathProvider _internalDataPathProvider;
     public const int MaxLines = 100;
         
     public IWorkDropoff Dropoff { get; }
@@ -44,7 +49,10 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
         IShortCircuitSettingsProvider shortCircuitSettingsProvider,
         IWriteShortCircuitMeta writeShortCircuitMeta,
         IPatcherExtraDataPathProvider patcherExtraDataPathProvider,
-        IRunProcessStartInfoProvider runProcessStartInfoProvider)
+        IRunProcessStartInfoProvider runProcessStartInfoProvider,
+        IFileSystem fileSystem,
+        IDefaultDataPathProvider defaultDataPathProvider,
+        IPatcherInternalDataPathProvider internalDataPathProvider)
     {
         MetaFileReader = metaFileReader;
         _shortCircuitSettingsProvider = shortCircuitSettingsProvider;
@@ -55,6 +63,9 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
         GameReleaseContext = gameReleaseContext;
         ProcessRunner = processRunner;
         RunProcessStartInfoProvider = runProcessStartInfoProvider;
+        _fileSystem = fileSystem;
+        _defaultDataPathProvider = defaultDataPathProvider;
+        _internalDataPathProvider = internalDataPathProvider;
     }
 
     public async Task<ErrorResponse> Check(
@@ -78,12 +89,16 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
             }
         }
 
+        var defaultDataFolderPath = _defaultDataPathProvider.Path;
+        
         var checkState = new CheckRunnability()
         {
             DataFolderPath = DataDirectoryProvider.Path,
             GameRelease = GameReleaseContext.Release,
             LoadOrderFilePath = loadOrderPath,
             ExtraDataFolder = ExtraDataPathProvider.Path,
+            DefaultDataFolderPath = _fileSystem.Directory.Exists(defaultDataFolderPath) ? defaultDataFolderPath.Path : null,
+            InternalDataFolder = _fileSystem.Directory.Exists(_internalDataPathProvider.Path) ? _internalDataPathProvider.Path.Path : null,
             ModKey = modKey.ToString()
         };
 
