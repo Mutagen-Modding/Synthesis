@@ -85,11 +85,11 @@ public class SynthesisPipelineTests
             .AddPatch<ISkyrimMod, ISkyrimModGetter>((state) =>
             {
                 state.GameRelease.Should().Be(gameEnvironment.GameRelease);
-                state.OutputPath.Should().Be(runSynthesisMutagenPatcher.OutputPath);
+                state.OutputPath.Path.Should().Be(runSynthesisMutagenPatcher.OutputPath);
                 state.SourcePath.Should().Be(sourcePath);
                 state.DataFolderPath.Should().Be(gameEnvironment.DataFolderPath);
                 state.LoadOrderFilePath.Should().Be(gameEnvironment.LoadOrderFilePath);
-                state.ExtraSettingsDataPath.Should().Be(runSynthesisMutagenPatcher.ExtraDataFolder);
+                state.ExtraSettingsDataPath!.Value.Path.Should().Be(runSynthesisMutagenPatcher.ExtraDataFolder);
                 state.PatchMod.Should().NotBeNull();
                 state.PatchMod.ModKey.Should().Be(outputModKey);
             })
@@ -477,7 +477,7 @@ public class SynthesisPipelineTests
     {
         int count = 0;
         var ret = await SynthesisPipeline.Instance
-            .SetTypicalOpen((r) =>
+            .SetTypicalOpen(() =>
             {
                 count++;
                 return 1753;
@@ -520,11 +520,28 @@ public class SynthesisPipelineTests
 
     #region OpenForSettings
     
+    private void SetupRun(
+        IFileSystem fileSystem,
+        OpenForSettings args,
+        ModKey modKey,
+        IGameEnvironment<ISkyrimMod, ISkyrimModGetter> gameEnvironment)
+    {
+        args.ModKey = modKey.FileName;
+        args.DataFolderPath = gameEnvironment.DataFolderPath;
+        args.LoadOrderFilePath = gameEnvironment.LoadOrderFilePath;
+        args.GameRelease = gameEnvironment.GameRelease;
+    }
+    
     [Theory]
     [SynthAutoData]
     public async Task OpenForSettings(
+        IFileSystem fileSystem,
+        IGameEnvironment<ISkyrimMod, ISkyrimModGetter> gameEnvironment,
+        ModKey outputModKey,
         OpenForSettings run)
     {
+        SetupRun(fileSystem, run, outputModKey, gameEnvironment);
+        
         int count = 0;
         var ret = await SynthesisPipeline.Instance
             .SetOpenForSettings(state =>
@@ -532,9 +549,33 @@ public class SynthesisPipelineTests
                 count++;
                 return 1753;
             })
-            .Run(run);
+            .Run(run, fileSystem);
         ret.Should().Be(1753);
         count.Should().Be(1);
+    }
+    
+    [Theory]
+    [SynthAutoData]
+    public async Task OpenForSettingsBasicProperties(
+        IFileSystem fileSystem,
+        IGameEnvironment<ISkyrimMod, ISkyrimModGetter> gameEnvironment,
+        ModKey outputModKey,
+        DirectoryPath extraSettingsFolder,
+        OpenForSettings run)
+    {
+        SetupRun(fileSystem, run, outputModKey, gameEnvironment);
+        run.ExtraDataFolder = extraSettingsFolder;
+        
+        var ret = await SynthesisPipeline.Instance
+            .SetOpenForSettings(state =>
+            {
+                state.GameRelease.Should().Be(gameEnvironment.GameRelease);
+                state.DataFolderPath.Should().Be(gameEnvironment.DataFolderPath);
+                state.LoadOrderFilePath.Should().Be(gameEnvironment.LoadOrderFilePath);
+                state.ExtraSettingsDataPath!.Value.Path.Should().Be(run.ExtraDataFolder);
+                return 1753;
+            })
+            .Run(run, fileSystem);
     }
 
     #endregion
