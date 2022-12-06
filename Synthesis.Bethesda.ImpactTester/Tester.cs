@@ -160,31 +160,43 @@ public class Tester
         System.Console.WriteLine();
         System.Console.WriteLine();
 
-        if (failedDeps.Count > 0)
+        using (var file = new StreamWriter(File.OpenWrite("Failed Repos.txt")))
         {
-            System.Console.WriteLine("Failed repos:");
-            foreach (var f in failedDeps
-                         .OrderBy(d => d.User)
-                         .CreateOrderedEnumerable(d => d.Repository, null, true))
+            if (failedDeps.Count > 0)
             {
-                System.Console.WriteLine($"   {f}");
+                System.Console.WriteLine("Failed repos:");
+                foreach (var f in failedDeps
+                             .OrderBy(d => d.User)
+                             .CreateOrderedEnumerable(d => d.Repository, null, true))
+                {
+                    System.Console.WriteLine($"   {f}");
+                    file.WriteLine(f.Repository);
+                }
             }
         }
-
-        var failed = projResults.Where(p => p.Compile.Failed).ToList();
-        if (failed.Count > 0)
+        using (var failedProjFile = new StreamWriter(File.OpenWrite("Failed Projects.txt")))
         {
-            System.Console.WriteLine("Failed projects:");
-            foreach (var f in failed.OrderBy(f => f.Dependent.User)
-                         .CreateOrderedEnumerable(d => d.Dependent.Repository, null, true)
-                         .CreateOrderedEnumerable(d => d.ProjSubPath, null, true))
+            using (var failedProjCsvFile = new StreamWriter(File.OpenWrite("Failed Projects.csv")))
             {
-                System.Console.WriteLine($"  {f.Dependent}: {f.ProjSubPath}");
-                _printErrorMessage.Print(f.Compile.Reason, f.SolutionFolderPath, (s, _) =>
+                failedProjCsvFile.WriteLine($"Succeeded,Repository,Project");
+                System.Console.WriteLine("Failed projects:");
+                foreach (var f in projResults.OrderBy(f => f.Dependent.User)
+                             .CreateOrderedEnumerable(d => d.Dependent.Repository, null, true)
+                             .CreateOrderedEnumerable(d => d.ProjSubPath, null, true))
                 {
-                    Console.WriteLine(s.ToString());
-                });
-                System.Console.WriteLine();
+                    if (f.Compile.Failed)
+                    {
+                        failedProjFile.WriteLine($"  {f.Dependent}: {f.ProjSubPath}");
+                        System.Console.WriteLine($"  {f.Dependent}: {f.ProjSubPath}");
+                        _printErrorMessage.Print(f.Compile.Reason, f.SolutionFolderPath, (s, _) =>
+                        {
+                            failedProjFile.WriteLine(s.ToString());
+                            Console.WriteLine(s.ToString());
+                        });
+                        System.Console.WriteLine();
+                    }
+                    failedProjCsvFile.WriteLine($"{!f.Compile.Failed},{f.Dependent.Repository},{f.ProjSubPath},{f.Compile.Exception}");
+                }
             }
         }
 
