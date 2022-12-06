@@ -35,7 +35,7 @@ public class NewProfileVm : ViewModel
         Action<ProfileVm>? postRun = null)
     {
         _config = config;
-        CategoryOptions.AddRange(EnumExt.GetValues<GameCategory>());
+        CategoryOptions.AddRange(Enums<GameCategory>.Values);
 
         ReleaseOptions = this.WhenAnyValue(x => x.SelectedCategory)
             .Select(x => x?.GetRelatedReleases().AsObservableChangeSet() ?? Observable.Return(ChangeSet<GameRelease>.Empty))
