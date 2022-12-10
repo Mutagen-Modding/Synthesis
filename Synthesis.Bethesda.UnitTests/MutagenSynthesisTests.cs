@@ -30,7 +30,7 @@ public class MutagenSynthesisTests
                 new ItemEntry()
                 {
                     Count = 1,
-                    Item = FormKey.Null.AsLink<IItemGetter>()
+                    Item = FormKey.Null.ToLink<IItemGetter>()
                 });
         }
     }

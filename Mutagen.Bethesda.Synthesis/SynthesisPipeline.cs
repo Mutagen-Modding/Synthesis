@@ -622,6 +622,8 @@ public class SynthesisPipeline
     #endregion
 
     #region Depreciated Patch Finisher
+
+#pragma warning disable CS0618
     public delegate void DepreciatedPatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
         where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
         where TModGetter : class, IContextGetterMod<TMod, TModGetter>;
@@ -629,7 +631,7 @@ public class SynthesisPipeline
     public delegate Task DepreciatedAsyncPatcherFunction<TMod, TModGetter>(SynthesisState<TMod, TModGetter> state)
         where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
         where TModGetter : class, IContextGetterMod<TMod, TModGetter>;
-
+    
     private SynthesisState<TMod, TModGetter> ToDepreciatedState<TMod, TModGetter>(IPatcherState<TMod, TModGetter> state)
         where TMod : class, IContextMod<TMod, TModGetter>, TModGetter
         where TModGetter : class, IContextGetterMod<TMod, TModGetter>
@@ -640,6 +642,7 @@ public class SynthesisPipeline
         }
         throw new ArgumentException("Using the depreciated \'Patch\' call is causing problems.  Upgrade to the newest API");
     }
+#pragma warning restore CS0618
 
     /// <summary>
     /// Takes in the main line command arguments, and handles PatcherRunSettings CLI inputs.

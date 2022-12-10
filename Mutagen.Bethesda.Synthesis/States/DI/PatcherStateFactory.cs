@@ -13,9 +13,11 @@ namespace Mutagen.Bethesda.Synthesis.States.DI;
 
 public interface IPatcherStateFactory
 {
+#pragma warning disable CS0618
     SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
         where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
         where TModGetter : class, IContextGetterMod<TModSetter, TModGetter>;
+#pragma warning restore CS0618
 
     IPatcherState ToState(GameCategory category, RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey);
 }
@@ -44,10 +46,12 @@ public class PatcherStateFactory : IPatcherStateFactory
         }
     }
         
+#pragma warning disable CS0618
     public SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
         where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
         where TModGetter : class, IContextGetterMod<TModSetter, TModGetter>
     {
+#pragma warning restore CS0618
         // Confirm target game release matches
         var regis = settings.GameRelease.ToCategory().ToModRegistration();
         if (!typeof(TModSetter).IsAssignableFrom(regis.SetterType))
