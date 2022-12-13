@@ -8,9 +8,9 @@ using Noggog;
 using Noggog.Utility;
 using Synthesis.Bethesda;
 using Synthesis.Bethesda.DTO;
-using System.Drawing;
 using System.IO.Abstractions;
 using System.Text.Json;
+using Mutagen.Bethesda.Environments;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Installs;
 using Mutagen.Bethesda.Installs.DI;
@@ -22,6 +22,7 @@ using Mutagen.Bethesda.Plugins.Exceptions;
 using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Mutagen.Bethesda.Strings.DI;
+using Mutagen.Bethesda.Synthesis.Pipeline;
 using Mutagen.Bethesda.Synthesis.States;
 using Mutagen.Bethesda.Synthesis.States.DI;
 using Synthesis.Bethesda.Commands;
@@ -766,31 +767,31 @@ public class SynthesisPipeline
         };
     }
 
-    public static RunSynthesisMutagenPatcher GetDefaultRun(GameRelease release, ModKey targetModKey)
+    private static RunSynthesisMutagenPatcher GetDefaultRun(
+        GameRelease release,
+        ModKey targetModKey,
+        TypicalOpenExtraParameters? extraParameters = null)
     {
-        if (!GameLocations.TryGetGameFolder(release, out var gameFolder))
-        {
-            throw new DirectoryNotFoundException("Could not locate game folder automatically.");
-        }
+        extraParameters ??= new();
+        using var env = GameEnvironment.Typical.Builder(release)
+            .WithFileSystem(extraParameters.FileSystem.GetOrDefault())
+            .Build();
 
-        if (!PluginListings.TryGetListingsFile(release, out var path))
-        {
-            throw new FileNotFoundException("Could not locate load order automatically.");
-        }
-
-        var dataPath = Path.Combine(gameFolder, "Data");
         return new RunSynthesisMutagenPatcher()
         {
-            DataFolderPath = dataPath,
+            DataFolderPath = env.DataFolderPath,
             SourcePath = null,
-            OutputPath = Path.Combine(dataPath, targetModKey.FileName),
+            OutputPath = Path.Combine(env.DataFolderPath, targetModKey.FileName),
             GameRelease = release,
-            LoadOrderFilePath = path.Path,
+            LoadOrderFilePath = env.LoadOrderFilePath.Path,
             ExtraDataFolder = Path.GetFullPath("./Data"),
             DefaultDataFolderPath = null,
             LoadOrderIncludesCreationClub = false,
             PatcherName = targetModKey.Name,
             PersistencePath = "Persistence",
+            TargetLanguage = extraParameters.TargetLanguage,
+            Localize = extraParameters.Localize,
+            UseUtf8ForEmbeddedStrings = extraParameters.UseUtf8ForEmbeddedStrings
         };
     }
 
