@@ -296,7 +296,8 @@ public class SynthesisPipeline
 
     public SynthesisPipeline SetTypicalOpen(
         GameRelease targetRelease,
-        ModKey identifyingModKey)
+        ModKey identifyingModKey,
+        TypicalOpenExtraParameters? extraParameters = null)
     {
         SetTypicalOpen(async () =>
         {
@@ -307,7 +308,7 @@ public class SynthesisPipeline
             }
 
             await Run(
-                GetDefaultRun(targetRelease, identifyingModKey),
+                GetDefaultRun(targetRelease, identifyingModKey, extraParameters),
                 identifyingModKey).ConfigureAwait(false);
             return 0;
         });
