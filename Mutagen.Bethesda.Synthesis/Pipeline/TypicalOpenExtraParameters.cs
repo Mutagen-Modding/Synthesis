@@ -8,5 +8,4 @@ public record TypicalOpenExtraParameters
     public Language TargetLanguage { get; init; } = Language.English;
     public bool Localize { get; init; }
     public bool UseUtf8ForEmbeddedStrings { get; init; }
-    public IFileSystem? FileSystem { get; init; }
 }
