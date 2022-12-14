@@ -777,8 +777,10 @@ public class SynthesisPipeline
         TypicalOpenExtraParameters? extraParameters = null)
     {
         extraParameters ??= new();
+
+        IDataDirectoryLookup dataDir = new GameLocator();
         
-        if (!GameLocations.TryGetDataFolder(release, out var dataFolder))
+        if (!dataDir.TryGet(release, out var dataFolder))
         {
             throw new DirectoryNotFoundException("Could not locate game folder automatically.");
         }
