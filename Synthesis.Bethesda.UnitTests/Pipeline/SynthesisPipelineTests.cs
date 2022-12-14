@@ -472,8 +472,11 @@ public class SynthesisPipelineTests
 
     #region TypicalOpen
     
-    [Fact]
-    public async Task TypicalOpen()
+    [Theory]
+    [SynthAutoData]
+    public async Task TypicalOpen(
+        IFileSystem fileSystem,
+        IGameEnvironment<ISkyrimMod, ISkyrimModGetter> environment)
     {
         int count = 0;
         var ret = await SynthesisPipeline.Instance
@@ -482,7 +485,7 @@ public class SynthesisPipelineTests
                 count++;
                 return 1753;
             })
-            .Run(Array.Empty<string>());
+            .Run(Array.Empty<string>(), fileSystem);
         ret.Should().Be(1753);
         count.Should().Be(1);
     }
@@ -490,19 +493,23 @@ public class SynthesisPipelineTests
     [Theory]
     [SynthAutoData]
     public async Task PatchWithTypicalOpenButNoPatches(
+        IFileSystem fileSystem,
+        IGameEnvironment<ISkyrimMod, ISkyrimModGetter> environment,
         ModKey modKey)
     {
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
             await SynthesisPipeline.Instance
                 .SetTypicalOpen(GameRelease.SkyrimSE, modKey)
-                .Run(Array.Empty<string>());
+                .Run(Array.Empty<string>(), fileSystem: fileSystem);
         });
     }
     
     [Theory]
     [SynthAutoData]
     public async Task PatchWithTypicalOpen(
+        IFileSystem fileSystem,
+        IGameEnvironment<ISkyrimMod, ISkyrimModGetter> environment,
         ModKey modKey)
     {
         int count = 0;
@@ -512,7 +519,7 @@ public class SynthesisPipelineTests
                 count++;
             })
             .SetTypicalOpen(GameRelease.SkyrimSE, modKey)
-            .Run(Array.Empty<string>());
+            .Run(Array.Empty<string>(), fileSystem: fileSystem);
         count.Should().Be(1);
     }
 
