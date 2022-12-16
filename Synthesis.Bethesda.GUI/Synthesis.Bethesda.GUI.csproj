@@ -3,7 +3,6 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <AssemblyName>Synthesis</AssemblyName>
-    <TargetFramework>net6.0</TargetFramework>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <UseWPF>true</UseWPF>
@@ -14,13 +13,10 @@
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Noggog/Synthesis</RepositoryUrl>
     <Company>Mutagen</Company>
-    <Platforms>x64</Platforms>
     <ApplicationIcon>mushroom.ico</ApplicationIcon>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <StartupObject>Synthesis.Bethesda.GUI.App</StartupObject>
     <LangVersion>preview</LangVersion>
-    <Nullable>enable</Nullable>
-    <WarningsAsErrors>nullable</WarningsAsErrors>
     <PublishReadyToRun>True</PublishReadyToRun>
     <PublishReadyToRunShowWarnings>True</PublishReadyToRunShowWarnings>
     <DebugType>embedded</DebugType>

@@ -4,6 +4,10 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally> 
     <ImplicitUsings>true</ImplicitUsings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Platforms>x64</Platforms>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
   </PropertyGroup> 
    
   <ItemGroup> 

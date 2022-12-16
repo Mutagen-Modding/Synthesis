@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
     <Authors>Noggog</Authors>
     <Company>Mutagen</Company>
     <Product>Synthesis</Product>
@@ -12,13 +11,10 @@
     <RepositoryUrl>https://github.com/Noggog/Synthesis</RepositoryUrl>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <AssemblyName>Synthesis.Bethesda</AssemblyName>
-    <Platforms>x64</Platforms>
     <PackageProjectUrl>https://github.com/Noggog/Synthesis</PackageProjectUrl>
     <Copyright>2020</Copyright>
     <IsPackable>true</IsPackable>
     <LangVersion>preview</LangVersion>
-    <Nullable>enable</Nullable>
-    <WarningsAsErrors>nullable</WarningsAsErrors>
     <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows> 
     <IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX> 
     <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux> 

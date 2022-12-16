@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <AssemblyName>Synthesis.Bethesda.Execution</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -13,12 +12,9 @@
     <Company>Mutagen</Company>
     <Product>Synthesis</Product>
     <PackageId>Synthesis.Bethesda.Execution</PackageId>
-    <Platforms>x64</Platforms>
     <PackageProjectUrl>https://github.com/Noggog/Synthesis</PackageProjectUrl>
     <Copyright>2020</Copyright>
     <IsPackable>true</IsPackable>
-    <Nullable>enable</Nullable>
-    <WarningsAsErrors>nullable</WarningsAsErrors>
     <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows> 
     <IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX> 
     <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux> 

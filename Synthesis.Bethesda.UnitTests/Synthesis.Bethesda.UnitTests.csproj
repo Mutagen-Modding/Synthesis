@@ -1,10 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Platforms>x64</Platforms>
-    <Nullable>enable</Nullable>
-    <WarningsAsErrors>nullable</WarningsAsErrors>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
   </PropertyGroup>
 

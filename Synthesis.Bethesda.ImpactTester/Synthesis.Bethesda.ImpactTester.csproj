@@ -3,9 +3,6 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <WarningsAsErrors>nullable</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
