@@ -32,5 +32,7 @@ jobs:
         file: Synthesis.zip
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.release.tag_name }}
+    - name: Publish x64 Nugets to Nuget.org
+      run: dotnet nuget push **bin/x64/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --no-symbols
     - name: Publish Nugets to Nuget.org
-      run: dotnet nuget push **/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --no-symbols
+      run: dotnet nuget push **bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --no-symbols
