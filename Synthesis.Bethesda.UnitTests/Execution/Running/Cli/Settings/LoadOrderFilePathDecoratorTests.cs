@@ -23,7 +23,7 @@ public class LoadOrderFilePathDecoratorTests
         FilePath path,
         LoadOrderFilePathDecorator sut)
     {
-        sut.Provider.Path.Returns(path);
+        sut.ListingsPathContext.Path.Returns(path);
         sut.Instructions.LoadOrderFilePath = default;
         sut.Path.Should().Be(path);
     }

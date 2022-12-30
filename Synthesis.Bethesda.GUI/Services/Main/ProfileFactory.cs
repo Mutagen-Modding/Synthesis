@@ -61,7 +61,7 @@ public class ProfileFactory : IProfileFactory
         profile.Versioning.ManualMutagenVersion = settings.MutagenManualVersion;
         profile.Versioning.SynthesisVersioning = settings.SynthesisVersioning;
         profile.Versioning.ManualSynthesisVersion = settings.SynthesisManualVersion;
-        profile.DataFolderOverride.DataPathOverride = settings.DataPathOverride;
+        profile.Overrides.DataPathOverride = settings.DataPathOverride;
         profile.IgnoreMissingMods = settings.IgnoreMissingMods;
         profile.ConsiderPrereleaseNugets = settings.ConsiderPrereleaseNugets;
         profile.LockSetting.Lock = settings.LockToCurrentVersioning;

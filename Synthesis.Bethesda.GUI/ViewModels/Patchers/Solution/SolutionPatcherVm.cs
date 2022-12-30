@@ -35,9 +35,9 @@ public class SolutionPatcherVm : PatcherVm
 
     public ICommand OpenSolutionCommand { get; }
 
-    public ObservableCollectionExtended<PreferredAutoVersioning> VersioningOptions { get; } = new(EnumExt.GetValues<PreferredAutoVersioning>());
+    public ObservableCollectionExtended<PreferredAutoVersioning> VersioningOptions { get; } = new(Enums<PreferredAutoVersioning>.Values);
 
-    public ObservableCollectionExtended<VisibilityOptions> VisibilityOptions { get; } = new(EnumExt.GetValues<VisibilityOptions>());
+    public ObservableCollectionExtended<VisibilityOptions> VisibilityOptions { get; } = new(Enums<VisibilityOptions>.Values);
          
     public IObservable<IChangeSet<ModKey>> DetectedMods => _loadOrder.LoadOrder.Connect().Transform(l => l.ModKey);
 

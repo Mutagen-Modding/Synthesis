@@ -53,7 +53,7 @@ public class ProfileVm : ViewModel
     public string ProfileDirectory { get; }
     public string WorkingDirectory { get; }
 
-    public IProfileDataFolderVm DataFolderOverride { get; }
+    public IProfileOverridesVm Overrides { get; }
     public IProfileVersioning Versioning { get; }
 
     private readonly ObservableAsPropertyHelper<DirectoryPath> _dataFolder;
@@ -115,7 +115,7 @@ public class ProfileVm : ViewModel
     public ProfileVm(
         ILifetimeScope scope,
         IPatcherInitializationVm initVm,
-        IProfileDataFolderVm dataFolder,
+        IProfileOverridesVm overrides,
         IProfileIdentifier ident,
         IProfileNameVm nameProvider,
         IProfileLoadOrder loadOrder,
@@ -137,7 +137,7 @@ public class ProfileVm : ViewModel
         OverallErrorVm = overallErrorVm;
         NameVm = nameProvider;
         Groups = groupsList.Groups;
-        DataFolderOverride = dataFolder;
+        Overrides = overrides;
         Versioning = versioning;
         LockSetting = lockSetting;
         Exporter = exporter;
@@ -154,7 +154,7 @@ public class ProfileVm : ViewModel
             
         EnvironmentErrors = environmentErrors;
 
-        _dataFolder = dataFolder.WhenAnyValue(x => x.DataFolderResult.Value)
+        _dataFolder = overrides.WhenAnyValue(x => x.DataFolderResult.Value)
             .ToGuiProperty<DirectoryPath>(this, nameof(DataFolder), string.Empty, deferSubscription: true);
 
         LoadOrder = loadOrder.LoadOrder;
@@ -170,7 +170,7 @@ public class ProfileVm : ViewModel
             .Replay(1).RefCount();
 
         _globalError = Observable.CombineLatest(
-                dataFolder.WhenAnyValue(x => x.DataFolderResult),
+                overrides.WhenAnyValue(x => x.DataFolderResult),
                 loadOrder.WhenAnyValue(x => x.State),
                 LoadOrder.Connect()
                     .FilterOnObservable(
@@ -190,8 +190,8 @@ public class ProfileVm : ViewModel
                 this.WhenAnyValue(x => x.IgnoreMissingMods),
                 (dataFolder, loadOrder, missingMods, ignoreMissingMods) =>
                 {
-                    if (!dataFolder.Succeeded) return dataFolder.BubbleFailure<ViewModel>();
-                    if (!loadOrder.Succeeded) return loadOrder.BubbleFailure<ViewModel>();
+                    if (!dataFolder.Succeeded) return GetResponse<ViewModel>.Fail(reason: $"DataFolder: {dataFolder.Reason}");
+                    if (!loadOrder.Succeeded) return GetResponse<ViewModel>.Fail(reason: $"LoadOrder: {dataFolder.Reason}");
                     if (!ignoreMissingMods && missingMods.Count > 0)
                     {
                         return GetResponse<ViewModel>.Fail(
@@ -226,7 +226,11 @@ public class ProfileVm : ViewModel
             {
                 if (x.Failed)
                 {
-                    logger.Warning($"Encountered blocking overall error: {x.Reason}");
+                    logger.Warning("Encountered blocking overall error: {Reason}", x.Reason);
+                }
+                else
+                {
+                    logger.Information("No global error");
                 }
             })
             .ToGuiProperty(this, nameof(BlockingError), GetResponse<ViewModel>.Fail("Uninitialized blocking error"), deferSubscription: true);
@@ -401,7 +405,7 @@ public class ProfileVm : ViewModel
             SynthesisManualVersion = Versioning.ManualSynthesisVersion,
             MutagenVersioning = Versioning.MutagenVersioning,
             SynthesisVersioning = Versioning.SynthesisVersioning,
-            DataPathOverride = DataFolderOverride.DataPathOverride,
+            DataPathOverride = Overrides.DataPathOverride,
             ConsiderPrereleaseNugets = ConsiderPrereleaseNugets,
             LockToCurrentVersioning = LockSetting.Lock,
             FormIdPersistence = SelectedPersistenceMode,

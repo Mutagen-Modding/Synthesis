@@ -4,20 +4,20 @@ using Synthesis.Bethesda.Execution.Commands;
 
 namespace Synthesis.Bethesda.CLI.RunPipeline.Settings;
 
-public class LoadOrderFilePathDecorator : IPluginListingsPathProvider
+public class LoadOrderFilePathDecorator : IPluginListingsPathContext
 {
-    public IPluginListingsPathProvider Provider { get; }
+    public IPluginListingsPathContext ListingsPathContext { get; }
     public RunPatcherPipelineInstructions Instructions { get; }
 
     public FilePath Path => Instructions.LoadOrderFilePath == default
-        ? Provider.Path
+        ? ListingsPathContext.Path
         : Instructions.LoadOrderFilePath;
 
     public LoadOrderFilePathDecorator(
-        IPluginListingsPathProvider provider,
+        IPluginListingsPathContext listingsPathContext,
         RunPatcherPipelineInstructions instructions)
     {
-        Provider = provider;
+        ListingsPathContext = listingsPathContext;
         Instructions = instructions;
     }
 }

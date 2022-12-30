@@ -18,18 +18,9 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Image>
-            <Image.Style>
-                <Style TargetType="Image">
-                    <Setter Property="Effect">
-                        <Setter.Value>
-                            <DropShadowEffect
-                                BlurRadius="10"
-                                Opacity="0.4"
-                                ShadowDepth="0"
-                                Color="{StaticResource LightBlue}" />
-                        </Setter.Value>
-                    </Setter>
+        <local:GameIconView Grid.Row="0" >
+            <local:GameIconView.Style>
+                <Style TargetType="local:GameIconView">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsMouseOver, ElementName=MainGrid}" Value="True">
                             <Setter Property="Effect">
@@ -42,40 +33,10 @@
                                 </Setter.Value>
                             </Setter>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.Oblivion}">
-                            <Setter Property="Source" Value="../../Resources/Oblivion.png" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.SkyrimLE}">
-                            <Setter Property="Source" Value="../../Resources/SkyrimLE.png" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.SkyrimSE}">
-                            <Setter Property="Source" Value="../../Resources/SkyrimSSE.png" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.SkyrimVR}">
-                            <Setter Property="Source" Value="../../Resources/SkyrimVR.png" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.Fallout4}">
-                            <Setter Property="Source" Value="../../Resources/Fallout4.png" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.EnderalLE}">
-                            <Setter Property="Source" Value="../../Resources/enderal.png" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.EnderalSE}">
-                            <Setter Property="Source" Value="../../Resources/enderal-se.png" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameCategory.Oblivion}">
-                            <Setter Property="Source" Value="../../Resources/Oblivion.png" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameCategory.Skyrim}">
-                            <Setter Property="Source" Value="../../Resources/SkyrimSSE.png" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameCategory.Fallout4}">
-                            <Setter Property="Source" Value="../../Resources/Fallout4.png" />
-                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </Image.Style>
-        </Image>
+            </local:GameIconView.Style>
+        </local:GameIconView>
         <TextBlock Grid.Row="1"
             Margin="-100,4,-100,0"
             HorizontalAlignment="Center"

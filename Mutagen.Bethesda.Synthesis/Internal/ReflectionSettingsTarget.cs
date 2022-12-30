@@ -1,17 +1,21 @@
+using System.IO.Abstractions;
 using Mutagen.Bethesda.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Noggog;
 
 namespace Mutagen.Bethesda.Synthesis.Internal;
 
 public interface IReflectionSettingsTarget
 {
     string? AnchorPath { get; set; }
+    IFileSystem? FileSystem { get; set; }
 }
 
 public class ReflectionSettingsTarget<TSetting> : IReflectionSettingsTarget
     where TSetting : class, new()
 {
+    public IFileSystem? FileSystem { get; set; }
     private static readonly JsonSerializerSettings JsonSettings;
 
     public readonly Lazy<TSetting> Value;
@@ -47,10 +51,10 @@ public class ReflectionSettingsTarget<TSetting> : IReflectionSettingsTarget
             return new TSetting();
         }
         var path = Path.Combine(AnchorPath, SettingsPath);
-        if (File.Exists(path))
+        if (FileSystem.GetOrDefault().File.Exists(path))
         {
             System.Console.WriteLine($"Reading settings: {path}");
-            var text = File.ReadAllText(path);
+            var text = FileSystem.GetOrDefault().File.ReadAllText(path);
             var settings = JsonConvert.DeserializeObject<TSetting>(text, JsonSettings);
             if (settings == null)
             {

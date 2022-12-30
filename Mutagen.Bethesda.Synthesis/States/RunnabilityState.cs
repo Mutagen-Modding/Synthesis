@@ -21,13 +21,16 @@ public class RunnabilityState : IRunnabilityState
     /// </summary>
     public ILoadOrderGetter<ILoadOrderListingGetter> LoadOrder { get; }
 
+    IReadOnlyList<ILoadOrderListingGetter> IBaseRunState.RawLoadOrder => LoadOrder.ListedOrder.ToList();
     public FilePath LoadOrderFilePath => Settings.LoadOrderFilePath;
 
     public DirectoryPath DataFolderPath => Settings.DataFolderPath;
 
     public GameRelease GameRelease => Settings.GameRelease;
     
-    public string? ExtraSettingsDataPath { get; }
+    public DirectoryPath? ExtraSettingsDataPath => Settings.ExtraDataFolder;
+    public DirectoryPath? InternalDataPath => Settings.InternalDataFolder;
+    public DirectoryPath? DefaultSettingsDataPath => Settings.DefaultDataFolderPath;
 
     public RunnabilityState(
         CheckRunnability settings,
@@ -35,10 +38,9 @@ public class RunnabilityState : IRunnabilityState
     {
         Settings = settings;
         LoadOrder = loadOrder;
-        ExtraSettingsDataPath = settings.ExtraDataFolder;
     }
 
-    public GameEnvironmentState<TModSetter, TModGetter> GetEnvironmentState<TModSetter, TModGetter>()
+    public IGameEnvironment<TModSetter, TModGetter> GetEnvironmentState<TModSetter, TModGetter>()
         where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
         where TModGetter : class, IContextGetterMod<TModSetter, TModGetter>
     {

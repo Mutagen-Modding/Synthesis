@@ -56,7 +56,7 @@ public class SolutionPatcherInitVm : ViewModel, IPatcherInitVm
         IPatcherInitializationVm init)
     {
         ShowHelpSetting = showHelpSetting;
-        IdeOptions.AddRange(EnumExt.GetValues<IDE>());
+        IdeOptions.AddRange(Enums<IDE>.Values);
         ExistingSolution = existingSolutionInit;
         ExistingProject = existingProjectInit;
         New = newSolutionInit;

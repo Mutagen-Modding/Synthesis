@@ -30,22 +30,26 @@ public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, IProfileLoadOrderP
         ILogger logger,
         ISchedulerProvider schedulerProvider,
         ILiveLoadOrderProvider liveLoadOrderProvider,
-        IPluginListingsPathProvider listingsPathProvider,
+        IPluginListingsPathContext pluginListingsPathContext,
         ICreationClubListingsPathProvider cccListingsPathProvider,
         IProfileIdentifier ident,
-        IProfileDataFolderVm dataFolder)
+        IProfileOverridesVm overrides)
     {
-        var loadOrderResult = dataFolder.WhenAnyValue(x => x.DataFolderResult)
+        var loadOrderResult = overrides.WhenAnyValue(x => x.DataFolderResult)
             .DistinctUntilChanged()
             .ObserveOn(schedulerProvider.TaskPool)
             .Select(x =>
             {
                 if (x.Failed)
                 {
-                    return (Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(), State: Observable.Return(ErrorResponse.Fail("Data folder not set")));
+                    return (
+                        Results: Observable.Empty<IChangeSet<ReadOnlyModListingVM>>(),
+                        State: Observable.Return(ErrorResponse.Fail("Load order could not be retrieved because data folder not set")));
                 }
 
-                logger.Information("Getting live load order for {Release}. DataDirectory: {DataDirectory}, Plugin File Path: {PluginFilePath}, CCC Plugin File Path: {CccPluginFilePath}", ident.Release, x.Value, listingsPathProvider.Path, cccListingsPathProvider.Path);
+                logger.Information("Getting live load order for {Release}. DataDirectory: {DataDirectory}, Plugin File Path: {PluginFilePath}, CCC Plugin File Path: {CccPluginFilePath}",
+                    ident.Release, x.Value, pluginListingsPathContext.Path, cccListingsPathProvider.Path);
+
                 var liveLo = liveLoadOrderProvider.Get(out var errors)
                     .Transform(listing => new ReadOnlyModListingVM(listing, x.Value))
                     .DisposeMany();

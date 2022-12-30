@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using FluentAssertions;
+using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog.IO;
 using NSubstitute;
@@ -16,11 +17,12 @@ public class ExecuteOpenForSettingsTests
     public async Task PassesListingsToTempLoadOrderProvider(
         string path,
         bool directExe,
+        ModKey modKey,
         IEnumerable<IModListingGetter> loadOrder,
         CancellationToken cancel,
         ExecuteOpenForSettings sut)
     {
-        await sut.Open(path, directExe, loadOrder, cancel);
+        await sut.Open(path, directExe, modKey, loadOrder, cancel);
         sut.LoadOrderProvider.Received(1).Get(loadOrder);
     }
         
@@ -28,43 +30,22 @@ public class ExecuteOpenForSettingsTests
     public async Task DisposesTemporaryLoadOrder(
         string path,
         bool directExe,
+        ModKey modKey,
         IEnumerable<IModListingGetter> loadOrder,
         ITempFile tempFile,
         CancellationToken cancel,
         ExecuteOpenForSettings sut)
     {
         sut.LoadOrderProvider.Get(default!).ReturnsForAnyArgs(tempFile);
-        await sut.Open(path, directExe, loadOrder, cancel);
+        await sut.Open(path, directExe, modKey, loadOrder, cancel);
         tempFile.Received(1).Dispose();
-    }
-
-    [Theory, SynthAutoData]
-    public async Task PassesParametersToGetStart(
-        string path,
-        bool directExe,
-        IEnumerable<IModListingGetter> loadOrder,
-        ITempFile tempLoadOrder,
-        CancellationToken cancel,
-        ExecuteOpenForSettings sut)
-    {
-        sut.LoadOrderProvider.Get(default!).ReturnsForAnyArgs(tempLoadOrder);
-        await sut.Open(path, directExe, loadOrder, cancel);
-        sut.RunProcessStartInfoProvider.Received(1).GetStart(path, directExe, new OpenForSettings()
-        {
-            Left = (int)sut.WindowPlacement.Left,
-            Top = (int)sut.WindowPlacement.Top,
-            Height = (int)sut.WindowPlacement.Height,
-            Width = (int)sut.WindowPlacement.Width,
-            LoadOrderFilePath = tempLoadOrder.File.Path,
-            DataFolderPath = sut.DataDirectoryProvider.Path,
-            GameRelease = sut.GameReleaseContext.Release,
-        });
     }
 
     [Theory, SynthAutoData]
     public async Task StartInfoPassedToRunner(
         string path,
         bool directExe,
+        ModKey modKey,
         IEnumerable<IModListingGetter> loadOrder,
         ProcessStartInfo startInfo,
         CancellationToken cancel,
@@ -72,7 +53,7 @@ public class ExecuteOpenForSettingsTests
     {
         sut.RunProcessStartInfoProvider.GetStart<OpenForSettings>(default!, default, default!)
             .ReturnsForAnyArgs(startInfo);
-        await sut.Open(path, directExe, loadOrder, cancel);
+        await sut.Open(path, directExe, modKey, loadOrder, cancel);
         await sut.ProcessRunner.Received(1).Run(startInfo, cancel);
     }
 
@@ -82,11 +63,12 @@ public class ExecuteOpenForSettingsTests
         bool directExe,
         IEnumerable<IModListingGetter> loadOrder,
         int result,
+        ModKey modKey,
         CancellationToken cancel,
         ExecuteOpenForSettings sut)
     {
         sut.ProcessRunner.Run(default!, default).ReturnsForAnyArgs(result);
-        (await sut.Open(path, directExe, loadOrder, cancel))
+        (await sut.Open(path, directExe, modKey, loadOrder, cancel))
             .Should().Be(result);
     }
 }

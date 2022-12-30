@@ -6,13 +6,14 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
 
 public class PluginsTxtMissingVm : ViewModel, IEnvironmentErrorVm
 {
-    private readonly ObservableAsPropertyHelper<bool> _InError;
-    public bool InError => _InError.Value;
+    private readonly ObservableAsPropertyHelper<bool> _inError;
+    public bool InError => _inError.Value;
 
     public string? ErrorString { get; }
 
@@ -20,10 +21,11 @@ public class PluginsTxtMissingVm : ViewModel, IEnvironmentErrorVm
 
     public PluginsTxtMissingVm(
         ILogger logger,
-        IPluginListingsPathProvider listingsPathProvider)
+        IPluginListingsPathContext listingsPathProvider)
     {
         PluginFilePath = listingsPathProvider.Path;
-        _InError = Noggog.ObservableExt.WatchFile(PluginFilePath)
+        
+        _inError = Noggog.ObservableExt.WatchFile(PluginFilePath)
             .StartWith(Unit.Default)
             .Select(_ =>
             {

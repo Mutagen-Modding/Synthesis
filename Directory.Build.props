@@ -1,8 +1,21 @@
 <Project>
-  <PropertyGroup>
+ 
+  <PropertyGroup> 
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally> 
+    <ImplicitUsings>true</ImplicitUsings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <GitInfoReportImportance Condition="$(Configuration) == 'Release'">high</GitInfoReportImportance>
-  </PropertyGroup>
+    <Platforms>x64</Platforms>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+  </PropertyGroup> 
+   
+  <ItemGroup> 
+    <PackageReference Include="GitInfo" > 
+      <PrivateAssets>all</PrivateAssets> 
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets> 
+    </PackageReference>
+  </ItemGroup> 
 
   <!-- To be redefined by GitInfo after restore. -->
   <Target Name="GitVersion" />

@@ -22,9 +22,20 @@ public class ProfileDataFolderTests
     public async Task HasDataPathOverride(
         Utility.Return r,
         DirectoryPath folder,
-        ProfileDataFolderVm sut)
+        ProfileOverridesVm sut)
     {
-        sut.FileSystem.Directory.Exists(folder.Path).Returns(r);
+        sut.FileSystem.Directory.Exists(folder.Path).Returns(x =>
+        {
+            switch (r)
+            {
+                case Utility.Return.False:
+                    return false;
+                case Utility.Return.True:
+                    return true;
+                default:
+                    throw new Exception();
+            }
+        });
         sut.DataPathOverride = folder;
                 
         GetResponse<DirectoryPath> result = GetResponse<DirectoryPath>.Failure;
@@ -34,11 +45,15 @@ public class ProfileDataFolderTests
         if (r == Utility.Return.True)
         {
             result.Value.Should().Be(folder);
-            sut.Path.Path.Should().NotBeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.Should().Be(folder.Path);
         }
-        else
+        else if (r == Utility.Return.False)
         {
-            sut.Path.Path.Should().BeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.Should().Be(folder.Path);
+        }
+        else if (r == Utility.Return.Throw)
+        {
+            sut.DataFolderResult.Value.Path.Should().BeNullOrWhiteSpace();
         }
     }
 
@@ -48,9 +63,9 @@ public class ProfileDataFolderTests
     [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false, OmitAutoProperties: true)]
     public void GameLocation(
         Utility.Return r,
-        Lazy<ProfileDataFolderVm> sutGetter,
+        Lazy<ProfileOverridesVm> sutGetter,
         [Frozen] IFileSystem fileSystem,
-        [Frozen] IGameDirectoryLookup gameLocator)
+        [Frozen] IDataDirectoryLookup gameLocator)
     {
         fileSystem.Directory.Exists(Arg.Any<string>()).Returns(true);
         gameLocator.TryGet(Arg.Any<GameRelease>(), out Arg.Any<DirectoryPath>())
@@ -76,11 +91,15 @@ public class ProfileDataFolderTests
         result.Succeeded.Should().Be(r == Utility.Return.True);
         if (r == Utility.Return.True)
         {
-            sut.Path.Path.Should().NotBeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.Should().NotBeNullOrWhiteSpace();
         }
-        else
+        else if (r == Utility.Return.False)
         {
-            sut.Path.Path.Should().BeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.Should().BeNullOrWhiteSpace();
+        }
+        else if (r == Utility.Return.Throw)
+        {
+            sut.DataFolderResult.Value.Path.Should().BeNullOrWhiteSpace();
         }
     }
     
@@ -93,8 +112,8 @@ public class ProfileDataFolderTests
         DirectoryPath folder,
         [Frozen]IFileSystem fs,
         [Frozen]IProfileIdentifier ident,
-        [Frozen]IGameDirectoryLookup lookup,
-        Lazy<ProfileDataFolderVm> sutF)
+        [Frozen]IDataDirectoryLookup lookup,
+        Lazy<ProfileOverridesVm> sutF)
     {
         lookup.TryGet(ident.Release, out Arg.Any<DirectoryPath>())
             .Returns(x =>
@@ -102,8 +121,7 @@ public class ProfileDataFolderTests
                 x[1] = folder;
                 return true;
             });
-        var dataFolder = Path.Combine(folder.Path, "Data");
-        fs.Directory.Exists(dataFolder).Returns(r);
+        fs.Directory.Exists(folder).Returns(r);
         var sut = sutF.Value;
             
         GetResponse<DirectoryPath> result = GetResponse<DirectoryPath>.Failure;
@@ -112,12 +130,16 @@ public class ProfileDataFolderTests
         result.Succeeded.Should().Be(r == Utility.Return.True);
         if (r == Utility.Return.True)
         {
-            result.Value.Path.Should().Be(dataFolder);
-            sut.Path.Path.Should().NotBeNullOrWhiteSpace();
+            result.Value.Path.Should().Be(folder);
+            sut.DataFolderResult.Value.Path.Should().NotBeNullOrWhiteSpace();
         }
-        else
+        else if (r == Utility.Return.False)
         {
-            sut.Path.Path.Should().BeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.Should().NotBeNullOrWhiteSpace();
+        }
+        else if (r == Utility.Return.Throw)
+        {
+            sut.DataFolderResult.Value.Path.Should().BeNullOrWhiteSpace();
         }
     }
 }

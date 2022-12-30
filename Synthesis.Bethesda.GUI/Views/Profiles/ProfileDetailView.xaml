@@ -181,17 +181,24 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
                 <TextBlock Grid.Row="0"
-                    Margin="0,16,0,0"
-                    Style="{StaticResource SettingSectionHeaderStyle}"
-                    Text="Data Folder Location" />
-                <TextBox Grid.Row="1"
-                    x:Name="DataFolderOverrideBox"
-                    Margin="10,8,0,0"
-                    mahapps:TextBoxHelper.Watermark="Automatic detection"
-                    ToolTip="Location of your data folder.  Default setting is to locate it automatically." />
+                           Margin="0,16,0,0"
+                           Style="{StaticResource SettingSectionHeaderStyle}"
+                           Text="Installation" />
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Margin="4"
+                           VerticalAlignment="Center"
+                           Text="Data Folder" />
+                <TextBox Grid.Row="1" Grid.Column="1"
+                         x:Name="DataFolderOverrideBox"
+                         Margin="10,8,0,0"
+                         mahapps:TextBoxHelper.Watermark="{Binding DataFolderWatermark, Mode=OneWay}"
+                         ToolTip="Location of your data folder.  Default setting is to locate it automatically." />
             </Grid>
             <Grid Grid.Row="3">
                 <Grid.RowDefinitions>
@@ -249,7 +256,7 @@
                           Content="Ignore Missing Mods"
                           ToolTip="Whether to allow pipeline execution even if there are missing mods" />
             </Grid>
-            <Button Grid.Row="6"
+            <Button Grid.Row="7"
                 x:Name="ProfileInternalFilesButton"
                 Margin="0,0,0,10"
                 HorizontalAlignment="Left">
@@ -261,7 +268,7 @@
                     <TextBlock VerticalAlignment="Center" Text="Profile Internal Files" />
                 </StackPanel>
             </Button>
-            <Button Grid.Row="6"
+            <Button Grid.Row="7"
                 x:Name="ExportButton"
                 Margin="0,0,0,10"
                 HorizontalAlignment="Right"

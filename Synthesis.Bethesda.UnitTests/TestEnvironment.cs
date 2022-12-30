@@ -22,9 +22,9 @@ public record TestEnvironment(
         return StatePluginListings().Get();
     }
 
-    public StateFactory GetStateFactory()
+    public PatcherStateFactory GetStateFactory()
     {
-        return new StateFactory(
+        return new PatcherStateFactory(
             FileSystem,
             new LoadOrderImporterFactory(FileSystem),
             GetStateLoadOrder());
@@ -35,6 +35,7 @@ public record TestEnvironment(
         var gameReleaseInjection = new GameReleaseInjection(Release);
         var categoryContext = new GameCategoryContext(gameReleaseInjection);
         var dataDirectoryInjection = new DataDirectoryInjection(DataFolder);
+        var gameLoc = new GameLocator();
         return new GetStateLoadOrder(
             new ImplicitListingsProvider(
                 FileSystem,
@@ -50,7 +51,7 @@ public record TestEnvironment(
                     new CreationClubEnabledProvider(categoryContext),
                     new GameDirectoryProvider(
                         gameReleaseInjection,
-                        new GameLocator())),
+                        gameLoc)),
                 new CreationClubRawListingsReader()),
             StatePluginListings(),
             new EnableImplicitMastersFactory(FileSystem));
@@ -63,6 +64,7 @@ public record TestEnvironment(
             new PluginRawListingsReader(
                 FileSystem,
                 new PluginListingsParser(
+                    new PluginListingCommentTrimmer(),
                     new LoadOrderListingParser(
                         new HasEnabledMarkersProvider(
                             new GameReleaseInjection(Release))))));

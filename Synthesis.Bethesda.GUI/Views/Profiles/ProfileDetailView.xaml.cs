@@ -151,7 +151,7 @@ public partial class ProfileDetailView : ProfileDetailViewBase
                 .DisposeWith(disposable);
             #endregion
 
-            this.Bind(this.ViewModel, x => x!.Profile!.DataFolderOverride.DataPathOverride, x => x.DataFolderOverrideBox.Text,
+            this.Bind(this.ViewModel, x => x!.Profile!.Overrides.DataPathOverride, x => x.DataFolderOverrideBox.Text,
                     vmToViewConverter: vm => vm ?? string.Empty,
                     viewToVmConverter: view => view.IsNullOrWhitespace() ? null : view)
                 .DisposeWith(disposable);

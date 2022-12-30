@@ -3,7 +3,6 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <AssemblyName>Synthesis</AssemblyName>
-    <TargetFramework>net6.0</TargetFramework>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <UseWPF>true</UseWPF>
@@ -14,13 +13,10 @@
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Noggog/Synthesis</RepositoryUrl>
     <Company>Mutagen</Company>
-    <Platforms>x64</Platforms>
     <ApplicationIcon>mushroom.ico</ApplicationIcon>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <StartupObject>Synthesis.Bethesda.GUI.App</StartupObject>
     <LangVersion>preview</LangVersion>
-    <Nullable>enable</Nullable>
-    <WarningsAsErrors>nullable</WarningsAsErrors>
     <PublishReadyToRun>True</PublishReadyToRun>
     <PublishReadyToRunShowWarnings>True</PublishReadyToRunShowWarnings>
     <DebugType>embedded</DebugType>
@@ -37,33 +33,24 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="6.4.0" />
-    <PackageReference Include="GitInfo" Version="2.2.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Humanizer.Core" Version="2.14.1" />
-    <PackageReference Include="Loqui" Version="2.50.1" />
-    <PackageReference Include="Loqui.Generation" Version="2.50.1" />
-    <PackageReference Include="Mutagen.Bethesda.Autofac" Version="0.39.5" />
-    <PackageReference Include="Mutagen.Bethesda.WPF" Version="0.39.5" />
-    <PackageReference Include="Noggog.Autofac" Version="2.50.1" />
-    <PackageReference Include="Noggog.CSharpExt" Version="2.50.1" />
-    <PackageReference Include="Noggog.CSharpExt.Windows" Version="2.50.1" />
-    <PackageReference Include="Noggog.WPF" Version="2.50.1" />
-    <PackageReference Include="NuGetizer" Version="0.8.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="reactiveui" Version="18.0.10" />
-    <PackageReference Include="ReactiveUI.Fody" Version="18.0.10" />
-    <PackageReference Include="ReactiveUI.WPF" Version="18.0.10" />
-    <PackageReference Include="Serilog" Version="2.11.0" />
-    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="Serilog.Sinks.Map" Version="1.0.2" />
-    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+    <PackageReference Include="Autofac" />
+    <PackageReference Include="Humanizer.Core" />
+    <PackageReference Include="Loqui" />
+    <PackageReference Include="Mutagen.Bethesda.Autofac" />
+    <PackageReference Include="Mutagen.Bethesda.WPF" />
+    <PackageReference Include="Noggog.Autofac" />
+    <PackageReference Include="Noggog.CSharpExt" />
+    <PackageReference Include="Noggog.CSharpExt.Windows" />
+    <PackageReference Include="Noggog.WPF" />
+    <PackageReference Include="ReactiveUI" />
+    <PackageReference Include="ReactiveUI.Fody" />
+    <PackageReference Include="ReactiveUI.WPF" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Enrichers.Thread" />
+    <PackageReference Include="Serilog.Extensions.Logging" />
+    <PackageReference Include="Serilog.Sinks.File" />
+    <PackageReference Include="Serilog.Sinks.Map" />
+    <PackageReference Include="System.Linq.Async" />
   </ItemGroup>
 
   <ItemGroup>

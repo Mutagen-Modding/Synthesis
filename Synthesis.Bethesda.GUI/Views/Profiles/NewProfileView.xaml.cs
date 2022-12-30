@@ -20,15 +20,15 @@ public partial class NewProfileView : NewProfileViewBase
             this.Bind(this.ViewModel, vm => vm.Nickname, view => view.PatcherDetailName.Text)
                 .DisposeWith(dispose);
 
-            this.OneWayBind(ViewModel, x => x.CategoryOptions, x => x.GameCategoryOptionsControl.ItemsSource)
+            this.OneWayBind(ViewModel, x => x.CategoryOptions, x => x.ReleasePickerView.GameCategoryOptionsControl.ItemsSource)
                 .DisposeWith(dispose);
-            this.Bind(this.ViewModel, vm => vm.SelectedCategory, view => view.GameCategoryOptionsControl.SelectedItem)
+            this.Bind(this.ViewModel, vm => vm.SelectedCategory, view => view.ReleasePickerView.GameCategoryOptionsControl.SelectedItem)
                 .DisposeWith(dispose);
 
             this.WhenAnyFallback(x => x.ViewModel!.ReleaseOptions, fallback: default)
-                .BindTo(this, x => x.GameReleaseOptionsControl.ItemsSource)
+                .BindTo(this, x => x.ReleasePickerView.GameReleaseOptionsControl.ItemsSource)
                 .DisposeWith(dispose);
-            this.Bind(this.ViewModel, vm => vm.SelectedRelease, view => view.GameReleaseOptionsControl.SelectedItem)
+            this.Bind(this.ViewModel, vm => vm.SelectedRelease, view => view.ReleasePickerView.GameReleaseOptionsControl.SelectedItem)
                 .DisposeWith(dispose);
         });
     }

@@ -20,7 +20,7 @@ public class SwapInDesiredVersionsForProjectString : ISwapInDesiredVersionsForPr
 
     static SwapInDesiredVersionsForProjectString()
     {
-        MutagenLibraries = EnumExt.GetValues<GameCategory>()
+        MutagenLibraries = Enums<GameCategory>.Values
             .Select(x => $"Mutagen.Bethesda.{x}")
             .And("Mutagen.Bethesda")
             .And("Mutagen.Bethesda.Core")

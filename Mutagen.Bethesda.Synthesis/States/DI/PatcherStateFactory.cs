@@ -11,22 +11,24 @@ using Mutagen.Bethesda.Synthesis.CLI;
 
 namespace Mutagen.Bethesda.Synthesis.States.DI;
 
-public interface IStateFactory
+public interface IPatcherStateFactory
 {
+#pragma warning disable CS0618
     SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
         where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
         where TModGetter : class, IContextGetterMod<TModSetter, TModGetter>;
+#pragma warning restore CS0618
 
     IPatcherState ToState(GameCategory category, RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey);
 }
 
-public class StateFactory : IStateFactory
+public class PatcherStateFactory : IPatcherStateFactory
 {
     private readonly IFileSystem _fileSystem;
     private readonly ILoadOrderImporterFactory _loadOrderImporter;
     private readonly IGetStateLoadOrder _getStateLoadOrder;
 
-    public StateFactory(
+    public PatcherStateFactory(
         IFileSystem fileSystem,
         ILoadOrderImporterFactory loadOrderImporter,
         IGetStateLoadOrder getStateLoadOrder)
@@ -44,10 +46,12 @@ public class StateFactory : IStateFactory
         }
     }
         
+#pragma warning disable CS0618
     public SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
         where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
         where TModGetter : class, IContextGetterMod<TModSetter, TModGetter>
     {
+#pragma warning restore CS0618
         // Confirm target game release matches
         var regis = settings.GameRelease.ToCategory().ToModRegistration();
         if (!typeof(TModSetter).IsAssignableFrom(regis.SetterType))
@@ -160,7 +164,7 @@ public class StateFactory : IStateFactory
             linkCache: cache,
             internalDataPath: settings.InternalDataFolder,
             patchMod: patchMod,
-            extraDataPath: settings.ExtraDataFolder == null ? string.Empty : Path.GetFullPath(settings.ExtraDataFolder),
+            extraDataPath: settings.ExtraDataFolder,
             defaultDataPath: settings.DefaultDataFolderPath,
             cancellation: userPrefs.Cancel,
             formKeyAllocator: formKeyAllocator);
@@ -169,7 +173,7 @@ public class StateFactory : IStateFactory
     public IPatcherState ToState(GameCategory category, RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
     {
         var regis = category.ToModRegistration();
-        var method = typeof(StateFactory)
+        var method = typeof(PatcherStateFactory)
             .GetMethods()
             .Where(m => m.Name == nameof(ToState))
             .Where(m => m.ContainsGenericParameters)

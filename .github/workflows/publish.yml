@@ -10,9 +10,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.*
+        dotnet-version: 7.0.*
     - name: Install dependencies
       run: |
         dotnet clean Synthesis.Bethesda.sln -c Release && dotnet nuget locals all --clear
@@ -32,5 +32,7 @@ jobs:
         file: Synthesis.zip
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.release.tag_name }}
-    - name: Publish Nugets to Nuget.org
+    - name: Publish x64 Nugets to Nuget.org
       run: dotnet nuget push **bin/x64/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --no-symbols
+    - name: Publish Nugets to Nuget.org
+      run: dotnet nuget push **bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --no-symbols

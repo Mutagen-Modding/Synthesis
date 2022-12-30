@@ -31,6 +31,9 @@ public class RunSynthesisPatcher
     [Option('k', "ModKey", Required = false, HelpText = "ModKey associated with the patch being generated")]
     public string? ModKey { get; set; }
 
+    [Option("LoadOrderIncludesCreationClub", Required = false, HelpText = "Whether the load order path file includes CC mods already")]
+    public bool LoadOrderIncludesCreationClub { get; set; } = true;
+
     [Option("TargetLanguage", Required = false, HelpText = "What language to view as the default language")]
     public string TargetLanguage { get; set; } = "English";
         
@@ -51,6 +54,7 @@ public class RunSynthesisPatcher
                + $"  {nameof(PersistencePath)} => {PersistencePath} \n"
                + $"  {nameof(PatcherName)} => {PatcherName} \n"
                + $"  {nameof(TargetLanguage)} => {this.TargetLanguage}\n"
+               + $"  {nameof(LoadOrderIncludesCreationClub)} => {this.LoadOrderIncludesCreationClub}\n"
                + $"  {nameof(Localize)} => {Localize}\n"
                + $"  {nameof(ModKey)} => {ModKey}\n"
                + $"  {nameof(UseUtf8ForEmbeddedStrings)} => {UseUtf8ForEmbeddedStrings}";

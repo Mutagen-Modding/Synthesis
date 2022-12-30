@@ -2,6 +2,7 @@ using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Linq;
 using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog;
 using Noggog.Reactive;
 using Noggog.WPF;
@@ -12,16 +13,17 @@ using Synthesis.Bethesda.Execution.Profile;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
-public interface IProfileDataFolderVm
+public interface IProfileOverridesVm
 {
     string? DataPathOverride { get; set; }
     GetResponse<DirectoryPath> DataFolderResult { get; }
 }
 
-public class ProfileDataFolderVm : ViewModel, IProfileDataFolderVm, IDataDirectoryProvider
+public class ProfileOverridesVm : ViewModel,
+    IProfileOverridesVm, 
+    IDataDirectoryProvider
 {
     public IFileSystem FileSystem { get; }
-    public IGameDirectoryLookup GameLocator { get; }
 
     [Reactive]
     public string? DataPathOverride { get; set; }
@@ -29,37 +31,37 @@ public class ProfileDataFolderVm : ViewModel, IProfileDataFolderVm, IDataDirecto
     private readonly ObservableAsPropertyHelper<GetResponse<DirectoryPath>> _dataFolderResult;
     public GetResponse<DirectoryPath> DataFolderResult => _dataFolderResult.Value;
     
-    public DirectoryPath Path => _dataFolderResult.Value.Value;
-
-    public ProfileDataFolderVm(
+    DirectoryPath IDataDirectoryProvider.Path =>  _dataFolderResult.Value.Value;
+    
+    public ProfileOverridesVm(
         ILogger logger,
         ISchedulerProvider schedulerProvider,
         IWatchDirectory watchDirectory,
         IFileSystem fileSystem,
-        IGameDirectoryLookup gameLocator,
+        IDataDirectoryLookup dataDirLookup,
         IProfileIdentifier ident)
     {
         FileSystem = fileSystem;
-        GameLocator = gameLocator;
         
         _dataFolderResult = this.WhenAnyValue(x => x.DataPathOverride)
             .Select(path =>
             {
                 if (path != null) return Observable.Return(GetResponse<DirectoryPath>.Succeed(path));
-                logger.Information("Starting to locate data folder");
                 return Observable.Return(ident.Release)
                     .ObserveOn(schedulerProvider.TaskPool)
-                    .Select(x =>
+                    .Select(release =>
                     {
                         try
                         {
-                            if (!gameLocator.TryGet(x, out var gameFolder))
+                            logger.Information("Starting to locate data folder for {Release}", release);
+                            if (!dataDirLookup.TryGet(release, out var dataFolder))
                             {
                                 return GetResponse<DirectoryPath>.Fail(
-                                    "Could not automatically locate Data folder.  Run Steam/GoG/etc once to properly register things.");
+                                    $"Could not automatically locate Data folder.  Run game once to properly register things.");
                             }
 
-                            return GetResponse<DirectoryPath>.Succeed(System.IO.Path.Combine(gameFolder, "Data"));
+                            logger.Information("Found data folder at {DataFolder}", dataFolder);
+                            return GetResponse<DirectoryPath>.Succeed(dataFolder);
                         }
                         catch (Exception ex)
                         {
@@ -79,7 +81,7 @@ public class ProfileDataFolderVm : ViewModel, IProfileDataFolderVm, IDataDirecto
                         try
                         {
                             if (fileSystem.Directory.Exists(x.Value)) return x;
-                            return GetResponse<DirectoryPath>.Fail($"Data folder did not exist: {x.Value}");
+                            return GetResponse<DirectoryPath>.Fail(x.Value, $"Data folder did not exist: {x.Value}");
                         }
                         catch (Exception ex)
                         {
@@ -100,6 +102,5 @@ public class ProfileDataFolderVm : ViewModel, IProfileDataFolderVm, IDataDirecto
                 }
             })
             .ToProperty(this, nameof(DataFolderResult), scheduler: schedulerProvider.MainThread, deferSubscription: true);
-
     }
 }

@@ -4,7 +4,7 @@ using Mutagen.Bethesda;
 namespace Synthesis.Bethesda.Commands;
 
 [Verb("open-for-settings", HelpText = "Informs the patcher to open in settings mode")]
-public record OpenForSettings
+public record OpenForSettings : IBaseRunArgs
 {
     [Option('y', "Top", Required = false, HelpText = "Top location to consider when positioning")]
     public int Top { get; set; }
@@ -27,6 +27,21 @@ public record OpenForSettings
     [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
     public string LoadOrderFilePath { get; set; } = string.Empty;
 
+    [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to the user data folder dedicated for a patcher")]
+    public string? ExtraDataFolder { get; set; }
+
+    [Option("LoadOrderIncludesCreationClub", Required = false, HelpText = "Whether the load order path file includes CC mods already")]
+    public bool LoadOrderIncludesCreationClub { get; set; } = true;
+
+    [Option('i', "InternalDataFolder", Required = false, HelpText = "Path to the internal data folder dedicated for a patcher")]
+    public string? InternalDataFolder { get; set; }
+
+    [Option('f', "DefaultDataFolderPath", Required = false, HelpText = "Path to the data folder as the patcher source code defines it.")]
+    public string? DefaultDataFolderPath { get; set; }
+        
+    [Option('k', "ModKey", Required = false, HelpText = "ModKey associated with the patch being generated")]
+    public string? ModKey { get; set; }
+
     public override string ToString()
     {
         return $"{nameof(OpenForSettings)} => \n"
@@ -34,8 +49,13 @@ public record OpenForSettings
                + $"  {nameof(Left)} => {this.Left} \n"
                + $"  {nameof(Width)} => {this.Width} \n"
                + $"  {nameof(Height)} => {this.Height} \n"
+               + $"  {nameof(ModKey)} => {this.ModKey} \n"
                + $"  {nameof(GameRelease)} => {this.GameRelease} \n"
                + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
-               + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}";
+               + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder} \n"
+               + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath} \n"
+               + $"  {nameof(InternalDataFolder)} => {this.InternalDataFolder} \n"
+               + $"  {nameof(DefaultDataFolderPath)} => {this.DefaultDataFolderPath} \n"
+               + $"  {nameof(LoadOrderIncludesCreationClub)} => {this.LoadOrderIncludesCreationClub}";
     }
 }

@@ -51,12 +51,12 @@ public class CheckRunnabilityTests
             .Should().Be(0);
     }
 
-    public static void RunPatch(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
+    private static void RunPatch(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
     {
         
     }
 
-    public static void RunPatch(IPatcherState<IFallout4Mod, IFallout4ModGetter> state)
+    private static void RunPatch(IPatcherState<IFallout4Mod, IFallout4ModGetter> state)
     {
         
     }
