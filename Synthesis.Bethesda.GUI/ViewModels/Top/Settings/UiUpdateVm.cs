@@ -13,6 +13,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
 public class UiUpdateVm : ViewModel
 {
+    private readonly SemanticVersionParsing _semanticVersionParsing;
     public string SynthesisVersion { get; }
 
     private readonly ObservableAsPropertyHelper<string?> _newestSynthesisVersion;
@@ -37,24 +38,18 @@ public class UiUpdateVm : ViewModel
         ILogger logger,
         INavigateTo navigateTo,
         INewestLibraryVersionsVm libVersionsVm,
-        IProvideCurrentVersions currentVersions)
+        IProvideCurrentVersions currentVersions,
+        SemanticVersionParsing semanticVersionParsing)
     {
+        _semanticVersionParsing = semanticVersionParsing;
         SynthesisVersion = currentVersions.SynthesisVersion;
         SemanticVersion? curVersion;
         try
         {
-            if (!SemanticVersion.TryParse(SynthesisVersion, out curVersion))
+            if (!_semanticVersionParsing.TryTrimAndParse(SynthesisVersion, out curVersion))
             {
                 curVersion = null;
-                int GetNum(int i) => i == -1 ? 0 : i;
-                if (Version.TryParse(SynthesisVersion, out var version))
-                {
-                    curVersion = new SemanticVersion(GetNum(version.Major), GetNum(version.Minor), GetNum(version.Build), version.Revision.ToString());
-                }
-                else
-                {
-                    logger.Error("Error getting current UI semantic version: {String}", SynthesisVersion);
-                }
+                logger.Error("Error getting current UI semantic version: {String}", SynthesisVersion);
             }
         }
         catch (Exception e)
@@ -86,7 +81,14 @@ public class UiUpdateVm : ViewModel
                 try
                 {
                     logger.Information("Checking if there is a UI update. {Current} -> {Newest}", curVersion, x);
-                    return SemanticVersion.Parse(x) > curVersion;
+
+                    if (!_semanticVersionParsing.TryTrimAndParse(x, out var newestVersion))
+                    {
+                        logger.Information("Failed to parse newest version");
+                        return false;
+                    }
+                    
+                    return newestVersion > curVersion;
                 }
                 catch (Exception e)
                 {
@@ -96,6 +98,4 @@ public class UiUpdateVm : ViewModel
             })
             .ToGuiProperty(this, nameof(HasUpdate));
     }
-    
-    
 }
