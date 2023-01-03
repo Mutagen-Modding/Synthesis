@@ -37,8 +37,7 @@ public class ProfileManagerVm : ViewModel, ISelectedProfileControllerVm, IModify
 
     public ProfileManagerVm(
         IProfileFactory profileFactory,
-        StartingProfileOverrideProvider startingProfileOverrideProvider,
-        ILogger logger)
+        StartingProfileOverrideProvider startingProfileOverrideProvider)
     {
         _profileFactory = profileFactory;
         _startingProfileOverrideProvider = startingProfileOverrideProvider;

@@ -22,6 +22,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Groups;
 
 public class GroupVm : ViewModel, ISelected
 {
+    private readonly IProfileDisplayControllerVm _profileDisplayController;
     public IProfileDisplayControllerVm DisplayController { get; }
     public SourceList<PatcherVm> Patchers { get; } = new();
 
@@ -77,9 +78,10 @@ public class GroupVm : ViewModel, ISelected
         StartRun startRun,
         IProfileLoadOrder loadOrder,
         IConfirmationPanelControllerVm confirmation,
-        IProfileDisplayControllerVm selPatcher,
+        IProfileDisplayControllerVm profileDisplayController,
         ILogger logger)
     {
+        _profileDisplayController = profileDisplayController;
         ProfileVm = profileVm;
         LoadOrder = loadOrder.LoadOrder.Connect()
             .Transform(x => x.ModKey);
@@ -97,7 +99,7 @@ public class GroupVm : ViewModel, ISelected
             })
             .ToGuiProperty(this, nameof(ModKey), GetResponse<ModKey>.Fail(Mutagen.Bethesda.Plugins.ModKey.Null), deferSubscription: true);
 
-        _isSelected = selPatcher.WhenAnyValue(x => x.SelectedObject)
+        _isSelected = profileDisplayController.WhenAnyValue(x => x.SelectedObject)
             .Select(x => x == this)
             // Not GuiProperty, as it interacts with drag/drop oddly
             .ToProperty(this, nameof(IsSelected));
@@ -264,6 +266,10 @@ public class GroupVm : ViewModel, ISelected
     public void Remove(PatcherVm patcher)
     {
         Patchers.Remove(patcher);
+        if (_profileDisplayController.SelectedObject == patcher)
+        {
+            _profileDisplayController.SelectedObject = this;
+        }
     }
 
     public PatcherGroupSettings Save()
