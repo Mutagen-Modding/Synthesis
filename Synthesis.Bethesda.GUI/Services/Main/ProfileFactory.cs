@@ -74,7 +74,9 @@ public class ProfileFactory : IProfileFactory
 
         if (profile.Groups.Count == 0)
         {
-            profile.Groups.Add(newGroup.Get());
+            var initialGroup = newGroup.Get();
+            profile.Groups.Add(initialGroup);
+            profile.DisplayController.SelectedObject = initialGroup;
         }
             
         return profile;
@@ -110,9 +112,10 @@ public class ProfileFactory : IProfileFactory
         var newGroup = scope.Resolve<INewGroupCreator>();
 
         scope.DisposeWith(profile);
-        var group = newGroup.Get();
-        group.Name = Constants.SynthesisName;
-        profile.Groups.Add(group);
+        var initialGroup = newGroup.Get();
+        initialGroup.Name = Constants.SynthesisName;
+        profile.Groups.Add(initialGroup);
+        profile.DisplayController.SelectedObject = initialGroup;
         return profile;
     }
 }
