@@ -98,12 +98,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 {
                     switch (x)
                     {
-                        case ProfileManagerVm config:
+                        case ProfileManagerVm:
                             return activeRunVm.WhenAnyFallback(x => x.CurrentRun!.Running, fallback: false);
                         case RunVm running:
                             return running.WhenAnyValue(x => x.Running);
-                        default:
-                            break;
                     }
                     return Observable.Return(false);
                 })
