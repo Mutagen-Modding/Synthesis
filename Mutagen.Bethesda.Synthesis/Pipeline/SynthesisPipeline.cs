@@ -550,6 +550,10 @@ public class SynthesisPipeline
                     GameRelease = args.GameRelease,
                     LoadOrderFilePath = args.LoadOrderFilePath,
                     ExtraDataFolder = args.ExtraDataFolder,
+                    InternalDataFolder = args.InternalDataFolder,
+                    DefaultDataFolderPath = args.DefaultDataFolderPath,
+                    ModKey = args.ModKey,
+                    LoadOrderIncludesCreationClub = args.LoadOrderIncludesCreationClub
                 },
                 fileSystem: fileSystem).ConfigureAwait(false);
             if (runnabilityResult == Codes.NotRunnable)
