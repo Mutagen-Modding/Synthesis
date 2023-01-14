@@ -4,7 +4,8 @@
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mahconv="clr-namespace:MahApps.Metro.Converters;assembly=MahApps.Metro"
     xmlns:xwpf="http://schemas.xceed.com/wpf/xaml/toolkit"
-    xmlns:xwpfThemes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit">
+    xmlns:xwpfThemes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit"
+    xmlns:themes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit.NET5">
     <Color x:Key="Salmon">#e16063</Color>
     <Color x:Key="LightSalmon">#fa7376</Color>
     <Color x:Key="WhiteSalmon">#ff999b</Color>
@@ -616,7 +617,7 @@
     <Style x:Key="NoggogNumericUpDown" TargetType="{x:Type xwpf:InputBase}">
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static xwpfThemes:ResourceKeys.ControlNormalBorderKey}}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static themes:ResourceKeys.ControlNormalBorderKey}}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="HorizontalContentAlignment" Value="Right" />
         <Setter Property="IsTabStop" Value="False" />
@@ -667,7 +668,7 @@
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static xwpfThemes:ResourceKeys.ControlMouseOverBorderKey}}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static themes:ResourceKeys.ControlMouseOverBorderKey}}" />
                         </Trigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
@@ -680,7 +681,7 @@
                             <Setter TargetName="PART_TextBox" Property="IsReadOnly" Value="True" />
                         </DataTrigger>
                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static xwpfThemes:ResourceKeys.ControlSelectedBorderKey}}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static themes:ResourceKeys.ControlSelectedBorderKey}}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />

@@ -43,7 +43,7 @@ public class GroupRunLoadOrderPreparer : IGroupRunLoadOrderPreparer
         Printer.Print(loadOrderList);
 
         var loadOrderPath = LoadOrderPathProvider.PathFor(groupRun);
-        _fileSystem.Directory.CreateDirectory(loadOrderPath.Directory);
+        _fileSystem.Directory.CreateDirectory(loadOrderPath.Directory!);
             
         LoadOrderWriter.Write(
             loadOrderPath,
