@@ -8,6 +8,7 @@ using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
+using Serilog;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.DotNet.Singleton;
 using Synthesis.Bethesda.Execution.Patchers.Common;
@@ -27,6 +28,7 @@ public class SolutionPatcherVm : PatcherVm
     public ISolutionPathInputVm SolutionPathInput { get; }
     public ISelectedProjectInputVm SelectedProjectInput { get; }
     private readonly IProfileLoadOrder _loadOrder;
+    private readonly ILogger _logger;
 
     public IObservableCollection<string> AvailableProjects { get; }
 
@@ -61,6 +63,7 @@ public class SolutionPatcherVm : PatcherVm
         ISolutionMetaFileSync metaFileSync,
         INavigateTo navigateTo,
         IPatcherIdProvider idProvider,
+        ILogger logger,
         SolutionPatcherSettingsVm settingsVm,
         PatcherRenameActionVm.Factory renameFactory,
         PatcherGroupTarget groupTarget,
@@ -71,6 +74,7 @@ public class SolutionPatcherVm : PatcherVm
         SelectedProjectInput = selectedProjectInput;
         Settings = settingsVm;
         _loadOrder = loadOrder;
+        _logger = logger;
         CopyInSettings(settings);
 
         AvailableProjects = availableProjectsFollower.Process(
@@ -129,7 +133,14 @@ public class SolutionPatcherVm : PatcherVm
         CopyOverSave(ret);
         ret.SolutionPath = this.SolutionPathInput.Picker.TargetPath;
         ret.ProjectSubpath = this.SelectedProjectInput.ProjectSubpath;
-        PatcherSettings.Persist();
+        try
+        {
+            PatcherSettings.Persist();
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Failed to save patcher settings");
+        }
         return ret;
     }
 
@@ -143,6 +154,13 @@ public class SolutionPatcherVm : PatcherVm
     public override void PrepForRun()
     {
         base.PrepForRun();
-        PatcherSettings.Persist();
+        try
+        {
+            PatcherSettings.Persist();
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Failed to save patcher settings");
+        }
     }
 }

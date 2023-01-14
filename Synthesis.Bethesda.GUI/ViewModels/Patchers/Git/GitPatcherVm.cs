@@ -309,7 +309,14 @@ public class GitPatcherVm : PatcherVm, IPathToSolutionFileProvider
     {
         base.PrepForRun();
         _copyOverExtraData.Copy();
-        PatcherSettings.Persist();
+        try
+        {
+            PatcherSettings.Persist();
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e, "Failed to save patcher settings");
+        }
     }
 
     public override void Delete()
