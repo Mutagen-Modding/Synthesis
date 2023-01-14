@@ -13,6 +13,7 @@ using Synthesis.Bethesda.DTO;
 using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.GUI.Services.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
@@ -60,6 +61,7 @@ public class PatcherUserSettingsVm : ViewModel
         IGetSettingsStyle getSettingsStyle,
         IModKeyProvider modKeyProvider,
         IExecuteOpenForSettings executeOpenForSettings,
+        IPatcherRunnabilityCliState runnabilityCliState,
         IOpenSettingsHost openSettingsHost)
     {
         _initRepository = initRepository;
@@ -125,6 +127,7 @@ public class PatcherUserSettingsVm : ViewModel
                         cancel: CancellationToken.None,
                         loadOrder: loadOrder.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm)).ConfigureAwait(false);
                 }
+                runnabilityCliState.CheckAgain();
             },
             disposable: this);
 

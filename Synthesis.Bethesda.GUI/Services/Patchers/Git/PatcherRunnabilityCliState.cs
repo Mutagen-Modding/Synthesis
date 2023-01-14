@@ -1,4 +1,6 @@
-﻿using System.Reactive.Linq;
+﻿using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using DynamicData;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Plugins.Order;
@@ -8,7 +10,6 @@ using Serilog;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;
@@ -16,11 +17,15 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;
 public interface IPatcherRunnabilityCliState
 {
     IObservable<ConfigurationState<RunnerRepoInfo>> Runnable { get; }
+    void CheckAgain();
 }
 
 public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
 {
+    private readonly Subject<Unit> _checkAgain = new();
     public IObservable<ConfigurationState<RunnerRepoInfo>> Runnable { get; }
+    
+    public void CheckAgain() => _checkAgain.OnNext(Unit.Default);
 
     public PatcherRunnabilityCliState(
         ICompilationProvider compilationProvider,
@@ -38,6 +43,14 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
                     .QueryWhenChanged()
                     .StartWith(Array.Empty<ReadOnlyModListingVM>()),
                 (comp, data, loadOrder) => (comp, data, loadOrder))
+            // ToDo
+            // Replace with RepublishLatestOnSignal
+            .Select(x =>
+            {
+                return _checkAgain.Select(_ => x)
+                    .StartWith(x);
+            })
+            .Switch()
             .Select(i =>
             {
                 return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
