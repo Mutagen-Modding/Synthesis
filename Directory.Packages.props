@@ -47,7 +47,7 @@
     <PackageVersion Include="Noggog.CSharpExt.Json" Version="2.55" />
     <PackageVersion Include="Noggog.CSharpExt.Windows" Version="2.55" />
     <PackageVersion Include="Noggog.GitRepository">
-      <Version>1.1.0.1-dev</Version>
+      <Version>1.2</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.Testing" Version="2.55" />
     <PackageVersion Include="Noggog.WPF" Version="2.55" />
