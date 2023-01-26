@@ -58,6 +58,6 @@ You can also add the required mods check to an existing runnability function wit
 ```cs
 public static void CheckRunnability(IRunnabilityState state)
 {
-    state.LoadOrder.AssertHasMod("RequiredMod.esp");
+    state.LoadOrder.AssertListsMod("RequiredMod.esp");
 }
 ```
