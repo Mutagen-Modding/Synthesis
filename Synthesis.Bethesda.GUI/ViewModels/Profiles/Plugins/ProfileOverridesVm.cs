@@ -21,7 +21,8 @@ public interface IProfileOverridesVm
 
 public class ProfileOverridesVm : ViewModel,
     IProfileOverridesVm, 
-    IDataDirectoryProvider
+    IDataDirectoryProvider,
+    IGameDirectoryProvider
 {
     public IFileSystem FileSystem { get; }
 
@@ -31,7 +32,9 @@ public class ProfileOverridesVm : ViewModel,
     private readonly ObservableAsPropertyHelper<GetResponse<DirectoryPath>> _dataFolderResult;
     public GetResponse<DirectoryPath> DataFolderResult => _dataFolderResult.Value;
     
-    DirectoryPath IDataDirectoryProvider.Path =>  _dataFolderResult.Value.Value;
+    DirectoryPath IDataDirectoryProvider.Path => _dataFolderResult.Value.Value;
+
+    DirectoryPath? IGameDirectoryProvider.Path => DataFolderResult.Failed ? null : DataFolderResult.Value.Directory;
     
     public ProfileOverridesVm(
         ILogger logger,
