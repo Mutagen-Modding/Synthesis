@@ -29,7 +29,7 @@ public class NotExistsError : INugetErrorSolution
         
     public void RunFix(FilePath path)
     {
-        using var stream = _fileSystem.FileStream.Create(path, FileMode.Create, FileAccess.Write);
+        using var stream = _fileSystem.FileStream.New(path, FileMode.Create, FileAccess.Write);
         TypicalFile().Save(stream);
     }
 }
