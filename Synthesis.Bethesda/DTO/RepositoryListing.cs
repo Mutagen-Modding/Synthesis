@@ -10,4 +10,5 @@ public record RepositoryListing
     public string User { get; set; } = string.Empty;
     public string Repository { get; set; } = string.Empty;
     public string Sha { get; set; } = string.Empty;
+    public int? LastUpdatedRunNumber { get; set; }
 }
