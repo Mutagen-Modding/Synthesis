@@ -13,7 +13,7 @@
 [![Discord](https://discordapp.com/api/guilds/759302581448474626/widget.png)](https://discord.gg/53KMEsW)
 
 # Synthesis
-A framework and GUI to construct a single Bethesda game patch from many patcher sources. Designed to allow any program to work as a patcher as long as it conforms to the CLI API.
+A framework and GUI to empower people to create mods via code instead of by hand.  Users can run large numbers of these code-based mods and funnel their results into one or more files. 
 
 ![Typical Usage](https://i.imgur.com/Wj2fGaF.gif)
 
