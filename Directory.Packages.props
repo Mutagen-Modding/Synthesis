@@ -13,7 +13,7 @@
     <PackageVersion Include="FluentAssertions" Version="6.8.0" />
     <PackageVersion Include="GitHubDependents" Version="1.2.0" />
     <PackageVersion Include="GitInfo">
-      <Version>2.3.0</Version>
+      <Version>3.0.4</Version>
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
@@ -56,7 +56,7 @@
       <Version>6.4.0</Version>
     </PackageVersion>
     <PackageVersion Include="NuGetizer">
-      <Version>0.9.2</Version>
+      <Version>0.9.5</Version>
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
