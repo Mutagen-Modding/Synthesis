@@ -1,9 +1,11 @@
 
 # Install .NET 7.0 SDK
-A good place to go for this is:
-https://dotnet.microsoft.com/download
+Currently, the latest version .NET 7.0.4 (SDK v7.0.202) has a bug.  The current installation recommendations are to go to this gritty page:
+https://dotnet.microsoft.com/en-us/download/dotnet/7.0
 
-### Do NOT install/uninstall multiple SDKs repeatedly
+And grab `7.0.3 (SDK7.0.2.01)` specifically
+
+### Try to NOT install/uninstall multiple SDKs repeatedly
 If after installing the .NET 7.0 SDK as instructed above it doesn't work, try following [this FAQ first](https://github.com/Mutagen-Modding/Synthesis/discussions/135)
 
 # Restart
