@@ -47,6 +47,12 @@ public class RunArgsConstructor : IRunArgsConstructor
         RunParameters runParameters)
     {
         var fileName = PatcherNameSanitizer.Sanitize(patcher.Name);
+
+        if (fileName.IsNullOrWhitespace())
+        {
+            throw new ArgumentNullException("Sanitized patcher name was null or whitespace: {patcher.Name}");
+        }
+        
         var nextPath = new FilePath(
             Path.Combine(ProfileDirectories.WorkingDirectory, groupRun.ModKey.Name, $"{patcher.Index} - {fileName}", groupRun.ModKey.FileName));
 
