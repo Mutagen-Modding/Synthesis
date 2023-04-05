@@ -1,11 +1,11 @@
 ﻿namespace Synthesis.Bethesda.Execution.Patchers.Git;
 
-public interface IConstructName
+public interface IConstructNameFromRepositoryPath
 {
     string Construct(string path);
 }
 
-public class ConstructName : IConstructName
+public class ConstructNameFromRepositoryPath : IConstructNameFromRepositoryPath
 {
     public const string FallbackName = "Mutagen Git Patcher";
         
@@ -16,15 +16,29 @@ public class ConstructName : IConstructName
             if (string.IsNullOrWhiteSpace(path)) return "Mutagen Git Patcher";
             var span = path.AsSpan();
             var slashIndex = span.LastIndexOf('/');
-            if (slashIndex != -1)
+            while (slashIndex != -1)
             {
-                span = span.Slice(slashIndex + 1);
+                var name = span.Slice(slashIndex + 1);
+                if (name.IsWhiteSpace())
+                {
+                    span = span.Slice(0, slashIndex);
+                    slashIndex = span.LastIndexOf('/');
+                }
+                else
+                {
+                    return name.ToString();
+                }
             }
-            return span.ToString();
+
+            if (!span.IsWhiteSpace())
+            {
+                return span.ToString();
+            }
         }
         catch (Exception)
         {
-            return "Mutagen Git Patcher";
         }
+        
+        return "Mutagen Git Patcher";
     }
 }
