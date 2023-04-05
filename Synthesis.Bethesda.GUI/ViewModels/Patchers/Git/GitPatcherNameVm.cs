@@ -16,15 +16,15 @@ public class GitPatcherNameVm : ViewModel, IPatcherNameVm
     [Reactive] public string Nickname { get; set; } = string.Empty;
 
     public GitPatcherNameVm(
-        IConstructName nameConstructor,
+        IConstructNameFromRepositoryPath nameFromRepositoryPathConstructor,
         IGitRemoteRepoPathInputVm remoteRepoPathFollower)
     {
         _name = remoteRepoPathFollower.WhenAnyValue(x => x.RemoteRepoPath)
-            .Select(nameConstructor.Construct)
+            .Select(nameFromRepositoryPathConstructor.Construct)
             .CombineLatest(
                 this.WhenAnyValue(x => x.Nickname),
                 (auto, nickname) => nickname.IsNullOrWhitespace() ? auto : nickname)
             .ToGuiProperty<string>(this, nameof(Name),
-                nameConstructor.Construct(remoteRepoPathFollower.RemoteRepoPath), deferSubscription: true);
+                nameFromRepositoryPathConstructor.Construct(remoteRepoPathFollower.RemoteRepoPath), deferSubscription: true);
     }
 }

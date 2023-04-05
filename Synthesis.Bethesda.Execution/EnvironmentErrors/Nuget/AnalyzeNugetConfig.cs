@@ -30,7 +30,7 @@ public class AnalyzeNugetConfig : IAnalyzeNugetConfig
             return new NotExistsError(_fileSystem);
         }
 
-        using var stream = _fileSystem.FileStream.Create(path, FileMode.Open, FileAccess.Read);
+        using var stream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read);
         XDocument doc;
         try
         {

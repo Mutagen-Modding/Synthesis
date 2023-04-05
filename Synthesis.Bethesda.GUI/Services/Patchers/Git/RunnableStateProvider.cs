@@ -15,15 +15,15 @@ public interface IRunnableStateProvider
 
 public class RunnableStateProvider : ViewModel, IRunnableStateProvider, IPathToProjProvider
 {
-    private readonly ObservableAsPropertyHelper<ConfigurationState<RunnerRepoInfo>> _State;
-    public ConfigurationState<RunnerRepoInfo> State => _State.Value;
+    private readonly ObservableAsPropertyHelper<ConfigurationState<RunnerRepoInfo>> _state;
+    public ConfigurationState<RunnerRepoInfo> State => _state.Value;
 
     public RunnableStateProvider(
         ISchedulerProvider schedulerProvider,
         ICheckoutInputProvider checkoutInputProvider,
         IPrepareRunnableState prepareRunnableState)
     {
-        _State = checkoutInputProvider.Input
+        _state = checkoutInputProvider.Input
             .Throttle(TimeSpan.FromMilliseconds(150), schedulerProvider.MainThread)
             .DistinctUntilChanged()
             .ObserveOn(schedulerProvider.TaskPool)

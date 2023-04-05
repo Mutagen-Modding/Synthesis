@@ -23,7 +23,7 @@ public class MissingNugetOrgError : INugetErrorSolution
 
         XElement doc;
 
-        using (var stream = _fileSystem.FileStream.Create(path, FileMode.Open, FileAccess.Read))
+        using (var stream = _fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read))
         {
             doc = XElement.Load(stream);
         }
@@ -48,7 +48,7 @@ public class MissingNugetOrgError : INugetErrorSolution
             sources.Add(addElem);
         }
 
-        using (var stream = _fileSystem.FileStream.Create(path, FileMode.Create, FileAccess.Write))
+        using (var stream = _fileSystem.FileStream.New(path, FileMode.Create, FileAccess.Write))
         {
             doc.Save(stream);
         }

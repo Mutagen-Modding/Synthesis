@@ -39,7 +39,7 @@ public class CreateProject : ICreateProject
         bool insertOldVersion = false,
         string? targetFramework = null)
     {
-        _fileSystem.Directory.CreateDirectory(projPath.Directory);
+        _fileSystem.Directory.CreateDirectory(projPath.Directory!);
         var projName = projPath.NameWithoutExtension;
 
         // Generate Project File

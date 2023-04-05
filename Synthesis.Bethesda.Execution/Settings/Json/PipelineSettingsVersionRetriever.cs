@@ -21,7 +21,7 @@ public class SettingsVersionRetriever : ISettingsVersionRetriever
         
     public int? GetVersion(FilePath path)
     {
-        using var reader = new StreamReader(_fileSystem.FileStream.Create(path, FileMode.Open, FileAccess.Read));
+        using var reader = new StreamReader(_fileSystem.FileStream.New(path, FileMode.Open, FileAccess.Read));
         JObject o = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
         var versionNode = o["Version"];
         if (versionNode == null) return null;

@@ -28,7 +28,7 @@ public class CreateSolutionFile : ICreateSolutionFile
     public string[] Create(FilePath solutionPath)
     {
         var slnDir = Path.GetDirectoryName(solutionPath)!;
-        _fileSystem.Directory.CreateDirectory(solutionPath.Directory);
+        _fileSystem.Directory.CreateDirectory(solutionPath.Directory!);
 
         // Create solution
         StructuredStringBuilder sb = new();

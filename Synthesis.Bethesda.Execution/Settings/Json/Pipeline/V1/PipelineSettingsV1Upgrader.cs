@@ -97,7 +97,7 @@ public class PipelineSettingsV1Upgrader : IPipelineSettingsV1Upgrader
                 newFolder = Path.Combine(_extraDataPathProvider.Path, "Unknown Profile", patcherSettingsDir.Name);
             }
             if (_fileSystem.Directory.Exists(newFolder)) continue;
-            _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(newFolder));
+            _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(newFolder)!);
             _fileSystem.Directory.Move(existingFolder, newFolder);
         }
     }

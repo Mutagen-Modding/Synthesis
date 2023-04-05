@@ -8,21 +8,35 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git;
 public class ConstructNameTests
 {
     [Theory, SynthAutoData]
-    public void EmptyPath(ConstructName sut)
+    public void EmptyPath(ConstructNameFromRepositoryPath sut)
     {
         sut.Construct(string.Empty)
-            .Should().Be(ConstructName.FallbackName);
+            .Should().Be(ConstructNameFromRepositoryPath.FallbackName);
     }
         
     [Theory, SynthAutoData]
-    public void TrimsToLastForwardSlash(ConstructName sut)
+    public void TrimsToLastForwardSlash(ConstructNameFromRepositoryPath sut)
     {
         sut.Construct("Some/Path/Name")
             .Should().Be("Name");
     }
         
     [Theory, SynthAutoData]
-    public void NoTrim(ConstructName sut)
+    public void TrimsOutTrailingSlash(ConstructNameFromRepositoryPath sut)
+    {
+        sut.Construct("Some/Path/Name/")
+            .Should().Be("Name");
+    }
+        
+    [Theory, SynthAutoData]
+    public void TrimsOutTrailingSlashes(ConstructNameFromRepositoryPath sut)
+    {
+        sut.Construct("Some/Path/Name///")
+            .Should().Be("Name");
+    }
+        
+    [Theory, SynthAutoData]
+    public void NoTrim(ConstructNameFromRepositoryPath sut)
     {
         sut.Construct("SomeName")
             .Should().Be("SomeName");

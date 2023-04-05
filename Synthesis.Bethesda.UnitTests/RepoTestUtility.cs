@@ -25,6 +25,7 @@ public class RepoTestUtility
         [CallerMemberName] string? testName = null)
     {
         var folder = Utility.GetTempFolder(folderName, testName: testName);
+        folder.Dir.DeleteEntireFolder(deleteFolderItself: false);
 
         local = Path.Combine(folder.Dir.Path, "Local");
         Repository.Init(local);
