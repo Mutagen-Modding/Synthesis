@@ -45,9 +45,4 @@
     <ProjectReference Include="..\Synthesis.Bethesda\Synthesis.Bethesda.csproj" />
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Condition="'$(IsWindows)'=='true'" Command="RD /S /Q &quot;%25USERPROFILE%25\.nuget\packages\mutagen.bethesda.synthesis&quot;" />
-    <Exec Condition="'$(IsLinux)'=='true'" Command="rm -rf &quot;%25USERPROFILE%25\.nuget\packages\mutagen.bethesda.synthesis&quot;" />
-  </Target>
-
 </Project>
