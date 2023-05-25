@@ -79,6 +79,9 @@
     <PackageVersion Include="Noggog.GitRepository">
       <Version>1.2</Version>
     </PackageVersion>
+    <PackageVersion Include="Noggog.SourceGenerators">
+      <Version>2.57.0.1-dev</Version>
+    </PackageVersion>
     <PackageVersion Include="Noggog.Testing">
       <Version>2.56</Version>
     </PackageVersion>

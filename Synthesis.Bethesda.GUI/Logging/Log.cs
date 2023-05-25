@@ -23,13 +23,13 @@ public static class Log
         Logger = Serilog.Log.Logger;
     }
 
-    public static LoggerConfiguration GetLoggerConfig()
+    private static LoggerConfiguration GetLoggerConfig()
     {
         return new LoggerConfiguration()
             .MinimumLevel.Debug();
     }
 
-    public static LoggerConfiguration WriteToFile(this LoggerConfiguration conf, params string[] extraIdentifiers)
+    private static LoggerConfiguration WriteToFile(this LoggerConfiguration conf, params string[] extraIdentifiers)
     {
         var startTime = $"{StartTime:HH_mm_ss}";
         startTime = startTime.Remove(5, 1);
