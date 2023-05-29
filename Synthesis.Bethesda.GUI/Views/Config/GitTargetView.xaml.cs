@@ -3,16 +3,13 @@ using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class GitTargetViewBase : NoggogUserControl<GitPatcherVm> { }
 
 /// <summary>
 /// Interaction logic for GitTargetView.xaml
 /// </summary>
-public partial class GitTargetView : GitTargetViewBase
+public partial class GitTargetView
 {
     public bool RespectLocking
     {

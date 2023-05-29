@@ -1,10 +1,12 @@
-<local:NoDotNetSdkInstalledViewBase
-    x:Class="Synthesis.Bethesda.GUI.Views.NoDotNetSdkInstalledView"
+<wpf:NoggogUserControl
+    x:TypeArguments="environmentErrors:DotNetNotInstalledVm" x:Class="Synthesis.Bethesda.GUI.Views.NoDotNetSdkInstalledView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:wpf="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
+    xmlns:environmentErrors="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -35,4 +37,4 @@
             Margin="20,20"
             Text="If you have already installed the SDK, try restarting Synthesis and/or your computer." />
     </Grid>
-</local:NoDotNetSdkInstalledViewBase>
+</wpf:NoggogUserControl>

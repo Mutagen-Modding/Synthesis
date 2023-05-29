@@ -6,16 +6,13 @@ using Synthesis.Bethesda.Execution.Settings;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class ProfileDetailViewBase : NoggogUserControl<ProfileDisplayVm> { }
 
 /// <summary>
 /// Interaction logic for ProfileDetailView.xaml
 /// </summary>
-public partial class ProfileDetailView : ProfileDetailViewBase
+public partial class ProfileDetailView
 {
     public ProfileDetailView()
     {

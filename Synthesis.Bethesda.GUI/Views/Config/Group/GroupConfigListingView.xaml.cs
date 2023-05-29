@@ -4,17 +4,14 @@ using Noggog.WPF;
 using System.Windows;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class GroupConfigListingViewBase : NoggogUserControl<GroupVm> { }
-
 /// <summary>
 /// Interaction logic for GroupConfigListingView.xaml
 /// </summary>
-public partial class GroupConfigListingView : GroupConfigListingViewBase
+public partial class GroupConfigListingView
 {
     public GroupConfigListingView()
     {

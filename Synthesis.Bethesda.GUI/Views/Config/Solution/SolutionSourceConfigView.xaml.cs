@@ -1,14 +1,10 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using Noggog.WPF;
 using ReactiveUI;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class SolutionSourceConfigViewBase : NoggogUserControl<SolutionPatcherVm> { }
-
-public partial class SolutionSourceConfigView : SolutionSourceConfigViewBase
+public partial class SolutionSourceConfigView
 {
     public SolutionSourceConfigView()
     {

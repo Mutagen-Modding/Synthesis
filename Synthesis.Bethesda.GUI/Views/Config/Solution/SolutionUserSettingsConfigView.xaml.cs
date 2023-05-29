@@ -5,9 +5,7 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class SolutionUserSettingsConfigViewBase : NoggogUserControl<SolutionPatcherVm> { }
-
-public partial class SolutionUserSettingsConfigView : SolutionUserSettingsConfigViewBase
+public partial class SolutionUserSettingsConfigView
 {
     public SolutionUserSettingsConfigView()
     {

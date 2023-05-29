@@ -1,14 +1,10 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using Noggog.WPF;
 using ReactiveUI;
-using Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class AdvancedSettingsViewBase : NoggogUserControl<GlobalSettingsVm> { }
-    
-public partial class AdvancedSettingsView : AdvancedSettingsViewBase
+public partial class AdvancedSettingsView
 {
     public AdvancedSettingsView()
     {

@@ -1,15 +1,11 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
-using Noggog.WPF;
 using ReactiveUI;
-using Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class UiVersionViewBase : NoggogUserControl<UiUpdateVm> { }
-
-public partial class UiVersionView : UiVersionViewBase
+public partial class UiVersionView
 {
     public UiVersionView()
     {

@@ -1,16 +1,12 @@
-using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class InitializationViewBase : NoggogUserControl<IPatcherInitVm> { }
 
 /// <summary>
 /// Interaction logic for InitializationView.xaml
 /// </summary>
-public partial class InitializationView : InitializationViewBase
+public partial class InitializationView
 {
     public InitializationView()
     {

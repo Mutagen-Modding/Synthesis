@@ -2,13 +2,10 @@
 using System.Reactive.Linq;
 using Noggog.WPF;
 using ReactiveUI;
-using Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class NugetConfigIssueViewBase : NoggogUserControl<NugetConfigErrorVm> { }
-
-public partial class NugetConfigIssueView : NugetConfigIssueViewBase
+public partial class NugetConfigIssueView
 {
     public NugetConfigIssueView()
     {

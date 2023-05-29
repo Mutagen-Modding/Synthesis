@@ -1,16 +1,12 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using Noggog.WPF;
 using System.Windows;
 using ReactiveUI;
-using Synthesis.Bethesda.GUI.ViewModels;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class BottomErrorDisplayViewBase : NoggogUserControl<ErrorDisplayVm> { }
-    
-public partial class BottomErrorDisplayView : BottomErrorDisplayViewBase
+public partial class BottomErrorDisplayView
 {
     public BottomErrorDisplayView()
     {

@@ -1,16 +1,13 @@
-using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class GitInitViewBase : NoggogUserControl<GitPatcherInitVm> { }
-
 /// <summary>
 /// Interaction logic for GitInitView.xaml
 /// </summary>
-public partial class GitInitView : GitInitViewBase
+public partial class GitInitView
 {
     public GitInitView()
     {

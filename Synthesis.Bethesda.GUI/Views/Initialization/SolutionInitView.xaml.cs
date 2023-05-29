@@ -5,16 +5,13 @@ using System.Reactive.Linq;
 using System.Windows.Controls.Primitives;
 using DynamicData;
 using System.Windows;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class SolutionInitViewBase : NoggogUserControl<SolutionPatcherInitVm> { }
 
 /// <summary>
 /// Interaction logic for SolutionInitView.xaml
 /// </summary>
-public partial class SolutionInitView : SolutionInitViewBase
+public partial class SolutionInitView
 {
     public SolutionInitView()
     {

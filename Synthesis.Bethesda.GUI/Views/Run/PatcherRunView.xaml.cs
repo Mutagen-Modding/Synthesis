@@ -7,12 +7,10 @@ using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class PatcherRunViewBase : NoggogUserControl<PatcherRunVm> { }
-
 /// <summary>
 /// Interaction logic for PatcherRunView.xaml
 /// </summary>
-public partial class PatcherRunView : PatcherRunViewBase
+public partial class PatcherRunView
 {
     public PatcherRunView()
     {

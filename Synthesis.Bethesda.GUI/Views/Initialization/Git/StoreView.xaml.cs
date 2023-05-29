@@ -1,18 +1,14 @@
-using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class StoreViewBase : NoggogUserControl<GitPatcherInitVm> { }
 
 /// <summary>
 /// Interaction logic for StoreView.xaml
 /// </summary>
-public partial class StoreView : StoreViewBase
+public partial class StoreView
 {
     public StoreView()
     {

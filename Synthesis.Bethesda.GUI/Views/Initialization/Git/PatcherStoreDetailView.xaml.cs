@@ -3,16 +3,13 @@ using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class PatcherStoreDetailViewBase : NoggogUserControl<PatcherStoreListingVm> { }
 
 /// <summary>
 /// Interaction logic for PatcherStoreDetailView.xaml
 /// </summary>
-public partial class PatcherStoreDetailView : PatcherStoreDetailViewBase
+public partial class PatcherStoreDetailView
 {
     public PatcherStoreDetailView()
     {

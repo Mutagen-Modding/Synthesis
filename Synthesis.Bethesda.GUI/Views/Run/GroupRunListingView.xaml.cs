@@ -1,13 +1,9 @@
 using System.Reactive.Disposables;
-using Noggog.WPF;
 using ReactiveUI;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class GroupRunListingViewBase : NoggogUserControl<GroupRunVm> { }
-
-public partial class GroupRunListingView : GroupRunListingViewBase
+public partial class GroupRunListingView
 {
     public GroupRunListingView()
     {

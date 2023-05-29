@@ -1,15 +1,11 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using Noggog.WPF;
 using System.Windows;
 using ReactiveUI;
-using Synthesis.Bethesda.GUI.ViewModels.Groups;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class GroupDetailPaneViewBase : NoggogUserControl<GroupVm> { }
-
-public partial class GroupDetailPaneView : GroupDetailPaneViewBase
+public partial class GroupDetailPaneView
 {
     public GroupDetailPaneView()
     {

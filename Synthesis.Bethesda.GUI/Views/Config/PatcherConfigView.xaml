@@ -1,5 +1,5 @@
-<local:PatcherConfigViewBase
-    x:Class="Synthesis.Bethesda.GUI.Views.PatcherConfigView"
+<wpf:NoggogUserControl
+    x:TypeArguments="topLevel:PatcherVm" x:Class="Synthesis.Bethesda.GUI.Views.PatcherConfigView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:cli="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli"
@@ -11,6 +11,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:running="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
     xmlns:solution="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution"
+    xmlns:wpf="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
+    xmlns:topLevel="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel"
     d:DesignHeight="450"
     d:DesignWidth="800"
     FocusVisualStyle="{x:Null}"
@@ -88,4 +90,4 @@
         <local:BottomErrorDisplayView Grid.Row="0" Grid.RowSpan="3"
             x:Name="BottomErrorDisplay" />
     </Grid>
-</local:PatcherConfigViewBase>
+</wpf:NoggogUserControl>

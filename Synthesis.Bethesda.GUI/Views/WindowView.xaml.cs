@@ -7,12 +7,10 @@ using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class WindowViewBase : NoggogUserControl<MainVm> { }
-
 /// <summary>
 /// Interaction logic for MainView.xaml
 /// </summary>
-public partial class WindowView : WindowViewBase
+public partial class WindowView
 {
     public WindowView()
     {

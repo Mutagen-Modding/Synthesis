@@ -1,5 +1,5 @@
-<local:PatcherConfigListingViewBase
-    x:Class="Synthesis.Bethesda.GUI.Views.PatcherConfigListingView"
+<wpf:NoggogUserControl
+    x:TypeArguments="topLevel:PatcherVm" x:Class="Synthesis.Bethesda.GUI.Views.PatcherConfigListingView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:cli="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli"
@@ -9,6 +9,8 @@
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:solution="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution"
+    xmlns:wpf="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
+    xmlns:topLevel="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel"
     d:DesignHeight="60"
     d:DesignWidth="800"
     FocusVisualStyle="{x:Null}"
@@ -18,77 +20,7 @@
     ToolTipService.ShowDuration="120000"
     ToolTipService.VerticalOffset="2"
     mc:Ignorable="d">
-    <local:PatcherConfigListingViewBase.ToolTip>
-        <Grid
-            MaxWidth="250"
-            Margin="-5,-2"
-            Background="{StaticResource PaleDarkPurpleBrush}">
-            <Grid Margin="10,5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0"
-                        x:Name="StatusTypeText"
-                        Margin="0,0,10,0"
-                        VerticalAlignment="Center"
-                        FontSize="18"
-                        FontWeight="Bold">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Foreground" Value="{StaticResource Noggog.Brushes.Green.Foreground}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding State.RunnableState.Succeeded}" Value="False">
-                                        <Setter Property="Foreground" Value="{StaticResource PurpleForegroundBrush}" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding State.IsHaltingError}" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource SalmonBrush}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                    <Grid Grid.Column="1"
-                        Height="25"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center">
-                        <icon:PackIconMaterial
-                            x:Name="ErrorIcon"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Foreground="{StaticResource Noggog.Brushes.Red.Foreground}"
-                            Kind="AlertCircle"
-                            Visibility="Collapsed" />
-                        <icon:PackIconMaterial
-                            x:Name="SuccessIcon"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Foreground="{StaticResource Noggog.Brushes.Green.Foreground}"
-                            Kind="CheckboxMarkedCircle"
-                            Visibility="Collapsed" />
-                        <icon:PackIconFontAwesome
-                            x:Name="ProcessingRing"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Foreground="{StaticResource LightPurpleBrush}"
-                            Kind="DotCircleSolid"
-                            Visibility="Collapsed" />
-                    </Grid>
-                </Grid>
-                <TextBlock Grid.Row="1"
-                    x:Name="TooltipErrorText"
-                    Margin="0,2,0,4"
-                    TextWrapping="Wrap" />
-            </Grid>
-        </Grid>
-    </local:PatcherConfigListingViewBase.ToolTip>
     <Grid
-        x:Name="TopGrid"
         MinHeight="24"
         Margin="0,2"
         Background="Transparent"
@@ -104,6 +36,75 @@
                 <MenuItem x:Name="DeleteContextMenuButton" Header="Delete" />
             </ContextMenu>
         </Grid.ContextMenu>
+        <Grid.ToolTip>
+            <Grid
+                MaxWidth="250"
+                Margin="-5,-2"
+                Background="{StaticResource PaleDarkPurpleBrush}">
+                <Grid Margin="10,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0"
+                            x:Name="StatusTypeText"
+                            Margin="0,0,10,0"
+                            VerticalAlignment="Center"
+                            FontSize="18"
+                            FontWeight="Bold">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="{StaticResource Noggog.Brushes.Green.Foreground}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding State.RunnableState.Succeeded}" Value="False">
+                                            <Setter Property="Foreground" Value="{StaticResource PurpleForegroundBrush}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding State.IsHaltingError}" Value="True">
+                                            <Setter Property="Foreground" Value="{StaticResource SalmonBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <Grid Grid.Column="1"
+                            Height="25"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center">
+                            <icon:PackIconMaterial
+                                x:Name="ErrorIcon"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="{StaticResource Noggog.Brushes.Red.Foreground}"
+                                Kind="AlertCircle"
+                                Visibility="Collapsed" />
+                            <icon:PackIconMaterial
+                                x:Name="SuccessIcon"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="{StaticResource Noggog.Brushes.Green.Foreground}"
+                                Kind="CheckboxMarkedCircle"
+                                Visibility="Collapsed" />
+                            <icon:PackIconFontAwesome
+                                x:Name="ProcessingRing"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="{StaticResource LightPurpleBrush}"
+                                Kind="DotCircleSolid"
+                                Visibility="Collapsed" />
+                        </Grid>
+                    </Grid>
+                    <TextBlock Grid.Row="1"
+                        x:Name="TooltipErrorText"
+                        Margin="0,2,0,4"
+                        TextWrapping="Wrap" />
+                </Grid>
+            </Grid>
+        </Grid.ToolTip>
         <local:IsOnToggleButtonView Grid.Column="0"
             x:Name="OnToggle"
             Width="30"
@@ -156,4 +157,4 @@
             ToolTip="Update available for patcher.  Either:&#x0a; - Mutagen and Synthesis versions used&#x0a; - Patcher code"
             Visibility="Collapsed" />
     </Grid>
-</local:PatcherConfigListingViewBase>
+</wpf:NoggogUserControl>

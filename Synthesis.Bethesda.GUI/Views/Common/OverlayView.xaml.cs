@@ -1,16 +1,12 @@
-using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
-using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class OverlayViewBase : NoggogUserControl<MainVm> { }
 
 /// <summary>
 /// Interaction logic for OverlayView.xaml
 /// </summary>
-public partial class OverlayView : OverlayViewBase
+public partial class OverlayView
 {
     public OverlayView()
     {

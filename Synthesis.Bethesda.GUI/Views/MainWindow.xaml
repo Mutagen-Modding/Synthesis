@@ -15,10 +15,10 @@
     Background="{StaticResource PurpleBackgroundGradient}"
     BorderBrush="{StaticResource MahApps.Brushes.Accent2}"
     NonActiveBorderBrush="#444444"
-    NonActiveWindowTitleBrush="#35000000"
     RenderOptions.BitmapScalingMode="HighQuality"
     SaveWindowPosition="True"
     UseLayoutRounding="True"
+    NonActiveWindowTitleBrush="#35000000"
     WindowTitleBrush="#35000000"
     mc:Ignorable="d">
     <mahapps:MetroWindow.IconTemplate>

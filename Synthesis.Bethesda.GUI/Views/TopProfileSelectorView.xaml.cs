@@ -5,16 +5,13 @@ using System.Windows;
 using System.Windows.Input;
 using System.Reactive.Linq;
 using Mutagen.Bethesda;
-using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class TopProfileSelectorViewBase : NoggogUserControl<MainVm> { }
 
 /// <summary>
 /// Interaction logic for TopProfileSelectorView.xaml
 /// </summary>
-public partial class TopProfileSelectorView : TopProfileSelectorViewBase
+public partial class TopProfileSelectorView
 {
     public TopProfileSelectorView()
     {
