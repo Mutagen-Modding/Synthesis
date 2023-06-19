@@ -45,7 +45,7 @@ public sealed class ProvideCurrentVersions : IProvideCurrentVersions
             return new VersionQuery(
                 MutagenSha: GetGitSha(typeof(FormKey).Assembly),
                 SynthesisSha: GetGitSha(typeof(BaseSynthesis.Constants).Assembly),
-                MutagenVersion: GetVersion(typeof(FormKey)),
+                MutagenVersion: GetVersion(AssemblyVersions.For<FormKey>()),
                 SynthesisVersion: GetVersion(AssemblyVersions.For<BaseSynthesis.Codes>()),
                 NewtonsoftVersion: GetVersion(AssemblyVersions.For<Newtonsoft.Json.JsonSerializer>()));
 
@@ -63,22 +63,6 @@ public sealed class ProvideCurrentVersions : IProvideCurrentVersions
         {
             throw new Exception(
                 $"Error retrieving product version for {versions.PrettyName}",
-                e);
-        }
-    }
-
-    private string GetVersion(Type t)
-    {
-        try
-        {
-            System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(t.Assembly.Location);
-            
-            return fvi.FileVersion ?? "Unknown";
-        }
-        catch (Exception e)
-        {
-            throw new Exception(
-                $"Error retrieving product version for {t}",
                 e);
         }
     }
