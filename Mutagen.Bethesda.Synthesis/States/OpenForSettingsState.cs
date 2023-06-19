@@ -25,7 +25,7 @@ public class OpenForSettingsState : IOpenForSettingsState
 
     public DirectoryPath DataFolderPath => Settings.DataFolderPath;
 
-    public GameRelease GameRelease => Settings.GameRelease;
+    public GameRelease GameRelease => ((IBaseRunArgs)Settings).GameRelease;
 
     public Rectangle RecommendedOpenLocation { get; }
     

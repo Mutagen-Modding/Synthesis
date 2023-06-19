@@ -18,10 +18,11 @@ public record OpenForSettings : IBaseRunArgs
     [Option('h', "Height", Required = false, HelpText = "Height to consider when positioning")]
     public int Height { get; set; }
 
-    [Option('g', "GameRelease", Required = true, HelpText = "GameRelease data folder is related to.")]
-    public GameRelease GameRelease { get; set; }
+    [Option('g', "GameRelease", Required = false, HelpText = "GameRelease data folder is related to.")]
+    public GameRelease? GameRelease { get; set; }
+    GameRelease IBaseRunArgs.GameRelease => GameRelease ?? throw new ArgumentNullException(nameof(GameRelease), "Game Release not specified");
 
-    [Option('d', "DataFolderPath", Required = true, HelpText = "Path to the data folder.")]
+    [Option('d', "DataFolderPath", Required = false, HelpText = "Path to the data folder.")]
     public string DataFolderPath { get; set; } = string.Empty;
 
     [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
