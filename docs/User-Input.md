@@ -114,7 +114,7 @@ Typically you want to provide your users with some default settings, you can pla
 
 The default files you define within your project will only be copied over to the User Data Folder if it is empty for your patcher.  For example, if content already exists within `[Exe Path]/Data/[Name of Patcher]/`, then no files will ever be copied into it.  It is assumed the user might have customized the files and would prefer not to lose their changes.  To have settings revert to default, just inform the user to delete the settings folder for your patcher, and it will be replaced with the defaults.
 
-# Opening The Patcher App Itself
-This is a more advanced option, but in theory a patcher application could be upgraded to itself be a UI application.  It would hook into the [SetOpenForSettings](https://github.com/Mutagen-Modding/Synthesis/wiki/Configuring-a-Patcher-at-Startup#setopenforsettings) callback to know when to open your app as a UI for settings input.  
+# Custom UI
+The patcher itself can be a UI application that can run as both a background executable (when patching) and a UI app (when modifying settings).   This is a more advanced option for developers that need very custom settings that the above options cannot provide. 
 
-This is generally reserved for very advanced application developers that are capable of creating a standalone UI application, and have the knowhow to set an application up to run as both a background executable (when patching) and a UI app (when modifying settings)
+A proof of concept template project can be [found here](https://github.com/Mutagen-Modding/SynthesisTemplateWpfApp)
