@@ -6,11 +6,11 @@ using ReactiveUI;
 namespace Synthesis.Bethesda.GUI.Views;
 
 /// <summary>
-/// Interaction logic for AddNewItemsView.xaml
+/// Interaction logic for EditLinkItemView.xaml
 /// </summary>
-public partial class AddNewItemsView
+public partial class EditLinkItemView
 {
-    public AddNewItemsView()
+    public EditLinkItemView()
     {
         InitializeComponent();
         this.WhenActivated((disposable) =>

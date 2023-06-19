@@ -280,7 +280,7 @@
                 Foreground="{StaticResource PaleBlueBrush}"
                 Text="Add a Group" />
         </StackPanel>
-        <local:AddNewItemsView Grid.Row="0" Grid.Column="0"
+        <local:EditLinkItemView Grid.Row="0" Grid.Column="0"
             Margin="-15,5,0,0" />
         <local:VerticalSlicer Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
             Margin="5,0" />
