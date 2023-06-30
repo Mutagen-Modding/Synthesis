@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using FluentAssertions;
 using Mutagen.Bethesda;
+using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
@@ -31,11 +32,10 @@ public class FormatCommandLineTests
     [Theory, SynthAutoData]
     public void EnumRequiredButDefault(FormatCommandLine sut)
     {
-        var format = sut.Format(new ArgClass()
+        var format = sut.Format(new RunSynthesisPatcher()
         {
-            Setting = "Hello World",
-            Release = default
+            GameRelease = default
         });
-        format.Should().Be("test-command --Release Oblivion --Setting \"Hello World\"");
+        format.Should().Be("run-patcher --LoadOrderIncludesCreationClub --TargetLanguage English --GameRelease Oblivion");
     }
 }
