@@ -368,6 +368,12 @@ ASALocalRun/
 healthchecksdb
 
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
-MigrationBackup/");
+MigrationBackup/
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+");
     } 
 }
