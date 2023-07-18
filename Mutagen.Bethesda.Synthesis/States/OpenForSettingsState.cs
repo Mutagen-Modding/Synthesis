@@ -14,6 +14,8 @@ public class OpenForSettingsState : IOpenForSettingsState
     /// </summary>
     public OpenForSettings Settings { get; }
 
+    private IBaseRunArgs BaseRunArgs => Settings;
+
     /// <summary>
     /// Current Load Order 
     /// </summary>
@@ -21,11 +23,11 @@ public class OpenForSettingsState : IOpenForSettingsState
 
     IReadOnlyList<ILoadOrderListingGetter> IBaseRunState.RawLoadOrder => LoadOrder.ListedOrder.ToList();
 
-    public FilePath LoadOrderFilePath => Settings.LoadOrderFilePath;
+    public FilePath LoadOrderFilePath => BaseRunArgs.LoadOrderFilePath;
 
-    public DirectoryPath DataFolderPath => Settings.DataFolderPath;
+    public DirectoryPath DataFolderPath => BaseRunArgs.DataFolderPath;
 
-    public GameRelease GameRelease => ((IBaseRunArgs)Settings).GameRelease;
+    public GameRelease GameRelease => BaseRunArgs.GameRelease;
 
     public Rectangle RecommendedOpenLocation { get; }
     

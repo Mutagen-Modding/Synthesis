@@ -20,13 +20,15 @@ public record OpenForSettings : IBaseRunArgs
 
     [Option('g', "GameRelease", Required = false, HelpText = "GameRelease data folder is related to.")]
     public GameRelease? GameRelease { get; set; }
-    GameRelease IBaseRunArgs.GameRelease => GameRelease ?? throw new ArgumentNullException(nameof(GameRelease), "Game Release not specified");
+    GameRelease IBaseRunArgs.GameRelease => GameRelease ?? throw new ArgumentNullException(nameof(GameRelease));
 
     [Option('d', "DataFolderPath", Required = false, HelpText = "Path to the data folder.")]
-    public string DataFolderPath { get; set; } = string.Empty;
+    public string? DataFolderPath { get; set; }
+    string IBaseRunArgs.DataFolderPath => DataFolderPath ?? throw new ArgumentNullException(nameof(DataFolderPath));
 
     [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
-    public string LoadOrderFilePath { get; set; } = string.Empty;
+    public string? LoadOrderFilePath { get; set; } = string.Empty;
+    string IBaseRunArgs.LoadOrderFilePath => LoadOrderFilePath ?? throw new ArgumentNullException(nameof(LoadOrderFilePath));
 
     [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to the user data folder dedicated for a patcher")]
     public string? ExtraDataFolder { get; set; }
