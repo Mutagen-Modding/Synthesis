@@ -774,6 +774,29 @@ public class SynthesisPipeline
         };
     }
 
+    private static string? LocateInternalData(IFileSystem fileSystem)
+    {
+        var internalDataDir = new DirectoryPath("InternalData");
+        if (internalDataDir.CheckExists(fileSystem))
+        {
+            return internalDataDir.Path;
+        }
+        
+        internalDataDir = new DirectoryPath(Path.Combine("..", "..", "InternalData"));
+        if (internalDataDir.CheckExists(fileSystem))
+        {
+            return internalDataDir.Path;
+        }
+        
+        internalDataDir = new DirectoryPath(Path.Combine("..", "..", "..", "InternalData"));
+        if (internalDataDir.CheckExists(fileSystem))
+        {
+            return internalDataDir.Path;
+        }
+
+        return null;
+    }
+
     private static RunSynthesisMutagenPatcher GetDefaultRun(
         GameRelease release,
         ModKey targetModKey,
@@ -806,6 +829,7 @@ public class SynthesisPipeline
             LoadOrderIncludesCreationClub = false,
             PatcherName = targetModKey.Name,
             PersistencePath = "Persistence",
+            InternalDataFolder = LocateInternalData(fileSystem),
             TargetLanguage = extraParameters.TargetLanguage,
             Localize = extraParameters.Localize,
             UseUtf8ForEmbeddedStrings = extraParameters.UseUtf8ForEmbeddedStrings
