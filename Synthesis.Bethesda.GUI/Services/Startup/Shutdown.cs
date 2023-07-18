@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using Autofac;
+using Noggog.IO;
 using Serilog;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings.Json.Pipeline;
@@ -70,6 +72,18 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
                 Closing(b);
             };
         }
+
+        private void SaveSettings()
+        {
+            _save.Retrieve(out var gui, out var pipe);
+            using var tmp = TempFolder.Factory();
+            var pipePath = Path.Combine(tmp.Dir, Path.GetFileName(_pipelineSettingsPath.Path));
+            var guiPath = Path.Combine(tmp.Dir, Path.GetFileName(_guiPaths.Path));
+            _pipelineSettingsExporter.Write(pipePath, pipe);
+            _guiSettingsExporter.Write(guiPath, gui);
+            File.Move(pipePath, _pipelineSettingsPath.Path, overwrite: true);
+            File.Move(guiPath, _guiPaths.Path, overwrite: true);
+        }
         
         private async void ExecuteShutdown()
         {
@@ -85,9 +99,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
 
                 try
                 {
-                    _save.Retrieve(out var gui, out var pipe);
-                    _pipelineSettingsExporter.Write(_pipelineSettingsPath.Path, pipe);
-                    _guiSettingsExporter.Write(_guiPaths.Path, gui);
+                    SaveSettings();
                 }
                 catch (Exception e)
                 {
