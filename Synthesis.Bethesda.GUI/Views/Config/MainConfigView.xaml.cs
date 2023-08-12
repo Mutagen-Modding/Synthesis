@@ -9,16 +9,13 @@ using ReactiveUI;
 using Noggog;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
-using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class MainConfigViewBase : NoggogUserControl<ProfileManagerVm> { }
 
 /// <summary>
 /// Interaction logic for PatchersConfigurationView.xaml
 /// </summary>
-public partial class MainConfigView : MainConfigViewBase
+public partial class MainConfigView
 {
     public MainConfigView()
     {

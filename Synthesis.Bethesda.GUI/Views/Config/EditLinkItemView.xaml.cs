@@ -2,18 +2,15 @@ using System.Reactive.Disposables;
 using System.Windows.Input;
 using Noggog.WPF;
 using ReactiveUI;
-using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class AddNewItemsViewBase : NoggogUserControl<ProfileManagerVm> { }
-
 /// <summary>
-/// Interaction logic for AddNewItemsView.xaml
+/// Interaction logic for EditLinkItemView.xaml
 /// </summary>
-public partial class AddNewItemsView : AddNewItemsViewBase
+public partial class EditLinkItemView
 {
-    public AddNewItemsView()
+    public EditLinkItemView()
     {
         InitializeComponent();
         this.WhenActivated((disposable) =>

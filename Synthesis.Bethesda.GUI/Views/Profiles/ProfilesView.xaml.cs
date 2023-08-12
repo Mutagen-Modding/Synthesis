@@ -4,16 +4,13 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
-using Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class ProfilesViewBase : NoggogUserControl<ProfilesDisplayVm> { }
 
 /// <summary>
 /// Interaction logic for ProfilesView.xaml
 /// </summary>
-public partial class ProfilesView : ProfilesViewBase
+public partial class ProfilesView
 {
     public ProfilesView()
     {

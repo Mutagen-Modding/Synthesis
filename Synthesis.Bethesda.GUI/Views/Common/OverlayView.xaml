@@ -1,5 +1,5 @@
-<local:OverlayViewBase
-    x:Class="Synthesis.Bethesda.GUI.Views.OverlayView"
+<wpf:NoggogUserControl
+    x:TypeArguments="top:MainVm" x:Class="Synthesis.Bethesda.GUI.Views.OverlayView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -9,6 +9,7 @@
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel"
     xmlns:conf="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Confirmations"
     xmlns:top="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Top"
+    xmlns:wpf="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -154,4 +155,4 @@
             </Grid>
         </Border>
     </Grid>
-</local:OverlayViewBase>
+</wpf:NoggogUserControl>

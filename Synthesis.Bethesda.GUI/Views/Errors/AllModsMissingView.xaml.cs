@@ -1,13 +1,10 @@
 using System.Reactive.Disposables;
 using Noggog.WPF;
 using ReactiveUI;
-using Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class AllModsMissingViewBase : NoggogUserControl<AllModsMissingErrorVm> { }
-
-public partial class AllModsMissingView : AllModsMissingViewBase
+public partial class AllModsMissingView
 {
     public AllModsMissingView()
     {

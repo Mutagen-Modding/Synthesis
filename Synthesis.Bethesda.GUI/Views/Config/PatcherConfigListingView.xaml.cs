@@ -6,16 +6,13 @@ using System.Windows;
 using System.Reactive.Disposables;
 using System.Windows.Controls;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class PatcherConfigListingViewBase : NoggogUserControl<PatcherVm> { }
 
 /// <summary>
 /// Interaction logic for PatcherConfigListingView.xaml
 /// </summary>
-public partial class PatcherConfigListingView : PatcherConfigListingViewBase
+public partial class PatcherConfigListingView
 {
     public PatcherConfigListingView()
     {

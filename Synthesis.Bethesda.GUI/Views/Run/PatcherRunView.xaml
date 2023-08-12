@@ -1,5 +1,5 @@
-<local:PatcherRunViewBase
-    x:Class="Synthesis.Bethesda.GUI.Views.PatcherRunView"
+<noggog:NoggogUserControl
+    x:TypeArguments="running:PatcherRunVm" x:Class="Synthesis.Bethesda.GUI.Views.PatcherRunView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
@@ -72,4 +72,4 @@
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             Visibility="Hidden" />
     </Grid>
-</local:PatcherRunViewBase>
+</noggog:NoggogUserControl>

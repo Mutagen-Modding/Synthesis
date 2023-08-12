@@ -1,20 +1,14 @@
 using System.Reactive.Disposables;
-using Noggog;
-using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class VersionDisplayBase : NoggogUserControl<MainVm> { }
 
 /// <summary>
 /// Interaction logic for VersionDisplay.xaml
 /// </summary>
-public partial class VersionDisplay : VersionDisplayBase
+public partial class VersionDisplay
 {
     public VersionDisplay()
     {

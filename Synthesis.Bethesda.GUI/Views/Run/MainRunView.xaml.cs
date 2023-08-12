@@ -1,18 +1,14 @@
-﻿using Noggog.WPF;
-using ReactiveUI;
+﻿using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Windows;
 using System.Reactive.Linq;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class MainRunViewBase : NoggogUserControl<RunVm> { }
 
 /// <summary>
 /// Interaction logic for MainRunView.xaml
 /// </summary>
-public partial class MainRunView : MainRunViewBase
+public partial class MainRunView
 {
     public MainRunView()
     {

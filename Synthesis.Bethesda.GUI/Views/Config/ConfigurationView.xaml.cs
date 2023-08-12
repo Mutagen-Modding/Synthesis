@@ -3,16 +3,13 @@ using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
-using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class ConfigurationViewBase : NoggogUserControl<ProfileManagerVm> { }
 
 /// <summary>
 /// Interaction logic for ConfigurationView.xaml
 /// </summary>
-public partial class ConfigurationView : ConfigurationViewBase
+public partial class ConfigurationView
 {
     enum Active { Normal, Init, Err }
         

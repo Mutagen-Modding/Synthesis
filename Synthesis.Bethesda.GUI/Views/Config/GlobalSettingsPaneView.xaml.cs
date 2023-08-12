@@ -1,16 +1,13 @@
 using System.Reactive.Disposables;
-using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class GlobalSettingsPaneViewBase : NoggogUserControl<GlobalSettingsPaneVm> { }
-
 /// <summary>
 /// Interaction logic for GlobalSettingsPaneView.xaml
 /// </summary>
-public partial class GlobalSettingsPaneView : GlobalSettingsPaneViewBase
+public partial class GlobalSettingsPaneView
 {
     public GlobalSettingsPaneView()
     {

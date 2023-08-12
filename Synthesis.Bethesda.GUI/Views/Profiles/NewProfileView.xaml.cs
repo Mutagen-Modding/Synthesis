@@ -1,16 +1,13 @@
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
-using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class NewProfileViewBase : NoggogUserControl<NewProfileVm> { }
 
 /// <summary>
 /// Interaction logic for NewProfileView.xaml
 /// </summary>
-public partial class NewProfileView : NewProfileViewBase
+public partial class NewProfileView
 {
     public NewProfileView()
     {

@@ -38,9 +38,4 @@
     <PackageReference Include="Noggog.CSharpExt" />
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Condition="'$(IsWindows)'=='true'" Command="RD /S /Q &quot;%25USERPROFILE%25\.nuget\packages\synthesis.bethesda&quot;" />
-    <Exec Condition="'$(IsLinux)'=='true'" Command="rm -rf &quot;%25USERPROFILE%25\.nuget\packages\synthesis.bethesda&quot;" />
-  </Target>
-
 </Project>

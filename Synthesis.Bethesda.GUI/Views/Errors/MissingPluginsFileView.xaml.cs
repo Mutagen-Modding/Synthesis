@@ -2,13 +2,10 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Noggog.WPF;
 using ReactiveUI;
-using Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class MissingPluginsFileViewBase : NoggogUserControl<PluginsTxtMissingVm> { }
-
-public partial class MissingPluginsFileView : MissingPluginsFileViewBase
+public partial class MissingPluginsFileView
 {
     public MissingPluginsFileView()
     {

@@ -1,17 +1,13 @@
-using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class PatcherConfigViewBase : NoggogUserControl<PatcherVm> { }
 
 /// <summary>
 /// Interaction logic for PatcherConfigView.xaml
 /// </summary>
-public partial class PatcherConfigView : PatcherConfigViewBase
+public partial class PatcherConfigView
 {
     public PatcherConfigView()
     {

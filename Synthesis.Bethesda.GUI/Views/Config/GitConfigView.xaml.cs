@@ -5,16 +5,13 @@ using System.Windows;
 using Synthesis.Bethesda.Execution.Settings;
 using System.Reactive.Linq;
 using Noggog;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class GitConfigViewBase : NoggogUserControl<GitPatcherVm> { }
 
 /// <summary>
 /// Interaction logic for GitConfigView.xaml
 /// </summary>
-public partial class GitConfigView : GitConfigViewBase
+public partial class GitConfigView
 {
     public GitConfigView()
     {

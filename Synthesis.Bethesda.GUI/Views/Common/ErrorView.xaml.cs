@@ -1,16 +1,13 @@
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class ErrorViewBase : NoggogUserControl<ErrorVM> { }
 
 /// <summary>
 /// Interaction logic for OverallErrorView.xaml
 /// </summary>
-public partial class ErrorView : ErrorViewBase
+public partial class ErrorView
 {
     public ErrorView()
     {

@@ -1,18 +1,14 @@
-using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Windows;
 using System.Reactive.Linq;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class PatcherRunListingViewBase : NoggogUserControl<PatcherRunVm> { }
 
 /// <summary>
 /// Interaction logic for PatcherRunListingView.xaml
 /// </summary>
-public partial class PatcherRunListingView : PatcherRunListingViewBase
+public partial class PatcherRunListingView
 {
     public PatcherRunListingView()
     {

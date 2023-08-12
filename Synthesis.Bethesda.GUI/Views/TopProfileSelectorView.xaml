@@ -1,11 +1,13 @@
-<local:TopProfileSelectorViewBase
-    x:Class="Synthesis.Bethesda.GUI.Views.TopProfileSelectorView"
+<wpf:NoggogUserControl
+    x:TypeArguments="top:MainVm" x:Class="Synthesis.Bethesda.GUI.Views.TopProfileSelectorView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muta="clr-namespace:Mutagen.Bethesda;assembly=Mutagen.Bethesda.Kernel"
+    xmlns:wpf="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
+    xmlns:top="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Top"
     d:DesignHeight="25"
     d:DesignWidth="150"
     mc:Ignorable="d">
@@ -62,4 +64,4 @@
             </Grid>
         </Button>
     </Grid>
-</local:TopProfileSelectorViewBase>
+</wpf:NoggogUserControl>

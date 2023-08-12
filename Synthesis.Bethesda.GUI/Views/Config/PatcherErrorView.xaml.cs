@@ -1,16 +1,13 @@
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.Views;
-
-public class PatcherErrorViewBase : NoggogUserControl<ErrorVM> { }
 
 /// <summary>
 /// Interaction logic for PatcherErrorView.xaml
 /// </summary>
-public partial class PatcherErrorView : PatcherErrorViewBase
+public partial class PatcherErrorView
 {
     public PatcherErrorView()
     {

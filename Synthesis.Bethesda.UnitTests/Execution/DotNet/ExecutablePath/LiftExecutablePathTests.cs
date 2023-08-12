@@ -60,4 +60,18 @@ public class LiftExecutablePathTests
             .Should().BeTrue();
         result.Should().Be($"SomePath.{ext}");
     }
+
+    [Theory, SynthInlineData("dll"), SynthInlineData("DLL")]
+    public void LastLineLineWithDelimiter(
+        string ext,
+        LiftExecutablePath sut)
+    {
+        sut.TryGet(new string[]
+            {
+                $"Text {LiftExecutablePath.Delimiter} SomePath.{ext}",
+                $"Text {LiftExecutablePath.Delimiter} SomePath2.{ext}"
+            }, out var result)
+            .Should().BeTrue();
+        result.Should().Be($"SomePath2.{ext}");
+    }
 }

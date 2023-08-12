@@ -14,6 +14,7 @@
   * [[Overriding Data Folder Path]]
   * [[Blacklisting Mods]]
   * [[Versioning]]
+  * [[Synthesis vs Mutagen]]
   * [[.synth Files]]
   * [[Other Dynamic Mod Generators]]
   * [[Language Settings]]
@@ -41,4 +42,3 @@
   * [[Non Mutagen Patchers and the CLI]]
 * Other
   * [[Sharing Your Setup]]
-  * [[Synthesis vs Mutagen]]

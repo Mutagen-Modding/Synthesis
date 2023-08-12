@@ -6,12 +6,10 @@ using Synthesis.Bethesda.GUI.ViewModels.Groups;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
-public class GroupConfigViewBase : NoggogUserControl<GroupVm> { }
-
 /// <summary>
 /// Interaction logic for GroupConfigView.xaml
 /// </summary>
-public partial class GroupConfigView : GroupConfigViewBase
+public partial class GroupConfigView
 {
     public GroupConfigView()
     {

@@ -1,10 +1,12 @@
-<local:GitConfigViewBase
-    x:Class="Synthesis.Bethesda.GUI.Views.GitConfigView"
+<wpf:NoggogUserControl
+    x:TypeArguments="git:GitPatcherVm" x:Class="Synthesis.Bethesda.GUI.Views.GitConfigView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:wpf="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
+    xmlns:git="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Git"
     d:DataContext=""
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -91,4 +93,4 @@
             </TabItem>
         </TabControl>
     </Grid>
-</local:GitConfigViewBase>
+</wpf:NoggogUserControl>

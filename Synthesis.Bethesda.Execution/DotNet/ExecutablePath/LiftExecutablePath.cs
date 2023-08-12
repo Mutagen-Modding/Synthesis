@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Noggog;
 
 namespace Synthesis.Bethesda.Execution.DotNet.ExecutablePath;
 
@@ -10,19 +11,19 @@ public interface ILiftExecutablePath
 public class LiftExecutablePath : ILiftExecutablePath
 {
     public const string Delimiter = " -> ";
+
+    private string? Get(ReadOnlySpan<char> line)
+    {
+        var trimmed = line.Trim();
+        if (!trimmed.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)) return null;
+        var index = trimmed.IndexOf(Delimiter, StringComparison.Ordinal);
+        if (index == -1) return null;
+        return trimmed.Slice(index + Delimiter.Length).Trim().ToString();
+    }
         
     public bool TryGet(IEnumerable<string> lines, [MaybeNullWhen(false)] out string output)
     {
-        foreach (var line in lines)
-        {
-            var trimmed = line.Trim();
-            if (!trimmed.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)) continue;
-            var index = trimmed.IndexOf(Delimiter, StringComparison.Ordinal);
-            if (index == -1) continue;
-            output = trimmed.Substring(index + Delimiter.Length).Trim();
-            return true;
-        }
-        output = null;
-        return false;
+        output = lines.Select(x => Get(x)).NotNull().LastOrDefault();
+        return output != null;
     }
 }
