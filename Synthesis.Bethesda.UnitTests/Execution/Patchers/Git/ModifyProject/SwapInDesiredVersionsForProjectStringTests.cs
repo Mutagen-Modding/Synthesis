@@ -175,6 +175,7 @@ public class SwapInDesiredVersionsForProjectStringTests
             ("Mutagen.Bethesda.Oblivion", "0.1.0"),
             ("Mutagen.Bethesda.Skyrim", "0.1.0"),
             ("Mutagen.Bethesda.Fallout4", "0.1.0"),
+            ("Mutagen.Bethesda.Starfield", "0.1.0"),
             ("Mutagen.Bethesda", "0.1.0"),
             ("Mutagen.Bethesda.Core", "0.1.0"),
             ("Mutagen.Bethesda.Kernel", "0.1.0"));
