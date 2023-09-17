@@ -15,6 +15,7 @@ public static class ResourceConstants
     public static readonly string FalloutLargeIcon = Path.Combine(ResourceFolder, "Fallout4.png");
     public static readonly string EnderalLeLargeIcon = Path.Combine(ResourceFolder, "enderal.png");
     public static readonly string EnderalSeLargeIcon = Path.Combine(ResourceFolder, "enderal-se.png");
+    public static readonly string StarfieldLargeIcon = Path.Combine(ResourceFolder, "starfield.png");
     public static string GetIcon(GameRelease release)
     {
         return release switch
@@ -27,6 +28,7 @@ public static class ResourceConstants
             GameRelease.Fallout4 => FalloutLargeIcon,
             GameRelease.EnderalLE => EnderalLeLargeIcon,
             GameRelease.EnderalSE => EnderalSeLargeIcon,
+            GameRelease.Starfield => StarfieldLargeIcon,
             _ => throw new NotImplementedException()
         };
     }

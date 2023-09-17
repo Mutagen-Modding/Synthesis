@@ -53,6 +53,9 @@
                     <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameCategory.Fallout4}">
                         <Setter Property="Source" Value="../../Resources/Fallout4.png" />
                     </DataTrigger>
+                    <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameCategory.Starfield}">
+                        <Setter Property="Source" Value="../../Resources/starfield.png" />
+                    </DataTrigger>
                 </Style.Triggers>
             </Style>
         </Image.Style>

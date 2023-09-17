@@ -70,6 +70,8 @@
     <Resource Include="Resources\enderal.png" />
     <None Remove="Resources\enderal-se.png" />
     <Resource Include="Resources\enderal-se.png" />
+    <None Remove="Resources\starfield.png" />
+    <Resource Include="Resources\starfield.png" />
   </ItemGroup>
 
   <ItemGroup>
