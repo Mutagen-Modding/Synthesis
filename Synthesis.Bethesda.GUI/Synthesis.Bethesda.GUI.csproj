@@ -72,6 +72,8 @@
     <Resource Include="Resources\enderal-se.png" />
     <None Remove="Resources\starfield.png" />
     <Resource Include="Resources\starfield.png" />
+    <None Remove="Resources\Fallout4VR.png" />
+    <Resource Include="Resources\Fallout4VR.png" />
   </ItemGroup>
 
   <ItemGroup>
