@@ -10,8 +10,7 @@ public interface ISwapInDesiredVersionsForProjectString
     void Swap(
         XElement proj,
         NugetVersionPair versions,
-        out NugetVersionPair listedVersions,
-        bool addMissing = true);
+        out NugetVersionPair listedVersions);
 }
 
 public class SwapInDesiredVersionsForProjectString : ISwapInDesiredVersionsForProjectString
@@ -31,8 +30,7 @@ public class SwapInDesiredVersionsForProjectString : ISwapInDesiredVersionsForPr
     public void Swap(
         XElement proj,
         NugetVersionPair versions,
-        out NugetVersionPair listedVersions,
-        bool addMissing = true)
+        out NugetVersionPair listedVersions)
     {
         listedVersions = new NugetVersionPair(null, null);
         var missingLibs = new HashSet<string>(MutagenLibraries);
@@ -75,15 +73,6 @@ public class SwapInDesiredVersionsForProjectString : ISwapInDesiredVersionsForPr
         if (itemGroup == null)
         {
             throw new ArgumentException("No ItemGroup found in project");
-        }
-        if (addMissing && versions.Mutagen != null)
-        {
-            foreach (var missing in missingLibs)
-            {
-                itemGroup.Add(new XElement("PackageReference",
-                    new XAttribute("Include", missing),
-                    new XAttribute("Version", versions.Mutagen)));
-            }
         }
     }
 }

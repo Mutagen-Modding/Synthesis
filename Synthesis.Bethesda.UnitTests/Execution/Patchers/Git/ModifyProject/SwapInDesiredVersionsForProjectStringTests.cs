@@ -43,8 +43,7 @@ public class SwapInDesiredVersionsForProjectStringTests
         sut.Swap(
             projXml,
             new NugetVersionPair(Mutagen: "0", Synthesis: "0"),
-            out var _,
-            addMissing: false);
+            out var _);
         projXml.ToString()
             .Should()
             .BeEquivalentTo(projStr);
@@ -60,8 +59,7 @@ public class SwapInDesiredVersionsForProjectStringTests
         sut.Swap(
             projXml, 
             new NugetVersionPair(Mutagen: "2.0", Synthesis: "3.1"),
-            out var _,
-            addMissing: false);
+            out var _);
         var swapString = projXml.ToString();
         var expectedString = CreateProj(
             ("Mutagen.Bethesda", "2.0"),
@@ -81,8 +79,7 @@ public class SwapInDesiredVersionsForProjectStringTests
         sut.Swap(
             projXml,
             new NugetVersionPair(Mutagen: "2.0", Synthesis: "3.1"),
-            out var _,
-            addMissing: false);
+            out var _);
         var swapString = projXml.ToString();
         var expectedString = CreateProj(
             ("Mutagen.Bethesda", "2.0"),
@@ -103,35 +100,12 @@ public class SwapInDesiredVersionsForProjectStringTests
         sut.Swap(
             projXml,
             new NugetVersionPair(Mutagen: "2.0", Synthesis: "3.1"),
-            out var _,
-            addMissing: false);
+            out var _);
         var swapString = projXml.ToString();
         var expectedString = CreateProj(
             ("Mutagen.Bethesda", "2.0"),
             ("Mutagen.Bethesda.Oblivion", "2.0"),
             ("Mutagen.Bethesda.Synthesis", "3.1"));
-        swapString
-            .Should()
-            .BeEquivalentTo(expectedString);
-    }
-
-    [Theory, SynthAutoData]
-    public void AddMissingMutagen(SwapInDesiredVersionsForProjectString sut)
-    {
-        var projStr = CreateProj(
-            ("Mutagen.Bethesda.Synthesis", "0.1.0"),
-            ("Mutagen.Bethesda.Oblivion", "0.1.0"));
-        var projXml = XElement.Parse(projStr);
-        sut.Swap(
-            projXml,
-            new NugetVersionPair(Mutagen: "2.0", Synthesis: "3.1"),
-            out var _,
-            addMissing: true);
-        var swapString = projXml.ToString();
-        var expectedString = CreateProj(
-            ("Mutagen.Bethesda.Synthesis", "3.1").AsEnumerable()
-            .And(SwapInDesiredVersionsForProjectString.MutagenLibraries.Select(x => (x, "2.0")))
-            .ToArray());
         swapString
             .Should()
             .BeEquivalentTo(expectedString);
