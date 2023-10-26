@@ -127,5 +127,6 @@
   "Shortcircuit": true,
   "WorkingDirectory": "",
   "BuildCorePercentage": 0.5,
-  "DotNetPathOverride": ""
+  "DotNetPathOverride": "",
+  "SpecifyTargetFramework": true
 }

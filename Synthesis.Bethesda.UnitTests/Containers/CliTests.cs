@@ -74,6 +74,7 @@ public class CliTests
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<IPatcherIdProvider>();
         builder.RegisterMock<IShortCircuitSettingsProvider>();
+        builder.RegisterMock<IExecutionParametersSettingsProvider>();
         builder.RegisterMock<SolutionPatcherSettings>()
             .As<IPathToSolutionFileProvider>()
             .As<IProjectSubpathProvider>()
@@ -93,6 +94,7 @@ public class CliTests
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<IPatcherIdProvider>();
         builder.RegisterMock<IShortCircuitSettingsProvider>();
+        builder.RegisterMock<IExecutionParametersSettingsProvider>();
         builder.RegisterMock<GithubPatcherSettings>()
             .As<IGithubPatcherIdentifier>()
             .As<IProjectSubpathProvider>()

@@ -137,22 +137,23 @@ public class SwapInDesiredVersionsForProjectStringTests
     public void NoMutagen(SwapInDesiredVersionsForProjectString sut)
     {
         var projStr = CreateProj(
-            ("Mutagen.Bethesda.Synthesis", "0.3.0"));
+            ("Mutagen.Bethesda.Synthesis", "0.3.0"),
+            ("Mutagen.Bethesda", "0.1.0"),
+            ("Mutagen.Bethesda.Skyrim", "0.1.0"),
+            ("Mutagen.Bethesda.Core", "0.1.0"),
+            ("Mutagen.Bethesda.Kernel", "0.1.0"));
         var projXml = XElement.Parse(projStr);
         sut.Swap(
             projXml,
-            new NugetVersionPair(Mutagen: "0.1.0", Synthesis: null),
+            new NugetVersionPair(Mutagen: "0.4.0", Synthesis: null),
             out var _);
         var swapString = projXml.ToString();
         var expectedString = CreateProj(
             ("Mutagen.Bethesda.Synthesis", "0.3.0"),
-            ("Mutagen.Bethesda.Oblivion", "0.1.0"),
-            ("Mutagen.Bethesda.Skyrim", "0.1.0"),
-            ("Mutagen.Bethesda.Fallout4", "0.1.0"),
-            ("Mutagen.Bethesda.Starfield", "0.1.0"),
-            ("Mutagen.Bethesda", "0.1.0"),
-            ("Mutagen.Bethesda.Core", "0.1.0"),
-            ("Mutagen.Bethesda.Kernel", "0.1.0"));
+            ("Mutagen.Bethesda", "0.4.0"),
+            ("Mutagen.Bethesda.Skyrim", "0.4.0"),
+            ("Mutagen.Bethesda.Core", "0.4.0"),
+            ("Mutagen.Bethesda.Kernel", "0.4.0"));
         swapString
             .Should()
             .BeEquivalentTo(expectedString);
