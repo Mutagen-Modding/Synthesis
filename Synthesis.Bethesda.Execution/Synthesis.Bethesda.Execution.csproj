@@ -69,6 +69,11 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
+    <Compile Update="Patchers\Git\IExecutionParametersSettingsProvider.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
   </ItemGroup>
 
 </Project>

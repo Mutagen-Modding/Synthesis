@@ -45,5 +45,7 @@
                      mahapps:TextBoxHelper.Watermark="Default pathing">
             </TextBox>
         </StackPanel>
+        <TextBlock Text="Dot Net" Style="{StaticResource SettingSectionHeaderStyle}" Margin="0,25,0,5" />
+        <CheckBox Content="Specify Target Framework" x:Name="SpecifyTargetFrameworkCheck" ToolTip="Specify the target framework win-x64 during builds" />
     </StackPanel>
 </wpf:NoggogUserControl>

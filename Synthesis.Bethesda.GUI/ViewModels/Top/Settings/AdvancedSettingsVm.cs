@@ -12,7 +12,10 @@ using Noggog.WorkEngine;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
-public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider, IDotNetPathSettingsProvider, IModifySavingSettings, INumWorkThreadsController
+public class GlobalSettingsVm : ViewModel, 
+    IShortCircuitSettingsProvider, IDotNetPathSettingsProvider, 
+    IModifySavingSettings, INumWorkThreadsController,
+    IExecutionParametersSettingsProvider
 {
     [Reactive] public bool Shortcircuit { get; set; }
 
@@ -23,6 +26,8 @@ public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider, IDotNe
         
     [Reactive] public double BuildCorePercentage { get; set; }
 
+    [Reactive] public bool SpecifyTargetFramework { get; set; } = true;
+
     public GlobalSettingsVm(
         ISettingsSingleton settingsSingleton,
         BuildCoreCalculator calculator)
@@ -30,6 +35,7 @@ public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider, IDotNe
         Shortcircuit = settingsSingleton.Pipeline.Shortcircuit;
         DotNetPathOverride = settingsSingleton.Pipeline.DotNetPathOverride;
         BuildCorePercentage = settingsSingleton.Pipeline.BuildCorePercentage;
+        SpecifyTargetFramework = settingsSingleton.Pipeline.SpecifyTargetFramework;
 
         _buildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
             .Select(calculator.Calculate)
@@ -39,6 +45,7 @@ public class GlobalSettingsVm : ViewModel, IShortCircuitSettingsProvider, IDotNe
     public void Save(SynthesisGuiSettings gui, PipelineSettings pipe)
     {
         pipe.BuildCorePercentage = BuildCorePercentage;
+        pipe.SpecifyTargetFramework = SpecifyTargetFramework;
         pipe.DotNetPathOverride = DotNetPathOverride;
         pipe.Shortcircuit = Shortcircuit;
     }
