@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using Noggog;
 using Serilog;
@@ -14,11 +14,14 @@ public interface IAvailableProjectsRetriever
 [ExcludeFromCodeCoverage]
 public class AvailableProjectsRetriever : IAvailableProjectsRetriever
 {
+    private readonly ILogger _logger;
     public IFileSystem FileSystem { get; }
 
     public AvailableProjectsRetriever(
+        ILogger logger,
         IFileSystem fileSystem)
     {
+        _logger = logger;
         FileSystem = fileSystem;
     }
         

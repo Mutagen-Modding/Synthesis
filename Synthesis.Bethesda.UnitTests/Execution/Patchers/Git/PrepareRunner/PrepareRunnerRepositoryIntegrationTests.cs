@@ -22,6 +22,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     private PrepareRunnerRepository Get(DirectoryPath local)
     {
         var availableProjectsRetriever = new AvailableProjectsRetriever(
+            Substitute.For<ILogger>(),
             IFileSystemExt.DefaultFilesystem);
         var modify = Substitute.For<IModifyRunnerProjects>();
         modify.WhenForAnyArgs(x => x.Modify(default!, default!, default!, out _)).Do(x =>
