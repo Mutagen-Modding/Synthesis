@@ -1,7 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
-using Buildalyzer;
 using Noggog;
+using Serilog;
+using Synthesis.Bethesda.Execution.Logging;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Solution;
 
@@ -23,15 +24,21 @@ public class AvailableProjectsRetriever : IAvailableProjectsRetriever
         
     public IEnumerable<string> Get(FilePath solutionPath)
     {
-        if (!FileSystem.File.Exists(solutionPath)) return Enumerable.Empty<string>();
-        try
+        if (!FileSystem.File.Exists(solutionPath))
         {
-            var manager = new AnalyzerManager(solutionPath);
-            return manager.Projects.Keys.Select(projPath => projPath.TrimStart($"{Path.GetDirectoryName(solutionPath)}\\"!));
+            yield break;
         }
-        catch (Exception)
+        
+        foreach (var line in File.ReadLines(solutionPath))
         {
-            return Enumerable.Empty<string>();
+            if (!line.StartsWith("Project(")) continue;
+            var indexOfComma = line.IndexOf(",");
+            if (indexOfComma == -1) continue;
+            var laterIndexOfComma = line.IndexOf(",", indexOfComma + 1);
+            if (laterIndexOfComma == -1) continue;
+            var projSpan = line.AsSpan().Slice(indexOfComma + 1, laterIndexOfComma - indexOfComma - 1).Trim();
+            projSpan = projSpan.TrimStart("\"").TrimEnd("\"");
+            yield return Path.Combine(Path.GetDirectoryName(solutionPath)!, projSpan.ToString());
         }
     }
 }
