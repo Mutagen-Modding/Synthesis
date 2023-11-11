@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using Noggog;
 using Serilog;
-using Synthesis.Bethesda.Execution.Logging;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Solution;
 
@@ -32,7 +31,7 @@ public class AvailableProjectsRetriever : IAvailableProjectsRetriever
             yield break;
         }
         
-        foreach (var line in File.ReadLines(solutionPath))
+        foreach (var line in FileSystem.File.ReadLines(solutionPath))
         {
             if (!line.StartsWith("Project(")) continue;
             var indexOfComma = line.IndexOf(",");
@@ -41,6 +40,7 @@ public class AvailableProjectsRetriever : IAvailableProjectsRetriever
             if (laterIndexOfComma == -1) continue;
             var projSpan = line.AsSpan().Slice(indexOfComma + 1, laterIndexOfComma - indexOfComma - 1).Trim();
             projSpan = projSpan.TrimStart("\"").TrimEnd("\"");
+            if (!projSpan.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase)) continue;
             yield return Path.Combine(Path.GetDirectoryName(solutionPath)!, projSpan.ToString());
         }
     }
