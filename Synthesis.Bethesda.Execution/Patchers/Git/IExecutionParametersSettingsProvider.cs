@@ -2,5 +2,5 @@
 
 public interface IExecutionParametersSettingsProvider
 {
-    bool SpecifyTargetFramework { get; set; }
+    string? TargetRuntime { get; }
 }

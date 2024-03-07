@@ -28,6 +28,8 @@ public class GlobalSettingsVm : ViewModel,
 
     [Reactive] public bool SpecifyTargetFramework { get; set; } = true;
 
+    public string? TargetRuntime => SpecifyTargetFramework ? "win-x64" : null;
+    
     public GlobalSettingsVm(
         ISettingsSingleton settingsSingleton,
         BuildCoreCalculator calculator)
@@ -35,7 +37,7 @@ public class GlobalSettingsVm : ViewModel,
         Shortcircuit = settingsSingleton.Pipeline.Shortcircuit;
         DotNetPathOverride = settingsSingleton.Pipeline.DotNetPathOverride;
         BuildCorePercentage = settingsSingleton.Pipeline.BuildCorePercentage;
-        SpecifyTargetFramework = settingsSingleton.Pipeline.SpecifyTargetFramework;
+        SpecifyTargetFramework = settingsSingleton.Gui.SpecifyTargetFramework;
 
         _buildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
             .Select(calculator.Calculate)
@@ -45,7 +47,7 @@ public class GlobalSettingsVm : ViewModel,
     public void Save(SynthesisGuiSettings gui, PipelineSettings pipe)
     {
         pipe.BuildCorePercentage = BuildCorePercentage;
-        pipe.SpecifyTargetFramework = SpecifyTargetFramework;
+        gui.SpecifyTargetFramework = SpecifyTargetFramework;
         pipe.DotNetPathOverride = DotNetPathOverride;
         pipe.Shortcircuit = Shortcircuit;
     }

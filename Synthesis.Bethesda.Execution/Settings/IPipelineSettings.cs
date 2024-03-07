@@ -2,7 +2,7 @@
 
 namespace Synthesis.Bethesda.Execution.Settings;
 
-public interface IPipelineSettings : IShortCircuitSettingsProvider, IExecutionParametersSettingsProvider
+public interface IPipelineSettings : IShortCircuitSettingsProvider
 {
     IList<ISynthesisProfileSettings> Profiles { get; set; }
     string WorkingDirectory { get; set; }

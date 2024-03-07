@@ -11,5 +11,4 @@ public record PipelineSettings : IPipelineSettings
     public string WorkingDirectory { get; set; } = string.Empty;
     public double BuildCorePercentage { get; set; } = 0.5d;
     public string DotNetPathOverride { get; set; } = string.Empty;
-    public bool SpecifyTargetFramework { get; set; } = true;
 }

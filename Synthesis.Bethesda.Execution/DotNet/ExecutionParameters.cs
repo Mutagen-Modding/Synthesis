@@ -13,7 +13,7 @@ public class ExecutionParameters : IExecutionParameters
 {
     private readonly IExecutionParametersSettingsProvider _parametersSettingsProvider;
 
-    public string Parameters => $"{(_parametersSettingsProvider.SpecifyTargetFramework ? "--runtime win-x64 " : null)}-c Release";
+    public string Parameters => $"{(_parametersSettingsProvider.TargetRuntime == null ? null : $"--runtime {_parametersSettingsProvider.TargetRuntime} ")}-c Release";
 
     public ExecutionParameters(IExecutionParametersSettingsProvider parametersSettingsProvider)
     {
