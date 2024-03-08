@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using CommandLine;
+using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -14,7 +15,8 @@ namespace Synthesis.Bethesda.Execution.Commands;
 public class RunPatcherPipelineInstructions :
     IProfileDefinitionPathProvider,
     IProfileNameProvider,
-    IExecutionParametersSettingsProvider
+    IExecutionParametersSettingsProvider,
+    IDataDirectoryProvider
 {
     [Option('s', "SourcePath", Required = false, HelpText = "Optional path pointing to the previous patcher result to build onto.")]
     public FilePath? SourcePath { get; set; }
@@ -63,4 +65,5 @@ public class RunPatcherPipelineInstructions :
     
     FilePath IProfileDefinitionPathProvider.Path => ProfileDefinitionPath;
     string IProfileNameProvider.Name => ProfileName;
+    DirectoryPath IDataDirectoryProvider.Path => DataFolderPath;
 }
