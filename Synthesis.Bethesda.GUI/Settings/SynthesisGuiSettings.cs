@@ -2,7 +2,7 @@ using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Synthesis.Bethesda.GUI.Settings;
 
-public interface ISynthesisGuiSettings : IExecutionParametersSettingsProvider
+public interface ISynthesisGuiSettings
 {
     bool ShowHelp { get; set; }
     bool OpenIdeAfterCreating { get; set; }
@@ -24,7 +24,7 @@ public record SynthesisGuiSettings : ISynthesisGuiSettings
     public string SelectedProfile { get; set; } = string.Empty;
     public BrowserSettings BrowserSettings { get; set; } = new(ShowUnlisted: false, ShowInstalled: true);
     public bool SpecifyTargetFramework { get; set; } = true;
-    public string? TargetRuntime => "win-x64";
+    public string? TargetRuntime => SpecifyTargetFramework ? "win-x64" : null;
 }
 
 public record BrowserSettings(bool ShowUnlisted, bool ShowInstalled);
