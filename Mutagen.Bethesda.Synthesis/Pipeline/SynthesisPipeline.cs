@@ -793,7 +793,7 @@ public class SynthesisPipeline
             MastersListOrdering = new MastersListOrderingByLoadOrder(loadOrder),
             TargetLanguageOverride = args.TargetLanguage,
             Encodings = args.UseUtf8ForEmbeddedStrings 
-                ? new EncodingBundle(NonTranslated: MutagenEncodingProvider._1252, NonLocalized: MutagenEncodingProvider._utf8)
+                ? new EncodingBundle(NonTranslated: MutagenEncoding._1252, NonLocalized: MutagenEncoding._utf8)
                 : null
         };
     }

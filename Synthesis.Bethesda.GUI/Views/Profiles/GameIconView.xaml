@@ -38,6 +38,9 @@
                     <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.Fallout4}">
                         <Setter Property="Source" Value="../../Resources/Fallout4.png" />
                     </DataTrigger>
+                    <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.Fallout4VR}">
+                        <Setter Property="Source" Value="../../Resources/Fallout4VR.png" />
+                    </DataTrigger>
                     <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameRelease.EnderalLE}">
                         <Setter Property="Source" Value="../../Resources/enderal.png" />
                     </DataTrigger>
@@ -52,6 +55,9 @@
                     </DataTrigger>
                     <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameCategory.Fallout4}">
                         <Setter Property="Source" Value="../../Resources/Fallout4.png" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding}" Value="{x:Static muta:GameCategory.Starfield}">
+                        <Setter Property="Source" Value="../../Resources/starfield.png" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>

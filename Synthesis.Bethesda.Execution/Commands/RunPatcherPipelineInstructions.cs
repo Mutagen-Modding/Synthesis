@@ -1,7 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using CommandLine;
+using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Synthesis.Bethesda.Commands;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
@@ -12,7 +14,9 @@ namespace Synthesis.Bethesda.Execution.Commands;
 [ExcludeFromCodeCoverage]
 public class RunPatcherPipelineInstructions :
     IProfileDefinitionPathProvider,
-    IProfileNameProvider
+    IProfileNameProvider,
+    IExecutionParametersSettingsProvider,
+    IDataDirectoryProvider
 {
     [Option('s', "SourcePath", Required = false, HelpText = "Optional path pointing to the previous patcher result to build onto.")]
     public FilePath? SourcePath { get; set; }
@@ -40,6 +44,9 @@ public class RunPatcherPipelineInstructions :
 
     [Option('m', "PersistenceMode", Required = false, HelpText = "Path to the Persistence state style to use")]
     public PersistenceMode? PersistenceMode { get; internal set; }
+    
+    [Option('t', "TargetRuntime", Required = false, HelpText = "Target runtime to specify explicitly")]
+    public string? TargetRuntime { get; set; }
 
     public override string ToString()
     {
@@ -52,9 +59,11 @@ public class RunPatcherPipelineInstructions :
                + $"  {nameof(ProfileName)} => {this.ProfileName} \n"
                + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}\n"
                + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
-               + $"  {nameof(PersistenceMode)} => {this.PersistenceMode}";
+               + $"  {nameof(PersistenceMode)} => {this.PersistenceMode}\n"
+               + $"  {nameof(TargetRuntime)} => {this.TargetRuntime}";
     }
     
     FilePath IProfileDefinitionPathProvider.Path => ProfileDefinitionPath;
     string IProfileNameProvider.Name => ProfileName;
+    DirectoryPath IDataDirectoryProvider.Path => DataFolderPath;
 }

@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
+using DynamicData.Alias;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Noggog.WPF;
@@ -185,8 +186,7 @@ public class GroupVm : ViewModel, ISelected
             
         var allCommands = Patchers.Connect()
             .ObserveOnGui()
-            .Transform(x => x as GitPatcherVm)
-            .ChangeNotNull()
+            .WhereCastable<PatcherVm, GitPatcherVm>()
             .Transform(x => CommandVM.Factory(x.UpdateAllCommand.Command))
             .AsObservableList();
         UpdateAllPatchersCommand = ReactiveCommand.CreateFromTask(

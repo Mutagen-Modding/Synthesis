@@ -110,7 +110,7 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
                 cancel: cancel);
         }).ConfigureAwait(false);
 
-        if (result == Codes.NotRunnable)
+        if (result is Codes.NotRunnable or Codes.Unsupported)
         {
             return ErrorResponse.Fail(string.Join(Environment.NewLine, results));
         }

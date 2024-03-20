@@ -31,9 +31,6 @@ public class QueryExecutablePath : IQueryExecutablePath
         
     public async Task<GetResponse<string>> Query(FilePath projectPath, CancellationToken cancel)
     {
-        // Hacky way to locate executable, but running a build and extracting the path its logs spit out
-        // Tried using Buildalyzer, but it has a lot of bad side effects like clearing build outputs when
-        // locating information like this.
         var result = await Runner.RunAndCapture(
             StartInfoProvider.Construct(projectPath),
             cancel: cancel).ConfigureAwait(false);

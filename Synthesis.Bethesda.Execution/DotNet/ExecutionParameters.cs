@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Synthesis.Bethesda.Execution.DotNet;
 
@@ -10,5 +11,12 @@ public interface IExecutionParameters
 [ExcludeFromCodeCoverage]
 public class ExecutionParameters : IExecutionParameters
 {
-    public string Parameters => "--runtime win-x64 -c Release";
+    private readonly IExecutionParametersSettingsProvider _parametersSettingsProvider;
+
+    public string Parameters => $"{(_parametersSettingsProvider.TargetRuntime == null ? null : $"--runtime {_parametersSettingsProvider.TargetRuntime} ")}-c Release";
+
+    public ExecutionParameters(IExecutionParametersSettingsProvider parametersSettingsProvider)
+    {
+        _parametersSettingsProvider = parametersSettingsProvider;
+    }
 }

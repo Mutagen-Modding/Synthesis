@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Noggog.Processes.DI;
 using Serilog;
 
@@ -32,12 +33,15 @@ public class SynthesisSubProcessRunner : ISynthesisSubProcessRunner
     public ILogger Logger { get; }
     public IProcessFactory Factory { get; }
 
+    private readonly bool _killWithParent;
+
     public SynthesisSubProcessRunner(
         ILogger logger,
         IProcessFactory processFactory)
     {
         Logger = logger;
         Factory = processFactory;
+        _killWithParent = !RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
     }
         
     public async Task<ProcessRunReturn> RunAndCapture(
@@ -58,7 +62,8 @@ public class SynthesisSubProcessRunner : ISynthesisSubProcessRunner
     {
         using var proc = Factory.Create(
             startInfo,
-            cancel: cancel);
+            cancel: cancel,
+            killWithParent: _killWithParent);
         Logger.Information("({WorkingDirectory}): {FileName} {Args}",
             startInfo.WorkingDirectory,
             startInfo.FileName,
@@ -86,7 +91,8 @@ public class SynthesisSubProcessRunner : ISynthesisSubProcessRunner
     {
         using var proc = Factory.Create(
             startInfo,
-            cancel: cancel);
+            cancel: cancel,
+            killWithParent: _killWithParent);
         Logger.Information("({WorkingDirectory}): {FileName} {Args}",
             startInfo.WorkingDirectory,
             startInfo.FileName,

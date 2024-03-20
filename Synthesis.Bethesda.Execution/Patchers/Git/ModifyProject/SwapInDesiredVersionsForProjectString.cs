@@ -10,13 +10,13 @@ public interface ISwapInDesiredVersionsForProjectString
     void Swap(
         XElement proj,
         NugetVersionPair versions,
-        out NugetVersionPair listedVersions,
-        bool addMissing = true);
+        out NugetVersionPair listedVersions);
 }
 
 public class SwapInDesiredVersionsForProjectString : ISwapInDesiredVersionsForProjectString
 {
     internal static readonly HashSet<string> MutagenLibraries;
+    internal static readonly HashSet<string> SynthLibraries;
 
     static SwapInDesiredVersionsForProjectString()
     {
@@ -25,14 +25,22 @@ public class SwapInDesiredVersionsForProjectString : ISwapInDesiredVersionsForPr
             .And("Mutagen.Bethesda")
             .And("Mutagen.Bethesda.Core")
             .And("Mutagen.Bethesda.Kernel")
+            .And("Mutagen.Bethesda.Json")
+            .And("Mutagen.Bethesda.Sqlite")
+            .And("Mutagen.Bethesda.Autofac")
+            .And("Mutagen.Bethesda.WPF")
             .ToHashSet();
+        SynthLibraries = new HashSet<string>()
+        {
+            "Mutagen.Bethesda.Synthesis",
+            "Mutagen.Bethesda.Synthesis.WPF",
+        };
     }
         
     public void Swap(
         XElement proj,
         NugetVersionPair versions,
-        out NugetVersionPair listedVersions,
-        bool addMissing = true)
+        out NugetVersionPair listedVersions)
     {
         listedVersions = new NugetVersionPair(null, null);
         var missingLibs = new HashSet<string>(MutagenLibraries);
@@ -44,7 +52,7 @@ public class SwapInDesiredVersionsForProjectString : ISwapInDesiredVersionsForPr
                 if (!elem.Name.LocalName.Equals("PackageReference")) continue;
                 if (!elem.TryGetAttribute("Include", out var libAttr)) continue;
                 string swapInStr;
-                if (libAttr.Value.Equals("Mutagen.Bethesda.Synthesis"))
+                if (SynthLibraries.Contains(libAttr.Value))
                 {
                     listedVersions = listedVersions with
                     {
@@ -75,15 +83,6 @@ public class SwapInDesiredVersionsForProjectString : ISwapInDesiredVersionsForPr
         if (itemGroup == null)
         {
             throw new ArgumentException("No ItemGroup found in project");
-        }
-        if (addMissing && versions.Mutagen != null)
-        {
-            foreach (var missing in missingLibs)
-            {
-                itemGroup.Add(new XElement("PackageReference",
-                    new XAttribute("Include", missing),
-                    new XAttribute("Version", versions.Mutagen)));
-            }
         }
     }
 }

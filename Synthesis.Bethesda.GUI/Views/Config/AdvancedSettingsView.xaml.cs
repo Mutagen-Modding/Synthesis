@@ -21,6 +21,8 @@ public partial class AdvancedSettingsView
                 .Select(x => x == 0 ? Environment.ProcessorCount : x)
                 .BindTo(this, x => x.ActiveProcessorsText.Text)
                 .DisposeWith(dispose);
+            this.Bind(ViewModel, x => x.SpecifyTargetFramework, x => x.SpecifyTargetFrameworkCheck.IsChecked)
+                .DisposeWith(dispose);
         });
     }
 }

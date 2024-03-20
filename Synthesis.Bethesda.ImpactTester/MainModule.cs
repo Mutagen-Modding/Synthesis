@@ -17,6 +17,8 @@ public class MainModule : Module
             .SingleInstance();
         builder.RegisterInstance(Log.Logger).As<ILogger>();
         builder.RegisterModule<NoggogModule>();
+        
+        builder.RegisterType<PipelineSettings>().AsImplementedInterfaces();
 
         builder.RegisterModule<Synthesis.Bethesda.Execution.Modules.MainModule>();
         builder.RegisterModule<Synthesis.Bethesda.Execution.Modules.SolutionPatcherModule>();

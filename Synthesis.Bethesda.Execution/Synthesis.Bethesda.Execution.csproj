@@ -35,7 +35,6 @@
   <ItemGroup>
     <PackageReference Include="Autofac" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" />
-    <PackageReference Include="Buildalyzer" />
     <PackageReference Include="LibGit2Sharp" />
     <PackageReference Include="Microsoft.Build" />
     <PackageReference Include="Microsoft.Build.Tasks.Core" />
@@ -65,6 +64,11 @@
       <BuildAction>Compile</BuildAction>
     </Compile>
     <Compile Update="Settings\Calculators\BuildCoreCalculator.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="Patchers\Git\IExecutionParametersSettingsProvider.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>

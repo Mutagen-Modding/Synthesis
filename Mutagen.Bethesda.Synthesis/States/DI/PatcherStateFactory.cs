@@ -42,7 +42,7 @@ public class PatcherStateFactory : IPatcherStateFactory
     {
         public IMutagenEncoding GetEncoding(GameRelease release, Language language)
         {
-            return MutagenEncodingProvider._utf8;
+            return MutagenEncoding._utf8;
         }
     }
         

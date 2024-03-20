@@ -1,3 +1,5 @@
+using Synthesis.Bethesda.Execution.Patchers.Git;
+
 namespace Synthesis.Bethesda.GUI.Settings;
 
 public interface ISynthesisGuiSettings
@@ -8,6 +10,8 @@ public interface ISynthesisGuiSettings
     string MainRepositoryFolder { get; set; }
     string SelectedProfile { get; set; }
     BrowserSettings BrowserSettings { get; set; }
+    bool SpecifyTargetFramework { get; set; }
+    
 }
 
 public record SynthesisGuiSettings : ISynthesisGuiSettings
@@ -19,6 +23,8 @@ public record SynthesisGuiSettings : ISynthesisGuiSettings
     public string MainRepositoryFolder { get; set; } = string.Empty;
     public string SelectedProfile { get; set; } = string.Empty;
     public BrowserSettings BrowserSettings { get; set; } = new(ShowUnlisted: false, ShowInstalled: true);
+    public bool SpecifyTargetFramework { get; set; } = true;
+    public string? TargetRuntime => SpecifyTargetFramework ? "win-x64" : null;
 }
 
 public record BrowserSettings(bool ShowUnlisted, bool ShowInstalled);
