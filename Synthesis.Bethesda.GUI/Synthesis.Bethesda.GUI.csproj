@@ -35,7 +35,6 @@
   <ItemGroup>
     <PackageReference Include="Autofac" />
     <PackageReference Include="Humanizer.Core" />
-    <PackageReference Include="Loqui" />
     <PackageReference Include="Mutagen.Bethesda.Autofac" />
     <PackageReference Include="Mutagen.Bethesda.WPF" />
     <PackageReference Include="Noggog.Autofac" />

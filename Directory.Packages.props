@@ -22,9 +22,6 @@
         </PackageVersion>
         <PackageVersion Include="Humanizer.Core" Version="2.14.1"/>
         <PackageVersion Include="LibGit2Sharp" Version="0.26.2" />
-        <PackageVersion Include="Loqui">
-            <Version>[2.63]</Version>
-        </PackageVersion>
         <PackageVersion Include="Microsoft.Build">
             <Version>17.7.2</Version>
         </PackageVersion>
