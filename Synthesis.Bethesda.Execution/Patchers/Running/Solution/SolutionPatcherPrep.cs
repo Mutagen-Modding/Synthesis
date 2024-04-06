@@ -1,4 +1,4 @@
-﻿using Serilog;
+using Serilog;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
@@ -33,7 +33,7 @@ public class SolutionPatcherPrep : ISolutionPatcherPrep
         await Task.WhenAll(
             Task.Run(async () =>
             {
-                _logger.Information("Compiling");
+                _logger.Information("Compiling solution {Path}", PathToProjProvider.Path);
                 try
                 {
                     var resp = await Build.Compile(PathToProjProvider.Path, cancel).ConfigureAwait(false);
@@ -41,11 +41,11 @@ public class SolutionPatcherPrep : ISolutionPatcherPrep
                     {
                         throw new SynthesisBuildFailure(resp.Reason);
                     }
-                    _logger.Information("Compiled");
+                    _logger.Information("Compiled solution {Path}", PathToProjProvider.Path);
                 }
                 catch (Exception e)
                 {
-                    _logger.Error(e, "Failed to compile");
+                    _logger.Error(e, $"Failed to compile solution {PathToProjProvider.Path}");
                     throw;
                 }
             }),

@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Reactive.Linq;
 using Noggog;
 using ReactiveUI;
@@ -41,7 +41,7 @@ public class CompilationProvider : ICompilationProvider
 
                     try
                     {
-                        logger.Information("Compiling");
+                        logger.Information("Compiling {Target}", state.Item);
                         // Return early with the values, but mark not complete
                         observer.OnNext(new ConfigurationState<RunnerRepoInfo>(state.Item)
                         {
@@ -53,7 +53,7 @@ public class CompilationProvider : ICompilationProvider
                         var compileResp = await build.Compile(state.Item, cancel).ConfigureAwait(false);
                         if (compileResp.Failed)
                         {
-                            logger.Information("Compiling failed: {Reason}", compileResp.Reason);
+                            logger.Information("Compiling {Target} failed: {Reason}", state.Item, compileResp.Reason);
                             var errs = new List<string>();
                             printErrorMessage.Print(compileResp.Reason,
                                 $"{Path.GetDirectoryName(state.Item.Project.ProjPath)}\\", (s, _) =>
@@ -66,7 +66,7 @@ public class CompilationProvider : ICompilationProvider
                         }
 
                         // Return things again, without error
-                        logger.Information("Finished compiling");
+                        logger.Information("Finished compiling {Target}", state.Item);
                         observer.OnNext(state);
                     }
                     catch (Exception ex)
