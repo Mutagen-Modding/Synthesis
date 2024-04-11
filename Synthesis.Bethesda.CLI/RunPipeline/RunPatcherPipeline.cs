@@ -1,4 +1,4 @@
-﻿using Synthesis.Bethesda.Execution.Commands;
+using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
 
@@ -40,6 +40,8 @@ public class RunPatcherPipeline : IRunPatcherPipeline
                     TargetLanguage: ProfileSettings.TargetLanguage,
                     Localize: ProfileSettings.Localize,
                     UseUtf8ForEmbeddedStrings: ProfileSettings.UseUtf8ForEmbeddedStrings,
+                    HeaderVersionOverride: ProfileSettings.HeaderVersionOverride,
+                    FormIDRangeMode: ProfileSettings.FormIDRangeMode,
                     PersistenceMode: Instructions.PersistenceMode ?? PersistenceMode.None, 
                     PersistencePath: Instructions.PersistencePath)).ConfigureAwait(false);
     }

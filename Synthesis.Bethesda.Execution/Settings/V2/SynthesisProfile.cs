@@ -26,4 +26,6 @@ public class SynthesisProfile : ISynthesisProfileSettings
 
     GameRelease IGameReleaseContext.Release => TargetRelease;
     public bool UseUtf8ForEmbeddedStrings { get; set; }
+    public FormIDRangeMode FormIDRangeMode { get; set; } = FormIDRangeMode.Auto;
+    public float? HeaderVersionOverride { get; set; }
 }

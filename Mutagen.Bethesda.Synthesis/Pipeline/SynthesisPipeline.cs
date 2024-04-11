@@ -856,7 +856,9 @@ public class SynthesisPipeline
             InternalDataFolder = LocateInternalData(fileSystem),
             TargetLanguage = extraParameters.TargetLanguage,
             Localize = extraParameters.Localize,
-            UseUtf8ForEmbeddedStrings = extraParameters.UseUtf8ForEmbeddedStrings
+            UseUtf8ForEmbeddedStrings = extraParameters.UseUtf8ForEmbeddedStrings,
+            FormIDRangeMode = extraParameters.FormIDRangeMode,
+            HeaderVersionOverride = extraParameters.HeaderVersionOverride,
         };
     }
 

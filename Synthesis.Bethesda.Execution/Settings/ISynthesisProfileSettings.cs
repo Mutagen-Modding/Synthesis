@@ -1,4 +1,4 @@
-﻿using Mutagen.Bethesda;
+using Mutagen.Bethesda;
 using Mutagen.Bethesda.Strings;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings.V2;
@@ -23,4 +23,6 @@ public interface ISynthesisProfileSettings : IProfileIdentifier
     bool Localize { get; set; }
     Language TargetLanguage { get; set; }
     public bool UseUtf8ForEmbeddedStrings { get; set; }
+    public FormIDRangeMode FormIDRangeMode { get; set; }
+    public float? HeaderVersionOverride { get; set; }
 }

@@ -180,6 +180,12 @@ public partial class ProfileDetailView
             this.Bind(ViewModel, x => x.Profile!.UseUtf8InEmbedded, x => x.Utf8ForEmbeddedStrings.IsChecked)
                 .DisposeWith(disposable);
 
+            this.Bind(ViewModel, x => x.Profile!.HeaderVersionOverride, x => x.HeaderVersionOverride.Value)
+                .DisposeWith(disposable);
+
+            this.Bind(ViewModel, x => x.Profile!.FormIDRangeMode, x => x.LowerFormIDRangeCombobox.SelectedItem)
+                .DisposeWith(disposable);
+
             //this.WhenAnyValue(x => x.ViewModel!.PersistenceModes)
             //    .BindTo(this, x => x.PersistenceStyleSelector.ItemsSource)
             //    .DisposeWith(disposable);

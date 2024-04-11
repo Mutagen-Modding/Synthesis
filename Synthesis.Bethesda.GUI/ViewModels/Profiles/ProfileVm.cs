@@ -106,9 +106,15 @@ public class ProfileVm : ViewModel
         
     [Reactive]
     public Language TargetLanguage { get; set; }
-        
+
     [Reactive]
     public bool UseUtf8InEmbedded { get; set; }
+
+    [Reactive]
+    public FormIDRangeMode FormIDRangeMode { get; set; } = FormIDRangeMode.Auto;
+
+    [Reactive]
+    public float? HeaderVersionOverride { get; set; }
 
     public IEnvironmentErrorsVm EnvironmentErrors { get; }
 
@@ -412,7 +418,9 @@ public class ProfileVm : ViewModel
             IgnoreMissingMods = IgnoreMissingMods,
             Localize = Localize,
             TargetLanguage = TargetLanguage,
-            UseUtf8ForEmbeddedStrings = UseUtf8InEmbedded
+            UseUtf8ForEmbeddedStrings = UseUtf8InEmbedded,
+            FormIDRangeMode = FormIDRangeMode,
+            HeaderVersionOverride = HeaderVersionOverride
         };
     }
 

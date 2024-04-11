@@ -211,6 +211,8 @@ public class RunVm : ViewModel
                         persistenceMode: RunningProfile.SelectedPersistenceMode,
                         localize: RunningProfile.Localize,
                         utf8InEmbeddedStrings: RunningProfile.UseUtf8InEmbedded,
+                        headerVersionOverride: RunningProfile.HeaderVersionOverride,
+                        formIDRangeMode: RunningProfile.FormIDRangeMode,
                         targetLanguage: RunningProfile.TargetLanguage,
                         cancel: _cancel.Token).ConfigureAwait(false);
                 }

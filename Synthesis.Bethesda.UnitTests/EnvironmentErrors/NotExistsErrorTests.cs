@@ -1,4 +1,4 @@
-﻿using System.IO.Abstractions.TestingHelpers;
+using System.IO.Abstractions.TestingHelpers;
 using System.Xml.Linq;
 using AutoFixture.Xunit2;
 using FluentAssertions;
@@ -18,7 +18,7 @@ public class NotExistsErrorTests
         NotExistsError sut)
     {
         sut.RunFix(path);
-        var doc = XDocument.Load(fs.FileStream.Create(path, FileMode.Open, FileAccess.Read));
+        var doc = XDocument.Load(fs.FileStream.New(path, FileMode.Open, FileAccess.Read));
         doc.Should().BeEquivalentTo(NotExistsError.TypicalFile());
     }
         
@@ -30,7 +30,7 @@ public class NotExistsErrorTests
     {
         fs.File.WriteAllText(path, "");
         sut.RunFix(path);
-        var doc = XDocument.Load(fs.FileStream.Create(path, FileMode.Open, FileAccess.Read));
+        var doc = XDocument.Load(fs.FileStream.New(path, FileMode.Open, FileAccess.Read));
         doc.Should().BeEquivalentTo(NotExistsError.TypicalFile());
     }
 
@@ -42,7 +42,7 @@ public class NotExistsErrorTests
     {
         fs.File.WriteAllText(path, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<something />");
         sut.RunFix(path);
-        var doc = XDocument.Load(fs.FileStream.Create(path, FileMode.Open, FileAccess.Read));
+        var doc = XDocument.Load(fs.FileStream.New(path, FileMode.Open, FileAccess.Read));
         doc.Should().BeEquivalentTo(NotExistsError.TypicalFile());
     }
 }
