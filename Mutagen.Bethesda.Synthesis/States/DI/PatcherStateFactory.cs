@@ -1,4 +1,4 @@
-﻿using System.IO.Abstractions;
+using System.IO.Abstractions;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Allocators;
 using Mutagen.Bethesda.Plugins.Cache;
@@ -8,6 +8,7 @@ using Mutagen.Bethesda.Plugins.Records.Internals;
 using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Strings.DI;
 using Mutagen.Bethesda.Synthesis.CLI;
+using Synthesis.Bethesda;
 
 namespace Mutagen.Bethesda.Synthesis.States.DI;
 
@@ -118,7 +119,18 @@ public class PatcherStateFactory : IPatcherStateFactory
         {
             if (settings.SourcePath == null)
             {
-                patchMod = ModInstantiator<TModSetter>.Activator(exportKey, settings.GameRelease);
+                bool? forceFormIdLowerRange = settings.FormIDRangeMode switch
+                {
+                    FormIDRangeMode.Auto => null,
+                    FormIDRangeMode.Off => false,
+                    FormIDRangeMode.On => true,
+                    _ => throw new NotImplementedException(),
+                };
+                patchMod = ModInstantiator<TModSetter>.Activator(
+                    exportKey,
+                    settings.GameRelease,
+                    headerVersion: settings.HeaderVersionOverride,
+                    forceUseLowerFormIDRanges: forceFormIdLowerRange);
             }
             else
             {

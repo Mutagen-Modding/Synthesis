@@ -794,7 +794,8 @@ public class SynthesisPipeline
             TargetLanguageOverride = args.TargetLanguage,
             Encodings = args.UseUtf8ForEmbeddedStrings 
                 ? new EncodingBundle(NonTranslated: MutagenEncoding._1252, NonLocalized: MutagenEncoding._utf8)
-                : null
+                : null,
+            LowerRangeDisallowedHandler = ALowerRangeDisallowedHandlerOption.AddPlaceholder(loadOrder)
         };
     }
 
