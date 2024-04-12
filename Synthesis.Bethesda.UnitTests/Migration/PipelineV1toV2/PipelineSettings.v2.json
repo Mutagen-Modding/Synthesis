@@ -1,4 +1,4 @@
-﻿{
+{
   "Version": 2,
   "Profiles": [
     {
@@ -73,7 +73,9 @@
       "IgnoreMissingMods": false,
       "Localize": false,
       "TargetLanguage": "English",
-      "UseUtf8ForEmbeddedStrings": false
+      "UseUtf8ForEmbeddedStrings": false,
+      "FormIDRangeMode": "Auto",
+      "HeaderVersionOverride": null
     },
     {
       "$type": "Synthesis.Bethesda.Execution.Settings.V2.SynthesisProfile, Synthesis.Bethesda.Execution",
@@ -121,7 +123,9 @@
       "IgnoreMissingMods": false,
       "Localize": false,
       "TargetLanguage": "English",
-      "UseUtf8ForEmbeddedStrings": false
+      "UseUtf8ForEmbeddedStrings": false,
+      "FormIDRangeMode": "Auto",
+      "HeaderVersionOverride": null
     }
   ],
   "Shortcircuit": true,

@@ -2,9 +2,9 @@ namespace Synthesis.Bethesda;
 
 public enum FormIDRangeMode
 {
-    Auto = 1,
-    Off = 2,
-    On = 3,
+    Off,
+    Auto,
+    On,
 }
 
 public static class FormIDRangeModeExt
