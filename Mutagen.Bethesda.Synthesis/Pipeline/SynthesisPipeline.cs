@@ -786,7 +786,7 @@ public class SynthesisPipeline
     #endregion
 
     private BinaryWriteParameters GetWriteParams(RunSynthesisMutagenPatcher args, IEnumerable<ModKey> loadOrder)
-    {
+    {        
         return new BinaryWriteParameters()
         {
             ModKey = ModKeyOption.NoCheck,
@@ -795,7 +795,8 @@ public class SynthesisPipeline
             Encodings = args.UseUtf8ForEmbeddedStrings 
                 ? new EncodingBundle(NonTranslated: MutagenEncoding._1252, NonLocalized: MutagenEncoding._utf8)
                 : null,
-            LowerRangeDisallowedHandler = ALowerRangeDisallowedHandlerOption.AddPlaceholder(loadOrder)
+            LowerRangeDisallowedHandler = ALowerRangeDisallowedHandlerOption.AddPlaceholder(loadOrder),
+            MinimumFormID = AMinimumFormIdOption.Force(args.FormIDRangeMode.ToForceBool())
         };
     }
 

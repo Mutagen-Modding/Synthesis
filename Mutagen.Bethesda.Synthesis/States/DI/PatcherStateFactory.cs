@@ -119,18 +119,26 @@ public class PatcherStateFactory : IPatcherStateFactory
         {
             if (settings.SourcePath == null)
             {
-                bool? forceFormIdLowerRange = settings.FormIDRangeMode switch
+                Console.WriteLine("Creating new mod:");
+                Console.WriteLine($"  ModKey: {exportKey}");
+                Console.WriteLine($"  GameRelease: {settings.GameRelease}");
+                if (settings.HeaderVersionOverride != null)
                 {
-                    FormIDRangeMode.Auto => null,
-                    FormIDRangeMode.Off => false,
-                    FormIDRangeMode.On => true,
-                    _ => throw new NotImplementedException(),
-                };
+                    Console.WriteLine($"  HeaderVersion: {settings.HeaderVersionOverride}");
+                }
+
+                var forceFormIdLowerRange = settings.FormIDRangeMode.ToForceBool();
+
+                if (forceFormIdLowerRange != null)
+                {
+                    Console.WriteLine($"  Force FormID Lower Range: {forceFormIdLowerRange}");
+                }
                 patchMod = ModInstantiator<TModSetter>.Activator(
                     exportKey,
                     settings.GameRelease,
                     headerVersion: settings.HeaderVersionOverride,
                     forceUseLowerFormIDRanges: forceFormIdLowerRange);
+                Console.WriteLine($"  Next FormID: {patchMod.NextFormID}");
             }
             else
             {
