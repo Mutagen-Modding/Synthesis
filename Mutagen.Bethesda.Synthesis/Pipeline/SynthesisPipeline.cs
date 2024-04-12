@@ -786,7 +786,7 @@ public class SynthesisPipeline
     #endregion
 
     private BinaryWriteParameters GetWriteParams(RunSynthesisMutagenPatcher args, IEnumerable<ModKey> loadOrder)
-    {
+    {        
         return new BinaryWriteParameters()
         {
             ModKey = ModKeyOption.NoCheck,
@@ -794,7 +794,9 @@ public class SynthesisPipeline
             TargetLanguageOverride = args.TargetLanguage,
             Encodings = args.UseUtf8ForEmbeddedStrings 
                 ? new EncodingBundle(NonTranslated: MutagenEncoding._1252, NonLocalized: MutagenEncoding._utf8)
-                : null
+                : null,
+            LowerRangeDisallowedHandler = ALowerRangeDisallowedHandlerOption.AddPlaceholder(loadOrder),
+            MinimumFormID = AMinimumFormIdOption.Force(args.FormIDRangeMode.ToForceBool())
         };
     }
 
@@ -856,7 +858,9 @@ public class SynthesisPipeline
             InternalDataFolder = LocateInternalData(fileSystem),
             TargetLanguage = extraParameters.TargetLanguage,
             Localize = extraParameters.Localize,
-            UseUtf8ForEmbeddedStrings = extraParameters.UseUtf8ForEmbeddedStrings
+            UseUtf8ForEmbeddedStrings = extraParameters.UseUtf8ForEmbeddedStrings,
+            FormIDRangeMode = extraParameters.FormIDRangeMode,
+            HeaderVersionOverride = extraParameters.HeaderVersionOverride,
         };
     }
 

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Synthesis.Bethesda.Commands;
@@ -37,7 +37,9 @@ public class GenericSettingsToMutagenSettings : IGenericSettingsToMutagenSetting
             Localize = settings.Localize,
             TargetLanguage = Enum.Parse<Language>(settings.TargetLanguage),
             ModKey = settings.ModKey,
-            UseUtf8ForEmbeddedStrings = settings.UseUtf8ForEmbeddedStrings
+            UseUtf8ForEmbeddedStrings = settings.UseUtf8ForEmbeddedStrings,
+            FormIDRangeMode = settings.FormIDRangeMode,
+            HeaderVersionOverride = settings.HeaderVersionOverride,
         };
     }
 }

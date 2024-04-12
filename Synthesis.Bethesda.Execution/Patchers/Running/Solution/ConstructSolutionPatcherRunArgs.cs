@@ -1,4 +1,4 @@
-﻿using System.IO.Abstractions;
+using System.IO.Abstractions;
 using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Synthesis.Bethesda.Commands;
@@ -50,7 +50,9 @@ public class ConstructSolutionPatcherRunArgs : IConstructSolutionPatcherRunArgs
             TargetLanguage = Enum.Parse<Language>(settings.TargetLanguage),
             Localize = settings.Localize,
             ModKey = settings.ModKey,
-            UseUtf8ForEmbeddedStrings = settings.UseUtf8ForEmbeddedStrings
+            UseUtf8ForEmbeddedStrings = settings.UseUtf8ForEmbeddedStrings,
+            HeaderVersionOverride = settings.HeaderVersionOverride,
+            FormIDRangeMode = settings.FormIDRangeMode,
         };
     }
 }

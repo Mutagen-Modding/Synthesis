@@ -1,4 +1,4 @@
-﻿using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Groups;
@@ -68,7 +68,9 @@ public class RunArgsConstructor : IRunArgsConstructor
             PersistencePath = runParameters.PersistenceMode == PersistenceMode.None ? null : runParameters.PersistencePath,
             PatcherName = fileName,
             ModKey = groupRun.ModKey.FileName,
-            UseUtf8ForEmbeddedStrings = runParameters.UseUtf8ForEmbeddedStrings
+            UseUtf8ForEmbeddedStrings = runParameters.UseUtf8ForEmbeddedStrings,
+            HeaderVersionOverride = runParameters.HeaderVersionOverride,
+            FormIDRangeMode = runParameters.FormIDRangeMode,
         };
     }
 }

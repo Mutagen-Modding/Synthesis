@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Strings;
 using Synthesis.Bethesda.Execution.Groups;
@@ -15,6 +15,8 @@ public interface IExecuteGuiRun
         PersistenceMode persistenceMode,
         bool localize,
         bool utf8InEmbeddedStrings,
+        float? headerVersionOverride,
+        FormIDRangeMode formIDRangeMode,
         Language targetLanguage,
         CancellationToken cancel);
 }
@@ -40,6 +42,8 @@ public class ExecuteGuiRun : IExecuteGuiRun
         PersistenceMode persistenceMode,
         bool localize,
         bool utf8InEmbeddedStrings,
+        float? headerVersionOverride,
+        FormIDRangeMode formIDRangeMode,
         Language targetLanguage,
         CancellationToken cancel)
     {
@@ -52,6 +56,8 @@ public class ExecuteGuiRun : IExecuteGuiRun
                 TargetLanguage: targetLanguage,
                 Localize: localize,
                 UseUtf8ForEmbeddedStrings: utf8InEmbeddedStrings,
+                FormIDRangeMode: formIDRangeMode,
+                HeaderVersionOverride: headerVersionOverride,
                 PersistenceMode: persistenceMode,
                 PersistencePath: Path.Combine(_profileDirectories.ProfileDirectory, "Persistence"))).ConfigureAwait(false);
     }

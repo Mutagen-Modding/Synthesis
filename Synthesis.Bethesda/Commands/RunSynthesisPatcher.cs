@@ -39,10 +39,16 @@ public class RunSynthesisPatcher
         
     [Option("Localize", Required = false, HelpText = "Whether to use STRINGS files during export")]
     public bool Localize { get; set; }
-        
+
     [Option("UseUtf8ForEmbeddedStrings", Required = false, HelpText = "Use UTF8 encoding when reading/writing localizable mod strings that are embedded")]
     public bool UseUtf8ForEmbeddedStrings { get; set; }
-        
+
+    [Option("HeaderVersionOverride", Required = false, HelpText = "Whether to override the header version when making a new mod object")]
+    public float? HeaderVersionOverride { get; set; }
+
+    [Option("FormIDRangeMode", Required = false, HelpText = "Whether to override the header version when making a new mod object")]
+    public FormIDRangeMode FormIDRangeMode { get; set; }
+
     public override string ToString()
     {
         return $"{nameof(RunSynthesisPatcher)} => \n"
@@ -57,6 +63,8 @@ public class RunSynthesisPatcher
                + $"  {nameof(LoadOrderIncludesCreationClub)} => {this.LoadOrderIncludesCreationClub}\n"
                + $"  {nameof(Localize)} => {Localize}\n"
                + $"  {nameof(ModKey)} => {ModKey}\n"
+               + $"  {nameof(HeaderVersionOverride)} => {HeaderVersionOverride}\n"
+               + $"  {nameof(FormIDRangeMode)} => {FormIDRangeMode}\n"
                + $"  {nameof(UseUtf8ForEmbeddedStrings)} => {UseUtf8ForEmbeddedStrings}";
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.IO.Abstractions;
+using System.IO.Abstractions;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Allocators;
 using Mutagen.Bethesda.Plugins.Cache;
@@ -8,6 +8,7 @@ using Mutagen.Bethesda.Plugins.Records.Internals;
 using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Strings.DI;
 using Mutagen.Bethesda.Synthesis.CLI;
+using Synthesis.Bethesda;
 
 namespace Mutagen.Bethesda.Synthesis.States.DI;
 
@@ -118,7 +119,26 @@ public class PatcherStateFactory : IPatcherStateFactory
         {
             if (settings.SourcePath == null)
             {
-                patchMod = ModInstantiator<TModSetter>.Activator(exportKey, settings.GameRelease);
+                Console.WriteLine("Creating new mod:");
+                Console.WriteLine($"  ModKey: {exportKey}");
+                Console.WriteLine($"  GameRelease: {settings.GameRelease}");
+                if (settings.HeaderVersionOverride != null)
+                {
+                    Console.WriteLine($"  HeaderVersion: {settings.HeaderVersionOverride}");
+                }
+
+                var forceFormIdLowerRange = settings.FormIDRangeMode.ToForceBool();
+
+                if (forceFormIdLowerRange != null)
+                {
+                    Console.WriteLine($"  Force FormID Lower Range: {forceFormIdLowerRange}");
+                }
+                patchMod = ModInstantiator<TModSetter>.Activator(
+                    exportKey,
+                    settings.GameRelease,
+                    headerVersion: settings.HeaderVersionOverride,
+                    forceUseLowerFormIDRanges: forceFormIdLowerRange);
+                Console.WriteLine($"  Next FormID: {patchMod.NextFormID}");
             }
             else
             {

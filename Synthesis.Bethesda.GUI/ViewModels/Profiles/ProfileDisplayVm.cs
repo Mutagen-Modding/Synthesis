@@ -35,6 +35,8 @@ public class ProfileDisplayVm : ViewModel
 
     public ObservableCollectionExtended<Language> Languages { get; } = new(Enums<Language>.Values);
 
+    public ObservableCollectionExtended<FormIDRangeMode> FormIDRangeModes { get; } = new(Enums<FormIDRangeMode>.Values);
+
     private readonly ObservableAsPropertyHelper<string> _dataFolderWatermark;
     public string DataFolderWatermark => _dataFolderWatermark.Value;
 

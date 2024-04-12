@@ -69,6 +69,8 @@ public class ProfileFactory : IProfileFactory
         profile.TargetLanguage = settings.TargetLanguage;
         profile.Localize = settings.Localize;
         profile.UseUtf8InEmbedded = settings.UseUtf8ForEmbeddedStrings;
+        profile.FormIDRangeMode = settings.FormIDRangeMode;
+        profile.HeaderVersionOverride = settings.HeaderVersionOverride;
 
         profile.Groups.AddRange(settings.Groups.Select(x => factory.Get(x)));
 

@@ -1,4 +1,4 @@
-﻿using Noggog;
+using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Groups;
@@ -39,6 +39,8 @@ public class RunPatcherPipelineTests
                 sut.ProfileSettings.TargetLanguage,
                 sut.ProfileSettings.Localize,
                 sut.ProfileSettings.UseUtf8ForEmbeddedStrings,
+                sut.ProfileSettings.HeaderVersionOverride,
+                sut.ProfileSettings.FormIDRangeMode,
                 sut.Instructions.PersistenceMode.Value,
                 sut.Instructions.PersistencePath),
             sourcePath: sut.Instructions.SourcePath);

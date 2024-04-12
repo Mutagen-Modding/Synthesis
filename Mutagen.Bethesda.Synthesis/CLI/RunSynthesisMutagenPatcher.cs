@@ -1,5 +1,6 @@
 using CommandLine;
 using Mutagen.Bethesda.Strings;
+using Synthesis.Bethesda;
 
 namespace Mutagen.Bethesda.Synthesis.CLI;
 
@@ -51,6 +52,12 @@ public class RunSynthesisMutagenPatcher
     [Option("UseUtf8ForEmbeddedStrings", Required = false, HelpText = "Use UTF8 encoding when reading/writing localizable mod strings that are embedded")]
     public bool UseUtf8ForEmbeddedStrings { get; set; }
 
+    [Option("HeaderVersionOverride", Required = false, HelpText = "Whether to override the header version when making a new mod object")]
+    public float? HeaderVersionOverride { get; set; }
+
+    [Option("FormIDRangeMode", Required = false, HelpText = "Whether to override the header version when making a new mod object")]
+    public FormIDRangeMode FormIDRangeMode { get; set; }
+
     public override string ToString()
     {
         return $"{nameof(RunSynthesisMutagenPatcher)} => \n"
@@ -68,6 +75,8 @@ public class RunSynthesisMutagenPatcher
                + $"  {nameof(TargetLanguage)} => {TargetLanguage}\n"
                + $"  {nameof(Localize)} => {Localize}\n"
                + $"  {nameof(ModKey)} => {ModKey}\n"
+               + $"  {nameof(HeaderVersionOverride)} => {HeaderVersionOverride}\n"
+               + $"  {nameof(FormIDRangeMode)} => {FormIDRangeMode}\n"
                + $"  {nameof(UseUtf8ForEmbeddedStrings)} => {UseUtf8ForEmbeddedStrings}";
     }
 }
