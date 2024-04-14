@@ -26,6 +26,8 @@ using Mutagen.Bethesda.Synthesis.Pipeline;
 using Mutagen.Bethesda.Synthesis.States;
 using Mutagen.Bethesda.Synthesis.States.DI;
 using Synthesis.Bethesda.Commands;
+using System.IO;
+using Mutagen.Bethesda.Strings;
 
 namespace Mutagen.Bethesda.Synthesis;
 
@@ -785,8 +787,23 @@ public class SynthesisPipeline
     }
     #endregion
 
+    private class MutagenEncodingWrapper : IMutagenEncodingProvider
+    {
+        private readonly IMutagenEncoding _encoding;
+
+        public MutagenEncodingWrapper(IMutagenEncoding encoding)
+        {
+            _encoding = encoding;
+        }
+
+        public IMutagenEncoding GetEncoding(GameRelease release, Language language)
+        {
+            return _encoding;
+        }
+    }
+
     private BinaryWriteParameters GetWriteParams(RunSynthesisMutagenPatcher args, IEnumerable<ModKey> loadOrder)
-    {        
+    {
         return new BinaryWriteParameters()
         {
             ModKey = ModKeyOption.NoCheck,
@@ -796,7 +813,15 @@ public class SynthesisPipeline
                 ? new EncodingBundle(NonTranslated: MutagenEncoding._1252, NonLocalized: MutagenEncoding._utf8)
                 : null,
             LowerRangeDisallowedHandler = ALowerRangeDisallowedHandlerOption.AddPlaceholder(loadOrder),
-            MinimumFormID = AMinimumFormIdOption.Force(args.FormIDRangeMode.ToForceBool())
+            MinimumFormID = AMinimumFormIdOption.Force(args.FormIDRangeMode.ToForceBool()),
+            StringsWriter = args.UseUtf8ForStringsFiles
+                ? new Strings.StringsWriter(
+                    args.GameRelease,
+                    ModKey.FromNameAndExtension(args.ModKey),
+                    Path.Combine(Path.GetDirectoryName(args.DataFolderPath)!, "Strings"),
+                    new MutagenEncodingWrapper(MutagenEncoding._utf8),
+                    new FileSystem())
+                : null,
         };
     }
 

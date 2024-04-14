@@ -48,9 +48,12 @@ public class RunSynthesisMutagenPatcher
 
     [Option("Localize", Required = false, HelpText = "Whether to use STRINGS files during export")]
     public bool Localize { get; set; } = false;
-    
+
     [Option("UseUtf8ForEmbeddedStrings", Required = false, HelpText = "Use UTF8 encoding when reading/writing localizable mod strings that are embedded")]
     public bool UseUtf8ForEmbeddedStrings { get; set; }
+
+    [Option("UseUtf8ForStringsFiles", Required = false, HelpText = "Use UTF8 encoding when reading/writing localizable mod strings that are in strings files")]
+    public bool UseUtf8ForStringsFiles { get; set; }
 
     [Option("HeaderVersionOverride", Required = false, HelpText = "Whether to override the header version when making a new mod object")]
     public float? HeaderVersionOverride { get; set; }
@@ -77,6 +80,7 @@ public class RunSynthesisMutagenPatcher
                + $"  {nameof(ModKey)} => {ModKey}\n"
                + $"  {nameof(HeaderVersionOverride)} => {HeaderVersionOverride}\n"
                + $"  {nameof(FormIDRangeMode)} => {FormIDRangeMode}\n"
+               + $"  {nameof(UseUtf8ForStringsFiles)} => {UseUtf8ForStringsFiles}\n"
                + $"  {nameof(UseUtf8ForEmbeddedStrings)} => {UseUtf8ForEmbeddedStrings}";
     }
 }
