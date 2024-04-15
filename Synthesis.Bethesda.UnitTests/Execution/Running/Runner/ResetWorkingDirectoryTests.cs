@@ -1,4 +1,5 @@
 ﻿using Noggog;
+using Noggog.Testing.AutoFixture;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -18,7 +19,7 @@ public class ResetWorkingDirectoryTests
         sut.DeleteEntireDirectory.Received(1).DeleteEntireFolder(workingDirectory);
     }
         
-    [Theory, SynthAutoData(UseMockFileSystem: false)]
+    [Theory, SynthAutoData(FileSystem: TargetFileSystem.Substitute)]
     public void CreatesDirectory(
         DirectoryPath workingDirectory,
         ResetWorkingDirectory sut)
@@ -28,7 +29,7 @@ public class ResetWorkingDirectoryTests
         sut.FileSystem.Directory.Received(1).CreateDirectory(workingDirectory);
     }
         
-    [Theory, SynthAutoData(UseMockFileSystem: false)]
+    [Theory, SynthAutoData(FileSystem: TargetFileSystem.Substitute)]
     public void DeletesBeforeCreates(
         ResetWorkingDirectory sut)
     {
