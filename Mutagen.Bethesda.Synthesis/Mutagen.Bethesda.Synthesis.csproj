@@ -34,7 +34,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Mutagen.Bethesda" />
+    <PackageReference Include="Mutagen.Bethesda.Core" />
     <PackageReference Include="Mutagen.Bethesda.Json" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Noggog.CSharpExt" />
