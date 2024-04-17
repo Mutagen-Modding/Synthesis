@@ -14,7 +14,6 @@ public class ExecuteRunTests
         IGroupRun[] groups,
         CancellationToken cancellation,
         DirectoryPath outputDir,
-        FilePath? sourcePath,
         RunParameters runParameters,
         ExecuteRun sut)
     {
@@ -22,8 +21,7 @@ public class ExecuteRunTests
             groups,
             cancellation,
             outputDir,
-            runParameters,
-            sourcePath);
+            runParameters);
             
         sut.ResetWorkingDirectory.Received(1).Reset();
     }
@@ -31,7 +29,6 @@ public class ExecuteRunTests
     [Theory, SynthAutoData]
     public async Task NoPatchersShortCircuits(
         CancellationToken cancellation,
-        FilePath? sourcePath,
         DirectoryPath outputDir,
         RunParameters runParameters,
         ExecuteRun sut)
@@ -41,8 +38,7 @@ public class ExecuteRunTests
             groups,
             cancellation,
             outputDir,
-            runParameters,
-            sourcePath);
+            runParameters);
         sut.EnsureSourcePathExists.DidNotReceiveWithAnyArgs().Ensure(default);
         await sut.RunAllGroups.DidNotReceiveWithAnyArgs().Run(
             default!, default, default, default!);
@@ -51,7 +47,6 @@ public class ExecuteRunTests
     [Theory, SynthAutoData]
     public async Task CancellationThrows(
         CancellationToken cancelled,
-        FilePath? sourcePath,
         DirectoryPath outputDir,
         RunParameters runParameters,
         ExecuteRun sut)
@@ -61,76 +56,6 @@ public class ExecuteRunTests
             groups,
             cancelled,
             outputDir,
-            runParameters,
-            sourcePath));
-    }
-        
-    [Theory, SynthAutoData]
-    public async Task EnsuresSourcePathExists(
-        IGroupRun[] groups,
-        CancellationToken cancellation,
-        DirectoryPath outputDir,
-        FilePath? sourcePath,
-        RunParameters runParameters,
-        ExecuteRun sut)
-    {
-        await sut.Run(
-            groups,
-            cancellation,
-            outputDir,
-            runParameters,
-            sourcePath);
-            
-        sut.EnsureSourcePathExists.Received(1).Ensure(sourcePath);
-    }
-        
-    [Theory, SynthAutoData]
-    public async Task ResetBeforeEnsure(
-        IGroupRun[] groups,
-        CancellationToken cancellation,
-        DirectoryPath outputDir,
-        FilePath? sourcePath,
-        RunParameters runParameters,
-        ExecuteRun sut)
-    {
-        await sut.Run(
-            groups,
-            cancellation,
-            outputDir,
-            runParameters,
-            sourcePath);
-            
-        Received.InOrder(() =>
-        {
-            sut.ResetWorkingDirectory.Reset();
-            sut.EnsureSourcePathExists.Ensure(
-                Arg.Any<FilePath?>());
-        });
-    }
-        
-    [Theory, SynthAutoData]
-    public async Task EnsurePathExistsBeforeRun(
-        IGroupRun[] groups,
-        CancellationToken cancellation,
-        DirectoryPath outputDir,
-        FilePath? sourcePath,
-        RunParameters runParameters,
-        ExecuteRun sut)
-    {
-        await sut.Run(
-            groups,
-            cancellation,
-            outputDir,
-            runParameters,
-            sourcePath);
-            
-        Received.InOrder(() =>
-        {
-            sut.EnsureSourcePathExists.Ensure(
-                Arg.Any<FilePath?>());
-            sut.RunAllGroups.Run(
-                Arg.Any<IGroupRun[]>(), Arg.Any<CancellationToken>(), Arg.Any<DirectoryPath>(), 
-                Arg.Any<RunParameters>(), Arg.Any<FilePath?>());
-        });
+            runParameters));
     }
 }

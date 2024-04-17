@@ -10,8 +10,7 @@ public interface IRunAGroup
         IGroupRun groupRun,
         CancellationToken cancellation,
         DirectoryPath outputDir,
-        RunParameters runParameters,
-        FilePath? sourcePath = null);
+        RunParameters runParameters);
 }
 
 public class RunAGroup : IRunAGroup
@@ -37,8 +36,7 @@ public class RunAGroup : IRunAGroup
         IGroupRun groupRun,
         CancellationToken cancellation,
         DirectoryPath outputDir,
-        RunParameters runParameters,
-        FilePath? sourcePath = null)
+        RunParameters runParameters)
     {
         _logger.Information("================= Starting Group Run: {Group} =================", groupRun.ModKey.Name);
         if (groupRun.BlacklistedMods.Count > 0)
@@ -60,7 +58,7 @@ public class RunAGroup : IRunAGroup
             groupRun,
             groupRun.Patchers,
             cancellation,
-            sourcePath,
+            null,
             runParameters).ConfigureAwait(false);
 
         if (finalPath == null) return false;

@@ -9,8 +9,7 @@ public interface IExecuteRun
         IGroupRun[] groups,
         CancellationToken cancel,
         DirectoryPath outputDir,
-        RunParameters runParameters,
-        FilePath? sourcePath = null);
+        RunParameters runParameters);
 }
 
 public class ExecuteRun : IExecuteRun
@@ -36,8 +35,7 @@ public class ExecuteRun : IExecuteRun
         IGroupRun[] groups,
         CancellationToken cancellation,
         DirectoryPath outputDir,
-        RunParameters runParameters,
-        FilePath? sourcePath = null)
+        RunParameters runParameters)
     {
         _print.Print(groups);
             
@@ -47,15 +45,11 @@ public class ExecuteRun : IExecuteRun
         if (groups.Length == 0) return;
 
         cancellation.ThrowIfCancellationRequested();
-        EnsureSourcePathExists.Ensure(sourcePath);
-
-        cancellation.ThrowIfCancellationRequested();
 
         await RunAllGroups.Run(
             groups,
             cancellation,
             outputDir,
-            runParameters,
-            sourcePath).ConfigureAwait(false);
+            runParameters).ConfigureAwait(false);
     }
 }
