@@ -48,7 +48,7 @@ public class RunAGroup : IRunAGroup
             }
         }
             
-        await GroupRunPreparer.Prepare(
+        var sourcePath = await GroupRunPreparer.Prepare(
             groupRun, 
             groupRun.BlacklistedMods,
             runParameters).ConfigureAwait(false);
@@ -57,7 +57,7 @@ public class RunAGroup : IRunAGroup
             groupRun,
             groupRun.Patchers,
             cancellation,
-            null,
+            sourcePath,
             runParameters).ConfigureAwait(false);
 
         if (finalPath == null) return false;
