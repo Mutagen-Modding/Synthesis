@@ -1,4 +1,5 @@
 ﻿using Mutagen.Bethesda.Plugins;
+using Noggog;
 using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Settings;
 
@@ -9,8 +10,7 @@ public interface IGroupRunPreparer
     Task Prepare(
         IGroupRun groupRun,
         IReadOnlySet<ModKey> blackListedMods,
-        PersistenceMode persistenceMode = PersistenceMode.None,
-        string? persistencePath = null);
+        RunParameters runParameters);
 }
 
 public class GroupRunPreparer : IGroupRunPreparer
@@ -29,8 +29,7 @@ public class GroupRunPreparer : IGroupRunPreparer
     public async Task Prepare(
         IGroupRun groupRun,
         IReadOnlySet<ModKey> blackListedMods,
-        PersistenceMode persistenceMode = PersistenceMode.None,
-        string? persistencePath = null)
+        RunParameters runParameters)
     {
         await Task.WhenAll(
             Task.Run(() =>
@@ -39,7 +38,7 @@ public class GroupRunPreparer : IGroupRunPreparer
             }), 
             Task.Run(() =>
             {
-                PersistencePreparer.Prepare(persistenceMode, persistencePath);
+                PersistencePreparer.Prepare(runParameters.PersistenceMode, runParameters.PersistencePath);
             })).ConfigureAwait(false);
     }
 }

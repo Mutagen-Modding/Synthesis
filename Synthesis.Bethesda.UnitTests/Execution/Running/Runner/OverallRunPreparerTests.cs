@@ -14,54 +14,58 @@ public class OverallRunPreparerTests
     public async Task PassesOutputToRunLoadOrderPreparer(
         IGroupRun groupRun,
         IReadOnlySet<ModKey> blacklist,
+        RunParameters runParameters,
         GroupRunPreparer sut)
     {
-        await sut.Prepare(groupRun, blacklist);
+        await sut.Prepare(groupRun, blacklist, runParameters);
         sut.GroupRunLoadOrderPreparer.Received(1).Write(groupRun, blacklist);
     }
         
     [Theory, SynthAutoData]
     public async Task PassesPersistenceToPersister(
         IGroupRun groupRun,
-        PersistenceMode persistenceMode,
         IReadOnlySet<ModKey> blacklist,
-        string? persistencePath,
+        RunParameters runParameters,
         GroupRunPreparer sut)
     {
-        await sut.Prepare(groupRun, blacklist, persistenceMode, persistencePath);
-        sut.PersistencePreparer.Received(1).Prepare(persistenceMode, persistencePath);
+        await sut.Prepare(groupRun, blacklist, runParameters);
+        sut.PersistencePreparer.Received(1)
+            .Prepare(
+                runParameters.PersistenceMode, 
+                runParameters.PersistencePath);
     }
         
     [Theory, SynthAutoData]
     public async Task ThrowingLoadOrderPreparerStillRunsPersistence(
         IGroupRun groupRun,
-        PersistenceMode persistenceMode,
         IReadOnlySet<ModKey> blacklist,
-        string? persistencePath,
+        RunParameters runParameters,
         GroupRunPreparer sut)
     {
         sut.GroupRunLoadOrderPreparer.When(x => x.Write(groupRun, blacklist))
             .Do(_ => throw new NotImplementedException());
         await Assert.ThrowsAsync<NotImplementedException>(async () =>
         {
-            await sut.Prepare(groupRun, blacklist, persistenceMode, persistencePath);
+            await sut.Prepare(groupRun, blacklist, runParameters);
         });
-        sut.PersistencePreparer.Received(1).Prepare(persistenceMode, persistencePath);
+        sut.PersistencePreparer.Received(1)
+            .Prepare(
+                runParameters.PersistenceMode, 
+                runParameters.PersistencePath);
     }
         
     [Theory, SynthAutoData]
     public async Task ThrowingPersistencePrepareStillRunsLoadOrderPrepare(
         IGroupRun groupRun,
-        PersistenceMode persistenceMode,
         IReadOnlySet<ModKey> blacklist,
-        string? persistencePath,
+        RunParameters runParameters,
         GroupRunPreparer sut)
     {
         sut.PersistencePreparer.When(x => x.Prepare(Arg.Any<PersistenceMode>(), Arg.Any<string?>()))
             .Do(_ => throw new NotImplementedException());
         await Assert.ThrowsAsync<NotImplementedException>(async () =>
         {
-            await sut.Prepare(groupRun, blacklist, persistenceMode, persistencePath);
+            await sut.Prepare(groupRun, blacklist, runParameters);
         });
         sut.GroupRunLoadOrderPreparer.Received(1).Write(groupRun, blacklist);
     }

@@ -51,8 +51,7 @@ public class RunAGroup : IRunAGroup
         await GroupRunPreparer.Prepare(
             groupRun, 
             groupRun.BlacklistedMods,
-            runParameters.PersistenceMode, 
-            runParameters.PersistencePath).ConfigureAwait(false);
+            runParameters).ConfigureAwait(false);
 
         var finalPath = await RunSomePatchers.Run(
             groupRun,
