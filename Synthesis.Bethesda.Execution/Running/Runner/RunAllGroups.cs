@@ -9,8 +9,7 @@ public interface IRunAllGroups
         IGroupRun[] groups,
         CancellationToken cancellation,
         DirectoryPath outputDir,
-        RunParameters runParameters,
-        FilePath? sourcePath = null);
+        RunParameters runParameters);
 }
 
 public class RunAllGroups : IRunAllGroups
@@ -26,8 +25,7 @@ public class RunAllGroups : IRunAllGroups
         IGroupRun[] groups,
         CancellationToken cancellation,
         DirectoryPath outputDir,
-        RunParameters runParameters,
-        FilePath? sourcePath = null)
+        RunParameters runParameters)
     {
         for (int i = 0; i < groups.Length; i++)
         {
@@ -37,8 +35,7 @@ public class RunAllGroups : IRunAllGroups
                 group,
                 cancellation,
                 outputDir,
-                runParameters,
-                sourcePath).ConfigureAwait(false);
+                runParameters).ConfigureAwait(false);
 
             if (!succeeded) break;
         }

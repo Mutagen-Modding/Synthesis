@@ -21,7 +21,7 @@ public class RunPatcherPipelineTests
         await sut.Run(cancel);
         await sut.ExecuteRun.Received(1).Run(
             groupRuns, Arg.Any<CancellationToken>(), Arg.Any<DirectoryPath>(),
-            Arg.Any<RunParameters>(), Arg.Any<FilePath?>());
+            Arg.Any<RunParameters>());
     }
         
     [Theory, SynthAutoData]
@@ -42,8 +42,7 @@ public class RunPatcherPipelineTests
                 sut.ProfileSettings.HeaderVersionOverride,
                 sut.ProfileSettings.FormIDRangeMode,
                 sut.Instructions.PersistenceMode.Value,
-                sut.Instructions.PersistencePath),
-            sourcePath: sut.Instructions.SourcePath);
+                sut.Instructions.PersistencePath));
     }
         
     [Theory, SynthAutoData]
@@ -55,6 +54,6 @@ public class RunPatcherPipelineTests
         await sut.Run(cancel);
         await sut.ExecuteRun.Received(1).Run(
             Arg.Any<IGroupRun[]>(), Arg.Any<CancellationToken>(), Arg.Any<DirectoryPath>(),
-            Arg.Any<RunParameters>(), Arg.Any<FilePath?>());
+            Arg.Any<RunParameters>());
     }
 }

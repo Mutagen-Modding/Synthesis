@@ -18,9 +18,6 @@ public class RunPatcherPipelineInstructions :
     IExecutionParametersSettingsProvider,
     IDataDirectoryProvider
 {
-    [Option('s', "SourcePath", Required = false, HelpText = "Optional path pointing to the previous patcher result to build onto.")]
-    public FilePath? SourcePath { get; set; }
-
     [Option('o', "OutputDirectory", Required = true, HelpText = "Path where the patcher should place its resulting file(s).")]
     public DirectoryPath OutputDirectory { get; set; }
 
@@ -51,7 +48,6 @@ public class RunPatcherPipelineInstructions :
     public override string ToString()
     {
         return $"\n{nameof(RunSynthesisPatcher)} => \n"
-               + $"  {nameof(SourcePath)} => {this.SourcePath} \n"
                + $"  {nameof(OutputDirectory)} => {this.OutputDirectory} \n"
                + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
                + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"

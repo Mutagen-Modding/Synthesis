@@ -33,7 +33,6 @@ public class RunPatcherPipeline : IRunPatcherPipeline
         await ExecuteRun
             .Run(
                 groups: GetGroupRunners.Get(cancel),
-                sourcePath: Instructions.SourcePath,
                 outputDir: Instructions.OutputDirectory,
                 cancel: cancel,
                 runParameters: new RunParameters(
