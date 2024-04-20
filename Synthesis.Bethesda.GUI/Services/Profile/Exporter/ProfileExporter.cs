@@ -50,8 +50,15 @@ public class ProfileExporter : IProfileExporter
             gitPatcher.AutoUpdateToBranchTip = false;
             gitPatcher.LatestTag = false;
         }
-        var subDir = "Export";
-        Directory.CreateDirectory(subDir);
+        DirectoryPath subDir = "Export";
+        if (subDir.Exists)
+        {
+            subDir.DeleteEntireFolder(deleteFolderItself: false);
+        }
+        else
+        {
+            Directory.CreateDirectory(subDir);
+        }
         File.WriteAllText(
             Path.Combine(subDir, PipelinePaths.Path),
             JsonConvert.SerializeObject(pipeSettings, Formatting.Indented, Execution.Constants.JsonSettings));
