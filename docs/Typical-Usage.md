@@ -1,72 +1,76 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-## Table Of Contents
-
-- [Adding Patchers](#adding-patchers)
-  - [Select a Patcher Type](#select-a-patcher-type)
-  - [Locate a Patcher](#locate-a-patcher)
-    - [Browse](#browse)
-    - [Input Tab](#input-tab)
-    - [Using .Synth files](#using-synth-files)
-- [Customizing Patcher Input](#customizing-patcher-input)
-- [Familiarize Yourself With the Versioning Systems](#familiarize-yourself-with-the-versioning-systems)
-- [Running the Patcher Pipeline](#running-the-patcher-pipeline)
-- [Enable in your Load Order](#enable-in-your-load-order)
-  - [Placement matters](#placement-matters)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
+# Typical Usage
 This clip is a good visual example of typical usage, but this page will be going over it in more detail.
 
-![Typical Usage](https://i.imgur.com/Wj2fGaF.gif)
+![Typical Usage Example](https://i.imgur.com/Wj2fGaF.gif)
 
-# Adding Patchers
-## Select a Patcher Type
-There are a few alternatives, but the one recommended for new users is the Git Repository patcher.
+## Adding Patchers
+### Select a Patcher Type
+There are a few alternatives, but the one recommended for new users is the [Git Repository patcher](Git-Repository-Patcher.md).
 
 ![Git Repository Patcher](https://i.imgur.com/LP2Q9jy.png)
 
-You can read about the other types of patchers [here](https://github.com/Mutagen-Modding/Synthesis/wiki/Patcher-Types).
+[:octicons-arrow-right-24: Patcher Types](Patcher-Types.md)
 
-## Locate a Patcher
-### Browse
+### Installing a Git Patcher
+#### Browse
 You can either look around in the wild yourself, or you can make use of the built in list of existing patchers.  Within a `Git Repository` patcher, there is a `Browse` section with an automatically populated list:
 
 ![Patcher Browser](https://i.imgur.com/63IgcRf.png)
 
-### Input Tab
-Alternatively, if you have the github address you want to use you can paste it directly into the `Input` tab.
+!!! info "Automatically Populated"
+    This list is automatically populated via a [Synthesis Registry](https://github.com/Mutagen-Modding/Synthesis.Registry)
 
-### Using .Synth files
-Alternatively, Synthesis patchers can be distributed via `.synth` files.  These files simply instruct the program to add the patcher as if you did the above steps.
+#### Input Tab
+If you have a specific github address you want to use you can paste it directly into the `Input` tab.
+
+#### .synth files
+Synthesis patchers can be distributed via `.synth` files.  These files simply instruct the program to add the patcher as if you did the above steps.  
 
 To use a `.synth` file:
+
 - Open Synthesis
 - Select the group you want to add the patcher to.  Initially there is only one, so you can skip this step
 - Double click the `.synth` file on the desktop
 
 ![](https://i.imgur.com/1bQ23Zu.gif)
 
-# Customizing Patcher Input
+[:octicons-arrow-right-24: .synth Files](Synth-File.md)
+
+## Patcher Settings
 Some patchers either require extra input, or offer customization options.  Some use the settings panel within Synthesis itself, while others use extra json files.
 
-The settings files for a given patcher can be found in:
+Read more about how settings are handled in Synthesis
 
-**[Path To The Synthesis Exe]/Data/[Profile Name]/[Patcher Name]/**
+[:octicons-arrow-right-24: Patcher Settings](Patcher-Settings.md)
 
-Each patcher will expose their settings files in different ways, so refer to the specific patcher for documentation.   Note that not all patchers have extra settings.
+!!! tip "Each Patcher is Different"
+    Each patcher can expose their settings files however they like, and not all patchers have settings.  Refer to the specific patcher's documentation.
+	
+## Patcher Versioning
+Synthesis can artificially upgrade patchers to newer versions of Mutagen to get fixes and upgrades locally, even if the original developers haven't updated in a while.  
 
-# Familiarize Yourself With the Versioning Systems
-Synthesis can artificially upgrade patchers to newer versions of Mutagen, and each patcher can potentially have its own specific settings for what Mutagen version it will use.  Typically it's best to keep it simple and follow the [typical recommended setup](https://github.com/Mutagen-Modding/Synthesis/wiki/Versioning#recommended-setup).  This will give you precise control over when you upgrade, while allowing you to revert patchers that have problems running into hyper compatibility mode.
+[:octicons-arrow-right-24: Recommended Versioning Setup](Versioning.md#recommended-setup)
 
-# Running the Patcher Pipeline
+The recommended setup will give you precise control over when you upgrade, while allowing you to revert patchers that have problems running into hyper compatibility mode.
+
+## Running the Patcher Pipeline
 Once you have a list of patchers, you can run them to create a single `Synthesis.esp` patch file which will contain all the changes from the patchers.  
 
 ![Running the Pipeline](https://i.imgur.com/EiKcWex.gif)
 
 You can click on any specific patcher to see specifics about it, or any errors it may have printed. 
 
-# Enable in your Load Order
+Running the pipeline will export a file [per patcher group](Multiple-Output-Targets.md) to your `Data` folder.
+
+[:octicons-arrow-right-24: Customizing Data Folder Location](Overriding-Data-Folder-Path.md)
+
+[:octicons-arrow-right-24: Multiple Output Files](Multiple-Output-Targets.md)
+
+!!! tip "Mod Manager Interception"
+    Some mod managers like Mo2 "intercept" new files.  If there are no errors in Synthesis, but you're not seeing its output in the Data folder, then your mod manager might be intercepting.
+
+## Enable in your Load Order
 Once a patch is created, you'll want to use your favorite tool and make sure the results look good and then add the patch to your load order!
-## Placement matters
-Be aware that the location you put the patch in your load order matters.  [Read more here](https://github.com/Mutagen-Modding/Synthesis/wiki/Load-Order-and-Previous-Patchers)
+
+## Read The Rest of the Wiki
+This page is just a brief overview of how to get started.  Be sure to read the rest of the wiki!
