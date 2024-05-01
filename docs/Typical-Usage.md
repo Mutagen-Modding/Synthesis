@@ -70,7 +70,7 @@ Running the pipeline will export a file [per patcher group](Multiple-Output-Targ
     Some mod managers like Mo2 "intercept" new files.  If there are no errors in Synthesis, but you're not seeing its output in the Data folder, then your mod manager might be intercepting.
 
 ## Enable in your Load Order
-Once a patch is created, you'll want to use your favorite tool and make sure the results look good and then add the patch to your load order!
+Once a patch is created, you'll want to use your favorite tool to view the results (like xEdit) and then add the patch to your load order!
 
 ## Read The Rest of the Wiki
 This page is just a brief overview of how to get started.  Be sure to read the rest of the wiki!

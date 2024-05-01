@@ -56,4 +56,16 @@ nav:
   - Overview:
     - Installation: Installation.md
     - Typical Usage: Typical-Usage.md
+    - Synthesis vs Mutagen: Synthesis-vs-Mutagen.md
+    - Multiple Output Targets: Multiple-Output-Targets.md
+    - Load Order of Patches: LoadOrder.md
+    - Overriding Data Folder Path: DataFolder.md
+    - Blacklisting Mods: Blacklisting.md
+    - Versioning: Versioning.md
+    - .synth Files: Synth-File.md
+    - Other Dynamic Mod Generators: Other-Dynamic-Mod-Generators.md
+    - Language Settings: Language-Settings.md
+    
+  - Developers:
+    - Nexus Integration: devs/Nexus-Integration.md
   - FAQs
