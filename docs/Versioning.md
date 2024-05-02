@@ -12,8 +12,8 @@ This picture shows a UI that is `0.21.2`
 !!! tip "Use the newest UI"
     The UI should usually always be the newest stable version available.  Only in rare circumstances might you want to downgrade it if some bug was encountered, and a hotfix hadn't been released yet.
 
-## Patcher Versioning
-This section outlines the various ways a specific patcher's versioning can controlled.
+## Git Patcher Versioning
+This section outlines the various ways a specific Git Patcher's versioning can controlled.   As this is the most commonly used patcher, it is an important topic.
 
 ### Libraries to Use
 `Mutagen` and `Synthesis` are also code libraries that patchers use to develop their logic.  Depending on which version a patcher uses when running, it might get certain fixes/improvements/features.
@@ -33,7 +33,15 @@ This option is only available on individual patchers, and helps keeps all of you
     This is the recommended choice for individual patchers [Read More](#recommended-setup)
 
 #### Manual
-This setting allows you to control the versioning to be used explicitly by typing in the desired version by hand.  It will also show a blue arrow when there's a newer version than the one you typed, which you can click manually to upgrade, if you so choose.
+Sets the patcher to use a specific version, while allowing the user to easily update to latest when desired.
+
+Pros:
+
+- Follows latest easily, while giving you a heads up and control over timing
+
+Cons:
+
+- Depending on the versions you input and the age of the patcher, it may not compile
 
 ![](https://i.imgur.com/u1xRQwE.gif)
 
@@ -41,9 +49,20 @@ This setting allows you to control the versioning to be used explicitly by typin
     Manual is the best balance between control and convenience, and is the recommended default choice [Read More](#recommended-setup)
  
 #### Match
+Use whatever versions were listed explicitly by the patcher.
+
 Each patcher is coded at a certain point in time.  The developer will typically work with the newest versions when develop their patcher.  As time progresses this listed version will become "old" as newer versions of `Mutagen` or `Synthesis` get released.
 
 By setting a patcher to `Match`, you are telling a patcher to use the same versions it was originally coded with.  This will be the most compatible, but might miss out on some necessary bugfixes.
+
+Pros:
+
+- More stable, as these were the versions used when the patcher was developed
+
+Cons:
+
+- Won't have any fixes or optimizations that came later on
+
 
 !!! info "Compatibility Fallback Choice"
     Only set patchers to Match if they are having problems running
@@ -51,8 +70,17 @@ By setting a patcher to `Match`, you are telling a patcher to use the same versi
 #### Latest
 This will upgrade the patcher to use the latest version of Mutagen/Synthesis libraries automatically.  It's usually recommended to avoid using this, in favor of `Manual`, which lets you click the upgrade buttons yourself so you know when things are being upgraded.
 
+Pros:
+
+- Get the latest features/fixes/optimizations right as they come out
+
+Cons:
+
+- The resulting patch might change at any time if a patcher updates and changes its logic.
+- Depending on the age of the patcher, it may not compile
+
 !!! warning "Unexpected Updates"
-    Latest can result in stealth breaks as you will get no indicator that something has updated
+    If you want a consistent patch every time you run, you don't want to use this option
 
 #### Recommended Setup
 The recommended setup for patcher versioning is:
