@@ -41,7 +41,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
-    <PackageReference Include="Mutagen.Bethesda" />
+    <PackageReference Include="Mutagen.Bethesda.Core" />
     <PackageReference Include="Noggog.CSharpExt.Json" />
     <PackageReference Include="Noggog.Autofac" />
     <PackageReference Include="Noggog.GitRepository" />
