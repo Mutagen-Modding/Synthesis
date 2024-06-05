@@ -45,52 +45,52 @@
       <Version>17.9.0</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda">
-      <Version>[0.44.0-nightly-20240428-095955]</Version>
+      <Version>0.44.0-nightly-20240428-095955</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.Autofac">
-      <Version>[0.44.0-nightly-20240428-095955]</Version>
+      <Version>0.44.0-nightly-20240428-095955</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.Core">
-      <Version>[0.44.0-nightly-20240428-095955]</Version>
+      <Version>0.44.0-nightly-20240428-095955</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.Json">
-      <Version>[0.44.0-nightly-20240428-095955]</Version>
+      <Version>0.44.0-nightly-20240428-095955</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.Kernel">
-      <Version>[0.44.0-nightly-20240428-095955]</Version>
+      <Version>0.44.0-nightly-20240428-095955</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.Testing">
-      <Version>[0.44.0-nightly-20240428-095955]</Version>
+      <Version>0.44.0-nightly-20240428-095955</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.WPF">
-      <Version>[0.44.0-nightly-20240428-095955]</Version>
+      <Version>0.44.0-nightly-20240428-095955</Version>
     </PackageVersion>
     <PackageVersion Include="Newtonsoft.Json">
       <Version>13.0.3</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.Autofac">
-      <Version>[2.65.0-nightly-20240413-211475]</Version>
+      <Version>2.65.0-nightly-20240413-211475</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.CSharpExt">
-      <Version>[2.65.0-nightly-20240413-211475]</Version>
+      <Version>2.65.0-nightly-20240413-211475</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.CSharpExt.Json">
-      <Version>[2.65.0-nightly-20240413-211475]</Version>
+      <Version>2.65.0-nightly-20240413-211475</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.CSharpExt.Windows">
-      <Version>[2.65.0-nightly-20240413-211475]</Version>
+      <Version>2.65.0-nightly-20240413-211475</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.GitRepository">
       <Version>1.2</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.SourceGenerators">
-      <Version>[2.65.0-nightly-20240413-211475]</Version>
+      <Version>2.65.0-nightly-20240413-211475</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.Testing">
-      <Version>[2.65.0-nightly-20240413-211475]</Version>
+      <Version>2.65.0-nightly-20240413-211475</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.WPF">
-      <Version>[2.65.0-nightly-20240413-211475]</Version>
+      <Version>2.65.0-nightly-20240413-211475</Version>
     </PackageVersion>
     <PackageVersion Include="NSubstitute">
       <Version>5.1.0</Version>
