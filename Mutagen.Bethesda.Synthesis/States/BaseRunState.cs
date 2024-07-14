@@ -11,6 +11,11 @@ public interface IBaseRunState : ISettingsDataConfiguration
     /// A list of ModKeys as they appeared, and whether they were enabled
     /// </summary>
     IReadOnlyList<ILoadOrderListingGetter> RawLoadOrder { get; }
+    
+    // /// <summary>
+    // /// A list of ModKeys as they appeared, and whether they were enabled
+    // /// </summary>
+    // ILoadOrderGetter<IModListingGetter<IModFlagsGetter>> LoadOrder { get; }
 
     /// <summary>
     /// Path to the plugins.txt used
@@ -37,7 +42,7 @@ public interface IBaseRunState<TModSetter, TModGetter> : IBaseRunState
     /// This Load Order will contain the patch mod itself.  This reference is the same object
     /// as the PatchMod member, and so any modifications will implicitly be applied to the Load Order.
     /// </summary>
-    ILoadOrder<IModListing<TModGetter>> LoadOrder { get; }
+    new ILoadOrder<IModListing<TModGetter>> LoadOrder { get; }
 
     /// <summary>
     /// Convenience Link Cache to use created from the provided Load Order object.<br />

@@ -37,10 +37,12 @@ public class SynthesisPipelineTests
         args.OutputPath = outputPath;
 
         var mod = new SkyrimMod(modKey, SkyrimRelease.SkyrimSE);
-        mod.WriteToBinary(sourcePath, fileSystem: fileSystem, param: new BinaryWriteParameters()
-        {
-            ModKey = ModKeyOption.NoCheck
-        });
+        mod.BeginWrite
+            .WithNoLoadOrder()
+            .ToPath(sourcePath)
+            .WithFileSystem(fileSystem)
+            .NoModKeySync()
+            .Write();
     }
     
     [Theory]

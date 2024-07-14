@@ -638,7 +638,18 @@ public class SynthesisPipeline
 
         try
         {
-            state.PatchMod.WriteToBinaryParallel(path: args.OutputPath, param: GetWriteParams(args, state.RawLoadOrder.Select(x => x.ModKey)), fileSystem: fileSystem);
+            await state.PatchMod.BeginWrite
+                .WithLoadOrder(state.LoadOrderForPipeline)
+                .ToPath(args.OutputPath)
+                .WithFileSystem(fileSystem)
+                .NoModKeySync()
+                .WithTargetLanguage(args.TargetLanguage)
+                .WithEmbeddedEncodings(
+                    args.UseUtf8ForEmbeddedStrings 
+                        ? new EncodingBundle(NonTranslated: MutagenEncoding._1252, NonLocalized: MutagenEncoding._utf8)
+                        : null)
+                .WithForcedLowerFormIdRangeUsage(args.FormIDRangeMode.ToForceBool())
+                .WriteAsync();
         }
         catch (TooManyMastersException tooMany)
         {
@@ -784,21 +795,6 @@ public class SynthesisPipeline
         }
     }
     #endregion
-
-    private BinaryWriteParameters GetWriteParams(RunSynthesisMutagenPatcher args, IEnumerable<ModKey> loadOrder)
-    {        
-        return new BinaryWriteParameters()
-        {
-            ModKey = ModKeyOption.NoCheck,
-            MastersListOrdering = new MastersListOrderingByLoadOrder(loadOrder),
-            TargetLanguageOverride = args.TargetLanguage,
-            Encodings = args.UseUtf8ForEmbeddedStrings 
-                ? new EncodingBundle(NonTranslated: MutagenEncoding._1252, NonLocalized: MutagenEncoding._utf8)
-                : null,
-            LowerRangeDisallowedHandler = ALowerRangeDisallowedHandlerOption.AddPlaceholder(loadOrder),
-            MinimumFormID = AMinimumFormIdOption.Force(args.FormIDRangeMode.ToForceBool())
-        };
-    }
 
     private static string? LocateInternalData(IFileSystem fileSystem)
     {
