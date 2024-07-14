@@ -26,8 +26,10 @@ public class AvailableProjectsRetriever : IAvailableProjectsRetriever
         
     public IEnumerable<string> Get(FilePath solutionPath)
     {
+        _logger.Information("Getting available projects from {SolutionPath}", solutionPath);
         if (!FileSystem.File.Exists(solutionPath))
         {
+            _logger.Warning("Solution did not exist, returning no available projects: {SolutionPath}", solutionPath);
             yield break;
         }
         

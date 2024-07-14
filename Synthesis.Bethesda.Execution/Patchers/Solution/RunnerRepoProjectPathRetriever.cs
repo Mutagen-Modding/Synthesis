@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using Noggog;
+using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Solution;
@@ -16,15 +17,18 @@ public interface IRunnerRepoProjectPathRetriever
 public class RunnerRepoProjectPathRetriever : IRunnerRepoProjectPathRetriever
 {
     private readonly IFileSystem _fileSystem;
+    private readonly ILogger _logger;
     public IRunnerRepoDirectoryProvider RunnerRepoDirectoryProvider { get; }
     public IAvailableProjectsRetriever AvailableProjectsRetriever { get; }
 
     public RunnerRepoProjectPathRetriever(
         IFileSystem fileSystem,
         IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
-        IAvailableProjectsRetriever availableProjectsRetriever)
+        IAvailableProjectsRetriever availableProjectsRetriever,
+        ILogger logger)
     {
         _fileSystem = fileSystem;
+        _logger = logger;
         RunnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
         AvailableProjectsRetriever = availableProjectsRetriever;
     }
@@ -32,12 +36,16 @@ public class RunnerRepoProjectPathRetriever : IRunnerRepoProjectPathRetriever
     public ProjectPaths? Get(FilePath solutionPath, FilePath projPath)
     {
         var projName = _fileSystem.Path.GetFileName(projPath);
-        var str = AvailableProjectsRetriever.Get(solutionPath)
+        var availableProjs = AvailableProjectsRetriever.Get(solutionPath).ToArray();
+        _logger.Information("Available projects: {Projects}", string.Join(", ", availableProjs));
+        var str = availableProjs
             .FirstOrDefault(av => _fileSystem.Path.GetFileName(av).Equals(projName));
         if (str == null) return null;
+        var path = new FilePath(
+            Path.Combine(RunnerRepoDirectoryProvider.Path, str));
+        _logger.Information("Using project {Project} at path {Path}", str, path);
         return new ProjectPaths(
-            new FilePath(
-                Path.Combine(RunnerRepoDirectoryProvider.Path, str)),
+            path,
             str);
     }
 }
