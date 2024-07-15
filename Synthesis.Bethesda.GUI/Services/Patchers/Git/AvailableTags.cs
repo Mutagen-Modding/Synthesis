@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
@@ -36,7 +36,7 @@ public class AvailableTags : ViewModel, IAvailableTags
                 {
                     if (x.count == 0) return new Func<DriverTag, bool>(_ => false);
                     if (x.count == 1) return new Func<DriverTag, bool>(_ => true);
-                    if (!x.targetPath.EndsWith(".csproj"))
+                    if (!x.targetPath.EndsWith(".csproj", StringComparison.Ordinal))
                         return new Func<DriverTag, bool>(_ => false);
                     var projName = Path.GetFileName(x.targetPath);
                     return new Func<DriverTag, bool>(i =>

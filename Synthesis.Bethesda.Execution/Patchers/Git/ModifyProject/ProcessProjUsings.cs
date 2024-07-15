@@ -24,10 +24,10 @@ public class ProcessProjUsings : IProcessProjUsings
             var lines = _fs.File.ReadAllLines(cs);
             if (lines.Any(l =>
                 {
-                    if (l.StartsWith("using Mutagen.Bethesda")) return true;
-                    if (l.StartsWith("namespace Mutagen.Bethesda")) return true;
-                    if (l.Contains("FormLink")) return true;
-                    if (l.Contains("ModKey")) return true;
+                    if (l.StartsWith("using Mutagen.Bethesda", StringComparison.Ordinal)) return true;
+                    if (l.StartsWith("namespace Mutagen.Bethesda", StringComparison.Ordinal)) return true;
+                    if (l.Contains("FormLink", StringComparison.Ordinal)) return true;
+                    if (l.Contains("ModKey", StringComparison.Ordinal)) return true;
                     return false;
                 }))
             {

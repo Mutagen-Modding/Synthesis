@@ -38,7 +38,7 @@ public class CopyDirectory : ICopyDirectory
     {
         var dirName = Path.GetFileName(folder);
         if (dirName == ".git") return true;
-        if (dirName.StartsWith("_git2_")) return true;
+        if (dirName.StartsWith("_git2_", StringComparison.Ordinal)) return true;
         return false;
     }
     

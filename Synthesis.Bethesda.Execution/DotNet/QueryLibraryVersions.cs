@@ -29,8 +29,8 @@ public class QueryLibraryVersions : IQueryLibraryVersions
         var queries = await _queryNuget.Query(projectPath, outdated: !current, includePrerelease: includePrerelease, cancel: cancel).ConfigureAwait(false);
         foreach (var item in queries.EvaluateOrThrow())
         {
-            if (item.Package.StartsWith("Mutagen.Bethesda")
-                && !item.Package.EndsWith("Synthesis"))
+            if (item.Package.StartsWith("Mutagen.Bethesda", StringComparison.Ordinal)
+                && !item.Package.EndsWith("Synthesis", StringComparison.Ordinal))
             {
                 mutagenVersion = current ? item.Resolved : item.Latest;
             }
