@@ -36,9 +36,9 @@ public class AvailableProjectsRetriever : IAvailableProjectsRetriever
         foreach (var line in FileSystem.File.ReadLines(solutionPath))
         {
             if (!line.StartsWith("Project(")) continue;
-            var indexOfComma = line.IndexOf(",");
+            var indexOfComma = line.IndexOf(",", StringComparison.Ordinal);
             if (indexOfComma == -1) continue;
-            var laterIndexOfComma = line.IndexOf(",", indexOfComma + 1);
+            var laterIndexOfComma = line.IndexOf(",", indexOfComma + 1, StringComparison.Ordinal);
             if (laterIndexOfComma == -1) continue;
             var projSpan = line.AsSpan().Slice(indexOfComma + 1, laterIndexOfComma - indexOfComma - 1).Trim();
             projSpan = projSpan.TrimStart("\"").TrimEnd("\"");
