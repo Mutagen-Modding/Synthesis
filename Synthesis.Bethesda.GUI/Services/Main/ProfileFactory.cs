@@ -71,6 +71,7 @@ public class ProfileFactory : IProfileFactory
         profile.UseUtf8InEmbedded = settings.UseUtf8ForEmbeddedStrings;
         profile.FormIDRangeMode = settings.FormIDRangeMode;
         profile.HeaderVersionOverride = settings.HeaderVersionOverride;
+        profile.MasterFile = settings.ExportAsMasterFiles;
 
         profile.Groups.AddRange(settings.Groups.Select(x => factory.Get(x)));
 

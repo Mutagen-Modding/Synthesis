@@ -39,7 +39,7 @@ public class GetGroupRunners : IGetGroupRunners
             .Select<PatcherGroupSettings, IGroupRun>(settings =>
             {
                 return new GroupRun(
-                    ModKey.FromName(settings.Name, ModType.Plugin),
+                    ModKey.FromName(settings.Name, _profile.ExportAsMasterFiles ? ModType.Master : ModType.Plugin),
                     _getPatcherRunners.Get(settings.Patchers).Select(patcher =>
                     {
                         return _prepPatcherForRun.Prep(patcher, cancellation);

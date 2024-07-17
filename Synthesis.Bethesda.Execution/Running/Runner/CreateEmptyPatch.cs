@@ -40,6 +40,7 @@ public class CreateEmptyPatch : ICreateEmptyPatch
         var mod = ModInstantiator.Activator(modKey, _gameReleaseContext.Release,
             headerVersion: runParameters.HeaderVersionOverride,
             forceUseLowerFormIDRanges: runParameters.FormIDRangeMode.ToForceBool());
+        mod.IsMaster = runParameters.Master;
         mod.BeginWrite
             .WithNoLoadOrder()
             .ToPath(path)

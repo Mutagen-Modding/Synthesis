@@ -18,6 +18,7 @@ public interface IExecuteGuiRun
         float? headerVersionOverride,
         FormIDRangeMode formIDRangeMode,
         Language targetLanguage,
+        bool masterFile,
         CancellationToken cancel);
 }
 
@@ -45,6 +46,7 @@ public class ExecuteGuiRun : IExecuteGuiRun
         float? headerVersionOverride,
         FormIDRangeMode formIDRangeMode,
         Language targetLanguage,
+        bool masterFile,
         CancellationToken cancel)
     {
         var outputDir = _dataDirectoryProvider.Path;
@@ -59,6 +61,7 @@ public class ExecuteGuiRun : IExecuteGuiRun
                 FormIDRangeMode: formIDRangeMode,
                 HeaderVersionOverride: headerVersionOverride,
                 PersistenceMode: persistenceMode,
-                PersistencePath: Path.Combine(_profileDirectories.ProfileDirectory, "Persistence"))).ConfigureAwait(false);
+                PersistencePath: Path.Combine(_profileDirectories.ProfileDirectory, "Persistence"),
+                Master: masterFile)).ConfigureAwait(false);
     }
 }

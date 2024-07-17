@@ -10,4 +10,5 @@ public record RunParameters(
     float? HeaderVersionOverride,
     FormIDRangeMode FormIDRangeMode,
     PersistenceMode PersistenceMode,
-    string? PersistencePath);
+    string? PersistencePath,
+    bool Master);

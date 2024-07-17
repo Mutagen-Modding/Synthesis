@@ -88,10 +88,14 @@ public class GroupVm : ViewModel, ISelected
             .Transform(x => x.ModKey);
         DisplayController = profileVm.DisplayController;
         _modKey = this.WhenAnyValue(x => x.Name)
+            .CombineLatest(profileVm.WhenAnyValue(x => x.MasterFile),
+                (Name, Master) => (Name, Master))
             .Select(x =>
             {
-                if (!string.IsNullOrWhiteSpace(x)
-                    && Mutagen.Bethesda.Plugins.ModKey.TryFromName(x, ModType.Plugin, out var modKey))
+                var type = x.Master ? ModType.Master : ModType.Plugin;
+                
+                if (!string.IsNullOrWhiteSpace(x.Name)
+                    && Mutagen.Bethesda.Plugins.ModKey.TryFromName(x.Name, type, out var modKey))
                 {
                     return modKey;
                 }
