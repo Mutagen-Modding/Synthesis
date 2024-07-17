@@ -119,6 +119,10 @@ public class ProfileFactory : IProfileFactory
         initialGroup.Name = Constants.SynthesisName;
         profile.Groups.Add(initialGroup);
         profile.DisplayController.SelectedObject = initialGroup;
+        
+        // Starfield requires masters
+        profile.MasterFile = release == GameRelease.Starfield;
+        
         return profile;
     }
 }
