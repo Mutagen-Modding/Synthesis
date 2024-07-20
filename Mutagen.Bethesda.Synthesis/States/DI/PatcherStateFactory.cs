@@ -9,6 +9,7 @@ using Mutagen.Bethesda.Plugins.Records.Internals;
 using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Strings.DI;
 using Mutagen.Bethesda.Synthesis.CLI;
+using Noggog;
 using Synthesis.Bethesda;
 
 namespace Mutagen.Bethesda.Synthesis.States.DI;
@@ -116,7 +117,10 @@ public class PatcherStateFactory : IPatcherStateFactory
                     new BinaryReadParameters()
                     {
                         FileSystem = _fileSystem,
-                        StringsParam = stringReadParams
+                        StringsParam = stringReadParams,
+                        LoadOrder = new LoadOrder<IModFlagsGetter>(
+                            loadOrder.Select(x => x.Value.Mod)
+                                .NotNull())
                     });
             }
             loadOrder.Add(new ModListing<TModGetter>(readOnlyPatchMod, enabled: true));
