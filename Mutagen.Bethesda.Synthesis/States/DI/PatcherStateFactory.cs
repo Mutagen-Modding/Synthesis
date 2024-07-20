@@ -91,7 +91,7 @@ public class PatcherStateFactory : IPatcherStateFactory
             .Import(new BinaryReadParameters()
             {
                 StringsParam = stringReadParams,
-                FileSystem = _fileSystem
+                FileSystem = _fileSystem,
             });
 
         // Create or import patch mod

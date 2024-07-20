@@ -80,7 +80,8 @@ public class MainModule : Module
             .InNamespacesOf(
                 typeof(IExecuteRun))
             .InstancePerMatchingLifetimeScope(LifetimeScopes.RunNickname)
-            .TypicalRegistrations();
+            .TypicalRegistrations()
+            .AsSelf();
             
         builder.RegisterAssemblyTypes(typeof(ISynthesisSubProcessRunner).Assembly)
             .InNamespacesOf(

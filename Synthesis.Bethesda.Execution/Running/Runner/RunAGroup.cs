@@ -1,3 +1,4 @@
+using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.Groups;
@@ -16,6 +17,7 @@ public interface IRunAGroup
 public class RunAGroup : IRunAGroup
 {
     private readonly ILogger _logger;
+    private readonly PostRunProcessor _postRunProcessor;
     public IMoveFinalResults MoveFinalResults { get; }
     public IGroupRunPreparer GroupRunPreparer { get; }
     public IRunSomePatchers RunSomePatchers { get; }
@@ -24,9 +26,11 @@ public class RunAGroup : IRunAGroup
         ILogger logger,
         IGroupRunPreparer groupRunPreparer,
         IRunSomePatchers runSomePatchers,
-        IMoveFinalResults moveFinalResults)
+        IMoveFinalResults moveFinalResults,
+        PostRunProcessor postRunProcessor)
     {
         _logger = logger;
+        _postRunProcessor = postRunProcessor;
         GroupRunPreparer = groupRunPreparer;
         RunSomePatchers = runSomePatchers;
         MoveFinalResults = moveFinalResults;
@@ -53,17 +57,23 @@ public class RunAGroup : IRunAGroup
             groupRun.BlacklistedMods,
             runParameters).ConfigureAwait(false);
 
-        var finalPath = await RunSomePatchers.Run(
+        var patcherRunOutputPath = await RunSomePatchers.Run(
             groupRun,
             groupRun.Patchers,
             cancellation,
             sourcePath,
             runParameters).ConfigureAwait(false);
 
-        if (finalPath == null) return false;
-
+        if (patcherRunOutputPath == null) return false;
+        
         cancellation.ThrowIfCancellationRequested();
-        MoveFinalResults.Move(finalPath.Value, outputDir);
+        var postRunPath = await _postRunProcessor.Run(
+            groupRun,
+            new ModPath(groupRun.ModKey, patcherRunOutputPath.Value),
+            groupRun.BlacklistedMods);
+        
+        cancellation.ThrowIfCancellationRequested();
+        MoveFinalResults.Move(postRunPath, outputDir);
         return true;
     }
 }
