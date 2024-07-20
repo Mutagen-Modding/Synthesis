@@ -34,7 +34,7 @@ public class CreateEmptyPatch : ICreateEmptyPatch
 
     public FilePath Create(ModKey modKey, RunParameters runParameters)
     {
-        var path = new FilePath(Path.Combine(ProfileDirectories.WorkingDirectory, "Seed Mod", modKey.FileName));
+        var path = new FilePath(Path.Combine(ProfileDirectories.SeedDirectory, modKey.FileName));
         _logger.Information("Creating seed mod at {Path}", path);
         path.Directory?.Create(_fileSystem);
         var mod = ModInstantiator.Activator(modKey, _gameReleaseContext.Release,

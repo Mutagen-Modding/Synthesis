@@ -9,6 +9,7 @@ public interface IProfileDirectories
     DirectoryPath ProfileDirectory { get; }
     DirectoryPath WorkingDirectory { get; }
     DirectoryPath OutputDirectory { get; }
+    DirectoryPath SeedDirectory { get; }
 }
 
 public class ProfileDirectories : IProfileDirectories
@@ -20,6 +21,7 @@ public class ProfileDirectories : IProfileDirectories
     public DirectoryPath ProfileDirectory => Path.Combine(Paths.WorkingDirectory, Ident.ID);
     public DirectoryPath WorkingDirectory => WorkingDirectorySubPaths.ProfileWorkingDirectory(Ident.ID);
     public DirectoryPath OutputDirectory => Path.Combine(WorkingDirectory, "Output");
+    public DirectoryPath SeedDirectory => Path.Combine(WorkingDirectory,  "Seed Mod");
 
     [ExcludeFromCodeCoverage]
     public ProfileDirectories(
