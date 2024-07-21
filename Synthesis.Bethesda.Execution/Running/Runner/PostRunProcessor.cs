@@ -67,11 +67,11 @@ public class PostRunProcessor
 
         postProcessPath.Directory?.Create(_fileSystem);
         
-        mod.WriteToBinary(postProcessPath, new BinaryWriteParameters()
-        {
-            FileSystem = _fileSystem,
-            LoadOrder = lo
-        });
+        await mod.BeginWrite
+            .WithLoadOrder(lo)
+            .ToPath(postProcessPath)
+            .WithFileSystem(_fileSystem)
+            .WriteAsync();
         
         return postProcessPath;
     }
