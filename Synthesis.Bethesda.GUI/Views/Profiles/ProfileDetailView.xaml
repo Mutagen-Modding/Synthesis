@@ -16,12 +16,12 @@
     mc:Ignorable="d">
     <Grid Margin="15,15,15,0">
         <Image Grid.Row="0" Grid.RowSpan="3"
-            x:Name="GameIconImage"
-            Width="40"
-            Height="40"
-            Margin="3,5"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top">
+               x:Name="GameIconImage"
+               Width="40"
+               Height="40"
+               Margin="3,5"
+               HorizontalAlignment="Right"
+               VerticalAlignment="Top">
             <Image.Resources>
                 <DropShadowEffect
                     x:Key="GlowEffect"
@@ -46,18 +46,12 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0"
-                Name="TopBarGrid"
-                Background="Transparent">
+                  Name="TopBarGrid"
+                  Background="Transparent">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -65,9 +59,9 @@
                     <ColumnDefinition Width="40" />
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0"
-                    x:Name="SelectButton"
-                    Width="30"
-                    VerticalAlignment="Center">
+                        x:Name="SelectButton"
+                        Width="30"
+                        VerticalAlignment="Center">
                     <Button.Style>
                         <Style BasedOn="{StaticResource Noggog.Styles.Button}" TargetType="Button">
                             <Setter Property="Content">
@@ -79,7 +73,8 @@
                                 <DataTrigger Binding="{Binding IsActive}" Value="True">
                                     <Setter Property="Content">
                                         <Setter.Value>
-                                            <icon:PackIconModern Foreground="{StaticResource LightBlueBrush}" Kind="LocationCircle" />
+                                            <icon:PackIconModern Foreground="{StaticResource LightBlueBrush}"
+                                                                 Kind="LocationCircle" />
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
@@ -88,225 +83,240 @@
                     </Button.Style>
                 </Button>
                 <TextBox Grid.Column="1"
-                    Name="ProfileDetailName"
-                    Margin="0,0,15,0"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Top"
-                    mahapps:TextBoxHelper.Watermark="Profile Name"
-                    Background="Transparent"
-                    FontSize="26"
-                    FontWeight="Black" />
+                         Name="ProfileDetailName"
+                         Margin="0,0,15,0"
+                         HorizontalAlignment="Stretch"
+                         VerticalAlignment="Top"
+                         mahapps:TextBoxHelper.Watermark="Profile Name"
+                         Background="Transparent"
+                         FontSize="26"
+                         FontWeight="Black" />
                 <Button Grid.Column="2"
-                    x:Name="DeleteButton"
-                    Margin="0,0,10,0"
-                    VerticalAlignment="Center"
-                    ToolTip="Delete Profile">
+                        x:Name="DeleteButton"
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        ToolTip="Delete Profile">
                     <Button.Resources>
                         <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="#44FFFFFF" />
-                        <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush" Color="{StaticResource Noggog.Colors.Red.Foreground}" />
-                        <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush" Color="{StaticResource Noggog.Colors.Red.Background}" />
+                        <SolidColorBrush x:Key="ButtonNakedIconOverForegroundBrush"
+                                         Color="{StaticResource Noggog.Colors.Red.Foreground}" />
+                        <SolidColorBrush x:Key="ButtonNakedIconPressedForegroundBrush"
+                                         Color="{StaticResource Noggog.Colors.Red.Background}" />
                     </Button.Resources>
                     <icon:PackIconFontAwesome Kind="TrashSolid" />
                 </Button>
             </Grid>
-            <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0"
-                    Margin="0,8,0,0"
-                    Style="{StaticResource SettingSectionHeaderStyle}"
-                    Text="Nuget Versions" />
-                <local:NugetsVersioningView Grid.Row="1" Grid.Column="0"
-                    x:Name="Nugets" 
-                    Margin="10,8,0,0" />
-                <StackPanel Grid.Row="2" Grid.Column="0"
-                    x:Name="ResetVersioningGrid"
-                    Margin="15,5,5,5"
-                    Orientation="Horizontal">
-                    <CheckBox x:Name="PrereleaseCheckbox">
-                        Consider Prereleases
-                    </CheckBox>
-                    <Button
-                        x:Name="ResetPatchersToProfile"
-                        Padding="5"
-                        Margin="20,0,0,0"
-                        HorizontalAlignment="Left"
-                        ToolTip="Sets all contained patchers to match and follow profile settings">
-                        Reset Patchers to Profile
-                    </Button>
-                </StackPanel>
-                <ToggleButton Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
-                              x:Name="LockToCurrentVersioning"
-                              Margin="5,0,0,0"
-                              VerticalAlignment="Center"
-                              ToolTip="Will disable all interaction with versioning systems, to help keep everything in its current state">
-                    <ToggleButton.Style>
-                        <Style TargetType="ToggleButton" BasedOn="{StaticResource BaseToggleButtonStyle}" >
-                            <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray4}"></Setter>
-                            <Setter Property="Content">
-                                <Setter.Value>
-                                    <icon:PackIconFontAwesome Kind="UnlockAltSolid"
-                                                              Width="20"
-                                                              Height="20"
-                                                              VerticalAlignment="Center" />
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <Trigger Property="IsChecked" Value="True">
+            <ScrollViewer Grid.Row="1" Margin="0,0,0,10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                   Margin="0,8,0,0"
+                                   Style="{StaticResource SettingSectionHeaderStyle}"
+                                   Text="Nuget Versions" />
+                        <local:NugetsVersioningView Grid.Row="1" Grid.Column="0"
+                                                    x:Name="Nugets"
+                                                    Margin="10,8,0,0" />
+                        <StackPanel Grid.Row="2" Grid.Column="0"
+                                    x:Name="ResetVersioningGrid"
+                                    Margin="15,5,5,5"
+                                    Orientation="Horizontal">
+                            <CheckBox x:Name="PrereleaseCheckbox">
+                                Consider Prereleases
+                            </CheckBox>
+                            <Button
+                                x:Name="ResetPatchersToProfile"
+                                Padding="5"
+                                Margin="20,0,0,0"
+                                HorizontalAlignment="Left"
+                                ToolTip="Sets all contained patchers to match and follow profile settings">
+                                Reset Patchers to Profile
+                            </Button>
+                        </StackPanel>
+                        <ToggleButton Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
+                                      x:Name="LockToCurrentVersioning"
+                                      Margin="5,0,0,0"
+                                      VerticalAlignment="Center"
+                                      ToolTip="Will disable all interaction with versioning systems, to help keep everything in its current state">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton" BasedOn="{StaticResource BaseToggleButtonStyle}">
+                                    <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray4}"></Setter>
                                     <Setter Property="Content">
                                         <Setter.Value>
-                                            <icon:PackIconFontAwesome Kind="LockSolid"
+                                            <icon:PackIconFontAwesome Kind="UnlockAltSolid"
                                                                       Width="20"
                                                                       Height="20"
                                                                       VerticalAlignment="Center" />
                                         </Setter.Value>
                                     </Setter>
-                                </Trigger>
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="IsMouseOver" Value="False" />
-                                        <Condition Property="IsChecked" Value="True" />
-                                    </MultiTrigger.Conditions>
-                                    <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.ThemeForeground}" />
-                                </MultiTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ToggleButton.Style>
-                </ToggleButton>
-            </Grid>
-            <Grid Grid.Row="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="0"
-                           Margin="0,16,0,0"
-                           Style="{StaticResource SettingSectionHeaderStyle}"
-                           Text="Installation" />
-                <TextBlock Grid.Row="1" Grid.Column="0"
-                           Margin="4"
-                           VerticalAlignment="Center"
-                           Text="Data Folder" />
-                <TextBox Grid.Row="1" Grid.Column="1"
-                         x:Name="DataFolderOverrideBox"
-                         Margin="10,8,0,0"
-                         mahapps:TextBoxHelper.Watermark="{Binding DataFolderWatermark, Mode=OneWay}"
-                         ToolTip="Location of your data folder.  Default setting is to locate it automatically." />
-            </Grid>
-            <Grid Grid.Row="3">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="10" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="10" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                    Margin="0,16,0,0"
-                    Style="{StaticResource SettingSectionHeaderStyle}"
-                    Text="Patch Settings" />
-                <TextBlock Grid.Row="2" Grid.Column="0"
-                           Margin="10,0,5,0"
-                           VerticalAlignment="Center"
-                           Text="Lower FormID Range" />
-                <ComboBox Grid.Row="2" Grid.Column="1" x:Name="LowerFormIDRangeCombobox"
-                          MinWidth="150"
-                          VerticalAlignment="Center"
-                          ItemsSource="{Binding FormIDRangeModes}"
-                          ToolTip="Controls whether to use lower FormID range with IDs starting with 1.  Auto will use the game's header version to detect if the lower range should be used." />
-                <TextBlock Grid.Row="4" Grid.Column="0"
-                           Margin="10,0,5,0"
-                           VerticalAlignment="Center"
-                           Text="Header Version Override" />
-                <xwpf:SingleUpDown Grid.Row="4" Grid.Column="1" x:Name="HeaderVersionOverride"
-                                   MinWidth="150"
-                                   Foreground="White"
-                                   Height="25"
+                                    <Style.Triggers>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter Property="Content">
+                                                <Setter.Value>
+                                                    <icon:PackIconFontAwesome Kind="LockSolid"
+                                                                              Width="20"
+                                                                              Height="20"
+                                                                              VerticalAlignment="Center" />
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="IsMouseOver" Value="False" />
+                                                <Condition Property="IsChecked" Value="True" />
+                                            </MultiTrigger.Conditions>
+                                            <Setter Property="Foreground"
+                                                    Value="{DynamicResource MahApps.Brushes.ThemeForeground}" />
+                                        </MultiTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0"
+                                   Margin="0,16,0,0"
+                                   Style="{StaticResource SettingSectionHeaderStyle}"
+                                   Text="Installation" />
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   Margin="4"
                                    VerticalAlignment="Center"
-                                   ToolTip="Explicitly set the outgoing patch mod's header version.  Leave empty for automatic."
-                                   Style="{StaticResource NoggogNumericUpDown}"
-                                   ShowButtonSpinner="False" />
-                <CheckBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="MasterCheckbox"
-                          Content="Master" 
-                          Margin="10,8,0,0"
-                          ToolTip="Whether to export patches as master files" />
-            </Grid>
-            <Grid Grid.Row="4">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0"
-                    Margin="0,16,0,0"
-                    Style="{StaticResource SettingSectionHeaderStyle}"
-                    Text="FormID Persistence" />
-                <ComboBox Grid.Row="1"
-                    x:Name="PersistenceStyleSelector"
-                    Margin="10,8,0,0"
-                    ItemsSource="{Binding PersistenceModes}"
-                    ToolTip="What type of persistence system to use for keeping FormIDs in sync" />
-            </Grid>
-            <Grid Grid.Row="5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0"
-                           Margin="0,16,0,0"
-                           Style="{StaticResource SettingSectionHeaderStyle}"
-                           Text="Language" />
-                <CheckBox Grid.Row="1" x:Name="Localize"
-                          Content="Localize" 
-                          Margin="10,8,0,0"
-                          ToolTip="Whether to use STRINGS files during export" />
-                <ComboBox Grid.Row="2"
-                          Margin="10,8,0,0"
-                          x:Name="TargetLanguage"
-                          ItemsSource="{Binding Languages}"
-                          SelectedItem="{Binding Profile.TargetLanguage}"
-                          ToolTip="What language to view as the default language" />
-                <CheckBox Grid.Row="3" x:Name="Utf8ForEmbeddedStrings"
-                          Content="Use UTF8 For Embedded Strings" 
-                          Margin="10,8,0,0"
-                          ToolTip="Use UTF8 encoding when reading/writing localizable mod strings that are embedded" />
-            </Grid>
-            <Grid Grid.Row="6">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0"
-                           Margin="0,16,0,0"
-                           Style="{StaticResource SettingSectionHeaderStyle}"
-                           Text="Other" />
-                <CheckBox Grid.Row="1"
-                          x:Name="IgnoreMissingModsCheckbox"
-                          Margin="10,8,0,0"
-                          Content="Ignore Missing Mods"
-                          ToolTip="Whether to allow pipeline execution even if there are missing mods" />
-            </Grid>
-            <Button Grid.Row="8"
-                x:Name="ProfileInternalFilesButton"
-                Margin="0,0,0,10"
-                HorizontalAlignment="Left">
+                                   Text="Data Folder" />
+                        <TextBox Grid.Row="1" Grid.Column="1"
+                                 x:Name="DataFolderOverrideBox"
+                                 Margin="10,8,0,0"
+                                 mahapps:TextBoxHelper.Watermark="{Binding DataFolderWatermark, Mode=OneWay}"
+                                 ToolTip="Location of your data folder.  Default setting is to locate it automatically." />
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="10" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="10" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                   Margin="0,16,0,0"
+                                   Style="{StaticResource SettingSectionHeaderStyle}"
+                                   Text="Patch Settings" />
+                        <TextBlock Grid.Row="2" Grid.Column="0"
+                                   Margin="10,0,5,0"
+                                   VerticalAlignment="Center"
+                                   Text="Lower FormID Range" />
+                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="LowerFormIDRangeCombobox"
+                                  MinWidth="150"
+                                  VerticalAlignment="Center"
+                                  ItemsSource="{Binding FormIDRangeModes}"
+                                  ToolTip="Controls whether to use lower FormID range with IDs starting with 1.  Auto will use the game's header version to detect if the lower range should be used." />
+                        <TextBlock Grid.Row="4" Grid.Column="0"
+                                   Margin="10,0,5,0"
+                                   VerticalAlignment="Center"
+                                   Text="Header Version Override" />
+                        <xwpf:SingleUpDown Grid.Row="4" Grid.Column="1" x:Name="HeaderVersionOverride"
+                                           MinWidth="150"
+                                           Foreground="White"
+                                           Height="25"
+                                           VerticalAlignment="Center"
+                                           ToolTip="Explicitly set the outgoing patch mod's header version.  Leave empty for automatic."
+                                           Style="{StaticResource NoggogNumericUpDown}"
+                                           ShowButtonSpinner="False" />
+                        <CheckBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="MasterCheckbox"
+                                  Content="Master"
+                                  Margin="10,8,0,0"
+                                  ToolTip="Whether to export patches as master files" />
+                    </Grid>
+                    <Grid Grid.Row="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0"
+                                   Margin="0,16,0,0"
+                                   Style="{StaticResource SettingSectionHeaderStyle}"
+                                   Text="FormID Persistence" />
+                        <ComboBox Grid.Row="1"
+                                  x:Name="PersistenceStyleSelector"
+                                  Margin="10,8,0,0"
+                                  ItemsSource="{Binding PersistenceModes}"
+                                  ToolTip="What type of persistence system to use for keeping FormIDs in sync" />
+                    </Grid>
+                    <Grid Grid.Row="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0"
+                                   Margin="0,16,0,0"
+                                   Style="{StaticResource SettingSectionHeaderStyle}"
+                                   Text="Language" />
+                        <CheckBox Grid.Row="1" x:Name="Localize"
+                                  Content="Localize"
+                                  Margin="10,8,0,0"
+                                  ToolTip="Whether to use STRINGS files during export" />
+                        <ComboBox Grid.Row="2"
+                                  Margin="10,8,0,0"
+                                  x:Name="TargetLanguage"
+                                  ItemsSource="{Binding Languages}"
+                                  SelectedItem="{Binding Profile.TargetLanguage}"
+                                  ToolTip="What language to view as the default language" />
+                        <CheckBox Grid.Row="3" x:Name="Utf8ForEmbeddedStrings"
+                                  Content="Use UTF8 For Embedded Strings"
+                                  Margin="10,8,0,0"
+                                  ToolTip="Use UTF8 encoding when reading/writing localizable mod strings that are embedded" />
+                    </Grid>
+                    <Grid Grid.Row="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0"
+                                   Margin="0,16,0,0"
+                                   Style="{StaticResource SettingSectionHeaderStyle}"
+                                   Text="Other" />
+                        <CheckBox Grid.Row="1"
+                                  x:Name="IgnoreMissingModsCheckbox"
+                                  Margin="10,8,0,0"
+                                  Content="Ignore Missing Mods"
+                                  ToolTip="Whether to allow pipeline execution even if there are missing mods" />
+                    </Grid>
+                </Grid>
+            </ScrollViewer>
+            <Button Grid.Row="2"
+                    x:Name="ProfileInternalFilesButton"
+                    Margin="0,0,0,10"
+                    HorizontalAlignment="Left">
                 <StackPanel Orientation="Horizontal">
                     <icon:PackIconModern
                         Margin="0,1,5,0"
@@ -315,11 +325,11 @@
                     <TextBlock VerticalAlignment="Center" Text="Profile Internal Files" />
                 </StackPanel>
             </Button>
-            <Button Grid.Row="8"
-                x:Name="ExportButton"
-                Margin="0,0,0,10"
-                HorizontalAlignment="Right"
-                ToolTip="Exports to hardcoded settings with no autoupdated features selected">
+            <Button Grid.Row="2"
+                    x:Name="ExportButton"
+                    Margin="0,0,0,10"
+                    HorizontalAlignment="Right"
+                    ToolTip="Exports to hardcoded settings with no autoupdated features selected">
                 Export
             </Button>
         </Grid>
