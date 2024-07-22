@@ -75,7 +75,8 @@
       "TargetLanguage": "English",
       "UseUtf8ForEmbeddedStrings": false,
       "FormIDRangeMode": "Auto",
-      "HeaderVersionOverride": null
+      "HeaderVersionOverride": null,
+      "ExportAsMasterFiles": false
     },
     {
       "$type": "Synthesis.Bethesda.Execution.Settings.V2.SynthesisProfile, Synthesis.Bethesda.Execution",
@@ -125,7 +126,8 @@
       "TargetLanguage": "English",
       "UseUtf8ForEmbeddedStrings": false,
       "FormIDRangeMode": "Auto",
-      "HeaderVersionOverride": null
+      "HeaderVersionOverride": null,
+      "ExportAsMasterFiles": false
     }
   ],
   "Shortcircuit": true,
