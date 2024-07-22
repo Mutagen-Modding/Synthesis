@@ -77,7 +77,10 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
                 fileSystem: env.FileSystem);
 
         Assert.True(env.FileSystem.File.Exists(modPath.Path));
-        using var patch = OblivionMod.CreateFromBinaryOverlay(modPath, fileSystem: env.FileSystem);
+        using var patch = OblivionMod.Create
+            .FromPath(modPath)
+            .WithFileSystem(env.FileSystem)
+            .Construct();
         Assert.Equal(3, patch.Npcs.Count);
         Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
         Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
@@ -104,7 +107,10 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
                 },
                 fileSystem: env.FileSystem);
         Assert.True(env.FileSystem.File.Exists(modPath.Path));
-        using var patch = OblivionMod.CreateFromBinaryOverlay(modPath, fileSystem: env.FileSystem);
+        using var patch = OblivionMod.Create
+            .FromPath(modPath)
+            .WithFileSystem(env.FileSystem)
+            .Construct();
         Assert.Equal(3, patch.Npcs.Count);
         Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
         Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
@@ -151,7 +157,10 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
                 fileSystem: env.FileSystem);
 
         Assert.True(env.FileSystem.File.Exists(modPath.Path));
-        using var patch = OblivionMod.CreateFromBinaryOverlay(modPath, fileSystem: env.FileSystem);
+        using var patch = OblivionMod.Create
+            .FromPath(modPath)
+            .WithFileSystem(env.FileSystem)
+            .Construct();
         Assert.Equal(4, patch.Npcs.Count);
         Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
         Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
@@ -201,7 +210,10 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
                 env.FileSystem);
 
         Assert.True(env.FileSystem.File.Exists(modPath.Path));
-        using var patch = OblivionMod.CreateFromBinaryOverlay(modPath, env.FileSystem);
+        using var patch = OblivionMod.Create
+            .FromPath(modPath)
+            .WithFileSystem(env.FileSystem)
+            .Construct();
         Assert.Equal(4, patch.Npcs.Count);
         Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
         Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
@@ -260,7 +272,10 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
             if (i == 1)
             {
                 Assert.True(env.FileSystem.File.Exists(modPath.Path));
-                using var patch = OblivionMod.CreateFromBinaryOverlay(modPath, env.FileSystem);
+                using var patch = OblivionMod.Create
+                    .FromPath(modPath)
+                    .WithFileSystem(env.FileSystem)
+                    .Construct();
                 Assert.Equal(4, patch.Npcs.Count);
                 Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
                 Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
@@ -350,7 +365,10 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
                     fileSystem: env.FileSystem);
 
             Assert.True(env.FileSystem.File.Exists(modPath.Path));
-            using var patch = OblivionMod.CreateFromBinaryOverlay(modPath, fileSystem: env.FileSystem);
+            using var patch = OblivionMod.Create
+                .FromPath(modPath)
+                .WithFileSystem(env.FileSystem)
+                .Construct();
             Assert.Equal(4, patch.Npcs.Count);
             Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
             Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);

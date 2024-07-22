@@ -26,17 +26,19 @@ public class AvailableProjectsRetriever : IAvailableProjectsRetriever
         
     public IEnumerable<string> Get(FilePath solutionPath)
     {
+        _logger.Information("Getting available projects from {SolutionPath}", solutionPath);
         if (!FileSystem.File.Exists(solutionPath))
         {
+            _logger.Warning("Solution did not exist, returning no available projects: {SolutionPath}", solutionPath);
             yield break;
         }
         
         foreach (var line in FileSystem.File.ReadLines(solutionPath))
         {
             if (!line.StartsWith("Project(")) continue;
-            var indexOfComma = line.IndexOf(",");
+            var indexOfComma = line.IndexOf(",", StringComparison.Ordinal);
             if (indexOfComma == -1) continue;
-            var laterIndexOfComma = line.IndexOf(",", indexOfComma + 1);
+            var laterIndexOfComma = line.IndexOf(",", indexOfComma + 1, StringComparison.Ordinal);
             if (laterIndexOfComma == -1) continue;
             var projSpan = line.AsSpan().Slice(indexOfComma + 1, laterIndexOfComma - indexOfComma - 1).Trim();
             projSpan = projSpan.TrimStart("\"").TrimEnd("\"");

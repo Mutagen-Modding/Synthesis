@@ -37,7 +37,8 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
             new RunnerRepoProjectPathRetriever(
                 IFileSystemExt.DefaultFilesystem,
                 runnerRepoDirectoryInjection,
-                availableProjectsRetriever),
+                availableProjectsRetriever,
+            Substitute.For<ILogger>()),
             modify,
             new ResetToTarget(
                 Substitute.For<ILogger>(),

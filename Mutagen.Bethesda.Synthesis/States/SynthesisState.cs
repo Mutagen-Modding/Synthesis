@@ -32,6 +32,8 @@ public class SynthesisState<TModSetter, TModGetter> : IPatcherState<TModSetter, 
     /// <inheritdoc />
     public CancellationToken Cancel { get; }
 
+    public ILoadOrderGetter<IModListingGetter<IModFlagsGetter>> LoadOrderForPipeline => LoadOrder;
+
     /// <inheritdoc />
     public DirectoryPath? ExtraSettingsDataPath { get; }
 

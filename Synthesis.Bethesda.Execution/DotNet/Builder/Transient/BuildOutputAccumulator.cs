@@ -28,14 +28,14 @@ public class BuildOutputAccumulator : IBuildOutputAccumulator
     {
         // ToDo
         // Refactor off looking for a string
-        if (line.StartsWith(BuildFailedString))
+        if (line.StartsWith(BuildFailedString, StringComparison.Ordinal))
         {
             BuildFailed = true;
         }
         else if (BuildFailed
                  && FirstError == null
                  && !string.IsNullOrWhiteSpace(line)
-                 && line.StartsWith("error"))
+                 && line.StartsWith("error", StringComparison.Ordinal))
         {
             FirstError = line;
         }

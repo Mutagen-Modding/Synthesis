@@ -1,4 +1,5 @@
 using Mutagen.Bethesda.Plugins.Allocators;
+using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Noggog;
 
@@ -38,6 +39,8 @@ public interface IPatcherState : IBaseRunState, IDisposable
     /// Cancellation token that signals whether to stop patching and exit early
     /// </summary>
     CancellationToken Cancel { get; }
+    
+    internal ILoadOrderGetter<IModListingGetter<IModFlagsGetter>> LoadOrderForPipeline { get; }
 }
 
 public interface IPatcherState<TModSetter, TModGetter> : IBaseRunState<TModSetter, TModGetter>, IPatcherState

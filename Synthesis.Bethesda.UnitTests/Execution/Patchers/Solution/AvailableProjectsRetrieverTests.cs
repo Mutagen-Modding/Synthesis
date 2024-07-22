@@ -2,6 +2,7 @@
 using AutoFixture.Xunit2;
 using FluentAssertions;
 using Noggog;
+using Noggog.Testing.AutoFixture;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -11,7 +12,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Solution;
 
 public class AvailableProjectsRetrieverTests
 {
-    [Theory, SynthAutoData(UseMockFileSystem: false)]
+    [Theory, SynthAutoData(FileSystem: TargetFileSystem.Substitute)]
     public void PathDoesNotExistReturnsEmpty(
         [Frozen]IFileSystem fs,
         FilePath solutionPath,

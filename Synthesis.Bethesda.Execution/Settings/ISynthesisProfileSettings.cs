@@ -25,4 +25,5 @@ public interface ISynthesisProfileSettings : IProfileIdentifier
     public bool UseUtf8ForEmbeddedStrings { get; set; }
     public FormIDRangeMode FormIDRangeMode { get; set; }
     public float? HeaderVersionOverride { get; set; }
+    public bool ExportAsMasterFiles { get; set; }
 }

@@ -106,6 +106,9 @@ public class ProfileVm : ViewModel
         
     [Reactive]
     public Language TargetLanguage { get; set; }
+        
+    [Reactive]
+    public bool MasterFile { get; set; }
 
     [Reactive]
     public bool UseUtf8InEmbedded { get; set; }
@@ -417,6 +420,7 @@ public class ProfileVm : ViewModel
             FormIdPersistence = SelectedPersistenceMode,
             IgnoreMissingMods = IgnoreMissingMods,
             Localize = Localize,
+            ExportAsMasterFiles = MasterFile,
             TargetLanguage = TargetLanguage,
             UseUtf8ForEmbeddedStrings = UseUtf8InEmbedded,
             FormIDRangeMode = FormIDRangeMode,

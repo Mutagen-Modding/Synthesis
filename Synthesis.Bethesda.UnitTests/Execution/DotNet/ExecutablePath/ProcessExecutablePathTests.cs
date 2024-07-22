@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Noggog;
+using Noggog.Testing.AutoFixture;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.DotNet.ExecutablePath;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -9,7 +10,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.ExecutablePath;
 
 public class ProcessExecutablePathTests
 {
-    [Theory, SynthAutoData(UseMockFileSystem: false)]
+    [Theory, SynthAutoData(FileSystem: TargetFileSystem.Substitute)]
     public void NoWorkIfAlreadyExists(
         ProcessExecutablePath sut)
     {
@@ -18,7 +19,7 @@ public class ProcessExecutablePathTests
         var w = sut.WorkingDirectoryProvider.DidNotReceiveWithAnyArgs().WorkingDirectory;
     }
         
-    [Theory, SynthAutoData(UseMockFileSystem: false)]
+    [Theory, SynthAutoData(FileSystem: TargetFileSystem.Substitute)]
     public void NoWorkIfProjectNotUnderneath(
         FilePath projPath,
         FilePath exePath,
@@ -31,7 +32,7 @@ public class ProcessExecutablePathTests
             .Should().Be(exePath);
     }
         
-    [Theory, SynthAutoData(UseMockFileSystem: false)]
+    [Theory, SynthAutoData(FileSystem: TargetFileSystem.Substitute)]
     public void RebasesToWorkingDirectory(
         ProcessExecutablePath sut)
     {

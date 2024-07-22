@@ -66,6 +66,7 @@ public class PrepareRunnerRepository : IPrepareRunnerRepository
                 
             var slnPath = SolutionFileLocator.GetPath(RunnerRepoDirectoryProvider.Path);
             if (slnPath == null) return GetResponse<RunnerRepoInfo>.Fail("Could not locate solution to run.");
+            _logger.Information("Target solution path: {SlnPath}", slnPath.Value);
 
             var foundProjSubPath = RunnerRepoProjectPathRetriever.Get(slnPath.Value, checkoutInput.Proj);
             if (foundProjSubPath == null) return GetResponse<RunnerRepoInfo>.Fail($"Could not locate target project file: {checkoutInput.Proj}.");

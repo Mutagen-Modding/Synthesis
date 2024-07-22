@@ -36,13 +36,14 @@ public class RunPatcherPipelineTests
             Arg.Any<CancellationToken>(),
             outputDir: sut.Instructions.OutputDirectory,
             runParameters: new RunParameters(
-                sut.ProfileSettings.TargetLanguage,
-                sut.ProfileSettings.Localize,
-                sut.ProfileSettings.UseUtf8ForEmbeddedStrings,
-                sut.ProfileSettings.HeaderVersionOverride,
-                sut.ProfileSettings.FormIDRangeMode,
-                sut.Instructions.PersistenceMode.Value,
-                sut.Instructions.PersistencePath));
+                TargetLanguage: sut.ProfileSettings.TargetLanguage,
+                Localize: sut.ProfileSettings.Localize,
+                UseUtf8ForEmbeddedStrings: sut.ProfileSettings.UseUtf8ForEmbeddedStrings,
+                HeaderVersionOverride: sut.ProfileSettings.HeaderVersionOverride,
+                FormIDRangeMode: sut.ProfileSettings.FormIDRangeMode,
+                PersistenceMode: sut.Instructions.PersistenceMode.Value,
+                PersistencePath: sut.Instructions.PersistencePath,
+                Master: sut.ProfileSettings.ExportAsMasterFiles));
     }
         
     [Theory, SynthAutoData]

@@ -1,6 +1,7 @@
 using System.IO.Abstractions;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Allocators;
+using Mutagen.Bethesda.Plugins.Binary.Parameters;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
@@ -8,6 +9,7 @@ using Mutagen.Bethesda.Plugins.Records.Internals;
 using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Strings.DI;
 using Mutagen.Bethesda.Synthesis.CLI;
+using Noggog;
 using Synthesis.Bethesda;
 
 namespace Mutagen.Bethesda.Synthesis.States.DI;
@@ -87,7 +89,11 @@ public class PatcherStateFactory : IPatcherStateFactory
                 settings.DataFolderPath,
                 loadOrderListing.ProcessedLoadOrder,
                 settings.GameRelease)
-            .Import(stringsParam: stringReadParams);
+            .Import(new BinaryReadParameters()
+            {
+                StringsParam = stringReadParams,
+                FileSystem = _fileSystem,
+            });
 
         // Create or import patch mod
         TModSetter patchMod;
@@ -108,8 +114,14 @@ public class PatcherStateFactory : IPatcherStateFactory
                 readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(
                     new ModPath(exportKey, settings.SourcePath),
                     settings.GameRelease, 
-                    fileSystem: _fileSystem,
-                    stringsParam: stringReadParams);
+                    new BinaryReadParameters()
+                    {
+                        FileSystem = _fileSystem,
+                        StringsParam = stringReadParams,
+                        LoadOrder = new LoadOrder<IModFlagsGetter>(
+                            loadOrder.Select(x => x.Value.Mod)
+                                .NotNull())
+                    });
             }
             loadOrder.Add(new ModListing<TModGetter>(readOnlyPatchMod, enabled: true));
             loadOrderListing.Raw.Add(new LoadOrderListing(readOnlyPatchMod.ModKey, enabled: true));
@@ -145,8 +157,11 @@ public class PatcherStateFactory : IPatcherStateFactory
                 patchMod = ModInstantiator<TModSetter>.Importer(
                     new ModPath(exportKey, settings.SourcePath), 
                     settings.GameRelease,
-                    fileSystem: _fileSystem,
-                    stringsParam: stringReadParams);
+                    new BinaryReadParameters()
+                    {
+                        FileSystem = _fileSystem,
+                        StringsParam = stringReadParams
+                    });
             }
             if (settings.PersistencePath is not null && settings.PatcherName is not null)
             {

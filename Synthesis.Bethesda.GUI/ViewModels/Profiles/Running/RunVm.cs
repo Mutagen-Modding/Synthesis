@@ -214,6 +214,7 @@ public class RunVm : ViewModel
                         headerVersionOverride: RunningProfile.HeaderVersionOverride,
                         formIDRangeMode: RunningProfile.FormIDRangeMode,
                         targetLanguage: RunningProfile.TargetLanguage,
+                        masterFile: RunningProfile.MasterFile,
                         cancel: _cancel.Token).ConfigureAwait(false);
                 }
                 catch (TaskCanceledException)

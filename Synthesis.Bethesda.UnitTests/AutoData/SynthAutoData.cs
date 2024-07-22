@@ -14,14 +14,14 @@ public class SynthAutoData : AutoDataAttribute
 {
     public SynthAutoData(
         bool ConfigureMembers = true, 
-        bool UseMockFileSystem = true,
+        TargetFileSystem FileSystem = TargetFileSystem.Fake,
         bool GenerateDelegates = false,
         bool UseMockRepositoryProvider = false,
         bool OmitAutoProperties = false)
         : base(() =>
         {
             return Factory(
-                UseMockFileSystem: UseMockFileSystem,
+                FileSystem: FileSystem,
                 ConfigureMembers: ConfigureMembers,
                 GenerateDelegates: GenerateDelegates,
                 UseMockRepositoryProvider: UseMockRepositoryProvider,
@@ -32,14 +32,14 @@ public class SynthAutoData : AutoDataAttribute
 
     public static AutoFixture.IFixture Factory(
         bool ConfigureMembers = true, 
-        bool UseMockFileSystem = true,
+        TargetFileSystem FileSystem = TargetFileSystem.Fake,
         bool GenerateDelegates = false,
         bool UseMockRepositoryProvider = false,
         bool OmitAutoProperties = false)
     {
         return new AutoFixture.Fixture()
             .Customize(new SynthAutoDataCustomization(
-                useMockFilesystem: UseMockFileSystem,
+                targetFileSystem: FileSystem,
                 configureMembers: ConfigureMembers,
                 generateDelegates: GenerateDelegates,
                 useMockRepositoryProvider: UseMockRepositoryProvider,
@@ -73,7 +73,7 @@ public class SynthCustomInlineData : CompositeDataAttribute
 {
     public SynthCustomInlineData(
         bool ConfigureMembers = true, 
-        bool UseMockFileSystem = true,
+        TargetFileSystem FileSystem = TargetFileSystem.Fake,
         bool GenerateDelegates = false,
         bool UseMockRepositoryProvider = false,
         bool OmitAutoProperties = false,
@@ -82,7 +82,7 @@ public class SynthCustomInlineData : CompositeDataAttribute
             new InlineDataAttribute(ExtraParameters), 
             new SynthAutoData(
                 ConfigureMembers: ConfigureMembers, 
-                UseMockFileSystem: UseMockFileSystem,
+                FileSystem: FileSystem,
                 GenerateDelegates: GenerateDelegates,
                 UseMockRepositoryProvider: UseMockRepositoryProvider,
                 OmitAutoProperties: OmitAutoProperties))
@@ -92,7 +92,7 @@ public class SynthCustomInlineData : CompositeDataAttribute
     
 public class SynthAutoDataCustomization : ICustomization
 {
-    private readonly bool _useMockFilesystem;
+    private readonly TargetFileSystem _targetFileSystem;
     private readonly bool _generateDelegates;
     private readonly bool _useMockRepositoryProvider;
     private readonly bool _omitAutoProperties;
@@ -100,12 +100,12 @@ public class SynthAutoDataCustomization : ICustomization
 
     public SynthAutoDataCustomization(
         bool configureMembers, 
-        bool useMockFilesystem,
+        TargetFileSystem targetFileSystem,
         bool generateDelegates,
         bool useMockRepositoryProvider,
         bool omitAutoProperties)
     {
-        _useMockFilesystem = useMockFilesystem;
+        _targetFileSystem = targetFileSystem;
         _generateDelegates = generateDelegates;
         _useMockRepositoryProvider = useMockRepositoryProvider;
         _omitAutoProperties = omitAutoProperties;
@@ -123,7 +123,7 @@ public class SynthAutoDataCustomization : ICustomization
         fixture.OmitAutoProperties = _omitAutoProperties;
         fixture.Customize(new MutagenBaseCustomization());
         fixture.Customize(new MutagenReleaseCustomization(GameRelease.SkyrimSE));
-        fixture.Customize(new DefaultCustomization(_useMockFilesystem));
+        fixture.Customize(new DefaultCustomization(_targetFileSystem));
         if (_useMockRepositoryProvider)
         {
             fixture.Register<IProvideRepositoryCheckouts>(

@@ -177,6 +177,9 @@ public partial class ProfileDetailView
             this.Bind(ViewModel, x => x.Profile!.Localize, x => x.Localize.IsChecked)
                 .DisposeWith(disposable);
 
+            this.Bind(ViewModel, x => x.Profile!.MasterFile, x => x.MasterCheckbox.IsChecked)
+                .DisposeWith(disposable);
+
             this.Bind(ViewModel, x => x.Profile!.UseUtf8InEmbedded, x => x.Utf8ForEmbeddedStrings.IsChecked)
                 .DisposeWith(disposable);
 

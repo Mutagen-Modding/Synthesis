@@ -42,6 +42,7 @@ public class RunPatcherPipeline : IRunPatcherPipeline
                     HeaderVersionOverride: ProfileSettings.HeaderVersionOverride,
                     FormIDRangeMode: ProfileSettings.FormIDRangeMode,
                     PersistenceMode: Instructions.PersistenceMode ?? PersistenceMode.None, 
-                    PersistencePath: Instructions.PersistencePath)).ConfigureAwait(false);
+                    PersistencePath: Instructions.PersistencePath,
+                    Master: ProfileSettings.ExportAsMasterFiles)).ConfigureAwait(false);
     }
 }

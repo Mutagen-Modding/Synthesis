@@ -57,7 +57,10 @@ public class MutagenSynthesisTests
             fileSystem: env.FileSystem);
 #pragma warning restore CS0618 // Type or member is obsolete
         Assert.True(env.FileSystem.File.Exists(modPath.Path));
-        using var patch = OblivionMod.CreateFromBinaryOverlay(modPath, env.FileSystem);
+        using var patch = OblivionMod.Create
+            .FromPath(modPath)
+            .WithFileSystem(env.FileSystem)
+            .Construct();
         Assert.Equal(3, patch.Npcs.Count);
         Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
         Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
@@ -81,7 +84,10 @@ public class MutagenSynthesisTests
         await new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(settings, PatchFunction, fileSystem: env.FileSystem);
 #pragma warning restore CS0618 // Type or member is obsolete
         Assert.True(env.FileSystem.File.Exists(modPath.Path));
-        using (var patch = OblivionMod.CreateFromBinaryOverlay(modPath, fileSystem: env.FileSystem))
+        using (var patch = OblivionMod.Create
+                   .FromPath(modPath)
+                   .WithFileSystem(env.FileSystem)
+                   .Construct())
         {
             Assert.Equal(3, patch.Npcs.Count);
             Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
@@ -95,7 +101,10 @@ public class MutagenSynthesisTests
         await new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(settings, PatchFunction, fileSystem: env.FileSystem);
 #pragma warning restore CS0618 // Type or member is obsolete
         Assert.True(env.FileSystem.File.Exists(modPath.Path));
-        using (var patch = OblivionMod.CreateFromBinaryOverlay(modPath, fileSystem: env.FileSystem))
+        using (var patch = OblivionMod.Create
+                   .FromPath(modPath)
+                   .WithFileSystem(env.FileSystem)
+                   .Construct())
         {
             Assert.Equal(4, patch.Npcs.Count);
             Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
@@ -258,10 +267,18 @@ public class MutagenSynthesisTests
             });
 
         var mod = new OblivionMod(Utility.TestModKey);
-        mod.WriteToBinary(Path.Combine(env.DataFolder, Utility.TestModKey.FileName), fileSystem: env.FileSystem);
+        mod.BeginWrite
+            .WithNoLoadOrder()
+            .ToPath(Path.Combine(env.DataFolder, Utility.TestModKey.FileName))
+            .WithFileSystem(env.FileSystem)
+            .Write();
         var mod2 = new OblivionMod(Utility.OverrideModKey);
         mod2.Npcs.Add(new Npc(mod.GetNextFormKey()));
-        mod2.WriteToBinary(Path.Combine(env.DataFolder, Utility.OverrideModKey.FileName), fileSystem: env.FileSystem);
+        mod2.BeginWrite
+            .WithNoLoadOrder()
+            .ToPath(Path.Combine(env.DataFolder, Utility.OverrideModKey.FileName))
+            .WithFileSystem(env.FileSystem)
+            .Write();
 
         var list = new ExtendedList<ILoadOrderListingGetter>()
         {

@@ -4,6 +4,7 @@ using FluentAssertions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Noggog;
+using Noggog.Testing.AutoFixture;
 using NSubstitute;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Profile;
@@ -16,9 +17,9 @@ namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles;
 public class ProfileDataFolderTests
 {
     [Theory]
-    [SynthCustomInlineData(ExtraParameters: Utility.Return.True, UseMockFileSystem: false)]
-    [SynthCustomInlineData(ExtraParameters: Utility.Return.False, UseMockFileSystem: false)]
-    [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false)]
+    [SynthCustomInlineData(ExtraParameters: Utility.Return.True, FileSystem: TargetFileSystem.Substitute)]
+    [SynthCustomInlineData(ExtraParameters: Utility.Return.False, FileSystem: TargetFileSystem.Substitute)]
+    [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, FileSystem: TargetFileSystem.Substitute)]
     public async Task HasDataPathOverride(
         Utility.Return r,
         DirectoryPath folder,
@@ -58,9 +59,9 @@ public class ProfileDataFolderTests
     }
 
     [Theory]
-    [SynthCustomInlineData(ExtraParameters: Utility.Return.True, UseMockFileSystem: false, OmitAutoProperties: true)]
-    [SynthCustomInlineData(ExtraParameters: Utility.Return.False, UseMockFileSystem: false, OmitAutoProperties: true)]
-    [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false, OmitAutoProperties: true)]
+    [SynthCustomInlineData(ExtraParameters: Utility.Return.True, FileSystem: TargetFileSystem.Substitute, OmitAutoProperties: true)]
+    [SynthCustomInlineData(ExtraParameters: Utility.Return.False, FileSystem: TargetFileSystem.Substitute, OmitAutoProperties: true)]
+    [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, FileSystem: TargetFileSystem.Substitute, OmitAutoProperties: true)]
     public void GameLocation(
         Utility.Return r,
         Lazy<ProfileOverridesVm> sutGetter,
@@ -104,9 +105,9 @@ public class ProfileDataFolderTests
     }
     
     [Theory]
-    [SynthCustomInlineData(ExtraParameters: Utility.Return.True, UseMockFileSystem: false, OmitAutoProperties: true)]
-    [SynthCustomInlineData(ExtraParameters: Utility.Return.False, UseMockFileSystem: false, OmitAutoProperties: true)]
-    [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, UseMockFileSystem: false, OmitAutoProperties: true)]
+    [SynthCustomInlineData(ExtraParameters: Utility.Return.True, FileSystem: TargetFileSystem.Substitute, OmitAutoProperties: true)]
+    [SynthCustomInlineData(ExtraParameters: Utility.Return.False, FileSystem: TargetFileSystem.Substitute, OmitAutoProperties: true)]
+    [SynthCustomInlineData(ExtraParameters: Utility.Return.Throw, FileSystem: TargetFileSystem.Substitute, OmitAutoProperties: true)]
     public void WatchesForFileExistence(
         Utility.Return r,
         DirectoryPath folder,
