@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+using System.IO.Abstractions;
+using System.Xml.Linq;
 using Noggog;
 using NuGet.Versioning;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
@@ -20,6 +21,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
     public static readonly System.Version NewtonSoftRemoveMutaVersion = new(0, 28);
     public static readonly System.Version NewtonSoftRemoveSynthVersion = new(0, 17, 5);
     public static readonly System.Version NamespaceMutaVersion = new(0, 30, 0);
+    private readonly IFileSystem _fileSystem;
     private readonly IAvailableProjectsRetriever _availableProjectsRetriever;
     private readonly ISwapOffNetCore _swapOffNetCore;
     private readonly IRemoveGitInfo _removeGitInfo;
@@ -32,6 +34,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
     private readonly IRemoveProject _removeProject;
 
     public ModifyRunnerProjects(
+        IFileSystem fileSystem,
         IAvailableProjectsRetriever availableProjectsRetriever,
         ISwapOffNetCore swapOffNetCore,
         IRemoveGitInfo removeGitInfo,
@@ -43,6 +46,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         IProcessProjUsings processProjUsings,
         IRemoveProject removeProject)
     {
+        _fileSystem = fileSystem;
         _availableProjectsRetriever = availableProjectsRetriever;
         _swapOffNetCore = swapOffNetCore;
         _removeGitInfo = removeGitInfo;
@@ -76,7 +80,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         foreach (var subProj in _availableProjectsRetriever.Get(solutionPath))
         {
             var proj = Path.Combine(Path.GetDirectoryName(solutionPath)!, subProj);
-            var txt = File.ReadAllText(proj);
+            var txt = _fileSystem.File.ReadAllText(proj);
             var projXml = XElement.Parse(txt);
             _swapDesiredVersions.Swap(
                 projXml,
@@ -109,7 +113,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
             var outputStr = projXml.ToString();
             if (!txt.Equals(outputStr))
             {
-                File.WriteAllText(proj, outputStr);
+                _fileSystem.File.WriteAllText(proj, outputStr);
             }
 
             if (drivingProjSubPath.Equals(subProj))
@@ -119,13 +123,13 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         }
         foreach (var item in Directory.EnumerateFiles(Path.GetDirectoryName(solutionPath)!, "Directory.Build.*"))
         {
-            var txt = File.ReadAllText(item);
+            var txt = _fileSystem.File.ReadAllText(item);
             var projXml = XElement.Parse(txt);
             _turnOffNullability.TurnOff(projXml);
             var outputStr = projXml.ToString();
             if (!txt.Equals(outputStr))
             {
-                File.WriteAllText(item, outputStr);
+                _fileSystem.File.WriteAllText(item, outputStr);
             }
         }
     }
