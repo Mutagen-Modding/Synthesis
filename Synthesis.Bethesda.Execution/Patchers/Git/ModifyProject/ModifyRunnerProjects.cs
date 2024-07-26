@@ -23,7 +23,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
     public static readonly System.Version NamespaceMutaVersion = new(0, 30, 0);
     private readonly IFileSystem _fileSystem;
     private readonly IAvailableProjectsRetriever _availableProjectsRetriever;
-    private readonly ISwapOffNetCore _swapOffNetCore;
+    private readonly ISwapToProperNetVersion _swapToProperNetVersion;
     private readonly IRemoveGitInfo _removeGitInfo;
     private readonly IAddNewtonsoftToOldSetups _addNewtonsoftToOldSetups;
     private readonly ISwapInDesiredVersionsForProjectString _swapDesiredVersions;
@@ -36,7 +36,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
     public ModifyRunnerProjects(
         IFileSystem fileSystem,
         IAvailableProjectsRetriever availableProjectsRetriever,
-        ISwapOffNetCore swapOffNetCore,
+        ISwapToProperNetVersion swapToProperNetVersion,
         IRemoveGitInfo removeGitInfo,
         IAddNewtonsoftToOldSetups addNewtonsoftToOldSetups,
         ISwapInDesiredVersionsForProjectString swapDesiredVersions,
@@ -48,7 +48,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
     {
         _fileSystem = fileSystem;
         _availableProjectsRetriever = availableProjectsRetriever;
-        _swapOffNetCore = swapOffNetCore;
+        _swapToProperNetVersion = swapToProperNetVersion;
         _removeGitInfo = removeGitInfo;
         _addNewtonsoftToOldSetups = addNewtonsoftToOldSetups;
         _swapDesiredVersions = swapDesiredVersions;
@@ -75,6 +75,12 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
             return version.Substring(0, index);
         }
 
+        if (versions.Mutagen == null)
+        {
+            throw new ArgumentException("Target mutagen version null");
+        }
+        
+        var targetMutagenNugetVersion = NuGetVersion.Parse(versions.Mutagen);
         var trimmedMutagenVersion = TrimVersion(versions.Mutagen);
         var trimmedSynthesisVersion = TrimVersion(versions.Synthesis);
         foreach (var subProj in _availableProjectsRetriever.Get(solutionPath))
@@ -88,7 +94,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
                 out var curListedVersions);
             _turnOffNullability.TurnOff(projXml);
             _removeGitInfo.Remove(projXml);
-            _swapOffNetCore.Swap(projXml);
+            _swapToProperNetVersion.Swap(projXml, targetMutagenNugetVersion);
             _turnOffWindowsSpec.TurnOff(projXml);
             System.Version.TryParse(TrimVersion(curListedVersions.Mutagen), out var mutaVersion);
             System.Version.TryParse(TrimVersion(curListedVersions.Synthesis), out var synthVersion);
