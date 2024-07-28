@@ -8,11 +8,11 @@ jobs:
   release:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
+    - uses: actions/checkout@v3
+    - name: Setup .NET 8
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.102
+        dotnet-version: 8.0.*
     - name: Install dependencies
       run: |
         dotnet clean Synthesis.Bethesda.sln -c Release && dotnet nuget locals all --clear
