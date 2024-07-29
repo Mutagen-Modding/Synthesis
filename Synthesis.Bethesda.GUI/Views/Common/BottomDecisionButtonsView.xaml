@@ -30,7 +30,7 @@
             <icon:PackIconFontAwesome
                 Width="22"
                 Height="22"
-                Kind="CheckCircleSolid">
+                Kind="CircleCheckSolid">
                 <icon:PackIconFontAwesome.Style>
                     <Style TargetType="icon:PackIconFontAwesome">
                         <Setter Property="Effect">

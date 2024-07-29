@@ -92,7 +92,7 @@
                 <icon:PackIconFontAwesome
                     Height="12"
                     VerticalAlignment="Center"
-                    Kind="PlusCircleSolid" />
+                    Kind="CirclePlusSolid" />
             </Button>
         </Grid>
     </Grid>

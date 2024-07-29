@@ -271,7 +271,7 @@
                 Height="12"
                 VerticalAlignment="Center"
                 Foreground="{StaticResource PaleBlueBrush}"
-                Kind="ChevronCircleUpSolid" />
+                Kind="CircleChevronUpSolid" />
             <TextBlock
                 Margin="5,0,0,0"
                 VerticalAlignment="Center"

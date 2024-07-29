@@ -48,7 +48,7 @@
                 <Button.Resources>
                     <SolidColorBrush x:Key="ButtonNakedIconForegroundBrush" Color="{StaticResource MahApps.Colors.Gray7}" />
                 </Button.Resources>
-                <icon:PackIconFontAwesome Kind="InfoCircleSolid" />
+                <icon:PackIconFontAwesome Kind="CircleInfoSolid" />
             </Button>
         </Grid>
         <ListBox Grid.Row="1" Grid.Column="0"

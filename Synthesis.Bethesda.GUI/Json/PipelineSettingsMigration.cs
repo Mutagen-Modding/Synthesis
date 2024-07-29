@@ -25,7 +25,7 @@ public class PipelineSettingsMigration
     {
         var vers = _versionRetriever.GetVersion(guiPath);
         if (vers >= 2) return;
-        using var reader = new StreamReader(_fileSystem.FileStream.Create(guiPath, FileMode.Open, FileAccess.Read));
+        using var reader = new StreamReader(_fileSystem.FileStream.New(guiPath, FileMode.Open, FileAccess.Read));
         JObject o = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
         var node = o["WorkingDirectory"];
         if (node != null)

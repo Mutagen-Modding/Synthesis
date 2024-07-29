@@ -11,7 +11,7 @@ namespace Synthesis.Bethesda.UnitTests;
 
 public class RepoTestUtility
 {
-    public string DefaultBranch => "master";
+    public string DefaultBranch => "dev";
     public string AFile => "Somefile.txt";
     public string SlnPath => "Solution.sln";
     public string ProjPath => "MyProj/MyProj.csproj";

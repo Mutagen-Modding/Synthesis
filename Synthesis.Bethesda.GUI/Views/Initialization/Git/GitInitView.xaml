@@ -29,7 +29,7 @@
             <icon:PackIconFontAwesome
                 Width="25"
                 Height="25"
-                Kind="BackspaceSolid">
+                Kind="DeleteLeftSolid">
                 <icon:PackIconFontAwesome.Style>
                     <Style TargetType="icon:PackIconFontAwesome">
                         <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray5}" />

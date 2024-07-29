@@ -94,7 +94,7 @@
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Foreground="{StaticResource LightPurpleBrush}"
-                                Kind="DotCircleSolid"
+                                Kind="CircleDotSolid"
                                 Visibility="Collapsed" />
                         </Grid>
                     </Grid>

@@ -23,7 +23,7 @@ public class MissingNugetOrgErrorTests
                                    "</packageSources>" +
                                    "</configuration>");
         sut.RunFix(path);
-        var doc = XDocument.Load(fs.FileStream.Create(path, FileMode.Open, FileAccess.Read));
+        var doc = XDocument.Load(fs.FileStream.New(path, FileMode.Open, FileAccess.Read));
         doc.Should().BeEquivalentTo(NotExistsError.TypicalFile());
     }
         
@@ -37,7 +37,7 @@ public class MissingNugetOrgErrorTests
                                    "<configuration>" +
                                    "</configuration>");
         sut.RunFix(path);
-        var doc = XDocument.Load(fs.FileStream.Create(path, FileMode.Open, FileAccess.Read));
+        var doc = XDocument.Load(fs.FileStream.New(path, FileMode.Open, FileAccess.Read));
         doc.Should().BeEquivalentTo(NotExistsError.TypicalFile());
     }
         
@@ -54,7 +54,7 @@ public class MissingNugetOrgErrorTests
                                    "</packageSources>" +
                                    "</configuration>");
         sut.RunFix(path);
-        var doc = XDocument.Load(fs.FileStream.Create(path, FileMode.Open, FileAccess.Read));
+        var doc = XDocument.Load(fs.FileStream.New(path, FileMode.Open, FileAccess.Read));
         var elem = new XElement("configuration",
             new XElement("packageSources",
                 new XElement("add",
