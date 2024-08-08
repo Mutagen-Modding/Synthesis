@@ -77,14 +77,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
             if (index == -1) return version;
             return version.Substring(0, index);
         }
-
-        if (versions.Mutagen == null)
-        {
-            throw new ArgumentException("Target mutagen version null");
-        }
         
-        var targetMutagenNugetVersion = NuGetVersion.Parse(versions.Mutagen);
-        var targetSynthesisNugetVersion = versions.Synthesis != null ? NuGetVersion.Parse(versions.Synthesis) : default;
         var trimmedMutagenVersion = TrimVersion(versions.Mutagen);
         var trimmedSynthesisVersion = TrimVersion(versions.Synthesis);
         foreach (var subProj in _availableProjectsRetriever.Get(solutionPath))
@@ -112,8 +105,11 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
             {
                 _removeProject.Remove(projXml, "Newtonsoft.Json");
             }
-            
-            _addAllReleasesToOldVersions.Add(projXml, synthVersion, targetMutagenNugetVersion, targetSynthesisNugetVersion);
+
+            if (targetMutaVersion != null && targetSynthesisVersion != null)
+            {
+                _addAllReleasesToOldVersions.Add(projXml, synthVersion, targetMutaVersion, targetSynthesisVersion);
+            }
 
             if (targetMutaVersion >= NamespaceMutaVersion
                 && mutaVersion < NamespaceMutaVersion)

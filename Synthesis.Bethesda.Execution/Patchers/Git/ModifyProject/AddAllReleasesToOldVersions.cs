@@ -1,6 +1,5 @@
 ﻿using System.Xml.Linq;
 using Noggog;
-using NuGet.Versioning;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
 
@@ -11,13 +10,13 @@ public class AddAllReleasesToOldVersions
     public void Add(
         XElement proj, 
         Version? curSynthVersion, 
-        NuGetVersion targetMutagenVersion, 
-        NuGetVersion? targetSynthVersion)
+        Version targetMutagenVersion, 
+        Version? targetSynthVersion)
     {
         if (targetSynthVersion != null
             && curSynthVersion != null
             && curSynthVersion < IntroducingSynthesisVersion
-            && targetSynthVersion.Version >= IntroducingSynthesisVersion)
+            && targetSynthVersion >= IntroducingSynthesisVersion)
         {
             foreach (var group in proj.Elements("ItemGroup"))
             {
