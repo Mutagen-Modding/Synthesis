@@ -32,6 +32,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
     private readonly ITurnOffNullability _turnOffNullability;
     private readonly IProcessProjUsings _processProjUsings;
     private readonly IRemoveProject _removeProject;
+    private readonly AddAllReleasesToOldVersions _addAllReleasesToOldVersions;
 
     public ModifyRunnerProjects(
         IFileSystem fileSystem,
@@ -44,7 +45,8 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         ISwapVersioning swapVersioning,
         ITurnOffNullability turnOffNullability,
         IProcessProjUsings processProjUsings,
-        IRemoveProject removeProject)
+        IRemoveProject removeProject,
+        AddAllReleasesToOldVersions addAllReleasesToOldVersions)
     {
         _fileSystem = fileSystem;
         _availableProjectsRetriever = availableProjectsRetriever;
@@ -57,6 +59,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         _turnOffNullability = turnOffNullability;
         _processProjUsings = processProjUsings;
         _removeProject = removeProject;
+        _addAllReleasesToOldVersions = addAllReleasesToOldVersions;
     }
         
     public void Modify(
@@ -81,6 +84,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         }
         
         var targetMutagenNugetVersion = NuGetVersion.Parse(versions.Mutagen);
+        var targetSynthesisNugetVersion = versions.Synthesis != null ? NuGetVersion.Parse(versions.Synthesis) : default;
         var trimmedMutagenVersion = TrimVersion(versions.Mutagen);
         var trimmedSynthesisVersion = TrimVersion(versions.Synthesis);
         foreach (var subProj in _availableProjectsRetriever.Get(solutionPath))
@@ -108,6 +112,8 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
             {
                 _removeProject.Remove(projXml, "Newtonsoft.Json");
             }
+            
+            _addAllReleasesToOldVersions.Add(projXml, synthVersion, targetMutagenNugetVersion, targetSynthesisNugetVersion);
 
             if (targetMutaVersion >= NamespaceMutaVersion
                 && mutaVersion < NamespaceMutaVersion)

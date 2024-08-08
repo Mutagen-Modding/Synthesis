@@ -22,6 +22,7 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.ModifyProject;
 [Register(typeof(AddNewtonsoftToOldSetups), typeof(IAddNewtonsoftToOldSetups))]
 [Register(typeof(AvailableProjectsRetriever), typeof(IAvailableProjectsRetriever))]
 [Register(typeof(SwapToProperNetVersion), typeof(ISwapToProperNetVersion))]
+[Register(typeof(AddAllReleasesToOldVersions), typeof(AddAllReleasesToOldVersions))]
 [Register(typeof(TurnOffWindowsSpecificationInTargetFramework), typeof(ITurnOffWindowsSpecificationInTargetFramework))]
 partial class ModifyRunnerProjectsContainer : IContainer<ModifyRunnerProjects>
 {
@@ -318,6 +319,41 @@ public class ModifyRunnerProjectsTests
 			new NugetVersionPair(
 				"0.44-abc",
 				"0.29-abc"),
+			out var pair);
+		await Verify(fileSystem.File.ReadAllText(projPath));
+	}
+	
+	[Theory, DefaultAutoData]
+	public async Task AddMutagenToOlderVersions(
+		IFileSystem fileSystem,
+		FilePath existingSlnPath)
+	{
+		var subPath = Path.Combine("SomeProj", "SomeProj.csproj");
+		fileSystem.File.WriteAllText(existingSlnPath, Sln);
+		var projPath = Path.Combine(Path.GetDirectoryName(existingSlnPath)!, subPath);
+		fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(projPath)!);
+		fileSystem.File.WriteAllText(projPath, 
+			"""
+			<Project Sdk="Microsoft.NET.Sdk">
+			
+			  <PropertyGroup>
+			    <OutputType>Exe</OutputType>
+				<TargetFramework>net6.0</TargetFramework>
+			  </PropertyGroup>
+			
+			  <ItemGroup>
+			    <PackageReference Include="Mutagen.Bethesda.Synthesis" Version="0.10.10" />
+			  </ItemGroup>
+
+			</Project>
+			""");
+		var sut = new ModifyRunnerProjectsContainer(fileSystem);
+		sut.Resolve().Value.Modify(
+			existingSlnPath, 
+			subPath, 
+			new NugetVersionPair(
+				"0.45",
+				"0.29"),
 			out var pair);
 		await Verify(fileSystem.File.ReadAllText(projPath));
 	}
