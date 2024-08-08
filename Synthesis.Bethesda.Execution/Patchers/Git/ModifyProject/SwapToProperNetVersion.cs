@@ -6,15 +6,15 @@ namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
 
 public interface ISwapToProperNetVersion
 {
-    void Swap(XElement proj, NuGetVersion targetMutagenVersion);
+    void Swap(XElement proj, Version targetMutagenVersion);
 }
 
 public class SwapToProperNetVersion : ISwapToProperNetVersion
 {
     private const int NetNum = 8;
-    private readonly NuGetVersion Net8Version = new NuGetVersion(0, 45, 0);
+    private readonly Version Net8Version = new Version(0, 45);
     
-    private void ProcessTargetFrameworkNode(XElement elem, NuGetVersion targetMutagenVersion)
+    private void ProcessTargetFrameworkNode(XElement elem, Version targetMutagenVersion)
     {
         if (!elem.Name.LocalName.Equals("TargetFramework")) return;
         if (targetMutagenVersion < Net8Version)
@@ -36,7 +36,7 @@ public class SwapToProperNetVersion : ISwapToProperNetVersion
         }
     }
 
-    private static void ProcessNet8(XElement elem, NuGetVersion targetMutagenVersion)
+    private static void ProcessNet8(XElement elem, Version targetMutagenVersion)
     {
         if (!elem.Value.StartsWith("net"))
         {
@@ -52,7 +52,7 @@ public class SwapToProperNetVersion : ISwapToProperNetVersion
         elem.Value = $"net{NetNum}.0";
     }
 
-    public void Swap(XElement proj, NuGetVersion targetMutagenVersion)
+    public void Swap(XElement proj, Version targetMutagenVersion)
     {
         foreach (var group in proj.Elements("PropertyGroup"))
         {

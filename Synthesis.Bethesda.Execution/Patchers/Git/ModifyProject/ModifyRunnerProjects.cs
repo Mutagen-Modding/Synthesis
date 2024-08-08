@@ -91,7 +91,6 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
                 out var curListedVersions);
             _turnOffNullability.TurnOff(projXml);
             _removeGitInfo.Remove(projXml);
-            _swapToProperNetVersion.Swap(projXml, targetMutagenNugetVersion);
             _turnOffWindowsSpec.TurnOff(projXml);
             System.Version.TryParse(TrimVersion(curListedVersions.Mutagen), out var mutaVersion);
             System.Version.TryParse(TrimVersion(curListedVersions.Synthesis), out var synthVersion);
@@ -104,6 +103,11 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
                     && targetSynthesisVersion >= NewtonSoftRemoveSynthVersion))
             {
                 _removeProject.Remove(projXml, "Newtonsoft.Json");
+            }
+
+            if (targetMutaVersion != null)
+            {
+                _swapToProperNetVersion.Swap(projXml, targetMutaVersion);
             }
 
             if (targetMutaVersion != null && targetSynthesisVersion != null)
