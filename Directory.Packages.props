@@ -48,25 +48,25 @@
       <Version>17.10.0</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda">
-      <Version>0.46.0.1</Version>
+      <Version>0.46.0.1-nightly-20240909-095488</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.Autofac">
-      <Version>0.46.0.1</Version>
+      <Version>0.46.0.1-nightly-20240909-095488</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.Core">
-      <Version>0.46.0.1</Version>
+      <Version>0.46.0.1-nightly-20240909-095488</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.Json">
-      <Version>0.46.0.1</Version>
+      <Version>0.46.0.1-nightly-20240909-095488</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.Kernel">
-      <Version>0.46.0.1</Version>
+      <Version>0.46.0.1-nightly-20240909-095488</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.Testing">
-      <Version>0.46.0.1</Version>
+      <Version>0.46.0.1-nightly-20240909-095488</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.WPF">
-      <Version>0.46.0.1</Version>
+      <Version>0.46.0.1-nightly-20240909-095488</Version>
     </PackageVersion>
     <PackageVersion Include="Newtonsoft.Json">
       <Version>13.0.3</Version>
