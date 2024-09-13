@@ -37,7 +37,9 @@
                 ToolTip="Open in IDE">
             <iconPacks:PackIconMaterial Kind="OpenInApp" />
         </Button>
-        <ComboBox x:Name="ProjectsPickerBox" Grid.Row="3">
+        <ComboBox x:Name="ProjectsPickerBox" Grid.Row="3"
+                  ItemsSource="{Binding AvailableProjects}"
+                  SelectedItem="{Binding SelectedProjectInput.ProjectSubpath}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding}" />

@@ -31,12 +31,6 @@ public partial class SolutionSourceConfigView
             projOpacity.BindTo(this, x => x.ProjectsPickerBox.Opacity)
                 .DisposeWith(disposable);
 
-            // Bind project picker
-            this.Bind(this.ViewModel, vm => vm.SelectedProjectInput.ProjectSubpath, view => view.ProjectsPickerBox.SelectedItem)
-                .DisposeWith(disposable);
-            this.OneWayBind(this.ViewModel, vm => vm.AvailableProjects, view => view.ProjectsPickerBox.ItemsSource)
-                .DisposeWith(disposable);
-
             // Set project picker tooltips
             this.WhenAnyValue(x => x.ViewModel!.SelectedProjectInput.Picker.ErrorState)
                 .Select(e =>
