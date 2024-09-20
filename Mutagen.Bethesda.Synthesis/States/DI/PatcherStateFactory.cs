@@ -1,8 +1,10 @@
 using System.IO.Abstractions;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Allocators;
+using Mutagen.Bethesda.Plugins.Binary.Headers;
 using Mutagen.Bethesda.Plugins.Binary.Parameters;
 using Mutagen.Bethesda.Plugins.Cache;
+using Mutagen.Bethesda.Plugins.Meta;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Plugins.Records.Internals;
@@ -111,6 +113,21 @@ public class PatcherStateFactory : IPatcherStateFactory
             }
             else
             {
+                // ToDo
+                // Eventually use generic read builder
+                Cache<IModMasterStyledGetter, ModKey>? masterFlagsLookup = null;
+                if (GameConstants.Get(settings.GameRelease).SeparateMasterLoadOrders)
+                {
+                    var header = ModHeaderFrame.FromPath(settings.SourcePath, settings.GameRelease, _fileSystem);
+                    masterFlagsLookup = new Cache<IModMasterStyledGetter, ModKey>(x => x.ModKey);
+                    foreach (var master in header.Masters(exportKey).Select(x => x.Master))
+                    {
+                        var otherPath = Path.Combine(settings.DataFolderPath, master.FileName);
+                        var otherHeader = ModHeaderFrame.FromPath(otherPath, settings.GameRelease, _fileSystem);
+                        masterFlagsLookup.Add(new KeyedMasterStyle(master, otherHeader.MasterStyle));
+                    }
+                }
+
                 readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(
                     new ModPath(exportKey, settings.SourcePath),
                     settings.GameRelease, 
@@ -118,9 +135,7 @@ public class PatcherStateFactory : IPatcherStateFactory
                     {
                         FileSystem = _fileSystem,
                         StringsParam = stringReadParams,
-                        LoadOrder = new LoadOrder<IModFlagsGetter>(
-                            loadOrder.Select(x => x.Value.Mod)
-                                .NotNull())
+                        MasterFlagsLookup = masterFlagsLookup
                     });
             }
             loadOrder.Add(new ModListing<TModGetter>(readOnlyPatchMod, enabled: true));

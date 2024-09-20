@@ -268,15 +268,15 @@ public class MutagenSynthesisTests
 
         var mod = new OblivionMod(Utility.TestModKey);
         mod.BeginWrite
-            .WithNoLoadOrder()
             .ToPath(Path.Combine(env.DataFolder, Utility.TestModKey.FileName))
+            .WithNoLoadOrder()
             .WithFileSystem(env.FileSystem)
             .Write();
         var mod2 = new OblivionMod(Utility.OverrideModKey);
         mod2.Npcs.Add(new Npc(mod.GetNextFormKey()));
         mod2.BeginWrite
-            .WithNoLoadOrder()
             .ToPath(Path.Combine(env.DataFolder, Utility.OverrideModKey.FileName))
+            .WithNoLoadOrder()
             .WithFileSystem(env.FileSystem)
             .Write();
 

@@ -38,8 +38,8 @@ public class SynthesisPipelineTests
 
         var mod = new SkyrimMod(modKey, SkyrimRelease.SkyrimSE);
         mod.BeginWrite
-            .WithNoLoadOrder()
             .ToPath(sourcePath)
+            .WithNoLoadOrder()
             .WithFileSystem(fileSystem)
             .NoModKeySync()
             .Write();

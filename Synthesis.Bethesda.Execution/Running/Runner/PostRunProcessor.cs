@@ -37,7 +37,7 @@ public class PostRunProcessor
         ModPath path,
         IReadOnlySet<ModKey> blackListMod)
     {
-        var lo = new LoadOrder<IModFlagsGetter>(
+        var lo = new LoadOrder<IModMasterStyledGetter>(
             _loadOrderForRunProvider
                 .Get(path.ModKey, blackListMod)
                 .Select(listing =>
@@ -59,7 +59,7 @@ public class PostRunProcessor
             _gameReleaseContext.Release,
             new BinaryReadParameters()
             {
-                LoadOrder = lo
+                MasterFlagsLookup = lo
             });
 
         var postProcessPath = new FilePath(
@@ -68,8 +68,8 @@ public class PostRunProcessor
         postProcessPath.Directory?.Create(_fileSystem);
         
         await mod.BeginWrite
-            .WithLoadOrder(lo)
             .ToPath(postProcessPath)
+            .WithLoadOrder(lo)
             .WithFileSystem(_fileSystem)
             .WriteAsync();
         
