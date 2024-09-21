@@ -159,7 +159,7 @@
                                     <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray4}"></Setter>
                                     <Setter Property="Content">
                                         <Setter.Value>
-                                            <icon:PackIconFontAwesome Kind="UnlockAltSolid"
+                                            <icon:PackIconFontAwesome Kind="UnlockKeyholeSolid"
                                                                       Width="20"
                                                                       Height="20"
                                                                       VerticalAlignment="Center" />

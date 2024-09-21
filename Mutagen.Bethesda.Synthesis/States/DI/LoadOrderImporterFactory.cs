@@ -19,10 +19,14 @@ public interface ILoadOrderImporterFactory
 public class LoadOrderImporterFactory : ILoadOrderImporterFactory
 {
     private readonly IFileSystem _FileSystem;
+    private readonly IMasterFlagsLookupProvider _masterFlagsLookupProvider;
 
-    public LoadOrderImporterFactory(IFileSystem fileSystem)
+    public LoadOrderImporterFactory(
+        IFileSystem fileSystem,
+        IMasterFlagsLookupProvider masterFlagsLookupProvider)
     {
         _FileSystem = fileSystem;
+        _masterFlagsLookupProvider = masterFlagsLookupProvider;
     }
         
     public ILoadOrderImporter<TModGetter> Get<TModGetter>(
@@ -37,6 +41,7 @@ public class LoadOrderImporterFactory : ILoadOrderImporterFactory
             new LoadOrderListingsInjection(listings),
             new ModImporter<TModGetter>(
                 _FileSystem,
-                new GameReleaseInjection(release)));
+                new GameReleaseInjection(release)),
+            _masterFlagsLookupProvider);
     }
 }

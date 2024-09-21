@@ -588,21 +588,26 @@ public class SynthesisPipeline
         var prefs = patcher.Prefs ?? new PatcherPreferences();
         var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
         var categoryContext = new GameCategoryContext(gameReleaseInjection);
+        var dataDir = new DataDirectoryInjection(args.DataFolderPath);
         var gameLoc = new GameLocator();
         var stateFactory = new PatcherStateFactory(
             fileSystem,
             new LoadOrderImporterFactory(
-                fileSystem),
+                fileSystem,
+                new MasterFlagsLookupProvider(
+                    gameReleaseInjection,
+                    fileSystem,
+                    dataDir)),
             new GetStateLoadOrder(
                 new ImplicitListingsProvider(
                     fileSystem,
-                    new DataDirectoryInjection(args.DataFolderPath),
+                    dataDir,
                     new ImplicitListingModKeyProvider(
                         gameReleaseInjection)),
                 new OrderListings(),
                 new CreationClubListingsProvider(
                     fileSystem,
-                    new DataDirectoryInjection(args.DataFolderPath),
+                    dataDir,
                     new CreationClubListingsPathProvider(
                         categoryContext,
                         new CreationClubEnabledProvider(categoryContext),
@@ -636,8 +641,8 @@ public class SynthesisPipeline
         try
         {
             await state.PatchMod.BeginWrite
-                .WithLoadOrder(state.LoadOrderForPipeline)
                 .ToPath(args.OutputPath)
+                .WithLoadOrder(state.LoadOrderForPipeline)
                 .WithFileSystem(fileSystem)
                 .NoModKeySync()
                 .WithTargetLanguage(args.TargetLanguage)

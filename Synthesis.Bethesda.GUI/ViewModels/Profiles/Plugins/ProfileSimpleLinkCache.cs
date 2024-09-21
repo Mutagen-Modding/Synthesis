@@ -2,6 +2,7 @@
 using System.Reactive.Linq;
 using DynamicData;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
 using Noggog;
@@ -24,6 +25,7 @@ public class ProfileSimpleLinkCacheVm : ViewModel, IProfileSimpleLinkCacheVm
 
     public ProfileSimpleLinkCacheVm(
         ILogger logger,
+        IGameReleaseContext gameReleaseContext,
         IProfileLoadOrder loadOrder,
         IProfileOverridesVm overrides,
         IProfileIdentifier ident)
@@ -45,6 +47,7 @@ public class ProfileSimpleLinkCacheVm : ViewModel, IProfileSimpleLinkCacheVm
                         var loadOrder = Mutagen.Bethesda.Plugins.Order.LoadOrder.Import(
                             x.dataFolder,
                             x.loadOrder,
+                            gameReleaseContext.Release,
                             factory: (modPath) => ModInstantiator.Importer(modPath, ident.Release));
                         obs.OnNext(
                             (loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()),

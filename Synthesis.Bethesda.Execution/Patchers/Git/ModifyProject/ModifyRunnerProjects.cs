@@ -1,3 +1,4 @@
+using System.IO.Abstractions;
 using System.Xml.Linq;
 using Noggog;
 using NuGet.Versioning;
@@ -20,8 +21,9 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
     public static readonly System.Version NewtonSoftRemoveMutaVersion = new(0, 28);
     public static readonly System.Version NewtonSoftRemoveSynthVersion = new(0, 17, 5);
     public static readonly System.Version NamespaceMutaVersion = new(0, 30, 0);
+    private readonly IFileSystem _fileSystem;
     private readonly IAvailableProjectsRetriever _availableProjectsRetriever;
-    private readonly ISwapOffNetCore _swapOffNetCore;
+    private readonly ISwapToProperNetVersion _swapToProperNetVersion;
     private readonly IRemoveGitInfo _removeGitInfo;
     private readonly IAddNewtonsoftToOldSetups _addNewtonsoftToOldSetups;
     private readonly ISwapInDesiredVersionsForProjectString _swapDesiredVersions;
@@ -33,8 +35,9 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
     private readonly AddAllReleasesToOldVersions _addAllReleasesToOldVersions;
 
     public ModifyRunnerProjects(
+        IFileSystem fileSystem,
         IAvailableProjectsRetriever availableProjectsRetriever,
-        ISwapOffNetCore swapOffNetCore,
+        ISwapToProperNetVersion swapToProperNetVersion,
         IRemoveGitInfo removeGitInfo,
         IAddNewtonsoftToOldSetups addNewtonsoftToOldSetups,
         ISwapInDesiredVersionsForProjectString swapDesiredVersions,
@@ -45,8 +48,9 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         IRemoveProject removeProject,
         AddAllReleasesToOldVersions addAllReleasesToOldVersions)
     {
+        _fileSystem = fileSystem;
         _availableProjectsRetriever = availableProjectsRetriever;
-        _swapOffNetCore = swapOffNetCore;
+        _swapToProperNetVersion = swapToProperNetVersion;
         _removeGitInfo = removeGitInfo;
         _addNewtonsoftToOldSetups = addNewtonsoftToOldSetups;
         _swapDesiredVersions = swapDesiredVersions;
@@ -79,7 +83,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         foreach (var subProj in _availableProjectsRetriever.Get(solutionPath))
         {
             var proj = Path.Combine(Path.GetDirectoryName(solutionPath)!, subProj);
-            var txt = File.ReadAllText(proj);
+            var txt = _fileSystem.File.ReadAllText(proj);
             var projXml = XElement.Parse(txt);
             _swapDesiredVersions.Swap(
                 projXml,
@@ -87,7 +91,6 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
                 out var curListedVersions);
             _turnOffNullability.TurnOff(projXml);
             _removeGitInfo.Remove(projXml);
-            _swapOffNetCore.Swap(projXml);
             _turnOffWindowsSpec.TurnOff(projXml);
             System.Version.TryParse(TrimVersion(curListedVersions.Mutagen), out var mutaVersion);
             System.Version.TryParse(TrimVersion(curListedVersions.Synthesis), out var synthVersion);
@@ -100,6 +103,11 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
                     && targetSynthesisVersion >= NewtonSoftRemoveSynthVersion))
             {
                 _removeProject.Remove(projXml, "Newtonsoft.Json");
+            }
+
+            if (targetMutaVersion != null)
+            {
+                _swapToProperNetVersion.Swap(projXml, targetMutaVersion);
             }
 
             if (targetMutaVersion != null && targetSynthesisVersion != null)
@@ -117,7 +125,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
             var outputStr = projXml.ToString();
             if (!txt.Equals(outputStr))
             {
-                File.WriteAllText(proj, outputStr);
+                _fileSystem.File.WriteAllText(proj, outputStr);
             }
 
             if (drivingProjSubPath.Equals(subProj))
@@ -127,13 +135,13 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         }
         foreach (var item in Directory.EnumerateFiles(Path.GetDirectoryName(solutionPath)!, "Directory.Build.*"))
         {
-            var txt = File.ReadAllText(item);
+            var txt = _fileSystem.File.ReadAllText(item);
             var projXml = XElement.Parse(txt);
             _turnOffNullability.TurnOff(projXml);
             var outputStr = projXml.ToString();
             if (!txt.Equals(outputStr))
             {
-                File.WriteAllText(item, outputStr);
+                _fileSystem.File.WriteAllText(item, outputStr);
             }
         }
     }

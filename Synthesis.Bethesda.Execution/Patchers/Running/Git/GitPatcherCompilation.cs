@@ -52,6 +52,7 @@ public class GitPatcherCompilation : IGitPatcherCompilation
         {
             _logger.Information("Clearing short circuit meta");
             _fs.File.Delete(info.MetaPath);
+            _logger.Information("Cleared short circuit meta");
         }
         catch (Exception e)
         {

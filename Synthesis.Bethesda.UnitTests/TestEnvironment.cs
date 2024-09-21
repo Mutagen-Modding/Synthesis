@@ -26,7 +26,12 @@ public record TestEnvironment(
     {
         return new PatcherStateFactory(
             FileSystem,
-            new LoadOrderImporterFactory(FileSystem),
+            new LoadOrderImporterFactory(
+                FileSystem,
+                new MasterFlagsLookupProvider(
+                    new GameReleaseInjection(Release),
+                    FileSystem,
+                    new DataDirectoryInjection(DataFolder))),
             GetStateLoadOrder());
     }
 

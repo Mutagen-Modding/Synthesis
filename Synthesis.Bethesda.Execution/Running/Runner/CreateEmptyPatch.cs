@@ -42,8 +42,8 @@ public class CreateEmptyPatch : ICreateEmptyPatch
             forceUseLowerFormIDRanges: runParameters.FormIDRangeMode.ToForceBool());
         mod.IsMaster = runParameters.Master;
         mod.BeginWrite
-            .WithNoLoadOrder()
             .ToPath(path)
+            .WithNoLoadOrder()
             .WithFileSystem(_fileSystem)
             .Write();
         return path;

@@ -24,7 +24,7 @@
                 <iconPacks:PackIconFontAwesome
                     Height="11"
                     VerticalAlignment="Center"
-                    Kind="RedoAltSolid" />
+                    Kind="RepeatSolid" />
                 <TextBlock
                     Margin="2,0,0,0"
                     VerticalAlignment="Center"

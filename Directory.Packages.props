@@ -3,7 +3,9 @@
     <PackageVersion Include="Autofac">
       <Version>8.0.0</Version>
     </PackageVersion>
-    <PackageVersion Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageVersion Include="Autofac.Extensions.DependencyInjection">
+      <Version>9.0.0</Version>
+    </PackageVersion>
     <PackageVersion Include="AutoFixture">
       <Version>4.18.1</Version>
     </PackageVersion>
@@ -15,120 +17,142 @@
       <Version>6.12.0</Version>
     </PackageVersion>
     <PackageVersion Include="GitHubDependents" Version="1.2.0" />
-    <PackageVersion Include="GitInfo">
-      <Version>3.3.4</Version>
-      <PrivateAssets>all</PrivateAssets>
+    <PackageVersion Include="GitInfo" PrivateAssets="all">
+      <Version>3.3.5</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
     <PackageVersion Include="Humanizer.Core" Version="2.14.1" />
-    <PackageVersion Include="LibGit2Sharp" Version="0.26.2" />
+    <PackageVersion Include="LibGit2Sharp">
+      <Version>0.30.0</Version>
+    </PackageVersion>
     <PackageVersion Include="Microsoft.Build">
-      <Version>17.7.2</Version>
+      <Version>17.10.4</Version>
     </PackageVersion>
     <PackageVersion Include="Microsoft.Build.Tasks.Core">
-      <Version>17.7.2</Version>
+      <Version>17.10.4</Version>
     </PackageVersion>
-      <PackageVersion Include="Microsoft.CodeAnalysis">
-          <Version>4.9.2</Version>
-      </PackageVersion>
+    <PackageVersion Include="Microsoft.CodeAnalysis">
+      <Version>4.10.0</Version>
+    </PackageVersion>
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.SourceGenerators.Testing" Version="1.1.1" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit" Version="1.1.1" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.SourceGenerators.Testing" Version="1.1.2" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit" Version="1.1.2" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
-      <Version>4.9.2</Version>
+      <Version>4.10.0</Version>
     </PackageVersion>
     <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="4.9.2" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild">
-      <Version>4.9.2</Version>
+      <Version>4.10.0</Version>
     </PackageVersion>
     <PackageVersion Include="Microsoft.NET.Test.Sdk">
-      <Version>17.9.0</Version>
+      <Version>17.10.0</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda">
-      <Version>0.45.1</Version>
+      <Version>0.46</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.Autofac">
-      <Version>0.45.1</Version>
+      <Version>0.46</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.Core">
-      <Version>0.45.1</Version>
+      <Version>0.46</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.Json">
-      <Version>0.45.1</Version>
+      <Version>0.46</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.Kernel">
-      <Version>0.45.1</Version>
+      <Version>0.46</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.Testing">
-      <Version>0.45.1</Version>
+      <Version>0.46</Version>
     </PackageVersion>
     <PackageVersion Include="Mutagen.Bethesda.WPF">
-      <Version>0.45.1</Version>
+      <Version>0.46</Version>
     </PackageVersion>
     <PackageVersion Include="Newtonsoft.Json">
       <Version>13.0.3</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.Autofac">
-      <Version>2.65.0-nightly-20240521-192763</Version>
+      <Version>2.65.1-nightly-20240911-092507</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.CSharpExt">
-      <Version>2.65.0-nightly-20240521-192763</Version>
+      <Version>2.65.1-nightly-20240911-092507</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.CSharpExt.Json">
-      <Version>2.65.0-nightly-20240521-192763</Version>
+      <Version>2.65.1-nightly-20240911-092507</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.CSharpExt.Windows">
-      <Version>2.65.0-nightly-20240521-192763</Version>
+      <Version>2.65.1-nightly-20240911-092507</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.GitRepository">
       <Version>1.2</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.SourceGenerators">
-      <Version>2.65.0-nightly-20240521-192763</Version>
+      <Version>2.65.1-nightly-20240911-092507</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.Testing">
-      <Version>2.65.0-nightly-20240521-192763</Version>
+      <Version>2.65.1-nightly-20240911-092507</Version>
     </PackageVersion>
     <PackageVersion Include="Noggog.WPF">
-      <Version>2.65.0-nightly-20240521-192763</Version>
+      <Version>2.65.1-nightly-20240911-092507</Version>
     </PackageVersion>
     <PackageVersion Include="NSubstitute">
       <Version>5.1.0</Version>
     </PackageVersion>
     <PackageVersion Include="NuGet.Versioning">
-      <Version>6.7.0</Version>
+      <Version>6.10.1</Version>
     </PackageVersion>
     <PackageVersion Include="NuGetizer">
-      <Version>1.2.1</Version>
+      <Version>1.2.2</Version>
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
     <PackageVersion Include="ReactiveUI">
-      <Version>19.5.41</Version>
+      <Version>20.1.1</Version>
     </PackageVersion>
     <PackageVersion Include="ReactiveUI.Fody">
       <Version>19.5.41</Version>
     </PackageVersion>
     <PackageVersion Include="ReactiveUI.WPF">
-      <Version>19.5.41</Version>
+      <Version>20.1.1</Version>
     </PackageVersion>
-    <PackageVersion Include="Serilog" Version="2.12.0" />
-    <PackageVersion Include="Serilog.Enrichers.Thread" Version="3.1.0" />
-    <PackageVersion Include="Serilog.Extensions.Logging" Version="3.1.0" />
-    <PackageVersion Include="Serilog.Sinks.Console" Version="4.1.0" />
-    <PackageVersion Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageVersion Include="Serilog.Sinks.Map" Version="1.0.2" />
-    <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
-    <PackageVersion Include="System.Reactive">
+    <PackageVersion Include="Serilog">
+      <Version>4.0.1</Version>
+    </PackageVersion>
+    <PackageVersion Include="Serilog.Enrichers.Thread">
+      <Version>4.0.0</Version>
+    </PackageVersion>
+    <PackageVersion Include="Serilog.Extensions.Logging">
+      <Version>8.0.0</Version>
+    </PackageVersion>
+    <PackageVersion Include="Serilog.Sinks.Console">
       <Version>6.0.0</Version>
     </PackageVersion>
+    <PackageVersion Include="Serilog.Sinks.File">
+      <Version>6.0.0</Version>
+    </PackageVersion>
+    <PackageVersion Include="Serilog.Sinks.Map">
+      <Version>2.0.0</Version>
+    </PackageVersion>
+    <PackageVersion Include="StrongInject">
+      <Version>1.4.4</Version>
+    </PackageVersion>
+    <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
+    <PackageVersion Include="System.Reactive">
+      <Version>6.0.1</Version>
+    </PackageVersion>
     <PackageVersion Include="xunit">
-      <Version>2.6.1</Version>
+      <Version>2.9.0</Version>
     </PackageVersion>
     <PackageVersion Include="xunit.runner.visualstudio">
-      <Version>2.5.3</Version>
+      <Version>2.8.2</Version>
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageVersion>
+    <PackageVersion Include="Verify.Xunit">
+      <Version>26.1.5</Version>
+    </PackageVersion>
+    <PackageVersion Include="Verify.DiffPlex">
+      <Version>3.1.0</Version>
     </PackageVersion>
   </ItemGroup>
 </Project>

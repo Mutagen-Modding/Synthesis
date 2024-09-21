@@ -47,17 +47,17 @@ public static class Log
                 Path.Combine(prefix, $"Everything.txt"))
             .WriteTo.Map(
                 FunnelNames.Profile,
-                default(string?),
+                string.Empty,
                 (profileName, profileWrite) =>
                 {
                     profileWrite.Map(
                         FunnelNames.Patcher,
-                        default(string?),
+                        string.Empty,
                         (patcherName, patcherWrite) =>
                         {
                             patcherWrite.Map(
                                 FunnelNames.Run,
-                                default(string?),
+                                string.Empty,
                                 (run, finalWrite) =>
                                 {
                                     var prefixToUse = prefix;

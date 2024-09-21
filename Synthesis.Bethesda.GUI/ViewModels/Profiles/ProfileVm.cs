@@ -378,6 +378,7 @@ public class ProfileVm : ViewModel
                         var loadOrder = Mutagen.Bethesda.Plugins.Order.LoadOrder.Import(
                             x.dataFolder,
                             x.loadOrder,
+                            x.rel,
                             factory: (modPath) => ModInstantiator.Importer(modPath, x.rel));
                         obs.OnNext(loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()));
                     }

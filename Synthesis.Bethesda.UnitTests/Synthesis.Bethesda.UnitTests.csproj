@@ -1,123 +1,126 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AutoFixture" />
-    <PackageReference Include="AutoFixture.AutoNSubstitute" />
-    <PackageReference Include="FluentAssertions" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Mutagen.Bethesda" />
-    <PackageReference Include="Mutagen.Bethesda.Testing" />
-    <PackageReference Include="Noggog.Autofac" />
-    <PackageReference Include="Noggog.CSharpExt" />
-    <PackageReference Include="Noggog.Testing" />
-    <PackageReference Include="NSubstitute" />
-    <PackageReference Include="Serilog" />
-    <PackageReference Include="xunit" />
-    <PackageReference Include="xunit.runner.visualstudio">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-	  <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit" />
-	  <PackageReference Include="Microsoft.CodeAnalysis.SourceGenerators.Testing" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="AutoFixture"/>
+        <PackageReference Include="AutoFixture.AutoNSubstitute"/>
+        <PackageReference Include="FluentAssertions"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="Mutagen.Bethesda"/>
+        <PackageReference Include="Mutagen.Bethesda.Testing"/>
+        <PackageReference Include="Noggog.Autofac"/>
+        <PackageReference Include="Noggog.CSharpExt"/>
+        <PackageReference Include="Noggog.Testing"/>
+        <PackageReference Include="NSubstitute"/>
+        <PackageReference Include="Verify.DiffPlex"/>
+        <PackageReference Include="Verify.Xunit"/>
+        <PackageReference Include="Serilog"/>
+        <PackageReference Include="StrongInject"/>
+        <PackageReference Include="xunit"/>
+        <PackageReference Include="xunit.runner.visualstudio">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.SourceGenerators.Testing"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Mutagen.Bethesda.Synthesis.WPF\Mutagen.Bethesda.Synthesis.WPF.csproj" />
-    <ProjectReference Include="..\Mutagen.Bethesda.Synthesis\Mutagen.Bethesda.Synthesis.csproj" />
-    <ProjectReference Include="..\Synthesis.Bethesda.CLI\Synthesis.Bethesda.CLI.csproj" />
-    <ProjectReference Include="..\Synthesis.Bethesda.Execution\Synthesis.Bethesda.Execution.csproj" />
-    <ProjectReference Include="..\Synthesis.Bethesda.GUI\Synthesis.Bethesda.GUI.csproj" />
-    <ProjectReference Include="..\Synthesis.Bethesda.ImpactTester\Synthesis.Bethesda.ImpactTester.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Mutagen.Bethesda.Synthesis.WPF\Mutagen.Bethesda.Synthesis.WPF.csproj"/>
+        <ProjectReference Include="..\Mutagen.Bethesda.Synthesis\Mutagen.Bethesda.Synthesis.csproj"/>
+        <ProjectReference Include="..\Synthesis.Bethesda.CLI\Synthesis.Bethesda.CLI.csproj"/>
+        <ProjectReference Include="..\Synthesis.Bethesda.Execution\Synthesis.Bethesda.Execution.csproj"/>
+        <ProjectReference Include="..\Synthesis.Bethesda.GUI\Synthesis.Bethesda.GUI.csproj"/>
+        <ProjectReference Include="..\Synthesis.Bethesda.ImpactTester\Synthesis.Bethesda.ImpactTester.csproj"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Files\le_test.esp">
-      <DefaultPackFolder>none</DefaultPackFolder>
-      <BuildAction>None</BuildAction>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Files\le_override.esp">
-      <DefaultPackFolder>none</DefaultPackFolder>
-      <BuildAction>None</BuildAction>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Files\BuildSuccessNonEnglish.txt">
-      <DefaultPackFolder>none</DefaultPackFolder>
-      <BuildAction>None</BuildAction>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Files\BuildSuccess.txt">
-      <DefaultPackFolder>none</DefaultPackFolder>
-      <BuildAction>None</BuildAction>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Files\BuildFailure.txt">
-      <DefaultPackFolder>none</DefaultPackFolder>
-      <BuildAction>None</BuildAction>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Files\oblivion_override.esp">
-      <DefaultPackFolder>none</DefaultPackFolder>
-      <BuildAction>None</BuildAction>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Files\oblivion_test.esp">
-      <DefaultPackFolder>none</DefaultPackFolder>
-      <BuildAction>None</BuildAction>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Files\Plugins.txt">
-      <DefaultPackFolder>none</DefaultPackFolder>
-      <BuildAction>None</BuildAction>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Migration\Pipeline\PipelineSettings.v2.json">
-      <DefaultPackFolder>none</DefaultPackFolder>
-      <BuildAction>None</BuildAction>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Migration\Pipeline\PipelineSettings.json">
-      <DefaultPackFolder>none</DefaultPackFolder>
-      <BuildAction>None</BuildAction>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Migration\PipelineV1toV2\PipelineSettings.v2.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Migration\PipelineV1toV2\PipelineSettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Migration\GuiV1toV2\GuiSettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+    <ItemGroup>
+        <None Update="Files\le_test.esp">
+            <DefaultPackFolder>none</DefaultPackFolder>
+            <BuildAction>None</BuildAction>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Files\le_override.esp">
+            <DefaultPackFolder>none</DefaultPackFolder>
+            <BuildAction>None</BuildAction>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Files\BuildSuccessNonEnglish.txt">
+            <DefaultPackFolder>none</DefaultPackFolder>
+            <BuildAction>None</BuildAction>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Files\BuildSuccess.txt">
+            <DefaultPackFolder>none</DefaultPackFolder>
+            <BuildAction>None</BuildAction>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Files\BuildFailure.txt">
+            <DefaultPackFolder>none</DefaultPackFolder>
+            <BuildAction>None</BuildAction>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Files\oblivion_override.esp">
+            <DefaultPackFolder>none</DefaultPackFolder>
+            <BuildAction>None</BuildAction>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Files\oblivion_test.esp">
+            <DefaultPackFolder>none</DefaultPackFolder>
+            <BuildAction>None</BuildAction>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Files\Plugins.txt">
+            <DefaultPackFolder>none</DefaultPackFolder>
+            <BuildAction>None</BuildAction>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Migration\Pipeline\PipelineSettings.v2.json">
+            <DefaultPackFolder>none</DefaultPackFolder>
+            <BuildAction>None</BuildAction>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Migration\Pipeline\PipelineSettings.json">
+            <DefaultPackFolder>none</DefaultPackFolder>
+            <BuildAction>None</BuildAction>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Migration\PipelineV1toV2\PipelineSettings.v2.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Migration\PipelineV1toV2\PipelineSettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Migration\GuiV1toV2\GuiSettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="UI\Services\LogCleanerTests.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Execution\Json\SettingsVersionRetrieverTests.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Migration\Pipeline\V1toV2Tests.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="Migration\Pipeline\PipelineSettingsBackupTests.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Update="UI\Services\LogCleanerTests.cs">
+            <CodeLanguage>cs</CodeLanguage>
+            <DefaultPackFolder>content</DefaultPackFolder>
+            <BuildAction>Compile</BuildAction>
+        </Compile>
+        <Compile Update="Execution\Json\SettingsVersionRetrieverTests.cs">
+            <CodeLanguage>cs</CodeLanguage>
+            <DefaultPackFolder>content</DefaultPackFolder>
+            <BuildAction>Compile</BuildAction>
+        </Compile>
+        <Compile Update="Migration\Pipeline\V1toV2Tests.cs">
+            <CodeLanguage>cs</CodeLanguage>
+            <DefaultPackFolder>content</DefaultPackFolder>
+            <BuildAction>Compile</BuildAction>
+        </Compile>
+        <Compile Update="Migration\Pipeline\PipelineSettingsBackupTests.cs">
+            <CodeLanguage>cs</CodeLanguage>
+            <DefaultPackFolder>content</DefaultPackFolder>
+            <BuildAction>Compile</BuildAction>
+        </Compile>
+    </ItemGroup>
 
 
 </Project>

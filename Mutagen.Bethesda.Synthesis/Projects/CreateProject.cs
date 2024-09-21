@@ -47,7 +47,7 @@ public class CreateProject : ICreateProject
         sb.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk\">");
         sb.AppendLine($"  <PropertyGroup>");
         sb.AppendLine($"    <OutputType>Exe</OutputType>");
-        sb.AppendLine($"    <TargetFramework>{(targetFramework ?? "net6.0")}</TargetFramework>");
+        sb.AppendLine($"    <TargetFramework>{(targetFramework ?? "net8.0")}</TargetFramework>");
         sb.AppendLine($"    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>");
         sb.AppendLine($"    <ImplicitUsings>true</ImplicitUsings>");
         sb.AppendLine($"  </PropertyGroup>");

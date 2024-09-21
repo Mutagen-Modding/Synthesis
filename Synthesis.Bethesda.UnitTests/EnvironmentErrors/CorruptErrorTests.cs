@@ -19,7 +19,7 @@ public class CorruptErrorTests
     {
         fs.File.WriteAllText(path, "Whut");
         sut.RunFix(path);
-        var doc = XDocument.Load(fs.FileStream.Create(path, FileMode.Open, FileAccess.Read));
+        var doc = XDocument.Load(fs.FileStream.New(path, FileMode.Open, FileAccess.Read));
         doc.Should().BeEquivalentTo(NotExistsError.TypicalFile());
     }
 }

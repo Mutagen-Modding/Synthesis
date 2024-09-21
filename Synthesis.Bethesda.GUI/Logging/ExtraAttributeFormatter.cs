@@ -30,7 +30,7 @@ public class ExtraAttributeFormatter : ITextFormatter
             output.Write(" ");
             foreach (var token in logEvent.MessageTemplate.Tokens)
             {
-                var text = logEvent.MessageTemplate.Text.AsSpan().Slice(token.StartIndex, token.Length);
+                var text = token.ToString()!;
                 if (text.Length > 0
                     && text[0] == '{'
                     && text[^1] == '}'
@@ -74,7 +74,7 @@ public class ExtraAttributeFormatter : ITextFormatter
         if (key == "ThreadId") return true;
         foreach (var token in logEvent.MessageTemplate.Tokens)
         {
-            var text = logEvent.MessageTemplate.Text.AsSpan().Slice(token.StartIndex, token.Length);
+            var text = token.ToString()!.AsSpan();
             if (text.Length == 0) continue;
             if (text[0] != '{') continue;
             if (text[^1] != '}') continue;

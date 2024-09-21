@@ -617,7 +617,7 @@
     <Style x:Key="NoggogNumericUpDown" TargetType="{x:Type xwpf:InputBase}">
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static themes:ResourceKeys.ControlNormalBorderKey}}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static xwpfThemes:ResourceKeys.ControlNormalBorderKey}}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="HorizontalContentAlignment" Value="Right" />
         <Setter Property="IsTabStop" Value="False" />
@@ -668,7 +668,7 @@
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static themes:ResourceKeys.ControlMouseOverBorderKey}}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static xwpfThemes:ResourceKeys.ControlMouseOverBorderKey}}" />
                         </Trigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
@@ -681,7 +681,7 @@
                             <Setter TargetName="PART_TextBox" Property="IsReadOnly" Value="True" />
                         </DataTrigger>
                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static themes:ResourceKeys.ControlSelectedBorderKey}}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static xwpfThemes:ResourceKeys.ControlSelectedBorderKey}}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
