@@ -10,7 +10,6 @@ namespace Synthesis.Bethesda.UnitTests;
 
 public class RepoTestUtility
 {
-    public string DefaultBranch => "dev";
     public string AFile => "Somefile.txt";
     public string SlnPath => "Solution.sln";
     public string ProjPath => "MyProj/MyProj.csproj";
@@ -20,6 +19,7 @@ public class RepoTestUtility
         string folderName,
         out DirectoryPath remote, 
         out DirectoryPath local,
+        out string defaultBranchName,
         bool createPatcherFiles = true,
         [CallerMemberName] string? testName = null)
     {
@@ -38,13 +38,7 @@ public class RepoTestUtility
         var sig = Signature;
         localRepo.Commit("Initial commit", sig, sig);
         var defaultBranch = localRepo.Branches.First();
-        if (defaultBranch.FriendlyName != DefaultBranch)
-        {
-            var dev = localRepo.Branches.Add(DefaultBranch, localRepo.Head.Tip);
-            LibGit2Sharp.Commands.Checkout(localRepo, dev);
-            localRepo.Branches.Remove(defaultBranch);
-            defaultBranch = dev;
-        }
+        defaultBranchName = defaultBranch.FriendlyName;
         
         if (createPatcherFiles)
         {
