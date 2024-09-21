@@ -37,7 +37,14 @@ public class RepoTestUtility
         LibGit2Sharp.Commands.Stage(localRepo, AFile);
         var sig = Signature;
         localRepo.Commit("Initial commit", sig, sig);
-
+        var defaultBranch = localRepo.Branches.First();
+        if (defaultBranch.FriendlyName != DefaultBranch)
+        {
+            var dev = localRepo.Branches.Add(DefaultBranch, localRepo.Head.Tip);
+            localRepo.Branches.Remove(defaultBranch);
+            defaultBranch = dev;
+        }
+        
         if (createPatcherFiles)
         {
             var files = new CreateSolutionFile(IFileSystemExt.DefaultFilesystem, new ExportStringToFile()).Create(Path.Combine(local, SlnPath))
@@ -56,16 +63,11 @@ public class RepoTestUtility
         }
 
         var remoteRef = localRepo.Network.Remotes.Add("origin", remote);
-        var master = localRepo.Branches.First();
         localRepo.Branches.Update(
-            master, 
+            defaultBranch, 
             b => b.Remote = remoteRef.Name, 
-            b => b.UpstreamBranch = master.CanonicalName);
-        localRepo.Network.Push(master);
-        if (master.FriendlyName != DefaultBranch)
-        {
-            localRepo.Branches.Add("dev", localRepo.Head.Tip);
-        }
+            b => b.UpstreamBranch = defaultBranch.CanonicalName);
+        localRepo.Network.Push(defaultBranch);
 
         return folder;
     }
