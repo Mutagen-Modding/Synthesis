@@ -5,13 +5,11 @@ using Mutagen.Bethesda.Synthesis.Projects;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using Noggog.IO;
-using Noggog.Utility;
 
 namespace Synthesis.Bethesda.UnitTests;
 
 public class RepoTestUtility
 {
-    public string DefaultBranch => "dev";
     public string AFile => "Somefile.txt";
     public string SlnPath => "Solution.sln";
     public string ProjPath => "MyProj/MyProj.csproj";
@@ -21,6 +19,7 @@ public class RepoTestUtility
         string folderName,
         out DirectoryPath remote, 
         out DirectoryPath local,
+        out string defaultBranchName,
         bool createPatcherFiles = true,
         [CallerMemberName] string? testName = null)
     {
@@ -38,7 +37,9 @@ public class RepoTestUtility
         LibGit2Sharp.Commands.Stage(localRepo, AFile);
         var sig = Signature;
         localRepo.Commit("Initial commit", sig, sig);
-
+        var defaultBranch = localRepo.Branches.First();
+        defaultBranchName = defaultBranch.FriendlyName;
+        
         if (createPatcherFiles)
         {
             var files = new CreateSolutionFile(IFileSystemExt.DefaultFilesystem, new ExportStringToFile()).Create(Path.Combine(local, SlnPath))
@@ -57,12 +58,11 @@ public class RepoTestUtility
         }
 
         var remoteRef = localRepo.Network.Remotes.Add("origin", remote);
-        var master = localRepo.Branches[DefaultBranch];
         localRepo.Branches.Update(
-            master, 
+            defaultBranch, 
             b => b.Remote = remoteRef.Name, 
-            b => b.UpstreamBranch = master.CanonicalName);
-        localRepo.Network.Push(master);
+            b => b.UpstreamBranch = defaultBranch.CanonicalName);
+        localRepo.Network.Push(defaultBranch);
 
         return folder;
     }

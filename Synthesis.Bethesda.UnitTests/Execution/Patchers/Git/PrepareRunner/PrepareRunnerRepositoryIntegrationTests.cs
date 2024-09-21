@@ -12,7 +12,6 @@ using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 using ILogger = Serilog.ILogger;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner;
@@ -65,10 +64,10 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     }
 
     [DebuggerStepThrough]
-    public GitPatcherVersioning TypicalPatcherVersioning() =>
+    public GitPatcherVersioning TypicalPatcherVersioning(string defaultBranchName) =>
         new(
             PatcherVersioningEnum.Branch,
-            DefaultBranch);
+            defaultBranchName);
 
     [DebuggerStepThrough]
     public NugetsVersioningTarget TypicalNugetVersioning() =>
@@ -95,11 +94,12 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     {
         using var repoPath = GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local);
+            out var remote, out var local,
+            out var defaultBranchName);
         var resp = await Get(local).Checkout(
             new CheckoutInput(
                 ProjPath,
-                TypicalPatcherVersioning(),
+                TypicalPatcherVersioning(defaultBranchName),
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
         using var repo = new Repository(local);
@@ -111,11 +111,12 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     {
         using var repoPath = GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local);
+            out var remote, out var local,
+            out var defaultBranchName);
         var resp = await Get(local).Checkout(
             new CheckoutInput(
                 string.Empty,
-                TypicalPatcherVersioning(),
+                TypicalPatcherVersioning(defaultBranchName),
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
         resp.IsHaltingError.Should().BeTrue();
@@ -129,11 +130,12 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
         using var repoPath = GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
             out var remote, out var local,
+            out var defaultBranchName,
             createPatcherFiles: false);
         var resp = await Get(local).Checkout(
             new CheckoutInput(
                 ProjPath,
-                TypicalPatcherVersioning(),
+                TypicalPatcherVersioning(defaultBranchName),
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
         resp.IsHaltingError.Should().BeTrue();
@@ -146,7 +148,8 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     {
         using var repoPath = GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local);
+            out var remote, out var local,
+            out var defaultBranchName);
         var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, "46c207318c1531de7dc2f8e8c2a91aced183bc30");
         var resp = await Get(local).Checkout(
             new CheckoutInput(
@@ -164,7 +167,8 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     {
         using var repoPath = GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local);
+            out var remote, out var local,
+            out var defaultBranchName);
         var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, "derp");
         var resp = await Get(local).Checkout(
             new CheckoutInput(
@@ -182,7 +186,8 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     {
         using var repoPath = GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local);
+            out var remote, out var local,
+            out var defaultBranchName);
         var tagStr = "1.3.4";
         using var repo = new Repository(local);
         var tipSha = repo.Head.Tip.Sha;
@@ -194,6 +199,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
@@ -205,7 +211,8 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     {
         using var repoPath = GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local);
+            out var remote, out var local,
+            out var defaultBranchName);
         var tagStr = "1.3.4";
         string tipSha;
         {
@@ -228,6 +235,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         clone.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
@@ -239,7 +247,8 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     {
         using var repoPath = GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local);
+            out var remote, out var local,
+            out var defaultBranchName);
         var tag = "1.3.4";
         using var repo = new Repository(local);
         var tipSha = repo.Head.Tip.Sha;
@@ -255,6 +264,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
@@ -266,7 +276,8 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     {
         using var repoPath = GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local);
+            out var remote, out var local,
+            out var defaultBranchName);
 
         var clonePath = Path.Combine(repoPath.Dir.Path, "Clone");
         using var clone = new Repository(Repository.Clone(remote, clonePath));
@@ -288,6 +299,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         clone.Head.Tip.Sha.Should().BeEquivalentTo(commitSha);
@@ -299,7 +311,8 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     {
         using var repoPath = GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local);
+            out var remote, out var local,
+            out var defaultBranchName);
         using var repo = new Repository(local);
         var tipSha = repo.Head.Tip.Sha;
 
@@ -313,6 +326,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
@@ -324,7 +338,8 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     {
         using var repoPath = GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local);
+            out var remote, out var local,
+            out var defaultBranchName);
         string tipSha;
         {
             using var repo = new Repository(local);
@@ -344,6 +359,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         clone.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
@@ -355,7 +371,8 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     {
         using var repoPath = GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local);
+            out var remote, out var local,
+            out var defaultBranchName);
 
         var clonePath = Path.Combine(repoPath.Dir.Path, "Clone");
         using var clone = new Repository(Repository.Clone(remote, clonePath));
@@ -376,6 +393,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         clone.Head.Tip.Sha.Should().BeEquivalentTo(commitSha);
@@ -387,7 +405,8 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     {
         using var repoPath = GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local);
+            out var remote, out var local,
+            out var defaultBranchName);
         using var repo = new Repository(local);
         var tipSha = repo.Head.Tip.Sha;
         var jbName = "Jumpback";
@@ -408,12 +427,13 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
         repo.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
         repo.Branches[jbName].Tip.Sha.Should().BeEquivalentTo(tipSha);
-        repo.Branches[DefaultBranch].Tip.Sha.Should().BeEquivalentTo(commit.Sha);
+        repo.Branches[defaultBranchName].Tip.Sha.Should().BeEquivalentTo(commit.Sha);
     }
 
     [Fact]
@@ -421,7 +441,8 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     {
         using var repoPath = GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local);
+            out var remote, out var local,
+            out var defaultBranchName);
         var jbName = "Jumpback";
         string tipSha;
         string commitSha;
@@ -438,7 +459,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
             repo.Branches.Remove(jbName);
             commitSha = AddACommit(local).Sha;
             repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
-            repo.Network.Push(repo.Branches[DefaultBranch]);
+            repo.Network.Push(repo.Branches[defaultBranchName]);
         }
 
         var clonePath = Path.Combine(repoPath.Dir.Path, "Clone");
@@ -451,12 +472,13 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         clone.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
         clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
         clone.Branches[jbName].Should().BeNull();
-        clone.Branches[DefaultBranch].Tip.Sha.Should().BeEquivalentTo(commitSha);
+        clone.Branches[defaultBranchName].Tip.Sha.Should().BeEquivalentTo(commitSha);
     }
 
     [Fact]
@@ -464,7 +486,8 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     {
         using var repoPath = GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local);
+            out var remote, out var local,
+            out var defaultBranchName);
         string tipSha;
         string commitSha;
 
@@ -475,21 +498,22 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
             tipSha = repo.Head.Tip.Sha;
             commitSha = AddACommit(local).Sha;
             repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
-            repo.Network.Push(repo.Branches[DefaultBranch]);
+            repo.Network.Push(repo.Branches[defaultBranchName]);
         }
 
-        var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, $"origin/{DefaultBranch}");
+        var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, $"origin/{defaultBranchName}");
         var resp = await Get(clonePath).Checkout(
             new CheckoutInput(
                 ProjPath,
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         clone.Head.Tip.Sha.Should().BeEquivalentTo(commitSha);
         clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
-        clone.Branches[DefaultBranch].Tip.Sha.Should().BeEquivalentTo(tipSha);
+        clone.Branches[defaultBranchName].Tip.Sha.Should().BeEquivalentTo(tipSha);
     }
     #endregion
 }
