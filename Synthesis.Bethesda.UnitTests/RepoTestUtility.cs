@@ -5,7 +5,6 @@ using Mutagen.Bethesda.Synthesis.Projects;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using Noggog.IO;
-using Noggog.Utility;
 
 namespace Synthesis.Bethesda.UnitTests;
 
@@ -57,12 +56,16 @@ public class RepoTestUtility
         }
 
         var remoteRef = localRepo.Network.Remotes.Add("origin", remote);
-        var master = localRepo.Branches[DefaultBranch];
+        var master = localRepo.Branches.First();
         localRepo.Branches.Update(
             master, 
             b => b.Remote = remoteRef.Name, 
             b => b.UpstreamBranch = master.CanonicalName);
         localRepo.Network.Push(master);
+        if (master.FriendlyName != DefaultBranch)
+        {
+            localRepo.Branches.Add("dev", localRepo.Head.Tip);
+        }
 
         return folder;
     }
