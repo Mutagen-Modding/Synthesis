@@ -194,6 +194,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
@@ -228,6 +229,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         clone.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
@@ -255,6 +257,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
@@ -288,6 +291,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         clone.Head.Tip.Sha.Should().BeEquivalentTo(commitSha);
@@ -313,6 +317,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
@@ -344,6 +349,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         clone.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
@@ -376,6 +382,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         clone.Head.Tip.Sha.Should().BeEquivalentTo(commitSha);
@@ -408,6 +415,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
@@ -451,6 +459,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         clone.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
@@ -485,6 +494,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
+        resp.RunnableState.Exception.Should().BeNull();
         resp.IsHaltingError.Should().BeFalse();
         resp.RunnableState.Succeeded.Should().BeTrue();
         clone.Head.Tip.Sha.Should().BeEquivalentTo(commitSha);
