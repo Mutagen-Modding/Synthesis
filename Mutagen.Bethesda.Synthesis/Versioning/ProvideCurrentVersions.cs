@@ -57,6 +57,11 @@ public sealed class ProvideCurrentVersions : IProvideCurrentVersions
         try
         {
             var version = versions.ProductVersion;
+            var plusIndex = version!.IndexOf("+", StringComparison.OrdinalIgnoreCase);
+            if (plusIndex != -1)
+            {
+                version = version.Substring(0, plusIndex);
+            }
             return version!.TrimEnd(".0").TrimEnd(".0");
         }
         catch (Exception e)
