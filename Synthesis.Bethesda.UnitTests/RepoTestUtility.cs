@@ -41,6 +41,7 @@ public class RepoTestUtility
         if (defaultBranch.FriendlyName != DefaultBranch)
         {
             var dev = localRepo.Branches.Add(DefaultBranch, localRepo.Head.Tip);
+            LibGit2Sharp.Commands.Checkout(localRepo, dev);
             localRepo.Branches.Remove(defaultBranch);
             defaultBranch = dev;
         }
