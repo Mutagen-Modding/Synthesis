@@ -96,6 +96,6 @@ public class UiUpdateVm : ViewModel
                     return false;
                 }
             })
-            .ToGuiProperty(this, nameof(HasUpdate));
+            .ToGuiProperty(this, nameof(HasUpdate), deferSubscription: true);
     }
 }
