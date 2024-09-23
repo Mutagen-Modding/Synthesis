@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics;
+using AutoFixture.Xunit2;
 using FluentAssertions;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.PatcherCommands;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
@@ -21,9 +23,12 @@ public class CheckRunnabilityTests
         ModKey modKey,
         FilePath buildMetaPath,
         CancellationToken cancel,
+        GitCompilationMeta compilationMeta,
+        [Frozen] IShortCircuitSettingsProvider shortCircuitSettingsProvider,
         ExecuteRunnabilityCheck sut)
     {
-        sut.MetaFileReader.Read(buildMetaPath).Returns(new GitCompilationMeta() { DoesNotHaveRunnability = true });
+        shortCircuitSettingsProvider.Shortcircuit.Returns(true);
+        sut.MetaFileReader.Read(buildMetaPath).Returns(compilationMeta with { DoesNotHaveRunnability = true });
         await sut.Check(modKey, path, directExe, loadOrderPath, buildMetaPath, cancel);
         await sut.ProcessRunner.DidNotReceiveWithAnyArgs().RunWithCallback(default!, default(Action<string>)!, default);
     }

@@ -119,7 +119,10 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
             && meta != null
             && buildMetaPath != null)
         {
-            meta.DoesNotHaveRunnability = true;
+            meta = meta with
+            {
+                DoesNotHaveRunnability = true
+            };
             _writeShortCircuitMeta.WriteMeta(buildMetaPath, meta);
         }
 
