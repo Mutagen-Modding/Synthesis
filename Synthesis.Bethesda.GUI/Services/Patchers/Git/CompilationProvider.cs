@@ -4,6 +4,7 @@ using Noggog;
 using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.DotNet.Singleton;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 
@@ -23,40 +24,42 @@ public class CompilationProvider : ICompilationProvider
         ILogger logger,
         IPrintErrorMessage printErrorMessage,
         IShortCircuitSettingsProvider shortCircuitSettingsProvider,
+        IInstalledSdkFollower installedSdkFollower,
         IRunnableStateProvider runnableStateProvider)
     {
         State = runnableStateProvider.WhenAnyValue(x => x.State)
             .CombineLatest(
+                installedSdkFollower.DotNetSdkInstalled,
                 shortCircuitSettingsProvider.WhenAnyValue(x => x.Shortcircuit),
-                (state, _) => state)
-            .Select(state =>
+                (State, DotNet, _) => (State, DotNet))
+            .Select(x =>
             {
                 return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
                 {
-                    if (state.RunnableState.Failed)
+                    if (x.State.RunnableState.Failed)
                     {
-                        observer.OnNext(state);
+                        observer.OnNext(x.State);
                         return;
                     }
 
                     try
                     {
-                        logger.Information("Compiling {Target}", state.Item);
+                        logger.Information("Compiling {Target}", x.State.Item);
                         // Return early with the values, but mark not complete
-                        observer.OnNext(new ConfigurationState<RunnerRepoInfo>(state.Item)
+                        observer.OnNext(new ConfigurationState<RunnerRepoInfo>(x.State.Item)
                         {
                             IsHaltingError = false,
                             RunnableState = ErrorResponse.Fail("Compiling")
                         });
 
                         // Compile to help prep
-                        var compileResp = await build.Compile(state.Item, cancel).ConfigureAwait(false);
+                        var compileResp = await build.Compile(x.State.Item, x.DotNet, cancel).ConfigureAwait(false);
                         if (compileResp.Failed)
                         {
-                            logger.Information("Compiling {Target} failed: {Reason}", state.Item, compileResp.Reason);
+                            logger.Information("Compiling {Target} failed: {Reason}", x.State.Item, compileResp.Reason);
                             var errs = new List<string>();
                             printErrorMessage.Print(compileResp.Reason,
-                                $"{Path.GetDirectoryName(state.Item.Project.ProjPath)}\\", (s, _) =>
+                                $"{Path.GetDirectoryName(x.State.Item.Project.ProjPath)}\\", (s, _) =>
                                 {
                                     errs.Add(s.ToString());
                                 });
@@ -66,8 +69,8 @@ public class CompilationProvider : ICompilationProvider
                         }
 
                         // Return things again, without error
-                        logger.Information("Finished compiling {Target}", state.Item);
-                        observer.OnNext(state);
+                        logger.Information("Finished compiling {Target}", x.State.Item);
+                        observer.OnNext(x.State);
                     }
                     catch (Exception ex)
                     {

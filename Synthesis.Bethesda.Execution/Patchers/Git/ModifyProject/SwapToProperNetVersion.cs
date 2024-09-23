@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using NuGet.Versioning;
+using Serilog;
 using Synthesis.Bethesda.Execution.Versioning;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
@@ -11,12 +12,19 @@ public interface ISwapToProperNetVersion
 
 public class SwapToProperNetVersion : ISwapToProperNetVersion
 {
+    private readonly ILogger _logger;
     private const int NetNum = 8;
     private readonly Version Net8Version = new Version(0, 45);
+
+    public SwapToProperNetVersion(ILogger logger)
+    {
+        _logger = logger;
+    }
     
     private void ProcessTargetFrameworkNode(XElement elem, Version targetMutagenVersion)
     {
         if (!elem.Name.LocalName.Equals("TargetFramework")) return;
+        _logger.Information("Target mutagen version: {Target}", targetMutagenVersion);
         if (targetMutagenVersion < Net8Version)
         {
             ProcessLegacy(elem);
@@ -27,16 +35,18 @@ public class SwapToProperNetVersion : ISwapToProperNetVersion
         }
     }
 
-    private static void ProcessLegacy(XElement elem)
+    private void ProcessLegacy(XElement elem)
     {
+        _logger.Information("Processing as legacy mutagen version");
         if (elem.Value.Equals("netcoreapp3.1", StringComparison.Ordinal)
             || elem.Value.StartsWith("net5", StringComparison.Ordinal))
         {
+            _logger.Information("Swapping to net6.0");
             elem.Value = "net6.0";
         }
     }
 
-    private static void ProcessNet8(XElement elem, Version targetMutagenVersion)
+    private void ProcessNet8(XElement elem, Version targetMutagenVersion)
     {
         if (!elem.Value.StartsWith("net"))
         {
@@ -49,6 +59,7 @@ public class SwapToProperNetVersion : ISwapToProperNetVersion
             return;
         }
         
+        _logger.Information("Swapping to net8.0");
         elem.Value = $"net{NetNum}.0";
     }
 

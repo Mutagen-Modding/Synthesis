@@ -2,6 +2,7 @@ using System.IO.Abstractions;
 using System.Xml.Linq;
 using Noggog;
 using NuGet.Versioning;
+using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Versioning;
 
@@ -21,6 +22,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
     public static readonly System.Version NewtonSoftRemoveMutaVersion = new(0, 28);
     public static readonly System.Version NewtonSoftRemoveSynthVersion = new(0, 17, 5);
     public static readonly System.Version NamespaceMutaVersion = new(0, 30, 0);
+    private readonly ILogger _logger;
     private readonly IFileSystem _fileSystem;
     private readonly IAvailableProjectsRetriever _availableProjectsRetriever;
     private readonly ISwapToProperNetVersion _swapToProperNetVersion;
@@ -35,6 +37,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
     private readonly AddAllReleasesToOldVersions _addAllReleasesToOldVersions;
 
     public ModifyRunnerProjects(
+        ILogger logger,
         IFileSystem fileSystem,
         IAvailableProjectsRetriever availableProjectsRetriever,
         ISwapToProperNetVersion swapToProperNetVersion,
@@ -48,6 +51,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         IRemoveProject removeProject,
         AddAllReleasesToOldVersions addAllReleasesToOldVersions)
     {
+        _logger = logger;
         _fileSystem = fileSystem;
         _availableProjectsRetriever = availableProjectsRetriever;
         _swapToProperNetVersion = swapToProperNetVersion;
@@ -83,6 +87,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         foreach (var subProj in _availableProjectsRetriever.Get(solutionPath))
         {
             var proj = Path.Combine(Path.GetDirectoryName(solutionPath)!, subProj);
+            _logger.Information("Modifying {ProjPath}", proj);
             var txt = _fileSystem.File.ReadAllText(proj);
             var projXml = XElement.Parse(txt);
             _swapDesiredVersions.Swap(

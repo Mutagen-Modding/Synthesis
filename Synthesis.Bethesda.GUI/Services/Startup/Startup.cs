@@ -21,6 +21,7 @@ public class Startup : IStartup
     private readonly IStartupTracker _tracker;
     private readonly IProvideCurrentVersions _provideCurrentVersions;
     private readonly IShutdown _shutdown;
+    private readonly PrintDotNetInfo _printDotNetInfo;
 
     public Startup(
         ILogger logger,
@@ -29,7 +30,8 @@ public class Startup : IStartup
         IMainWindow window,
         IStartupTracker tracker,
         IProvideCurrentVersions provideCurrentVersions,
-        IShutdown shutdown)
+        IShutdown shutdown,
+        PrintDotNetInfo printDotNetInfo)
     {
         _logger = logger;
         _startupTasks = startupTasks;
@@ -38,6 +40,7 @@ public class Startup : IStartup
         _tracker = tracker;
         _provideCurrentVersions = provideCurrentVersions;
         _shutdown = shutdown;
+        _printDotNetInfo = printDotNetInfo;
     }
         
     public async void Initialize()
@@ -65,6 +68,7 @@ public class Startup : IStartup
         {
             _logger.Information(printout);
         }
+        await _printDotNetInfo.Print(CancellationToken.None);
             
         try
         {
