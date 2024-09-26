@@ -37,15 +37,24 @@ public class CreateEmptyPatch : ICreateEmptyPatch
         var path = new FilePath(Path.Combine(ProfileDirectories.SeedDirectory, modKey.FileName));
         _logger.Information("Creating seed mod at {Path}", path);
         path.Directory?.Create(_fileSystem);
+        
+        var formIdRangeBool = runParameters.FormIDRangeMode.ToForceBool();
+        
+        // Hardcode this for now until Light/Medium masters supported
+        if (runParameters.Master || !runParameters.Master)
+        {
+            formIdRangeBool = false;
+        }
+        
         var mod = ModInstantiator.Activator(modKey, _gameReleaseContext.Release,
             headerVersion: runParameters.HeaderVersionOverride,
-            forceUseLowerFormIDRanges: runParameters.FormIDRangeMode.ToForceBool());
+            forceUseLowerFormIDRanges: formIdRangeBool);
         mod.IsMaster = runParameters.Master;
         mod.BeginWrite
             .ToPath(path)
             .WithNoLoadOrder()
             .WithFileSystem(_fileSystem)
-            .WithForcedLowerFormIdRangeUsage(runParameters.FormIDRangeMode.ToForceBool())
+            .WithForcedLowerFormIdRangeUsage(formIdRangeBool)
             .NoNextFormIDProcessing()
             .Write();
         return path;
