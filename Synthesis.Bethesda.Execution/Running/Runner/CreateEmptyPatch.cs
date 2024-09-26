@@ -45,6 +45,8 @@ public class CreateEmptyPatch : ICreateEmptyPatch
             .ToPath(path)
             .WithNoLoadOrder()
             .WithFileSystem(_fileSystem)
+            .WithForcedLowerFormIdRangeUsage(runParameters.FormIDRangeMode.ToForceBool())
+            .NoNextFormIDProcessing()
             .Write();
         return path;
     }
