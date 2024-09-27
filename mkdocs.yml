@@ -8,6 +8,8 @@ extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/Mutagen-Modding
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/GdKZ3SH
 
 markdown_extensions:
   - admonition
