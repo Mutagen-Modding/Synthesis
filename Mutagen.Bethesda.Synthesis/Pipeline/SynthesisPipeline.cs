@@ -11,6 +11,7 @@ using Synthesis.Bethesda.DTO;
 using System.IO.Abstractions;
 using System.Text.Json;
 using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Installs;
 using Mutagen.Bethesda.Installs.DI;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using SynthesisBase = Synthesis.Bethesda;
@@ -114,7 +115,7 @@ public class SynthesisPipeline
         var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
         var categoryContext = new GameCategoryContext(gameReleaseInjection);
         var dataDir = new DataDirectoryInjection(args.DataFolderPath);
-        var gameLoc = new GameLocator();
+        var gameLoc = new GameLocatorLookupCache();
         return new GetStateLoadOrder(
                 new ImplicitListingsProvider(
                     fileSystem,
@@ -589,7 +590,7 @@ public class SynthesisPipeline
         var gameReleaseInjection = new GameReleaseInjection(args.GameRelease);
         var categoryContext = new GameCategoryContext(gameReleaseInjection);
         var dataDir = new DataDirectoryInjection(args.DataFolderPath);
-        var gameLoc = new GameLocator();
+        var gameLoc = new GameLocatorLookupCache();
         var stateFactory = new PatcherStateFactory(
             fileSystem,
             new LoadOrderImporterFactory(
@@ -829,7 +830,7 @@ public class SynthesisPipeline
     {
         extraParameters ??= new();
 
-        IDataDirectoryLookup dataDir = new GameLocator();
+        IDataDirectoryLookup dataDir = new GameLocatorLookupCache();
         
         if (!dataDir.TryGet(release, out var dataFolder))
         {
