@@ -1,6 +1,7 @@
 ﻿using System.IO.Abstractions;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Binary.Headers;
 using Mutagen.Bethesda.Plugins.Binary.Parameters;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
@@ -45,12 +46,8 @@ public class PostRunProcessor
                     var modPath = new ModPath(listing.ModKey,
                         _dataDirectoryProvider.Path.GetFile(listing.ModKey.FileName).Path);
                     if (!_fileSystem.File.Exists(modPath)) return null;
-                    using var mod = ModInstantiator.ImportGetter(modPath, _gameReleaseContext.Release,
-                        new BinaryReadParameters()
-                        {
-                            FileSystem = _fileSystem
-                        });
-                    return new ModFlags(mod);
+                    var modHeader = ModHeaderFrame.FromPath(modPath, _gameReleaseContext.Release);
+                    return new KeyedMasterStyle(modPath.ModKey, modHeader.MasterStyle);
                 })
                 .NotNull());
         
