@@ -17,7 +17,7 @@ public class FormatCommandLine : IFormatCommandLine
         var ret = Parser.Default.FormatCommandLine<T>(obj);
         
         if (!ret.Contains("GameRelease")
-            && obj is RunSynthesisMutagenPatcher or RunSynthesisPatcher)
+            && obj is RunSynthesisMutagenPatcher or RunSynthesisPatcher or CheckRunnability)
         {
             // Hardcoded fix for GameRelease not being included
             // Can be removed if this gets fixed

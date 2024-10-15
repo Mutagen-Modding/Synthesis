@@ -51,7 +51,7 @@ public class PostRunProcessor
                 })
                 .NotNull());
         
-        var mod = ModInstantiator.ImportGetter(
+        using var mod = ModInstantiator.ImportGetter(
             path,
             _gameReleaseContext.Release,
             new BinaryReadParameters()
