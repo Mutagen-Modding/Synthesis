@@ -46,4 +46,37 @@ public class LinesToReflectionConfigsTests
                 Nickname: "OtherSettings",
                 Path: "othersettings.json"));
     }
+        
+    [Theory, SynthAutoData]
+    public void UsingLaunchSettings(
+        LinesToReflectionConfigsParser sut)
+    {
+        var ret = sut.Parse(new string[]
+        {
+            "Using launch settings from ",
+            "{\"Configs\":[{\"TypeName\":\"FaceFixer.Settings\",\"Nickname\":\"Settings\",\"Path\":\"settings.json\"}]}"
+        });
+
+        ret.Configs.Should().Equal(
+            new ReflectionSettingsConfig(
+                TypeName: "FaceFixer.Settings",
+                Nickname: "Settings",
+                Path: "settings.json"));
+    }
+        
+    [Theory, SynthAutoData]
+    public void AnsiCodes(
+        LinesToReflectionConfigsParser sut)
+    {
+        var ret = sut.Parse(new string[]
+        {
+            "\u001b]9;4;3;\u001b\\\u001b]9;4;0;\u001b{\"Configs\":[{\"TypeName\":\"FaceFixer.Settings\",\"Nickname\":\"Settings\",\"Path\":\"settings.json\"}]}"
+        });
+
+        ret.Configs.Should().Equal(
+            new ReflectionSettingsConfig(
+                TypeName: "FaceFixer.Settings",
+                Nickname: "Settings",
+                Path: "settings.json"));
+    }
 }

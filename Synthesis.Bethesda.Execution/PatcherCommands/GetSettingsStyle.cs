@@ -94,9 +94,11 @@ public class GetSettingsStyle : IGetSettingsStyle
                     return new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>());
                 }
             }
-                
+
+            var start = GetRunProcessStartInfoProvider.GetStart(path, directExe, new SettingsQuery(), build: false);
+            
             var result = await ProcessRunner.RunAndCapture(
-                GetRunProcessStartInfoProvider.GetStart(path, directExe, new SettingsQuery(), build: false),
+                start,
                 cancel: cancel);
                 
             switch ((Codes)result.Result)
