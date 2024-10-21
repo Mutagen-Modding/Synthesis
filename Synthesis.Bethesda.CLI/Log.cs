@@ -1,4 +1,5 @@
 ﻿using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Synthesis.Bethesda.CLI;
 
@@ -9,7 +10,7 @@ public static class Log
     static Log()
     {
         Serilog.Log.Logger = GetLoggerConfig()
-            .WriteTo.Console()
+            .WriteTo.Console(theme: ConsoleTheme.None)
             .CreateLogger();
 
         Logger = Serilog.Log.Logger;
