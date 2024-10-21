@@ -10,9 +10,21 @@ public interface ILinesToReflectionConfigsParser
 
 public class LinesToReflectionConfigsParser : ILinesToReflectionConfigsParser
 {
+    private const string Starter = "{\"Configs";
+    
+    private string RemoveAnsiCode(string str)
+    {
+        var indexOf = str.IndexOf(Starter, StringComparison.OrdinalIgnoreCase);
+        if (indexOf == -1) return str;
+        return str.Substring(indexOf);
+    }
+    
     public ReflectionSettingsConfigs Parse(IEnumerable<string> lines)
     {
-        return JsonConvert.DeserializeObject<ReflectionSettingsConfigs>(
-            string.Join(Environment.NewLine, lines))!;
+        var convertedLines = lines
+            .SkipWhile(l => !l.Contains(Starter, StringComparison.OrdinalIgnoreCase))
+            .Select(RemoveAnsiCode);
+        var str = string.Join(Environment.NewLine, convertedLines);
+        return JsonConvert.DeserializeObject<ReflectionSettingsConfigs>(str)!;
     }
 }
