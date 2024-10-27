@@ -43,7 +43,9 @@ public class RunPatcherPipelineTests
                 FormIDRangeMode: sut.ProfileSettings.FormIDRangeMode,
                 PersistenceMode: sut.Instructions.PersistenceMode.Value,
                 PersistencePath: sut.Instructions.PersistencePath,
-                Master: sut.ProfileSettings.ExportAsMasterFiles));
+                Master: sut.ProfileSettings.ExportAsMasterFiles,
+                MasterStyle: sut.ProfileSettings.MasterStyle,
+                MasterStyleFallbackEnabled: sut.ProfileSettings.MasterStyleFallbackEnabled));
     }
         
     [Theory, SynthAutoData]

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -5,6 +6,7 @@ using System.Windows.Input;
 using Autofac;
 using DynamicData;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Strings;
@@ -109,6 +111,9 @@ public class ProfileVm : ViewModel
         
     [Reactive]
     public bool MasterFile { get; set; }
+        
+    [Reactive]
+    public bool MasterStyleFallbackEnabled { get; set; }
 
     [Reactive]
     public bool UseUtf8InEmbedded { get; set; }
@@ -120,6 +125,9 @@ public class ProfileVm : ViewModel
     public float? HeaderVersionOverride { get; set; }
 
     public IEnvironmentErrorsVm EnvironmentErrors { get; }
+    
+    [Reactive]
+    public MasterStyle MasterStyle { get; set; }
 
     public ProfileVm(
         ILifetimeScope scope,
@@ -422,6 +430,8 @@ public class ProfileVm : ViewModel
             IgnoreMissingMods = IgnoreMissingMods,
             Localize = Localize,
             ExportAsMasterFiles = MasterFile,
+            MasterStyleFallbackEnabled = MasterStyleFallbackEnabled,
+            MasterStyle = MasterStyle,
             TargetLanguage = TargetLanguage,
             UseUtf8ForEmbeddedStrings = UseUtf8InEmbedded,
             FormIDRangeMode = FormIDRangeMode,

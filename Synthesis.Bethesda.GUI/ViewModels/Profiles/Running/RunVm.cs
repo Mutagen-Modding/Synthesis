@@ -215,6 +215,8 @@ public class RunVm : ViewModel
                         formIDRangeMode: RunningProfile.FormIDRangeMode,
                         targetLanguage: RunningProfile.TargetLanguage,
                         masterFile: RunningProfile.MasterFile,
+                        masterStyleFallbackEnabled: RunningProfile.MasterStyleFallbackEnabled,
+                        masterStyle: RunningProfile.MasterStyle,
                         cancel: _cancel.Token).ConfigureAwait(false);
                 }
                 catch (TaskCanceledException)

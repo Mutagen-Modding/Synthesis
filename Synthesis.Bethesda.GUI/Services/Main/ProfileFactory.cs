@@ -72,6 +72,8 @@ public class ProfileFactory : IProfileFactory
         profile.FormIDRangeMode = settings.FormIDRangeMode;
         profile.HeaderVersionOverride = settings.HeaderVersionOverride;
         profile.MasterFile = settings.ExportAsMasterFiles;
+        profile.MasterStyleFallbackEnabled = settings.MasterStyleFallbackEnabled;
+        profile.MasterStyle = settings.MasterStyle;
 
         profile.Groups.AddRange(settings.Groups.Select(x => factory.Get(x)));
 

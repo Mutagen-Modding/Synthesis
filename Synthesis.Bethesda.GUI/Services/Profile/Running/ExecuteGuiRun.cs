@@ -1,5 +1,6 @@
 using System.IO;
 using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Strings;
 using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Profile;
@@ -19,6 +20,8 @@ public interface IExecuteGuiRun
         FormIDRangeMode formIDRangeMode,
         Language targetLanguage,
         bool masterFile,
+        bool masterStyleFallbackEnabled,
+        MasterStyle masterStyle,
         CancellationToken cancel);
 }
 
@@ -47,6 +50,8 @@ public class ExecuteGuiRun : IExecuteGuiRun
         FormIDRangeMode formIDRangeMode,
         Language targetLanguage,
         bool masterFile,
+        bool masterStyleFallbackEnabled,
+        MasterStyle masterStyle,
         CancellationToken cancel)
     {
         var outputDir = _dataDirectoryProvider.Path;
@@ -62,6 +67,8 @@ public class ExecuteGuiRun : IExecuteGuiRun
                 HeaderVersionOverride: headerVersionOverride,
                 PersistenceMode: persistenceMode,
                 PersistencePath: Path.Combine(_profileDirectories.ProfileDirectory, "Persistence"),
-                Master: masterFile)).ConfigureAwait(false);
+                Master: masterFile,
+                MasterStyleFallbackEnabled: masterStyleFallbackEnabled,
+                MasterStyle: masterStyle)).ConfigureAwait(false);
     }
 }

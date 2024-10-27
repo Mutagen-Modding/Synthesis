@@ -1,3 +1,4 @@
+using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Strings;
 using Synthesis.Bethesda.Execution.Settings;
 
@@ -11,4 +12,6 @@ public record RunParameters(
     FormIDRangeMode FormIDRangeMode,
     PersistenceMode PersistenceMode,
     string? PersistencePath,
-    bool Master);
+    bool Master,
+    bool MasterStyleFallbackEnabled,
+    MasterStyle MasterStyle);

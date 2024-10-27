@@ -70,7 +70,8 @@ public class RunAGroup : IRunAGroup
         var postRunPath = await _postRunProcessor.Run(
             groupRun,
             new ModPath(groupRun.ModKey, patcherRunOutputPath.Value),
-            groupRun.BlacklistedMods);
+            groupRun.BlacklistedMods,
+            runParameters);
         
         cancellation.ThrowIfCancellationRequested();
         MoveFinalResults.Move(postRunPath, outputDir);

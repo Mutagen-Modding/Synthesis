@@ -43,6 +43,8 @@ public class RunPatcherPipeline : IRunPatcherPipeline
                     FormIDRangeMode: ProfileSettings.FormIDRangeMode,
                     PersistenceMode: Instructions.PersistenceMode ?? PersistenceMode.None, 
                     PersistencePath: Instructions.PersistencePath,
-                    Master: ProfileSettings.ExportAsMasterFiles)).ConfigureAwait(false);
+                    Master: ProfileSettings.ExportAsMasterFiles,
+                    MasterStyleFallbackEnabled: ProfileSettings.MasterStyleFallbackEnabled,
+                    MasterStyle: ProfileSettings.MasterStyle)).ConfigureAwait(false);
     }
 }

@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Strings;
 
 namespace Synthesis.Bethesda.Execution.Settings.V2;
@@ -29,4 +30,6 @@ public class SynthesisProfile : ISynthesisProfileSettings
     public FormIDRangeMode FormIDRangeMode { get; set; } = FormIDRangeMode.Auto;
     public float? HeaderVersionOverride { get; set; }
     public bool ExportAsMasterFiles { get; set; }
+    public bool MasterStyleFallbackEnabled { get; set; }
+    public MasterStyle MasterStyle { get; set; }
 }
