@@ -1,13 +1,13 @@
 # Local Solution Patcher
 This style uses a local C# project which is compiled and run as a patcher.
 
-![](https://i.imgur.com/FUGCqsN.png)
+![Solution Patcher](images/solution-patcher.png)
 
 ## Goals and Reasons to Choose
 
 - Preferred route any time you want to run raw code from a folder that you downloaded/created yourself
 - Can create new patcher Solutions/Projects or latch on to existing projects
-   - Generated solutions come with a lot of initial settings configured for you, such as Nullability errors.
+    - Generated solutions come with a lot of initial settings configured for you, such as Nullability errors.
 - Code can be developed in an IDE on the side, but run from within Synthesis as part of a larger patcher pipeline. 
 - Meta information tooling is offered to customize the patcher's information such as descriptions/nicknames/visibility in the patcher browser
 
@@ -25,7 +25,7 @@ The basic input required is:
 ## New Patcher Wizard
 Synthesis is able to construct new patcher projects for you that contain a lot of starting frameworks and default settings.
 
-![](https://i.imgur.com/06H1CRa.png)
+![New Patcher Wizard](images/new-patcher-wizard.png)
 
 It is able to construct whole Solutions from scratch, or add a new project to an existing solution, or latch onto existing projects.
 

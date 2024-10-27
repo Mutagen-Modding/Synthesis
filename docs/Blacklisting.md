@@ -3,7 +3,7 @@
 ## By Group
 Synthesis Groups can blacklist mods.  To do so, click on the Group of interest, and a UI should show that lets you pick the mods to not include during patching of that group.
 
-![](https://i.imgur.com/iyf4rPO.png)
+![Blacklisting by Group](images/blacklist-by-group.png)
 
 ## By Patcher
 ### Patcher Settings

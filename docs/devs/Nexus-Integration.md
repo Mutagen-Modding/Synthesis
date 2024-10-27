@@ -1,5 +1,15 @@
 # Nexus Integration
-The Nexus and other sites typically want a file to be uploaded in order to make a mod.   Synthesis patchers typically do not have a concrete set of files to upload, and we would prefer the source code be located on sites like GitHub, which have much more robust code versioning systems.
+Typically mods are uploaded straight to the Nexus.  However, Synthesis mods are code, which the Nexus isn't as suited for.  Places like GitHub are better homes for Synthesis patchers, as they come with all the tooling that coding developers rely on:
+
+- Git based historical tracking
+- Branches for experimental versions
+- Easily browsable source code
+- Ability for others to contribute fixes/upgrades as Pull Requests
+
+Additionally, the Synthesis system leverages these [Git Patchers](https://github.com/Mutagen-Modding/Synthesis/wiki/Git-Repository) to fulfill many other features:
+
+- Automatic listing in the Synthesis search systems
+- Automatic upgrades over time via the [Versioning System](https://github.com/Mutagen-Modding/Synthesis/wiki/Versioning), which reduces the need for maintenance on your end.
 
 ## Create a .Synth File
 Synthesis offers a `.synth` file that acts as a convenience installer.   The concept is unnecessary if users are familiar with the [Git Repository Browser](Typical-Usage.md#browse) systems.  However, for Nexus, it allows us to create a file that we can upload for our mod listing.

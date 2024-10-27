@@ -6,7 +6,7 @@ But what is the term Mutagen, and why is it mentioned often alongside Synthesis?
 Both of these terms are used in conjunction with each other often, and so they can get confusing.
 
 ## Mutagen
-Mutagen is the library that allows for reading and manipulating Bethesda plugin files.  
+[Mutagen](https://github.com/Mutagen-Modding/Mutagen) is the library that allows for reading and manipulating Bethesda plugin files.  
 
 Sorts of things that Mutagen is in charge of:
 
@@ -17,7 +17,7 @@ Sorts of things that Mutagen is in charge of:
 - Other jobs that require interacting with mods and analyzing/manipulating their data
 
 ## Synthesis
-Synthesis is a system that is built on top of Mutagen to provide an easy patcher pipeline ecosystem.  
+[Synthesis](https://github.com/Mutagen-Modding/Synthesis) is a system that is built on top of Mutagen to provide an easy patcher pipeline ecosystem.  
 
 Things that Synthesis is in charge of:
 

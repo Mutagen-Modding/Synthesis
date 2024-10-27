@@ -1,7 +1,7 @@
 # Git Repository Patcher
-This type latches on to a patcher accessible via a Git Repository address (usually hosted on Github.com).  ****It will clone the code and build the exe to run locally on your machine****.  It only supports Mutagen-based projects.
+This type latches on to a patcher accessible via a Git Repository address (usually hosted on Github.com).  ***It will clone the code and build the exe to run locally on your machine***.  It only supports Mutagen-based projects.
 
-![](https://i.imgur.com/DdgARsi.png)
+![Git Patcher Detail Pane](images/git-patcher.png)
 
 !!! success "Recommended"
     This is the recommended patcher type for typical users
@@ -24,7 +24,7 @@ The `Input` pane allows you to create a Git Patcher by explicitly providing the 
 ### Patcher Browser
 Alternatively, you can make use of the "Browse" feature, which lists a whole load of patchers that were automatically located on Github.
 
-![](https://i.imgur.com/S0JsBgV.png)
+![Patcher Browser](images/patcher-browser.png)
 
 To get to the Patcher browser, click and add a new Git Repository Patcher at the top left, and then go to the Browse tab.
 
@@ -35,4 +35,4 @@ This is an important topic, and so has received its own section in the Overview 
 
 [:octicons-arrow-right-24: Versioning](Versioning.md)
 
-![](https://i.imgur.com/DpcHKDN.png)
+![Git Patcher Versioning](images/git-patcher-versioning.png)

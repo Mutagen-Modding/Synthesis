@@ -21,7 +21,7 @@ Do patchers consider any other patcher's results when running?
 ### Within a Group
 Patchers within a group build on each other's contents.  An earlier patcher's changes will affect a later patcher's results.
 
-![](https://i.imgur.com/KMIAVeI.png)
+![Patchers in a Group](images/patchers-in-group.png)
 
 In this scenario, `Speed and Reach Fixes` will run first.  Any changes it makes will be seen and considered as `Facefixer` and `AmmoTweaks` run right after.
 

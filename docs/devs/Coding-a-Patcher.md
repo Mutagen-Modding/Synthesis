@@ -2,7 +2,7 @@
 ## Starting Setup
 If you used a Local [Solution Patcher](Local-Solution.md) to [Create a Patcher](Create-a-Patcher.md), then you will have a project that has a minimal basic setup:
 
-```csharp
+```cs
 public static async Task<int> Main(string[] args)
 {
     return await SynthesisPipeline.Instance
@@ -33,7 +33,7 @@ The state object given to your `RunPatch` contains several important objects:
 ## Typical Simple Code
 Typical code for a Synthesis patcher consists of locating Winning Overrides for a record type, and adding them to the output patch mod with some changes.  Here is a simplistic example:
 
-```csharp
+```cs
 // Loop over all the winning NPCs in the load order
 foreach (var npcGetter in state.LoadOrder.PriorityOrder.Npc().WinningOverrides())
 {

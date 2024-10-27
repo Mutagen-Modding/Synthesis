@@ -6,7 +6,7 @@
 - Click on the group you want the patcher added to
 - Double click and open the `.synth` file
 
-![](https://i.imgur.com/1bQ23Zu.gif)
+![.synth File](images/synth-files.gif)
 
 ## Creating an Installer .synth File
 To create a .synth file, create a text file with the repository url and project location that normally shows up. Then make sure to save your file as `[patcher_name].synth`.

@@ -1,12 +1,17 @@
 ## Install an IDE
-**Be sure to install an [IDE](https://visualstudio.microsoft.com/vs/community/) for C# development!** You will also need the [DotNet SDK](https://dotnet.microsoft.com/download), but this should come with the IDE.
+Be sure to install an IDE for C# development!
+
+- [Visual Studio Community](https://visualstudio.microsoft.com/vs/community/)
+- [Rider](https://www.jetbrains.com/help/rider/Installation_guide.html)
+
+You will also need the [DotNet SDK](https://dotnet.microsoft.com/download), but this should come with the IDE.
 
 ## Solution Patcher
 Synthesis provides bootstrapping functionality to get new Mutagen patchers off the ground fairly easily.
 
 These systems can be found by creating a new [Local Solution patcher](Local-Solution.md), which is the preferred patcher type for developers.
 
-![](https://i.imgur.com/06H1CRa.png)
+![Solution Patcher](../images/solution-patcher.png)
 
 There is a few options available when creating a new Solution Patcher:
 
@@ -55,7 +60,7 @@ The main function calls Synthesis bootstrapping code that listens for commands f
 ## Customization
 Patchers that are listed on the store use a meta json file to specify some customization.  The Local Solution Patcher can modify this file for you in the GUI itself.
 
-![](https://i.imgur.com/iA9DR89.png)
+![Solution Patcher](../images/customizing-patcher.png)
 
 - Display Name
 - One line description

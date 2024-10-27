@@ -28,9 +28,9 @@ Unzip the archive somewhere you like
 ## Run Synthesis
 You're ready to run Synthesis!
 
-### Are You a User?
+![Showcase](images/showcase.gif)
 
-![Typical Usage Example](https://i.imgur.com/Wj2fGaF.gif)
+### Are You a User?
 
 Be sure to read the rest of the wiki for how to use the app.
 
