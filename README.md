@@ -1,13 +1,3 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-## Table Of Contents
-
-- [Synthesis](#synthesis)
-  - [Installation](#installation)
-  - [Development](#development)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 ![Release](https://github.com/Mutagen-Modding/Synthesis/workflows/Release/badge.svg) ![Dev](https://github.com/Mutagen-Modding/Synthesis/workflows/Dev/badge.svg) ![Scrape](https://github.com/Mutagen-Modding/Synthesis.Registry/workflows/Scrape/badge.svg) [![NuGet Stats](https://img.shields.io/nuget/v/Synthesis.Bethesda.svg)](https://www.nuget.org/packages/Synthesis.Bethesda)
 
 [![Discord](https://discordapp.com/api/guilds/759302581448474626/widget.png)](https://discord.gg/53KMEsW)
