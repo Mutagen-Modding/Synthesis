@@ -10,7 +10,8 @@ Most of the documentation so far has been focused on making Mutagen-based patche
 - Shut down
 
 ## Run Patcher CLI
-The Synthesis pipeline passes in [command line arguments](https://github.com/Mutagen-Modding/Synthesis/blob/release/Synthesis.Bethesda/CLI/RunSynthesisPatcher.cs) to request a patch to be made. 
+The Synthesis pipeline passes in [command line arguments](https://github.com/Mutagen-Modding/Synthesis/blob/dev/Synthesis.Bethesda/Commands/RunSynthesisPatcher.cs) to request a patch to be made. 
+
 - `-s`/`--SourcePath`: Optional path to the previous patch file to build onto
 - `-o`/`--OutputPath`: Path an output patch is expected to be written to
 - `-g`/`--GameRelease`: The game the patch is expected to be run on (SkyrimSE/SkyrimLE/Oblivion/etc)

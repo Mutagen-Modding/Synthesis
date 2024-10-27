@@ -9,10 +9,6 @@ There are a few alternatives, but the one recommended for new users is the [Git 
 
 ![Git Repository Patcher](images/git-repo-patcher.png)
 
-You can read about the other types of patchers:
-
-[:octicons-arrow-right-24: Patcher Types](Patcher-Types.md)
-
 ### Installing a Git Patcher
 #### Browse
 You can either look around in the wild yourself, or you can make use of the built in list of existing patchers.  Within a `Git Repository` patcher, there is a `Browse` section with an automatically populated list:
@@ -64,7 +60,7 @@ You can click on any specific patcher to see specifics about it, or any errors i
 
 Running the pipeline will export a file [per patcher group](Multiple-Output-Targets.md) to your `Data` folder.
 
-[:octicons-arrow-right-24: Customizing Data Folder Location](Overriding-Data-Folder-Path.md)
+[:octicons-arrow-right-24: Customizing Data Folder Location](DataFolder.md)
 
 [:octicons-arrow-right-24: Multiple Output Files](Multiple-Output-Targets.md)
 

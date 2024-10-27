@@ -71,14 +71,14 @@ nav:
     - Other Dynamic Mod Generators: Other-Dynamic-Mod-Generators.md
     - Language Settings: Language-Settings.md
     - Updating UI: Updating-UI.md
-    - Existing Saves: Existing-Saves.md
+    # - Existing Saves: Existing-Saves.md
     - Starting Into a Specific Profile: Starting-Into-Profile.md
     - FAQs and Troubleshooting: FAQ-and-Troubleshooting.md
     - Sharing Your Setup: Sharing.md
   - Patcher Types:
-    - Git Repository: Git-Repository.md
-    - External Program: External-Program.md
-    - Local Solution: Local-Solution.md
+    - Git Repository: Git-Repository-Patcher.md
+    - External Program: External-Program-Patcher.md
+    - Local Solution: Local-Solution-Patcher.md
   - Developers:
     - Create a Patcher: devs/Create-a-Patcher.md
     - Coding a Patcher: devs/Coding-a-Patcher.md

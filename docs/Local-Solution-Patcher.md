@@ -14,7 +14,7 @@ This style uses a local C# project which is compiled and run as a patcher.
 !!! tip "Preferred for Developers, When Needed"
     While this is the preferred patcher choice for developers, note that running during normal development should be done from your IDE, and not through the Synthesis UI
 
-[:octicons-arrow-right-24: Running a Patcher](Running-And-Debugging.md)
+[:octicons-arrow-right-24: Running a Patcher](devs/Running-and-Debugging.md)
 	
 ## Required Input
 The basic input required is:
@@ -39,4 +39,4 @@ Settings you can modify:
 - Patcher display name
 - One line description
 - Multi-line extended description
-- Whether to show in the [patcher browser](https://github.com/Mutagen-Modding/Synthesis/wiki/Git-Repository#patcher-browser) by default
+- Whether to show in the [patcher browser](Git-Repository-Patcher.md#patcher-browser) by default

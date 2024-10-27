@@ -6,10 +6,10 @@ Once you have a patcher that you want to share with the world, there are a few o
 Uploading to Github is the preferred route for publishing a patcher.
 
 - Automatically listed in the Patcher Browser registration systems.
-- Still can be used with the [Nexus](https://github.com/Mutagen-Modding/Synthesis/wiki/Nexus-Integration)
-- Easy versioning via [tags](https://github.com/Mutagen-Modding/Synthesis/wiki/Publishing-a-Patcher#versioned-tags-to-mark-releases)
-- Easy exposure of "experimental" versions to willing users via [branches](https://github.com/Mutagen-Modding/Synthesis/wiki/Publishing-a-Patcher#branches)
-- Gives your end users ability to [upgrade to newer Mutagen/Synthesis versions](https://github.com/Mutagen-Modding/Synthesis/wiki/Git-Repository#mutagensynthesis-version) without bugging you
+- Still can be used with the [Nexus](Nexus-Integration.md)
+- Easy versioning via [tags](Publishing.md#versioned-tags-to-mark-releases)
+- Easy exposure of "experimental" versions to willing users via [branches](Publishing.md#branches)
+- Gives your end users ability to [upgrade to newer Mutagen/Synthesis versions](../Git-Repository-Patcher.md#versioning) without bugging you
 - Will hook in to [systems](https://github.com/Mutagen-Modding/Synthesis/issues/42) to improve overall patching speed, that will be developed in the future
 - Source code is viewable, and people can help improve it with PRs
 
@@ -96,17 +96,16 @@ In order to be found/listed there are a few requirements:
 - In a git repository uploaded to GitHub.com
 - Solution is top level (#211)
 - At least one patcher project which imports the `Mutagen.Bethesda.Synthesis` NuGet package
-- (Optional) Patcher meta json file specifying description and other information.  These can be made easily by utilizing the [Solution Patcher](https://github.com/Mutagen-Modding/Synthesis/wiki/Local-Solution) system made for devs
+- (Optional) Patcher meta json file specifying description and other information.  These can be made easily by utilizing the [Solution Patcher](../Local-Solution-Patcher.md) system made for devs
 
-The [Local Solution patcher wizard](https://github.com/Mutagen-Modding/Synthesis/wiki/Local-Solution) will create an automatically compatible setup **EXCEPT** the first step of creating and uploading to GitHub.  This responsibility is on the patcher developer to create their Github presence.
+The [Local Solution patcher wizard](../Local-Solution-Patcher.md#new-patcher-wizard) will create an automatically compatible setup **EXCEPT** the first step of creating and uploading to GitHub.  This responsibility is on the patcher developer to create their Github presence.
 
 **NOTE:** 
 It is possible to have a single solution with several patcher projects underneath.  Whether you prefer a separate solution and repository per patcher, or one large repository with several patchers is up to personal preference.
 
 ### Troubleshooting Registration
 ### Github Dependency Graph
-The scraper tech functions by looking at the GitHub dependency graph systems.  The list can be found here:
-<https://github.com/Mutagen-Modding/Synthesis/network/dependents>
+The scraper tech functions by looking at the GitHub dependency graph systems.  [The list can be found here](https://github.com/Mutagen-Modding/Synthesis/network/dependents)
 
 There is also a list on your patcher side, where it shows what it is dependent on.  This will be in the same area, just in your own repo.
 
@@ -120,4 +119,4 @@ Sometimes there can be error during the scraping event.   The scraper system tri
 If you see your patcher with an error, see if it makes sense and if you can adjust for what it's complaining about.
 
 ## Build Executable
-You can also build an executable, and distribute the `exe` directly for users.  They would then add it as an [External Program Patcher](https://github.com/Mutagen-Modding/Synthesis/wiki/External-Program)
+You can also build an executable, and distribute the `exe` directly for users.  They would then add it as an [External Program Patcher](../External-Program-Patcher.md)

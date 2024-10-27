@@ -12,7 +12,7 @@ Easily add patchers and run patcher pipelines on your game.
 
 [:octicons-arrow-right-24: Installation](Installation.md)
 
-[:octicons-arrow-right-24: Typical Usage](https://github.com/Mutagen-Modding/Synthesis/wiki/Typical-Usage)
+[:octicons-arrow-right-24: Typical Usage](Typical-Usage.md)
 
 # For Developers:
 Utilize development tools provided by Synthesis to help you create Mutagen patchers from scratch
@@ -29,4 +29,4 @@ foreach (var npc in state.LoadOrder.PriorityOrder.Npc().WinningOverrides())
 }
 ```
 
-[:octicons-arrow-right-24: Create a Patcher](https://github.com/Mutagen-Modding/Synthesis/wiki/dev/Create-A-Patcher)
+[:octicons-arrow-right-24: Create a Patcher](devs/Create-a-Patcher.md)

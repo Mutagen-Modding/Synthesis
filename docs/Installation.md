@@ -42,4 +42,4 @@ Be sure to read the rest of the wiki for how to use the app.
 ### Are You a Developer?
 There are a lot of resources on how to get started creating a patcher
 
-[:octicons-arrow-right-24: Create a Patcher](Create-A-Patcher.md)
+[:octicons-arrow-right-24: Create a Patcher](devs/Create-a-Patcher.md)

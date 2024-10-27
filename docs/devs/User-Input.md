@@ -57,7 +57,7 @@ Synthesis will inspect your patcher via reflection, and will provide users a nic
 ### More Documentation
 This feature is actually part of Mutagen, meaning it can be used for applications besides Synthesis.
 
-As such, the [heavy documentation for it is located in the Mutagen repository](https://github.com/Mutagen-Modding/Mutagen/wiki/Reflection-Powered-Settings)
+As such, the [heavy documentation for it is located in the Mutagen repository](https://mutagen-modding.github.io/Mutagen/wpf/Reflection-Powered-Settings/)
 
 It will go into detail on how to use the feature, what fields/structures are allowed, and what other extra functionality exists.
 
