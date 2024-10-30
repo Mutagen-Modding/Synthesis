@@ -76,7 +76,9 @@
       "UseUtf8ForEmbeddedStrings": false,
       "FormIDRangeMode": "Auto",
       "HeaderVersionOverride": null,
-      "ExportAsMasterFiles": false
+      "ExportAsMasterFiles": false,
+      "MasterStyleFallbackEnabled": false,
+      "MasterStyle": "Full"
     },
     {
       "$type": "Synthesis.Bethesda.Execution.Settings.V2.SynthesisProfile, Synthesis.Bethesda.Execution",
@@ -127,7 +129,9 @@
       "UseUtf8ForEmbeddedStrings": false,
       "FormIDRangeMode": "Auto",
       "HeaderVersionOverride": null,
-      "ExportAsMasterFiles": false
+      "ExportAsMasterFiles": false,
+      "MasterStyleFallbackEnabled": false,
+      "MasterStyle": "Full"
     }
   ],
   "Shortcircuit": true,
