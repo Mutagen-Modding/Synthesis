@@ -36,10 +36,7 @@ public class NewSolutionInitVm : ASolutionInitializer
         IGameCategoryContext gameCategoryContext,
         IPatcherFactory patcherFactory,
         IValidateProjectPath validateProjectPath,
-        ICreateSolutionFile createSolutionFile,
-        ICreateProject createProject,
-        IAddProjectToSolution addProjectToSolution,
-        IGenerateGitIgnore gitIgnore)
+        CreateTemplatePatcherSolution createTemplatePatcherSolution)
     {
         ParentDirPath.PathType = PathPickerVM.PathTypeOptions.Folder;
         ParentDirPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
@@ -105,10 +102,7 @@ public class NewSolutionInitVm : ASolutionInitializer
                 return GetResponse<InitializerCall>.Succeed(async () =>
                 {
                     var projName = Path.GetFileNameWithoutExtension(i.validation.Value);
-                    createSolutionFile.Create(i.sln.Value);
-                    createProject.Create(gameCategoryContext.Category, i.validation.Value);
-                    addProjectToSolution.Add(i.sln.Value, i.validation.Value);
-                    gitIgnore.Generate(Path.GetDirectoryName(i.sln.Value)!);
+                    createTemplatePatcherSolution.Create(i.sln.Value, i.validation.Value);
                     var patcher = patcherFactory.GetSolutionPatcher(new SolutionPatcherSettings()
                     {
                         SolutionPath = i.sln.Value,

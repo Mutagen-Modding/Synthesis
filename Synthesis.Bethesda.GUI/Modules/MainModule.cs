@@ -66,6 +66,7 @@ public class MainModule : Autofac.Module
             .InNamespacesOf(
                 typeof(IProvideCurrentVersions),
                 typeof(ICreateProject))
+            .AsSelf()
             .AsMatchingInterface()
             .SingleInstance();
 
