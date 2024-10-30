@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.IO.Abstractions;
+using Autofac;
 using Noggog;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Utility;
@@ -18,13 +19,17 @@ public class RunPipelineLogic
         _runPipeline = runPipeline;
     }
     
-    public static async Task<int> Run(RunPatcherPipelineInstructions settings)
+    public static async Task<int> Run(RunPatcherPipelineCommand settings, IFileSystem? fileSystem = null)
     {
         try
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule(
                 new RunPipelineModule(settings));
+            if (fileSystem != null)
+            {
+                builder.RegisterInstance(fileSystem).AsImplementedInterfaces();
+            }
             var container = builder.Build();
 
             var profile = container.Resolve<IRunProfileProvider>();

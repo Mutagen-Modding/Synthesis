@@ -7,17 +7,17 @@ namespace Synthesis.Bethesda.CLI.RunPipeline.Settings;
 public class LoadOrderFilePathDecorator : IPluginListingsPathContext
 {
     public IPluginListingsPathContext ListingsPathContext { get; }
-    public RunPatcherPipelineInstructions Instructions { get; }
+    public RunPatcherPipelineCommand Command { get; }
 
-    public FilePath Path => Instructions.LoadOrderFilePath == default
+    public FilePath Path => Command.LoadOrderFilePath == default
         ? ListingsPathContext.Path
-        : Instructions.LoadOrderFilePath;
+        : Command.LoadOrderFilePath;
 
     public LoadOrderFilePathDecorator(
         IPluginListingsPathContext listingsPathContext,
-        RunPatcherPipelineInstructions instructions)
+        RunPatcherPipelineCommand command)
     {
         ListingsPathContext = listingsPathContext;
-        Instructions = instructions;
+        Command = command;
     }
 }

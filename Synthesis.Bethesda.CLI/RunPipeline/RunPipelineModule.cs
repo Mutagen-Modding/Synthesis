@@ -13,9 +13,9 @@ namespace Synthesis.Bethesda.CLI.RunPipeline;
 
 public class RunPipelineModule : Module
 {
-    public RunPatcherPipelineInstructions Settings { get; }
+    public RunPatcherPipelineCommand Settings { get; }
 
-    public RunPipelineModule(RunPatcherPipelineInstructions settings)
+    public RunPipelineModule(RunPatcherPipelineCommand settings)
     {
         Settings = settings;
     }

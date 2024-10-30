@@ -29,20 +29,20 @@ public class RunPatcherPipelineTests
         CancellationToken cancel,
         RunPatcherPipeline sut)
     {
-        sut.Instructions.PersistenceMode = PersistenceMode.None;
+        sut.Command.PersistenceMode = PersistenceMode.None;
         await sut.Run(cancel);
         await sut.ExecuteRun.Received(1).Run(
             Arg.Any<IGroupRun[]>(),
             Arg.Any<CancellationToken>(),
-            outputDir: sut.Instructions.OutputDirectory,
+            outputDir: sut.Command.OutputDirectory,
             runParameters: new RunParameters(
                 TargetLanguage: sut.ProfileSettings.TargetLanguage,
                 Localize: sut.ProfileSettings.Localize,
                 UseUtf8ForEmbeddedStrings: sut.ProfileSettings.UseUtf8ForEmbeddedStrings,
                 HeaderVersionOverride: sut.ProfileSettings.HeaderVersionOverride,
                 FormIDRangeMode: sut.ProfileSettings.FormIDRangeMode,
-                PersistenceMode: sut.Instructions.PersistenceMode.Value,
-                PersistencePath: sut.Instructions.PersistencePath,
+                PersistenceMode: sut.Command.PersistenceMode.Value,
+                PersistencePath: sut.Command.PersistencePath,
                 Master: sut.ProfileSettings.ExportAsMasterFiles,
                 MasterStyle: sut.ProfileSettings.MasterStyle,
                 MasterStyleFallbackEnabled: sut.ProfileSettings.MasterStyleFallbackEnabled));
@@ -53,7 +53,7 @@ public class RunPatcherPipelineTests
         CancellationToken cancel,
         RunPatcherPipeline sut)
     {
-        sut.Instructions.PersistenceMode = null;
+        sut.Command.PersistenceMode = null;
         await sut.Run(cancel);
         await sut.ExecuteRun.Received(1).Run(
             Arg.Any<IGroupRun[]>(), Arg.Any<CancellationToken>(), Arg.Any<DirectoryPath>(),

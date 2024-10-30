@@ -14,7 +14,7 @@ public class LoadOrderFilePathDecoratorTests
         FilePath path,
         LoadOrderFilePathDecorator sut)
     {
-        sut.Instructions.LoadOrderFilePath = path;
+        sut.Command.LoadOrderFilePath = path;
         sut.Path.Should().Be(path);
     }
         
@@ -24,7 +24,7 @@ public class LoadOrderFilePathDecoratorTests
         LoadOrderFilePathDecorator sut)
     {
         sut.ListingsPathContext.Path.Returns(path);
-        sut.Instructions.LoadOrderFilePath = default;
+        sut.Command.LoadOrderFilePath = default;
         sut.Path.Should().Be(path);
     }
 }

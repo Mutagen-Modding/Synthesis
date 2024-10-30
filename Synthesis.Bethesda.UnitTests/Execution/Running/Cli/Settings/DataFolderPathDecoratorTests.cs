@@ -14,7 +14,7 @@ public class DataFolderPathDecoratorTests
         DirectoryPath path,
         DataFolderPathDecorator sut)
     {
-        sut.Instructions.DataFolderPath = path;
+        sut.Command.DataFolderPath = path;
         sut.Path.Should().Be(path);
     }
         
@@ -24,7 +24,7 @@ public class DataFolderPathDecoratorTests
         DataFolderPathDecorator sut)
     {
         sut.DataDirectoryProvider.Path.Returns(path);
-        sut.Instructions.DataFolderPath = default;
+        sut.Command.DataFolderPath = default;
         sut.Path.Should().Be(path);
     }
 }

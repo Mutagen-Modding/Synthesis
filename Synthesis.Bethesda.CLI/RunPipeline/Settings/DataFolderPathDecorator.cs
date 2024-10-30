@@ -7,23 +7,23 @@ namespace Synthesis.Bethesda.CLI.RunPipeline.Settings;
 public class DataFolderPathDecorator : IDataDirectoryProvider
 {
     public IDataDirectoryProvider DataDirectoryProvider { get; }
-    public RunPatcherPipelineInstructions Instructions { get; }
+    public RunPatcherPipelineCommand Command { get; }
 
     public DirectoryPath Path => GetPath();
         
     public DataFolderPathDecorator(
         IDataDirectoryProvider dataDirectoryProvider,
-        RunPatcherPipelineInstructions instructions)
+        RunPatcherPipelineCommand command)
     {
         DataDirectoryProvider = dataDirectoryProvider;
-        Instructions = instructions;
+        Command = command;
     }
 
     private DirectoryPath GetPath()
     {
-        if (Instructions.DataFolderPath != default(DirectoryPath))
+        if (Command.DataFolderPath != default(DirectoryPath))
         {
-            return Instructions.DataFolderPath;
+            return Command.DataFolderPath;
         }
 
         return DataDirectoryProvider.Path;

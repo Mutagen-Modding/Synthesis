@@ -8,9 +8,9 @@ class Program
 {
     static async Task<int> Main(string[] args)
     {
-        return await Parser.Default.ParseArguments(args, typeof(RunPatcherPipelineInstructions))
+        return await Parser.Default.ParseArguments(args, typeof(RunPatcherPipelineCommand))
             .MapResult(
-                async (RunPatcherPipelineInstructions settings) => await RunPipelineLogic.Run(settings),
+                async (RunPatcherPipelineCommand cmd) => await RunPipelineLogic.Run(cmd),
                 async _ => -1);
     }
 }

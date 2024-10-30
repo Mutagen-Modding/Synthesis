@@ -12,7 +12,7 @@ namespace Synthesis.Bethesda.Execution.Commands;
 
 [Verb("run-pipeline", HelpText = "Run the patcher pipeline")]
 [ExcludeFromCodeCoverage]
-public class RunPatcherPipelineInstructions :
+public class RunPatcherPipelineCommand :
     IProfileDefinitionPathProvider,
     IProfileNameProvider,
     IExecutionParametersSettingsProvider,

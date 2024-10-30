@@ -14,18 +14,18 @@ public class RunPatcherPipeline : IRunPatcherPipeline
     public ISynthesisProfileSettings ProfileSettings { get; }
     public IExecuteRun ExecuteRun { get; }
     public IGetGroupRunners GetGroupRunners { get; }
-    public RunPatcherPipelineInstructions Instructions { get; }
+    public RunPatcherPipelineCommand Command { get; }
 
     public RunPatcherPipeline(
         IExecuteRun executeRun,
         IGetGroupRunners getGroupRunners,
         ISynthesisProfileSettings profileSettings,
-        RunPatcherPipelineInstructions instructions)
+        RunPatcherPipelineCommand command)
     {
         ProfileSettings = profileSettings;
         ExecuteRun = executeRun;
         GetGroupRunners = getGroupRunners;
-        Instructions = instructions;
+        Command = command;
     }
         
     public async Task Run(CancellationToken cancel)
@@ -33,7 +33,7 @@ public class RunPatcherPipeline : IRunPatcherPipeline
         await ExecuteRun
             .Run(
                 groups: GetGroupRunners.Get(cancel),
-                outputDir: Instructions.OutputDirectory,
+                outputDir: Command.OutputDirectory,
                 cancel: cancel,
                 runParameters: new RunParameters(
                     TargetLanguage: ProfileSettings.TargetLanguage,
@@ -41,8 +41,8 @@ public class RunPatcherPipeline : IRunPatcherPipeline
                     UseUtf8ForEmbeddedStrings: ProfileSettings.UseUtf8ForEmbeddedStrings,
                     HeaderVersionOverride: ProfileSettings.HeaderVersionOverride,
                     FormIDRangeMode: ProfileSettings.FormIDRangeMode,
-                    PersistenceMode: Instructions.PersistenceMode ?? PersistenceMode.None, 
-                    PersistencePath: Instructions.PersistencePath,
+                    PersistenceMode: Command.PersistenceMode ?? PersistenceMode.None, 
+                    PersistencePath: Command.PersistencePath,
                     Master: ProfileSettings.ExportAsMasterFiles,
                     MasterStyleFallbackEnabled: ProfileSettings.MasterStyleFallbackEnabled,
                     MasterStyle: ProfileSettings.MasterStyle)).ConfigureAwait(false);

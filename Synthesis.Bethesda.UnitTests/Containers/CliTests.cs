@@ -27,7 +27,7 @@ public class CliTests
         var builder = new ContainerBuilder();
         builder.RegisterModule(
             new RunPipelineModule(
-                new RunPatcherPipelineInstructions()));
+                new RunPatcherPipelineCommand()));
         var cont = builder.Build();
         cont.Validate(typeof(IRunProfileProvider));
     }
@@ -38,7 +38,7 @@ public class CliTests
         var builder = new ContainerBuilder();
         builder.RegisterModule(
             new RunPipelineModule(
-                new RunPatcherPipelineInstructions()));
+                new RunPatcherPipelineCommand()));
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<ISynthesisProfileSettings>();
         var cont = builder.Build();
@@ -51,7 +51,7 @@ public class CliTests
         var builder = new ContainerBuilder();
         builder.RegisterModule(
             new RunPipelineModule(
-                new RunPatcherPipelineInstructions()));
+                new RunPatcherPipelineCommand()));
         builder.RegisterModule<PatcherModule>();
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<IPatcherIdProvider>();
@@ -69,7 +69,7 @@ public class CliTests
         var builder = new ContainerBuilder();
         builder.RegisterModule(
             new RunPipelineModule(
-                new RunPatcherPipelineInstructions()));
+                new RunPatcherPipelineCommand()));
         builder.RegisterModule<SolutionPatcherModule>();
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<IPatcherIdProvider>();
@@ -89,7 +89,7 @@ public class CliTests
         var builder = new ContainerBuilder();
         builder.RegisterModule(
             new RunPipelineModule(
-                new RunPatcherPipelineInstructions()));
+                new RunPatcherPipelineCommand()));
         builder.RegisterModule<GitPatcherModule>();
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<IPatcherIdProvider>();
