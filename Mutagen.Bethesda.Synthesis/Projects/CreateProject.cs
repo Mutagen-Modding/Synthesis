@@ -57,7 +57,7 @@ public class CreateProject : ICreateProject
         sb.AppendLine($"    <PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{(insertOldVersion ? _currentVersions.OldSynthesisVersion : _currentVersions.SynthesisVersion)}\" />");
         sb.AppendLine($"  </ItemGroup>");
         sb.AppendLine("</Project>");
-        _exportStringToFile.ExportToFile(projPath, sb.GetString());
+        _exportStringToFile.ExportToFile(projPath, sb.GetString(), fileSystem: _fileSystem);
 
         // Generate Program.cs
         sb = new StructuredStringBuilder();
@@ -91,7 +91,7 @@ public class CreateProject : ICreateProject
                 }
             }
         }
-        _exportStringToFile.ExportToFile(Path.Combine(Path.GetDirectoryName(projPath)!, "Program.cs"), sb.GetString());
+        _exportStringToFile.ExportToFile(Path.Combine(Path.GetDirectoryName(projPath)!, "Program.cs"), sb.GetString(), fileSystem: _fileSystem);
 
         return new string[]
         {

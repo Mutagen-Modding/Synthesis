@@ -6,7 +6,6 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
@@ -27,14 +26,12 @@ public class ProfilesDisplayVm : ViewModel
 
     public ProfilesDisplayVm(
         ProfileManagerVm parent,
-        IProfileFactory profileFactory)
+        NewProfileVm.Factory newProfileVmFactory)
     {
         Config = parent;
         AddCommand = ReactiveCommand.Create(() =>
         {
-            DisplayObject = new NewProfileVm(
-                Config,
-                profileFactory);
+            DisplayObject = newProfileVmFactory(Config);
             DisplayedProfile = null;
         });
 

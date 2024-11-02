@@ -13,7 +13,8 @@
     <PackageReference Include="Mutagen.Bethesda.Autofac" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Autofac" />
-    <PackageReference Include="Noggog.Autofac" />
+      <PackageReference Include="Noggog.Autofac" />
+      <PackageReference Include="StrongInject" />
     <PackageReference Include="Serilog.Sinks.Console" />
   </ItemGroup>
 

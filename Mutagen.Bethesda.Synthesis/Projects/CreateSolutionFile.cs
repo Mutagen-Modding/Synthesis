@@ -36,7 +36,7 @@ public class CreateSolutionFile : ICreateSolutionFile
         sb.AppendLine($"# Visual Studio Version 16");
         sb.AppendLine($"VisualStudioVersion = 16.0.30330.147");
         sb.AppendLine($"MinimumVisualStudioVersion = 10.0.40219.1");
-        _exportStringToFile.ExportToFile(solutionPath, sb.GetString());
+        _exportStringToFile.ExportToFile(solutionPath, sb.GetString(), fileSystem: _fileSystem);
 
         // Create editorconfig
         sb = new StructuredStringBuilder();
@@ -51,7 +51,7 @@ public class CreateSolutionFile : ICreateSolutionFile
         sb.AppendLine();
         sb.AppendLine("# CS1998: Async function does not contain await");
         sb.AppendLine("dotnet_diagnostic.CS1998.severity = silent");
-        _exportStringToFile.ExportToFile(Path.Combine(slnDir, ".editorconfig"), sb.GetString());
+        _exportStringToFile.ExportToFile(Path.Combine(slnDir, ".editorconfig"), sb.GetString(), fileSystem: _fileSystem);
 
         // Add nullability errors
         sb = new StructuredStringBuilder();
@@ -67,7 +67,7 @@ public class CreateSolutionFile : ICreateSolutionFile
             sb.AppendLine("</PropertyGroup>");
         }
         sb.AppendLine("</Project>");
-        _exportStringToFile.ExportToFile(Path.Combine(slnDir, "Directory.Build.props"), sb.GetString());
+        _exportStringToFile.ExportToFile(Path.Combine(slnDir, "Directory.Build.props"), sb.GetString(), fileSystem: _fileSystem);
 
         return new string[]
         {
