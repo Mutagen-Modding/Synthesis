@@ -20,7 +20,7 @@ public class CreateProfileRunner
         _pipelineSettingsModifier = pipelineSettingsModifier;
     }
 
-    private void RunInternal(CreateProfileCommand cmd)
+    internal void RunInternal(CreateProfileCommand cmd)
     {
         _pipelineSettingsModifier.DoModification(cmd.SettingsFolderPath, (pipelineSettings) =>
         {

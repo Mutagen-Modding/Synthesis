@@ -63,6 +63,11 @@
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
+    <Compile Update="Permissions.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
