@@ -2,6 +2,8 @@
 
 Most of the documentation so far has been focused on making Mutagen-based patchers that are easily addable via Synthesis UI, but any program can be a patcher in Synthesis as long as it conforms to a few standards.
 
+This section talks about the CLI that patchers respond to, not the CLI that the [Synthesis engine](../Synthesis-CLI.md) responds to.
+
 ## General Workflow
 
 - Synthesis will pass you command line instructions

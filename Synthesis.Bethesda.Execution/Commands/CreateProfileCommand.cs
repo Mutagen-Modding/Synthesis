@@ -3,6 +3,7 @@ using Mutagen.Bethesda;
 
 namespace Synthesis.Bethesda.Execution.Commands;
 
+[Verb("create-profile", HelpText = "Create a new profile")]
 public class CreateProfileCommand
 {
     [Option('r', "GameRelease",
@@ -16,7 +17,7 @@ public class CreateProfileCommand
     public required string ProfileName { get; set; }
     
     [Option('p', "SettingsFolderPath",
-        HelpText = "Path to the folder containing the settings to be adjusted",
+        HelpText = "Path to the folder containing the PipelineSettings.json to be adjusted",
         Required = true)]
     public required string SettingsFolderPath { get; set; }
     

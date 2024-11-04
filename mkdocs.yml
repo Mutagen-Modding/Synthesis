@@ -61,6 +61,7 @@ nav:
   - Overview:
     - Installation: Installation.md
     - Typical Usage: Typical-Usage.md
+    - Patcher Settings: Patcher-Settings.md
     - Synthesis vs Mutagen: Synthesis-vs-Mutagen.md
     - Multiple Output Targets: Multiple-Output-Targets.md
     - Load Order of Patches: LoadOrder.md
@@ -70,6 +71,7 @@ nav:
     - .synth Files: Synth-File.md
     - Other Dynamic Mod Generators: Other-Dynamic-Mod-Generators.md
     - Language Settings: Language-Settings.md
+    - Synthesis CLI: Synthesis-CLI.md
     - Updating UI: Updating-UI.md
     # - Existing Saves: Existing-Saves.md
     - Starting Into a Specific Profile: Starting-Into-Profile.md

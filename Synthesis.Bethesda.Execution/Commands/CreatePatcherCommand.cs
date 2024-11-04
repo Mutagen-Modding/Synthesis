@@ -4,6 +4,7 @@ using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Commands;
 
+[Verb("create-patcher", HelpText = "Create a new patcher project template")]
 public class CreatePatcherCommand
 {
     [Option('c', "GameCategory",

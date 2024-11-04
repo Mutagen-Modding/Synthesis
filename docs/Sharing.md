@@ -5,7 +5,7 @@ So you have a good set of patchers and settings that you want to share!
 ## Use the Profile Export
 The profile area has a dedicated button for exporting a copy of your Synthesis settings, specialized for sharing with others.
 
-![Sharing](../images/sharing.gif)
+![Sharing](images/sharing.gif)
 
 You can then give others those settings instead, which will have a few tweaks to help ensure they get the same setup you intended to pass on to them.
 
