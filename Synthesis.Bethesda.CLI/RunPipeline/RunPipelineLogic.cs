@@ -2,6 +2,7 @@
 using Autofac;
 using Noggog;
 using Synthesis.Bethesda.Execution.Commands;
+using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.CLI.RunPipeline;
@@ -34,7 +35,7 @@ public class RunPipelineLogic
 
             var profile = container.Resolve<IRunProfileProvider>();
 
-            using var runScope = container.BeginLifetimeScope(c =>
+            using var runScope = container.BeginLifetimeScope(LifetimeScopes.RunNickname, c =>
             {
                 c.RegisterType<RunPipelineLogic>().AsSelf();
                 c.RegisterInstance(profile.Get())

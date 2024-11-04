@@ -61,7 +61,8 @@ public class PostRunProcessor
             _gameReleaseContext.Release,
             new BinaryReadParameters()
             {
-                MasterFlagsLookup = lo
+                MasterFlagsLookup = lo,
+                FileSystem = _fileSystem
             });
 
         var postProcessPath = new FilePath(

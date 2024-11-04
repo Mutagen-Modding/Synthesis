@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments;
+using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Testing.AutoData;
 using Noggog;
 using Synthesis.Bethesda.CLI.CreateNewPatcher;
@@ -50,5 +51,6 @@ public class RunPipelineLogicTests
             ProfileDefinitionPath = Path.Combine(existingSettingsPath, settingsNameProvider.Name)
         }, fileSystem);
         result.Should().Be(0);
+        fileSystem.File.Exists(Path.Combine(outputDir, ModKey.FromName(name, ModType.Plugin).FileName));
     }
 }
