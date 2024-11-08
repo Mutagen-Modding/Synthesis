@@ -1,6 +1,7 @@
 using System.IO.Abstractions;
 using CommandLine;
 using Synthesis.Bethesda.CLI.CreateNewPatcher;
+using Synthesis.Bethesda.CLI.CreateProfileCli;
 using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Commands;
 
@@ -13,10 +14,12 @@ class Program
         var fs = new FileSystem();
         return await Parser.Default.ParseArguments(args, 
                 typeof(RunPatcherPipelineCommand), 
+                typeof(CreateProfileCommand), 
                 typeof(CreatePatcherCommand))
             .MapResult(
                 async (RunPatcherPipelineCommand cmd) => await RunPipelineLogic.Run(cmd),
                 async (CreatePatcherCommand cmd) => await new CreateTemplatePatcherSolutionRunner(fs).Run(cmd),
+                async (CreateProfileCommand cmd) => await CreateProfileRunner.Run(cmd),
                 async _ => -1);
     }
 }
