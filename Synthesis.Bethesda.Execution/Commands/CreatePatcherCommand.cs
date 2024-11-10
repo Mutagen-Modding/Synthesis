@@ -21,5 +21,4 @@ public class CreatePatcherCommand
         HelpText = "Name to give patcher",
         Required = true)]
     public required string PatcherName { get; set; }
-
 }

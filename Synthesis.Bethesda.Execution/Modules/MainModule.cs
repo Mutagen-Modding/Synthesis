@@ -21,6 +21,7 @@ using Synthesis.Bethesda.Execution.Versioning.Query;
 using Noggog.WorkEngine;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services.Instantiation;
 using Synthesis.Bethesda.Execution.Startup;
 
 namespace Synthesis.Bethesda.Execution.Modules;
@@ -49,6 +50,7 @@ public class MainModule : Module
                 typeof(IPatcherNameSanitizer),
                 typeof(ILinesToReflectionConfigsParser),
                 typeof(INugetErrorSolution),
+                typeof(GitIdAllocator),
                 typeof(ExportGitAddFile),
                 typeof(IBuildOutputAccumulator),
                 typeof(IProjectRunProcessStartInfoProvider))

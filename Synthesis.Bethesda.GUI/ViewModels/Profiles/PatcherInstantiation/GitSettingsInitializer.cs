@@ -1,5 +1,6 @@
-﻿using System.IO;
-using Noggog;
+﻿using Noggog;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services.Instantiation;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
@@ -15,11 +16,14 @@ public interface IGitSettingsInitializer
 public class GitSettingsInitializer : IGitSettingsInitializer
 {
     private readonly IProfilePatcherEnumerable _patchersList;
+    private readonly GitIdAllocator _gitIdAllocator;
 
     public GitSettingsInitializer(
-        IProfilePatcherEnumerable patchersList)
+        IProfilePatcherEnumerable patchersList,
+        GitIdAllocator gitIdAllocator)
     {
         _patchersList = patchersList;
+        _gitIdAllocator = gitIdAllocator;
     }
         
     public GithubPatcherSettings Get(GithubPatcherSettings? settings)
@@ -31,27 +35,10 @@ public class GitSettingsInitializer : IGitSettingsInitializer
         
     private string GetNewId()
     {
-        bool IsValid(string id)
-        {
-            foreach (var patcher in _patchersList.Patchers.WhereCastable<PatcherVm, GitPatcherVm>())
-            {
-                if (patcher.ID == id)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+        var set = _patchersList.Patchers.WhereCastable<PatcherVm, GitPatcherVm>()
+            .Select(x => x.ID)
+            .ToHashSet();
 
-        for (int i = 0; i < 15; i++)
-        {
-            var attempt = Path.GetRandomFileName();
-            if (IsValid(attempt))
-            {
-                return attempt;
-            }
-        }
-
-        throw new ArgumentException("Could not allocate a new profile");
+        return _gitIdAllocator.GetNewId(set);
     }
 }
