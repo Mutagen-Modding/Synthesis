@@ -17,7 +17,6 @@ public class ProfileDirectories : IProfileDirectories
     public IWorkingDirectoryProvider Paths { get; }
     public IWorkingDirectorySubPaths WorkingDirectorySubPaths { get; }
     public IProfileIdentifier Ident { get; }
-
     public DirectoryPath ProfileDirectory => Path.Combine(Paths.WorkingDirectory, Ident.ID);
     public DirectoryPath WorkingDirectory => WorkingDirectorySubPaths.ProfileWorkingDirectory(Ident.ID);
     public DirectoryPath OutputDirectory => Path.Combine(WorkingDirectory, "Output");

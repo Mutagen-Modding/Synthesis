@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Autofac;
 using DynamicData;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
@@ -147,6 +148,7 @@ public class ProfileVm : ViewModel
         IEnvironmentErrorsVm environmentErrors,
         OverallErrorVm overallErrorVm,
         StartRun startRun,
+        IGameReleaseContext gameReleaseContext,
         AddGitPatcherResponder addGitPatcherResponder,
         ILogger logger)
     {
@@ -163,7 +165,7 @@ public class ProfileVm : ViewModel
         _startRun = startRun;
         _logger = logger;
         ID = ident.ID;
-        Release = ident.Release;
+        Release = gameReleaseContext.Release;
 
         GroupsDisplay = new SourceListUiFunnel<GroupVm>(Groups, this);
 

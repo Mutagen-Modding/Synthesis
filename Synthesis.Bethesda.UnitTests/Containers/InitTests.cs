@@ -26,7 +26,8 @@ public class InitTests
         builder.RegisterMock<IPatcherIdProvider>();
         builder.RegisterMock<GithubPatcherSettings>();
         builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
-            .As<IProfileIdentifier>()
+            .As<IProfileIdentifier>();
+        builder.RegisterInstance(Substitute.For<IGameReleaseContext>())
             .As<IGameReleaseContext>();
         var cont = builder.Build();
         cont.Validate(
@@ -41,7 +42,8 @@ public class InitTests
         builder.RegisterModule<GuiSolutionPatcherModule>();
         ContainerTestUtil.RegisterCommonMocks(builder);
         builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
-            .As<IProfileIdentifier>()
+            .As<IProfileIdentifier>();
+        builder.RegisterInstance(Substitute.For<IGameReleaseContext>())
             .As<IGameReleaseContext>();
         var cont = builder.Build();
         cont.Validate(
@@ -58,7 +60,8 @@ public class InitTests
         builder.RegisterMock<IPatcherIdProvider>();
         builder.RegisterMock<CliPatcherSettings>();
         builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
-            .As<IProfileIdentifier>()
+            .As<IProfileIdentifier>();
+        builder.RegisterInstance(Substitute.For<IGameReleaseContext>())
             .As<IGameReleaseContext>();
         var cont = builder.Build();
         cont.Validate(

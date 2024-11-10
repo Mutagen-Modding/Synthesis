@@ -34,7 +34,8 @@ public class PatcherVmTests
         builder.RegisterMock<GithubPatcherSettings>();
         builder.RegisterMock<ISynthesisProfileSettings>();
         builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
-            .As<IProfileIdentifier>()
+            .As<IProfileIdentifier>();
+        builder.RegisterInstance(Substitute.For<IGameReleaseContext>())
             .As<IGameReleaseContext>();
         var cont = builder.Build();
         cont.Validate(
@@ -54,7 +55,8 @@ public class PatcherVmTests
         builder.RegisterMock<ISynthesisProfileSettings>();
         builder.RegisterMock<IProjectSubpathDefaultSettings>();
         builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
-            .As<IProfileIdentifier>()
+            .As<IProfileIdentifier>();
+        builder.RegisterInstance(Substitute.For<IGameReleaseContext>())
             .As<IGameReleaseContext>();
         var cont = builder.Build();
         cont.Validate(
@@ -74,7 +76,8 @@ public class PatcherVmTests
         builder.RegisterMock<CliPatcherSettings>();
         builder.RegisterMock<ISynthesisProfileSettings>();
         builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
-            .As<IProfileIdentifier>()
+            .As<IProfileIdentifier>();
+        builder.RegisterInstance(Substitute.For<IGameReleaseContext>())
             .As<IGameReleaseContext>();
         var cont = builder.Build();
         cont.Validate(

@@ -1,4 +1,5 @@
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Strings;
 using Synthesis.Bethesda.Execution.Profile;
@@ -6,7 +7,7 @@ using Synthesis.Bethesda.Execution.Settings.V2;
 
 namespace Synthesis.Bethesda.Execution.Settings;
 
-public interface ISynthesisProfileSettings : IProfileIdentifier
+public interface ISynthesisProfileSettings : IProfileIdentifier, IGameReleaseContext
 {
     string Nickname { get; set; }
     new string ID { get; set; }

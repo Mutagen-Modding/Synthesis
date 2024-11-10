@@ -2,14 +2,12 @@ using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Linq;
 using Mutagen.Bethesda.Environments.DI;
-using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog;
 using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
-using Synthesis.Bethesda.Execution.Profile;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
@@ -41,8 +39,8 @@ public class ProfileOverridesVm : ViewModel,
         ISchedulerProvider schedulerProvider,
         IWatchDirectory watchDirectory,
         IFileSystem fileSystem,
-        IDataDirectoryLookup dataDirLookup,
-        IProfileIdentifier ident)
+        IGameReleaseContext gameReleaseContext,
+        IDataDirectoryLookup dataDirLookup)
     {
         FileSystem = fileSystem;
         
@@ -50,7 +48,7 @@ public class ProfileOverridesVm : ViewModel,
             .Select(path =>
             {
                 if (path != null) return Observable.Return(GetResponse<DirectoryPath>.Succeed(path));
-                return Observable.Return(ident.Release)
+                return Observable.Return(gameReleaseContext.Release)
                     .ObserveOn(schedulerProvider.TaskPool)
                     .Select(release =>
                     {

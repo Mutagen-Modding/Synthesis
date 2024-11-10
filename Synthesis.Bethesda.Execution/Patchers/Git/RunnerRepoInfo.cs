@@ -3,7 +3,7 @@ using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.PrepareRunner;
 using Synthesis.Bethesda.Execution.Versioning;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git.Services;
+namespace Synthesis.Bethesda.Execution.Patchers.Git;
 
 public record TargetProject(
     FilePath SolutionPath,

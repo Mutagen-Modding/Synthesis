@@ -9,7 +9,6 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
-using Synthesis.Bethesda.Execution.Profile;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
@@ -27,8 +26,7 @@ public class ProfileSimpleLinkCacheVm : ViewModel, IProfileSimpleLinkCacheVm
         ILogger logger,
         IGameReleaseContext gameReleaseContext,
         IProfileLoadOrder loadOrder,
-        IProfileOverridesVm overrides,
-        IProfileIdentifier ident)
+        IProfileOverridesVm overrides)
     {
         _simpleLinkCache = Observable.CombineLatest(
                 overrides.WhenAnyValue(x => x.DataFolderResult.Value),
@@ -48,7 +46,7 @@ public class ProfileSimpleLinkCacheVm : ViewModel, IProfileSimpleLinkCacheVm
                             x.dataFolder,
                             x.loadOrder,
                             gameReleaseContext.Release,
-                            factory: (modPath) => ModInstantiator.Importer(modPath, ident.Release));
+                            factory: (modPath) => ModInstantiator.Importer(modPath, gameReleaseContext.Release));
                         obs.OnNext(
                             (loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()),
                                 loadOrder));

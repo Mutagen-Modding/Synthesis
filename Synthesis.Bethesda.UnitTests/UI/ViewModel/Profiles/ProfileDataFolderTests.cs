@@ -113,10 +113,11 @@ public class ProfileDataFolderTests
         DirectoryPath folder,
         [Frozen]IFileSystem fs,
         [Frozen]IProfileIdentifier ident,
+        [Frozen]IGameReleaseContext gameReleaseContext,
         [Frozen]IDataDirectoryLookup lookup,
         Lazy<ProfileOverridesVm> sutF)
     {
-        lookup.TryGet(ident.Release, out Arg.Any<DirectoryPath>())
+        lookup.TryGet(gameReleaseContext.Release, out Arg.Any<DirectoryPath>())
             .Returns(x =>
             {
                 x[1] = folder;

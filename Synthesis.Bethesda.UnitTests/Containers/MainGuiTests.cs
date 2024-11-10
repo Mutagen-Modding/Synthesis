@@ -7,7 +7,6 @@ using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Containers;
 
@@ -19,7 +18,8 @@ public class MainGuiTests
         builder.RegisterModule<MainModule>();
         ContainerTestUtil.RegisterCommonMocks(builder);
         builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
-            .As<IProfileIdentifier>()
+            .As<IProfileIdentifier>();
+        builder.RegisterInstance(Substitute.For<IGameReleaseContext>())
             .As<IGameReleaseContext>();
         return builder;
     }

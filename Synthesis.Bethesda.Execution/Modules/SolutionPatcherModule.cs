@@ -1,6 +1,5 @@
-﻿using Autofac;
+using Autofac;
 using Noggog.Autofac;
-using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
@@ -15,7 +14,7 @@ public class SolutionPatcherModule : Module
         builder.RegisterAssemblyTypes(typeof(IPathToProjProvider).Assembly)
             .InNamespacesOf(
                 typeof(IPathToProjProvider),
-                typeof(IGithubPatcherIdentifier))
+                typeof(IBuildMetaFileReader))
             .NotInjection()
             .AsImplementedInterfaces()
             .AsSelf();
