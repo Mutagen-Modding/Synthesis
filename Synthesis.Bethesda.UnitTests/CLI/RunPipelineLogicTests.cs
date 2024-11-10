@@ -38,7 +38,7 @@ public class RunPipelineLogicTests
         result.Should().Be(0);
         var b = new ContainerBuilder();
         b.RegisterModule(createProfileRunnerModule);
-        b.Build().Resolve<CreateProfileRunner>().RunInternal(new CreateProfileCommand()
+        await b.Build().Resolve<CreateProfileRunner>().RunInternal(new CreateProfileCommand()
         {
             ProfileName = profileName,
             InitialGroupName = initialGroupName,

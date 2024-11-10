@@ -23,7 +23,7 @@ public class CreateProfileRunnerTests
     {
         var b = new ContainerBuilder();
         b.RegisterModule(createProfileRunnerModule);
-        b.Build().Resolve<CreateProfileRunner>().RunInternal(new CreateProfileCommand()
+        await b.Build().Resolve<CreateProfileRunner>().RunInternal(new CreateProfileCommand()
         {
             GameRelease = GameRelease.SkyrimSE,
             ProfileName = profileName,

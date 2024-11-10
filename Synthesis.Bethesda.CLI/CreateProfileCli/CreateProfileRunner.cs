@@ -1,4 +1,4 @@
-﻿using System.IO.Abstractions;
+using System.IO.Abstractions;
 using Autofac;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Synthesis.Profiles;
@@ -21,9 +21,9 @@ public class CreateProfileRunner
         _pipelineSettingsModifier = pipelineSettingsModifier;
     }
 
-    internal void RunInternal(CreateProfileCommand cmd)
+    internal async Task RunInternal(CreateProfileCommand cmd)
     {
-        _pipelineSettingsModifier.DoModification(cmd.SettingsFolderPath, (pipelineSettings) =>
+        await _pipelineSettingsModifier.DoModification(cmd.SettingsFolderPath, async (pipelineSettings) =>
         {
             var existingProfileIds = pipelineSettings.Profiles.Select(x => x.ID).ToHashSet();
             pipelineSettings.Profiles.Add(new SynthesisProfile()
@@ -51,7 +51,7 @@ public class CreateProfileRunner
             b.RegisterModule(new CreateProfileModule(new FileSystem()));
             var cont = b.Build();
             var create = cont.Resolve<CreateProfileRunner>();
-            create.RunInternal(cmd);
+            await create.RunInternal(cmd);
         }
         catch (Exception ex)
         {

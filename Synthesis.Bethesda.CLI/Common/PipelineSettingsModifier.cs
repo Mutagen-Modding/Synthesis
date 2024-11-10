@@ -26,7 +26,7 @@ public class PipelineSettingsModifier
         _pipelineSettingsExporter = pipelineSettingsExporter;
     }
 
-    public void DoModification(DirectoryPath settingsPath, Action<PipelineSettings> toDo)
+    public async Task DoModification(DirectoryPath settingsPath, Func<PipelineSettings, Task> toDo)
     {
         var pipelineSettingsPath = Path.Combine(settingsPath, _pipelineSettingsPath.Name);
         PipelineSettings settings;
@@ -39,7 +39,7 @@ public class PipelineSettingsModifier
             settings = new PipelineSettings();
         }
 
-        toDo(settings);
+        await toDo(settings);
         
         _pipelineSettingsExporter.Write(pipelineSettingsPath, settings);
     }
