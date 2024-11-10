@@ -1,6 +1,7 @@
 using System.IO.Abstractions;
 using CommandLine;
 using Synthesis.Bethesda.CLI.AddGitPatcher;
+using Synthesis.Bethesda.CLI.AddSolutionPatcher;
 using Synthesis.Bethesda.CLI.CreateProfileCli;
 using Synthesis.Bethesda.CLI.CreateTemplatePatcher;
 using Synthesis.Bethesda.CLI.RunPipeline;
@@ -17,11 +18,13 @@ class Program
                 typeof(RunPatcherPipelineCommand), 
                 typeof(CreateProfileCommand), 
                 typeof(AddGitPatcherCommand), 
+                typeof(AddSolutionPatcherCommand), 
                 typeof(CreatePatcherCommand))
             .MapResult(
                 async (RunPatcherPipelineCommand cmd) => await RunPipelineLogic.Run(cmd),
                 async (CreatePatcherCommand cmd) => await new CreateTemplatePatcherSolutionRunner(fs).Run(cmd),
                 async (AddGitPatcherCommand cmd) => await AddGitPatcherRunner.Run(cmd),
+                async (AddSolutionPatcherCommand cmd) => await AddSolutionPatcherRunner.Run(cmd),
                 async (CreateProfileCommand cmd) => await CreateProfileRunner.Run(cmd),
                 async _ => -1);
     }
