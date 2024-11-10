@@ -133,6 +133,9 @@
     <PackageVersion Include="Serilog.Sinks.Map">
       <Version>2.0.0</Version>
     </PackageVersion>
+      <PackageVersion Include="StrongInject">
+          <Version>1.4.4</Version>
+      </PackageVersion>
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
     <PackageVersion Include="System.Reactive">
       <Version>6.0.1</Version>
