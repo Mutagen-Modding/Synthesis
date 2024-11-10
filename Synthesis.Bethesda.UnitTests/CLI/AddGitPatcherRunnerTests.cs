@@ -1,8 +1,7 @@
-﻿using Autofac;
+using Autofac;
 using FluentAssertions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Testing.AutoData;
-using Noggog;
 using Noggog.IO;
 using Noggog.Testing.AutoFixture;
 using Synthesis.Bethesda.CLI.AddGitPatcher;
@@ -57,7 +56,7 @@ public class AddGitPatcherRunnerTests
                 ProfileName = profileName,
                 SettingsFolderPath = settingsFolder.Dir,
                 GitRepoAddress = repoPath,
-                SelectedProjectSubpath = Path.Combine("FaceFixer", "FaceFixer.csproj"),
+                ProjectSubpath = Path.Combine("FaceFixer", "FaceFixer.csproj"),
             });
             pipeSettings = reader.Read(pipelineSettingsPath);
             var patcher = pipeSettings.Profiles.First().Groups.First().Patchers.First() as GithubPatcherSettings;

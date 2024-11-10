@@ -1,4 +1,4 @@
-﻿using System.IO.Abstractions;
+using System.IO.Abstractions;
 using Autofac;
 using Noggog;
 using Synthesis.Bethesda.CLI.Common;
@@ -56,11 +56,11 @@ public class AddGitPatcherRunner
                 .Prepare(GetResponse<string>.Succeed(cmd.GitRepoAddress), CancellationToken.None)
                 .EvaluateOrThrow();
             
-            var gitSettings = new GithubPatcherSettings()
+            var settings = new GithubPatcherSettings()
             {
                 ID = id,
                 RemoteRepoPath = cmd.GitRepoAddress,
-                SelectedProjectSubpath = cmd.SelectedProjectSubpath,
+                SelectedProjectSubpath = cmd.ProjectSubpath,
                 Nickname = cmd.Nickname ?? string.Empty,
                 On = true,
                 PatcherVersioning = PatcherVersioningEnum.Branch,
@@ -70,7 +70,7 @@ public class AddGitPatcherRunner
                 SynthesisVersionType = PatcherNugetVersioningEnum.Profile,
                 AutoUpdateToBranchTip = false,
             };
-            group.Patchers.Add(gitSettings);
+            group.Patchers.Add(settings);
         });
     }
     

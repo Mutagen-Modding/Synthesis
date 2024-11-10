@@ -1,4 +1,4 @@
-﻿using CommandLine;
+using CommandLine;
 
 namespace Synthesis.Bethesda.Execution.Commands;
 
@@ -20,18 +20,18 @@ public class AddGitPatcherCommand
         Required = true)]
     public required string GroupName { get; set; }
     
+    [Option("PatcherNickname",
+        HelpText = "Nickname to give the patcher",
+        Required = false)]
+    public required string? Nickname { get; set; }
+    
     [Option('a', "GitRepoAddress",
         HelpText = "Address to the repository to add the git patcher from",
         Required = true)]
     public required string GitRepoAddress { get; set; }
     
-    [Option("SelectedProjectSubpath",
-        HelpText = "Project subpath to target.  Need to check the source code and find the target .csproj within.",
+    [Option("ProjectSubpath",
+        HelpText = "Project subpath to target",
         Required = true)]
-    public required string SelectedProjectSubpath { get; set; }
-    
-    [Option("PatcherNickname",
-        HelpText = "Nickname to give the patcher",
-        Required = false)]
-    public required string? Nickname { get; set; }
+    public required string ProjectSubpath { get; set; }
 }
