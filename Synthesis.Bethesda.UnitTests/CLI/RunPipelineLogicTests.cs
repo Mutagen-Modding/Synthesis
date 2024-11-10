@@ -1,12 +1,13 @@
 ﻿using System.IO.Abstractions;
+using Autofac;
 using FluentAssertions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Testing.AutoData;
 using Noggog;
-using Synthesis.Bethesda.CLI.CreateNewPatcher;
 using Synthesis.Bethesda.CLI.CreateProfileCli;
+using Synthesis.Bethesda.CLI.CreateTemplatePatcher;
 using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -25,7 +26,7 @@ public class RunPipelineLogicTests
         GameEnvironmentState env,
         DirectoryPath existingSettingsPath,
         PipelineSettingsPath settingsNameProvider,
-        CreateProfileRunnerContainer createProfileRunnerContainer)
+        CreateProfileModule createProfileRunnerModule)
     {
         var name = "Hello World";
         var result = await new CreateTemplatePatcherSolutionRunner(fileSystem).Run(new CreatePatcherCommand()
@@ -35,7 +36,9 @@ public class RunPipelineLogicTests
             ParentDirectory = patcherDir
         });
         result.Should().Be(0);
-        createProfileRunnerContainer.Resolve().Value.RunInternal(new CreateProfileCommand()
+        var b = new ContainerBuilder();
+        b.RegisterModule(createProfileRunnerModule);
+        b.Build().Resolve<CreateProfileRunner>().RunInternal(new CreateProfileCommand()
         {
             ProfileName = profileName,
             InitialGroupName = initialGroupName,

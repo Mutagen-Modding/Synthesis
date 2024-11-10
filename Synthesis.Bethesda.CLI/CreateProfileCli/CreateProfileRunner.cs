@@ -1,4 +1,5 @@
 ﻿using System.IO.Abstractions;
+using Autofac;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Synthesis.Profiles;
 using Synthesis.Bethesda.CLI.Common;
@@ -46,8 +47,10 @@ public class CreateProfileRunner
     {
         try
         {
-            var cont = new CreateProfileRunnerContainer(new FileSystem(), Log.Logger, new GameReleaseInjection(cmd.GameRelease));
-            var create = cont.Resolve().Value;
+            var b = new ContainerBuilder();
+            b.RegisterModule(new CreateProfileModule(new FileSystem()));
+            var cont = b.Build();
+            var create = cont.Resolve<CreateProfileRunner>();
             create.RunInternal(cmd);
         }
         catch (Exception ex)

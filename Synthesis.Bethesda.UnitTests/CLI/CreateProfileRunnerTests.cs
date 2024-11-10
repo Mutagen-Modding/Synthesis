@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using Autofac;
+using FluentAssertions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Testing.AutoData;
 using Noggog;
@@ -18,10 +19,11 @@ public class CreateProfileRunnerTests
         DirectoryPath existingSettingsPath,
         PipelineSettingsPath pipelineSettingsPathProvider,
         PipelineSettingsV2Reader reader,
-        CreateProfileRunnerContainer sutContainer)
+        CreateProfileModule createProfileRunnerModule)
     {
-        var sut = sutContainer.Resolve().Value;
-        sut.RunInternal(new CreateProfileCommand()
+        var b = new ContainerBuilder();
+        b.RegisterModule(createProfileRunnerModule);
+        b.Build().Resolve<CreateProfileRunner>().RunInternal(new CreateProfileCommand()
         {
             GameRelease = GameRelease.SkyrimSE,
             ProfileName = profileName,

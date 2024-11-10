@@ -3,7 +3,7 @@ using FluentAssertions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Testing.AutoData;
 using Noggog;
-using Synthesis.Bethesda.CLI.CreateNewPatcher;
+using Synthesis.Bethesda.CLI.CreateTemplatePatcher;
 using Synthesis.Bethesda.Execution.Commands;
 
 namespace Synthesis.Bethesda.UnitTests.CLI;

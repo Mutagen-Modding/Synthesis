@@ -1,8 +1,10 @@
 ﻿using System.IO.Abstractions;
+using Autofac;
 using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Synthesis.Projects;
 using Synthesis.Bethesda.Execution.Commands;
 
-namespace Synthesis.Bethesda.CLI.CreateNewPatcher;
+namespace Synthesis.Bethesda.CLI.CreateTemplatePatcher;
 
 public class CreateTemplatePatcherSolutionRunner
 {
@@ -17,8 +19,12 @@ public class CreateTemplatePatcherSolutionRunner
     {
         try
         {
-            var cont = new CreateTemplatePatcherSolutionContainer(_fileSystem, Log.Logger, new GameCategoryInjection(cmd.GameCategory));
-            var create = cont.Resolve().Value;
+            var b = new ContainerBuilder();
+            b.RegisterModule(new CreateTemplatePatcherSolutionModule(
+                _fileSystem,
+                new GameCategoryInjection(cmd.GameCategory)));
+            var cont = b.Build();
+            var create = cont.Resolve<CreateTemplatePatcherSolution>();
             var solutionPath = Path.Combine(cmd.ParentDirectory, $"{cmd.PatcherName}.sln");
             var projPath = Path.Combine(cmd.ParentDirectory, cmd.PatcherName, $"{cmd.PatcherName}.csproj");
             create.Create(solutionPath, projPath);

@@ -1,7 +1,7 @@
 using System.IO.Abstractions;
 using CommandLine;
-using Synthesis.Bethesda.CLI.CreateNewPatcher;
 using Synthesis.Bethesda.CLI.CreateProfileCli;
+using Synthesis.Bethesda.CLI.CreateTemplatePatcher;
 using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Commands;
 

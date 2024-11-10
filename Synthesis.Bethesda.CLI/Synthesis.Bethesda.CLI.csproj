@@ -14,7 +14,6 @@
     <PackageReference Include="Serilog" />
     <PackageReference Include="Autofac" />
       <PackageReference Include="Noggog.Autofac" />
-      <PackageReference Include="StrongInject" />
     <PackageReference Include="Serilog.Sinks.Console" />
   </ItemGroup>
 
@@ -64,6 +63,16 @@
       <BuildAction>Compile</BuildAction>
     </Compile>
     <Compile Update="Permissions.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="CommonCliModule.cs">
+      <CodeLanguage>cs</CodeLanguage>
+      <DefaultPackFolder>content</DefaultPackFolder>
+      <BuildAction>Compile</BuildAction>
+    </Compile>
+    <Compile Update="CreateNewPatcher\CreateTemplatePatcherSolutionModule.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
