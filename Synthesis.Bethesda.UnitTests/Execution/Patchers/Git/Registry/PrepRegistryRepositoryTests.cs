@@ -2,7 +2,7 @@
 using Noggog;
 using NSubstitute;
 using Noggog.GitRepository;
-using Synthesis.Bethesda.Execution.Patchers.Git.Registry;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services.Registry;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 

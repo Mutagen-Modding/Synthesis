@@ -9,6 +9,7 @@ using Mutagen.Bethesda.Plugins.Utility.DI;
 using Noggog;
 using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Profile;
+using Synthesis.Bethesda.Execution.Profile.Services;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner;
 

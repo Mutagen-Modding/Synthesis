@@ -2,6 +2,7 @@
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;
 

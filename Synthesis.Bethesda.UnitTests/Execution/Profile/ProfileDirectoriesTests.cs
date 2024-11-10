@@ -2,6 +2,7 @@
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Profile;
+using Synthesis.Bethesda.Execution.Profile.Services;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;
 

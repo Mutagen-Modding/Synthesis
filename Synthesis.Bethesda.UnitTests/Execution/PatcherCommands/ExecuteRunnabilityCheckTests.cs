@@ -7,6 +7,7 @@ using NSubstitute;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.UnitTests.AutoData;
 using Xunit;

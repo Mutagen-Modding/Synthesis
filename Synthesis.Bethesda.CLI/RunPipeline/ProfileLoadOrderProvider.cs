@@ -1,6 +1,6 @@
-﻿using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Order.DI;
-using Synthesis.Bethesda.Execution.Profile;
+using Synthesis.Bethesda.Execution.Profile.Services;
 
 namespace Synthesis.Bethesda.CLI.RunPipeline;
 

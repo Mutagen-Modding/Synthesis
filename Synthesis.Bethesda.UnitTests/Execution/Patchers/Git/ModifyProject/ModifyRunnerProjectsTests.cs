@@ -5,7 +5,7 @@ using Noggog.Testing.AutoFixture;
 using Serilog;
 using Serilog.Core;
 using StrongInject;
-using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services.ModifyProject;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Versioning;
 

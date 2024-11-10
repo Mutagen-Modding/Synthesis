@@ -9,6 +9,7 @@ using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings.Calculators;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Noggog.WorkEngine;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 

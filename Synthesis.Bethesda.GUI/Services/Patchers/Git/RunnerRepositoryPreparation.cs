@@ -6,6 +6,7 @@ using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Logging;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;
 

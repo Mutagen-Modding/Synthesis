@@ -10,6 +10,7 @@ using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Profile;
+using Synthesis.Bethesda.Execution.Profile.Services;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 

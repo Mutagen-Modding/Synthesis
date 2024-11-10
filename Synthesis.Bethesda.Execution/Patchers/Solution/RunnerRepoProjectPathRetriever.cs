@@ -3,6 +3,7 @@ using System.IO.Abstractions;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Solution;
 

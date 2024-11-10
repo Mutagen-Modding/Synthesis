@@ -8,7 +8,7 @@ using Noggog.IO;
 using Noggog.Utility;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
-using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services.ModifyProject;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Versioning;
 

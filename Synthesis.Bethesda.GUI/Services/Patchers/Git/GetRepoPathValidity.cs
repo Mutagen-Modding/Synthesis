@@ -3,6 +3,7 @@ using Noggog;
 using Noggog.Reactive;
 using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;
 
