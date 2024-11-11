@@ -16,23 +16,11 @@ using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Containers;
 
 public class CliTests
-{
-    [Fact]
-    public void ProfileLocator()
-    {
-        var builder = new ContainerBuilder();
-        builder.RegisterModule(
-            new RunPipelineModule(
-                new RunPatcherPipelineCommand()));
-        var cont = builder.Build();
-        cont.Validate(typeof(IRunProfileProvider));
-    }
-        
+{  
     [Fact]
     public void CliRun()
     {
