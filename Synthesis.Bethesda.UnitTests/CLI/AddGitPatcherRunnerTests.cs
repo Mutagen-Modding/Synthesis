@@ -53,7 +53,7 @@ public class AddGitPatcherRunnerTests
             {
                 Nickname = patcherNickname,
                 GroupName = groupName,
-                ProfileName = profileName,
+                ProfileIdentifier = profileName,
                 SettingsFolderPath = settingsFolder.Dir,
                 GitRepoAddress = repoPath,
                 ProjectSubpath = Path.Combine("FaceFixer", "FaceFixer.csproj"),

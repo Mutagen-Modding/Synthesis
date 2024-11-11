@@ -34,7 +34,7 @@ public class RunPipelineLogic
             {
                 builder.RegisterInstance(fileSystem).AsImplementedInterfaces();
             }
-            builder.RegisterInstance(new ProfileIdentifier(cmd.ProfileName)).AsImplementedInterfaces();
+            builder.RegisterInstance(new ProfileIdentifier(cmd.ProfileIdentifier)).AsImplementedInterfaces();
             if (cmd.DataFolderPath.HasValue)
             {
                 builder.RegisterInstance(new DataDirectoryInjection(cmd.DataFolderPath.Value))

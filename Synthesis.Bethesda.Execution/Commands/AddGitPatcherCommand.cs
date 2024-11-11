@@ -5,12 +5,12 @@ namespace Synthesis.Bethesda.Execution.Commands;
 [Verb("add-git-patcher", HelpText = "Adds a git patcher to a profile")]
 public class AddGitPatcherCommand
 {
-    [Option('n', "ProfileName",
-        HelpText = "Name of profile to add to",
+    [Option('p', "ProfileIdentifier",
+        HelpText = "Nickname/GUID of profile to add to",
         Required = true)]
-    public required string ProfileName { get; set; }
+    public required string ProfileIdentifier { get; set; }
     
-    [Option('p', "SettingsFolderPath",
+    [Option('s', "SettingsFolderPath",
         HelpText = "Path to the folder containing the PipelineSettings.json to be adjusted",
         Required = true)]
     public required string SettingsFolderPath { get; set; }

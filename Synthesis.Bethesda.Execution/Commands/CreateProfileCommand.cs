@@ -16,7 +16,7 @@ public class CreateProfileCommand
         Required = true)]
     public required string ProfileName { get; set; }
     
-    [Option('p', "SettingsFolderPath",
+    [Option('s', "SettingsFolderPath",
         HelpText = "Path to the folder containing the PipelineSettings.json to be adjusted",
         Required = true)]
     public required string SettingsFolderPath { get; set; }

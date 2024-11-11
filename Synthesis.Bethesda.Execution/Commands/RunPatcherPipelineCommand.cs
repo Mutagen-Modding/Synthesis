@@ -25,13 +25,13 @@ public class RunPatcherPipelineCommand :
     [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
     public FilePath? LoadOrderFilePath { get; set; }
 
-    [Option('p', "SettingsFolderPath",
+    [Option('s', "SettingsFolderPath",
         HelpText = "Path to the folder containing the PipelineSettings.json to be adjusted",
         Required = true)]
     public string SettingsFolderPath { get; set; } = string.Empty;
 
-    [Option('n', "ProfileName", Required = false, HelpText = "Nickname/GUID of profile to run if path is to a settings file with multiple profiles")]
-    public string ProfileName { get; set; } = string.Empty;
+    [Option('p', "ProfileIdentifier", Required = false, HelpText = "Nickname/GUID of profile to run if path is to a settings file with multiple profiles")]
+    public string ProfileIdentifier { get; set; } = string.Empty;
 
     [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to where top level extra patcher data should be stored/read from.  Default is next to the exe")]
     public DirectoryPath? ExtraDataFolder { get; set; }
@@ -52,7 +52,7 @@ public class RunPatcherPipelineCommand :
                + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
                + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
                + $"  {nameof(SettingsFolderPath)} => {this.SettingsFolderPath} \n"
-               + $"  {nameof(ProfileName)} => {this.ProfileName} \n"
+               + $"  {nameof(ProfileIdentifier)} => {this.ProfileIdentifier} \n"
                + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}\n"
                + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
                + $"  {nameof(PersistenceMode)} => {this.PersistenceMode}\n"
@@ -60,5 +60,5 @@ public class RunPatcherPipelineCommand :
     }
     
     FilePath IProfileDefinitionPathProvider.Path => Path.Combine(SettingsFolderPath, "PipelineSettings.json");
-    string IProfileNameProvider.Name => ProfileName;
+    string IProfileNameProvider.Name => ProfileIdentifier;
 }

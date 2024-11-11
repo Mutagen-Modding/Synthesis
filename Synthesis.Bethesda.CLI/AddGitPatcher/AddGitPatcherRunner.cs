@@ -38,12 +38,12 @@ public class AddGitPatcherRunner
     {
         await _pipelineSettingsModifier.DoModification(cmd.SettingsFolderPath, async (pipelineSettings, settingsPath) =>
         {
-            var profile = _profileRetriever.GetProfile(pipelineSettings.Profiles, settingsPath, cmd.ProfileName);
+            var profile = _profileRetriever.GetProfile(pipelineSettings.Profiles, settingsPath, cmd.ProfileIdentifier);
             
             var group = profile.Groups.FirstOrDefault(x => x.Name == cmd.GroupName);
             if (group == null)
             {
-                throw new KeyNotFoundException($"Could not find a group name {cmd.GroupName} within profile {cmd.ProfileName} in settings path {settingsPath}");
+                throw new KeyNotFoundException($"Could not find a group name {cmd.GroupName} within profile {cmd.ProfileIdentifier} in settings path {settingsPath}");
             }
             
             var patcherIds = pipelineSettings.Profiles

@@ -50,7 +50,7 @@ public class AddSolutionPatcherRunnerTests
         {
             Nickname = patcherNickname,
             GroupName = groupName,
-            ProfileName = profileName,
+            ProfileIdentifier = profileName,
             SettingsFolderPath = existingSettingsFolder,
             SolutionPath = slnPath,
             ProjectSubpath = projSubPath,

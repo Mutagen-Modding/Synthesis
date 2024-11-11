@@ -46,7 +46,7 @@ public class RunPatcherPipeline
         }
         var pipeSettings = _pipelineSettingsV2Reader.Read(pipelineSettingsPath);
 
-        var profile = _profileRetriever.GetProfile(pipeSettings.Profiles, pipelineSettingsPath, Command.ProfileName);
+        var profile = _profileRetriever.GetProfile(pipeSettings.Profiles, pipelineSettingsPath, Command.ProfileIdentifier);
 
         using var profileScope = _scope.BeginLifetimeScope(LifetimeScopes.ProfileNickname, (b) =>
         {

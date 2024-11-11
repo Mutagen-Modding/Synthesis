@@ -57,7 +57,7 @@ public class RunPipelineLogicTests
         var solutionDir = Path.Combine(patcherDir.Dir, $"{name}.sln");
         await b.Build().Resolve<AddSolutionPatcherRunner>().Add(new AddSolutionPatcherCommand()
         {
-            ProfileName = profileName,
+            ProfileIdentifier = profileName,
             SettingsFolderPath = existingSettingsPath.Dir,
             SolutionPath = solutionDir,
             ProjectSubpath = Path.Combine(name, $"{name}.csproj"),
@@ -106,7 +106,7 @@ public class RunPipelineLogicTests
         {
             DataFolderPath = dataFolder.Dir,
             LoadOrderFilePath = pluginList.File,
-            ProfileName = profileName,
+            ProfileIdentifier = profileName,
             OutputDirectory = outputDir.Dir,
             SettingsFolderPath = existingSettingsPath.Dir
         }, fileSystem);
