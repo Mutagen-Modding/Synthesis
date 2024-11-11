@@ -21,12 +21,12 @@ public class PipelineProfilesProvider : IPipelineProfilesProvider, IPipelineSett
 
     public IPipelineSettings Settings => _settings.Value;
     public IPipelineSettingsImporter PipelineSettingsImporter { get; }
-    public IProfileDefinitionPathProvider ProfileDefinitionPathProvider { get; }
+    public IPipelineSettingsPath ProfileDefinitionPathProvider { get; }
 
     public PipelineProfilesProvider(
         IFileSystem fileSystem,
         IPipelineSettingsImporter pipelineSettingsImporter,
-        IProfileDefinitionPathProvider profileDefinitionPathProvider)
+        IPipelineSettingsPath profileDefinitionPathProvider)
     {
         PipelineSettingsImporter = pipelineSettingsImporter;
         ProfileDefinitionPathProvider = profileDefinitionPathProvider;

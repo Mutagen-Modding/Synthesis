@@ -3,6 +3,7 @@ using CommandLine;
 using Noggog;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
+using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Commands;
@@ -10,7 +11,7 @@ namespace Synthesis.Bethesda.Execution.Commands;
 [Verb("run-pipeline", HelpText = "Run the patcher pipeline")]
 [ExcludeFromCodeCoverage]
 public class RunPatcherPipelineCommand : 
-    ISettingsFolderProvider,
+    IPipelineSettingsPath,
     IExecutionParametersSettingsProvider
 {
     [Option('o', "OutputDirectory", Required = true, HelpText = "Path where the patcher should place its resulting file(s).")]
@@ -22,10 +23,10 @@ public class RunPatcherPipelineCommand :
     [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
     public string? LoadOrderFilePath { get; set; }
 
-    [Option('s', "SettingsFolderPath",
-        HelpText = "Path to the folder containing the PipelineSettings.json to be adjusted",
+    [Option('s', "PipelineSettingsPath",
+        HelpText = "Path to a specific pipeline settings to read from",
         Required = true)]
-    public string SettingsFolderPath { get; set; } = string.Empty;
+    public string PipelineSettingsPath { get; set; } = string.Empty;
 
     [Option('p', "ProfileIdentifier", Required = false, HelpText = "Nickname/GUID of profile to run if path is to a settings file with multiple profiles")]
     public string? ProfileIdentifier { get; set; }
@@ -48,7 +49,7 @@ public class RunPatcherPipelineCommand :
                + $"  {nameof(OutputDirectory)} => {this.OutputDirectory} \n"
                + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
                + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
-               + $"  {nameof(SettingsFolderPath)} => {this.SettingsFolderPath} \n"
+               + $"  {nameof(PipelineSettingsPath)} => {this.PipelineSettingsPath} \n"
                + $"  {nameof(ProfileIdentifier)} => {this.ProfileIdentifier} \n"
                + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}\n"
                + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
@@ -56,5 +57,5 @@ public class RunPatcherPipelineCommand :
                + $"  {nameof(TargetRuntime)} => {this.TargetRuntime}";
     }
 
-    DirectoryPath ISettingsFolderProvider.SettingsFolder => SettingsFolderPath;
+    FilePath IPipelineSettingsPath.Path => PipelineSettingsPath;
 }

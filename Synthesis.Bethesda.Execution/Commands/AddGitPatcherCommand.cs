@@ -1,21 +1,21 @@
 using CommandLine;
 using Noggog;
-using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Synthesis.Bethesda.Execution.Commands;
 
 [Verb("add-git-patcher", HelpText = "Adds a git patcher to a profile")]
-public class AddGitPatcherCommand : ISettingsFolderProvider
+public class AddGitPatcherCommand : IPipelineSettingsPath
 {
     [Option('p', "ProfileIdentifier",
         HelpText = "Nickname/GUID of profile to add to",
         Required = true)]
     public required string ProfileIdentifier { get; set; }
-    
-    [Option('s', "SettingsFolderPath",
-        HelpText = "Path to the folder containing the PipelineSettings.json to be adjusted",
+
+    [Option('s', "PipelineSettingsPath",
+        HelpText = "Path to a specific pipeline settings to read from",
         Required = true)]
-    public required string SettingsFolderPath { get; set; }
+    public string PipelineSettingsPath { get; set; } = string.Empty;
     
     [Option('g', "GroupName",
         HelpText = "Name of the patcher group to add patcher to",
@@ -37,5 +37,5 @@ public class AddGitPatcherCommand : ISettingsFolderProvider
         Required = true)]
     public required string ProjectSubpath { get; set; }
 
-    DirectoryPath ISettingsFolderProvider.SettingsFolder => SettingsFolderPath;
+    FilePath IPipelineSettingsPath.Path => PipelineSettingsPath;
 }

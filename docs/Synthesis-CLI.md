@@ -15,7 +15,7 @@ Runs the Synthesis pipeline on all the groups for a specific profile.
 | Short | Long | Required | Description |
 | ---- | ---- | ---- | ---- |
 | `-o` | `--OutputDirectory` | Required | Path where the patcher should place its resulting file(s). |
-| `-p` | `--ProfileDefinitionPath` | Required | Path to a specific profile or settings definition to run |
+| `-s` | `--SettingsFolderPath` | Required | Path to the folder containing the pipeline settings to run |
 | `-d` | `--DataFolderPath` | Optional | Path to the data folder. |
 | `-n` | `--ProfileName` | Semi-Optional | Nickname/GUID of profile to run if path is to a settings file with multiple profiles |
 | `-l` | `--LoadOrderFilePath` | Optional | Path to the load order file to use. |

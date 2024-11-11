@@ -28,9 +28,9 @@ public class RunPipelineLogicTests
     {
         using var dataFolder = TempFolder.Factory();
         using var patcherDir = TempFolder.Factory();
-        using var existingSettingsPath = TempFolder.Factory();
         using var outputDir = TempFolder.Factory();
         using var pluginList = new TempFile();
+        using var pipelineSettingsFile = new TempFile();
         var name = "TestName";
         var result = await new CreateTemplatePatcherSolutionRunner(fileSystem).Run(new CreateTemplatePatcherCommand()
         {
@@ -45,7 +45,7 @@ public class RunPipelineLogicTests
         {
             ProfileName = profileName,
             InitialGroupName = groupName,
-            SettingsFolderPath = existingSettingsPath.Dir,
+            PipelineSettingsPath = pipelineSettingsFile.File,
             GameRelease = GameRelease.SkyrimSE
         };
         b.RegisterModule(new CreateProfileModule(fileSystem, createProfileCmd));
@@ -56,7 +56,7 @@ public class RunPipelineLogicTests
         var addSlnCmd = new AddSolutionPatcherCommand()
         {
             ProfileIdentifier = profileName,
-            SettingsFolderPath = existingSettingsPath.Dir,
+            PipelineSettingsPath = pipelineSettingsFile.File,
             SolutionPath = solutionDir,
             ProjectSubpath = Path.Combine(name, $"{name}.csproj"),
             Nickname = patcherNickname,
@@ -108,7 +108,7 @@ public class RunPipelineLogicTests
             LoadOrderFilePath = pluginList.File,
             ProfileIdentifier = profileName,
             OutputDirectory = outputDir.Dir,
-            SettingsFolderPath = existingSettingsPath.Dir
+            PipelineSettingsPath = pipelineSettingsFile.File,
         }, fileSystem);
         result.Should().Be(0);
         var patchFilePath = Path.Combine(outputDir.Dir, ModKey.FromName(groupName, ModType.Plugin).FileName);

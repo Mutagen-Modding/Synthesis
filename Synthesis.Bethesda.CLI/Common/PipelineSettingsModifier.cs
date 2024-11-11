@@ -10,25 +10,25 @@ namespace Synthesis.Bethesda.CLI.Common;
 public class PipelineSettingsModifier
 {
     private readonly IFileSystem _fileSystem;
-    private readonly IProfileDefinitionPathProvider _profileDefinitionPathProvider;
+    private readonly IPipelineSettingsPath _pipelineSettingsPath;
     private readonly IPipelineSettingsV2Reader _pipelineSettingsV2Reader;
     private readonly IPipelineSettingsExporter _pipelineSettingsExporter;
 
     public PipelineSettingsModifier(
         IFileSystem fileSystem,
-        IProfileDefinitionPathProvider profileDefinitionPathProvider,
+        IPipelineSettingsPath pipelineSettingsPath,
         IPipelineSettingsV2Reader pipelineSettingsV2Reader,
         IPipelineSettingsExporter pipelineSettingsExporter)
     {
         _fileSystem = fileSystem;
-        _profileDefinitionPathProvider = profileDefinitionPathProvider;
+        _pipelineSettingsPath = pipelineSettingsPath;
         _pipelineSettingsV2Reader = pipelineSettingsV2Reader;
         _pipelineSettingsExporter = pipelineSettingsExporter;
     }
 
     public async Task DoModification(Func<PipelineSettings, FilePath, Task> toDo)
     {
-        var pipelineSettingsPath = _profileDefinitionPathProvider.Path;
+        var pipelineSettingsPath = _pipelineSettingsPath.Path;
         PipelineSettings settings;
         if (_fileSystem.File.Exists(pipelineSettingsPath))
         {

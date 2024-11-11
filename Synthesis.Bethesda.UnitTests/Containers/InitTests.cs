@@ -4,6 +4,7 @@ using Noggog;
 using Noggog.Autofac;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Patchers.Common;
+using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Modules;
@@ -25,10 +26,9 @@ public class InitTests
         ContainerTestUtil.RegisterCommonMocks(builder);
         builder.RegisterMock<IPatcherIdProvider>();
         builder.RegisterMock<GithubPatcherSettings>();
-        builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
-            .As<IProfileIdentifier>();
-        builder.RegisterInstance(Substitute.For<IGameReleaseContext>())
-            .As<IGameReleaseContext>();
+        builder.RegisterMock<IProfileIdentifier>();
+        builder.RegisterMock<IGameReleaseContext>();
+        builder.RegisterMock<IPipelineSettingsPath>();
         var cont = builder.Build();
         cont.Validate(
             typeof(GitPatcherInitVm));
@@ -41,10 +41,9 @@ public class InitTests
         builder.RegisterModule<MainModule>();
         builder.RegisterModule<GuiSolutionPatcherModule>();
         ContainerTestUtil.RegisterCommonMocks(builder);
-        builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
-            .As<IProfileIdentifier>();
-        builder.RegisterInstance(Substitute.For<IGameReleaseContext>())
-            .As<IGameReleaseContext>();
+        builder.RegisterMock<IProfileIdentifier>();
+        builder.RegisterMock<IGameReleaseContext>();
+        builder.RegisterMock<IPipelineSettingsPath>();
         var cont = builder.Build();
         cont.Validate(
             typeof(SolutionPatcherInitVm));
@@ -59,10 +58,9 @@ public class InitTests
         ContainerTestUtil.RegisterCommonMocks(builder);
         builder.RegisterMock<IPatcherIdProvider>();
         builder.RegisterMock<CliPatcherSettings>();
-        builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
-            .As<IProfileIdentifier>();
-        builder.RegisterInstance(Substitute.For<IGameReleaseContext>())
-            .As<IGameReleaseContext>();
+        builder.RegisterMock<IProfileIdentifier>();
+        builder.RegisterMock<IGameReleaseContext>();
+        builder.RegisterMock<IPipelineSettingsPath>();
         var cont = builder.Build();
         cont.Validate(
             typeof(CliPatcherInitVm));

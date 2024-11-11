@@ -1,4 +1,4 @@
-﻿using System.IO.Abstractions.TestingHelpers;
+﻿using System.IO.Abstractions;
 using FluentAssertions;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -8,7 +8,6 @@ using Synthesis.Bethesda.GUI.Json;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Migration.GuiV1toV2;
 
@@ -16,7 +15,8 @@ public class V1toV2Tests
 {
     [Theory, SynthAutoData]
     public void Upgrade(
-        MockFileSystem fs,
+        IFileSystem fs,
+        IPipelineSettingsPath pipelineSettingsPath,
         IGuiSettingsPath settingsPath)
     {
         fs.File.WriteAllText(settingsPath.Path, File.ReadAllText(Path.Combine("Migration", "GuiV1toV2", "GuiSettings.json")));
@@ -26,7 +26,7 @@ public class V1toV2Tests
                 new GuiSettingsImporter(fs),
                 Substitute.For<IPipelineSettingsImporter>(),
                 new PipelineSettingsMigration(fs, new SettingsVersionRetriever(fs)),
-                new PipelineSettingsPath());
+                pipelineSettingsPath);
         import.Pipeline.BuildCorePercentage.Should().Be(.123);
         import.Pipeline.WorkingDirectory.Should().Be("Testing123");
         import.Pipeline.DotNetPathOverride.Should().Be("HelloWorld");

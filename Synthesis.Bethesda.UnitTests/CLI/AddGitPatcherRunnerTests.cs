@@ -8,7 +8,6 @@ using Noggog.Testing.AutoFixture;
 using Synthesis.Bethesda.CLI.AddGitPatcher;
 using Synthesis.Bethesda.CLI.CreateProfileCli;
 using Synthesis.Bethesda.Execution.Commands;
-using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Profile.Services;
 using Synthesis.Bethesda.Execution.Settings;
@@ -24,15 +23,15 @@ public class AddGitPatcherRunnerTests
         string profileName,
         string patcherNickname,
         string groupName,
-        PipelineSettingsPath pipelineSettingsPathProvider,
         PipelineSettingsV2Reader reader)
     {
+        using var pipelineSettingsPath = new TempFile();
         using var settingsFolder = TempFolder.Factory();
         var createProfileCmd = new CreateProfileCommand()
         {
             ProfileName = profileName,
             InitialGroupName = groupName,
-            SettingsFolderPath = settingsFolder.Dir,
+            PipelineSettingsPath = pipelineSettingsPath.File,
             GameRelease = GameRelease.SkyrimSE
         };
         var repoPath = "https://github.com/Synthesis-Collective/facefixer";
@@ -40,15 +39,14 @@ public class AddGitPatcherRunnerTests
         b.RegisterModule(new CreateProfileModule(fileSystem, createProfileCmd));
         b.RegisterInstance(createProfileCmd).AsImplementedInterfaces();
         await b.Build().Resolve<CreateProfileRunner>().RunInternal(createProfileCmd);
-        var pipelineSettingsPath = Path.Combine(settingsFolder.Dir, pipelineSettingsPathProvider.Name);
-        var pipeSettings = reader.Read(pipelineSettingsPath);
+        var pipeSettings = reader.Read(pipelineSettingsPath.File);
 
         var addGitPatcherCmd = new AddGitPatcherCommand()
         {
             Nickname = patcherNickname,
             GroupName = groupName,
             ProfileIdentifier = profileName,
-            SettingsFolderPath = settingsFolder.Dir,
+            PipelineSettingsPath = pipelineSettingsPath.File,
             GitRepoAddress = repoPath,
             ProjectSubpath = Path.Combine("FaceFixer", "FaceFixer.csproj"),
         };
@@ -62,7 +60,7 @@ public class AddGitPatcherRunnerTests
         try
         {
             await cont.Resolve<AddGitPatcherRunner>().Add(addGitPatcherCmd);
-            pipeSettings = reader.Read(pipelineSettingsPath);
+            pipeSettings = reader.Read(pipelineSettingsPath.File);
             var patcher = pipeSettings.Profiles.First().Groups.First().Patchers.First() as GithubPatcherSettings;
             patcher!.Nickname.Should().Be(patcherNickname);
             patcher.RemoteRepoPath.Should().Be(repoPath);

@@ -1,10 +1,8 @@
 using System.IO.Abstractions;
 using Autofac;
-using Noggog;
 using Synthesis.Bethesda.CLI.Common;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Modules;
-using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V2;
@@ -15,7 +13,6 @@ public class RunPatcherPipeline
 {
     private readonly ILifetimeScope _scope;
     private readonly IFileSystem _fileSystem;
-    private readonly IPipelineSettingsPath _pipelineSettingsPath;
     private readonly ProfileRetriever _profileRetriever;
     private readonly IPipelineSettingsV2Reader _pipelineSettingsV2Reader;
     public RunPatcherPipelineCommand Command { get; }
@@ -23,14 +20,12 @@ public class RunPatcherPipeline
     public RunPatcherPipeline(
         ILifetimeScope scope,
         IFileSystem fileSystem,
-        IPipelineSettingsPath pipelineSettingsPath,
         ProfileRetriever profileRetriever,
         IPipelineSettingsV2Reader pipelineSettingsV2Reader,
         RunPatcherPipelineCommand command)
     {
         _scope = scope;
         _fileSystem = fileSystem;
-        _pipelineSettingsPath = pipelineSettingsPath;
         _profileRetriever = profileRetriever;
         _pipelineSettingsV2Reader = pipelineSettingsV2Reader;
         Command = command;
@@ -38,7 +33,7 @@ public class RunPatcherPipeline
         
     public async Task Run(CancellationToken cancel)
     {
-        var pipelineSettingsPath = Path.Combine(Command.SettingsFolderPath, _pipelineSettingsPath.Name);
+        var pipelineSettingsPath = Command.PipelineSettingsPath;
 
         if (!_fileSystem.File.Exists(pipelineSettingsPath))
         {

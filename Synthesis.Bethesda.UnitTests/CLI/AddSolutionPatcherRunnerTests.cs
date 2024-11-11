@@ -4,6 +4,7 @@ using FluentAssertions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Testing.AutoData;
 using Noggog;
+using Noggog.IO;
 using Synthesis.Bethesda.CLI.AddSolutionPatcher;
 using Synthesis.Bethesda.CLI.CreateProfileCli;
 using Synthesis.Bethesda.Execution.Commands;
@@ -22,23 +23,20 @@ public class AddSolutionPatcherRunnerTests
         string profileName,
         string patcherNickname,
         string groupName,
-        PipelineSettingsPath pipelineSettingsPathProvider,
+        FilePath pipelineSettingsPath,
         PipelineSettingsV2Reader reader,
-        DirectoryPath patcherDir,
-        DirectoryPath existingSettingsFolder)
+        DirectoryPath patcherDir)
     {
         var b = new ContainerBuilder();
         var createProfileCmd = new CreateProfileCommand()
         {
             ProfileName = profileName,
             InitialGroupName = groupName,
-            SettingsFolderPath = existingSettingsFolder,
+            PipelineSettingsPath = pipelineSettingsPath,
             GameRelease = GameRelease.SkyrimSE
         };
         b.RegisterModule(new CreateProfileModule(fileSystem, createProfileCmd));
         await b.Build().Resolve<CreateProfileRunner>().RunInternal(createProfileCmd);
-        var pipelineSettingsPath = Path.Combine(existingSettingsFolder, pipelineSettingsPathProvider.Name);
-        var pipeSettings = reader.Read(pipelineSettingsPath);
         
         b = new ContainerBuilder();
         var slnPath = Path.Combine(patcherDir, $"{slnPatcherName}.sln");
@@ -48,14 +46,14 @@ public class AddSolutionPatcherRunnerTests
             Nickname = patcherNickname,
             GroupName = groupName,
             ProfileIdentifier = profileName,
-            SettingsFolderPath = existingSettingsFolder,
+            PipelineSettingsPath = pipelineSettingsPath,
             SolutionPath = slnPath,
             ProjectSubpath = projSubPath,
         };
         b.RegisterModule(new AddSolutionPatcherModule(fileSystem, addSlnCmd));
         var cont = b.Build();
         await cont.Resolve<AddSolutionPatcherRunner>().Add(addSlnCmd);
-        pipeSettings = reader.Read(pipelineSettingsPath);
+        var pipeSettings = reader.Read(pipelineSettingsPath);
         var patcher = pipeSettings.Profiles.First().Groups.First().Patchers.First() as SolutionPatcherSettings;
         patcher!.Nickname.Should().Be(patcherNickname);
         patcher.ProjectSubpath.Should().Be(projSubPath);
