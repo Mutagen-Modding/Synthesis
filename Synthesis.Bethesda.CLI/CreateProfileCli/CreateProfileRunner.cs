@@ -23,7 +23,7 @@ public class CreateProfileRunner
 
     internal async Task RunInternal(CreateProfileCommand cmd)
     {
-        await _pipelineSettingsModifier.DoModification(cmd.SettingsFolderPath, async (pipelineSettings) =>
+        await _pipelineSettingsModifier.DoModification(cmd.SettingsFolderPath, async (pipelineSettings, settingsPath) =>
         {
             var existingProfileIds = pipelineSettings.Profiles.Select(x => x.ID).ToHashSet();
             pipelineSettings.Profiles.Add(new SynthesisProfile()

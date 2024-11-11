@@ -18,18 +18,18 @@ public class AddSolutionPatcherRunner
     
     public async Task Add(AddSolutionPatcherCommand cmd)
     {
-        await _pipelineSettingsModifier.DoModification(cmd.SettingsFolderPath, async (pipelineSettings) =>
+        await _pipelineSettingsModifier.DoModification(cmd.SettingsFolderPath, async (pipelineSettings, settingsPath) =>
         {
             var profile = pipelineSettings.Profiles.FirstOrDefault(x => x.Nickname == cmd.ProfileName);
             if (profile == null)
             {
-                throw new KeyNotFoundException($"Could not find a profile name {cmd.ProfileName} in settings file {cmd.SettingsFolderPath}");
+                throw new KeyNotFoundException($"Could not find a profile name {cmd.ProfileName} in settings path {settingsPath}");
             }
             
             var group = profile.Groups.FirstOrDefault(x => x.Name == cmd.GroupName);
             if (group == null)
             {
-                throw new KeyNotFoundException($"Could not find a group name {cmd.GroupName} within profile {cmd.ProfileName} in settings file {cmd.SettingsFolderPath}");
+                throw new KeyNotFoundException($"Could not find a group name {cmd.GroupName} within profile {cmd.ProfileName} in settings path {settingsPath}");
             }
             
             var settings = new SolutionPatcherSettings()
