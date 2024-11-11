@@ -28,7 +28,7 @@ public class AddSolutionPatcherCommand : IPipelineSettingsPath
     public required string? Nickname { get; set; }
     
     [Option("SolutionPath",
-        HelpText = "Address to the solution to add the patcher from",
+        HelpText = "Path to the solution to add the patcher from",
         Required = true)]
     public required string SolutionPath { get; set; }
     

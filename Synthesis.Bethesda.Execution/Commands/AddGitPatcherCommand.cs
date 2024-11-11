@@ -28,7 +28,7 @@ public class AddGitPatcherCommand : IPipelineSettingsPath
     public required string? Nickname { get; set; }
     
     [Option('a', "GitRepoAddress",
-        HelpText = "Address to the repository to add the git patcher from",
+        HelpText = "URL address to the repository to add the git patcher from",
         Required = true)]
     public required string GitRepoAddress { get; set; }
     
