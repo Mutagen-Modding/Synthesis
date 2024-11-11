@@ -43,7 +43,7 @@ public class CliTests
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<ISynthesisProfileSettings>();
         var cont = builder.Build();
-        cont.Validate(typeof(IRunPatcherPipeline));
+        cont.Validate(typeof(RunPatcherPipeline));
     }
 
     [Fact]

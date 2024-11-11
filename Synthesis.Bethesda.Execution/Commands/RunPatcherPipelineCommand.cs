@@ -1,9 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using CommandLine;
-using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Synthesis.Bethesda.Commands;
-using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
@@ -16,20 +14,21 @@ namespace Synthesis.Bethesda.Execution.Commands;
 public class RunPatcherPipelineCommand :
     IProfileDefinitionPathProvider,
     IProfileNameProvider,
-    IExecutionParametersSettingsProvider,
-    IDataDirectoryProvider
+    IExecutionParametersSettingsProvider
 {
     [Option('o', "OutputDirectory", Required = true, HelpText = "Path where the patcher should place its resulting file(s).")]
     public DirectoryPath OutputDirectory { get; set; }
 
     [Option('d', "DataFolderPath", Required = false, HelpText = "Path to the data folder.")]
-    public DirectoryPath DataFolderPath { get; set; } = string.Empty;
+    public DirectoryPath? DataFolderPath { get; set; }
 
     [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
-    public FilePath LoadOrderFilePath { get; set; } = string.Empty;
+    public FilePath? LoadOrderFilePath { get; set; }
 
-    [Option('p', "ProfileDefinitionPath", Required = true, HelpText = "Path to a specific profile or settings definition to run")]
-    public FilePath ProfileDefinitionPath { get; set; } = string.Empty;
+    [Option('p', "SettingsFolderPath",
+        HelpText = "Path to the folder containing the PipelineSettings.json to be adjusted",
+        Required = true)]
+    public string SettingsFolderPath { get; set; } = string.Empty;
 
     [Option('n', "ProfileName", Required = false, HelpText = "Nickname/GUID of profile to run if path is to a settings file with multiple profiles")]
     public string ProfileName { get; set; } = string.Empty;
@@ -52,7 +51,7 @@ public class RunPatcherPipelineCommand :
                + $"  {nameof(OutputDirectory)} => {this.OutputDirectory} \n"
                + $"  {nameof(DataFolderPath)} => {this.DataFolderPath} \n"
                + $"  {nameof(LoadOrderFilePath)} => {this.LoadOrderFilePath}\n"
-               + $"  {nameof(ProfileDefinitionPath)} => {this.ProfileDefinitionPath} \n"
+               + $"  {nameof(SettingsFolderPath)} => {this.SettingsFolderPath} \n"
                + $"  {nameof(ProfileName)} => {this.ProfileName} \n"
                + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}\n"
                + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
@@ -60,7 +59,6 @@ public class RunPatcherPipelineCommand :
                + $"  {nameof(TargetRuntime)} => {this.TargetRuntime}";
     }
     
-    FilePath IProfileDefinitionPathProvider.Path => ProfileDefinitionPath;
+    FilePath IProfileDefinitionPathProvider.Path => Path.Combine(SettingsFolderPath, "PipelineSettings.json");
     string IProfileNameProvider.Name => ProfileName;
-    DirectoryPath IDataDirectoryProvider.Path => DataFolderPath;
 }

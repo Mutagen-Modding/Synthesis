@@ -4,7 +4,6 @@ using Mutagen.Bethesda.Autofac;
 using Noggog.Autofac;
 using Noggog.Autofac.Modules;
 using Serilog;
-using Synthesis.Bethesda.CLI.RunPipeline.Settings;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Reporters;
@@ -38,7 +37,6 @@ public class RunPipelineModule : Module
         builder.RegisterAssemblyTypes(typeof(ProfileLoadOrderProvider).Assembly)
             .InNamespacesOf(
                 typeof(ProfileLoadOrderProvider))
-            .NotInNamespacesOf(typeof(DataFolderPathDecorator))
             .AsImplementedInterfaces()
             .AsSelf();
             

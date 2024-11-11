@@ -1,50 +1,81 @@
+using System.IO.Abstractions;
+using Autofac;
 using Synthesis.Bethesda.Execution.Commands;
+using Synthesis.Bethesda.Execution.Modules;
+using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V2;
 
 namespace Synthesis.Bethesda.CLI.RunPipeline;
 
-public interface IRunPatcherPipeline
+public class RunPatcherPipeline
 {
-    Task Run(CancellationToken cancel);
-}
-
-public class RunPatcherPipeline : IRunPatcherPipeline
-{
-    public ISynthesisProfileSettings ProfileSettings { get; }
-    public IExecuteRun ExecuteRun { get; }
-    public IGetGroupRunners GetGroupRunners { get; }
+    private readonly ILifetimeScope _scope;
+    private readonly IFileSystem _fileSystem;
+    private readonly IPipelineSettingsPath _pipelineSettingsPath;
+    private readonly IPipelineSettingsV2Reader _pipelineSettingsV2Reader;
     public RunPatcherPipelineCommand Command { get; }
 
     public RunPatcherPipeline(
-        IExecuteRun executeRun,
-        IGetGroupRunners getGroupRunners,
-        ISynthesisProfileSettings profileSettings,
+        ILifetimeScope scope,
+        IFileSystem fileSystem,
+        // IExecuteRun executeRun,
+        // IGetGroupRunners getGroupRunners,
+        IPipelineSettingsPath pipelineSettingsPath,
+        IPipelineSettingsV2Reader pipelineSettingsV2Reader,
         RunPatcherPipelineCommand command)
     {
-        ProfileSettings = profileSettings;
-        ExecuteRun = executeRun;
-        GetGroupRunners = getGroupRunners;
+        _scope = scope;
+        _fileSystem = fileSystem;
+        _pipelineSettingsPath = pipelineSettingsPath;
+        _pipelineSettingsV2Reader = pipelineSettingsV2Reader;
         Command = command;
     }
         
     public async Task Run(CancellationToken cancel)
     {
-        await ExecuteRun
+        var pipelineSettingsPath = Path.Combine(Command.SettingsFolderPath, _pipelineSettingsPath.Name);
+
+        if (!_fileSystem.File.Exists(pipelineSettingsPath))
+        {
+            throw new FileNotFoundException("Could not find settings", pipelineSettingsPath);
+        }
+        var pipeSettings = _pipelineSettingsV2Reader.Read(pipelineSettingsPath);
+        
+        var profile = pipeSettings.Profiles.FirstOrDefault(x => x.Nickname == Command.ProfileName);
+        if (profile == null)
+        {
+            throw new KeyNotFoundException($"Could not find a profile name {Command.ProfileName} in settings path {pipelineSettingsPath}");
+        }
+
+        using var profileScope = _scope.BeginLifetimeScope(LifetimeScopes.ProfileNickname, (b) =>
+        {
+            b.RegisterInstance(profile).AsImplementedInterfaces();
+        });
+
+        var getGroupRunners = profileScope.Resolve<IGetGroupRunners>();
+
+        using var runScope = profileScope.BeginLifetimeScope(LifetimeScopes.RunNickname, (b) =>
+        {
+        });
+        var executeRun = runScope.Resolve<IExecuteRun>();
+        
+        await executeRun
             .Run(
-                groups: GetGroupRunners.Get(cancel),
+                groups: getGroupRunners.Get(cancel),
                 outputDir: Command.OutputDirectory,
                 cancel: cancel,
                 runParameters: new RunParameters(
-                    TargetLanguage: ProfileSettings.TargetLanguage,
-                    Localize: ProfileSettings.Localize,
-                    UseUtf8ForEmbeddedStrings: ProfileSettings.UseUtf8ForEmbeddedStrings,
-                    HeaderVersionOverride: ProfileSettings.HeaderVersionOverride,
-                    FormIDRangeMode: ProfileSettings.FormIDRangeMode,
+                    TargetLanguage: profile.TargetLanguage,
+                    Localize: profile.Localize,
+                    UseUtf8ForEmbeddedStrings: profile.UseUtf8ForEmbeddedStrings,
+                    HeaderVersionOverride: profile.HeaderVersionOverride,
+                    FormIDRangeMode: profile.FormIDRangeMode,
                     PersistenceMode: Command.PersistenceMode ?? PersistenceMode.None, 
                     PersistencePath: Command.PersistencePath,
-                    Master: ProfileSettings.ExportAsMasterFiles,
-                    MasterStyleFallbackEnabled: ProfileSettings.MasterStyleFallbackEnabled,
-                    MasterStyle: ProfileSettings.MasterStyle)).ConfigureAwait(false);
+                    Master: profile.ExportAsMasterFiles,
+                    MasterStyleFallbackEnabled: profile.MasterStyleFallbackEnabled,
+                    MasterStyle: profile.MasterStyle)).ConfigureAwait(false);
     }
 }

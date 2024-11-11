@@ -2,58 +2,121 @@
 using Autofac;
 using FluentAssertions;
 using Mutagen.Bethesda;
-using Mutagen.Bethesda.Environments;
 using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Testing.AutoData;
-using Noggog;
+using Noggog.IO;
+using Noggog.Testing.AutoFixture;
+using Synthesis.Bethesda.CLI.AddSolutionPatcher;
 using Synthesis.Bethesda.CLI.CreateProfileCli;
 using Synthesis.Bethesda.CLI.CreateTemplatePatcher;
 using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Commands;
-using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Synthesis.Bethesda.UnitTests.CLI;
 
 public class RunPipelineLogicTests
 {
-    [Theory, MutagenAutoData]
+    [Theory, MutagenModAutoData(FileSystem: TargetFileSystem.Real)]
     public async Task Typical(
         IFileSystem fileSystem,
         string profileName,
-        string initialGroupName,
-        DirectoryPath patcherDir,
-        DirectoryPath outputDir,
-        GameEnvironmentState env,
-        DirectoryPath existingSettingsPath,
-        PipelineSettingsPath settingsNameProvider,
-        CreateProfileModule createProfileRunnerModule)
+        string groupName,
+        string patcherNickname,
+        SkyrimMod someMod,
+        Npc npc,
+        CreateProfileModule createProfileRunnerModule,
+        AddSolutionPatcherModule addSolutionPatcherModule)
     {
-        var name = "Hello World";
-        var result = await new CreateTemplatePatcherSolutionRunner(fileSystem).Run(new CreatePatcherCommand()
+        using var dataFolder = TempFolder.Factory();
+        using var patcherDir = TempFolder.Factory();
+        using var existingSettingsPath = TempFolder.Factory();
+        using var outputDir = TempFolder.Factory();
+        using var pluginList = new TempFile();
+        var name = "TestName";
+        var result = await new CreateTemplatePatcherSolutionRunner(fileSystem).Run(new CreateTemplatePatcherCommand()
         {
             PatcherName = name,
             GameCategory = GameCategory.Skyrim,
-            ParentDirectory = patcherDir
+            ParentDirectory = patcherDir.Dir
         });
         result.Should().Be(0);
+        
         var b = new ContainerBuilder();
         b.RegisterModule(createProfileRunnerModule);
         await b.Build().Resolve<CreateProfileRunner>().RunInternal(new CreateProfileCommand()
         {
             ProfileName = profileName,
-            InitialGroupName = initialGroupName,
-            SettingsFolderPath = existingSettingsPath,
+            InitialGroupName = groupName,
+            SettingsFolderPath = existingSettingsPath.Dir,
             GameRelease = GameRelease.SkyrimSE
         });
+        
+        b = new ContainerBuilder();
+        b.RegisterModule(addSolutionPatcherModule);
+        var solutionDir = Path.Combine(patcherDir.Dir, $"{name}.sln");
+        await b.Build().Resolve<AddSolutionPatcherRunner>().Add(new AddSolutionPatcherCommand()
+        {
+            ProfileName = profileName,
+            SettingsFolderPath = existingSettingsPath.Dir,
+            SolutionPath = solutionDir,
+            ProjectSubpath = Path.Combine(name, $"{name}.csproj"),
+            Nickname = patcherNickname,
+            GroupName = groupName
+        });
+        
+        await fileSystem.File.WriteAllTextAsync(pluginList.File, $"*{someMod.ModKey.FileName}");
+        npc.EditorID = "Before";
+        await someMod.BeginWrite.ToPath(Path.Combine(dataFolder.Dir, someMod.ModKey.FileName))
+            .WithNoLoadOrder()
+            .WithFileSystem(fileSystem)
+            .WriteAsync();
+        
+        await fileSystem.File.WriteAllTextAsync(Path.Combine(patcherDir.Dir, name, "Program.cs"),
+            """
+            using Mutagen.Bethesda;
+            using Mutagen.Bethesda.Synthesis;
+            using Mutagen.Bethesda.Skyrim;
+            
+            namespace TestName
+            {
+                public class Program
+                {
+                    public static async Task<int> Main(string[] args)
+                    {
+                        return await SynthesisPipeline.Instance
+                            .AddPatch<ISkyrimMod, ISkyrimModGetter>(RunPatch)
+                            .SetTypicalOpen(GameRelease.SkyrimSE, "YourPatcher.esp")
+                            .Run(args);
+                    }
+            
+                    public static void RunPatch(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
+                    {
+                        foreach (var npc in state.LoadOrder.PriorityOrder.Npc().WinningOverrides())
+                        {
+                            var npcOverride = state.PatchMod.Npcs.GetOrAddAsOverride(npc);
+                            npcOverride.EditorID = "After";
+                        }
+                    }
+                }
+            }
+            """);
+        
         result = await RunPipelineLogic.Run(new RunPatcherPipelineCommand()
         {
-            DataFolderPath = env.DataFolderPath,
-            LoadOrderFilePath = env.LoadOrderFilePath,
+            DataFolderPath = dataFolder.Dir,
+            LoadOrderFilePath = pluginList.File,
             ProfileName = profileName,
-            OutputDirectory = outputDir,
-            ProfileDefinitionPath = Path.Combine(existingSettingsPath, settingsNameProvider.Name)
+            OutputDirectory = outputDir.Dir,
+            SettingsFolderPath = existingSettingsPath.Dir
         }, fileSystem);
         result.Should().Be(0);
-        fileSystem.File.Exists(Path.Combine(outputDir, ModKey.FromName(name, ModType.Plugin).FileName));
+        var patchFilePath = Path.Combine(outputDir.Dir, ModKey.FromName(groupName, ModType.Plugin).FileName);
+        fileSystem.File.Exists(patchFilePath).Should().BeTrue();
+        using var reimport = SkyrimMod.Create(SkyrimRelease.SkyrimSE)
+            .FromPath(patchFilePath)
+            .WithFileSystem(fileSystem)
+            .Construct();
+        reimport.Npcs.Select(x => x.EditorID).Should().Equal("After");
     }
 }
