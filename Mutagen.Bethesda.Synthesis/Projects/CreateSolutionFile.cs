@@ -33,8 +33,8 @@ public class CreateSolutionFile : ICreateSolutionFile
         // Create solution
         StructuredStringBuilder sb = new();
         sb.AppendLine($"Microsoft Visual Studio Solution File, Format Version 12.00");
-        sb.AppendLine($"# Visual Studio Version 16");
-        sb.AppendLine($"VisualStudioVersion = 16.0.30330.147");
+        sb.AppendLine($"# Visual Studio Version 17");
+        sb.AppendLine($"VisualStudioVersion = 17.10.35122.118");
         sb.AppendLine($"MinimumVisualStudioVersion = 10.0.40219.1");
         _exportStringToFile.ExportToFile(solutionPath, sb.GetString(), fileSystem: _fileSystem);
 
