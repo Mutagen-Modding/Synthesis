@@ -49,7 +49,6 @@ public class RunPipelineModule : Module
             .AsSelf()
             .AsImplementedInterfaces();
         
-        builder.RegisterInstance(new ProfileIdentifier(_cmd.ProfileIdentifier)).AsImplementedInterfaces();
         if (_cmd.DataFolderPath != null)
         {
             builder.RegisterInstance(new DataDirectoryInjection(_cmd.DataFolderPath))

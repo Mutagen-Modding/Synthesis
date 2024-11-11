@@ -12,6 +12,11 @@ public class ProfileRetriever
     {
         if (profileIdentifier.IsNullOrEmpty())
         {
+            if (profiles.Count > 1)
+            {
+                throw new ArgumentException($"There were more than one profile in settings path {settingsPath}.  Must specify profile explicitly");
+            }
+            
             var profile = profiles.FirstOrDefault();
             if (profile == null)
             {

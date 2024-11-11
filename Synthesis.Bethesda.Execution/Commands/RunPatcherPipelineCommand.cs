@@ -27,8 +27,8 @@ public class RunPatcherPipelineCommand :
         Required = true)]
     public string SettingsFolderPath { get; set; } = string.Empty;
 
-    [Option('p', "ProfileIdentifier", Required = true, HelpText = "Nickname/GUID of profile to run if path is to a settings file with multiple profiles")]
-    public required string ProfileIdentifier { get; set; }
+    [Option('p', "ProfileIdentifier", Required = false, HelpText = "Nickname/GUID of profile to run if path is to a settings file with multiple profiles")]
+    public string? ProfileIdentifier { get; set; }
 
     [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to where top level extra patcher data should be stored/read from.  Default is next to the exe")]
     public string? ExtraDataFolder { get; set; }
