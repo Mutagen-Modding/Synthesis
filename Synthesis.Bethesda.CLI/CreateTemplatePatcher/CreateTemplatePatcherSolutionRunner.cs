@@ -15,7 +15,7 @@ public class CreateTemplatePatcherSolutionRunner
         _fileSystem = fileSystem;
     }
     
-    public async Task<int> Run(CreatePatcherCommand cmd)
+    public async Task<int> Run(CreateTemplatePatcherCommand cmd)
     {
         try
         {

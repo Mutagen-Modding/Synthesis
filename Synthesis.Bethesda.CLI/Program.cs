@@ -19,10 +19,10 @@ class Program
                 typeof(CreateProfileCommand), 
                 typeof(AddGitPatcherCommand), 
                 typeof(AddSolutionPatcherCommand), 
-                typeof(CreatePatcherCommand))
+                typeof(CreateTemplatePatcherCommand))
             .MapResult(
                 async (RunPatcherPipelineCommand cmd) => await RunPipelineLogic.Run(cmd),
-                async (CreatePatcherCommand cmd) => await new CreateTemplatePatcherSolutionRunner(fs).Run(cmd),
+                async (CreateTemplatePatcherCommand cmd) => await new CreateTemplatePatcherSolutionRunner(fs).Run(cmd),
                 async (AddGitPatcherCommand cmd) => await AddGitPatcherRunner.Run(cmd),
                 async (AddSolutionPatcherCommand cmd) => await AddSolutionPatcherRunner.Run(cmd),
                 async (CreateProfileCommand cmd) => await CreateProfileRunner.Run(cmd),

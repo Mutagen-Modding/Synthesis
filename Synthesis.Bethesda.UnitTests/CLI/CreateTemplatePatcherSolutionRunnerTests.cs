@@ -17,7 +17,7 @@ public class CreateTemplatePatcherSolutionRunnerTests
         CreateTemplatePatcherSolutionRunner sut)
     {
         var name = "Hello World";
-        var result = await sut.Run(new CreatePatcherCommand()
+        var result = await sut.Run(new CreateTemplatePatcherCommand()
         {
             PatcherName = name,
             GameCategory = GameCategory.Skyrim,
