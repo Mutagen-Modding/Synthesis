@@ -1,4 +1,4 @@
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using Autofac;
 using Noggog;
 using Synthesis.Bethesda.CLI.Common;
@@ -35,8 +35,18 @@ public class AddGitPatcherRunner
     {
         await _pipelineSettingsModifier.DoModification(cmd.SettingsFolderPath, async (pipelineSettings) =>
         {
-            var profile = pipelineSettings.Profiles.First(x => x.Nickname == cmd.ProfileName);
-            var group = profile.Groups.First(x => x.Name == cmd.GroupName);
+            var profile = pipelineSettings.Profiles.FirstOrDefault(x => x.Nickname == cmd.ProfileName);
+            if (profile == null)
+            {
+                throw new KeyNotFoundException($"Could not find a profile name {cmd.ProfileName} in settings file {cmd.SettingsFolderPath}");
+            }
+            
+            var group = profile.Groups.FirstOrDefault(x => x.Name == cmd.GroupName);
+            if (group == null)
+            {
+                throw new KeyNotFoundException($"Could not find a group name {cmd.GroupName} within profile {cmd.ProfileName} in settings file {cmd.SettingsFolderPath}");
+            }
+            
             var patcherIds = pipelineSettings.Profiles
                 .SelectMany(x => x.Groups)
                 .SelectMany(x => x.Patchers)
