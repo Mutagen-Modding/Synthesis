@@ -8,7 +8,7 @@ A framework and GUI to empower people to create mods via code instead of by hand
 ![Typical Usage](https://i.imgur.com/Wj2fGaF.gif)
 
 ## Installation
-If you're looking to install, we have a [wiki page](https://github.com/Mutagen-Modding/Synthesis/wiki/Installation) with the details.
+Check out the [![Documentation](https://i.imgur.com/DGoSrNg.png)](https://mutagen-modding.github.io/Mutagen/) [Official Documentation]([https://mutagen-modding.github.io/Mutagen/](https://mutagen-modding.github.io/Synthesis/Installation/)) for installation and typical usage instructions.
 
 Also be sure to head over to [Discord](https://discord.gg/53KMEsW) and ask any and all questions you may have!
 
