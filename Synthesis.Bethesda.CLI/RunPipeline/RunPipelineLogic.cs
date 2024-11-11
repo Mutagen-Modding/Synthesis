@@ -1,10 +1,9 @@
-﻿using System.IO.Abstractions;
+using System.IO.Abstractions;
 using Autofac;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog;
 using Synthesis.Bethesda.Execution.Commands;
-using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Utility;
 
@@ -12,14 +11,11 @@ namespace Synthesis.Bethesda.CLI.RunPipeline;
 
 public class RunPipelineLogic
 {
-    private readonly IStartupTask[] _startups;
     private readonly RunPatcherPipeline _runPipeline;
 
     public RunPipelineLogic(
-        IStartupTask[] startups,
         RunPatcherPipeline runPipeline)
     {
-        _startups = startups;
         _runPipeline = runPipeline;
     }
     
@@ -29,25 +25,13 @@ public class RunPipelineLogic
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule(
-                new RunPipelineModule(cmd));
-            if (fileSystem != null)
-            {
-                builder.RegisterInstance(fileSystem).AsImplementedInterfaces();
-            }
-            builder.RegisterInstance(new ProfileIdentifier(cmd.ProfileIdentifier)).AsImplementedInterfaces();
-            if (cmd.DataFolderPath.HasValue)
-            {
-                builder.RegisterInstance(new DataDirectoryInjection(cmd.DataFolderPath.Value))
-                    .AsImplementedInterfaces();
-            }
-
-            if (cmd.LoadOrderFilePath.HasValue)
-            {
-                builder.RegisterInstance(new PluginListingsPathInjection(cmd.LoadOrderFilePath.Value))
-                    .AsImplementedInterfaces();
-            }
+                new RunPipelineModule(fileSystem.GetOrDefault(), cmd));
             
             var container = builder.Build();
+
+            container
+                .Resolve<IStartupTask[]>()
+                .ForEach(x => x.Start());
 
             await container
                 .Resolve<RunPipelineLogic>()
@@ -63,7 +47,6 @@ public class RunPipelineLogic
 
     private async Task RunInternal()
     {
-        _startups.ForEach(x => x.Start());
         await _runPipeline.Run(CancellationToken.None);
     }
 }

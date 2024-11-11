@@ -7,7 +7,7 @@ using Synthesis.Bethesda.Execution.Settings.V2;
 
 namespace Synthesis.Bethesda.Execution.Settings;
 
-public interface ISynthesisProfileSettings : IProfileIdentifier, IGameReleaseContext
+public interface ISynthesisProfileSettings : IProfileIdentifier, IGameReleaseContext, IProfileNameProvider
 {
     string Nickname { get; set; }
     new string ID { get; set; }

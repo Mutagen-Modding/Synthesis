@@ -1,9 +1,11 @@
 ﻿using CommandLine;
+using Noggog;
+using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Commands;
 
 [Verb("add-solution-patcher", HelpText = "Adds a solution patcher to a profile")]
-public class AddSolutionPatcherCommand
+public class AddSolutionPatcherCommand : ISettingsFolderProvider
 {
     [Option('p', "ProfileIdentifier",
         HelpText = "Nickname/GUID of profile to add to",
@@ -34,4 +36,6 @@ public class AddSolutionPatcherCommand
         HelpText = "Project subpath to target",
         Required = true)]
     public required string ProjectSubpath { get; set; }
+
+    DirectoryPath ISettingsFolderProvider.SettingsFolder => SettingsFolderPath;
 }

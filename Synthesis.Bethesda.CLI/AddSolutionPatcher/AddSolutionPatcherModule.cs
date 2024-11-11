@@ -1,15 +1,18 @@
 ﻿using System.IO.Abstractions;
 using Autofac;
+using Synthesis.Bethesda.Execution.Commands;
 
 namespace Synthesis.Bethesda.CLI.AddSolutionPatcher;
 
 public class AddSolutionPatcherModule : Autofac.Module
 {
     private readonly IFileSystem _fileSystem;
+    private readonly AddSolutionPatcherCommand _cmd;
 
-    public AddSolutionPatcherModule(IFileSystem fileSystem)
+    public AddSolutionPatcherModule(IFileSystem fileSystem, AddSolutionPatcherCommand cmd)
     {
         _fileSystem = fileSystem;
+        _cmd = cmd;
     }
     
     protected override void Load(ContainerBuilder builder)
@@ -21,15 +24,6 @@ public class AddSolutionPatcherModule : Autofac.Module
 
         builder.RegisterType<AddSolutionPatcherRunner>().AsSelf().SingleInstance();
 
-        // Synthesis.Bethesda.Execution
-        // builder.RegisterAssemblyTypes(typeof(IPrepareDriverRespository).Assembly)
-        //     .InNamespacesOf(
-        //         typeof(IPrepareDriverRespository),
-        //         typeof(IDriverRepoDirectoryProvider),
-        //         typeof(ISolutionFileLocator),
-        //         typeof(IProfileDirectories))
-        //     .AsSelf()
-        //     .AsMatchingInterface()
-        //     .SingleInstance();
+        builder.RegisterInstance(_cmd).AsImplementedInterfaces();
     }
 }

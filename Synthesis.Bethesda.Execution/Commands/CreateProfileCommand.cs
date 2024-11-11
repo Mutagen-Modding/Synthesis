@@ -1,10 +1,12 @@
 ﻿using CommandLine;
 using Mutagen.Bethesda;
+using Noggog;
+using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Commands;
 
 [Verb("create-profile", HelpText = "Create a new profile")]
-public class CreateProfileCommand
+public class CreateProfileCommand : ISettingsFolderProvider
 {
     [Option('r', "GameRelease",
         HelpText = "Game release that the profile should be related to",
@@ -25,4 +27,6 @@ public class CreateProfileCommand
         HelpText = "Name to give the initial patcher group",
         Required = true)]
     public required string InitialGroupName { get; set; }
+
+    DirectoryPath ISettingsFolderProvider.SettingsFolder => SettingsFolderPath;
 }

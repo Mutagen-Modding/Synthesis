@@ -3,6 +3,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Strings;
+using Synthesis.Bethesda.Execution.Profile;
 
 namespace Synthesis.Bethesda.Execution.Settings.V2;
 
@@ -32,4 +33,5 @@ public class SynthesisProfile : ISynthesisProfileSettings
     public bool ExportAsMasterFiles { get; set; }
     public bool MasterStyleFallbackEnabled { get; set; }
     public MasterStyle MasterStyle { get; set; }
+    string IProfileNameProvider.Name => Nickname;
 }

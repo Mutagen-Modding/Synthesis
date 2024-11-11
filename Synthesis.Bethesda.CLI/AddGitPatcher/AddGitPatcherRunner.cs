@@ -3,7 +3,6 @@ using Autofac;
 using Noggog;
 using Synthesis.Bethesda.CLI.Common;
 using Synthesis.Bethesda.Execution.Commands;
-using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.Instantiation;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.PrepareDriver;
@@ -36,7 +35,7 @@ public class AddGitPatcherRunner
     
     public async Task Add(AddGitPatcherCommand cmd)
     {
-        await _pipelineSettingsModifier.DoModification(cmd.SettingsFolderPath, async (pipelineSettings, settingsPath) =>
+        await _pipelineSettingsModifier.DoModification(async (pipelineSettings, settingsPath) =>
         {
             var profile = _profileRetriever.GetProfile(pipelineSettings.Profiles, settingsPath, cmd.ProfileIdentifier);
             
@@ -56,7 +55,7 @@ public class AddGitPatcherRunner
 
             using var subCont = _scope.BeginLifetimeScope((c) =>
             {
-                c.RegisterModule(new AddGitPatcherModule(_fileSystem));
+                c.RegisterModule(new AddGitPatcherModule(_fileSystem, cmd));
                 c.RegisterInstance(new GithubPatcherIdentifier(id)).AsImplementedInterfaces();
                 c.RegisterInstance(new ProfileIdentifier(profile.ID)).AsImplementedInterfaces();
             });
@@ -88,7 +87,7 @@ public class AddGitPatcherRunner
         try
         {
             var b = new ContainerBuilder();
-            b.RegisterModule(new AddGitPatcherModule(new FileSystem()));
+            b.RegisterModule(new AddGitPatcherModule(new FileSystem(), cmd));
             var cont = b.Build();
             var adder = cont.Resolve<AddGitPatcherRunner>();
             await adder.Add(cmd);

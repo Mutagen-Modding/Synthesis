@@ -1,33 +1,36 @@
 ﻿using System.IO.Abstractions;
 using Autofac;
 using Mutagen.Bethesda.Autofac;
+using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog.Autofac;
-using Noggog.Autofac.Modules;
-using Serilog;
 using Synthesis.Bethesda.CLI.Common;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Modules;
+using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Reporters;
 
 namespace Synthesis.Bethesda.CLI.RunPipeline;
 
 public class RunPipelineModule : Module
 {
-    public RunPatcherPipelineCommand Settings { get; }
+    private readonly IFileSystem _fileSystem;
+    private readonly RunPatcherPipelineCommand _cmd;
 
-    public RunPipelineModule(RunPatcherPipelineCommand settings)
+    public RunPipelineModule(
+        IFileSystem fileSystem,
+        RunPatcherPipelineCommand cmd)
     {
-        Settings = settings;
+        _fileSystem = fileSystem;
+        _cmd = cmd;
     }
         
     protected override void Load(ContainerBuilder builder)
     {
         builder.RegisterModule<MutagenModule>();
-        builder.RegisterType<FileSystem>().As<IFileSystem>();
-        builder.RegisterModule<NoggogModule>();
-        builder.RegisterInstance(Log.Logger).As<ILogger>();
         builder.RegisterModule<Execution.Modules.MainModule>();
         builder.RegisterModule<Execution.Modules.ProfileModule>();
+        builder.RegisterModule(new CommonCliModule(_fileSystem));
             
         builder.Register(_ => CancellationToken.None).AsSelf();
         builder.RegisterInstance(new ConsoleReporter()).As<IRunReporter>();
@@ -42,9 +45,21 @@ public class RunPipelineModule : Module
             .AsImplementedInterfaces()
             .AsSelf();
             
-        // Settings
-        builder.RegisterInstance(Settings)
+        builder.RegisterInstance(_cmd)
             .AsSelf()
             .AsImplementedInterfaces();
+        
+        builder.RegisterInstance(new ProfileIdentifier(_cmd.ProfileIdentifier)).AsImplementedInterfaces();
+        if (_cmd.DataFolderPath != null)
+        {
+            builder.RegisterInstance(new DataDirectoryInjection(_cmd.DataFolderPath))
+                .AsImplementedInterfaces();
+        }
+
+        if (_cmd.LoadOrderFilePath != null)
+        {
+            builder.RegisterInstance(new PluginListingsPathInjection(_cmd.LoadOrderFilePath))
+                .AsImplementedInterfaces();
+        }
     }
 }

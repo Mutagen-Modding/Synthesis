@@ -1,8 +1,10 @@
-﻿using Autofac;
+﻿using System.IO.Abstractions;
+using Autofac;
 using FluentAssertions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Testing.AutoData;
 using Noggog;
+using Synthesis.Bethesda.CLI.Common;
 using Synthesis.Bethesda.CLI.CreateProfileCli;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -14,22 +16,25 @@ public class CreateProfileRunnerTests
 {
     [Theory, MutagenModAutoData]
     public async Task Typical(
+        IFileSystem fileSystem,
         string profileName,
         string initialGroupName,
         DirectoryPath existingSettingsPath,
         PipelineSettingsPath pipelineSettingsPathProvider,
-        PipelineSettingsV2Reader reader,
-        CreateProfileModule createProfileRunnerModule)
+        PipelineSettingsV2Reader reader)
     {
-        var b = new ContainerBuilder();
-        b.RegisterModule(createProfileRunnerModule);
-        await b.Build().Resolve<CreateProfileRunner>().RunInternal(new CreateProfileCommand()
+        var cmd = new CreateProfileCommand()
         {
             GameRelease = GameRelease.SkyrimSE,
             ProfileName = profileName,
             InitialGroupName = initialGroupName,
             SettingsFolderPath = existingSettingsPath
-        });
+        };
+        var b = new ContainerBuilder();
+        b.RegisterModule(new CreateProfileModule(fileSystem, cmd));
+        b.RegisterInstance(cmd).AsImplementedInterfaces();
+        var cont = b.Build();
+        await cont.Resolve<CreateProfileRunner>().RunInternal(cmd);
         var pipelineSettingsPath = Path.Combine(existingSettingsPath, pipelineSettingsPathProvider.Name);
         var pipeSettings = reader.Read(pipelineSettingsPath);
         pipeSettings.Profiles.Select(x => x.Nickname).Should().Equal(profileName);

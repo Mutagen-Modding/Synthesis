@@ -23,7 +23,7 @@ public class CreateProfileRunner
 
     internal async Task RunInternal(CreateProfileCommand cmd)
     {
-        await _pipelineSettingsModifier.DoModification(cmd.SettingsFolderPath, async (pipelineSettings, settingsPath) =>
+        await _pipelineSettingsModifier.DoModification(async (pipelineSettings, settingsPath) =>
         {
             var existingProfileIds = pipelineSettings.Profiles.Select(x => x.ID).ToHashSet();
             pipelineSettings.Profiles.Add(new SynthesisProfile()
@@ -48,7 +48,7 @@ public class CreateProfileRunner
         try
         {
             var b = new ContainerBuilder();
-            b.RegisterModule(new CreateProfileModule(new FileSystem()));
+            b.RegisterModule(new CreateProfileModule(new FileSystem(), cmd));
             var cont = b.Build();
             var create = cont.Resolve<CreateProfileRunner>();
             await create.RunInternal(cmd);

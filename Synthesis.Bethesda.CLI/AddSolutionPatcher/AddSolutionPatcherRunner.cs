@@ -21,7 +21,7 @@ public class AddSolutionPatcherRunner
     
     public async Task Add(AddSolutionPatcherCommand cmd)
     {
-        await _pipelineSettingsModifier.DoModification(cmd.SettingsFolderPath, async (pipelineSettings, settingsPath) =>
+        await _pipelineSettingsModifier.DoModification(async (pipelineSettings, settingsPath) =>
         {
             var profile = _profileRetriever.GetProfile(pipelineSettings.Profiles, settingsPath, cmd.ProfileIdentifier);
 
@@ -47,7 +47,7 @@ public class AddSolutionPatcherRunner
         try
         {
             var b = new ContainerBuilder();
-            b.RegisterModule(new AddSolutionPatcherModule(new FileSystem()));
+            b.RegisterModule(new AddSolutionPatcherModule(new FileSystem(), cmd));
             var cont = b.Build();
             var adder = cont.Resolve<AddSolutionPatcherRunner>();
             await adder.Add(cmd);

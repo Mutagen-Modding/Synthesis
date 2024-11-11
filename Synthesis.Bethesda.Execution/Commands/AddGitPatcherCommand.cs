@@ -1,9 +1,11 @@
 using CommandLine;
+using Noggog;
+using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Commands;
 
 [Verb("add-git-patcher", HelpText = "Adds a git patcher to a profile")]
-public class AddGitPatcherCommand
+public class AddGitPatcherCommand : ISettingsFolderProvider
 {
     [Option('p', "ProfileIdentifier",
         HelpText = "Nickname/GUID of profile to add to",
@@ -34,4 +36,6 @@ public class AddGitPatcherCommand
         HelpText = "Project subpath to target",
         Required = true)]
     public required string ProjectSubpath { get; set; }
+
+    DirectoryPath ISettingsFolderProvider.SettingsFolder => SettingsFolderPath;
 }

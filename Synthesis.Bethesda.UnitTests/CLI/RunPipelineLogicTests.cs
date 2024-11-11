@@ -24,9 +24,7 @@ public class RunPipelineLogicTests
         string groupName,
         string patcherNickname,
         SkyrimMod someMod,
-        Npc npc,
-        CreateProfileModule createProfileRunnerModule,
-        AddSolutionPatcherModule addSolutionPatcherModule)
+        Npc npc)
     {
         using var dataFolder = TempFolder.Factory();
         using var patcherDir = TempFolder.Factory();
@@ -43,19 +41,19 @@ public class RunPipelineLogicTests
         result.Should().Be(0);
         
         var b = new ContainerBuilder();
-        b.RegisterModule(createProfileRunnerModule);
-        await b.Build().Resolve<CreateProfileRunner>().RunInternal(new CreateProfileCommand()
+        var createProfileCmd = new CreateProfileCommand()
         {
             ProfileName = profileName,
             InitialGroupName = groupName,
             SettingsFolderPath = existingSettingsPath.Dir,
             GameRelease = GameRelease.SkyrimSE
-        });
+        };
+        b.RegisterModule(new CreateProfileModule(fileSystem, createProfileCmd));
+        await b.Build().Resolve<CreateProfileRunner>().RunInternal(createProfileCmd);
         
         b = new ContainerBuilder();
-        b.RegisterModule(addSolutionPatcherModule);
         var solutionDir = Path.Combine(patcherDir.Dir, $"{name}.sln");
-        await b.Build().Resolve<AddSolutionPatcherRunner>().Add(new AddSolutionPatcherCommand()
+        var addSlnCmd = new AddSolutionPatcherCommand()
         {
             ProfileIdentifier = profileName,
             SettingsFolderPath = existingSettingsPath.Dir,
@@ -63,7 +61,9 @@ public class RunPipelineLogicTests
             ProjectSubpath = Path.Combine(name, $"{name}.csproj"),
             Nickname = patcherNickname,
             GroupName = groupName
-        });
+        };
+        b.RegisterModule(new AddSolutionPatcherModule(fileSystem, addSlnCmd));
+        await b.Build().Resolve<AddSolutionPatcherRunner>().Add(addSlnCmd);
         
         await fileSystem.File.WriteAllTextAsync(pluginList.File, $"*{someMod.ModKey.FileName}");
         npc.EditorID = "Before";

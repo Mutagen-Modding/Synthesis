@@ -1,6 +1,6 @@
-﻿using Autofac;
-using Autofac.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
+using System.IO.Abstractions;
+using Autofac;
+using Mutagen.Bethesda.Testing.AutoData;
 using Noggog;
 using Noggog.Autofac;
 using Synthesis.Bethesda.CLI.RunPipeline;
@@ -20,29 +20,32 @@ using Synthesis.Bethesda.Execution.Settings;
 namespace Synthesis.Bethesda.UnitTests.Containers;
 
 public class CliTests
-{  
-    [Fact]
-    public void CliRun()
+{
+    [Theory, MutagenAutoData]
+    public void CliRun(
+        IFileSystem fileSystem,
+        RunPatcherPipelineCommand cmd)
     {
         var builder = new ContainerBuilder();
         builder.RegisterModule(
-            new RunPipelineModule(
-                new RunPatcherPipelineCommand()));
+            new RunPipelineModule(fileSystem, cmd));
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<ISynthesisProfileSettings>();
         var cont = builder.Build();
         cont.Validate(typeof(RunPatcherPipeline));
     }
-
-    [Fact]
-    public void CliPatcher()
+    
+    [Theory, MutagenAutoData]
+    public void CliPatcher(
+        IFileSystem fileSystem,
+        RunPatcherPipelineCommand cmd)
     {
         var builder = new ContainerBuilder();
         builder.RegisterModule(
-            new RunPipelineModule(
-                new RunPatcherPipelineCommand()));
+            new RunPipelineModule(fileSystem, cmd));
         builder.RegisterModule<PatcherModule>();
         builder.RegisterMock<IProfileIdentifier>();
+        builder.RegisterMock<IProfileNameProvider>();
         builder.RegisterMock<IPatcherIdProvider>();
         builder.RegisterMock<CliPatcherSettings>()
             .As<IPathToExecutableInputProvider>()
@@ -52,15 +55,17 @@ public class CliTests
         cont.Validate(typeof(ICliPatcherRun));
     }
 
-    [Fact]
-    public void SlnPatcher()
+    [Theory, MutagenAutoData]
+    public void SlnPatcher(
+        IFileSystem fileSystem,
+        RunPatcherPipelineCommand cmd)
     {
         var builder = new ContainerBuilder();
         builder.RegisterModule(
-            new RunPipelineModule(
-                new RunPatcherPipelineCommand()));
+            new RunPipelineModule(fileSystem, cmd));
         builder.RegisterModule<SolutionPatcherModule>();
         builder.RegisterMock<IProfileIdentifier>();
+        builder.RegisterMock<IProfileNameProvider>();
         builder.RegisterMock<IPatcherIdProvider>();
         builder.RegisterMock<IShortCircuitSettingsProvider>();
         builder.RegisterMock<IExecutionParametersSettingsProvider>();
@@ -71,16 +76,18 @@ public class CliTests
         var cont = builder.Build();
         cont.Validate(typeof(ISolutionPatcherRun));
     }
-
-    [Fact]
-    public void GitPatcher()
+    
+    [Theory, MutagenAutoData]
+    public void GitPatcher(
+        IFileSystem fileSystem,
+        RunPatcherPipelineCommand cmd)
     {
         var builder = new ContainerBuilder();
         builder.RegisterModule(
-            new RunPipelineModule(
-                new RunPatcherPipelineCommand()));
+            new RunPipelineModule(fileSystem, cmd));
         builder.RegisterModule<GitPatcherModule>();
         builder.RegisterMock<IProfileIdentifier>();
+        builder.RegisterMock<IProfileNameProvider>();
         builder.RegisterMock<IPatcherIdProvider>();
         builder.RegisterMock<IShortCircuitSettingsProvider>();
         builder.RegisterMock<IExecutionParametersSettingsProvider>();

@@ -27,7 +27,7 @@ public class CommonCliModule : Autofac.Module
             .InNamespacesOf(
                 typeof(PipelineSettingsModifier))
             .AsSelf()
-            .AsMatchingInterface()
+            .AsImplementedInterfaces()
             .SingleInstance();
     }
 }

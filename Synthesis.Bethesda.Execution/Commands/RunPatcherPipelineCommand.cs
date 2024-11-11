@@ -3,38 +3,35 @@ using CommandLine;
 using Noggog;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
-using Synthesis.Bethesda.Execution.Pathing;
-using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Commands;
 
 [Verb("run-pipeline", HelpText = "Run the patcher pipeline")]
 [ExcludeFromCodeCoverage]
-public class RunPatcherPipelineCommand :
-    IProfileDefinitionPathProvider,
-    IProfileNameProvider,
+public class RunPatcherPipelineCommand : 
+    ISettingsFolderProvider,
     IExecutionParametersSettingsProvider
 {
     [Option('o', "OutputDirectory", Required = true, HelpText = "Path where the patcher should place its resulting file(s).")]
-    public DirectoryPath OutputDirectory { get; set; }
+    public required string OutputDirectory { get; set; }
 
     [Option('d', "DataFolderPath", Required = false, HelpText = "Path to the data folder.")]
-    public DirectoryPath? DataFolderPath { get; set; }
+    public string? DataFolderPath { get; set; }
 
     [Option('l', "LoadOrderFilePath", Required = false, HelpText = "Path to the load order file to use.")]
-    public FilePath? LoadOrderFilePath { get; set; }
+    public string? LoadOrderFilePath { get; set; }
 
     [Option('s', "SettingsFolderPath",
         HelpText = "Path to the folder containing the PipelineSettings.json to be adjusted",
         Required = true)]
     public string SettingsFolderPath { get; set; } = string.Empty;
 
-    [Option('p', "ProfileIdentifier", Required = false, HelpText = "Nickname/GUID of profile to run if path is to a settings file with multiple profiles")]
-    public string ProfileIdentifier { get; set; } = string.Empty;
+    [Option('p', "ProfileIdentifier", Required = true, HelpText = "Nickname/GUID of profile to run if path is to a settings file with multiple profiles")]
+    public required string ProfileIdentifier { get; set; }
 
     [Option('e', "ExtraDataFolder", Required = false, HelpText = "Path to where top level extra patcher data should be stored/read from.  Default is next to the exe")]
-    public DirectoryPath? ExtraDataFolder { get; set; }
+    public string? ExtraDataFolder { get; set; }
 
     [Option('r', "PersistencePath", Required = false, HelpText = "Path to the shared FormKey allocation state")]
     public string? PersistencePath { get; internal set; }
@@ -58,7 +55,6 @@ public class RunPatcherPipelineCommand :
                + $"  {nameof(PersistenceMode)} => {this.PersistenceMode}\n"
                + $"  {nameof(TargetRuntime)} => {this.TargetRuntime}";
     }
-    
-    FilePath IProfileDefinitionPathProvider.Path => Path.Combine(SettingsFolderPath, "PipelineSettings.json");
-    string IProfileNameProvider.Name => ProfileIdentifier;
+
+    DirectoryPath ISettingsFolderProvider.SettingsFolder => SettingsFolderPath;
 }
