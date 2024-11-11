@@ -71,6 +71,7 @@ nav:
     - .synth Files: Synth-File.md
     - Other Dynamic Mod Generators: Other-Dynamic-Mod-Generators.md
     - Language Settings: Language-Settings.md
+    - Compaction Settings: Compaction.md
     - Synthesis CLI: Synthesis-CLI.md
     - Updating UI: Updating-UI.md
     # - Existing Saves: Existing-Saves.md
