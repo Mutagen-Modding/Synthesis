@@ -1,5 +1,7 @@
 using System.IO.Abstractions;
 using Autofac;
+using Noggog;
+using Synthesis.Bethesda.CLI.Common;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -14,21 +16,22 @@ public class RunPatcherPipeline
     private readonly ILifetimeScope _scope;
     private readonly IFileSystem _fileSystem;
     private readonly IPipelineSettingsPath _pipelineSettingsPath;
+    private readonly ProfileRetriever _profileRetriever;
     private readonly IPipelineSettingsV2Reader _pipelineSettingsV2Reader;
     public RunPatcherPipelineCommand Command { get; }
 
     public RunPatcherPipeline(
         ILifetimeScope scope,
         IFileSystem fileSystem,
-        // IExecuteRun executeRun,
-        // IGetGroupRunners getGroupRunners,
         IPipelineSettingsPath pipelineSettingsPath,
+        ProfileRetriever profileRetriever,
         IPipelineSettingsV2Reader pipelineSettingsV2Reader,
         RunPatcherPipelineCommand command)
     {
         _scope = scope;
         _fileSystem = fileSystem;
         _pipelineSettingsPath = pipelineSettingsPath;
+        _profileRetriever = profileRetriever;
         _pipelineSettingsV2Reader = pipelineSettingsV2Reader;
         Command = command;
     }
@@ -42,12 +45,8 @@ public class RunPatcherPipeline
             throw new FileNotFoundException("Could not find settings", pipelineSettingsPath);
         }
         var pipeSettings = _pipelineSettingsV2Reader.Read(pipelineSettingsPath);
-        
-        var profile = pipeSettings.Profiles.FirstOrDefault(x => x.Nickname == Command.ProfileName);
-        if (profile == null)
-        {
-            throw new KeyNotFoundException($"Could not find a profile name {Command.ProfileName} in settings path {pipelineSettingsPath}");
-        }
+
+        var profile = _profileRetriever.GetProfile(pipeSettings.Profiles, pipelineSettingsPath, Command.ProfileName);
 
         using var profileScope = _scope.BeginLifetimeScope(LifetimeScopes.ProfileNickname, (b) =>
         {

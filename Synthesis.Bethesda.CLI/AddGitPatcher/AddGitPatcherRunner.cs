@@ -16,17 +16,20 @@ public class AddGitPatcherRunner
 {
     private readonly ILifetimeScope _scope;
     private readonly IFileSystem _fileSystem;
+    private readonly ProfileRetriever _profileRetriever;
     private readonly PipelineSettingsModifier _pipelineSettingsModifier;
     private readonly GitIdAllocator _gitIdAllocator;
 
     public AddGitPatcherRunner(
         ILifetimeScope scope,
         IFileSystem fileSystem,
+        ProfileRetriever profileRetriever,
         PipelineSettingsModifier pipelineSettingsModifier,
         GitIdAllocator gitIdAllocator)
     {
         _scope = scope;
         _fileSystem = fileSystem;
+        _profileRetriever = profileRetriever;
         _pipelineSettingsModifier = pipelineSettingsModifier;
         _gitIdAllocator = gitIdAllocator;
     }
@@ -35,11 +38,7 @@ public class AddGitPatcherRunner
     {
         await _pipelineSettingsModifier.DoModification(cmd.SettingsFolderPath, async (pipelineSettings, settingsPath) =>
         {
-            var profile = pipelineSettings.Profiles.FirstOrDefault(x => x.Nickname == cmd.ProfileName);
-            if (profile == null)
-            {
-                throw new KeyNotFoundException($"Could not find a profile name {cmd.ProfileName} in settings path {settingsPath}");
-            }
+            var profile = _profileRetriever.GetProfile(pipelineSettings.Profiles, settingsPath, cmd.ProfileName);
             
             var group = profile.Groups.FirstOrDefault(x => x.Name == cmd.GroupName);
             if (group == null)

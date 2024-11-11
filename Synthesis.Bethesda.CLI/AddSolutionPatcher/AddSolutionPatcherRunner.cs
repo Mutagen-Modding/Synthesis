@@ -9,23 +9,22 @@ namespace Synthesis.Bethesda.CLI.AddSolutionPatcher;
 public class AddSolutionPatcherRunner
 {
     private readonly PipelineSettingsModifier _pipelineSettingsModifier;
+    private readonly ProfileRetriever _profileRetriever;
 
     public AddSolutionPatcherRunner(
-        PipelineSettingsModifier pipelineSettingsModifier)
+        PipelineSettingsModifier pipelineSettingsModifier,
+        ProfileRetriever profileRetriever)
     {
         _pipelineSettingsModifier = pipelineSettingsModifier;
+        _profileRetriever = profileRetriever;
     }
     
     public async Task Add(AddSolutionPatcherCommand cmd)
     {
         await _pipelineSettingsModifier.DoModification(cmd.SettingsFolderPath, async (pipelineSettings, settingsPath) =>
         {
-            var profile = pipelineSettings.Profiles.FirstOrDefault(x => x.Nickname == cmd.ProfileName);
-            if (profile == null)
-            {
-                throw new KeyNotFoundException($"Could not find a profile name {cmd.ProfileName} in settings path {settingsPath}");
-            }
-            
+            var profile = _profileRetriever.GetProfile(pipelineSettings.Profiles, settingsPath, cmd.ProfileName);
+
             var group = profile.Groups.FirstOrDefault(x => x.Name == cmd.GroupName);
             if (group == null)
             {
