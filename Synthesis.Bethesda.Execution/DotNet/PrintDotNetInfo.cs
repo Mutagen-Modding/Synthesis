@@ -1,8 +1,7 @@
 ﻿using Serilog;
-using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Utility;
 
-namespace Synthesis.Bethesda.GUI.Services.Startup;
+namespace Synthesis.Bethesda.Execution.DotNet;
 
 public class PrintDotNetInfo
 {
