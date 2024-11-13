@@ -49,7 +49,10 @@ public class RunAPatcher : IRunAPatcher
         {
             // Finish waiting for prep, if it didn't finish
             var prepException = await prepBundle.Prep.ConfigureAwait(false);
-            if (prepException != null) return null;
+            if (prepException != null)
+            {
+                throw prepException;
+            }
                 
             var args = GetRunArgs.GetArgs(
                 groupRun,

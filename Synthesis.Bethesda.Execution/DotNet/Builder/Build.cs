@@ -48,7 +48,7 @@ public class Build : IBuild
         var result = await Dropoff.EnqueueAndWait(async () =>
         {
             _logger.Information("Starting build for {TargetPath}", targetPath);
-            var ret = await  ProcessRunner.RunWithCallback(
+            var ret = await ProcessRunner.RunWithCallback(
                 start,
                 outputCallback: accumulator.Process,
                 errorCallback: e => {},
