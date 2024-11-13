@@ -2,6 +2,7 @@ using System.IO.Abstractions;
 using Autofac;
 using Synthesis.Bethesda.CLI.Common;
 using Synthesis.Bethesda.Execution.Commands;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
@@ -45,6 +46,7 @@ public class RunPatcherPipeline
 
         using var profileScope = _scope.BeginLifetimeScope(LifetimeScopes.ProfileNickname, (b) =>
         {
+            b.RegisterInstance(pipeSettings).AsImplementedInterfaces();
             b.RegisterInstance(profile).AsImplementedInterfaces();
         });
 
@@ -54,6 +56,8 @@ public class RunPatcherPipeline
         {
         });
         var executeRun = runScope.Resolve<IExecuteRun>();
+        var printDotNet = runScope.Resolve<PrintDotNetInfo>();
+        await printDotNet.Print(CancellationToken.None);
         
         await executeRun
             .Run(

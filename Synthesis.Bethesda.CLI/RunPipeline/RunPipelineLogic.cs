@@ -2,22 +2,17 @@ using System.IO.Abstractions;
 using Autofac;
 using Noggog;
 using Synthesis.Bethesda.Execution.Commands;
-using Synthesis.Bethesda.Execution.DotNet;
-using Synthesis.Bethesda.Execution.DotNet.Singleton;
 using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.CLI.RunPipeline;
 
 public class RunPipelineLogic
 {
-    private readonly PrintDotNetInfo _printDotNetInfo;
     private readonly RunPatcherPipeline _runPipeline;
 
     public RunPipelineLogic(
-        PrintDotNetInfo printDotNetInfo,
         RunPatcherPipeline runPipeline)
     {
-        _printDotNetInfo = printDotNetInfo;
         _runPipeline = runPipeline;
     }
     
@@ -49,7 +44,6 @@ public class RunPipelineLogic
 
     private async Task RunInternal()
     {
-        await _printDotNetInfo.Print(CancellationToken.None);
         await _runPipeline.Run(CancellationToken.None);
     }
 }
