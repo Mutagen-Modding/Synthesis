@@ -5,6 +5,7 @@ using Noggog;
 using Noggog.Autofac;
 using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Commands;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Patchers.Cli;
 using Synthesis.Bethesda.Execution.Patchers.Common;
@@ -67,6 +68,7 @@ public class CliTests
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<IProfileNameProvider>();
         builder.RegisterMock<IPatcherIdProvider>();
+        builder.RegisterMock<IDotNetPathSettingsProvider>();
         builder.RegisterMock<IShortCircuitSettingsProvider>();
         builder.RegisterMock<IExecutionParametersSettingsProvider>();
         builder.RegisterMock<SolutionPatcherSettings>()
@@ -89,6 +91,7 @@ public class CliTests
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<IProfileNameProvider>();
         builder.RegisterMock<IPatcherIdProvider>();
+        builder.RegisterMock<IDotNetPathSettingsProvider>();
         builder.RegisterMock<IShortCircuitSettingsProvider>();
         builder.RegisterMock<IExecutionParametersSettingsProvider>();
         builder.RegisterMock<GithubPatcherSettings>()

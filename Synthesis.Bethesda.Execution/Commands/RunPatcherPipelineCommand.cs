@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using CommandLine;
 using Noggog;
 using Synthesis.Bethesda.Commands;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings;

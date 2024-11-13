@@ -46,7 +46,7 @@ public class RunPatcherPipeline
 
         using var profileScope = _scope.BeginLifetimeScope(LifetimeScopes.ProfileNickname, (b) =>
         {
-            b.RegisterInstance(pipeSettings).AsImplementedInterfaces();
+            b.RegisterInstance(new PipelineSettingsRegister(pipeSettings)).AsImplementedInterfaces();
             b.RegisterInstance(profile).AsImplementedInterfaces();
         });
 

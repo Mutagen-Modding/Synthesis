@@ -5,7 +5,7 @@ public interface IDotNetPathSettingsProvider
     string DotNetPathOverride { get; }
 }
 
-public class DotNetPathSettingsProvider : IDotNetPathSettingsProvider
+public class DotNetPathSettingsInjection : IDotNetPathSettingsProvider
 {
     public string DotNetPathOverride => string.Empty;
 }

@@ -4,6 +4,7 @@ using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog.Autofac;
 using Noggog.Autofac.Modules;
 using Serilog;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.DotNet.Dto;
 using Synthesis.Bethesda.Execution.Utility;
 
@@ -19,6 +20,7 @@ public class MainModule : Module
         builder.RegisterModule<NoggogModule>();
         
         builder.RegisterType<PipelineSettings>().AsImplementedInterfaces();
+        builder.RegisterType<DotNetPathSettingsInjection>().AsImplementedInterfaces();
 
         builder.RegisterModule<Synthesis.Bethesda.Execution.Modules.MainModule>();
         builder.RegisterModule<Synthesis.Bethesda.Execution.Modules.SolutionPatcherModule>();
