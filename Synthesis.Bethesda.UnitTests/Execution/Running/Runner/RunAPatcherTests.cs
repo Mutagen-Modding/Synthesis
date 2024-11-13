@@ -23,15 +23,17 @@ public class RunAPatcherTests
         RunParameters runParameters,
         RunAPatcher sut)
     {
-        (await sut.Run(
+        await Assert.ThrowsAsync<NotImplementedException>(async () =>
+        {
+            await sut.Run(
                 groupRun,
                 new PatcherPrepBundle(
                     patcher,
                     Task.FromResult<Exception?>(new NotImplementedException())),
                 cancellation,
                 sourcePath,
-                runParameters))
-            .Should().BeNull();
+                runParameters);
+        });
     }
         
     [Theory, SynthAutoData]

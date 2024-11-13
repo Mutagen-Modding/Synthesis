@@ -49,6 +49,7 @@ public class RunAPatcher : IRunAPatcher
         {
             // Finish waiting for prep, if it didn't finish
             var prepException = await prepBundle.Prep.ConfigureAwait(false);
+            if (cancellation.IsCancellationRequested) return null;
             if (prepException != null)
             {
                 throw prepException;
