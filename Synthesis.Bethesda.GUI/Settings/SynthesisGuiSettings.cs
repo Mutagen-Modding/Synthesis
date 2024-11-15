@@ -1,5 +1,3 @@
-using Synthesis.Bethesda.Execution.Patchers.Git;
-
 namespace Synthesis.Bethesda.GUI.Settings;
 
 public interface ISynthesisGuiSettings

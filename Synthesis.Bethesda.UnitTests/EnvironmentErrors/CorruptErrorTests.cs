@@ -5,7 +5,6 @@ using FluentAssertions;
 using Noggog;
 using Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.EnvironmentErrors;
 

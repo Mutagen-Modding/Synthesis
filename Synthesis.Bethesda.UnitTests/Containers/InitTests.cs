@@ -2,7 +2,6 @@ using Autofac;
 using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Noggog.Autofac;
-using NSubstitute;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
@@ -11,7 +10,6 @@ using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Cli;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Containers;
 

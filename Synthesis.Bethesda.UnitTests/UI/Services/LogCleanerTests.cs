@@ -5,7 +5,6 @@ using NSubstitute;
 using Synthesis.Bethesda.GUI.Logging;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.UI;
 

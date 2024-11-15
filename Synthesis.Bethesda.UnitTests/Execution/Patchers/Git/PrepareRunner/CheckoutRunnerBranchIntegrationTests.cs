@@ -2,7 +2,6 @@
 using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.PrepareRunner;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner;
 

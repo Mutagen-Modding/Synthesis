@@ -1,6 +1,5 @@
 ﻿using System.IO.Abstractions;
 using Noggog;
-using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Profile.Services;
 using Synthesis.Bethesda.Execution.Reporters;
 

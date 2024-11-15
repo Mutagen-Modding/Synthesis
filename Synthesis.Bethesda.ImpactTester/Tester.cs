@@ -5,7 +5,6 @@ using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using Noggog.IO;
-using Noggog.Utility;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.ModifyProject;

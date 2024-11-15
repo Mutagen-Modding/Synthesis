@@ -2,7 +2,6 @@
 using FluentAssertions;
 using NSubstitute;
 using Noggog.GitRepository;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository;
 

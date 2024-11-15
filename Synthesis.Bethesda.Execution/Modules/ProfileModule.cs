@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using Noggog.Autofac;
 using Synthesis.Bethesda.Execution.Groups;
-using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Profile.Services;
 using Synthesis.Bethesda.Execution.Running.Runner;
 

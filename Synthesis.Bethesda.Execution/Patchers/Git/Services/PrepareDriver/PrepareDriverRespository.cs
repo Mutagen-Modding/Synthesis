@@ -1,5 +1,4 @@
-﻿using Autofac;
-using Noggog;
+﻿using Noggog;
 using Noggog.GitRepository;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;

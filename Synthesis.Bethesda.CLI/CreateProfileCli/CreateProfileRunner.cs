@@ -1,6 +1,5 @@
 using System.IO.Abstractions;
 using Autofac;
-using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Synthesis.Profiles;
 using Synthesis.Bethesda.CLI.Common;
 using Synthesis.Bethesda.Execution.Commands;

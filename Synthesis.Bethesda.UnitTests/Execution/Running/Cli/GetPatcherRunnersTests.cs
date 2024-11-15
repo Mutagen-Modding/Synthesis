@@ -5,7 +5,6 @@ using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Running.Cli;
 

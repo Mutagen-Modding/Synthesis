@@ -8,8 +8,6 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Settings.V2;
-using Synthesis.Bethesda.GUI.Services.Main;
-using Synthesis.Bethesda.GUI.Services.Versioning;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;

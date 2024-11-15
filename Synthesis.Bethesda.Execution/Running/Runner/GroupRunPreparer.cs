@@ -1,7 +1,6 @@
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Synthesis.Bethesda.Execution.Groups;
-using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner;
 

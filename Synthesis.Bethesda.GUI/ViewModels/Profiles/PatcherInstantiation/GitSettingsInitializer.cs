@@ -1,5 +1,4 @@
 ﻿using Noggog;
-using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.Instantiation;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;

@@ -7,7 +7,6 @@ using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Running.Solution;
 

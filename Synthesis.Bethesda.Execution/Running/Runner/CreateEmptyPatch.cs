@@ -4,7 +4,6 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Records;
 using Noggog;
 using Serilog;
-using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Profile.Services;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner;

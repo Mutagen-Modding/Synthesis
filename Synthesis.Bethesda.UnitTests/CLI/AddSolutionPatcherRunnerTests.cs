@@ -4,11 +4,9 @@ using FluentAssertions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Testing.AutoData;
 using Noggog;
-using Noggog.IO;
 using Synthesis.Bethesda.CLI.AddSolutionPatcher;
 using Synthesis.Bethesda.CLI.CreateProfileCli;
 using Synthesis.Bethesda.Execution.Commands;
-using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V2;
 

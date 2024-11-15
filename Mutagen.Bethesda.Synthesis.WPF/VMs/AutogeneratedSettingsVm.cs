@@ -8,7 +8,6 @@ using System.Reactive.Linq;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Order;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 
 namespace Mutagen.Bethesda.Synthesis.WPF;
 

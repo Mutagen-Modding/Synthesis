@@ -8,7 +8,6 @@ using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 
 namespace Mutagen.Bethesda.Synthesis.WPF;
 

@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.UI.Services;
 

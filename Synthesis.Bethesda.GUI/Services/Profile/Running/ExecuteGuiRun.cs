@@ -3,7 +3,6 @@ using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Strings;
 using Synthesis.Bethesda.Execution.Groups;
-using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Profile.Services;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;

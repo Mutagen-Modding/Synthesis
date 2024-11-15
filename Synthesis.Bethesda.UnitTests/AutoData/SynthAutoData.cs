@@ -6,7 +6,6 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Testing.AutoData;
 using Noggog.Testing.AutoFixture;
 using Noggog.GitRepository;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.AutoData;
 

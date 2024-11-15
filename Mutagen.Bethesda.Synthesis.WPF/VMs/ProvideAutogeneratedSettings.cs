@@ -5,7 +5,6 @@ using Mutagen.Bethesda.Plugins.Order;
 using ReactiveUI;
 using Synthesis.Bethesda;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 
 namespace Mutagen.Bethesda.Synthesis.WPF;
 

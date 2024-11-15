@@ -3,7 +3,6 @@ using System.Reactive.Linq;
 using Noggog.WPF;
 using System.Windows;
 using ReactiveUI;
-using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 

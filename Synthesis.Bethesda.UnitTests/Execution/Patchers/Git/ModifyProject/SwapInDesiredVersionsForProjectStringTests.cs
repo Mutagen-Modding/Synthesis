@@ -1,10 +1,8 @@
 ﻿using System.Xml.Linq;
 using FluentAssertions;
-using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.ModifyProject;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.ModifyProject;
 

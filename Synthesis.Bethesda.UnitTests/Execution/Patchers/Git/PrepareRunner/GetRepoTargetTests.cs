@@ -2,12 +2,10 @@
 using FluentAssertions;
 using NSubstitute;
 using Noggog.GitRepository;
-using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.PrepareRunner;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner;
 

@@ -10,7 +10,6 @@ using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Masters.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Mutagen.Bethesda.Synthesis.States;
-using Xunit;
 using Path = System.IO.Path;
 
 namespace Synthesis.Bethesda.UnitTests;

@@ -2,7 +2,6 @@
 using Mutagen.Bethesda.Environments.DI;
 using Noggog;
 using Noggog.Autofac;
-using NSubstitute;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.GUI.Modules;

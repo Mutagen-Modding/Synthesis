@@ -8,7 +8,6 @@ using Noggog.Utility;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet.ExecutablePath;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Pathing;
 
 namespace Mutagen.Bethesda.Synthesis.WPF;

@@ -7,7 +7,6 @@ using Noggog.Autofac;
 using Synthesis.Bethesda.CLI.Common;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Modules;
-using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Reporters;
 
 namespace Synthesis.Bethesda.CLI.RunPipeline;

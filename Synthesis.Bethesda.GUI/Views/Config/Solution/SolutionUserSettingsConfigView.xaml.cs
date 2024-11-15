@@ -1,7 +1,6 @@
 ﻿using System.Reactive.Disposables;
 using Noggog.WPF;
 using ReactiveUI;
-using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Views;
 

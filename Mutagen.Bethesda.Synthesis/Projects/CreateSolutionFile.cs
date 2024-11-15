@@ -1,5 +1,4 @@
 ﻿using System.IO.Abstractions;
-using Loqui;
 using Noggog;
 using Noggog.IO;
 using Noggog.StructuredStrings;

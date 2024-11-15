@@ -1,9 +1,7 @@
 ﻿using Autofac;
 using Noggog;
-using Noggog.Autofac.Validation;
 using Noggog.IO;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Views;

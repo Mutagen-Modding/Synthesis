@@ -9,7 +9,6 @@ using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Synthesis.States;
 using NSubstitute;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Pipeline.States;
 

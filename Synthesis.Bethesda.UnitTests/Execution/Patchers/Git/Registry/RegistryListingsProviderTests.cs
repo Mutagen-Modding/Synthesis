@@ -4,7 +4,6 @@ using NSubstitute;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.Registry;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.Registry;
 

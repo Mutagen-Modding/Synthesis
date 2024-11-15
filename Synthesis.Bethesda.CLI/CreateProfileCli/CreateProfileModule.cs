@@ -2,7 +2,6 @@
 using Autofac;
 using Mutagen.Bethesda.Synthesis.Profiles;
 using Noggog.Autofac;
-using Synthesis.Bethesda.CLI.Common;
 using Synthesis.Bethesda.Execution.Commands;
 
 namespace Synthesis.Bethesda.CLI.CreateProfileCli;
