@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using Synthesis.Bethesda.Execution.Patchers.Git.Services;
+using FluentAssertions;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.UnitTests.AutoData;
 

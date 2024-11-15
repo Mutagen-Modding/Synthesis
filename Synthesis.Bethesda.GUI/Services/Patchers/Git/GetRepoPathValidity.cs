@@ -1,8 +1,8 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
 using Noggog;
 using Noggog.Reactive;
 using Noggog.GitRepository;
-using Synthesis.Bethesda.Execution.Patchers.Git.Services;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;
 

@@ -1,7 +1,7 @@
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git.Services;
+namespace Synthesis.Bethesda.Execution.Patchers.Git;
 
 public class NugetsToUse : IEquatable<NugetsToUse>
 {

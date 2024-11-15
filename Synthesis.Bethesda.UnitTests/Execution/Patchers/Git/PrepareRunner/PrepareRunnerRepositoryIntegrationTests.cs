@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Noggog;
 using NSubstitute;
 using Noggog.GitRepository;
+using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.ModifyProject;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.PrepareRunner;

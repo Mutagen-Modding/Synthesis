@@ -1,6 +1,6 @@
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git.Services;
+namespace Synthesis.Bethesda.Execution.Patchers.Git;
 
 public record GitPatcherVersioning(PatcherVersioningEnum Versioning, string Target)
 {

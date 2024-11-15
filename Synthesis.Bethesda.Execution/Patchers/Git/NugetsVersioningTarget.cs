@@ -2,7 +2,7 @@ using Serilog;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Versioning;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git.Services;
+namespace Synthesis.Bethesda.Execution.Patchers.Git;
 
 public record NugetVersioningTarget(string? Version, NugetVersioningEnum Versioning)
 {

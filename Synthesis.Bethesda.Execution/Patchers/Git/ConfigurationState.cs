@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using Noggog;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git.Services;
+namespace Synthesis.Bethesda.Execution.Patchers.Git;
 
 public interface IConfigurationState
 {

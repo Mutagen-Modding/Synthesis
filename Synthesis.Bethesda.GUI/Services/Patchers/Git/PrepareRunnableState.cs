@@ -2,7 +2,6 @@
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.PrepareRunner;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 

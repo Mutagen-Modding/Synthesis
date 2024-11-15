@@ -1,6 +1,6 @@
 using Noggog;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Git.Services;
+namespace Synthesis.Bethesda.Execution.Patchers.Git;
 
 public record ActiveNugetVersioning(NugetsToUse Mutagen, NugetsToUse Synthesis)
 {

@@ -1,6 +1,5 @@
 ﻿using System.Reactive.Linq;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.GUI.Services.Patchers.Git;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
