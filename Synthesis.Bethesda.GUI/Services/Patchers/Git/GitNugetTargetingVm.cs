@@ -7,7 +7,9 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
@@ -30,6 +32,7 @@ public interface IGitNugetTargetingVm : INugetVersioningFollower
 
 public class GitNugetTargetingVm : ViewModel, IGitNugetTargetingVm
 {
+    private readonly CalculatePatcherVersioning _calculatePatcherVersioning;
     [Reactive] public string ManualMutagenVersion { get; set; } = string.Empty;
 
     [Reactive] public string ManualSynthesisVersion { get; set; } = string.Empty;
@@ -49,8 +52,10 @@ public class GitNugetTargetingVm : ViewModel, IGitNugetTargetingVm
     public GitNugetTargetingVm(
         ILogger logger,
         INewestProfileLibraryVersionsVm newest,
-        IProfileVersioning versioning)
+        IProfileVersioning versioning,
+        CalculatePatcherVersioning calculatePatcherVersioning)
     {
+        _calculatePatcherVersioning = calculatePatcherVersioning;
         UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(
             objectSource: newest.WhenAnyValue(x => x.NewestMutagenVersion),
             canExecute: v =>
@@ -79,46 +84,25 @@ public class GitNugetTargetingVm : ViewModel, IGitNugetTargetingVm
             disposable: this);
 
         ActiveNugetVersion = Observable.CombineLatest(
+                this.WhenAnyValue(x => x.MutagenVersioning),
                 versioning.WhenAnyValue(x => x.ActiveVersioning)
                     .Switch(),
-                this.WhenAnyValue(x => x.MutagenVersioning),
                 this.WhenAnyValue(x => x.ManualMutagenVersion),
                 newest.WhenAnyValue(x => x.NewestMutagenVersion),
                 this.WhenAnyValue(x => x.SynthesisVersioning),
                 this.WhenAnyValue(x => x.ManualSynthesisVersion),
                 newest.WhenAnyValue(x => x.NewestSynthesisVersion),
-                (profile, mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
+                (mutaVersioning, profile, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
                 {
-                    var sb = new StringBuilder("Switching nuget targets");
-                    NugetsToUse mutagen, synthesis;
-                    if (mutaVersioning == PatcherNugetVersioningEnum.Profile)
-                    {
-                        sb.Append($"  Mutagen following profile: {profile.Mutagen}");
-                        mutagen = profile.Mutagen;
-                    }
-                    else
-                    {
-                        mutagen = new NugetsToUse("Mutagen", mutaVersioning.ToNugetVersioningEnum(), mutaManual,
-                            newestMuta);
-                        sb.Append($"  {mutagen}");
-                    }
-
-                    if (synthVersioning == PatcherNugetVersioningEnum.Profile)
-                    {
-                        sb.Append($"  Synthesis following profile: {profile.Synthesis}");
-                        synthesis = profile.Synthesis;
-                    }
-                    else
-                    {
-                        synthesis = new NugetsToUse("Synthesis", synthVersioning.ToNugetVersioningEnum(),
-                            synthManual, newestSynth);
-                        sb.Append($"  {synthesis}");
-                    }
-
-                    logger.Information(sb.ToString());
-                    return new ActiveNugetVersioning(
-                        Mutagen: mutagen,
-                        Synthesis: synthesis);
+                    return _calculatePatcherVersioning.Calculate(
+                        profile,
+                        new NugetVersionPair(
+                            Mutagen: newestMuta,
+                            Synthesis: newestSynth),
+                        mutaVersioning,
+                        mutaManual,
+                        synthVersioning,
+                        synthManual);
                 })
             .Select(nuget => nuget.TryGetTarget())
             .Replay(1)

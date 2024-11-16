@@ -6,6 +6,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings;
 
@@ -48,6 +49,7 @@ public class ProfileVersioning : ViewModel, IProfileVersioning
     public ProfileVersioning(
         ILogger logger,
         IProfileNameProvider nameProvider,
+        CalculateProfileVersioning calculateProfileVersioning,
         INewestProfileLibraryVersionsVm libs)
     {
         ActiveVersioning = Observable.CombineLatest(
@@ -59,9 +61,9 @@ public class ProfileVersioning : ViewModel, IProfileVersioning
                 libs.WhenAnyValue(x => x.NewestSynthesisVersion),
                 (mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth) =>
                 {
-                    return new ActiveNugetVersioning(
-                        new NugetsToUse("Mutagen", mutaVersioning, mutaManual ?? newestMuta ?? string.Empty, newestMuta),
-                        new NugetsToUse("Synthesis", synthVersioning, synthManual ?? newestSynth ?? string.Empty, newestSynth));
+                    return calculateProfileVersioning.Calculate(
+                        mutaVersioning, mutaManual, newestMuta, synthVersioning, synthManual, newestSynth
+                    );
                 })
             .Do(x => logger.Information("Swapped profile {Nickname} to {Versioning}", nameProvider.Name, x))
             .ObserveOnGui()

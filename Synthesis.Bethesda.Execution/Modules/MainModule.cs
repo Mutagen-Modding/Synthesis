@@ -16,11 +16,11 @@ using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings.Calculators;
 using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.Execution.Utility;
-using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.Execution.Versioning.Query;
 using Noggog.WorkEngine;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.Instantiation;
 using Synthesis.Bethesda.Execution.Startup;
 
@@ -46,10 +46,11 @@ public class MainModule : Module
                 typeof(IIsApplicableErrorLine),
                 typeof(IInstalledSdkFollower),
                 typeof(BuildCoreCalculator),
-                typeof(IConsiderPrereleasePreference),
+                typeof(IQueryVersionProjectPathing),
                 typeof(IPatcherNameSanitizer),
                 typeof(ILinesToReflectionConfigsParser),
                 typeof(INugetErrorSolution),
+                typeof(CalculateProfileVersioning),
                 typeof(GitIdAllocator),
                 typeof(ExportGitAddFile),
                 typeof(IBuildOutputAccumulator),
