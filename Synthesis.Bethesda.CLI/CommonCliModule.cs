@@ -3,7 +3,8 @@ using Autofac;
 using Noggog.Autofac;
 using Noggog.Autofac.Modules;
 using Serilog;
-using Synthesis.Bethesda.CLI.Common;
+using Synthesis.Bethesda.CLI.Services;
+using Synthesis.Bethesda.CLI.Services.Common;
 
 namespace Synthesis.Bethesda.CLI;
 

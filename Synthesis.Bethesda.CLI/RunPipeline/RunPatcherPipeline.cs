@@ -1,68 +1,52 @@
-using System.IO.Abstractions;
 using Autofac;
-using Synthesis.Bethesda.CLI.Common;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V2;
 
 namespace Synthesis.Bethesda.CLI.RunPipeline;
 
 public class RunPatcherPipeline
 {
     private readonly ILifetimeScope _scope;
-    private readonly IFileSystem _fileSystem;
-    private readonly ProfileRetriever _profileRetriever;
-    private readonly IPipelineSettingsV2Reader _pipelineSettingsV2Reader;
-    public RunPatcherPipelineCommand Command { get; }
+    private readonly ProfileProvider _profileProvider;
+    private readonly RunPatcherPipelineCommand _command;
 
     public RunPatcherPipeline(
         ILifetimeScope scope,
-        IFileSystem fileSystem,
-        ProfileRetriever profileRetriever,
-        IPipelineSettingsV2Reader pipelineSettingsV2Reader,
+        ProfileProvider profileProvider,
         RunPatcherPipelineCommand command)
     {
         _scope = scope;
-        _fileSystem = fileSystem;
-        _profileRetriever = profileRetriever;
-        _pipelineSettingsV2Reader = pipelineSettingsV2Reader;
-        Command = command;
+        _profileProvider = profileProvider;
+        _command = command;
     }
         
     public async Task Run(CancellationToken cancel)
     {
-        var pipelineSettingsPath = Command.PipelineSettingsPath;
-
-        if (!_fileSystem.File.Exists(pipelineSettingsPath))
-        {
-            throw new FileNotFoundException("Could not find settings", pipelineSettingsPath);
-        }
-        var pipeSettings = _pipelineSettingsV2Reader.Read(pipelineSettingsPath);
-
-        var profile = _profileRetriever.GetProfile(pipeSettings.Profiles, pipelineSettingsPath, Command.ProfileIdentifier);
-
+        var profile = _profileProvider.Profile.Value;
         using var profileScope = _scope.BeginLifetimeScope(LifetimeScopes.ProfileNickname, (b) =>
         {
-            b.RegisterInstance(new PipelineSettingsRegister(pipeSettings)).AsImplementedInterfaces();
-            b.RegisterInstance(profile).AsImplementedInterfaces();
         });
+        
+        var printDotNet = profileScope.Resolve<PrintDotNetInfo>();
+        await printDotNet.Print(cancel);
 
-        var getGroupRunners = profileScope.Resolve<IGetGroupRunners>();
+        var prep = profileScope.Resolve<PrepForRun>();
+        await prep.Prep(cancel);
 
         using var runScope = profileScope.BeginLifetimeScope(LifetimeScopes.RunNickname, (b) =>
         {
         });
         var executeRun = runScope.Resolve<IExecuteRun>();
-        var printDotNet = runScope.Resolve<PrintDotNetInfo>();
-        await printDotNet.Print(CancellationToken.None);
         
+        var getGroupRunners = profileScope.Resolve<IGetGroupRunners>();
+        var groupRuns = getGroupRunners.Get(cancel);
         await executeRun
             .Run(
-                groups: getGroupRunners.Get(cancel),
-                outputDir: Command.OutputDirectory,
+                groups: groupRuns,
+                outputDir: _command.OutputDirectory,
                 cancel: cancel,
                 runParameters: new RunParameters(
                     TargetLanguage: profile.TargetLanguage,
@@ -70,8 +54,8 @@ public class RunPatcherPipeline
                     UseUtf8ForEmbeddedStrings: profile.UseUtf8ForEmbeddedStrings,
                     HeaderVersionOverride: profile.HeaderVersionOverride,
                     FormIDRangeMode: profile.FormIDRangeMode,
-                    PersistenceMode: Command.PersistenceMode ?? PersistenceMode.None, 
-                    PersistencePath: Command.PersistencePath,
+                    PersistenceMode: _command.PersistenceMode ?? PersistenceMode.None, 
+                    PersistencePath: _command.PersistencePath,
                     Master: profile.ExportAsMasterFiles,
                     MasterStyleFallbackEnabled: profile.MasterStyleFallbackEnabled,
                     MasterStyle: profile.MasterStyle)).ConfigureAwait(false);

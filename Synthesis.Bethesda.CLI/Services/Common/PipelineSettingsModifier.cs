@@ -5,7 +5,7 @@ using Synthesis.Bethesda.Execution.Settings.Json.Pipeline;
 using Synthesis.Bethesda.Execution.Settings.Json.Pipeline.V2;
 using Synthesis.Bethesda.Execution.Settings.V2;
 
-namespace Synthesis.Bethesda.CLI.Common;
+namespace Synthesis.Bethesda.CLI.Services.Common;
 
 public class PipelineSettingsModifier
 {

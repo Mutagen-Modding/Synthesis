@@ -1,7 +1,7 @@
 ﻿using Noggog;
 using Synthesis.Bethesda.Execution.Settings;
 
-namespace Synthesis.Bethesda.CLI.Common;
+namespace Synthesis.Bethesda.CLI.Services.Common;
 
 public class ProfileRetriever
 {

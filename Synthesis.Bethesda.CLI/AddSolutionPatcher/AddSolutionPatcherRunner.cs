@@ -1,6 +1,7 @@
 ﻿using System.IO.Abstractions;
 using Autofac;
-using Synthesis.Bethesda.CLI.Common;
+using Synthesis.Bethesda.CLI.Services;
+using Synthesis.Bethesda.CLI.Services.Common;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Settings;
 

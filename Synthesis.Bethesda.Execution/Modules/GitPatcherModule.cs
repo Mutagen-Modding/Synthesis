@@ -14,6 +14,7 @@ public class GitPatcherModule : Module
             .InNamespacesOf(
                 typeof(IGitPatcherRun))
             .NotInjection()
-            .AsImplementedInterfaces();
+            .AsImplementedInterfaces()
+            .SingleInstance();
     }
 }

@@ -3,8 +3,9 @@ using Autofac;
 using Mutagen.Bethesda.Autofac;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
+using Mutagen.Bethesda.Synthesis.Projects;
+using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog.Autofac;
-using Synthesis.Bethesda.CLI.Common;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Reporters;
@@ -39,10 +40,19 @@ public class RunPipelineModule : Module
             
         builder.RegisterAssemblyTypes(typeof(ProfileLoadOrderProvider).Assembly)
             .InNamespacesOf(
-                typeof(ProfileLoadOrderProvider),
-                typeof(ProfileRetriever))
+                typeof(ProfileLoadOrderProvider))
             .AsImplementedInterfaces()
-            .AsSelf();
+            .AsSelf()
+            .SingleInstance();
+
+        // Mutagen.Bethesda.Synthesis
+        builder.RegisterAssemblyTypes(typeof(ProvideCurrentVersions).Assembly)
+            .InNamespacesOf(
+                typeof(ICreateSolutionFile),
+                typeof(ProvideCurrentVersions))
+            .AsSelf()
+            .AsImplementedInterfaces()
+            .SingleInstance();
             
         builder.RegisterInstance(_cmd)
             .AsSelf()

@@ -1,7 +1,8 @@
 using System.IO.Abstractions;
 using Autofac;
 using Mutagen.Bethesda.Synthesis.Profiles;
-using Synthesis.Bethesda.CLI.Common;
+using Synthesis.Bethesda.CLI.Services;
+using Synthesis.Bethesda.CLI.Services.Common;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Settings.V2;
 
