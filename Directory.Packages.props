@@ -47,6 +47,7 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk">
       <Version>17.10.0</Version>
     </PackageVersion>
+      <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     <PackageVersion Include="Mutagen.Bethesda">
       <Version>0.47.4</Version>
     </PackageVersion>
