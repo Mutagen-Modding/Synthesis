@@ -1,4 +1,5 @@
-﻿using System.Reactive.Disposables;
+using System.IO.Abstractions;
+using System.Reactive.Disposables;
 using System.Runtime.CompilerServices;
 using LibGit2Sharp;
 using Mutagen.Bethesda;
@@ -50,12 +51,13 @@ public class RepoTestUtilityPayload : IDisposable
         
         if (createPatcherFiles)
         {
-            var files = new CreateSolutionFile(IFileSystemExt.DefaultFilesystem, new ExportStringToFile()).Create(Path.Combine(ret.Local, ret.SlnPath))
+            var fs = new FileSystem();
+            var files = new CreateSolutionFile(IFileSystemExt.DefaultFilesystem, new ExportStringToFile(fs)).Create(Path.Combine(ret.Local, ret.SlnPath))
                 .And(
                     new CreateProject(
                         IFileSystemExt.DefaultFilesystem,
                         new ProvideCurrentVersions(),
-                        new ExportStringToFile())
+                        new ExportStringToFile(fs))
                         .Create(GameCategory.Skyrim, Path.Combine(ret.Local, ret.ProjPath)));
             new AddProjectToSolution(IFileSystemExt.DefaultFilesystem).Add(Path.Combine(ret.Local, ret.SlnPath), Path.Combine(ret.Local, ret.ProjPath));
             foreach (var path in files)

@@ -19,7 +19,7 @@ public class TurnOffWindowsSpecificationInTargetFramework : ITurnOffWindowsSpeci
                 if (elem.Name.LocalName.Equals("TargetFramework")
                     && elem.Value.EndsWith("-windows7.0", StringComparison.Ordinal))
                 {
-                    elem.Value = elem.Value.TrimEnd("-windows7.0");
+                    elem.Value = Noggog.StringExt.TrimEnd(elem.Value, "-windows7.0");
                 }
             }
         }
