@@ -17,7 +17,7 @@ using ILogger = Serilog.ILogger;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareRunner;
 
-public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
+public class PrepareRunnerRepositoryIntegrationTests
 {
     private PrepareRunnerRepository Get(DirectoryPath local)
     {
@@ -53,12 +53,12 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 new GitRepositoryFactory()));
     }
         
-    public Commit AddACommit(string path)
+    public Commit AddACommit(RepoTestUtilityPayload payload, string path)
     {
-        File.AppendAllText(Path.Combine(path, AFile), "Hello there");
+        File.AppendAllText(Path.Combine(path, payload.AFile), "Hello there");
         using var repo = new Repository(path);
-        LibGit2Sharp.Commands.Stage(repo, AFile);
-        var sig = Signature;
+        LibGit2Sharp.Commands.Stage(repo, payload.AFile);
+        var sig = payload.Signature;
         var commit = repo.Commit("A commit", sig, sig);
         repo.Network.Push(repo.Head);
         return commit;
@@ -93,31 +93,27 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     [Fact]
     public async Task CreatesRunnerBranch()
     {
-        using var repoPath = GetRepository(
-            nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local,
-            out var defaultBranchName);
-        var resp = await Get(local).Checkout(
+        using var util = RepoTestUtilityPayload.GetRepository(
+            nameof(PrepareRunnerRepositoryIntegrationTests));
+        var resp = await Get(util.Local).Checkout(
             new CheckoutInput(
-                ProjPath,
-                TypicalPatcherVersioning(defaultBranchName),
+                util.ProjPath,
+                TypicalPatcherVersioning(util.DefaultBranchName),
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
-        using var repo = new Repository(local);
+        using var repo = new Repository(util.Local);
         repo.Branches.Select(x => x.FriendlyName).Should().Contain(CheckoutRunnerBranch.RunnerBranch);
     }
 
     [Fact]
     public async Task NonExistentProjPath()
     {
-        using var repoPath = GetRepository(
-            nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local,
-            out var defaultBranchName);
-        var resp = await Get(local).Checkout(
+        using var util = RepoTestUtilityPayload.GetRepository(
+            nameof(PrepareRunnerRepositoryIntegrationTests));
+        var resp = await Get(util.Local).Checkout(
             new CheckoutInput(
                 string.Empty,
-                TypicalPatcherVersioning(defaultBranchName),
+                TypicalPatcherVersioning(util.DefaultBranchName),
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
         resp.IsHaltingError.Should().BeTrue();
@@ -128,15 +124,13 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     [Fact]
     public async Task NonExistentSlnPath()
     {
-        using var repoPath = GetRepository(
+        using var util = RepoTestUtilityPayload.GetRepository(
             nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local,
-            out var defaultBranchName,
             createPatcherFiles: false);
-        var resp = await Get(local).Checkout(
+        var resp = await Get(util.Local).Checkout(
             new CheckoutInput(
-                ProjPath,
-                TypicalPatcherVersioning(defaultBranchName),
+                util.ProjPath,
+                TypicalPatcherVersioning(util.DefaultBranchName),
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
         resp.IsHaltingError.Should().BeTrue();
@@ -147,14 +141,12 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     [Fact]
     public async Task UnknownSha()
     {
-        using var repoPath = GetRepository(
-            nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local,
-            out var defaultBranchName);
+        using var util = RepoTestUtilityPayload.GetRepository(
+            nameof(PrepareRunnerRepositoryIntegrationTests));
         var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, "46c207318c1531de7dc2f8e8c2a91aced183bc30");
-        var resp = await Get(local).Checkout(
+        var resp = await Get(util.Local).Checkout(
             new CheckoutInput(
-                ProjPath,
+                util.ProjPath,
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
@@ -166,14 +158,12 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     [Fact]
     public async Task MalformedSha()
     {
-        using var repoPath = GetRepository(
-            nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local,
-            out var defaultBranchName);
+        using var util = RepoTestUtilityPayload.GetRepository(
+            nameof(PrepareRunnerRepositoryIntegrationTests));
         var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, "derp");
-        var resp = await Get(local).Checkout(
+        var resp = await Get(util.Local).Checkout(
             new CheckoutInput(
-                ProjPath,
+                util.ProjPath,
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
@@ -185,18 +175,16 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     [Fact]
     public async Task TagTarget()
     {
-        using var repoPath = GetRepository(
-            nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local,
-            out var defaultBranchName);
+        using var util = RepoTestUtilityPayload.GetRepository(
+            nameof(PrepareRunnerRepositoryIntegrationTests));
         var tagStr = "1.3.4";
-        using var repo = new Repository(local);
+        using var repo = new Repository(util.Local);
         var tipSha = repo.Head.Tip.Sha;
         repo.Tags.Add(tagStr, tipSha);
         var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tagStr);
-        var resp = await Get(local).Checkout(
+        var resp = await Get(util.Local).Checkout(
             new CheckoutInput(
-                ProjPath,
+                util.ProjPath,
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
@@ -210,29 +198,27 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     [Fact]
     public async Task TagTargetNoLocal()
     {
-        using var repoPath = GetRepository(
-            nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local,
-            out var defaultBranchName);
+        using var util = RepoTestUtilityPayload.GetRepository(
+            nameof(PrepareRunnerRepositoryIntegrationTests));
         var tagStr = "1.3.4";
         string tipSha;
         {
-            using var repo = new Repository(local);
+            using var repo = new Repository(util.Local);
             tipSha = repo.Head.Tip.Sha;
             var tag = repo.Tags.Add(tagStr, tipSha);
             repo.Network.Push(repo.Network.Remotes.First(), tag.CanonicalName);
 
-            AddACommit(local);
+            AddACommit(util, util.Local);
             repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
         }
 
-        var clonePath = Path.Combine(repoPath.Dir.Path, "Clone");
-        using var clone = new Repository(Repository.Clone(remote, clonePath));
+        var clonePath = Path.Combine(util.Temp.Path, "Clone");
+        using var clone = new Repository(Repository.Clone(util.Remote, clonePath));
 
         var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tagStr);
         var resp = await Get(clonePath).Checkout(
             new CheckoutInput(
-                ProjPath,
+                util.ProjPath,
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
@@ -246,22 +232,20 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     [Fact]
     public async Task TagTargetJumpback()
     {
-        using var repoPath = GetRepository(
-            nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local,
-            out var defaultBranchName);
+        using var util = RepoTestUtilityPayload.GetRepository(
+            nameof(PrepareRunnerRepositoryIntegrationTests));
         var tag = "1.3.4";
-        using var repo = new Repository(local);
+        using var repo = new Repository(util.Local);
         var tipSha = repo.Head.Tip.Sha;
         repo.Tags.Add("1.3.4", tipSha);
 
-        AddACommit(local);
+        AddACommit(util, util.Local);
         repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
 
         var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tag);
-        var resp = await Get(local).Checkout(
+        var resp = await Get(util.Local).Checkout(
             new CheckoutInput(
-                ProjPath,
+                util.ProjPath,
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
@@ -275,19 +259,17 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     [Fact]
     public async Task TagTargetNewContent()
     {
-        using var repoPath = GetRepository(
-            nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local,
-            out var defaultBranchName);
+        using var util = RepoTestUtilityPayload.GetRepository(
+            nameof(PrepareRunnerRepositoryIntegrationTests));
 
-        var clonePath = Path.Combine(repoPath.Dir.Path, "Clone");
-        using var clone = new Repository(Repository.Clone(remote, clonePath));
+        var clonePath = Path.Combine(util.Temp.Path, "Clone");
+        using var clone = new Repository(Repository.Clone(util.Remote, clonePath));
 
         var tagStr = "1.3.4";
         string commitSha;
         {
-            using var repo = new Repository(local);
-            AddACommit(local);
+            using var repo = new Repository(util.Local);
+            util.AddACommit();
             commitSha = repo.Head.Tip.Sha;
             var tag = repo.Tags.Add(tagStr, commitSha);
             repo.Network.Push(repo.Network.Remotes.First(), tag.CanonicalName);
@@ -296,7 +278,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
         var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Tag, tagStr);
         var resp = await Get(clonePath).Checkout(
             new CheckoutInput(
-                ProjPath,
+                util.ProjPath,
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
@@ -310,20 +292,18 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     [Fact]
     public async Task CommitTargetJumpback()
     {
-        using var repoPath = GetRepository(
-            nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local,
-            out var defaultBranchName);
-        using var repo = new Repository(local);
+        using var util = RepoTestUtilityPayload.GetRepository(
+            nameof(PrepareRunnerRepositoryIntegrationTests));
+        using var repo = new Repository(util.Local);
         var tipSha = repo.Head.Tip.Sha;
 
-        AddACommit(local);
+        util.AddACommit();
         repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
 
         var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, tipSha);
-        var resp = await Get(local).Checkout(
+        var resp = await Get(util.Local).Checkout(
             new CheckoutInput(
-                ProjPath,
+                util.ProjPath,
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
@@ -337,26 +317,24 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     [Fact]
     public async Task CommitTargetNoLocal()
     {
-        using var repoPath = GetRepository(
-            nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local,
-            out var defaultBranchName);
+        using var util = RepoTestUtilityPayload.GetRepository(
+            nameof(PrepareRunnerRepositoryIntegrationTests));
         string tipSha;
         {
-            using var repo = new Repository(local);
+            using var repo = new Repository(util.Local);
             tipSha = repo.Head.Tip.Sha;
 
-            AddACommit(local);
+            util.AddACommit();
             repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
         }
 
-        var clonePath = Path.Combine(repoPath.Dir.Path, "Clone");
-        using var clone = new Repository(Repository.Clone(remote, clonePath));
+        var clonePath = Path.Combine(util.Temp.Path, "Clone");
+        using var clone = new Repository(Repository.Clone(util.Remote, clonePath));
 
         var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, tipSha);
         var resp = await Get(clonePath).Checkout(
             new CheckoutInput(
-                ProjPath,
+                util.ProjPath,
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
@@ -370,27 +348,25 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     [Fact]
     public async Task CommitTargetNewContent()
     {
-        using var repoPath = GetRepository(
-            nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local,
-            out var defaultBranchName);
+        using var util = RepoTestUtilityPayload.GetRepository(
+            nameof(PrepareRunnerRepositoryIntegrationTests));
 
-        var clonePath = Path.Combine(repoPath.Dir.Path, "Clone");
-        using var clone = new Repository(Repository.Clone(remote, clonePath));
+        var clonePath = Path.Combine(util.Temp.Path, "Clone");
+        using var clone = new Repository(Repository.Clone(util.Remote, clonePath));
 
         string tipSha, commitSha;
         {
-            using var repo = new Repository(local);
+            using var repo = new Repository(util.Local);
             tipSha = repo.Head.Tip.Sha;
 
-            commitSha = AddACommit(local).Sha;
+            commitSha = util.AddACommit().Sha;
             repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
         }
 
         var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Commit, commitSha);
         var resp = await Get(clonePath).Checkout(
             new CheckoutInput(
-                ProjPath,
+                util.ProjPath,
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
@@ -404,11 +380,9 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
     [Fact]
     public async Task BranchTargetJumpback()
     {
-        using var repoPath = GetRepository(
-            nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local,
-            out var defaultBranchName);
-        using var repo = new Repository(local);
+        using var util = RepoTestUtilityPayload.GetRepository(
+            nameof(PrepareRunnerRepositoryIntegrationTests));
+        using var repo = new Repository(util.Local);
         var tipSha = repo.Head.Tip.Sha;
         var jbName = "Jumpback";
         var jbBranch = repo.CreateBranch(jbName);
@@ -418,13 +392,13 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
             b => b.UpstreamBranch = jbBranch.CanonicalName);
         repo.Network.Push(jbBranch);
 
-        var commit = AddACommit(local);
+        var commit = util.AddACommit();
         repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
 
         var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, jbName);
-        var resp = await Get(local).Checkout(
+        var resp = await Get(util.Local).Checkout(
             new CheckoutInput(
-                ProjPath,
+                util.ProjPath,
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
@@ -434,22 +408,20 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
         repo.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
         repo.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
         repo.Branches[jbName].Tip.Sha.Should().BeEquivalentTo(tipSha);
-        repo.Branches[defaultBranchName].Tip.Sha.Should().BeEquivalentTo(commit.Sha);
+        repo.Branches[util.DefaultBranchName].Tip.Sha.Should().BeEquivalentTo(commit.Sha);
     }
 
     [Fact]
     public async Task BranchTargetNoLocal()
     {
-        using var repoPath = GetRepository(
-            nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local,
-            out var defaultBranchName);
+        using var util = RepoTestUtilityPayload.GetRepository(
+            nameof(PrepareRunnerRepositoryIntegrationTests));
         var jbName = "Jumpback";
         string tipSha;
         string commitSha;
 
         {
-            using var repo = new Repository(local);
+            using var repo = new Repository(util.Local);
             tipSha = repo.Head.Tip.Sha;
             var jbBranch = repo.CreateBranch(jbName);
             repo.Branches.Update(
@@ -458,18 +430,18 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
                 b => b.UpstreamBranch = jbBranch.CanonicalName);
             repo.Network.Push(jbBranch);
             repo.Branches.Remove(jbName);
-            commitSha = AddACommit(local).Sha;
+            commitSha = util.AddACommit().Sha;
             repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
-            repo.Network.Push(repo.Branches[defaultBranchName]);
+            repo.Network.Push(repo.Branches[util.DefaultBranchName]);
         }
 
-        var clonePath = Path.Combine(repoPath.Dir.Path, "Clone");
-        using var clone = new Repository(Repository.Clone(remote, clonePath));
+        var clonePath = Path.Combine(util.Temp.Path, "Clone");
+        using var clone = new Repository(Repository.Clone(util.Remote, clonePath));
 
         var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, $"origin/{jbName}");
         var resp = await Get(clonePath).Checkout(
             new CheckoutInput(
-                ProjPath,
+                util.ProjPath,
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
@@ -479,33 +451,31 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
         clone.Head.Tip.Sha.Should().BeEquivalentTo(tipSha);
         clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
         clone.Branches[jbName].Should().BeNull();
-        clone.Branches[defaultBranchName].Tip.Sha.Should().BeEquivalentTo(commitSha);
+        clone.Branches[util.DefaultBranchName].Tip.Sha.Should().BeEquivalentTo(commitSha);
     }
 
     [Fact]
     public async Task BranchNewContent()
     {
-        using var repoPath = GetRepository(
-            nameof(PrepareRunnerRepositoryIntegrationTests),
-            out var remote, out var local,
-            out var defaultBranchName);
+        using var util = RepoTestUtilityPayload.GetRepository(
+            nameof(PrepareRunnerRepositoryIntegrationTests));
         string tipSha;
         string commitSha;
 
-        var clonePath = Path.Combine(repoPath.Dir.Path, "Clone");
-        using var clone = new Repository(Repository.Clone(remote, clonePath));
+        var clonePath = Path.Combine(util.Temp.Path, "Clone");
+        using var clone = new Repository(Repository.Clone(util.Remote, clonePath));
         {
-            using var repo = new Repository(local);
+            using var repo = new Repository(util.Local);
             tipSha = repo.Head.Tip.Sha;
-            commitSha = AddACommit(local).Sha;
+            commitSha = util.AddACommit().Sha;
             repo.Head.Tip.Sha.Should().NotBeEquivalentTo(tipSha);
-            repo.Network.Push(repo.Branches[defaultBranchName]);
+            repo.Network.Push(repo.Branches[util.DefaultBranchName]);
         }
 
-        var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, $"origin/{defaultBranchName}");
+        var versioning = new GitPatcherVersioning(PatcherVersioningEnum.Branch, $"origin/{util.DefaultBranchName}");
         var resp = await Get(clonePath).Checkout(
             new CheckoutInput(
-                ProjPath,
+                util.ProjPath,
                 versioning,
                 TypicalNugetVersioning()),
             cancel: CancellationToken.None);
@@ -514,7 +484,7 @@ public class PrepareRunnerRepositoryIntegrationTests : RepoTestUtility
         resp.RunnableState.Succeeded.Should().BeTrue();
         clone.Head.Tip.Sha.Should().BeEquivalentTo(commitSha);
         clone.Head.FriendlyName.Should().BeEquivalentTo(CheckoutRunnerBranch.RunnerBranch);
-        clone.Branches[defaultBranchName].Tip.Sha.Should().BeEquivalentTo(tipSha);
+        clone.Branches[util.DefaultBranchName].Tip.Sha.Should().BeEquivalentTo(tipSha);
     }
     #endregion
 }
