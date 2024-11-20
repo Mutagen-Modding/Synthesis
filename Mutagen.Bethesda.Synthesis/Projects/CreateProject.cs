@@ -4,6 +4,7 @@ using Noggog;
 using Noggog.IO;
 using Noggog.StructuredStrings;
 using Noggog.StructuredStrings.CSharp;
+using Synthesis.Bethesda;
 
 namespace Mutagen.Bethesda.Synthesis.Projects;
 
@@ -46,7 +47,7 @@ public class CreateProject : ICreateProject
         sb.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk\">");
         sb.AppendLine($"  <PropertyGroup>");
         sb.AppendLine($"    <OutputType>Exe</OutputType>");
-        sb.AppendLine($"    <TargetFramework>{(targetFramework ?? "net8.0")}</TargetFramework>");
+        sb.AppendLine($"    <TargetFramework>{(targetFramework ?? TargetNetVersion.Target)}</TargetFramework>");
         sb.AppendLine($"    <ImplicitUsings>true</ImplicitUsings>");
         sb.AppendLine($"  </PropertyGroup>");
         sb.AppendLine();

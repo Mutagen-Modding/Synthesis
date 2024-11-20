@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Xml.Linq;
 using Serilog;
+using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.Services.ModifyProject;
 
@@ -12,13 +13,20 @@ public interface ISwapToProperNetVersion
 public class SwapToProperNetVersion : ISwapToProperNetVersion
 {
     private readonly ILogger _logger;
-    private const int NetNum = 8;
     private readonly Version Net8Version = new Version(0, 45);
+    private readonly Version Net9Version = new Version(0, 49);
     private readonly CultureInfo Culture = new CultureInfo("en");
 
+    private readonly SortedList<Version, byte> _netMapping;
+    
     public SwapToProperNetVersion(ILogger logger)
     {
         _logger = logger;
+        _netMapping = new SortedList<Version, byte>()
+        {
+            { Net8Version, 8 },
+            { Net9Version, 9 }
+        };
     }
     
     private void ProcessTargetFrameworkNode(XElement elem, Version targetMutagenVersion)
@@ -31,7 +39,7 @@ public class SwapToProperNetVersion : ISwapToProperNetVersion
         }
         else
         {
-            ProcessNet8(elem, targetMutagenVersion);
+            ProcessNormal(elem, targetMutagenVersion);
         }
     }
 
@@ -46,7 +54,7 @@ public class SwapToProperNetVersion : ISwapToProperNetVersion
         }
     }
 
-    private bool NeedsUpgrade(string elem)
+    private bool NeedsUpgrade(string elem, byte target)
     {
         if (elem.StartsWith("netcoreapp", StringComparison.OrdinalIgnoreCase))
         {
@@ -58,7 +66,7 @@ public class SwapToProperNetVersion : ISwapToProperNetVersion
         }
 
         if (double.TryParse(elem.Substring(3), Culture, out var netNum)
-            && netNum > NetNum)
+            && netNum > target)
         {
             _logger.Information($"Already net{netNum}.  No need to upgrade");
             return false;
@@ -67,12 +75,17 @@ public class SwapToProperNetVersion : ISwapToProperNetVersion
         return true;
     }
 
-    private void ProcessNet8(XElement elem, Version targetMutagenVersion)
+    private void ProcessNormal(XElement elem, Version targetMutagenVersion)
     {
-        if (!NeedsUpgrade(elem.Value)) return;
-        
-        _logger.Information("Swapping to net8.0");
-        elem.Value = $"net{NetNum}.0";
+        if (!_netMapping.TryGetInDirection(targetMutagenVersion, higher: false, out var targetNetVersion))
+        {
+            throw new ArgumentException($"Could not find target net to use for version: {targetMutagenVersion}");
+        }
+
+        if (!NeedsUpgrade(elem.Value, targetNetVersion.Value)) return;
+
+        elem.Value = $"net{targetNetVersion.Value}.0";
+        _logger.Information("Swapping to {Target}", elem.Value);
     }
 
     public void Swap(XElement proj, Version targetMutagenVersion)
