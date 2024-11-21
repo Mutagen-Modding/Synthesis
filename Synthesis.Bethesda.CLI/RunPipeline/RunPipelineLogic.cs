@@ -18,27 +18,19 @@ public class RunPipelineLogic
     
     public static async Task<int> Run(RunPatcherPipelineCommand cmd, IFileSystem? fileSystem = null)
     {
-        try
-        {
-            var builder = new ContainerBuilder();
-            builder.RegisterModule(
-                new RunPipelineModule(fileSystem.GetOrDefault(), cmd));
+        var builder = new ContainerBuilder();
+        builder.RegisterModule(
+            new RunPipelineModule(fileSystem.GetOrDefault(), cmd));
             
-            var container = builder.Build();
+        var container = builder.Build();
 
-            container
-                .Resolve<IStartupTask[]>()
-                .ForEach(x => x.Start());
+        container
+            .Resolve<IStartupTask[]>()
+            .ForEach(x => x.Start());
 
-            await container
-                .Resolve<RunPipelineLogic>()
-                .RunInternal().ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            System.Console.Error.WriteLine(ex);
-            return -1;
-        }
+        await container
+            .Resolve<RunPipelineLogic>()
+            .RunInternal().ConfigureAwait(false);
         return 0;
     }
 
