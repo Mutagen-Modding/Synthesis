@@ -49,7 +49,7 @@ public class NewProfileVm : ViewModel
             .ToObservableCollection(this);
 
         this.WhenAnyValue(x => x.SelectedCategory)
-            .NotNull()
+            .WhereNotNull()
             .Select(x => x.GetRelatedReleases())
             .Where(x => x.Count() == 1)
             .Subscribe(rel =>

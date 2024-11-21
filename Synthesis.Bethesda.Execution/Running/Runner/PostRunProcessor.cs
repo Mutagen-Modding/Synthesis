@@ -54,7 +54,7 @@ public class PostRunProcessor
                     var modHeader = ModHeaderFrame.FromPath(modPath, _gameReleaseContext.Release);
                     return new KeyedMasterStyle(modPath.ModKey, modHeader.MasterStyle);
                 })
-                .NotNull());
+                .WhereNotNull());
         
         var mod = ModInstantiator.ImportSetter(
             path,

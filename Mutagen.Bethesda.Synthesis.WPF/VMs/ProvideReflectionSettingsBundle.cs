@@ -71,7 +71,7 @@ public class ProvideReflectionSettingsBundle : IProvideReflectionSettingsBundle
                             throw new ArgumentException($"Error creating reflected settings: {ex.Message}");
                         }
                     })
-                    .NotNull()
+                    .WhereNotNull()
                     .ToArray();
             }).ConfigureAwait(false);
         if (vms.Failed)
