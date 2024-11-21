@@ -14,7 +14,7 @@ public class SwapToProperNetVersion : ISwapToProperNetVersion
 {
     private readonly ILogger _logger;
     private readonly Version Net8Version = new Version(0, 45);
-    private readonly Version Net9Version = new Version(0, 49);
+    // private readonly Version Net9Version = new Version(0, 49);
     private readonly CultureInfo Culture = new CultureInfo("en");
 
     private readonly SortedList<Version, byte> _netMapping;
@@ -25,7 +25,7 @@ public class SwapToProperNetVersion : ISwapToProperNetVersion
         _netMapping = new SortedList<Version, byte>()
         {
             { Net8Version, 8 },
-            { Net9Version, 9 }
+            // { Net9Version, 9 }
         };
     }
     
