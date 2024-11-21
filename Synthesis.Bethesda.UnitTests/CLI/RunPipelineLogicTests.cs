@@ -26,11 +26,11 @@ public class RunPipelineLogicTests
         SkyrimMod someMod,
         Npc npc)
     {
-        using var dataFolder = TempFolder.Factory();
-        using var patcherDir = TempFolder.Factory();
-        using var outputDir = TempFolder.Factory();
-        using var pluginList = new TempFile();
-        using var pipelineSettingsFile = new TempFile();
+        using var dataFolder = TempFolder.Factory(fileSystem: fileSystem);
+        using var patcherDir = TempFolder.Factory(fileSystem: fileSystem);
+        using var outputDir = TempFolder.Factory(fileSystem: fileSystem);
+        using var pluginList = new TempFile(fileSystem: fileSystem);
+        using var pipelineSettingsFile = new TempFile(fileSystem: fileSystem);
         var name = "TestName";
         var result = await new CreateTemplatePatcherSolutionRunner(fileSystem).Run(new CreateTemplatePatcherCommand()
         {
