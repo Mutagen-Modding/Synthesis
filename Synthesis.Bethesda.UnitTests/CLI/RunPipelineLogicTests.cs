@@ -17,7 +17,7 @@ namespace Synthesis.Bethesda.UnitTests.CLI;
 
 public class RunPipelineLogicTests
 {
-    [Theory, MutagenModAutoData(FileSystem: TargetFileSystem.Real)]
+    [Theory(Skip = "Need to upgrade to target known published packages"), MutagenModAutoData(FileSystem: TargetFileSystem.Real)]
     public async Task Typical(
         IFileSystem fileSystem,
         string profileName,
