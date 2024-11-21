@@ -3,7 +3,6 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
-using DynamicData.Kernel;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -215,6 +214,8 @@ public class RunVm : ViewModel
                         formIDRangeMode: RunningProfile.FormIDRangeMode,
                         targetLanguage: RunningProfile.TargetLanguage,
                         masterFile: RunningProfile.MasterFile,
+                        masterStyleFallbackEnabled: RunningProfile.MasterStyleFallbackEnabled,
+                        masterStyle: RunningProfile.MasterStyle,
                         cancel: _cancel.Token).ConfigureAwait(false);
                 }
                 catch (TaskCanceledException)

@@ -19,6 +19,7 @@ public class PatcherModule : Module
                 typeof(IPatcherNameProvider),
                 typeof(IPrintShaIfApplicable))
             .NotInjection()
-            .AsImplementedInterfaces();
+            .AsImplementedInterfaces()
+            .AsSelf();
     }
 }

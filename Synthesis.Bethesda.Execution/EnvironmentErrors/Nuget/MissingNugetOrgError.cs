@@ -39,7 +39,7 @@ public class MissingNugetOrgError : INugetErrorSolution
 
             if (sources.Elements("add")
                 .Select(x => x.Attribute("value"))
-                .NotNull()
+                .WhereNotNull()
                 .Any(attr => attr.Value.Equals("https://api.nuget.org/v3/index.json")))
             {
                 return;

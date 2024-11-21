@@ -13,7 +13,7 @@
     <PackageReference Include="Mutagen.Bethesda.Autofac" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Autofac" />
-    <PackageReference Include="Noggog.Autofac" />
+      <PackageReference Include="Noggog.Autofac" />
     <PackageReference Include="Serilog.Sinks.Console" />
   </ItemGroup>
 
@@ -22,56 +22,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Services\ProfileLoadOrderProvider.cs">
+    <Compile Update="Services\Common\NewestVersionProvider.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
-    <Compile Update="RunPipeline\RunPipelineModule.cs">
+    <Compile Update="Services\Common\PipelineSettingsModifier.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
-    <Compile Update="RunPipeline\GetGroupRunners.cs">
+    <Compile Update="Services\Common\ProfileRetriever.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
-    <Compile Update="RunPipeline\GetPatcherRunners.cs">
+    <Compile Update="Services\Common\ProfileVersionProvider.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
-    <Compile Update="RunPipeline\PatcherSettingsToRunnerFactory.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="RunPipeline\PipelineProfilesProvider.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="RunPipeline\RunPatcherPipeline.cs">
-      <CodeLanguage>cs</CodeLanguage>
-      <DefaultPackFolder>content</DefaultPackFolder>
-      <BuildAction>Compile</BuildAction>
-    </Compile>
-    <Compile Update="RunPipeline\RunProfileProvider.cs">
+    <Compile Update="RunPipeline\ProfileProvider.cs">
       <CodeLanguage>cs</CodeLanguage>
       <DefaultPackFolder>content</DefaultPackFolder>
       <BuildAction>Compile</BuildAction>
     </Compile>
   </ItemGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <DebugType>embedded</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DebugType>embedded</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
 
 </Project>

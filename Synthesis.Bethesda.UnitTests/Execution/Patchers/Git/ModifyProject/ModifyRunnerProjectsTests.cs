@@ -5,7 +5,7 @@ using Noggog.Testing.AutoFixture;
 using Serilog;
 using Serilog.Core;
 using StrongInject;
-using Synthesis.Bethesda.Execution.Patchers.Git.ModifyProject;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services.ModifyProject;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Versioning;
 
@@ -100,7 +100,7 @@ public class ModifyRunnerProjectsTests
 		""";
 
 	[Theory, DefaultAutoData]
-	public async Task Typical(
+	public async Task Net8(
 		IFileSystem fileSystem,
 		FilePath existingSlnPath)
 	{
@@ -115,6 +115,48 @@ public class ModifyRunnerProjectsTests
 			subPath, 
 			new NugetVersionPair(
 				"0.45",
+				"0.30"),
+			out var pair);
+		await Verify(fileSystem.File.ReadAllText(projPath));
+	}
+
+	[Theory, DefaultAutoData]
+	public async Task Net8_Top(
+		IFileSystem fileSystem,
+		FilePath existingSlnPath)
+	{
+		var subPath = Path.Combine("SomeProj", "SomeProj.csproj");
+		fileSystem.File.WriteAllText(existingSlnPath, Sln);
+		var projPath = Path.Combine(Path.GetDirectoryName(existingSlnPath)!, subPath);
+		fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(projPath)!);
+		fileSystem.File.WriteAllText(projPath, NetCoreProj);
+		var sut = new ModifyRunnerProjectsContainer(fileSystem);
+		sut.Resolve().Value.Modify(
+			existingSlnPath, 
+			subPath, 
+			new NugetVersionPair(
+				"0.48",
+				"0.30"),
+			out var pair);
+		await Verify(fileSystem.File.ReadAllText(projPath));
+	}
+
+	[Theory, DefaultAutoData]
+	public async Task Typical(
+		IFileSystem fileSystem,
+		FilePath existingSlnPath)
+	{
+		var subPath = Path.Combine("SomeProj", "SomeProj.csproj");
+		fileSystem.File.WriteAllText(existingSlnPath, Sln);
+		var projPath = Path.Combine(Path.GetDirectoryName(existingSlnPath)!, subPath);
+		fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(projPath)!);
+		fileSystem.File.WriteAllText(projPath, NetCoreProj);
+		var sut = new ModifyRunnerProjectsContainer(fileSystem);
+		sut.Resolve().Value.Modify(
+			existingSlnPath, 
+			subPath, 
+			new NugetVersionPair(
+				"0.49",
 				"0.30"),
 			out var pair);
 		await Verify(fileSystem.File.ReadAllText(projPath));

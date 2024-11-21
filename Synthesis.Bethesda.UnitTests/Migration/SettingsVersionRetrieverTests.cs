@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings.Json;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Migration;
 

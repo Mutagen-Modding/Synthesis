@@ -3,7 +3,6 @@ using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Versioning.Query;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Versioning;
 

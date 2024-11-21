@@ -8,7 +8,6 @@ using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner;
 
@@ -23,15 +22,17 @@ public class RunAPatcherTests
         RunParameters runParameters,
         RunAPatcher sut)
     {
-        (await sut.Run(
+        await Assert.ThrowsAsync<NotImplementedException>(async () =>
+        {
+            await sut.Run(
                 groupRun,
                 new PatcherPrepBundle(
                     patcher,
                     Task.FromResult<Exception?>(new NotImplementedException())),
                 cancellation,
                 sourcePath,
-                runParameters))
-            .Should().BeNull();
+                runParameters);
+        });
     }
         
     [Theory, SynthAutoData]

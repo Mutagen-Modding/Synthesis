@@ -8,8 +8,6 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Settings.V2;
-using Synthesis.Bethesda.GUI.Services.Main;
-using Synthesis.Bethesda.GUI.Services.Versioning;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
@@ -28,8 +26,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         private readonly ISelectedProfileControllerVm _selectedProfileController;
         private readonly ISettingsSingleton _settingsSingleton;
         private readonly IActivePanelControllerVm _activePanelControllerVm;
-        private readonly IProfileFactory _profileFactory;
         private readonly ILogger _logger;
+        private readonly NewProfileVm.Factory _newProfileVmFactory;
         public ProfileManagerVm ProfileManager { get; }
 
         private readonly ObservableAsPropertyHelper<ViewModel?> _activePanel;
@@ -70,15 +68,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             ISelectedProfileControllerVm selectedProfile,
             ISettingsSingleton settingsSingleton,
             IActivePanelControllerVm activePanelControllerVm,
-            IProfileFactory profileFactory,
             ILogger logger, 
-            UiUpdateVm uiUpdateVm)
+            UiUpdateVm uiUpdateVm,
+            NewProfileVm.Factory newProfileVmFactory)
         {
             _selectedProfileController = selectedProfile;
             _settingsSingleton = settingsSingleton;
             _activePanelControllerVm = activePanelControllerVm;
-            _profileFactory = profileFactory;
             _logger = logger;
+            _newProfileVmFactory = newProfileVmFactory;
             UiUpdateVm = uiUpdateVm;
             _activePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel!.ViewModel)
                 .ToGuiProperty(this, nameof(ActivePanel), default, deferSubscription: true);
@@ -156,9 +154,8 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         {
             if (ProfileManager.Profiles.Count == 0)
             {
-                _activePanelControllerVm.ActivePanel = new NewProfileVm(
+                _activePanelControllerVm.ActivePanel = _newProfileVmFactory(
                     this.ProfileManager, 
-                    _profileFactory,
                     (profile) =>
                     {
                         _selectedProfileController.SelectedProfile = profile;

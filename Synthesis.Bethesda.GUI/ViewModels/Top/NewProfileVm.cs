@@ -1,8 +1,8 @@
-using System.IO;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Synthesis.Profiles;
 using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
@@ -28,10 +28,15 @@ public class NewProfileVm : ViewModel
 
     [Reactive]
     public GameRelease? SelectedRelease { get; set; }
+    
+    public delegate NewProfileVm Factory(
+        ProfileManagerVm config,
+        Action<ProfileVm>? postRun = null);
 
     public NewProfileVm(
-        ProfileManagerVm config, 
         IProfileFactory profileFactory,
+        CreateProfileId createProfileId,
+        ProfileManagerVm config, 
         Action<ProfileVm>? postRun = null)
     {
         _config = config;
@@ -44,7 +49,7 @@ public class NewProfileVm : ViewModel
             .ToObservableCollection(this);
 
         this.WhenAnyValue(x => x.SelectedCategory)
-            .NotNull()
+            .WhereNotNull()
             .Select(x => x.GetRelatedReleases())
             .Where(x => x.Count() == 1)
             .Subscribe(rel =>
@@ -57,36 +62,11 @@ public class NewProfileVm : ViewModel
             .Subscribe(game =>
             {
                 if (game == null) return;
-                var profile = profileFactory.Get(game.Value, GetNewProfileId(), Nickname.IsNullOrWhitespace() ? game.Value.ToDescriptionString() : Nickname);
+                var existing = config.Profiles.Items.Select(x => x.ID).ToHashSet();
+                var profile = profileFactory.Get(game.Value, createProfileId.GetNewProfileId(existing), Nickname.IsNullOrWhitespace() ? game.Value.ToDescriptionString() : Nickname);
                 config.Profiles.AddOrUpdate(profile);
                 postRun?.Invoke(profile);
             })
             .DisposeWith(this);
-    }
-
-    public string GetNewProfileId()
-    {
-        bool IsValid(string id)
-        {
-            foreach (var profile in _config.Profiles.Items)
-            {
-                if (profile.ID == id)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        for (int i = 0; i < 15; i++)
-        {
-            var attempt = Path.GetRandomFileName();
-            if (IsValid(attempt))
-            {
-                return attempt;
-            }
-        }
-
-        throw new ArgumentException("Could not allocate a new profile");
     }
 }

@@ -3,7 +3,6 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.CLI;
-using Xunit;
 using Path = System.IO.Path;
 
 namespace Synthesis.Bethesda.UnitTests;

@@ -31,7 +31,7 @@ public class AddGitPatcherResponder
     {
         return _metaFileReceiver.MetaFiles
             .Select(x => x.AddGitPatcher)
-            .NotNull()
+            .WhereNotNull()
             .DoTask(async x =>
             {
                 if (!_addPatchersToSelectedGroupVm.CanAddPatchers) return;

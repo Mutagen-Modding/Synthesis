@@ -1,4 +1,4 @@
-﻿using Noggog;
+using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;

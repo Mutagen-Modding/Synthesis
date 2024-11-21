@@ -1,9 +1,8 @@
 ﻿using FluentAssertions;
 using Noggog;
 using NSubstitute;
-using Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services.PrepareDriver;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.PrepareDriver;
 

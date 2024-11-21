@@ -5,33 +5,17 @@
     <ImplicitUsings>true</ImplicitUsings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Platforms>x64</Platforms>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable</WarningsAsErrors>
-  </PropertyGroup> 
-   
-  <ItemGroup> 
-    <PackageReference Include="GitInfo" > 
-      <PrivateAssets>all</PrivateAssets> 
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets> 
-    </PackageReference>
-  </ItemGroup> 
-
-  <!-- To be redefined by GitInfo after restore. -->
-  <Target Name="GitVersion" />
-
-  <Target Name="SetVersion"
-		  BeforeTargets="GetAssemblyVersion;GetPackageVersion;GetProjectVersion"
-		  DependsOnTargets="GitVersion"
-		  Returns="$(PackageVersion)">
-    <PropertyGroup>
-      <DevLabel Condition="$(GitCommits) != '0'">.1-dev</DevLabel>
-      <DevLabel Condition="$(GitCommits) == '0' And $(GitSemVerDashLabel) != ''">$(GitSemVerDashLabel)</DevLabel>
-      <AssemblyDevLabel Condition="$(GitCommits) != '0'">.1</AssemblyDevLabel>
-      <FileVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(AssemblyDevLabel)</FileVersion>
-      <PackageVersion>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(DevLabel)</PackageVersion>
-      <Version>$(GitBaseVersionMajor).$(GitBaseVersionMinor).$(GitBaseVersionPatch)$(AssemblyDevLabel)</Version>
-      <InformationalVersion>$(PackageVersion)</InformationalVersion>
-    </PropertyGroup>
-  </Target>
+  </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
+        <PackageReference Include="GitVersion.MsBuild">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+    
 </Project>

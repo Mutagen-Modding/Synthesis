@@ -2,7 +2,6 @@ using FluentAssertions;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests;
 

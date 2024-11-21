@@ -3,11 +3,11 @@ using Serilog;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
-using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.Execution.Utility;
 using Noggog.WorkEngine;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 
 namespace Synthesis.Bethesda.Execution.PatcherCommands;
 

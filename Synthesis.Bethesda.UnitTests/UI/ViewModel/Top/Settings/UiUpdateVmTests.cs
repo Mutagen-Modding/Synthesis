@@ -1,14 +1,11 @@
 ﻿using AutoFixture.Xunit2;
 using FluentAssertions;
 using Mutagen.Bethesda.Synthesis.Versioning;
-using Noggog;
 using NSubstitute;
-using ReactiveUI;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.GUI.Services.Versioning;
 using Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Top.Settings;
 

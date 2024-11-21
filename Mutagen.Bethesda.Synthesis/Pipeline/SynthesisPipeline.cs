@@ -11,7 +11,6 @@ using Synthesis.Bethesda.DTO;
 using System.IO.Abstractions;
 using System.Text.Json;
 using Mutagen.Bethesda.Environments.DI;
-using Mutagen.Bethesda.Installs;
 using Mutagen.Bethesda.Installs.DI;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using SynthesisBase = Synthesis.Bethesda;

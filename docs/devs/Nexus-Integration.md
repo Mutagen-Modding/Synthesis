@@ -1,10 +1,20 @@
 # Nexus Integration
-The Nexus and other sites typically want a file to be uploaded in order to make a mod.   Synthesis patchers typically do not have a concrete set of files to upload, and we would prefer the source code be located on sites like GitHub, which have much more robust code versioning systems.
+Typically mods are uploaded straight to the Nexus.  However, Synthesis mods are code, which the Nexus isn't as suited for.  Places like GitHub are better homes for Synthesis patchers, as they come with all the tooling that coding developers rely on:
+
+- Git based historical tracking
+- Branches for experimental versions
+- Easily browsable source code
+- Ability for others to contribute fixes/upgrades as Pull Requests
+
+Additionally, the Synthesis system leverages these [Git Patchers](../Git-Repository-Patcher.md) to fulfill many other features:
+
+- Automatic listing in the Synthesis search systems
+- Automatic upgrades over time via the [Versioning System](../Versioning.md), which reduces the need for maintenance on your end.
 
 ## Create a .Synth File
-Synthesis offers a `.synth` file that acts as a convenience installer.   The concept is unnecessary if users are familiar with the [Git Repository Browser](Typical-Usage.md#browse) systems.  However, for Nexus, it allows us to create a file that we can upload for our mod listing.
+Synthesis offers a `.synth` file that acts as a convenience installer.   The concept is unnecessary if users are familiar with the [Git Repository Browser](../Typical-Usage.md#browse) systems.  However, for Nexus, it allows us to create a file that we can upload for our mod listing.
 
-Please refer to the [.synth File](Synth-File.md) page for more details
+Please refer to the [.synth File](../Synth-File.md) page for more details
 
 ## Uploading Exes
 One alternative is to compile the exe yourself, and upload that to the Nexus.  This is undesirable for a few reasons:

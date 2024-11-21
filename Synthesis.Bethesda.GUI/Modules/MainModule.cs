@@ -1,6 +1,7 @@
 using System.IO.Abstractions;
 using Autofac;
 using Mutagen.Bethesda.Autofac;
+using Mutagen.Bethesda.Synthesis.Profiles;
 using Mutagen.Bethesda.Synthesis.Projects;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Mutagen.Bethesda.Synthesis.WPF;
@@ -65,7 +66,9 @@ public class MainModule : Autofac.Module
         builder.RegisterAssemblyTypes(typeof(IProvideCurrentVersions).Assembly)
             .InNamespacesOf(
                 typeof(IProvideCurrentVersions),
+                typeof(CreateProfileId),
                 typeof(ICreateProject))
+            .AsSelf()
             .AsMatchingInterface()
             .SingleInstance();
 

@@ -1,10 +1,4 @@
 <Project>
-  <ItemGroup>
-    <PackageReference Include="NuGetizer" > 
-      <PrivateAssets>all</PrivateAssets> 
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets> 
-    </PackageReference> 
-  </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Condition="'$(IsWindows)'=='true' And $(PackageId) != ''" Command="RD /S /Q &quot;%25USERPROFILE%25\.nuget\packages\$(PackageId)&quot;" />

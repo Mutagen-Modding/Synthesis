@@ -8,11 +8,25 @@ As a user creating a modded load order, Synthesis lets you add as many of these 
 # For Users:
 Easily add patchers and run patcher pipelines on your game.  
 
+![Showcase](images/showcase.gif)
+
 [:octicons-arrow-right-24: Installation](Installation.md)
 
-[:octicons-arrow-right-24: Typical Usage](https://github.com/Mutagen-Modding/Synthesis/wiki/Typical-Usage)
+[:octicons-arrow-right-24: Typical Usage](Typical-Usage.md)
 
 # For Developers:
-Utilize development tools provided by Synthesis to help you create Mutagen patchers from scratch.
+Utilize development tools provided by Synthesis to help you create Mutagen patchers from scratch
 
-[:octicons-arrow-right-24: Create a Patcher](https://github.com/Mutagen-Modding/Synthesis/wiki/dev/Create-A-Patcher)
+```cs
+// Loop every NPC in the game
+foreach (var npc in state.LoadOrder.PriorityOrder.Npc().WinningOverrides())
+{
+    // Add the record as an override to the new patch
+    var overrideNpc = state.PatchMod.Npcs.GetOrAddAsOverride(npc);
+	
+	// Add 10% to their height
+    overrideNpc.Height *= 1.1f;
+}
+```
+
+[:octicons-arrow-right-24: Create a Patcher](devs/Create-a-Patcher.md)

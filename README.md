@@ -1,13 +1,3 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-## Table Of Contents
-
-- [Synthesis](#synthesis)
-  - [Installation](#installation)
-  - [Development](#development)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 ![Release](https://github.com/Mutagen-Modding/Synthesis/workflows/Release/badge.svg) ![Dev](https://github.com/Mutagen-Modding/Synthesis/workflows/Dev/badge.svg) ![Scrape](https://github.com/Mutagen-Modding/Synthesis.Registry/workflows/Scrape/badge.svg) [![NuGet Stats](https://img.shields.io/nuget/v/Synthesis.Bethesda.svg)](https://www.nuget.org/packages/Synthesis.Bethesda)
 
 [![Discord](https://discordapp.com/api/guilds/759302581448474626/widget.png)](https://discord.gg/53KMEsW)
@@ -18,10 +8,10 @@ A framework and GUI to empower people to create mods via code instead of by hand
 ![Typical Usage](https://i.imgur.com/Wj2fGaF.gif)
 
 ## Installation
-If you're looking to install, we have a [wiki page](https://github.com/Mutagen-Modding/Synthesis/wiki/Installation) with the details.
+Check out the [![Documentation](https://i.imgur.com/DGoSrNg.png)](https://mutagen-modding.github.io/Synthesis/Installation/) [Official Documentation](https://mutagen-modding.github.io/Synthesis/Installation/) for installation and typical usage instructions.
 
 Also be sure to head over to [Discord](https://discord.gg/53KMEsW) and ask any and all questions you may have!
 
 ## Development
 While Synthesis supports any external program as a patcher, it heavily facilitates creating and running Mutagen-based patchers.
-Take a look at the [Development](https://github.com/Mutagen-Modding/Synthesis/wiki/Create-a-Patcher) side of the wiki, the [Mutagen](https://github.com/Mutagen-Modding/Mutagen/wiki) documentation, or some [example patchers](https://github.com/Mutagen-Modding/Synthesis/network/dependents?package_id=UGFja2FnZS0xMzg1MjY1MjYz).
+Take a look at the [Development](https://mutagen-modding.github.io/Synthesis/devs/Create-a-Patcher/) side of the wiki, the [Mutagen](https://mutagen-modding.github.io/Mutagen/) documentation, or some [example patchers](https://github.com/Mutagen-Modding/Synthesis/network/dependents?package_id=UGFja2FnZS0xMzg1MjY1MjYz).

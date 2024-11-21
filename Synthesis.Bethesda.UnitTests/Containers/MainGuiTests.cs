@@ -1,13 +1,13 @@
 ﻿using Autofac;
 using Mutagen.Bethesda.Environments.DI;
+using Noggog;
 using Noggog.Autofac;
-using NSubstitute;
+using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Containers;
 
@@ -18,9 +18,9 @@ public class MainGuiTests
         var builder = new ContainerBuilder();
         builder.RegisterModule<MainModule>();
         ContainerTestUtil.RegisterCommonMocks(builder);
-        builder.RegisterInstance(Substitute.For<IProfileIdentifier>())
-            .As<IProfileIdentifier>()
-            .As<IGameReleaseContext>();
+        builder.RegisterMock<IProfileIdentifier>();
+        builder.RegisterMock<IGameReleaseContext>();
+        builder.RegisterMock<IPipelineSettingsPath>();
         return builder;
     }
         

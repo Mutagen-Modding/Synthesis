@@ -220,6 +220,8 @@
                             <RowDefinition Height="10" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -254,6 +256,15 @@
                                   Content="Master"
                                   Margin="10,8,0,0"
                                   ToolTip="Whether to export patches as master files" />
+                        <ComboBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" x:Name="MasterStylePicker"
+                                  Margin="10,8,0,0"
+                                  ItemsSource="{Binding MasterStyleOptions}"
+                                  SelectedItem="{Binding Profile.MasterStyle}"
+                                  ToolTip="What style of master to export patches as" />
+                        <CheckBox Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" x:Name="MasterStyleFallback"
+                                  Content="Fallback on Overflow"
+                                  Margin="10,8,0,0"
+                                  ToolTip="Whether to automatically fall back to larger master styles when needed" />
                     </Grid>
                     <Grid Grid.Row="3">
                         <Grid.RowDefinitions>

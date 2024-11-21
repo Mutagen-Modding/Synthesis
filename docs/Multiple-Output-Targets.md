@@ -11,11 +11,12 @@ A group named `MyPatch` will be exported to a mod called `MyPatch.esp`
 ### Adding a Group
 Clicking the new group button will add a fresh group to your pipeline
 
-![](https://i.imgur.com/99v7YqM.png)
+![Adding a Group](images/new-group.png)
 
 ### Renaming a Group
 After creating a new Group, you will want to give it a name before it is usable.  This can only be done by focusing the group and renaming it in the right side panel
-![](https://i.imgur.com/cWTEkXz.gif)
+
+![Renaming a Group](images/renaming-group.gif)
 
 ### Adding Patchers to Group
 With the group selected, you can then add patchers to the new group as normal.  Just make sure to click on the group you want to add the patcher to before adding the patcher.

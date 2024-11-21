@@ -4,7 +4,7 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Records;
 using Noggog;
 using Serilog;
-using Synthesis.Bethesda.Execution.Profile;
+using Synthesis.Bethesda.Execution.Profile.Services;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner;
 
@@ -39,12 +39,6 @@ public class CreateEmptyPatch : ICreateEmptyPatch
         path.Directory?.Create(_fileSystem);
         
         var formIdRangeBool = runParameters.FormIDRangeMode.ToForceBool();
-        
-        // Hardcode this for now until Light/Medium masters supported
-        if (runParameters.Master || !runParameters.Master)
-        {
-            formIdRangeBool = false;
-        }
         
         var mod = ModInstantiator.Activator(modKey, _gameReleaseContext.Release,
             headerVersion: runParameters.HeaderVersionOverride,

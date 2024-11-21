@@ -1,6 +1,6 @@
-using Noggog;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
+using Noggog;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git;
 

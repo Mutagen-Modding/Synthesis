@@ -3,7 +3,6 @@ using Noggog;
 using NSubstitute;
 using Noggog.GitRepository;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.GitRepository;
 

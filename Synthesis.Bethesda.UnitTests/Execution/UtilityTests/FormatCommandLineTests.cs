@@ -4,7 +4,6 @@ using Mutagen.Bethesda;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.UtilityTests;
 

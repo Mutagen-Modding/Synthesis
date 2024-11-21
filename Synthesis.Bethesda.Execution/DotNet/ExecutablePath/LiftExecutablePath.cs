@@ -23,7 +23,7 @@ public class LiftExecutablePath : ILiftExecutablePath
         
     public bool TryGet(IEnumerable<string> lines, [MaybeNullWhen(false)] out string output)
     {
-        output = lines.Select(x => Get(x)).NotNull().LastOrDefault();
+        output = lines.Select(x => Get(x)).WhereNotNull().LastOrDefault();
         return output != null;
     }
 }

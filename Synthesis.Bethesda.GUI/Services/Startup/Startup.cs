@@ -1,6 +1,7 @@
 using System.Windows;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Serilog;
+using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 using Synthesis.Bethesda.GUI.Views;

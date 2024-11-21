@@ -14,7 +14,7 @@ The `SetTypicalOpen` call that comes with the typical template informs your patc
 #### Explicit Side Environment
 A typical run will look to your default Plugins.txt and Data folder, which may or may not contain content you want to test against.   One route for testing against a specific load order is to set up a secondary side `Data` folder and `Plugins.txt` load order file.
 
-To tell your patcher to latch onto that side environment, you can utilize the [CLI Arguments](CLI-Specification.md) to give it the details to use.  Here is an example set of arguments:
+To tell your patcher to latch onto that side environment, you can utilize the [CLI Arguments](Patcher-CLI.md) to give it the details to use.  Here is an example set of arguments:
 
 ```
 run-patcher --GameRelease SkyrimSE --DataFolderPath "Path/To/Side/Data"
@@ -23,7 +23,7 @@ run-patcher --GameRelease SkyrimSE --DataFolderPath "Path/To/Side/Data"
 
 
 ### Solution Patchers via Synthesis GUI
-Patcher solutions can be run from inside the Synthesis GUI, by adding them as a Synthesis patcher.  The recommended type is [Solution](https://github.com/Mutagen-Modding/Synthesis/wiki/Local-Solution) patchers, but [External Program](https://github.com/Mutagen-Modding/Synthesis/wiki/External-Program) can be used, too.
+Patcher solutions can be run from inside the Synthesis GUI, by adding them as a Synthesis patcher.  The recommended type is [Solution](../Local-Solution-Patcher.md) patchers, but [External Program](../External-Program-Patcher.md) can be used, too.
 
 Notes:
 - Lets you run your in-development patcher alongside several other patchers to see their combined results

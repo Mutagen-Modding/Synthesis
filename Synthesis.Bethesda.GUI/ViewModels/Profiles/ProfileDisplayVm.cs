@@ -2,7 +2,8 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
-using Mutagen.Bethesda;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Meta;
 using Mutagen.Bethesda.Strings;
 using Noggog;
 using Noggog.WPF;
@@ -37,6 +38,8 @@ public class ProfileDisplayVm : ViewModel
 
     public ObservableCollectionExtended<FormIDRangeMode> FormIDRangeModes { get; } = new(Enums<FormIDRangeMode>.Values);
 
+    public ObservableCollectionExtended<MasterStyle> MasterStyleOptions { get; }
+
     private readonly ObservableAsPropertyHelper<string> _dataFolderWatermark;
     public string DataFolderWatermark => _dataFolderWatermark.Value;
 
@@ -60,6 +63,19 @@ public class ProfileDisplayVm : ViewModel
         _isActive = this.WhenAnyValue(x => x.Profile.IsActive)
             .ToGuiProperty(this, nameof(IsActive), deferSubscription: true);
 
+        var constants = GameConstants.Get(profile.Release);
+        
+        MasterStyleOptions = new();
+        MasterStyleOptions.Add(MasterStyle.Full);
+        if (constants.MediumMasterFlag.HasValue)
+        {
+            MasterStyleOptions.Add(MasterStyle.Medium);
+        }
+        if (constants.SmallMasterFlag.HasValue)
+        {
+            MasterStyleOptions.Add(MasterStyle.Small);
+        }
+        
         DeleteCommand = ReactiveCommand.Create(
             canExecute: this.WhenAnyValue(x => x.Profile!.IsActive)
                 .Select(active => !active),

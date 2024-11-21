@@ -1,5 +1,8 @@
+using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog;
+using Serilog;
 using Synthesis.Bethesda.Execution.Groups;
+using Synthesis.Bethesda.Execution.Profile.Services;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner;
 
@@ -14,7 +17,11 @@ public interface IExecuteRun
 
 public class ExecuteRun : IExecuteRun
 {
+    private readonly ILogger _logger;
     private readonly IPrintRunStart _print;
+    private readonly ILoadOrderPrinter _loadOrderPrinter;
+    private readonly IProfileLoadOrderProvider _profileLoadOrderProvider;
+    private readonly IPluginListingsPathContext _pluginListingsPathContext;
     public IResetWorkingDirectory ResetWorkingDirectory { get; }
     public IRunAllGroups RunAllGroups { get; }
     public IEnsureSourcePathExists EnsureSourcePathExists { get; }
@@ -23,12 +30,20 @@ public class ExecuteRun : IExecuteRun
         IResetWorkingDirectory resetWorkingDirectory,
         IRunAllGroups runAllGroups,
         IPrintRunStart print,
-        IEnsureSourcePathExists ensureSourcePathExists)
+        ILoadOrderPrinter loadOrderPrinter,
+        IProfileLoadOrderProvider profileLoadOrderProvider,
+        IEnsureSourcePathExists ensureSourcePathExists,
+        IPluginListingsPathContext pluginListingsPathContext,
+        ILogger logger)
     {
         _print = print;
+        _loadOrderPrinter = loadOrderPrinter;
+        _profileLoadOrderProvider = profileLoadOrderProvider;
+        _pluginListingsPathContext = pluginListingsPathContext;
         ResetWorkingDirectory = resetWorkingDirectory;
         RunAllGroups = runAllGroups;
         EnsureSourcePathExists = ensureSourcePathExists;
+        _logger = logger;
     }
 
     public async Task Run(
@@ -38,6 +53,9 @@ public class ExecuteRun : IExecuteRun
         RunParameters runParameters)
     {
         _print.Print(groups);
+        
+        _logger.Information($"Raw Load Order from {_pluginListingsPathContext.Path}:");
+        _loadOrderPrinter.Print(_profileLoadOrderProvider.Get());
             
         cancellation.ThrowIfCancellationRequested();
         ResetWorkingDirectory.Reset();

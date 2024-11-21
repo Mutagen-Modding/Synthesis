@@ -1,11 +1,8 @@
 ﻿using System.IO.Abstractions;
 using FluentAssertions;
-using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments;
 using Mutagen.Bethesda.Fallout4;
 using Mutagen.Bethesda.Plugins;
-using Mutagen.Bethesda.Plugins.Binary.Parameters;
-using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.CLI;
@@ -13,7 +10,6 @@ using Newtonsoft.Json;
 using Noggog;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Pipeline;
 

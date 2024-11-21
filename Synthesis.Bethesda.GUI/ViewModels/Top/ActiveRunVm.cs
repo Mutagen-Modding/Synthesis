@@ -33,7 +33,7 @@ public class ActiveRunVm : ViewModel
             .ObserveOn(RxApp.TaskpoolScheduler)
             .StartWith(default(RunVm?))
             .NotNull()
-            .Subscribe(x => x.Run())
+            .SubscribeAsyncConcat(x => x.Run())
             .DisposeWith(this);
     }
 }

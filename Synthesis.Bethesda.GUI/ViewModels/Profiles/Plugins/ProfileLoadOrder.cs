@@ -10,6 +10,7 @@ using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.Execution.Profile;
+using Synthesis.Bethesda.Execution.Profile.Services;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
@@ -28,6 +29,7 @@ public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, IProfileLoadOrderP
 
     public ProfileLoadOrder(
         ILogger logger,
+        IGameReleaseContext gameReleaseContext,
         ISchedulerProvider schedulerProvider,
         ILiveLoadOrderProvider liveLoadOrderProvider,
         IPluginListingsPathContext pluginListingsPathContext,
@@ -48,7 +50,7 @@ public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, IProfileLoadOrderP
                 }
 
                 logger.Information("Getting live load order for {Release}. DataDirectory: {DataDirectory}, Plugin File Path: {PluginFilePath}, CCC Plugin File Path: {CccPluginFilePath}",
-                    ident.Release, x.Value, pluginListingsPathContext.Path, cccListingsPathProvider.Path);
+                    gameReleaseContext.Release, x.Value, pluginListingsPathContext.Path, cccListingsPathProvider.Path);
 
                 var liveLo = liveLoadOrderProvider.Get(out var errors)
                     .Transform(listing => new ReadOnlyModListingVM(listing, x.Value))

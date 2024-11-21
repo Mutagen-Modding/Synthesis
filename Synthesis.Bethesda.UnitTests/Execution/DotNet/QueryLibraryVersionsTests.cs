@@ -2,7 +2,6 @@
 using Noggog.DotNetCli.DI;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.DotNet;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.DotNet;
 

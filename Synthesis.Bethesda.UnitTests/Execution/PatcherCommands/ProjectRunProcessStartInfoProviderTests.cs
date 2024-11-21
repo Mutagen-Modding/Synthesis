@@ -2,7 +2,6 @@
 using NSubstitute;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.PatcherCommands;
 

@@ -1,10 +1,10 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
 using Noggog;
 using Noggog.Reactive;
 using Serilog;
 using Synthesis.Bethesda.Execution.Logging;
 using Synthesis.Bethesda.Execution.Patchers.Git;
-using Synthesis.Bethesda.Execution.Patchers.Git.PrepareDriver;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services.PrepareDriver;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;

@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using Noggog.Autofac;
 using Synthesis.Bethesda.ImpactTester;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Containers;
 

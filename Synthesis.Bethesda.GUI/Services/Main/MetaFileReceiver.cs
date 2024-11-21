@@ -39,7 +39,7 @@ public class MetaFileReceiver : IMetaFileReceiver
 
                 return default(MetaFileDto?);
             })
-            .NotNull()
+            .WhereNotNull()
             .PublishRefCount();
     }
 }

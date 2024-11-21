@@ -6,7 +6,6 @@ using Noggog;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
 

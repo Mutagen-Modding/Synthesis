@@ -34,6 +34,9 @@ extra_css:
 
 plugins:
   - search
+  - glightbox:
+      zoomable: true
+      draggable: true
 
 theme:
   name: material
@@ -58,6 +61,7 @@ nav:
   - Overview:
     - Installation: Installation.md
     - Typical Usage: Typical-Usage.md
+    - Patcher Settings: Patcher-Settings.md
     - Synthesis vs Mutagen: Synthesis-vs-Mutagen.md
     - Multiple Output Targets: Multiple-Output-Targets.md
     - Load Order of Patches: LoadOrder.md
@@ -67,17 +71,27 @@ nav:
     - .synth Files: Synth-File.md
     - Other Dynamic Mod Generators: Other-Dynamic-Mod-Generators.md
     - Language Settings: Language-Settings.md
+    - Compaction Settings: Compaction.md
+    - Synthesis CLI: Synthesis-CLI.md
     - Updating UI: Updating-UI.md
-    - Existing Saves: Existing-Saves.md
+    # - Existing Saves: Existing-Saves.md
     - Starting Into a Specific Profile: Starting-Into-Profile.md
     - FAQs and Troubleshooting: FAQ-and-Troubleshooting.md
+    - Sharing Your Setup: Sharing.md
   - Patcher Types:
-    - Git Repository: Git-Repository.md
-    - External Program: External-Program.md
-    - Local Solution: Local-Solution.md
+    - Git Repository: Git-Repository-Patcher.md
+    - External Program: External-Program-Patcher.md
+    - Local Solution: Local-Solution-Patcher.md
   - Developers:
     - Create a Patcher: devs/Create-a-Patcher.md
     - Coding a Patcher: devs/Coding-a-Patcher.md
     - Configuring a Patcher at Startup: devs/Configuring-a-Patcher-at-Startup.md 
     - Running and Debugging: devs/Running-and-Debugging.md
+    - Runnability Checks: devs/Runnability-Checks.md
+    - User Input: devs/User-Input.md
+    - Internal Data: devs/Internal-Data.md
+    - Publishing: devs/Publishing.md
     - Nexus Integration: devs/Nexus-Integration.md
+    - Supporting Multiple Games: devs/Supporting-Multiple-Games.md
+    - Synthesis Collective: devs/Synthesis-Collective.md
+    - Patcher CLI: devs/Patcher-CLI.md

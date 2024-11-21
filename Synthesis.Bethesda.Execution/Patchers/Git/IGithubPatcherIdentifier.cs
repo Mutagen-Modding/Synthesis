@@ -4,3 +4,5 @@ public interface IGithubPatcherIdentifier
 {
     string Id { get; }
 }
+
+public record GithubPatcherIdentifier(string Id) : IGithubPatcherIdentifier;

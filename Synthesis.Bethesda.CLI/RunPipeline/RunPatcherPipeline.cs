@@ -1,48 +1,63 @@
+using Autofac;
 using Synthesis.Bethesda.Execution.Commands;
+using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.CLI.RunPipeline;
 
-public interface IRunPatcherPipeline
+public class RunPatcherPipeline
 {
-    Task Run(CancellationToken cancel);
-}
-
-public class RunPatcherPipeline : IRunPatcherPipeline
-{
-    public ISynthesisProfileSettings ProfileSettings { get; }
-    public IExecuteRun ExecuteRun { get; }
-    public IGetGroupRunners GetGroupRunners { get; }
-    public RunPatcherPipelineInstructions Instructions { get; }
+    private readonly ILifetimeScope _scope;
+    private readonly ProfileProvider _profileProvider;
+    private readonly RunPatcherPipelineCommand _command;
 
     public RunPatcherPipeline(
-        IExecuteRun executeRun,
-        IGetGroupRunners getGroupRunners,
-        ISynthesisProfileSettings profileSettings,
-        RunPatcherPipelineInstructions instructions)
+        ILifetimeScope scope,
+        ProfileProvider profileProvider,
+        RunPatcherPipelineCommand command)
     {
-        ProfileSettings = profileSettings;
-        ExecuteRun = executeRun;
-        GetGroupRunners = getGroupRunners;
-        Instructions = instructions;
+        _scope = scope;
+        _profileProvider = profileProvider;
+        _command = command;
     }
         
     public async Task Run(CancellationToken cancel)
     {
-        await ExecuteRun
+        var profile = _profileProvider.Profile.Value;
+        using var profileScope = _scope.BeginLifetimeScope(LifetimeScopes.ProfileNickname, (b) =>
+        {
+        });
+        
+        var printDotNet = profileScope.Resolve<PrintDotNetInfo>();
+        await printDotNet.Print(cancel);
+
+        var prep = profileScope.Resolve<PrepForRun>();
+        await prep.Prep(cancel);
+
+        using var runScope = profileScope.BeginLifetimeScope(LifetimeScopes.RunNickname, (b) =>
+        {
+        });
+        var executeRun = runScope.Resolve<IExecuteRun>();
+        
+        var getGroupRunners = profileScope.Resolve<IGetGroupRunners>();
+        var groupRuns = getGroupRunners.Get(cancel);
+        await executeRun
             .Run(
-                groups: GetGroupRunners.Get(cancel),
-                outputDir: Instructions.OutputDirectory,
+                groups: groupRuns,
+                outputDir: _command.OutputDirectory,
                 cancel: cancel,
                 runParameters: new RunParameters(
-                    TargetLanguage: ProfileSettings.TargetLanguage,
-                    Localize: ProfileSettings.Localize,
-                    UseUtf8ForEmbeddedStrings: ProfileSettings.UseUtf8ForEmbeddedStrings,
-                    HeaderVersionOverride: ProfileSettings.HeaderVersionOverride,
-                    FormIDRangeMode: ProfileSettings.FormIDRangeMode,
-                    PersistenceMode: Instructions.PersistenceMode ?? PersistenceMode.None, 
-                    PersistencePath: Instructions.PersistencePath,
-                    Master: ProfileSettings.ExportAsMasterFiles)).ConfigureAwait(false);
+                    TargetLanguage: profile.TargetLanguage,
+                    Localize: profile.Localize,
+                    UseUtf8ForEmbeddedStrings: profile.UseUtf8ForEmbeddedStrings,
+                    HeaderVersionOverride: profile.HeaderVersionOverride,
+                    FormIDRangeMode: profile.FormIDRangeMode,
+                    PersistenceMode: _command.PersistenceMode ?? PersistenceMode.None, 
+                    PersistencePath: _command.PersistencePath,
+                    Master: profile.ExportAsMasterFiles,
+                    MasterStyleFallbackEnabled: profile.MasterStyleFallbackEnabled,
+                    MasterStyle: profile.MasterStyle)).ConfigureAwait(false);
     }
 }

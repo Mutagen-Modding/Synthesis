@@ -15,6 +15,17 @@ public record GitPatcherVersioning(PatcherVersioningEnum Versioning, string Targ
         };
     }
 
+    public static GitPatcherVersioning Factory(GithubPatcherSettings patcherSettings)
+    {
+        return Factory(
+            versioning: patcherSettings.PatcherVersioning,
+            tag: patcherSettings.TargetTag,
+            commit: patcherSettings.TargetCommit,
+            branch: patcherSettings.TargetBranch,
+            autoTag: patcherSettings.LatestTag,
+            autoBranch: patcherSettings.AutoUpdateToBranchTip);
+    }
+
     public static GitPatcherVersioning Factory(
         PatcherVersioningEnum versioning,
         string tag,

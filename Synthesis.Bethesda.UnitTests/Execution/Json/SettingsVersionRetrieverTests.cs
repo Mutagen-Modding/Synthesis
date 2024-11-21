@@ -3,7 +3,6 @@ using FluentAssertions;
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Json;
 

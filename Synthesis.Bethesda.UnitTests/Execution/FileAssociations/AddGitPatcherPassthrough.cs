@@ -2,7 +2,6 @@
 using Noggog;
 using Synthesis.Bethesda.Execution.FileAssociations;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.FileAssociations;
 

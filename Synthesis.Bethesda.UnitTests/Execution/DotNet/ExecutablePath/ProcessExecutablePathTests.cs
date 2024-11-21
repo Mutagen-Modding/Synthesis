@@ -4,7 +4,6 @@ using Noggog.Testing.AutoFixture;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.DotNet.ExecutablePath;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.ExecutablePath;
 

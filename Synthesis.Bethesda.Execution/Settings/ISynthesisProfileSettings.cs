@@ -1,11 +1,13 @@
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Strings;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Settings.V2;
 
 namespace Synthesis.Bethesda.Execution.Settings;
 
-public interface ISynthesisProfileSettings : IProfileIdentifier
+public interface ISynthesisProfileSettings : IProfileIdentifier, IGameReleaseContext, IProfileNameProvider
 {
     string Nickname { get; set; }
     new string ID { get; set; }
@@ -26,4 +28,6 @@ public interface ISynthesisProfileSettings : IProfileIdentifier
     public FormIDRangeMode FormIDRangeMode { get; set; }
     public float? HeaderVersionOverride { get; set; }
     public bool ExportAsMasterFiles { get; set; }
+    public bool MasterStyleFallbackEnabled { get; set; }
+    public MasterStyle MasterStyle { get; set; }
 }

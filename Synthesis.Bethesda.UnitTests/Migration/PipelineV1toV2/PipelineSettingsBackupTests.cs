@@ -2,7 +2,6 @@
 using FluentAssertions;
 using Synthesis.Bethesda.Execution.Settings.Json.Pipeline;
 using Synthesis.Bethesda.UnitTests.AutoData;
-using Xunit;
 
 namespace Synthesis.Bethesda.UnitTests.Migration.PipelineV1toV2;
 

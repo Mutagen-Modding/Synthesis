@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Noggog;
-using Synthesis.Bethesda.Execution.Patchers.Git.PrepareRunner;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services.PrepareRunner;
 using Synthesis.Bethesda.Execution.Versioning;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git;

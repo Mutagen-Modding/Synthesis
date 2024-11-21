@@ -11,7 +11,7 @@ public class CommandStringConstructor : ICommandStringConstructor
 {
     public string Get(string command, FilePath path, params string?[] args)
     {
-        var argStr = string.Join(' ', args.NotNull());
+        var argStr = string.Join(' ', args.WhereNotNull());
         return $"{command} \"{path.RelativePath}\"{(argStr.IsNullOrWhitespace() ? string.Empty : $" {argStr}")}";
     }
 }
