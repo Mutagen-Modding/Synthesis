@@ -1,4 +1,5 @@
-using Autofac;
+﻿using Autofac;
+using Mutagen.Bethesda.Synthesis.Projects;
 using Noggog.Autofac;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
@@ -15,6 +16,13 @@ public class SolutionPatcherModule : Module
             .InNamespacesOf(
                 typeof(IPathToProjProvider),
                 typeof(IBuildMetaFileReader))
+            .NotInjection()
+            .AsImplementedInterfaces()
+            .AsSelf();
+            
+        builder.RegisterAssemblyTypes(typeof(CreateTemplatePatcherSolution).Assembly)
+            .InNamespacesOf(
+                typeof(CreateTemplatePatcherSolution))
             .NotInjection()
             .AsImplementedInterfaces()
             .AsSelf();

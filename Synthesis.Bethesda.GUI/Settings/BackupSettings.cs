@@ -34,19 +34,55 @@ public class BackupSettings : IStartupTask
     
     public void Start()
     {
-        _initRepository.Init(RepoDirectory);
-        CreateGitIgnore();
-        using var repo = _repositoryCheckouts.Get(RepoDirectory);
-        StageIfExists(GitIgnorePath, repo.Repository);
-        StageIfExists(PipelineSettings, repo.Repository);
-        StageIfExists(GuiSettings, repo.Repository);
         try
         {
+            _initRepository.Init(RepoDirectory);
+        }
+        catch (LibGit2SharpException e)
+        {
+            _logger.Warning(e, "Could not initiate backup repository.");
+            return;
+        }
+        try
+        {
+            CreateGitIgnore();
+            using var repo = _repositoryCheckouts.Get(RepoDirectory);
+            StageIfExists(GitIgnorePath, repo.Repository);
+            StageIfExists(PipelineSettings, repo.Repository);
+            StageIfExists(GuiSettings, repo.Repository);
             repo.Repository.Commit("Settings changed");
         }
         catch (EmptyCommitException)
         {
         }
+        catch (Exception ex)
+        {
+            HandleException(ex);
+        }
+    }
+
+    private void HandleException(Exception? ex)
+    {
+        switch (ex)
+        {
+            case LibGit2SharpException:
+            case NullReferenceException:
+                WipeBackup(ex);
+                break;
+            case AggregateException agg:
+                HandleException(agg.InnerException);
+                break;
+            case null:
+                return;
+            default:
+                throw ex;
+        }
+    }
+
+    private void WipeBackup(Exception ex)
+    {
+        _logger.Warning(ex, "Wiping backup settings.");
+        _fileSystem.Directory.DeleteEntireFolder(RepoDirectory);
     }
 
     private void CreateGitIgnore()
