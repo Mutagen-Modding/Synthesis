@@ -1,6 +1,5 @@
 using System.IO;
 using System.Reactive.Linq;
-using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Synthesis.Projects;
 using Noggog;
 using Noggog.WPF;
@@ -33,7 +32,6 @@ public class NewSolutionInitVm : ASolutionInitializer
     public string ProjectNameWatermark => _projectNameWatermark.Value;
 
     public NewSolutionInitVm(
-        IGameCategoryContext gameCategoryContext,
         IPatcherFactory patcherFactory,
         IValidateProjectPath validateProjectPath,
         CreateTemplatePatcherSolution createTemplatePatcherSolution)
