@@ -4,10 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Mutagen.Bethesda.Skyrim" Version="0.49.0-alpha.7" />
     <PackageReference Include="Mutagen.Bethesda.Synthesis" Version="0.29" />
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <PackageReference Include="Mutagen.Bethesda" Version="0.45.0" />
   </ItemGroup>
 </Project>
