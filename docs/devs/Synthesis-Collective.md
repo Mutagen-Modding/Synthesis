@@ -29,7 +29,7 @@ No!  You can contribute to the patchers within the Collective and improve them, 
 
 ## How to become part of the Collective
 
-- Request membership to the Collective.  This will give you no real power, by default.
+- Request membership to the Collective.  Github does not have a way to initiate this yourself, unfortunately, so swing by the discord and ask in the Synthesis channels to be invited.
 - Transfer your repository to the Collective.  (Main Github Repo Page -> Settings -> Options -> Scroll down -> Transfer Ownership to `Synthesis-Collective`)
 - You will automatically be added as a collaborator (full read/write access) to the transferred repository
 - You can fork your own copy if you wish, or just work directly on the main repo that now lives within the Collective.

@@ -19,9 +19,9 @@ public interface IModifyRunnerProjects
 
 public class ModifyRunnerProjects : IModifyRunnerProjects
 {
-    public static readonly System.Version NewtonSoftRemoveMutaVersion = new(0, 28);
-    public static readonly System.Version NewtonSoftRemoveSynthVersion = new(0, 17, 5);
-    public static readonly System.Version NamespaceMutaVersion = new(0, 30, 0);
+    public static readonly SemanticVersion NewtonSoftRemoveMutaVersion = new(0, 28, 0);
+    public static readonly SemanticVersion NewtonSoftRemoveSynthVersion = new(0, 17, 5);
+    public static readonly SemanticVersion NamespaceMutaVersion = new(0, 30, 0);
     private readonly ILogger _logger;
     private readonly IFileSystem _fileSystem;
     private readonly IAvailableProjectsRetriever _availableProjectsRetriever;
@@ -65,6 +65,46 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         _removeProject = removeProject;
         _addAllReleasesToOldVersions = addAllReleasesToOldVersions;
     }
+
+    string? TrimVersion(string? version, out string? prereleaseLabel)
+    {
+        if (version == null)
+        {
+            prereleaseLabel = null;
+            return null;
+        }
+        var index = version.IndexOf('-');
+        if (index == -1)
+        {
+            prereleaseLabel = null;
+            return version;
+        }
+        
+        prereleaseLabel = version.Substring(index + 1);
+        return version.Substring(0, index);
+    }
+
+    private SemanticVersion? SemanticVersionParse(string? str)
+    {
+        if (str == null) return null;
+        if (SemanticVersion.TryParse(str, out var semVer))
+        {
+            return semVer;
+        }
+
+        var trimmed = TrimVersion(str, out var prereleaseLabel);
+        
+        if (Version.TryParse(trimmed, out var vers))
+        {
+            if (prereleaseLabel == null)
+            {
+                return new SemanticVersion(vers.Major, vers.Minor, vers.Build == -1 ? 0 : vers.Build);
+            }
+            return new SemanticVersion(vers.Major, vers.Minor, vers.Build == -1 ? 0 : vers.Build, prereleaseLabel);
+        }
+
+        return null;
+    }
         
     public void Modify(
         FilePath solutionPath,
@@ -74,16 +114,6 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
     {
         listedVersions = new NugetVersionPair(null, null);
 
-        string? TrimVersion(string? version)
-        {
-            if (version == null) return null;
-            var index = version.IndexOf('-');
-            if (index == -1) return version;
-            return version.Substring(0, index);
-        }
-        
-        var trimmedMutagenVersion = TrimVersion(versions.Mutagen);
-        var trimmedSynthesisVersion = TrimVersion(versions.Synthesis);
         foreach (var subProj in _availableProjectsRetriever.Get(solutionPath))
         {
             var proj = Path.Combine(Path.GetDirectoryName(solutionPath)!, subProj);
@@ -97,11 +127,11 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
             _turnOffNullability.TurnOff(projXml);
             _removeGitInfo.Remove(projXml);
             _turnOffWindowsSpec.TurnOff(projXml);
-            System.Version.TryParse(TrimVersion(curListedVersions.Mutagen), out var mutaVersion);
-            System.Version.TryParse(TrimVersion(curListedVersions.Synthesis), out var synthVersion);
+            var mutaVersion = SemanticVersionParse(curListedVersions.Mutagen);
+            var synthVersion = SemanticVersionParse(curListedVersions.Synthesis);
             _addNewtonsoftToOldSetups.Add(projXml, mutaVersion, synthVersion);
-            System.Version.TryParse(trimmedMutagenVersion, out var targetMutaVersion);
-            System.Version.TryParse(trimmedSynthesisVersion, out var targetSynthesisVersion);
+            var targetMutaVersion = SemanticVersionParse(versions.Mutagen);
+            var targetSynthesisVersion = SemanticVersionParse(versions.Synthesis);
             if ((targetMutaVersion != null
                  && targetMutaVersion >= NewtonSoftRemoveMutaVersion)
                 || (targetSynthesisVersion != null
@@ -120,7 +150,9 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
                 _addAllReleasesToOldVersions.Add(projXml, synthVersion, targetMutaVersion, targetSynthesisVersion);
             }
 
-            if (targetMutaVersion >= NamespaceMutaVersion
+            if (targetMutaVersion != null
+                && mutaVersion != null
+                && targetMutaVersion >= NamespaceMutaVersion
                 && mutaVersion < NamespaceMutaVersion)
             {
                 _processProjUsings.Process(proj);

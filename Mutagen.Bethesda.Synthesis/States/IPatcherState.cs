@@ -1,4 +1,5 @@
 using Mutagen.Bethesda.Plugins.Allocators;
+using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Noggog;
@@ -41,6 +42,12 @@ public interface IPatcherState : IBaseRunState, IDisposable
     CancellationToken Cancel { get; }
     
     internal ILoadOrderGetter<IModListingGetter<IModFlagsGetter>> LoadOrderForPipeline { get; }
+
+    /// <summary>
+    /// Convenience Link Cache to use created from the provided Load Order object.<br />
+    /// The patch mod is marked as safe for mutation, and will not make the cache invalid.
+    /// </summary>
+    ILinkCache LinkCache { get; }
 }
 
 public interface IPatcherState<TModSetter, TModGetter> : IBaseRunState<TModSetter, TModGetter>, IPatcherState
@@ -56,4 +63,10 @@ public interface IPatcherState<TModSetter, TModGetter> : IBaseRunState<TModSette
     /// upon that content as appropriate, and mesh any changes to produce the final patch file.
     /// </summary>
     new TModSetter PatchMod { get; }
+
+    /// <summary>
+    /// Convenience Link Cache to use created from the provided Load Order object.<br />
+    /// The patch mod is marked as safe for mutation, and will not make the cache invalid.
+    /// </summary>
+    new ILinkCache<TModSetter, TModGetter> LinkCache { get; }
 }

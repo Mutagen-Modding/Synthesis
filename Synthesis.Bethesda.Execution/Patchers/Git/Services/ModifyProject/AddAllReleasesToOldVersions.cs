@@ -1,17 +1,19 @@
 ﻿using System.Xml.Linq;
+using Mutagen.Bethesda;
 using Noggog;
+using NuGet.Versioning;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.Services.ModifyProject;
 
 public class AddAllReleasesToOldVersions
 {
-    public static readonly Version IntroducingSynthesisVersion = new Version(0, 29);
+    public static readonly SemanticVersion IntroducingSynthesisVersion = new(0, 29, 0);
         
     public void Add(
         XElement proj, 
-        Version? curSynthVersion, 
-        Version targetMutagenVersion, 
-        Version? targetSynthVersion)
+        SemanticVersion? curSynthVersion, 
+        SemanticVersion targetMutagenVersion, 
+        SemanticVersion? targetSynthVersion)
     {
         if (targetSynthVersion != null
             && curSynthVersion != null
@@ -25,6 +27,10 @@ public class AddAllReleasesToOldVersions
                     if (!elem.Name.LocalName.Equals("PackageReference")) continue;
                     if (!elem.TryGetAttribute("Include", out var include)) continue;
                     if (include.Value.Equals("Mutagen.Bethesda")) return;
+                    foreach (var cat in Enums<GameCategory>.Values)
+                    {
+                        if (include.Value.Equals($"Mutagen.Bethesda.{cat}")) return;
+                    }
                 }
             }
 

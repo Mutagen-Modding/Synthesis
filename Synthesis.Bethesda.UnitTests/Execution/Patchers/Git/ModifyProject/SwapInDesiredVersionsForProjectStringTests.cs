@@ -156,4 +156,30 @@ public class SwapInDesiredVersionsForProjectStringTests
             .Should()
             .BeEquivalentTo(expectedString);
     }
+
+    [Theory, SynthAutoData]
+    public void AlphaVersion(SwapInDesiredVersionsForProjectString sut)
+    {
+        var projStr = CreateProj(
+            ("Mutagen.Bethesda.Synthesis", "0.3.0"),
+            ("Mutagen.Bethesda", "0.1.0"),
+            ("Mutagen.Bethesda.Skyrim", "0.1.0"),
+            ("Mutagen.Bethesda.Core", "0.1.0"),
+            ("Mutagen.Bethesda.Kernel", "0.1.0"));
+        var projXml = XElement.Parse(projStr);
+        sut.Swap(
+            projXml,
+            new NugetVersionPair(Mutagen: "0.49.0-alpha.7", Synthesis: null),
+            out var _);
+        var swapString = projXml.ToString();
+        var expectedString = CreateProj(
+            ("Mutagen.Bethesda.Synthesis", "0.3.0"),
+            ("Mutagen.Bethesda", "0.49.0-alpha.7"),
+            ("Mutagen.Bethesda.Skyrim", "0.49.0-alpha.7"),
+            ("Mutagen.Bethesda.Core", "0.49.0-alpha.7"),
+            ("Mutagen.Bethesda.Kernel", "0.49.0-alpha.7"));
+        swapString
+            .Should()
+            .BeEquivalentTo(expectedString);
+    }
 }
