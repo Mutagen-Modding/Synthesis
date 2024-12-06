@@ -40,6 +40,7 @@
     <PackageReference Include="Noggog.Autofac" />
     <PackageReference Include="Noggog.CSharpExt" />
     <PackageReference Include="Noggog.CSharpExt.Windows" />
+    <PackageReference Include="Noggog.Nuget" />
     <PackageReference Include="Noggog.WPF" />
     <PackageReference Include="ReactiveUI" />
     <PackageReference Include="ReactiveUI.Fody" />
@@ -50,6 +51,8 @@
     <PackageReference Include="Serilog.Sinks.File" />
     <PackageReference Include="Serilog.Sinks.Map" />
     <PackageReference Include="System.Linq.Async" />
+      <PackageReference Include="ReactiveMarbles.ObservableEvents.SourceGenerator"
+                        PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

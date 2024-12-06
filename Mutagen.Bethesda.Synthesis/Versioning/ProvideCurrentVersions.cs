@@ -62,7 +62,7 @@ public sealed class ProvideCurrentVersions : IProvideCurrentVersions
             {
                 version = version.Substring(0, plusIndex);
             }
-            return version!.TrimEnd(".0").TrimEnd(".0");
+            return version!.TrimStringFromEnd(".0").TrimStringFromEnd(".0");
         }
         catch (Exception e)
         {

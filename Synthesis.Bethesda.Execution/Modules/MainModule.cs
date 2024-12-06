@@ -5,7 +5,6 @@ using Noggog.Autofac;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.DotNet.Builder.Transient;
 using Synthesis.Bethesda.Execution.DotNet.Singleton;
-using Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget;
 using Synthesis.Bethesda.Execution.FileAssociations;
 using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.PatcherCommands;
@@ -49,7 +48,6 @@ public class MainModule : Module
                 typeof(IQueryVersionProjectPathing),
                 typeof(IPatcherNameSanitizer),
                 typeof(ILinesToReflectionConfigsParser),
-                typeof(INugetErrorSolution),
                 typeof(CalculateProfileVersioning),
                 typeof(GitIdAllocator),
                 typeof(ExportGitAddFile),
