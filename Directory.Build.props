@@ -8,6 +8,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable</WarningsAsErrors>
+      <PackageOutputPath>..\outputPackages</PackageOutputPath>
   </PropertyGroup>
     
     <ItemGroup>
