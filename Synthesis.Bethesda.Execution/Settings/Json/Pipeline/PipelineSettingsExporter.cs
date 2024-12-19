@@ -20,6 +20,7 @@ public class PipelineSettingsExporter : IPipelineSettingsExporter
         
     public void Write(FilePath path, IPipelineSettings pipe)
     {
+        path.Directory?.Create();
         _fileSystem.File.WriteAllText(path,
             JsonConvert.SerializeObject(pipe, Formatting.Indented, Execution.Constants.JsonSettings));
     }
