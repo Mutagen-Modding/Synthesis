@@ -46,7 +46,7 @@ public class ProfileSimpleLinkCacheVm : ViewModel, IProfileSimpleLinkCacheVm
                             x.dataFolder,
                             x.loadOrder,
                             gameReleaseContext.Release,
-                            factory: (modPath) => ModInstantiator.Importer(modPath, gameReleaseContext.Release));
+                            factory: (modPath) => ModInstantiator.ImportGetter(modPath, gameReleaseContext.Release));
                         obs.OnNext(
                             (loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()),
                                 loadOrder));

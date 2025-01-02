@@ -206,7 +206,9 @@ public class PatcherStateFactory : IPatcherStateFactory
             }
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         return new SynthesisState<TModSetter, TModGetter>(
+#pragma warning restore CS0618 // Type or member is obsolete
             runArguments: settings,
             loadOrder: loadOrder,
             rawLoadOrder: loadOrderListing.Raw,

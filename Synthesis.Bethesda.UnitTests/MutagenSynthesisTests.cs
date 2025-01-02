@@ -16,7 +16,9 @@ namespace Synthesis.Bethesda.UnitTests;
 
 public class MutagenSynthesisTests
 {
+#pragma warning disable CS0618 // Type or member is obsolete
     private async Task PatchFunction(SynthesisState<IOblivionMod, IOblivionModGetter> state)
+#pragma warning restore CS0618 // Type or member is obsolete
     {
         // Add a new NPC
         state.PatchMod.Npcs.AddNew();

@@ -42,7 +42,7 @@ public interface IBaseRunState<TModSetter, TModGetter> : IBaseRunState
     /// This Load Order will contain the patch mod itself.  This reference is the same object
     /// as the PatchMod member, and so any modifications will implicitly be applied to the Load Order.
     /// </summary>
-    new ILoadOrder<IModListing<TModGetter>> LoadOrder { get; }
+    ILoadOrder<IModListing<TModGetter>> LoadOrder { get; }
 
     /// <summary>
     /// Convenience Link Cache to use created from the provided Load Order object.<br />
