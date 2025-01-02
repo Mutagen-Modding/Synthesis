@@ -4,10 +4,11 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData.Kernel;
 using Noggog;
+using Noggog.Nuget.Errors;
+using Noggog.Nuget.Services.Singleton;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
-using Synthesis.Bethesda.Execution.EnvironmentErrors.Nuget;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
 
@@ -25,6 +26,7 @@ public class NugetConfigErrorVm : ViewModel, IEnvironmentErrorVm
     public string? ErrorString => _ErrorString.Value;
 
     public NugetConfigErrorVm(
+        INugetConfigPathProvider nugetConfigPathProvider,
         IAnalyzeNugetConfig analyzeNugetConfig,
         ILogger logger)
     {

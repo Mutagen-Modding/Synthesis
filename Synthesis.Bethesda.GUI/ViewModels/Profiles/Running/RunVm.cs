@@ -127,7 +127,7 @@ public class RunVm : ViewModel
             {
                 logger
                     .ForContext(nameof(IPatcherNameVm.Name), i.data.Run)
-                    .Error(i.data.Error, $"Error while {i.type}");
+                    .Error(i.data.Error, $"Error while {i.type}: {i.data.Error}");
             })
             .ObserveOnGui()
             .Subscribe(i =>

@@ -2,6 +2,7 @@ using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Noggog;
 using Mutagen.Bethesda.Environments;
+using Mutagen.Bethesda.Plugins.Order.DI;
 using Synthesis.Bethesda.Commands;
 
 namespace Mutagen.Bethesda.Synthesis;
@@ -44,13 +45,15 @@ public class RunnabilityState : IRunnabilityState
         where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
         where TModGetter : class, IContextGetterMod<TModSetter, TModGetter>
     {
-        var lo = Plugins.Order.LoadOrder.Import<TModGetter>(DataFolderPath, LoadOrder.ListedOrder, GameRelease);
-        return new GameEnvironmentState<TModSetter, TModGetter>(
-            gameRelease: GameRelease,
-            dataFolderPath: DataFolderPath,
-            loadOrderFilePath: LoadOrderFilePath,
-            creationClubListingsFilePath: null,
-            loadOrder: lo,
-            linkCache: lo.ToImmutableLinkCache<TModSetter, TModGetter>());
+        return GameEnvironmentBuilder<TModSetter, TModGetter>.Create(GameRelease)
+            .WithLoadOrder(LoadOrder.ListedOrder.ToArray())
+            .WithTargetDataFolder(DataFolderPath)
+            .WithResolver(t =>
+            {
+                if (t == typeof(IPluginListingsPathContext)) return new PluginListingsPathInjection(Settings.LoadOrderFilePath);
+                if (t == typeof(ICreationClubListingsPathProvider)) return new CreationClubListingsPathInjection(null);
+                return default;
+            })
+            .Build();
     }
 }

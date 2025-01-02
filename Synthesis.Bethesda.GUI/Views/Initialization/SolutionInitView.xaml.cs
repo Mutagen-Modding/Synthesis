@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Windows.Controls.Primitives;
 using DynamicData;
 using System.Windows;
+using ReactiveMarbles.ObservableEvents;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
