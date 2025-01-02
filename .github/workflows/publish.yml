@@ -23,7 +23,7 @@ jobs:
       run: dotnet build Synthesis.Bethesda.sln -c Release --no-restore /p:GeneratePackageOnBuild=false
     - name: Pack
       run: |
-        dotnet pack Mutagen.Records.sln -c Release --no-build --no-restore -o out --include-symbols -p:SymbolPackageFormat=snupkg  -p:PackageReleaseNotes="See https://github.com/Mutagen-Modding/Synthesis/releases/tag/${{ github.event.release.tag_name }}"
+        dotnet pack Synthesis.Bethesda.sln -c Release --no-build --no-restore -o out --include-symbols -p:SymbolPackageFormat=snupkg  -p:PackageReleaseNotes="See https://github.com/Mutagen-Modding/Synthesis/releases/tag/${{ github.event.release.tag_name }}"
     - name: Test
       run: dotnet test Synthesis.Bethesda.sln --no-build -c Release
     - name: Pack GUI
