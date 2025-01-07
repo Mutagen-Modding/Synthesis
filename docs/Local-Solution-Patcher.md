@@ -32,7 +32,7 @@ It is able to construct whole Solutions from scratch, or add a new project to an
 ## Patcher Settings
 A patcher has a Synthesis specific meta file where you can specify patcher description, among other things.  The Solution Patcher has built in GUI controls for modifying/creating this file:
 
-![](https://i.imgur.com/mTJevUM.png)
+![](images/customizing-patcher.png)
 
 Settings you can modify:
 

@@ -118,5 +118,10 @@ Sometimes there can be error during the scraping event.   The scraper system tri
 
 If you see your patcher with an error, see if it makes sense and if you can adjust for what it's complaining about.
 
+### Delisting patcher
+If you want to delist your patcher, you can by including a meta file with instructions to do so.   The easiest way to do this is by using the Solution Patcher suite.  This setup has settings panels you can use, one of which allows you to set the visibility of your patcher easily.
+
+[:octicons-arrow-right-24: Solution Patcher](../Local-Solution-Patcher.md#patcher-settings)
+	
 ## Build Executable
 You can also build an executable, and distribute the `exe` directly for users.  They would then add it as an [External Program Patcher](../External-Program-Patcher.md)
