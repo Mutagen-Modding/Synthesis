@@ -15,15 +15,16 @@ Sorts of things that Mutagen is in charge of:
 - Finding/reading a texture asset from a BSA
 - Resolving and finding the Race that an Npc is
 - Other jobs that require interacting with mods and analyzing/manipulating their data
+- Creating or modifying mod files
 
 ## Synthesis
 [Synthesis](https://github.com/Mutagen-Modding/Synthesis) is a system that is built on top of Mutagen to provide an easy patcher pipeline ecosystem.  
 
 Things that Synthesis is in charge of:
 
+- Running dozens of Mutagen code snippets (patchers) from many mod authors easily in one place with one click
 - A UI for users to control what patchers they want to install, in what groups, in what order.
-- Running dozens of patcher code snippets (patchers) from many mod authors easily in one place with one click
-- Creating an easy bootstrap project template to start coding your own patcher that hooks into the system
+- Creating an easy bootstrap project template that hooks into the Synthesis system for developers to start coding
 
 ## Summary
 Synthesis is the patcher pipeline ecosystem that helps create an accessible environment for developers to create and for users to run Mutagen code snippets.   You do not need to find/install Mutagen yourself as an installation step for Synthesis, it will be pulled in automatically.

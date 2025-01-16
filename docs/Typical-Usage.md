@@ -37,6 +37,8 @@ To use a `.synth` file:
 ## Patcher Settings
 Some patchers either require extra input, or offer customization options.  Some use the settings panel within Synthesis itself, while others use extra json files.
 
+![Patcher Settings](images/patcher-settings.png)
+
 Read more about how settings are handled in Synthesis
 
 [:octicons-arrow-right-24: Patcher Settings](Patcher-Settings.md)
