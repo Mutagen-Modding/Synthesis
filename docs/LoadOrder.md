@@ -1,5 +1,8 @@
 # Load Order
-Load Order can affect the results of Synthesis patches in a few ways
+Load Order can affect the results of Synthesis patches in a few ways.  In general, it is preferable for Synthesis patches to exist on the load order when running.  This allows you to control what content they consider when patching, as described below.
+
+!!! tip "Keep In Load Order"
+    You do not need to remove Synthesis files from your Load Order before rerunning.  Keep it present and enabled, and just rerun the patcher pipeline to replace the existing file with a new version.
 
 ## Patches Only Consider Mods Earlier in the Load Order
 A patch being run will only consider the mods that come before it in the load order.  Any mods that come after it are ignored and not seen or considered by the patchers when they are running.

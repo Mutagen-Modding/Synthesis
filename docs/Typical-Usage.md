@@ -72,5 +72,10 @@ Running the pipeline will export a file [per patcher group](Multiple-Output-Targ
 ## Enable in your Load Order
 Once a patch is created, you'll want to use your favorite tool to view the results (like xEdit) and then add the patch to your load order!
 
+You do not need to remove Synthesis from your Load Order before rerunning.  Keep it present and enabled, and just rerun the patcher pipeline to replace the existing file with a new version.
+
+
+[:octicons-arrow-right-24: Load Order](LoadOrder.md)
+
 ## Read The Rest of the Wiki
 This page is just a brief overview of how to get started.  Be sure to read the rest of the wiki!
