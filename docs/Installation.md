@@ -15,7 +15,9 @@ You can get the typical SDK installation from Microsoft's official page
 - `.NET Runtime` -> Enables you to you run existing .NET programs (such as the Synthesis UI)
 - `.NET SDK` -> Enables you to compile code
 
-While the `.NET Runtime` is also required, Microsoft itself will prompt you to install this when trying to start the Synthesis UI if it is missing.   This installation step relates to installing the SDK, which is different.   The SDK is what allows Synthesis to compile patchers in order to run them, among other things.
+Some users get confused and just install the `.NET Runtime`.  The `Runtime` is required, but Microsoft itself will prompt you to install this when trying to start the Synthesis UI, if it is missing.
+
+Be sure to install the `SDK`; The `Runtime` alone is not enough.  
 
 ## Download Synthesis UI
 To download Synthesis itself, go is the GitHub release section
