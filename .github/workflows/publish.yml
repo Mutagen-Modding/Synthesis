@@ -21,11 +21,13 @@ jobs:
         dotnet restore Synthesis.Bethesda.sln
     - name: Build
       run: dotnet build Synthesis.Bethesda.sln -c Release --no-restore /p:GeneratePackageOnBuild=false
+    - name: Test
+      run: dotnet test Synthesis.Bethesda.sln --no-build -c Release
     - name: Pack
       run: |
         dotnet pack Synthesis.Bethesda.sln -c Release --no-build --no-restore -o out --include-symbols -p:SymbolPackageFormat=snupkg  -p:PackageReleaseNotes="See https://github.com/Mutagen-Modding/Synthesis/releases/tag/${{ github.event.release.tag_name }}"
-    - name: Test
-      run: dotnet test Synthesis.Bethesda.sln --no-build -c Release
+    - name: Publish x64 Nugets to Nuget.org
+      run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Pack GUI
       run: dotnet publish "Synthesis.Bethesda.GUI/Synthesis.Bethesda.GUI.csproj" --configuration Release -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true
     - name: Archive Release
@@ -37,5 +39,3 @@ jobs:
         file: Synthesis.zip
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.release.tag_name }}
-    - name: Publish x64 Nugets to Nuget.org
-      run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
