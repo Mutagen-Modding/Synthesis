@@ -1,4 +1,4 @@
-using FluentAssertions;
+using Shouldly;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Oblivion;
 using Mutagen.Bethesda.Plugins;
@@ -10,6 +10,7 @@ using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Masters.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Mutagen.Bethesda.Synthesis.States;
+using Noggog.Testing.Extensions;
 using Path = System.IO.Path;
 
 namespace Synthesis.Bethesda.UnitTests;
@@ -237,11 +238,11 @@ public class MutagenSynthesisTests
             },
             new PatcherPreferences(),
             Synthesis.Bethesda.Constants.SynthesisModKey);
-        state.LoadOrder.PriorityOrder.Should().HaveCount(2);
-        state.RawLoadOrder.Should().HaveCount(3);
-        state.RawLoadOrder[0].Should().Be(new LoadOrderListing(Utility.TestModKey, true));
-        state.RawLoadOrder[1].Should().Be(new LoadOrderListing(Utility.OverrideModKey, false));
-        state.RawLoadOrder[2].Should().Be(new LoadOrderListing(Utility.SynthesisModKey, true));
+        state.LoadOrder.PriorityOrder.ShouldHaveCount(2);
+        state.RawLoadOrder.ShouldHaveCount(3);
+        state.RawLoadOrder[0].ShouldBe(new LoadOrderListing(Utility.TestModKey, true));
+        state.RawLoadOrder[1].ShouldBe(new LoadOrderListing(Utility.OverrideModKey, false));
+        state.RawLoadOrder[2].ShouldBe(new LoadOrderListing(Utility.SynthesisModKey, true));
     }
 
     [Fact]
@@ -295,9 +296,9 @@ public class MutagenSynthesisTests
                         new GameReleaseInjection(env.Release))))
             .Add(list);
 
-        list.Should().HaveCount(2);
-        list[0].Should().Be(new LoadOrderListing(Utility.TestModKey, true));
-        list[1].Should().Be(new LoadOrderListing(Utility.OverrideModKey, true));
+        list.ShouldHaveCount(2);
+        list[0].ShouldBe(new LoadOrderListing(Utility.TestModKey, true));
+        list[1].ShouldBe(new LoadOrderListing(Utility.OverrideModKey, true));
     }
 
     [Fact]
@@ -323,6 +324,6 @@ public class MutagenSynthesisTests
             },
             env.FileSystem);
 #pragma warning restore CS0618 // Type or member is obsolete
-        env.FileSystem.File.Exists(modPath.Path).Should().BeFalse();
+        env.FileSystem.File.Exists(modPath.Path).ShouldBeFalse();
     }
 }

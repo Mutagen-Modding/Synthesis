@@ -1,5 +1,5 @@
 ﻿using System.IO.Abstractions.TestingHelpers;
-using FluentAssertions;
+using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.GUI.Logging;
@@ -31,9 +31,9 @@ public class LogCleanerTests
             
         cleaner.Start();
 
-        fs.Directory.Exists(keepDir).Should().BeTrue();
-        fs.File.Exists(keepFile).Should().BeTrue();
-        fs.Directory.Exists(deleteDir).Should().BeFalse();
-        fs.File.Exists(deleteFile).Should().BeFalse();
+        fs.Directory.Exists(keepDir).ShouldBeTrue();
+        fs.File.Exists(keepFile).ShouldBeTrue();
+        fs.Directory.Exists(deleteDir).ShouldBeFalse();
+        fs.File.Exists(deleteFile).ShouldBeFalse();
     }
 }

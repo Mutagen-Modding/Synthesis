@@ -1,5 +1,5 @@
 using System.Xml.Linq;
-using FluentAssertions;
+using Shouldly;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.ModifyProject;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
@@ -16,7 +16,7 @@ public class TurnOffNullabilityTests
             new XElement("PropertyGroup",
                 elem));
         sut.TurnOff(root);
-        elem.Value.Should().BeEquivalentTo(string.Empty);
+        elem.Value.ShouldBe(string.Empty);
     }
 
     [Theory, SynthAutoData]
@@ -28,6 +28,6 @@ public class TurnOffNullabilityTests
             new XElement("PropertyGroup",
                 elem));
         sut.TurnOff(root);
-        elem.Value.Should().BeEquivalentTo("other");
+        elem.Value.ShouldBe("other");
     }
 }

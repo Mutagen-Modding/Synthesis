@@ -1,5 +1,5 @@
 ﻿using System.Reactive.Disposables;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Noggog.GitRepository;
 
@@ -16,7 +16,7 @@ public class RepositoryCheckoutTests
                 new Lazy<IGitRepository>(repoMock),
                 cleanup)
             .Dispose();
-        cleanup.IsDisposed.Should().BeTrue();
+        cleanup.IsDisposed.ShouldBeTrue();
         repoMock.Received().Dispose();
     }
 }

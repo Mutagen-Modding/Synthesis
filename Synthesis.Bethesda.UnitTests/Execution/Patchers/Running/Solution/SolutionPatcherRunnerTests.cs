@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using FluentAssertions;
+using Shouldly;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using NSubstitute;
@@ -80,6 +80,6 @@ public class SolutionPatcherRunnerTests
         {
             await sut.Run(settings, cancel);
         });
-        ex.ExitCode.Should().Be(-1);
+        ex.ExitCode.ShouldBe(-1);
     }
 }

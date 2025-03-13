@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using NSubstitute;
@@ -52,7 +52,7 @@ public class RunAPatcherTests
                 cancelled,
                 sourcePath,
                 runParameters))
-            .Should().BeNull();
+            .ShouldBeNull();
     }
         
     [Theory, SynthAutoData]
@@ -201,6 +201,6 @@ public class RunAPatcherTests
                 cancellation,
                 sourcePath,
                 runParameters))
-            .Should().Be(ret);
+            .ShouldBe(ret);
     }
 }

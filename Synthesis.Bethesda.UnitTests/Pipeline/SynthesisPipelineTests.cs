@@ -1,5 +1,5 @@
 ﻿using System.IO.Abstractions;
-using FluentAssertions;
+using Shouldly;
 using Mutagen.Bethesda.Environments;
 using Mutagen.Bethesda.Fallout4;
 using Mutagen.Bethesda.Plugins;
@@ -8,6 +8,7 @@ using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Newtonsoft.Json;
 using Noggog;
+using Noggog.Testing.Extensions;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
@@ -62,7 +63,7 @@ public class SynthesisPipelineTests
                 count++;
             })
             .Run(runSynthesisMutagenPatcher, fileSystem);
-        count.Should().Be(1);
+        count.ShouldBe(1);
     }
     
     [Theory]
@@ -82,14 +83,14 @@ public class SynthesisPipelineTests
         await SynthesisPipeline.Instance
             .AddPatch<ISkyrimMod, ISkyrimModGetter>((state) =>
             {
-                state.GameRelease.Should().Be(gameEnvironment.GameRelease);
-                state.OutputPath.Path.Should().Be(runSynthesisMutagenPatcher.OutputPath);
-                state.SourcePath.Should().Be(sourcePath);
-                state.DataFolderPath.Should().Be(gameEnvironment.DataFolderPath);
-                state.LoadOrderFilePath.Should().Be(gameEnvironment.LoadOrderFilePath);
-                state.ExtraSettingsDataPath!.Value.Path.Should().Be(runSynthesisMutagenPatcher.ExtraDataFolder);
-                state.PatchMod.Should().NotBeNull();
-                state.PatchMod.ModKey.Should().Be(outputModKey);
+                state.GameRelease.ShouldBe(gameEnvironment.GameRelease);
+                state.OutputPath.Path.ShouldBe(runSynthesisMutagenPatcher.OutputPath);
+                state.SourcePath.ShouldBe(sourcePath);
+                state.DataFolderPath.ShouldBe(gameEnvironment.DataFolderPath);
+                state.LoadOrderFilePath.ShouldBe(gameEnvironment.LoadOrderFilePath);
+                state.ExtraSettingsDataPath!.Value.Path.ShouldBe(runSynthesisMutagenPatcher.ExtraDataFolder);
+                state.PatchMod.ShouldNotBeNull();
+                state.PatchMod.ModKey.ShouldBe(outputModKey);
             })
             .Run(runSynthesisMutagenPatcher, fileSystem);
     }
@@ -111,13 +112,13 @@ public class SynthesisPipelineTests
         await SynthesisPipeline.Instance
             .AddPatch<ISkyrimMod, ISkyrimModGetter>((state) =>
             {
-                state.LoadOrder.ListedOrder.Select(x => x.ModKey).Should().Equal(
+                state.LoadOrder.ListedOrder.Select(x => x.ModKey).ShouldEqual(
                     gameEnvironment.LoadOrder.ListedOrder
                         .Where(x => x.Enabled)
                         .Select(x => x.ModKey)
                         .And(outputModKey));
-                state.LoadOrder.ListedOrder.Select(x => x.Mod).Should().AllSatisfy(x => x.Should().NotBeNull());
-                state.LinkCache.ListedOrder.Select(x => x.ModKey).Should().Equal(
+                state.LoadOrder.ListedOrder.Select(x => x.Mod).ShouldSatisfyAllConditions(x => x.ShouldNotBeNull());
+                state.LinkCache.ListedOrder.Select(x => x.ModKey).ShouldEqual(
                     gameEnvironment.LoadOrder.ListedOrder
                         .Where(x => x.Enabled)
                         .Select(x => x.ModKey)
@@ -144,8 +145,8 @@ public class SynthesisPipelineTests
             .AddPatch<ISkyrimMod, ISkyrimModGetter>((state) => skyrimCount++)
             .AddPatch<IFallout4Mod, IFallout4ModGetter>((state) => fo4Count++)
             .Run(runSynthesisMutagenPatcher, fileSystem);
-        skyrimCount.Should().Be(1);
-        fo4Count.Should().Be(0);
+        skyrimCount.ShouldBe(1);
+        fo4Count.ShouldBe(0);
     }
     
     [Theory]
@@ -208,7 +209,7 @@ public class SynthesisPipelineTests
                 callCount++;
             })
             .Run(runSynthesisMutagenPatcher, fileSystem);
-        callCount.Should().Be(1);
+        callCount.ShouldBe(1);
     }
     
     [Theory]
@@ -237,7 +238,7 @@ public class SynthesisPipelineTests
                 })
                 .Run(runSynthesisMutagenPatcher, fileSystem);
         });
-        callCount.Should().Be(1);
+        callCount.ShouldBe(1);
     }
 
     #endregion
@@ -274,8 +275,8 @@ public class SynthesisPipelineTests
                 callCount++;
             })
             .Run(checkRunnability, fileSystem);
-        callCount.Should().Be(1);
-        code.Should().Be(0);
+        callCount.ShouldBe(1);
+        code.ShouldBe(0);
     }
     
     [Theory]
@@ -295,8 +296,8 @@ public class SynthesisPipelineTests
                 callCount++;
             })
             .Run(checkRunnability, fileSystem);
-        callCount.Should().Be(0);
-        code.Should().Be(Codes.NotRunnable);
+        callCount.ShouldBe(0);
+        code.ShouldBe(Codes.NotRunnable);
     }
     
     [Theory]
@@ -312,10 +313,10 @@ public class SynthesisPipelineTests
         await SynthesisPipeline.Instance
             .AddRunnabilityCheck((state) =>
             {
-                state.GameRelease.Should().Be(gameEnvironment.GameRelease);
-                state.DataFolderPath.Should().Be(gameEnvironment.DataFolderPath);
-                state.LoadOrderFilePath.Should().Be(gameEnvironment.LoadOrderFilePath);
-                state.ExtraSettingsDataPath.Should().Be(checkRunnability.ExtraDataFolder);
+                state.GameRelease.ShouldBe(gameEnvironment.GameRelease);
+                state.DataFolderPath.ShouldBe(gameEnvironment.DataFolderPath);
+                state.LoadOrderFilePath.ShouldBe(gameEnvironment.LoadOrderFilePath);
+                state.ExtraSettingsDataPath.ShouldBe<DirectoryPath?>(checkRunnability.ExtraDataFolder);
             })
             .Run(checkRunnability, fileSystem);
     }
@@ -333,7 +334,7 @@ public class SynthesisPipelineTests
         await SynthesisPipeline.Instance
             .AddRunnabilityCheck((state) =>
             {
-                state.LoadOrder.ListedOrder.Select(x => x.ModKey).Should().Equal(
+                state.LoadOrder.ListedOrder.Select(x => x.ModKey).ShouldEqual(
                     gameEnvironment.LoadOrder.ListedOrder
                         .Where(x => x.Enabled)
                         .Select(x => x.ModKey)
@@ -356,17 +357,17 @@ public class SynthesisPipelineTests
             .AddRunnabilityCheck((state) =>
             {
                 using var env = state.GetEnvironmentState<ISkyrimMod, ISkyrimModGetter>();
-                env.GameRelease.Should().Be(gameEnvironment.GameRelease);
-                env.DataFolderPath.Should().Be(gameEnvironment.DataFolderPath);
-                env.LoadOrderFilePath.Should().Be(gameEnvironment.LoadOrderFilePath);
-                env.CreationClubListingsFilePath.Should().Be(gameEnvironment.CreationClubListingsFilePath);
-                env.LoadOrder.ListedOrder.Select(x => x.ModKey).Should().Equal(
+                env.GameRelease.ShouldBe(gameEnvironment.GameRelease);
+                env.DataFolderPath.ShouldBe(gameEnvironment.DataFolderPath);
+                env.LoadOrderFilePath.ShouldBe(gameEnvironment.LoadOrderFilePath);
+                env.CreationClubListingsFilePath.ShouldBe(gameEnvironment.CreationClubListingsFilePath);
+                env.LoadOrder.ListedOrder.Select(x => x.ModKey).ShouldEqual(
                     gameEnvironment.LoadOrder.ListedOrder
                         .Where(x => x.Enabled)
                         .Select(x => x.ModKey)
                         .And(outputModKey));
-                env.LoadOrder.ListedOrder.Select(x => x.Mod).Should().AllSatisfy(x => x.Should().NotBeNull());
-                env.LinkCache.ListedOrder.Select(x => x.ModKey).Should().Equal(
+                env.LoadOrder.ListedOrder.Select(x => x.Mod).ShouldSatisfyAllConditions(x => x.ShouldNotBeNull());
+                env.LinkCache.ListedOrder.Select(x => x.ModKey).ShouldEqual(
                     gameEnvironment.LoadOrder.ListedOrder
                         .Where(x => x.Enabled)
                         .Select(x => x.ModKey)
@@ -389,12 +390,12 @@ public class SynthesisPipelineTests
 
     private void AssertSettingsPresent(Lazy<SettingDto> settings)
     {
-        settings.Value.MyInt.Should().Be(SettingDto.Set);
+        settings.Value.MyInt.ShouldBe(SettingDto.Set);
     }
 
     private void AssertSettingsMissing(Lazy<SettingDto> settings)
     {
-        settings.Value.MyInt.Should().Be(SettingDto.Default);
+        settings.Value.MyInt.ShouldBe(SettingDto.Default);
     }
 
     private void AssertSettingsThrows(Lazy<SettingDto> settings)
@@ -486,8 +487,8 @@ public class SynthesisPipelineTests
     //             return 1753;
     //         })
     //         .Run(Array.Empty<string>(), fileSystem);
-    //     ret.Should().Be(1753);
-    //     count.Should().Be(1);
+    //     ret.ShouldBe(1753);
+    //     count.ShouldBe(1);
     // }
     //
     // [Theory]
@@ -520,7 +521,7 @@ public class SynthesisPipelineTests
     //         })
     //         .SetTypicalOpen(GameRelease.SkyrimSE, modKey)
     //         .Run(Array.Empty<string>(), fileSystem: fileSystem);
-    //     count.Should().Be(1);
+    //     count.ShouldBe(1);
     // }
 
     #endregion
@@ -557,8 +558,8 @@ public class SynthesisPipelineTests
                 return 1753;
             })
             .Run(run, fileSystem);
-        ret.Should().Be(1753);
-        count.Should().Be(1);
+        ret.ShouldBe(1753);
+        count.ShouldBe(1);
     }
     
     [Theory]
@@ -576,10 +577,10 @@ public class SynthesisPipelineTests
         var ret = await SynthesisPipeline.Instance
             .SetOpenForSettings(state =>
             {
-                state.GameRelease.Should().Be(gameEnvironment.GameRelease);
-                state.DataFolderPath.Should().Be(gameEnvironment.DataFolderPath);
-                state.LoadOrderFilePath.Should().Be(gameEnvironment.LoadOrderFilePath);
-                state.ExtraSettingsDataPath!.Value.Path.Should().Be(run.ExtraDataFolder);
+                state.GameRelease.ShouldBe(gameEnvironment.GameRelease);
+                state.DataFolderPath.ShouldBe(gameEnvironment.DataFolderPath);
+                state.LoadOrderFilePath.ShouldBe(gameEnvironment.LoadOrderFilePath);
+                state.ExtraSettingsDataPath!.Value.Path.ShouldBe(run.ExtraDataFolder);
                 return 1753;
             })
             .Run(run, fileSystem);

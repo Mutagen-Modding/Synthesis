@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog.DotNetCli.DI;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.DotNet;
@@ -26,8 +26,8 @@ public class QueryLibraryVersionsTests
         var queryNuget = GetNugetQuery();
         var queryLibs = new QueryLibraryVersions(queryNuget);
         var libVersions = await queryLibs.Query(default, true, false, CancellationToken.None);
-        libVersions.Mutagen.Should().Be("0.14.0");
-        libVersions.Synthesis.Should().Be("0.0.3");
+        libVersions.Mutagen.ShouldBe("0.14.0");
+        libVersions.Synthesis.ShouldBe("0.0.3");
     }
         
     [Fact]
@@ -36,8 +36,8 @@ public class QueryLibraryVersionsTests
         var queryNuget = GetNugetQuery();
         var queryLibs = new QueryLibraryVersions(queryNuget);
         var libVersions = await queryLibs.Query(default, false, false, CancellationToken.None);
-        libVersions.Mutagen.Should().Be("0.30.3");
-        libVersions.Synthesis.Should().Be("0.19.1");
+        libVersions.Mutagen.ShouldBe("0.30.3");
+        libVersions.Synthesis.ShouldBe("0.19.1");
     }
         
     [Fact]
@@ -52,8 +52,8 @@ public class QueryLibraryVersionsTests
             });
         var queryLibs = new QueryLibraryVersions(queryNuget);
         var libVersions = await queryLibs.Query(string.Empty, false, false, CancellationToken.None);
-        libVersions.Mutagen.Should().BeNull();
-        libVersions.Synthesis.Should().Be("0.19.1");
+        libVersions.Mutagen.ShouldBeNull();
+        libVersions.Synthesis.ShouldBe("0.19.1");
     }
         
     [Fact]
@@ -68,7 +68,7 @@ public class QueryLibraryVersionsTests
             });
         var queryLibs = new QueryLibraryVersions(queryNuget);
         var libVersions = await queryLibs.Query(string.Empty, false, false, CancellationToken.None);
-        libVersions.Mutagen.Should().Be("0.30.3");
-        libVersions.Synthesis.Should().BeNull();
+        libVersions.Mutagen.ShouldBe("0.30.3");
+        libVersions.Synthesis.ShouldBeNull();
     }
 }

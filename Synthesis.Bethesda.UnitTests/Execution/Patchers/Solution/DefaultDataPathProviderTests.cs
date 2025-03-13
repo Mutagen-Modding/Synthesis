@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
@@ -13,6 +13,6 @@ public class DefaultDataPathProviderTests
         DefaultDataPathProvider sut)
     {
         sut.PathToProjProvider.Path.Returns(new FilePath("C:/Dir/Proj.csproj"));
-        sut.Path.Should().Be(new DirectoryPath("C:/Dir/Data"));
+        sut.Path.ShouldBe(new DirectoryPath("C:/Dir/Data"));
     }
 }

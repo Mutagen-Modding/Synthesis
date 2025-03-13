@@ -1,4 +1,4 @@
-using FluentAssertions;
+using Shouldly;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -13,7 +13,7 @@ public class NugetVersioningTest
         string rhs)
     {
         new NugetVersioningTarget(version, NugetVersioningEnum.Match)
-            .ReturnIfMatch(rhs).Should().Be(rhs);
+            .ReturnIfMatch(rhs).ShouldBe(rhs);
     }
         
     [Theory]
@@ -25,6 +25,6 @@ public class NugetVersioningTest
         string rhs)
     {
         new NugetVersioningTarget(version, versioning)
-            .ReturnIfMatch(rhs).Should().Be(version);
+            .ReturnIfMatch(rhs).ShouldBe(version);
     }
 }

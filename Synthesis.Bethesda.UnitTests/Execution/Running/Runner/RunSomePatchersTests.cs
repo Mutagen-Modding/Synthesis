@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using NSubstitute;
@@ -145,7 +145,7 @@ public class RunSomePatchersTests
                 cancellation,
                 sourcePath,
                 runParameters))
-            .Should().Be(return2);
+            .ShouldBe(return2);
     }
         
     [Theory, SynthAutoData]

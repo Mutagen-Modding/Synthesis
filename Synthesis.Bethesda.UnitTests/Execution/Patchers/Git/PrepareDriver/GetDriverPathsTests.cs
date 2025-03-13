@@ -1,5 +1,6 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
+using Noggog.Testing.Extensions;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.PrepareDriver;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -24,7 +25,7 @@ public class GetDriverPathsTests
     {
         sut.SolutionFileLocator.GetPath(default).ReturnsForAnyArgs(default(FilePath?));
         sut.Get()
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -46,8 +47,8 @@ public class GetDriverPathsTests
         sut.SolutionFileLocator.GetPath(default).ReturnsForAnyArgs(path);
         sut.AvailableProjectsRetriever.Get(default).ReturnsForAnyArgs(paths);
         var ret = sut.Get();
-        ret.Succeeded.Should().BeTrue();
-        ret.Value.SolutionPath.Should().Be(path);
-        ret.Value.AvailableProjects.Should().Equal(paths);
+        ret.Succeeded.ShouldBeTrue();
+        ret.Value.SolutionPath.ShouldBe(path);
+        ret.Value.AvailableProjects.ShouldEqual(paths);
     }
 }

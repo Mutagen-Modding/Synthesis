@@ -1,4 +1,4 @@
-using FluentAssertions;
+using Shouldly;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Fallout4;
 using Mutagen.Bethesda.Skyrim;
@@ -19,7 +19,7 @@ public class CheckRunnabilityTests
                 })
                 .AddPatch<ISkyrimMod, ISkyrimModGetter>(RunPatch)
                 .Run($"check-runnability -g SkyrimSE -d {env.DataFolder}".Split(' '), fileSystem: env.FileSystem))
-            .Should().Be((int)Codes.NotRunnable);
+            .ShouldBe((int)Codes.NotRunnable);
     }
     
     [Fact]
@@ -33,7 +33,7 @@ public class CheckRunnabilityTests
                 })
                 .AddPatch<IFallout4Mod, IFallout4ModGetter>(RunPatch)
                 .Run($"check-runnability -g SkyrimSE -d {env.DataFolder}".Split(' '), fileSystem: env.FileSystem))
-            .Should().Be((int)Codes.NotRunnable);
+            .ShouldBe((int)Codes.NotRunnable);
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class CheckRunnabilityTests
                 })
                 .AddPatch<ISkyrimMod, ISkyrimModGetter>(RunPatch)
                 .Run($"check-runnability -g SkyrimSE -d {env.DataFolder}".Split(' '), fileSystem: env.FileSystem))
-            .Should().Be(0);
+            .ShouldBe(0);
     }
 
     private static void RunPatch(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)

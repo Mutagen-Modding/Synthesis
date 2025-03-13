@@ -1,12 +1,13 @@
 ﻿using System.IO.Abstractions;
 using Autofac;
-using FluentAssertions;
+using Shouldly;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Testing.AutoData;
 using Noggog.IO;
 using Noggog.Testing.AutoFixture;
+using Noggog.Testing.Extensions;
 using Synthesis.Bethesda.CLI.AddSolutionPatcher;
 using Synthesis.Bethesda.CLI.CreateProfileCli;
 using Synthesis.Bethesda.CLI.CreateTemplatePatcher;
@@ -38,7 +39,7 @@ public class RunPipelineLogicTests
             GameCategory = GameCategory.Skyrim,
             ParentDirectory = patcherDir.Dir
         });
-        result.Should().Be(0);
+        result.ShouldBe(0);
         
         var b = new ContainerBuilder();
         var createProfileCmd = new CreateProfileCommand()
@@ -110,13 +111,13 @@ public class RunPipelineLogicTests
             OutputDirectory = outputDir.Dir,
             PipelineSettingsPath = pipelineSettingsFile.File,
         }, fileSystem);
-        result.Should().Be(0);
+        result.ShouldBe(0);
         var patchFilePath = Path.Combine(outputDir.Dir, ModKey.FromName(groupName, ModType.Plugin).FileName);
-        fileSystem.File.Exists(patchFilePath).Should().BeTrue();
+        fileSystem.File.Exists(patchFilePath).ShouldBeTrue();
         using var reimport = SkyrimMod.Create(SkyrimRelease.SkyrimSE)
             .FromPath(patchFilePath)
             .WithFileSystem(fileSystem)
             .Construct();
-        reimport.Npcs.Select(x => x.EditorID).Should().Equal("After");
+        reimport.Npcs.Select(x => x.EditorID).ShouldEqual("After");
     }
 }

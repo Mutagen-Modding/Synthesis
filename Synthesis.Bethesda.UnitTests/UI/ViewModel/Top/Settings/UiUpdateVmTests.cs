@@ -1,5 +1,5 @@
 ﻿using AutoFixture.Xunit2;
-using FluentAssertions;
+using Shouldly;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Versioning;
@@ -23,7 +23,7 @@ public class UiUpdateVmTests
             new NugetVersionPair("2.0.0", "1.0.0"),
             new NugetVersionPair("2.0.0-pr01", "1.0.0-pr01")));
         var sut = sutGetter.Value;
-        sut.HasUpdate.Should().BeFalse();
+        sut.HasUpdate.ShouldBeFalse();
     }
     
     [Theory]
@@ -38,7 +38,7 @@ public class UiUpdateVmTests
             new NugetVersionPair("2.0.0", "1.1.0"),
             new NugetVersionPair("2.0.0-pr01", "1.0.0-pr01")));
         var sut = sutGetter.Value;
-        sut.HasUpdate.Should().BeTrue();
+        sut.HasUpdate.ShouldBeTrue();
     }
     
     [Theory]
@@ -53,7 +53,7 @@ public class UiUpdateVmTests
             new NugetVersionPair("2.0.0", "1.0.0"),
             new NugetVersionPair("2.0.0-pr01", "1.1.0-pr01")));
         var sut = sutGetter.Value;
-        sut.HasUpdate.Should().BeFalse();
+        sut.HasUpdate.ShouldBeFalse();
     }
     
     [Theory]
@@ -68,6 +68,6 @@ public class UiUpdateVmTests
             new NugetVersionPair("2.0.0", "1.0.0"),
             new NugetVersionPair("2.0.0-pr01", "1.1.0-pr01")));
         var sut = sutGetter.Value;
-        sut.HasUpdate.Should().BeTrue();
+        sut.HasUpdate.ShouldBeTrue();
     }
 }

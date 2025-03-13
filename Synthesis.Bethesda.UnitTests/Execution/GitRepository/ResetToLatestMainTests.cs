@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using NSubstitute;
 using Noggog.GitRepository;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -14,7 +14,7 @@ public class ResetToLatestMainTests
     {
         repo.MainBranch.Returns(default(IBranch?));
         sut.TryReset(repo)
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -25,8 +25,8 @@ public class ResetToLatestMainTests
     {
         repo.MainBranch.Returns(branch);
         var resp = sut.TryReset(repo);
-        resp.Succeeded.Should().BeTrue();
-        resp.Value.Should().Be(branch);
+        resp.Succeeded.ShouldBeTrue();
+        resp.Value.ShouldBe(branch);
     }
         
     [Theory, SynthAutoData]

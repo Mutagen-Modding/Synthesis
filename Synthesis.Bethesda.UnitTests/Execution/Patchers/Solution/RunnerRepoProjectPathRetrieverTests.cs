@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
@@ -16,7 +16,7 @@ public class RunnerRepoProjectPathRetrieverTests
     {
         sut.AvailableProjectsRetriever.Get(default).ReturnsForAnyArgs(Enumerable.Empty<string>());
         sut.Get(solutionPath, projPath)
-            .Should().BeNull();
+            .ShouldBeNull();
     }
         
     [Theory, SynthAutoData]
@@ -43,7 +43,7 @@ public class RunnerRepoProjectPathRetrieverTests
             "SomeDir/SomeProj.csproj",
         });
         var ret = sut.Get(solutionPath, projSubpath);
-        ret!.SubPath.Should().Be("SomeDir/SomeProj.csproj");
-        ret!.FullPath.Should().Be(new FilePath("D:/RunnerRepo/SomeDir/SomeProj.csproj"));
+        ret!.SubPath.ShouldBe("SomeDir/SomeProj.csproj");
+        ret!.FullPath.ShouldBe(new FilePath("D:/RunnerRepo/SomeDir/SomeProj.csproj"));
     }
 }

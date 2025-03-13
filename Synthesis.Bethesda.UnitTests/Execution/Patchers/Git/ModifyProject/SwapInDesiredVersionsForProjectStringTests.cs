@@ -1,5 +1,5 @@
 ﻿using System.Xml.Linq;
-using FluentAssertions;
+using Shouldly;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.ModifyProject;
 using Synthesis.Bethesda.Execution.Versioning;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -43,8 +43,7 @@ public class SwapInDesiredVersionsForProjectStringTests
             new NugetVersionPair(Mutagen: "0", Synthesis: "0"),
             out var _);
         projXml.ToString()
-            .Should()
-            .BeEquivalentTo(projStr);
+            .ShouldBe(projStr);
     }
 
     [Theory, SynthAutoData]
@@ -62,9 +61,7 @@ public class SwapInDesiredVersionsForProjectStringTests
         var expectedString = CreateProj(
             ("Mutagen.Bethesda", "2.0"),
             ("Mutagen.Bethesda.Synthesis", "3.1"));
-        swapString
-            .Should()
-            .BeEquivalentTo(expectedString);
+        swapString.ShouldBe(expectedString);
     }
 
     [Theory, SynthAutoData]
@@ -82,9 +79,7 @@ public class SwapInDesiredVersionsForProjectStringTests
         var expectedString = CreateProj(
             ("Mutagen.Bethesda", "2.0"),
             ("Mutagen.Bethesda.Synthesis", "3.1"));
-        swapString
-            .Should()
-            .BeEquivalentTo(expectedString);
+        swapString.ShouldBe(expectedString);
     }
 
     [Theory, SynthAutoData]
@@ -104,9 +99,7 @@ public class SwapInDesiredVersionsForProjectStringTests
             ("Mutagen.Bethesda", "2.0"),
             ("Mutagen.Bethesda.Oblivion", "2.0"),
             ("Mutagen.Bethesda.Synthesis", "3.1"));
-        swapString
-            .Should()
-            .BeEquivalentTo(expectedString);
+        swapString.ShouldBe(expectedString);
     }
 
     [Theory, SynthAutoData]
@@ -126,9 +119,7 @@ public class SwapInDesiredVersionsForProjectStringTests
             ("Mutagen.Bethesda", "0.0.0"),
             ("Mutagen.Bethesda.Oblivion", "0.1.0"),
             ("Mutagen.Bethesda.Synthesis", "0.3.0"));
-        swapString
-            .Should()
-            .BeEquivalentTo(expectedString);
+        swapString.ShouldBe(expectedString);
     }
 
     [Theory, SynthAutoData]
@@ -152,9 +143,7 @@ public class SwapInDesiredVersionsForProjectStringTests
             ("Mutagen.Bethesda.Skyrim", "0.4.0"),
             ("Mutagen.Bethesda.Core", "0.4.0"),
             ("Mutagen.Bethesda.Kernel", "0.4.0"));
-        swapString
-            .Should()
-            .BeEquivalentTo(expectedString);
+        swapString.ShouldBe(expectedString);
     }
 
     [Theory, SynthAutoData]
@@ -178,8 +167,6 @@ public class SwapInDesiredVersionsForProjectStringTests
             ("Mutagen.Bethesda.Skyrim", "0.49.0-alpha.7"),
             ("Mutagen.Bethesda.Core", "0.49.0-alpha.7"),
             ("Mutagen.Bethesda.Kernel", "0.49.0-alpha.7"));
-        swapString
-            .Should()
-            .BeEquivalentTo(expectedString);
+        swapString.ShouldBe(expectedString);
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.IO.Abstractions.TestingHelpers;
-using FluentAssertions;
+using Shouldly;
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -15,7 +15,7 @@ public class SettingsVersionRetrieverTests
         SettingsVersionRetriever sut)
     {
         fileSystem.File.WriteAllText(path, "{}");
-        sut.GetVersion(path).Should().BeNull();
+        sut.GetVersion(path).ShouldBeNull();
     }
         
     [Theory, SynthAutoData]
@@ -25,6 +25,6 @@ public class SettingsVersionRetrieverTests
         SettingsVersionRetriever sut)
     {
         fileSystem.File.WriteAllText(path, "{ \"Version\": \"3\" }");
-        sut.GetVersion(path).Should().Be(3);
+        sut.GetVersion(path).ShouldBe(3);
     }
 }

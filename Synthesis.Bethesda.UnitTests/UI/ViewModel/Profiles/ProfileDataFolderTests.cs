@@ -1,6 +1,6 @@
 ﻿using System.IO.Abstractions;
 using AutoFixture.Xunit2;
-using FluentAssertions;
+using Shouldly;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Noggog;
@@ -41,19 +41,19 @@ public class ProfileDataFolderTests
         GetResponse<DirectoryPath> result = GetResponse<DirectoryPath>.Failure;
         sut.WhenAnyValue(x => x.DataFolderResult).Subscribe(x => result = x);
             
-        result.Succeeded.Should().Be(r == Utility.Return.True);
+        result.Succeeded.ShouldBe(r == Utility.Return.True);
         if (r == Utility.Return.True)
         {
-            result.Value.Should().Be(folder);
-            sut.DataFolderResult.Value.Path.Should().Be(folder.Path);
+            result.Value.ShouldBe(folder);
+            sut.DataFolderResult.Value.Path.ShouldBe(folder.Path);
         }
         else if (r == Utility.Return.False)
         {
-            sut.DataFolderResult.Value.Path.Should().Be(folder.Path);
+            sut.DataFolderResult.Value.Path.ShouldBe(folder.Path);
         }
         else if (r == Utility.Return.Throw)
         {
-            sut.DataFolderResult.Value.Path.Should().BeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.ShouldBeNullOrWhiteSpace();
         }
     }
 
@@ -88,18 +88,18 @@ public class ProfileDataFolderTests
         GetResponse<DirectoryPath> result = GetResponse<DirectoryPath>.Failure;
         sut.WhenAnyValue(x => x.DataFolderResult).Subscribe(x => result = x);
             
-        result.Succeeded.Should().Be(r == Utility.Return.True);
+        result.Succeeded.ShouldBe(r == Utility.Return.True);
         if (r == Utility.Return.True)
         {
-            sut.DataFolderResult.Value.Path.Should().NotBeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.ShouldNotBeNullOrWhiteSpace();
         }
         else if (r == Utility.Return.False)
         {
-            sut.DataFolderResult.Value.Path.Should().BeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.ShouldBeNullOrWhiteSpace();
         }
         else if (r == Utility.Return.Throw)
         {
-            sut.DataFolderResult.Value.Path.Should().BeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.ShouldBeNullOrWhiteSpace();
         }
     }
     
@@ -128,19 +128,19 @@ public class ProfileDataFolderTests
         GetResponse<DirectoryPath> result = GetResponse<DirectoryPath>.Failure;
         sut.WhenAnyValue(x => x.DataFolderResult).Subscribe(x => result = x);
                 
-        result.Succeeded.Should().Be(r == Utility.Return.True);
+        result.Succeeded.ShouldBe(r == Utility.Return.True);
         if (r == Utility.Return.True)
         {
-            result.Value.Path.Should().Be(folder);
-            sut.DataFolderResult.Value.Path.Should().NotBeNullOrWhiteSpace();
+            result.Value.Path.ShouldBe(folder);
+            sut.DataFolderResult.Value.Path.ShouldNotBeNullOrWhiteSpace();
         }
         else if (r == Utility.Return.False)
         {
-            sut.DataFolderResult.Value.Path.Should().NotBeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.ShouldNotBeNullOrWhiteSpace();
         }
         else if (r == Utility.Return.Throw)
         {
-            sut.DataFolderResult.Value.Path.Should().BeNullOrWhiteSpace();
+            sut.DataFolderResult.Value.Path.ShouldBeNullOrWhiteSpace();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Patchers.Common;
@@ -18,7 +18,7 @@ public class PatcherExtraDataPathProviderTests
         sut.ExtraDataPathProvider.Path.Returns(extraData);
         sut.NameProvider.Name.Returns(name);
         sut.ProfileNameProvider.Name.Returns(profileName);
-        sut.Path.Should().Be(
+        sut.Path.ShouldBe(
             new DirectoryPath(Path.Combine(extraData, profileName, name)));
     }
 }

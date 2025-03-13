@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using FluentAssertions;
+using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
@@ -38,6 +38,6 @@ public class BuildStartInfoProviderTests
     {
         sut.StartConstructor.Construct(default!, default).ReturnsForAnyArgs(startInfo);
         sut.Construct(path)
-            .Should().BeSameAs(startInfo);
+            .ShouldBeSameAs(startInfo);
     }
 }

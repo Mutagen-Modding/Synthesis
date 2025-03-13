@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -11,7 +11,7 @@ public class ExtraDataPathProviderTests
     public void CombinesCurrentDirectoryAndData(
         ExtraDataPathProvider sut)
     {
-        sut.Path.Should().Be(
+        sut.Path.ShouldBe(
             new DirectoryPath(
                 Path.Combine(sut.CurrentDirectoryProvider.CurrentDirectory, "Data")));
     }

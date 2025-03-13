@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -12,7 +12,7 @@ public class ProjectPathConstructorTests
         ProjectPathConstructor sut)
     {
         sut.Construct("C:/SolutionDir/SolutionPath.sln", "SubPath")
-            .Should().Be(new FilePath("C:/SolutionDir/SubPath"));
+            .ShouldBe(new FilePath("C:/SolutionDir/SubPath"));
     }
         
     [Theory, SynthAutoData]
@@ -20,6 +20,6 @@ public class ProjectPathConstructorTests
         ProjectPathConstructor sut)
     {
         sut.Construct("C:/SolutionDir/SolutionPath.sln", null!)
-            .Should().Be(new FilePath());
+            .ShouldBe(new FilePath());
     }
 }

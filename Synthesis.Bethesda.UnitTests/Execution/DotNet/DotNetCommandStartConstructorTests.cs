@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.DotNet;
@@ -15,7 +15,7 @@ public class DotNetCommandStartConstructorTests
     {
         sut.DotNetPathProvider.Path.Returns(dotNetPath);
         sut.Construct(default!, default)
-            .FileName.Should().Be(dotNetPath);
+            .FileName.ShouldBe(dotNetPath);
     }
         
     [Theory, SynthAutoData]
@@ -36,6 +36,6 @@ public class DotNetCommandStartConstructorTests
     {
         sut.Constructor.Get(default!, default).ReturnsForAnyArgs(ret);
         sut.Construct(default!, default)
-            .Arguments.Should().Be(ret);
+            .Arguments.ShouldBe(ret);
     }
 }

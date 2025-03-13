@@ -1,5 +1,5 @@
 using System.IO.Abstractions.TestingHelpers;
-using FluentAssertions;
+using Shouldly;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Masters;
 using Mutagen.Bethesda.Plugins.Masters.DI;
@@ -7,6 +7,7 @@ using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Synthesis.States;
+using Noggog.Testing.Extensions;
 using NSubstitute;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
@@ -79,8 +80,8 @@ public class AddImplicitMastersTests
             new LoadOrderListing(ModB, true),
         };
         adder.Add(list);
-        list.Should().HaveCount(3);
-        list.All(x => x.Enabled).Should().BeTrue();
+        list.ShouldHaveCount(3);
+        list.All(x => x.Enabled).ShouldBeTrue();
     }
         
     [Theory, SynthAutoData]
@@ -101,8 +102,8 @@ public class AddImplicitMastersTests
             new LoadOrderListing(ModB, true),
         };
         adder.Add(list);
-        list.Should().HaveCount(3);
-        list.All(x => x.Enabled).Should().BeTrue();
+        list.ShouldHaveCount(3);
+        list.All(x => x.Enabled).ShouldBeTrue();
     }
         
     [Theory, SynthAutoData]
@@ -122,8 +123,8 @@ public class AddImplicitMastersTests
             new LoadOrderListing(ModB, true),
         };
         adder.Add(list);
-        list.Should().HaveCount(3);
-        list.Select(x => x.Enabled).ToArray().Should().Equal(
+        list.ShouldHaveCount(3);
+        list.Select(x => x.Enabled).ToArray().ShouldEqual(
             true, false, true);
     }
         
@@ -147,8 +148,8 @@ public class AddImplicitMastersTests
             new LoadOrderListing(ModB, true),
         };
         adder.Add(list);
-        list.Should().HaveCount(4);
-        list.All(x => x.Enabled).Should().BeTrue();
+        list.ShouldHaveCount(4);
+        list.All(x => x.Enabled).ShouldBeTrue();
     }
         
     [Theory, SynthAutoData]
@@ -171,7 +172,7 @@ public class AddImplicitMastersTests
             new LoadOrderListing(ModD, false),
         };
         adder.Add(list);
-        list.Should().HaveCount(4);
-        list.All(x => x.Enabled).Should().BeTrue();
+        list.ShouldHaveCount(4);
+        list.All(x => x.Enabled).ShouldBeTrue();
     }
 }

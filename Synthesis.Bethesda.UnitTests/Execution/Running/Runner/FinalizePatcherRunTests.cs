@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Mutagen.Bethesda.Plugins;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Running.Runner;
@@ -15,7 +15,7 @@ public class FinalizePatcherRunTests
         FinalizePatcherRun sut)
     {
         sut.Finalize(patcher, missingOutput)
-            .Should().BeNull();
+            .ShouldBeNull();
     }
         
     [Theory, SynthAutoData]
@@ -25,6 +25,6 @@ public class FinalizePatcherRunTests
         FinalizePatcherRun sut)
     {
         sut.Finalize(patcher, existingOutput)
-            .Should().Be(existingOutput.Path);
+            .ShouldBe(existingOutput.Path);
     }
 }

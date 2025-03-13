@@ -1,5 +1,5 @@
 ﻿using System.IO.Abstractions.TestingHelpers;
-using FluentAssertions;
+using Shouldly;
 using Newtonsoft.Json;
 using Noggog;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -43,7 +43,7 @@ public class V1toV2Tests
         mockFileSystem.File.WriteAllText("C:/Test", JsonConvert.SerializeObject(import, Formatting.Indented, Synthesis.Bethesda.Execution.Constants.JsonSettings));
         var expected = IFileSystemExt.DefaultFilesystem.File.ReadAllText(Path.Combine("Migration", "PipelineV1toV2", "PipelineSettings.v2.json"));
         var reimport = mockFileSystem.File.ReadAllText("C:/Test");
-        reimport.Should().Be(expected);
+        reimport.ShouldBe(expected);
     }
         
     [Theory, SynthAutoData]
@@ -52,8 +52,8 @@ public class V1toV2Tests
         MakeImporter(extraDataPathProvider, out var mockFileSystem)
             .Import(V1FilePath);
         mockFileSystem.File.Exists(V1FilePathBackup)
-            .Should().BeTrue();
-        mockFileSystem.File.ReadAllText(V1FilePath).Should().Be(
+            .ShouldBeTrue();
+        mockFileSystem.File.ReadAllText(V1FilePath).ShouldBe(
             mockFileSystem.File.ReadAllText(V1FilePathBackup));
     }
         
@@ -81,31 +81,31 @@ public class V1toV2Tests
         importer.Import(V1FilePath);
             
         mockFileSystem.Directory.Exists(Path.Combine(extraDataPathProvider.Path, "Patcher1"))
-            .Should().BeFalse();
+            .ShouldBeFalse();
         mockFileSystem.Directory.Exists(Path.Combine(extraDataPathProvider.Path, "Patcher2"))
-            .Should().BeFalse();
+            .ShouldBeFalse();
         mockFileSystem.Directory.Exists(Path.Combine(extraDataPathProvider.Path, "Patcher3"))
-            .Should().BeFalse();
+            .ShouldBeFalse();
         foreach (var name in patcherNames)
         {
             mockFileSystem.File.Exists(Path.Combine(extraDataPathProvider.Path, name))
-                .Should().BeFalse();
+                .ShouldBeFalse();
         }
         mockFileSystem.Directory.Exists(Path.Combine(extraDataPathProvider.Path, "Profile1", "Patcher1"))
-            .Should().BeTrue();
+            .ShouldBeTrue();
         mockFileSystem.File.Exists(Path.Combine(extraDataPathProvider.Path, "Profile1", "Patcher1", "settings.json"))
-            .Should().BeTrue();
+            .ShouldBeTrue();
         mockFileSystem.Directory.Exists(Path.Combine(extraDataPathProvider.Path, "Profile1", "Patcher2"))
-            .Should().BeTrue();
+            .ShouldBeTrue();
         mockFileSystem.File.Exists(Path.Combine(extraDataPathProvider.Path, "Profile1", "Patcher2", "settings.json"))
-            .Should().BeTrue();
+            .ShouldBeTrue();
         mockFileSystem.Directory.Exists(Path.Combine(extraDataPathProvider.Path, "Profile2", "Patcher3"))
-            .Should().BeTrue();
+            .ShouldBeTrue();
         mockFileSystem.File.Exists(Path.Combine(extraDataPathProvider.Path, "Profile2", "Patcher3", "settings.json"))
-            .Should().BeTrue();
+            .ShouldBeTrue();
         mockFileSystem.Directory.Exists(Path.Combine(extraDataPathProvider.Path, "Unknown Profile", "Patcher4"))
-            .Should().BeTrue();
+            .ShouldBeTrue();
         mockFileSystem.File.Exists(Path.Combine(extraDataPathProvider.Path, "Unknown Profile", "Patcher4", "settings.json"))
-            .Should().BeTrue();
+            .ShouldBeTrue();
     }
 }

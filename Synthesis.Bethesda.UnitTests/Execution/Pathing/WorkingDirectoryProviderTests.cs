@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -14,7 +14,7 @@ public class WorkingDirectoryProviderTests
         WorkingDirectoryProvider sut)
     {
         sut.TempDir.Path.Returns(tempDir);
-        sut.WorkingDirectory.Should().Be(
+        sut.WorkingDirectory.ShouldBe(
             new DirectoryPath(
                 Path.Combine(tempDir, "Synthesis")));
     }

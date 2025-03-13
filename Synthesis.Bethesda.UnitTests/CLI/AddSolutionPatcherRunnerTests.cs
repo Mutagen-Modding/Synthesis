@@ -1,6 +1,6 @@
 ﻿using System.IO.Abstractions;
 using Autofac;
-using FluentAssertions;
+using Shouldly;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Testing.AutoData;
 using Noggog;
@@ -53,8 +53,8 @@ public class AddSolutionPatcherRunnerTests
         await cont.Resolve<AddSolutionPatcherRunner>().Add(addSlnCmd);
         var pipeSettings = reader.Read(pipelineSettingsPath);
         var patcher = pipeSettings.Profiles.First().Groups.First().Patchers.First() as SolutionPatcherSettings;
-        patcher!.Nickname.Should().Be(patcherNickname);
-        patcher.ProjectSubpath.Should().Be(projSubPath);
-        patcher.SolutionPath.Path.Should().Be(slnPath);
+        patcher!.Nickname.ShouldBe(patcherNickname);
+        patcher.ProjectSubpath.ShouldBe(projSubPath);
+        patcher.SolutionPath.Path.ShouldBe(slnPath);
     }
 }

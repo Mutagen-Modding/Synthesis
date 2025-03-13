@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -35,8 +35,8 @@ public class ProvideDotNetRunProcessInfoTests
     {
         sut.Format.Format(argsClass).Returns(args);
         var start = sut.GetStart(path, directExe: true, argsClass, build);
-        start.FileName.Should().Be(path);
-        start.Arguments.Should().Be(args);
+        start.FileName.ShouldBe(path);
+        start.Arguments.ShouldBe(args);
     }
         
     [Theory, SynthAutoData]
@@ -64,6 +64,6 @@ public class ProvideDotNetRunProcessInfoTests
         sut.ProjectRunProcessStartInfoProvider.GetStart(default!, default!)
             .ReturnsForAnyArgs(startInfo);
         sut.GetStart(path, directExe: false, argsClass, build)
-            .Should().Be(startInfo);
+            .ShouldBe(startInfo);
     }
 }

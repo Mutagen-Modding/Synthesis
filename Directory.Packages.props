@@ -9,7 +9,7 @@
       <Version>4.18.1</Version>
     </PackageVersion>
     <PackageVersion Include="CommandLineParser" Version="2.9.1" />
-    <PackageVersion Include="FluentAssertions" Version="7.0.0" />
+    <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="GitHubDependents" Version="1.2.0" />
     <PackageVersion Include="GitVersion.MsBuild" Version="6.1.0" />
     <PackageVersion Include="Humanizer.Core" Version="2.14.1" />

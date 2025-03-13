@@ -1,7 +1,8 @@
-using FluentAssertions;
+using Shouldly;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
+using Noggog.Testing.Extensions;
 
 namespace Synthesis.Bethesda.UnitTests;
 
@@ -32,8 +33,8 @@ public class PipelineTests
             pluginPath);
         var getStateLoadOrder = testEnv.GetStateLoadOrder();
         var listings = getStateLoadOrder.GetUnfilteredLoadOrder(false).ToList();
-        listings.Should().HaveCount(3);
-        listings.Should().BeEquivalentTo(new ILoadOrderListingGetter[]
+        listings.ShouldHaveCount(3);
+        listings.ShouldEqual(new ILoadOrderListingGetter[]
         {
             new LoadOrderListing(Mutagen.Bethesda.Skyrim.Constants.Skyrim, true),
             new LoadOrderListing(Utility.TestModKey, true),
@@ -48,6 +49,6 @@ public class PipelineTests
         env = env with {PluginPath = string.Empty};
         var getStateLoadOrder = env.GetStateLoadOrder();
         var lo = getStateLoadOrder.GetUnfilteredLoadOrder(false);
-        lo.Select(l => l.ModKey).Should().BeEmpty();
+        lo.Select(l => l.ModKey).ShouldBeEmpty();
     }
 }

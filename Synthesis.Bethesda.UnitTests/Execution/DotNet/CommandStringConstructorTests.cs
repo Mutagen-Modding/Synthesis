@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -15,7 +15,7 @@ public class CommandStringConstructorTests
         CommandStringConstructor sut)
     {
         sut.Get(command, path, args)
-            .Should().Contain($"\"{path.RelativePath}\"");
+            .ShouldContain($"\"{path.RelativePath}\"");
     }
         
     [Theory, SynthAutoData]
@@ -26,7 +26,7 @@ public class CommandStringConstructorTests
         CommandStringConstructor sut)
     {
         sut.Get(command, path, args)
-            .Should().Be(
+            .ShouldBe(
                 $"{command} \"{path}\" {args}");
     }
         
@@ -38,7 +38,7 @@ public class CommandStringConstructorTests
         CommandStringConstructor sut)
     {
         sut.Get(command, path, args)
-            .Should().Be(
+            .ShouldBe(
                 $"{command} \"{path}\" {string.Join(' ', args)}");
     }
         
@@ -55,7 +55,7 @@ public class CommandStringConstructorTests
             "World"
         };
         sut.Get(command, path, args)
-            .Should().Be(
+            .ShouldBe(
                 $"{command} \"{path}\" Hello World");
     }
         
@@ -66,7 +66,7 @@ public class CommandStringConstructorTests
         CommandStringConstructor sut)
     {
         sut.Get(command, path)
-            .Should().Be(
+            .ShouldBe(
                 $"{command} \"{path}\"");
     }
 }

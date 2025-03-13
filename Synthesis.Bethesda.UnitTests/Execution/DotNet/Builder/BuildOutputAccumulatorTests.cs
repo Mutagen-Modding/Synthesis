@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using Noggog.Testing.Extensions;
+using Shouldly;
 using Synthesis.Bethesda.Execution.DotNet.Builder.Transient;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
@@ -11,7 +12,7 @@ public class BuildOutputAccumulatorTests
         BuildOutputAccumulator sut)
     {
         sut.Process(BuildOutputAccumulator.BuildFailedString);
-        sut.BuildFailed.Should().BeTrue();
+        sut.BuildFailed.ShouldBeTrue();
     }
         
     [Theory, SynthAutoData]
@@ -19,7 +20,7 @@ public class BuildOutputAccumulatorTests
         BuildOutputAccumulator sut)
     {
         sut.Process(BuildOutputAccumulator.BuildFailedString);
-        sut.FirstError.Should().BeNull();
+        sut.FirstError.ShouldBeNull();
     }
         
     [Theory, SynthAutoData]
@@ -27,8 +28,8 @@ public class BuildOutputAccumulatorTests
         BuildOutputAccumulator sut)
     {
         sut.Process("Normal");
-        sut.FirstError.Should().BeNull();
-        sut.BuildFailed.Should().BeFalse();
+        sut.FirstError.ShouldBeNull();
+        sut.BuildFailed.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -36,7 +37,7 @@ public class BuildOutputAccumulatorTests
         BuildOutputAccumulator sut)
     {
         sut.Process("error");
-        sut.FirstError.Should().BeNull();
+        sut.FirstError.ShouldBeNull();
     }
         
     [Theory, SynthAutoData]
@@ -45,7 +46,7 @@ public class BuildOutputAccumulatorTests
     {
         sut.Process(BuildOutputAccumulator.BuildFailedString);
         sut.Process("error 123");
-        sut.FirstError.Should().Be("error 123");
+        sut.FirstError.ShouldBe("error 123");
     }
         
     [Theory, SynthAutoData]
@@ -53,7 +54,7 @@ public class BuildOutputAccumulatorTests
         BuildOutputAccumulator sut)
     {
         sut.Process("Normal");
-        sut.Output.Should().Equal("Normal");
+        sut.Output.ShouldEqual("Normal");
     }
         
     [Theory, SynthAutoData]
@@ -61,7 +62,7 @@ public class BuildOutputAccumulatorTests
         BuildOutputAccumulator sut)
     {
         sut.Process("error 123");
-        sut.Output.Should().Equal("error 123");
+        sut.Output.ShouldEqual("error 123");
     }
         
     [Theory, SynthAutoData]
@@ -72,7 +73,7 @@ public class BuildOutputAccumulatorTests
         sut.Process("abcd");
         sut.Process("efgh");
         sut.Process("ijkl");
-        sut.Output.Should().Equal(
+        sut.Output.ShouldEqual(
             "abcd",
             "efgh");
     }

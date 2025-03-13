@@ -1,6 +1,6 @@
 ﻿using System.IO.Abstractions.TestingHelpers;
 using AutoFixture.Xunit2;
-using FluentAssertions;
+using Shouldly;
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -21,7 +21,7 @@ public class SolutionFileLocatorTests
         fs.File.Create(Path.Combine(existingRepoPath, "SomeSln2.sln"));
 
         sut.GetPath(existingRepoPath)
-            .Should().Be(pathToFind);
+            .ShouldBe(pathToFind);
     }
         
     [Theory, SynthAutoData]
@@ -33,6 +33,6 @@ public class SolutionFileLocatorTests
         fs.File.Create(Path.Combine(existingRepoPath, "SomeFile.txt"));
 
         sut.GetPath(existingRepoPath)
-            .Should().BeNull();
+            .ShouldBeNull();
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.IO.Abstractions;
-using FluentAssertions;
+using Shouldly;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Testing.AutoData;
 using Noggog;
@@ -23,8 +23,8 @@ public class CreateTemplatePatcherSolutionRunnerTests
             GameCategory = GameCategory.Skyrim,
             ParentDirectory = existingDir
         });
-        result.Should().Be(0);
-        fileSystem.File.Exists(Path.Combine(existingDir, $"{name}.sln")).Should().BeTrue();
-        fileSystem.File.Exists(Path.Combine(existingDir, name, $"{name}.csproj")).Should().BeTrue();
+        result.ShouldBe(0);
+        fileSystem.File.Exists(Path.Combine(existingDir, $"{name}.sln")).ShouldBeTrue();
+        fileSystem.File.Exists(Path.Combine(existingDir, name, $"{name}.csproj")).ShouldBeTrue();
     }
 }

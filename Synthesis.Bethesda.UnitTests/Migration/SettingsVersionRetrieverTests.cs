@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using Synthesis.Bethesda.Execution.Settings.Json;
 
@@ -11,7 +11,7 @@ public class SettingsVersionRetrieverTests
     {
         new SettingsVersionRetriever(IFileSystemExt.DefaultFilesystem)
             .GetVersion(Path.Combine("Migration", "PipelineV1toV2", "PipelineSettings.json"))
-            .Should().BeNull();
+            .ShouldBeNull();
     }
         
     [Fact]
@@ -19,6 +19,6 @@ public class SettingsVersionRetrieverTests
     {
         new SettingsVersionRetriever(IFileSystemExt.DefaultFilesystem)
             .GetVersion(Path.Combine("Migration", "PipelineV1toV2", "PipelineSettings.v2.json"))
-            .Should().Be(2);
+            .ShouldBe(2);
     }
 }

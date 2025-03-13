@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Profile.Services;
@@ -16,7 +16,7 @@ public class ProfileDirectoriesTests
     {
         sut.Ident.ID.Returns(id);
         sut.Paths.WorkingDirectory.Returns(workingDir);
-        sut.ProfileDirectory.Should().Be(
+        sut.ProfileDirectory.ShouldBe(
             new DirectoryPath(
                 Path.Combine(workingDir, id)));
     }
@@ -38,6 +38,6 @@ public class ProfileDirectoriesTests
     {
         sut.WorkingDirectorySubPaths.ProfileWorkingDirectory(default!)
             .ReturnsForAnyArgs(workingDir);
-        sut.WorkingDirectory.Should().Be(workingDir);
+        sut.WorkingDirectory.ShouldBe(workingDir);
     }
 }

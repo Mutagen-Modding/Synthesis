@@ -1,8 +1,9 @@
 ﻿using System.IO.Abstractions;
 using AutoFixture.Xunit2;
-using FluentAssertions;
+using Shouldly;
 using Noggog;
 using Noggog.Testing.AutoFixture;
+using Noggog.Testing.Extensions;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -19,7 +20,7 @@ public class AvailableProjectsRetrieverTests
     {
         fs.File.Exists(default).ReturnsForAnyArgs(false);
         sut.Get(solutionPath)
-            .Should().BeEmpty();
+            .ShouldBeEmpty();
     }
     
     [Theory, SynthAutoData]
@@ -71,7 +72,7 @@ EndGlobal
 ");
         sut.Get(filePath)
 	        .Select(x => x.TrimStart(filePath.Directory!, StringComparison.InvariantCulture))
-            .Should().Equal(
+            .ShouldEqual(
 		        "RaceCompatibilityDialogue\\RaceCompatibilityDialogue.csproj",
 		        "Tests\\Tests.csproj");
     }

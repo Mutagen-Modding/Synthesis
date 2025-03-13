@@ -1,6 +1,6 @@
 using System.IO.Abstractions;
 using Autofac;
-using FluentAssertions;
+using Shouldly;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Testing.AutoData;
 using Noggog.IO;
@@ -62,8 +62,8 @@ public class AddGitPatcherRunnerTests
             await cont.Resolve<AddGitPatcherRunner>().Add(addGitPatcherCmd);
             pipeSettings = reader.Read(pipelineSettingsPath.File);
             var patcher = pipeSettings.Profiles.First().Groups.First().Patchers.First() as GithubPatcherSettings;
-            patcher!.Nickname.Should().Be(patcherNickname);
-            patcher.RemoteRepoPath.Should().Be(repoPath);
+            patcher!.Nickname.ShouldBe(patcherNickname);
+            patcher.RemoteRepoPath.ShouldBe(repoPath);
         }
         finally
         {

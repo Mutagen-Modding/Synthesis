@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Patchers.Running.Git;
@@ -24,7 +24,7 @@ public class GitRunSolutionPathProviderTests
         GitRunSolutionPathProvider sut)
     {
         sut.SolutionFileLocator.GetPath(default).ReturnsForAnyArgs(path);
-        sut.Path.Should().Be(path);
+        sut.Path.ShouldBe(path);
     }
         
     [Theory, SynthAutoData]

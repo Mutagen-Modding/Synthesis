@@ -1,4 +1,4 @@
-using FluentAssertions;
+using Shouldly;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Versioning;
@@ -18,8 +18,8 @@ public class NugetsVersioningTargetTests
                 new NugetVersioningTarget(muta, NugetVersioningEnum.Match),
                 new NugetVersioningTarget(synth, NugetVersioningEnum.Match))
             .ReturnIfMatch(pair);
-        ret.Mutagen.Should().Be(pair.Mutagen);
-        ret.Synthesis.Should().Be(pair.Synthesis);
+        ret.Mutagen.ShouldBe(pair.Mutagen);
+        ret.Synthesis.ShouldBe(pair.Synthesis);
     }
         
     [Theory]
@@ -35,7 +35,7 @@ public class NugetsVersioningTargetTests
                 new NugetVersioningTarget(muta, versioning),
                 new NugetVersioningTarget(synth, versioning))
             .ReturnIfMatch(pair);
-        ret.Mutagen.Should().Be(muta);
-        ret.Synthesis.Should().Be(synth);
+        ret.Mutagen.ShouldBe(muta);
+        ret.Synthesis.ShouldBe(synth);
     }
 }

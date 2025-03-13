@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using FluentAssertions;
+using Shouldly;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog.IO;
@@ -68,6 +68,6 @@ public class ExecuteOpenForSettingsTests
     {
         sut.ProcessRunner.Run(default!, default).ReturnsForAnyArgs(result);
         (await sut.Open(path, directExe, modKey, loadOrder, cancel))
-            .Should().Be(result);
+            .ShouldBe(result);
     }
 }

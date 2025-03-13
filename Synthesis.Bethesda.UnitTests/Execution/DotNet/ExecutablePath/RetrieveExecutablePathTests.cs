@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.DotNet.ExecutablePath;
@@ -16,7 +16,7 @@ public class RetrieveExecutablePathTests
     {
         sut.Lift.TryGet(default!, out _).ReturnsForAnyArgs(false);
         sut.TryGet(path, lines, out _)
-            .Should().BeFalse();
+            .ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -59,7 +59,7 @@ public class RetrieveExecutablePathTests
             return true;
         });
         sut.TryGet(path, lines, out var output)
-            .Should().BeTrue();
-        output.Should().Be(processRet);
+            .ShouldBeTrue();
+        output.ShouldBe(processRet);
     }
 }

@@ -1,4 +1,4 @@
-using FluentAssertions;
+using Shouldly;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
@@ -16,6 +16,6 @@ public class ParseNugetVersionStringTests
         ParseNugetVersionString sut)
     {
         sut.Parse(str)
-            .Acceptable.Should().Be(shouldSucceed);
+            .Acceptable.ShouldBe(shouldSucceed);
     }
 }

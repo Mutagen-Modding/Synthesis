@@ -1,6 +1,7 @@
 ﻿using System.Reactive;
-using FluentAssertions;
+using Shouldly;
 using Microsoft.Reactive.Testing;
+using Noggog.Testing.Extensions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Synthesis.Bethesda.Execution.DotNet.Dto;
@@ -57,7 +58,7 @@ public class InstalledSdkFollowerTests
         var unsubTime = InstalledSdkFollower.RequeryTime * 10;
         var messages = scheduler.Start(() => sut.DotNetSdkInstalled, 0, 0, unsubTime.Ticks + 5);
         messages.Messages.Where(x => x.Value.Kind == NotificationKind.OnNext)
-            .Should().HaveCount(2);
+            .ShouldHaveCount(2);
     }
         
     [Theory, SynthAutoData]
@@ -73,7 +74,7 @@ public class InstalledSdkFollowerTests
         var messages = scheduler.Start(() => sut.DotNetSdkInstalled, 0, 0, unsubTime.Ticks);
         var last = messages.Messages.Where(x => x.Value.Kind == NotificationKind.OnNext)
             .Last().Value.Value;
-        last.Version.Should().Be(version);
-        last.Acceptable.Should().BeTrue();
+        last.Version.ShouldBe(version);
+        last.Acceptable.ShouldBeTrue();
     }
 }

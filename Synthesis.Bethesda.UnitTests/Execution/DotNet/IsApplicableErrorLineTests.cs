@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -41,7 +41,7 @@ C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisR
             }
         }
         lines
-            .Should().BeEquivalentTo(new string[]
+            .ShouldBe(new string[]
             {
                 @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\ArmorAnalyzer.cs(151,49): error CS0029: Cannot implicitly convert type 'Mutagen.Bethesda.FormKey' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>' [C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\HalgarisRPGLoot.csproj]",
                 @"C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\ArmorAnalyzer.cs(158,50): error CS0266: Cannot implicitly convert type 'Mutagen.Bethesda.Skyrim.LeveledItem' to 'Mutagen.Bethesda.IFormLink<Mutagen.Bethesda.Skyrim.IItemGetter>'. An explicit conversion exists (are you missing a cast?) [C:\Users\Levia\AppData\Local\Temp\jt3nyvxx.xjm\halgari\HalgarisRPGLoot\HalgarisRPGLoot\HalgarisRPGLoot.csproj]"

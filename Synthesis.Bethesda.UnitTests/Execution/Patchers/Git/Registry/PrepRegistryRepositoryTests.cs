@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using NSubstitute;
 using Noggog.GitRepository;
@@ -48,7 +48,7 @@ public class PrepRegistryRepositoryTests
         sut.CheckOrClone.Check(default, default, default)
             .ReturnsForAnyArgs(failed);
         sut.Prep(cancel)
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -86,6 +86,6 @@ public class PrepRegistryRepositoryTests
     {
         sut.ResetToLatestMain.TryReset(default!).ReturnsForAnyArgs(response);
         sut.Prep(cancel)
-            .Should().Be((ErrorResponse)response);
+            .ShouldBe((ErrorResponse)response);
     }
 }
