@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
