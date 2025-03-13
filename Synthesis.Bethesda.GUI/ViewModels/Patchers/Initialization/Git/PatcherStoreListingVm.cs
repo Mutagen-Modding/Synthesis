@@ -38,7 +38,7 @@ public class PatcherStoreListingVm : ViewModel
         Raw = listing;
         try
         {
-            Name = Raw.Customization?.Nickname ?? Path.GetFileName(Raw.ProjectPath).TrimEnd(".csproj");
+            Name = Raw.Customization?.Nickname ?? Path.GetFileName(Raw.ProjectPath).TrimStringFromEnd(".csproj");
         }
         catch (Exception)
         {

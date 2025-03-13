@@ -70,7 +70,7 @@ Global
 EndGlobal
 ");
         sut.Get(filePath)
-	        .Select(x => x.TrimStart(filePath.Directory!))
+	        .Select(x => x.TrimStart(filePath.Directory!, StringComparison.InvariantCulture))
             .Should().Equal(
 		        "RaceCompatibilityDialogue\\RaceCompatibilityDialogue.csproj",
 		        "Tests\\Tests.csproj");

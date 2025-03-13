@@ -8,6 +8,17 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable</WarningsAsErrors>
+      <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+      <PackageProjectUrl>https://github.com/Mutagen-Modding/Synthesis</PackageProjectUrl>
+      <RepositoryUrl>https://github.com/Mutagen-Modding/Synthesis</RepositoryUrl>
+      <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+      <Copyright>2024</Copyright>
+      <Company>Mutagen</Company>
+      <Product>Mutagen</Product>
+      <PackageReleaseNotes>Bethesda Modding</PackageReleaseNotes>
+      <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+      <Authors>Noggog</Authors>
+      <PackageOutputPath>..\nupkg</PackageOutputPath>
   </PropertyGroup>
     
     <ItemGroup>

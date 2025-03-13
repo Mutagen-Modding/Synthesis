@@ -87,6 +87,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup
         
         private async void ExecuteShutdown()
         {
+            _logger.Information("Executing shutdown");
             IsShutdown = true;
 
             await Task.Run(() =>

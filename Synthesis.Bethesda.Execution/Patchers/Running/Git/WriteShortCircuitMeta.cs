@@ -1,6 +1,7 @@
 ﻿using System.IO.Abstractions;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Newtonsoft.Json;
+using Serilog;
 using Synthesis.Bethesda.Execution.DotNet.Dto;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 
@@ -16,13 +17,16 @@ public class WriteShortCircuitMeta : IWriteShortCircuitMeta
 {
     private readonly IFileSystem _fs;
     private readonly IProvideCurrentVersions _provideCurrentVersions;
+    private readonly ILogger _logger;
 
     public WriteShortCircuitMeta(
         IFileSystem fs, 
-        IProvideCurrentVersions provideCurrentVersions)
+        IProvideCurrentVersions provideCurrentVersions,
+        ILogger logger)
     {
         _fs = fs;
         _provideCurrentVersions = provideCurrentVersions;
+        _logger = logger;
     }
         
     public void WriteMeta(RunnerRepoInfo info, DotNetVersion dotNetVersion)
@@ -39,6 +43,7 @@ public class WriteShortCircuitMeta : IWriteShortCircuitMeta
         
     public void WriteMeta(string metaPath, GitCompilationMeta meta)
     {
+        _logger.Information("Writing compilation meta path: {Path}.  Settings: {Settings}", metaPath, meta);
         _fs.File.WriteAllText(
             metaPath,
             JsonConvert.SerializeObject(meta));

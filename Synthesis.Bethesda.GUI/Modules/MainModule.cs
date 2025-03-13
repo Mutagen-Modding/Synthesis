@@ -7,7 +7,12 @@ using Mutagen.Bethesda.Synthesis.Versioning;
 using Mutagen.Bethesda.Synthesis.WPF;
 using Noggog.Autofac;
 using Noggog.Autofac.Modules;
+using Noggog.DotNetCli.DI;
+using Noggog.IO;
+using Noggog.Nuget.Services.Singleton;
+using Noggog.Processes.DI;
 using Noggog.Reactive;
+using Noggog.Time;
 using Noggog.WPF;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
@@ -57,6 +62,12 @@ public class MainModule : Autofac.Module
         builder.RegisterType<WatchDirectory>().As<IWatchDirectory>()
             .SingleInstance();
         builder.RegisterType<SchedulerProvider>().As<ISchedulerProvider>()
+            .SingleInstance();
+        builder.RegisterAssemblyTypes(typeof(IAnalyzeNugetConfig).Assembly)
+            .InNamespacesOf(
+                typeof(IAnalyzeNugetConfig))
+            .TypicalRegistrations()
+            .AsImplementedInterfaces()
             .SingleInstance();
 
         // Mutagen

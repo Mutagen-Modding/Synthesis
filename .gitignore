@@ -363,3 +363,5 @@ Synthesis.Bethesda.SettingsHost/Properties/launchSettings.json
 Synthesis.Bethesda.ImpactTester/Synthesis.Bethesda.Execution.xml
 
 Mutagen.Bethesda.Synthesis.WPF/Synthesis.Bethesda.Execution.xml
+
+nupkg/

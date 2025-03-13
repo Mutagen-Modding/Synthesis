@@ -14,7 +14,7 @@ public class QueryVersionProjectPathTests
         QueryVersionProjectPathing sut)
     {
         sut.Paths.WorkingDirectory.Returns(workingDir);
-        sut.BaseFolder.IsSubfolderOf(workingDir)
+        sut.BaseFolder.IsUnderneath(workingDir)
             .Should().BeTrue();
     }
         

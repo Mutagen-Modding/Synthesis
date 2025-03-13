@@ -23,7 +23,7 @@ public class BuildResultsProcessor : IBuildResultsProcessor
         IBuildOutputAccumulator accumulator)
     {
         var firstError = accumulator.FirstError;
-        firstError = firstError?.TrimStart($"{targetPath}{TargetPathSuffix}");
+        firstError = firstError?.TrimStart($"{targetPath}{TargetPathSuffix}", StringComparison.InvariantCulture);
         if (firstError == null && cancel.IsCancellationRequested)
         {
             firstError = "Cancelled";

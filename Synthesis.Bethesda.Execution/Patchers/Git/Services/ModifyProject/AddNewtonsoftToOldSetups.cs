@@ -1,6 +1,7 @@
 ﻿using System.Xml.Linq;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
+using NuGet.Versioning;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.Services.ModifyProject;
 
@@ -8,15 +9,15 @@ public interface IAddNewtonsoftToOldSetups
 {
     void Add(
         XElement proj,
-        Version? mutaVersion,
-        Version? synthVersion);
+        SemanticVersion? mutaVersion,
+        SemanticVersion? synthVersion);
 }
 
 public class AddNewtonsoftToOldSetups : IAddNewtonsoftToOldSetups
 {
     private readonly IProvideCurrentVersions _provideCurrentVersions;
-    public static readonly System.Version NewtonSoftAddMutaVersion = new(0, 26);
-    public static readonly System.Version NewtonSoftAddSynthVersion = new(0, 14, 1);
+    public static readonly SemanticVersion NewtonSoftAddMutaVersion = new(0, 26, 0);
+    public static readonly SemanticVersion NewtonSoftAddSynthVersion = new(0, 14, 1);
 
     public AddNewtonsoftToOldSetups(IProvideCurrentVersions provideCurrentVersions)
     {
@@ -25,8 +26,8 @@ public class AddNewtonsoftToOldSetups : IAddNewtonsoftToOldSetups
         
     public void Add(
         XElement proj, 
-        Version? mutaVersion,
-        Version? synthVersion)
+        SemanticVersion? mutaVersion,
+        SemanticVersion? synthVersion)
     {
         if ((mutaVersion != null
              && mutaVersion <= NewtonSoftAddMutaVersion)
@@ -39,7 +40,7 @@ public class AddNewtonsoftToOldSetups : IAddNewtonsoftToOldSetups
                 {
                     if (!elem.Name.LocalName.Equals("PackageReference")) continue;
                     if (!elem.TryGetAttribute("Include", out var include)) continue;
-                    if (include.Equals("Newtonsoft.Json")) return;
+                    if (include.Value.Equals("Newtonsoft.Json")) return;
                 }
             }
 

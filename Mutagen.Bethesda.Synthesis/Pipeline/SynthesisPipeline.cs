@@ -82,7 +82,9 @@ public class SynthesisPipeline
         }
         _patchers.Add(
             cata,
+#pragma warning disable CS0618 // Type or member is obsolete
             new PatcherListing((state) => patcher((SynthesisState<TMod, TModGetter>)state), userPreferences));
+#pragma warning restore CS0618 // Type or member is obsolete
         return this;
     }
 

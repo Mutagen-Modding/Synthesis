@@ -2,34 +2,35 @@
 using System.Xml.Linq;
 using Serilog;
 using Noggog;
+using NuGet.Versioning;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git.Services.ModifyProject;
 
 public interface ISwapToProperNetVersion
 {
-    void Swap(XElement proj, Version targetMutagenVersion);
+    void Swap(XElement proj, SemanticVersion targetMutagenVersion);
 }
 
 public class SwapToProperNetVersion : ISwapToProperNetVersion
 {
     private readonly ILogger _logger;
-    private readonly Version Net8Version = new Version(0, 45);
+    private readonly SemanticVersion Net8Version = new(0, 45, 0);
     // private readonly Version Net9Version = new Version(0, 49);
-    private readonly CultureInfo Culture = new CultureInfo("en");
+    private readonly CultureInfo Culture = new("en");
 
-    private readonly SortedList<Version, byte> _netMapping;
+    private readonly SortedList<SemanticVersion, byte> _netMapping;
     
     public SwapToProperNetVersion(ILogger logger)
     {
         _logger = logger;
-        _netMapping = new SortedList<Version, byte>()
+        _netMapping = new SortedList<SemanticVersion, byte>()
         {
             { Net8Version, 8 },
             // { Net9Version, 9 }
         };
     }
     
-    private void ProcessTargetFrameworkNode(XElement elem, Version targetMutagenVersion)
+    private void ProcessTargetFrameworkNode(XElement elem, SemanticVersion targetMutagenVersion)
     {
         if (!elem.Name.LocalName.Equals("TargetFramework")) return;
         _logger.Information("Target mutagen version: {Target}", targetMutagenVersion);
@@ -75,7 +76,7 @@ public class SwapToProperNetVersion : ISwapToProperNetVersion
         return true;
     }
 
-    private void ProcessNormal(XElement elem, Version targetMutagenVersion)
+    private void ProcessNormal(XElement elem, SemanticVersion targetMutagenVersion)
     {
         if (!_netMapping.TryGetInDirection(targetMutagenVersion, higher: false, out var targetNetVersion))
         {
@@ -88,7 +89,7 @@ public class SwapToProperNetVersion : ISwapToProperNetVersion
         _logger.Information("Swapping to {Target}", elem.Value);
     }
 
-    public void Swap(XElement proj, Version targetMutagenVersion)
+    public void Swap(XElement proj, SemanticVersion targetMutagenVersion)
     {
         foreach (var group in proj.Elements("PropertyGroup"))
         {

@@ -182,6 +182,44 @@ public class ModifyRunnerProjectsTests
 			out var pair);
 		await Verify(fileSystem.File.ReadAllText(projPath));
 	}
+
+	[Theory, DefaultAutoData]
+	public async Task LegacySpecificMutagenCategoryLib(
+		IFileSystem fileSystem,
+		FilePath existingSlnPath)
+	{
+		var subPath = Path.Combine("SomeProj", "SomeProj.csproj");
+		fileSystem.File.WriteAllText(existingSlnPath, Sln);
+		var projPath = Path.Combine(Path.GetDirectoryName(existingSlnPath)!, subPath);
+		fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(projPath)!);
+
+		string proj =
+		"""
+		<Project Sdk="Microsoft.NET.Sdk">
+
+		<PropertyGroup>
+		  <OutputType>Exe</OutputType>
+		  <TargetFramework>net6.0</TargetFramework>
+		</PropertyGroup>
+
+		<ItemGroup>
+		  <PackageReference Include="Mutagen.Bethesda.Skyrim" Version="0.39.5" />
+		  <PackageReference Include="Mutagen.Bethesda.Synthesis" Version="0.24.1" />
+		</ItemGroup>
+
+		</Project>
+		""";
+		fileSystem.File.WriteAllText(projPath, proj);
+		var sut = new ModifyRunnerProjectsContainer(fileSystem);
+		sut.Resolve().Value.Modify(
+			existingSlnPath, 
+			subPath, 
+			new NugetVersionPair(
+				"0.49.0-alpha.7",
+				"0.29"),
+			out var pair);
+		await Verify(fileSystem.File.ReadAllText(projPath));
+	}
 	
 	[Theory, DefaultAutoData]
 	public async Task NetCoreApp(
