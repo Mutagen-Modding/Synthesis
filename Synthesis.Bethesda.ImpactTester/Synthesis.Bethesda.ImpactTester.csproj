@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
+      <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
