@@ -8,7 +8,7 @@ using Mutagen.Bethesda.Plugins.Order.DI;
 using Mutagen.Bethesda.Synthesis.States;
 using Mutagen.Bethesda.Synthesis.States.DI;
 
-namespace Synthesis.Bethesda.UnitTests;
+namespace Synthesis.Bethesda.UnitTests.Common;
 
 public record TestEnvironment(
     IFileSystem FileSystem,

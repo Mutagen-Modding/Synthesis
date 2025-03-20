@@ -3,6 +3,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Fallout4;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
+using Synthesis.Bethesda.UnitTests.Common;
 
 namespace Synthesis.Bethesda.UnitTests;
 

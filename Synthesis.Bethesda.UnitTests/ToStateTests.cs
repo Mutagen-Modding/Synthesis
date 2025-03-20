@@ -4,6 +4,7 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog.Testing.Extensions;
+using Synthesis.Bethesda.UnitTests.Common;
 using Path = System.IO.Path;
 
 namespace Synthesis.Bethesda.UnitTests;

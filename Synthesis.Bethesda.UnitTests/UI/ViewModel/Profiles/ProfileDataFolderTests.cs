@@ -10,6 +10,7 @@ using ReactiveUI;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.UnitTests.AutoData;
+using Synthesis.Bethesda.UnitTests.Common;
 
 namespace Synthesis.Bethesda.UnitTests.UI.ViewModel.Profiles;
 

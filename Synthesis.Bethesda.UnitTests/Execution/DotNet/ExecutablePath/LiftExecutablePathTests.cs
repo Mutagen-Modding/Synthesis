@@ -1,6 +1,7 @@
 ﻿using Shouldly;
 using Synthesis.Bethesda.Execution.DotNet.ExecutablePath;
 using Synthesis.Bethesda.UnitTests.AutoData;
+using Synthesis.Bethesda.UnitTests.Common;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.ExecutablePath;
 

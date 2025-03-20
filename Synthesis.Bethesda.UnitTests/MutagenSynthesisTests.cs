@@ -11,6 +11,7 @@ using Mutagen.Bethesda.Plugins.Masters.DI;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Mutagen.Bethesda.Synthesis.States;
 using Noggog.Testing.Extensions;
+using Synthesis.Bethesda.UnitTests.Common;
 using Path = System.IO.Path;
 
 namespace Synthesis.Bethesda.UnitTests;
