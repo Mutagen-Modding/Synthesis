@@ -40,7 +40,7 @@ jobs:
           echo "same_sha=${same_sha}"
           echo "same_sha=${same_sha}" >> $GITHUB_OUTPUT
           
-  release:
+  build-test-push:
     runs-on: windows-latest
     needs: activity-short-circuit
     steps:
