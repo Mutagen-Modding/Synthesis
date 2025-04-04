@@ -134,6 +134,7 @@ Here's an example of one:
 ```
 
 Options are:
+
 - Visible (default)
 - IncludeButHide
 - Exclude
