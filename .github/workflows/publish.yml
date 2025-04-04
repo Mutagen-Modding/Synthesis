@@ -76,8 +76,8 @@ jobs:
         file: Synthesis.zip
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.release.tag_name }}
-    - name: Publish x64 Nugets to Nuget.org
-      run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+    #- name: Publish x64 Nugets to Nuget.org
+    #  run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
   update-nightly:
     needs: [build-test-push, activity-short-circuit]
