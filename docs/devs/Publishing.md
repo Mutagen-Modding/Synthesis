@@ -119,7 +119,26 @@ Sometimes there can be error during the scraping event.   The scraper system tri
 If you see your patcher with an error, see if it makes sense and if you can adjust for what it's complaining about.
 
 ### Delisting patcher
-If you want to delist your patcher, you can by including a meta file with instructions to do so.   The easiest way to do this is by using the Solution Patcher suite.  This setup has settings panels you can use, one of which allows you to set the visibility of your patcher easily.
+If you want to delist your patcher, you can by including a `SynthesisMeta.json` meta file with instructions to do so.   This goes next to the .csproj for the patcher.
+
+Here's an example of one:
+```
+{
+  "Nickname": "My Awesome Patcher",
+  "Visibility": "Exclude",
+  "OneLineDescription": "A one liner description",
+  "LongDescription": "Some longer description",
+  "PreferredAutoVersioning": "Default",
+  "RequiredMods": []
+}
+```
+
+Options are:
+- Visible (default)
+- IncludeButHide
+- Exclude
+
+One alternative way to make and modify this meta file is to use the Solution Patcher suite.  This setup has settings panels you can use, one of which allows you to set the visibility of your patcher easily.
 
 [:octicons-arrow-right-24: Solution Patcher](../Local-Solution-Patcher.md#patcher-settings)
 	
