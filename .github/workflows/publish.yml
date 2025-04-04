@@ -41,8 +41,9 @@ jobs:
           echo "same_sha=${same_sha}" >> $GITHUB_OUTPUT
           
   build-test-push:
-    runs-on: windows-latest
     needs: activity-short-circuit
+    if: needs.activity-short-circuit.outputs.same_sha == 'false'
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
       with:
