@@ -1,4 +1,8 @@
 using System.IO.Abstractions;
+using Mutagen.Bethesda.Archives.DI;
+using Mutagen.Bethesda.Assets.DI;
+using Mutagen.Bethesda.Environments.DI;
+using Mutagen.Bethesda.Inis.DI;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Allocators;
 using Mutagen.Bethesda.Plugins.Binary.Headers;
@@ -6,6 +10,7 @@ using Mutagen.Bethesda.Plugins.Binary.Parameters;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Meta;
 using Mutagen.Bethesda.Plugins.Order;
+using Mutagen.Bethesda.Plugins.Order.DI;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Strings.DI;
@@ -206,11 +211,41 @@ public class PatcherStateFactory : IPatcherStateFactory
             }
         }
 
+        var dataDir = new DataDirectoryInjection(settings.DataFolderPath);
+        var rel = new GameReleaseInjection(settings.GameRelease);
+        var archiveExt = new ArchiveExtensionProvider(rel);
+        var loListings = new LoadOrderListingsInjection(
+            loadOrderListing.ProcessedLoadOrder);
+        var gameDirectoryLookup = new GameDirectoryLookupInjection(rel.Release, dataDir.Path.Directory);
+        var assetProvider = new GameAssetProvider(
+            new DataDirectoryAssetProvider(
+                _fileSystem,
+                dataDir),
+            new ArchiveAssetProvider(
+                _fileSystem,
+                new GetApplicableArchivePaths(
+                    _fileSystem,
+                    new CheckArchiveApplicability(
+                        archiveExt),
+                    dataDir,
+                    archiveExt,
+                    new CachedArchiveListingDetailsProvider(
+                        loListings,
+                        new GetArchiveIniListings(
+                            _fileSystem,
+                            new IniPathProvider(
+                                rel,
+                                new IniPathLookup(
+                                    gameDirectoryLookup))),
+                        new ArchiveNameFromModKeyProvider(rel))),
+                rel));
+
 #pragma warning disable CS0618 // Type or member is obsolete
         return new SynthesisState<TModSetter, TModGetter>(
 #pragma warning restore CS0618 // Type or member is obsolete
             runArguments: settings,
             loadOrder: loadOrder,
+            assetProvider: assetProvider,
             rawLoadOrder: loadOrderListing.Raw,
             linkCache: cache,
             internalDataPath: settings.InternalDataFolder,
