@@ -26,6 +26,7 @@ run-patcher --GameRelease SkyrimSE --DataFolderPath "Path/To/Side/Data"
 Patcher solutions can be run from inside the Synthesis GUI, by adding them as a Synthesis patcher.  The recommended type is [Solution](../Local-Solution-Patcher.md) patchers, but [External Program](../External-Program-Patcher.md) can be used, too.
 
 Notes:
+
 - Lets you run your in-development patcher alongside several other patchers to see their combined results
 - Not really the best route for testing just your patcher alone; Use the Direct method mentioned above instead.
 
