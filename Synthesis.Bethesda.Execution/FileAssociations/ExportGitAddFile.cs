@@ -1,6 +1,7 @@
 ﻿using System.IO.Abstractions;
 using Newtonsoft.Json;
 using Noggog;
+using Synthesis.Bethesda.Execution.Settings;
 
 namespace Synthesis.Bethesda.Execution.FileAssociations;
 
@@ -30,14 +31,16 @@ public class ExportGitAddFile
     public void ExportAsFile(
         FilePath path,
         string url, 
-        string selectedSubPath)
+        string selectedSubPath,
+        PatcherVersioningEnum versioning)
     {
         var dto = new MetaFileDto()
         {
             AddGitPatcher = new AddGitPatcherInstruction()
             {
                 Url = url,
-                SelectedProject = selectedSubPath
+                SelectedProject = selectedSubPath,
+                Versioning = versioning
             }
         };
         _fileSystem.File.WriteAllText(

@@ -243,7 +243,8 @@ public class GitPatcherVm : PatcherVm, IPathToSolutionFileProvider
             exportGitAddFile.ExportAsFile(
                 dialog.FileName,
                 remoteRepoPathInputVm.RemoteRepoPath,
-                selectedProjectInput.ProjectSubpath);
+                selectedProjectInput.ProjectSubpath,
+                patcherTargeting.PatcherVersioning);
         });
     }
 

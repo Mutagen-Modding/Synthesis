@@ -38,7 +38,8 @@ public class AddGitPatcherResponder
                 var gitPatcher = _patcherFactory.GetGitPatcher(new GithubPatcherSettings()
                 {
                     RemoteRepoPath = x.Url,
-                    SelectedProjectSubpath = x.SelectedProject
+                    SelectedProjectSubpath = x.SelectedProject,
+                    PatcherVersioning = x.Versioning
                 });
                 if (!await _renamer.ConfirmNameUnique(gitPatcher)) return;
                 _addPatchersToSelectedGroupVm.AddNewPatchers(gitPatcher);

@@ -14,7 +14,7 @@ public class AddGitPatcherPassthrough
         ExportGitAddFile exportGitAddFile,
         ImportMetaDto importMetaDto)
     {
-        exportGitAddFile.ExportAsFile(missingPath, add.Url, add.SelectedProject);
+        exportGitAddFile.ExportAsFile(missingPath, add.Url, add.SelectedProject, add.Versioning);
         var dto = importMetaDto.Import(missingPath);
         dto.ShouldBe(new MetaFileDto()
         {
