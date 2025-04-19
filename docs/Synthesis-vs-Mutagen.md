@@ -25,6 +25,7 @@ Things that Synthesis is in charge of:
 - Running dozens of Mutagen code snippets (patchers) from many mod authors easily in one place with one click
 - A UI for users to control what patchers they want to install, in what groups, in what order.
 - Creating an easy bootstrap project template that hooks into the Synthesis system for developers to start coding
+- Keeping all the code in sync with the latest mutagen versions
 
 ## Summary
 Synthesis is the patcher pipeline ecosystem that helps create an accessible environment for developers to create and for users to run Mutagen code snippets.   You do not need to find/install Mutagen yourself as an installation step for Synthesis, it will be pulled in automatically.
