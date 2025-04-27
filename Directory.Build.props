@@ -3,6 +3,7 @@
   <PropertyGroup> 
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally> 
     <ImplicitUsings>true</ImplicitUsings>
+      <CETCompat>false</CETCompat>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Platforms>x64</Platforms>
     <TargetFramework>net8.0</TargetFramework>
