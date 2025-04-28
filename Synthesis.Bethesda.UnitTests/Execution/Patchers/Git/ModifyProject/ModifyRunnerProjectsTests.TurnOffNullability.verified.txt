@@ -3,6 +3,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <WarningsAsErrors></WarningsAsErrors>
+    <CETCompat>false</CETCompat>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Mutagen.Bethesda" Version="0.44" />

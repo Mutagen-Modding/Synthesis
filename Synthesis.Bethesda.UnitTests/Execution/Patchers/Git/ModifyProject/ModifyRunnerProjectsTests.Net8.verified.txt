@@ -2,6 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
+    <CETCompat>false</CETCompat>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Mutagen.Bethesda" Version="0.45" />
