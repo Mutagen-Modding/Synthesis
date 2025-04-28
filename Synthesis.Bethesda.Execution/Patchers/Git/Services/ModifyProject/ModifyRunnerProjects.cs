@@ -35,6 +35,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
     private readonly IProcessProjUsings _processProjUsings;
     private readonly IRemoveProject _removeProject;
     private readonly AddAllReleasesToOldVersions _addAllReleasesToOldVersions;
+    private readonly TurnOffCetCompat _turnOffCetCompat;
 
     public ModifyRunnerProjects(
         ILogger logger,
@@ -49,7 +50,8 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         ITurnOffNullability turnOffNullability,
         IProcessProjUsings processProjUsings,
         IRemoveProject removeProject,
-        AddAllReleasesToOldVersions addAllReleasesToOldVersions)
+        AddAllReleasesToOldVersions addAllReleasesToOldVersions,
+        TurnOffCetCompat turnOffCetCompat)
     {
         _logger = logger;
         _fileSystem = fileSystem;
@@ -64,6 +66,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         _processProjUsings = processProjUsings;
         _removeProject = removeProject;
         _addAllReleasesToOldVersions = addAllReleasesToOldVersions;
+        _turnOffCetCompat = turnOffCetCompat;
     }
 
     string? TrimVersion(string? version, out string? prereleaseLabel)
@@ -127,6 +130,7 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
             _turnOffNullability.TurnOff(projXml);
             _removeGitInfo.Remove(projXml);
             _turnOffWindowsSpec.TurnOff(projXml);
+            _turnOffCetCompat.TurnOff(projXml);
             var mutaVersion = SemanticVersionParse(curListedVersions.Mutagen);
             var synthVersion = SemanticVersionParse(curListedVersions.Synthesis);
             _addNewtonsoftToOldSetups.Add(projXml, mutaVersion, synthVersion);
