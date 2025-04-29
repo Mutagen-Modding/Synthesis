@@ -12,7 +12,6 @@ on:
 
 jobs:    
   build-test-push:
-    if: needs.activity-short-circuit.outputs.same_sha == 'false'
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
