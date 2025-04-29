@@ -20,6 +20,8 @@ public class WorkingDirectoryProvider : IWorkingDirectoryProvider
         _currentDirectoryProvider = currentDirectoryProvider;
         TempDir = tempDir;
         #if DEBUG
+        // Setting to current directory during development causes clashes with umbrella git repository
+        // of the synthesis repository itself
         WorkingDirectory = Path.Combine(TempDir.Path, "Synthesis")!;
         #else
         WorkingDirectory = Path.Combine(_currentDirectoryProvider.CurrentDirectory, "Workspace")!;
