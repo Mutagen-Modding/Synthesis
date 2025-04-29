@@ -1,8 +1,6 @@
 name: Publish
 
 on:
-  schedule:
-    - cron: '40 9 * * *'
   workflow_dispatch:
   release:
     types: [published]
@@ -12,36 +10,8 @@ on:
         required: true
         default: 'false'
 
-jobs:
-  activity-short-circuit:
-    runs-on: ubuntu-latest
-    outputs:
-      same_sha: ${{ steps.check.outputs.same_sha }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          
-      - name: Get Activity Short Circuit
-        id: check
-        run: |
-          echo "Event name: ${{ github.event_name }}"
-          git branch -a
-          git fetch origin nightly:nightly
-          head_sha=$(git rev-parse --verify HEAD)
-          nightly_sha=$(git rev-parse --verify nightly)
-          if [[ "$head_sha" == "$nightly_sha" && ${{ github.event_name }} != "release" ]]; then
-              same_sha=true;
-          else
-              same_sha=false;
-          fi
-          echo "head_sha=$head_sha"
-          echo "nightly_sha=$nightly_sha"
-          echo "same_sha=${same_sha}"
-          echo "same_sha=${same_sha}" >> $GITHUB_OUTPUT
-          
+jobs:    
   build-test-push:
-    needs: activity-short-circuit
     if: needs.activity-short-circuit.outputs.same_sha == 'false'
     runs-on: windows-latest
     steps:
@@ -64,14 +34,11 @@ jobs:
       run: |
         dotnet pack Synthesis.Bethesda.sln -c Release --no-build --no-restore -o out --include-symbols -p:SymbolPackageFormat=snupkg  -p:PackageReleaseNotes="See https://github.com/Mutagen-Modding/Synthesis/releases/tag/${{ github.event.release.tag_name }}"
     - name: Pack GUI
-      if: ${{ success() && !github.event.release.prerelease && github.event_name == 'release' }}
       run: dotnet publish "Synthesis.Bethesda.GUI/Synthesis.Bethesda.GUI.csproj" --configuration Release -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true
     - name: Archive Release
-      if: ${{ success() && !github.event.release.prerelease && github.event_name == 'release' }}
       run: |
         powershell Compress-Archive Synthesis.Bethesda.GUI/bin/Release/net8.0/win-x64/publish/* Synthesis.zip
     - name: Publish Synthesis GUI to Github
-      if: ${{ success() && !github.event.release.prerelease && github.event_name == 'release' }}
       uses: svenstaro/upload-release-action@v2
       with:
         file: Synthesis.zip
@@ -79,19 +46,3 @@ jobs:
         tag: ${{ github.event.release.tag_name }}
     - name: Publish x64 Nugets to Nuget.org
       run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
-
-  update-nightly:
-    needs: [build-test-push, activity-short-circuit]
-    if: needs.activity-short-circuit.outputs.same_sha == 'false'
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Reset nightly to main
-      run: |
-        head_sha=$(git rev-parse --verify HEAD)
-        echo "head_sha=$head_sha"
-        git checkout nightly
-        git reset --hard $head_sha
-        git push
