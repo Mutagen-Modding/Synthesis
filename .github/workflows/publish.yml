@@ -4,11 +4,6 @@ on:
   workflow_dispatch:
   release:
     types: [published]
-    inputs:
-      is_release_event:
-        description: Should this be a release or a preview package
-        required: true
-        default: 'false'
 
 jobs:    
   build-test-push:
