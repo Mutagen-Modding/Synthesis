@@ -5,6 +5,7 @@ using Mutagen.Bethesda.Plugins.Allocators;
 using Mutagen.Bethesda.Synthesis;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
+using Synthesis.Bethesda.UnitTests.Common;
 using Path = System.IO.Path;
 
 namespace Synthesis.Bethesda.UnitTests;

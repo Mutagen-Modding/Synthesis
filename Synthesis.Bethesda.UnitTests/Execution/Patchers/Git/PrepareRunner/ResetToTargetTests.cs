@@ -1,4 +1,4 @@
-using FluentAssertions;
+using Shouldly;
 using Noggog;
 using NSubstitute;
 using Noggog.GitRepository;
@@ -41,7 +41,7 @@ public class ResetToTargetTests
     {
         sut.GetRepoTarget.Get(default!, default!).ReturnsForAnyArgs(GetResponse<RepoTarget>.Failure);
         var resp = sut.Reset(repo, patcherVersioning, cancel);
-        resp.Succeeded.Should().BeFalse();
+        resp.Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -71,7 +71,7 @@ public class ResetToTargetTests
         sut.RetrieveCommit.TryGet(default!, default!, default!, default)
             .ReturnsForAnyArgs(GetResponse<ICommit>.Failure);
         var resp = sut.Reset(repo, patcherVersioning, cancel);
-        resp.Succeeded.Should().BeFalse();
+        resp.Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]

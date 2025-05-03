@@ -5,29 +5,29 @@ using Synthesis.Bethesda.UnitTests.AutoData;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.ModifyProject;
 
-public class TurnOffNullabilityTests
+public class TurnOffCetTests
 {
     [Theory, SynthAutoData]
-    public void RemoveWarning(
-        TurnOffNullability sut)
+    public void AdjustCetCompat(
+        TurnOffCetCompat sut)
     {
-        var elem = new XElement("WarningsAsErrors", "nullable");
+        var elem = new XElement("CETCompat", "true");
         var root = new XElement("Project",
             new XElement("PropertyGroup",
                 elem));
         sut.TurnOff(root);
-        elem.Value.ShouldBe(string.Empty);
+        elem.Value.ShouldBe("false");
     }
 
     [Theory, SynthAutoData]
-    public void RemoveWarningFromMany(
-        TurnOffNullability sut)
+    public void AddCetCompat(
+        TurnOffCetCompat sut)
     {
-        var elem = new XElement("WarningsAsErrors", "nullable,other");
         var root = new XElement("Project",
-            new XElement("PropertyGroup",
-                elem));
+            new XElement("PropertyGroup"));
         sut.TurnOff(root);
-        elem.Value.ShouldBe("other");
+        root.Element("PropertyGroup")!
+            .Element("CETCompat")!
+            .Value.ShouldBe("false");
     }
 }

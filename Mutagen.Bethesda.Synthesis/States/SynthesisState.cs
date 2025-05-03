@@ -1,3 +1,4 @@
+using Mutagen.Bethesda.Assets.DI;
 using Mutagen.Bethesda.Plugins.Allocators;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Order;
@@ -24,6 +25,9 @@ public class SynthesisState<TModSetter, TModGetter> : IPatcherState<TModSetter, 
 
     /// <inheritdoc />
     public ILinkCache<TModSetter, TModGetter> LinkCache { get; }
+
+    /// <inheritdoc />
+    public IAssetProvider AssetProvider { get; }
 
     /// <inheritdoc />
     public TModSetter PatchMod { get; }
@@ -68,6 +72,7 @@ public class SynthesisState<TModSetter, TModGetter> : IPatcherState<TModSetter, 
         IReadOnlyList<ILoadOrderListingGetter> rawLoadOrder,
         ILoadOrder<IModListing<TModGetter>> loadOrder,
         ILinkCache<TModSetter, TModGetter> linkCache,
+        IAssetProvider assetProvider,
         TModSetter patchMod,
         DirectoryPath? extraDataPath,
         DirectoryPath? internalDataPath,
@@ -89,6 +94,7 @@ public class SynthesisState<TModSetter, TModGetter> : IPatcherState<TModSetter, 
         OutputPath = runArguments.OutputPath;
         SourcePath = runArguments.SourcePath;
         _formKeyAllocator = formKeyAllocator;
+        AssetProvider = assetProvider;
     }
 
     public void Dispose()

@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using Synthesis.Bethesda.Execution.FileAssociations;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -16,7 +16,7 @@ public class AddGitPatcherPassthrough
     {
         exportGitAddFile.ExportAsFile(missingPath, add.Url, add.SelectedProject);
         var dto = importMetaDto.Import(missingPath);
-        dto.Should().Be(new MetaFileDto()
+        dto.ShouldBe(new MetaFileDto()
         {
             AddGitPatcher = add
         });

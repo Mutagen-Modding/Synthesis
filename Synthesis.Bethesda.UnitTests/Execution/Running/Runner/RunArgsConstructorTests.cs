@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Mutagen.Bethesda;
 using Noggog;
 using NSubstitute;
@@ -33,7 +33,7 @@ public class RunArgsConstructorTests
     {
         var result = sut.GetArgs(groupRun, patcher, sourcePath, runParameters);
         result.OutputPath.IsUnderneath(sut.ProfileDirectories.WorkingDirectory)
-            .Should().BeTrue();
+            .ShouldBeTrue();
     }
         
     [Theory, SynthAutoData]
@@ -47,7 +47,7 @@ public class RunArgsConstructorTests
     {
         sut.PatcherNameSanitizer.Sanitize(default!).ReturnsForAnyArgs(sanitize);
         var result = sut.GetArgs(groupRun, patcher, sourcePath, runParameters);
-        result.PatcherName.Should().Be(sanitize);
+        result.PatcherName.ShouldBe(sanitize);
     }
         
     [Theory, SynthAutoData]
@@ -61,7 +61,7 @@ public class RunArgsConstructorTests
     {
         sut.PatcherNameSanitizer.Sanitize(default!).ReturnsForAnyArgs(sanitize);
         var result = sut.GetArgs(groupRun, patcher, sourcePath, runParameters);
-        result.OutputPath.Name.String.Should().NotContain(patcher.Name);
+        result.OutputPath.Name.String.ShouldNotContain(patcher.Name);
     }
         
     [Theory, SynthAutoData]
@@ -79,8 +79,8 @@ public class RunArgsConstructorTests
         sut.ReleaseContext.Release.Returns(release);
         sut.RunLoadOrderPathProvider.PathFor(groupRun).Returns(loadOrderPath);
         var result = sut.GetArgs(groupRun, patcher, sourcePath, runParameters);
-        result.SourcePath.Should().Be(sourcePath);
-        result.DataFolderPath.Should().Be(dataDir);
-        result.LoadOrderFilePath.Should().Be(loadOrderPath);
+        result.SourcePath.ShouldBe(sourcePath);
+        result.DataFolderPath.ShouldBe(dataDir);
+        result.LoadOrderFilePath.ShouldBe(loadOrderPath);
     }
 }

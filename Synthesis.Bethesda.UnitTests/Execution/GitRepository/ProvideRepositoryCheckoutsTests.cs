@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using NSubstitute;
 using Noggog.GitRepository;
@@ -26,7 +26,7 @@ public class ProvideRepositoryCheckoutsTests
     {
         sut.RepositoryFactory.Get(local).Returns(repo);
         using var checkout = sut.Get(local);
-        checkout.Repository.Should().BeSameAs(repo);
+        checkout.Repository.ShouldBeSameAs(repo);
     }
         
     [Theory, SynthAutoData]
@@ -45,8 +45,8 @@ public class ProvideRepositoryCheckoutsTests
     {
         sut.Get(local).Dispose();
         sut.Dispose();
-        sut.IsShutdownRequested.Should().BeTrue();
-        sut.IsShutdown.Should().BeTrue();
+        sut.IsShutdownRequested.ShouldBeTrue();
+        sut.IsShutdown.ShouldBeTrue();
     }
 
     [Theory, SynthAutoData]
@@ -59,14 +59,14 @@ public class ProvideRepositoryCheckoutsTests
         var t = Task.Run(async () =>
         {
             await Task.Delay(500);
-            sut.IsShutdownRequested.Should().BeTrue();
+            sut.IsShutdownRequested.ShouldBeTrue();
             waited = true;
             checkout.Dispose();
         });
         sut.Dispose();
-        waited.Should().BeTrue();
+        waited.ShouldBeTrue();
         await t;
-        sut.IsShutdown.Should().BeTrue();
+        sut.IsShutdown.ShouldBeTrue();
     }
 
     [Theory, SynthAutoData]

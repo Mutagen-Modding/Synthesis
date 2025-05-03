@@ -95,7 +95,7 @@
                 </Style>
             </mahapps:WindowCommands.Style>
             <local:TopProfileSelectorView />
-            <Button Command="{Binding OpenGlobalSettingsCommand}" >
+            <Button Command="{Binding OpenProfilesPageCommand}" >
                 <icon:PackIconMaterial Kind="Cog" />
             </Button>
             <local:VersionDisplay Margin="10,0" VerticalAlignment="Center" />

@@ -1,8 +1,9 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Noggog.GitRepository;
+using Noggog.Testing.Extensions;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.PrepareDriver;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
@@ -33,7 +34,7 @@ public class PrepareDriverRepositoryTests
         sut.CheckOrClone.Check(default, default, default)
             .ReturnsForAnyArgs(GetResponse<RepoPathPair>.Failure);
         sut.Prepare(remotePath, cancel)
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -77,7 +78,7 @@ public class PrepareDriverRepositoryTests
         sut.CheckOrClone.Check(default, default, default)
             .ReturnsForAnyArgs(GetResponse<RepoPathPair>.Succeed(repoPathPair));
         sut.Prepare(remotePath, cancel)
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -91,7 +92,7 @@ public class PrepareDriverRepositoryTests
         sut.CheckOrClone.Check(default, default, default)
             .ReturnsForAnyArgs(GetResponse<RepoPathPair>.Succeed(repoPathPair));
         sut.Prepare(remotePath, cancel)
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -128,7 +129,7 @@ public class PrepareDriverRepositoryTests
         sut.CheckOrClone.Check(default, default, default)
             .ReturnsForAnyArgs(GetResponse<RepoPathPair>.Succeed(repoPathPair));
         sut.Prepare(remotePath, cancel)
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -142,7 +143,7 @@ public class PrepareDriverRepositoryTests
         sut.CheckOrClone.Check(default, default, default)
             .ReturnsForAnyArgs(GetResponse<RepoPathPair>.Succeed(repoPathPair));
         sut.Prepare(remotePath, cancel)
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -174,12 +175,12 @@ public class PrepareDriverRepositoryTests
         sut.CheckOrClone.Check(default, default, default)
             .ReturnsForAnyArgs(GetResponse<RepoPathPair>.Succeed(repoPathPair));
         var ret = sut.Prepare(remotePath, cancel);
-        ret.Succeeded.Should().BeTrue();
-        ret.Value.Tags.Should().BeEquivalentTo(tags);
-        ret.Value.AvailableProjects.Should().Equal(availableProjs);
-        ret.Value.BranchShas.Should().BeEquivalentTo(branchShas);
-        ret.Value.SolutionPath.Should().Be(slnPath);
-        ret.Value.MasterBranchName.Should().Be(masterBranch.FriendlyName);
+        ret.Succeeded.ShouldBeTrue();
+        ret.Value.Tags.ShouldBe(tags);
+        ret.Value.AvailableProjects.ShouldEqual(availableProjs);
+        ret.Value.BranchShas.ShouldBe(branchShas);
+        ret.Value.SolutionPath.ShouldBe(slnPath);
+        ret.Value.MasterBranchName.ShouldBe(masterBranch.FriendlyName);
     }
         
     [Theory, SynthAutoData]

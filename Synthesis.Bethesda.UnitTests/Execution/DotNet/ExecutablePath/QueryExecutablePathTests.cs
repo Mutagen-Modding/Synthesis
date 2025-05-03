@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using AutoFixture.Xunit2;
-using FluentAssertions;
+using Shouldly;
 using Noggog;
 using Noggog.NSubstitute;
 using NSubstitute;
@@ -43,7 +43,7 @@ public class QueryExecutablePathTests
         sut.Runner.RunAndCapture(default!, default).ReturnsForAnyArgs(
             new ProcessRunReturn(0, new List<string>(), new List<string>() {"Error"}));
         (await sut.Query(projPath, cancel))
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
 
     [Theory, SynthAutoData]
@@ -55,7 +55,7 @@ public class QueryExecutablePathTests
         sut.Runner.RunAndCapture(default!, default).ReturnsForAnyArgs(new ProcessRunReturn());
         sut.RetrievePath.TryGet(default, default!, out _).ReturnsForAnyArgs(false);
         (await sut.Query(projPath, cancel))
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
 
     [Theory, SynthAutoData]
@@ -72,7 +72,7 @@ public class QueryExecutablePathTests
             return true;
         });
         var ret = await sut.Query(projPath, cancel);
-        ret.Succeeded.Should().BeTrue();
-        ret.Value.Should().Be(retPath);
+        ret.Succeeded.ShouldBeTrue();
+        ret.Value.ShouldBe(retPath);
     }
 }

@@ -1,7 +1,8 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog;
+using Noggog.Testing.Extensions;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -19,7 +20,7 @@ public class LoadOrderForRunProviderTests
     {
         sut.LoadOrderListingsProvider.Get(blacklist).Returns(listings);
         sut.Get(outputPath, blacklist)
-            .Should().Equal(listings);
+            .ShouldEqual(listings);
     }
         
     [Theory, SynthAutoData]
@@ -36,6 +37,6 @@ public class LoadOrderForRunProviderTests
                 .And(modListingGetter)
                 .Concat(listingsSecond));
         sut.Get(outputPath, blacklist)
-            .Should().Equal(listingsFirst);
+            .ShouldEqual(listingsFirst);
     }
 }

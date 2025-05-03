@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
@@ -19,7 +19,7 @@ public class BuildResultsProcessorTests
     {
         accumulator.FirstError.Returns($"{targetPath}{BuildResultsProcessor.TargetPathSuffix}End");
         sut.GetResults(targetPath, intResult, cancel, accumulator)
-            .Reason.Should().Be("End");
+            .Reason.ShouldBe("End");
     }
         
     [Theory, SynthAutoData]
@@ -34,8 +34,8 @@ public class BuildResultsProcessorTests
         accumulator.Output.ReturnsForAnyArgs(new List<string>() {output});
         accumulator.FirstError.Returns(default(string?));
         var results = sut.GetResults(targetPath, intResult, cancel, accumulator);
-        results.Reason.Should().StartWith("Unknown Error");
-        results.Reason.Should().Contain(output);
+        results.Reason.ShouldStartWith("Unknown Error");
+        results.Reason.ShouldContain(output);
     }
         
     [Theory, SynthAutoData]
@@ -48,6 +48,6 @@ public class BuildResultsProcessorTests
     {
         accumulator.FirstError.Returns(default(string?));
         var results = sut.GetResults(targetPath, intResult, cancelled, accumulator);
-        results.Reason.Should().Contain("Cancel");
+        results.Reason.ShouldContain("Cancel");
     }
 }

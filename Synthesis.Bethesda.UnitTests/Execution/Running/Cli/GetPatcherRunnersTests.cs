@@ -1,5 +1,6 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog.NSubstitute;
+using Noggog.Testing.Extensions;
 using NSubstitute;
 using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Patchers.Running;
@@ -46,6 +47,6 @@ public class GetPatcherRunnersTests
         settings.ForEach(x => x.On = true);
         sut.PatcherSettingsToRunnerFactory.Convert(default!)
             .ReturnsSeriallyForAnyArgs(patcherRuns);
-        sut.Get(settings).Should().Equal(patcherRuns);
+        sut.Get(settings).ShouldEqual(patcherRuns);
     }
 }

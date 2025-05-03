@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using AutoFixture.Xunit2;
-using FluentAssertions;
+using Shouldly;
 using Noggog;
 using Noggog.Testing.TestClassData;
 using NSubstitute;
@@ -31,7 +31,7 @@ public class BuildTests
     {
         sut.BuildStartInfoProvider.Construct(default).ReturnsForAnyArgs(start);
         await sut.Compile(targetPath, cancel);
-        start.WorkingDirectory.Should().Be(targetPath.Directory);
+        start.WorkingDirectory.ShouldBe(targetPath.Directory);
     }
         
     [Theory, SynthAutoData]
@@ -43,7 +43,7 @@ public class BuildTests
         sut.ProcessRunner.RunWithCallback(default!, default!, default!, default)
             .ReturnsForAnyArgs(0);
         var result = await sut.Compile(targetPath, cancel);
-        result.Should().Be(ErrorResponse.Success);
+        result.ShouldBe(ErrorResponse.Success);
     }
         
     [Theory, SynthAutoData]
@@ -85,6 +85,6 @@ public class BuildTests
         sut.ResultsProcessor.GetResults(default, default, default, default!)
             .ReturnsForAnyArgs(errorResponse);
         var result = await sut.Compile(targetPath, cancel);
-        result.Should().Be(errorResponse);
+        result.ShouldBe(errorResponse);
     }
 }

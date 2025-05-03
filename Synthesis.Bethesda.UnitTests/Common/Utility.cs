@@ -1,14 +1,14 @@
-using Mutagen.Bethesda;
-using Mutagen.Bethesda.Plugins;
-using Noggog;
 using System.Collections;
 using System.IO.Abstractions.TestingHelpers;
 using System.Runtime.CompilerServices;
+using Mutagen.Bethesda;
+using Mutagen.Bethesda.Plugins;
+using Noggog;
 using Noggog.IO;
 using NSubstitute;
 using NSubstitute.Core;
 
-namespace Synthesis.Bethesda.UnitTests;
+namespace Synthesis.Bethesda.UnitTests.Common;
 
 public static class Utility
 {

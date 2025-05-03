@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
@@ -10,6 +10,6 @@ public class RandomFileNameProviderTests
     public void NotTheSameTwice(
         RandomFileNameProvider sut)
     {
-        sut.Get().Should().NotBe(sut.Get());
+        sut.Get().ShouldNotBe(sut.Get());
     }
 }

@@ -1,4 +1,4 @@
-using FluentAssertions;
+using Shouldly;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -18,7 +18,7 @@ public class NugetsToUseTests
                 manual,
                 null)
             .TryGetVersioning()
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -33,8 +33,8 @@ public class NugetsToUseTests
                 manual,
                 newest)
             .TryGetVersioning();
-        resp.Succeeded.Should().BeTrue();
-        resp.Value.Should().Be(newest);
+        resp.Succeeded.ShouldBeTrue();
+        resp.Value.ShouldBe(newest);
     }
         
     [Theory, SynthAutoData]
@@ -49,8 +49,8 @@ public class NugetsToUseTests
                 manual,
                 newest)
             .TryGetVersioning();
-        resp.Succeeded.Should().BeTrue();
-        resp.Value.Should().Be(null);
+        resp.Succeeded.ShouldBeTrue();
+        resp.Value.ShouldBe(null);
     }
         
     [Theory, SynthAutoData]
@@ -65,8 +65,8 @@ public class NugetsToUseTests
                 manual,
                 newest)
             .TryGetVersioning();
-        resp.Succeeded.Should().BeTrue();
-        resp.Value.Should().Be(manual);
+        resp.Succeeded.ShouldBeTrue();
+        resp.Value.ShouldBe(manual);
     }
         
     [Theory, SynthAutoData]
@@ -80,7 +80,7 @@ public class NugetsToUseTests
                 string.Empty,
                 newest)
             .TryGetVersioning()
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -94,6 +94,6 @@ public class NugetsToUseTests
                 string.Empty,
                 newest)
             .TryGetVersioning()
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
 }

@@ -1,11 +1,12 @@
 name: Publish
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
 
-jobs:
-  release:
+jobs:    
+  build-test-push:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4

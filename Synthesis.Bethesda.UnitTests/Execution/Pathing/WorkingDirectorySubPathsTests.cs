@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -14,7 +14,7 @@ public class WorkingDirectorySubPathsTests
         WorkingDirectorySubPaths sut)
     {
         sut.WorkingDir.WorkingDirectory.Returns(workingDir);
-        sut.LoadingFolder.Should().Be(
+        sut.LoadingFolder.ShouldBe(
             new DirectoryPath(
                 Path.Combine(workingDir, "Loading")));
     }
@@ -26,7 +26,7 @@ public class WorkingDirectorySubPathsTests
         WorkingDirectorySubPaths sut)
     {
         sut.WorkingDir.WorkingDirectory.Returns(workingDir);
-        sut.ProfileWorkingDirectory(id).Should().Be(
+        sut.ProfileWorkingDirectory(id).ShouldBe(
             new DirectoryPath(
                 Path.Combine(workingDir, id, "Workspace")));
     }

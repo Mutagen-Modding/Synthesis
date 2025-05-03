@@ -1,3 +1,4 @@
+using Mutagen.Bethesda.Assets.DI;
 using Mutagen.Bethesda.Plugins.Allocators;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Order;
@@ -48,6 +49,11 @@ public interface IPatcherState : IBaseRunState, IDisposable
     /// The patch mod is marked as safe for mutation, and will not make the cache invalid.
     /// </summary>
     ILinkCache LinkCache { get; }
+
+    /// <summary>
+    /// Convenience Asset Provider created from the environment's context
+    /// </summary>
+    public IAssetProvider AssetProvider { get; }
 }
 
 public interface IPatcherState<TModSetter, TModGetter> : IBaseRunState<TModSetter, TModGetter>, IPatcherState

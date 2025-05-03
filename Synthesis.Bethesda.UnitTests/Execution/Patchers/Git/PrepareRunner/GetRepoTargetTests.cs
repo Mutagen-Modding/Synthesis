@@ -1,5 +1,5 @@
 using AutoFixture.Xunit2;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -19,7 +19,7 @@ public class GetRepoTargetTests
         GetRepoTarget sut)
     {
         sut.Get(repo, new GitPatcherVersioning(PatcherVersioningEnum.Tag, string.Empty))
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -50,7 +50,7 @@ public class GetRepoTargetTests
     {
         repo.TryGetTagSha(default!, out _).ReturnsForAnyArgs(false);
         sut.Get(repo, new GitPatcherVersioning(PatcherVersioningEnum.Tag, target))
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -66,9 +66,9 @@ public class GetRepoTargetTests
             return true;
         });
         var result = sut.Get(repo, new GitPatcherVersioning(PatcherVersioningEnum.Tag, target));
-        result.Succeeded.Should().BeTrue();
-        result.Value.Target.Should().Be(target);
-        result.Value.TargetSha.Should().Be(sha);
+        result.Succeeded.ShouldBeTrue();
+        result.Value.Target.ShouldBe(target);
+        result.Value.TargetSha.ShouldBe(sha);
     }
 
     #endregion
@@ -81,7 +81,7 @@ public class GetRepoTargetTests
         GetRepoTarget sut)
     {
         sut.Get(repo, new GitPatcherVersioning(PatcherVersioningEnum.Commit, string.Empty))
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -91,9 +91,9 @@ public class GetRepoTargetTests
         GetRepoTarget sut)
     {
         var result = sut.Get(repo, new GitPatcherVersioning(PatcherVersioningEnum.Commit, target));
-        result.Succeeded.Should().BeTrue();
-        result.Value.Target.Should().Be(target);
-        result.Value.TargetSha.Should().Be(target);
+        result.Succeeded.ShouldBeTrue();
+        result.Value.Target.ShouldBe(target);
+        result.Value.TargetSha.ShouldBe(target);
     }
 
     #endregion
@@ -106,7 +106,7 @@ public class GetRepoTargetTests
         GetRepoTarget sut)
     {
         sut.Get(repo, new GitPatcherVersioning(PatcherVersioningEnum.Branch, string.Empty))
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -137,7 +137,7 @@ public class GetRepoTargetTests
     {
         repo.TryGetBranch(default!, out _).ReturnsForAnyArgs(false);
         sut.Get(repo, new GitPatcherVersioning(PatcherVersioningEnum.Branch, target))
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -153,9 +153,9 @@ public class GetRepoTargetTests
             return true;
         });
         var result = sut.Get(repo, new GitPatcherVersioning(PatcherVersioningEnum.Branch, target));
-        result.Succeeded.Should().BeTrue();
-        result.Value.Target.Should().Be(target);
-        result.Value.TargetSha.Should().Be(branch.Tip.Sha);
+        result.Succeeded.ShouldBeTrue();
+        result.Value.Target.ShouldBe(target);
+        result.Value.TargetSha.ShouldBe(branch.Tip.Sha);
     }
         
     [Theory, SynthAutoData]

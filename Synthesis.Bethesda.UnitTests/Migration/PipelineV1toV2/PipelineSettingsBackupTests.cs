@@ -1,5 +1,5 @@
 ﻿using System.IO.Abstractions.TestingHelpers;
-using FluentAssertions;
+using Shouldly;
 using Synthesis.Bethesda.Execution.Settings.Json.Pipeline;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
@@ -16,10 +16,10 @@ public class PipelineSettingsBackupTests
         mockFileSystem.File.WriteAllText(path, "Test1");
             
         sut.Backup(1, path);
-        mockFileSystem.File.ReadAllText("C:\\Path.v1.json").Should().Be("Test1");
+        mockFileSystem.File.ReadAllText("C:\\Path.v1.json").ShouldBe("Test1");
             
         mockFileSystem.File.WriteAllText(path, "Test2");
         sut.Backup(1, path);
-        mockFileSystem.File.ReadAllText("C:\\Path.v1.json").Should().Be("Test2");
+        mockFileSystem.File.ReadAllText("C:\\Path.v1.json").ShouldBe("Test2");
     }
 }

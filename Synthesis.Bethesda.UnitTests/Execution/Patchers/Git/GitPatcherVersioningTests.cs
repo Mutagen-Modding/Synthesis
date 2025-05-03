@@ -1,4 +1,4 @@
-using FluentAssertions;
+using Shouldly;
 using Noggog.Testing.TestClassData;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
@@ -26,8 +26,8 @@ public class GitPatcherVersioningTests
             branch,
             autoTag: true,
             autoBranch: autoBranch);
-        ret.Versioning.Should().Be(PatcherVersioningEnum.Tag);
-        ret.Target.Should().Be(tag);
+        ret.Versioning.ShouldBe(PatcherVersioningEnum.Tag);
+        ret.Target.ShouldBe(tag);
     }
         
     [Theory, SynthMemberData(nameof(TrueFalse))]
@@ -44,8 +44,8 @@ public class GitPatcherVersioningTests
             branch,
             autoTag: false,
             autoBranch: autoBranch);
-        ret.Versioning.Should().Be(PatcherVersioningEnum.Commit);
-        ret.Target.Should().Be(commit);
+        ret.Versioning.ShouldBe(PatcherVersioningEnum.Commit);
+        ret.Target.ShouldBe(commit);
     }
         
     [Theory, SynthMemberData(nameof(DoubleTrueFalse))]
@@ -63,8 +63,8 @@ public class GitPatcherVersioningTests
             branch,
             autoTag: autoTag,
             autoBranch: autoBranch);
-        ret.Versioning.Should().Be(PatcherVersioningEnum.Commit);
-        ret.Target.Should().Be(commit);
+        ret.Versioning.ShouldBe(PatcherVersioningEnum.Commit);
+        ret.Target.ShouldBe(commit);
     }
         
     [Theory, SynthMemberData(nameof(TrueFalse))]
@@ -81,8 +81,8 @@ public class GitPatcherVersioningTests
             branch,
             autoTag: autoTag,
             autoBranch: true);
-        ret.Versioning.Should().Be(PatcherVersioningEnum.Branch);
-        ret.Target.Should().Be(branch);
+        ret.Versioning.ShouldBe(PatcherVersioningEnum.Branch);
+        ret.Target.ShouldBe(branch);
     }
         
     [Theory, SynthMemberData(nameof(TrueFalse))]
@@ -99,7 +99,7 @@ public class GitPatcherVersioningTests
             branch,
             autoTag: autoTag,
             autoBranch: false);
-        ret.Versioning.Should().Be(PatcherVersioningEnum.Commit);
-        ret.Target.Should().Be(commit);
+        ret.Versioning.ShouldBe(PatcherVersioningEnum.Commit);
+        ret.Target.ShouldBe(commit);
     }
 }

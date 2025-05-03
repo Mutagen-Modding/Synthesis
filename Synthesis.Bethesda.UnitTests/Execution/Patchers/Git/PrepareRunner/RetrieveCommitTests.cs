@@ -1,5 +1,5 @@
 using AutoFixture.Xunit2;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -37,7 +37,7 @@ public class RetrieveCommitTests
             return commit;
         });
         sut.TryGet(repo, targets, patcherVersioning, cancel)
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -55,7 +55,7 @@ public class RetrieveCommitTests
             return commit;
         });
         sut.TryGet(repo, targets, patcherVersioning, cancel)
-            .Succeeded.Should().BeTrue();
+            .Succeeded.ShouldBeTrue();
     }
         
     [Theory, SynthAutoData]
@@ -90,7 +90,7 @@ public class RetrieveCommitTests
         });
         sut.ShouldFetchIfMissing.Should(default!).ReturnsForAnyArgs(false);
         sut.TryGet(repo, targets, patcherVersioning, cancel)
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -127,7 +127,7 @@ public class RetrieveCommitTests
             });
         sut.ShouldFetchIfMissing.Should(default!).ReturnsForAnyArgs(true);
         sut.TryGet(repo, targets, patcherVersioning, cancel)
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -152,6 +152,6 @@ public class RetrieveCommitTests
             });
         sut.ShouldFetchIfMissing.Should(default!).ReturnsForAnyArgs(true);
         sut.TryGet(repo, targets, patcherVersioning, cancel)
-            .Succeeded.Should().BeTrue();
+            .Succeeded.ShouldBeTrue();
     }
 }

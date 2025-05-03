@@ -1,5 +1,5 @@
 ﻿using CommandLine;
-using FluentAssertions;
+using Shouldly;
 using Mutagen.Bethesda;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Utility;
@@ -25,7 +25,7 @@ public class FormatCommandLineTests
             Setting = "Hello World",
             Release = GameRelease.Fallout4
         });
-        format.Should().Be("test-command --Release Fallout4 --Setting \"Hello World\"");
+        format.ShouldBe("test-command --Release Fallout4 --Setting \"Hello World\"");
     }
 
     [Theory, SynthAutoData]
@@ -35,6 +35,6 @@ public class FormatCommandLineTests
         {
             GameRelease = default
         });
-        format.Should().Be("run-patcher --LoadOrderIncludesCreationClub --TargetLanguage English --GameRelease Oblivion");
+        format.ShouldBe("run-patcher --LoadOrderIncludesCreationClub --TargetLanguage English --GameRelease Oblivion");
     }
 }

@@ -1,4 +1,4 @@
-using FluentAssertions;
+using Shouldly;
 using Noggog;
 using NSubstitute;
 using Noggog.GitRepository;
@@ -59,8 +59,8 @@ public class PrepareRunnerRepositoryTests
         sut.ResetToTarget.Reset(default!, default!, default)
             .ReturnsForAnyArgs(GetResponse<ResetResults>.Failure);
         var resp = await sut.Checkout(checkoutInput, cancel);
-        resp.RunnableState.Succeeded.Should().BeFalse();
-        resp.IsHaltingError.Should().BeTrue();
+        resp.RunnableState.Succeeded.ShouldBeFalse();
+        resp.IsHaltingError.ShouldBeTrue();
     }
         
     [Theory, SynthAutoData]
@@ -89,8 +89,8 @@ public class PrepareRunnerRepositoryTests
         sut.SolutionFileLocator.GetPath(default).ReturnsForAnyArgs(default(FilePath?));
             
         var resp = await sut.Checkout(checkoutInput, cancel);
-        resp.RunnableState.Succeeded.Should().BeFalse();
-        resp.IsHaltingError.Should().BeTrue();
+        resp.RunnableState.Succeeded.ShouldBeFalse();
+        resp.IsHaltingError.ShouldBeTrue();
     }
         
     [Theory, SynthAutoData]
@@ -120,8 +120,8 @@ public class PrepareRunnerRepositoryTests
         sut.RunnerRepoProjectPathRetriever.Get(default, default!).ReturnsForAnyArgs(default(ProjectPaths?));
             
         var resp = await sut.Checkout(checkoutInput, cancel);
-        resp.RunnableState.Succeeded.Should().BeFalse();
-        resp.IsHaltingError.Should().BeTrue();
+        resp.RunnableState.Succeeded.ShouldBeFalse();
+        resp.IsHaltingError.ShouldBeTrue();
     }
         
     [Theory, SynthAutoData]
@@ -227,13 +227,13 @@ public class PrepareRunnerRepositoryTests
         };
             
         var resp = await sut.Checkout(checkoutInput, cancel);
-        resp.IsHaltingError.Should().BeFalse();
-        resp.RunnableState.Succeeded.Should().BeTrue();
-        resp.Item.Project.SolutionPath.Should().Be(sln);
-        resp.Item.Project.ProjPath.Should().Be(proj.FullPath);
-        resp.Item.Target.Should().Be(resetResults.Target);
-        resp.Item.CommitMessage.Should().Be(resetResults.CommitMessage);
-        resp.Item.CommitDate.Should().Be(resetResults.CommitDate);
+        resp.IsHaltingError.ShouldBeFalse();
+        resp.RunnableState.Succeeded.ShouldBeTrue();
+        resp.Item.Project.SolutionPath.ShouldBe(sln);
+        resp.Item.Project.ProjPath.ShouldBe(proj.FullPath);
+        resp.Item.Target.ShouldBe(resetResults.Target);
+        resp.Item.CommitMessage.ShouldBe(resetResults.CommitMessage);
+        resp.Item.CommitDate.ShouldBe(resetResults.CommitDate);
     }
 
     [Theory, SynthAutoData]

@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog.GitRepository;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
@@ -10,6 +10,6 @@ public class CheckLocalRepoIsValidTests
     public void NullReturnsFalse(CheckLocalRepoIsValid sut)
     {
         sut.IsValidRepository(null)
-            .Should().BeFalse();
+            .ShouldBeFalse();
     }
 }

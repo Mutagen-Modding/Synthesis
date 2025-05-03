@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using FluentAssertions;
+using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.DotNet;
@@ -78,6 +78,6 @@ public class QueryInstalledSdkTests
             new ProcessRunReturn(0, new() { "Something" }, new()));
         sut.NugetVersionString.Parse(default!).ReturnsForAnyArgs(vers);
         (await sut.Query(cancel))
-            .Should().BeSameAs(vers);
+            .ShouldBeSameAs(vers);
     }
 }

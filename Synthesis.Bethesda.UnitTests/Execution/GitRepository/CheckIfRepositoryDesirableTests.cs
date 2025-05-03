@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using NSubstitute;
 using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.GitRepository;
@@ -15,7 +15,7 @@ public class CheckIfRepositoryDesirableTests
     {
         repo.MainBranch.Returns(default(IBranch?));
         sut.IsDesirable(repo)
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -24,6 +24,6 @@ public class CheckIfRepositoryDesirableTests
         CheckIfRepositoryDesirable sut)
     {
         sut.IsDesirable(repo)
-            .Succeeded.Should().BeTrue();
+            .Succeeded.ShouldBeTrue();
     }
 }

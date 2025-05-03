@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
@@ -10,34 +10,34 @@ public class ConstructNameTests
     public void EmptyPath(ConstructNameFromRepositoryPath sut)
     {
         sut.Construct(string.Empty)
-            .Should().Be(ConstructNameFromRepositoryPath.FallbackName);
+            .ShouldBe(ConstructNameFromRepositoryPath.FallbackName);
     }
         
     [Theory, SynthAutoData]
     public void TrimsToLastForwardSlash(ConstructNameFromRepositoryPath sut)
     {
         sut.Construct("Some/Path/Name")
-            .Should().Be("Name");
+            .ShouldBe("Name");
     }
         
     [Theory, SynthAutoData]
     public void TrimsOutTrailingSlash(ConstructNameFromRepositoryPath sut)
     {
         sut.Construct("Some/Path/Name/")
-            .Should().Be("Name");
+            .ShouldBe("Name");
     }
         
     [Theory, SynthAutoData]
     public void TrimsOutTrailingSlashes(ConstructNameFromRepositoryPath sut)
     {
         sut.Construct("Some/Path/Name///")
-            .Should().Be("Name");
+            .ShouldBe("Name");
     }
         
     [Theory, SynthAutoData]
     public void NoTrim(ConstructNameFromRepositoryPath sut)
     {
         sut.Construct("SomeName")
-            .Should().Be("SomeName");
+            .ShouldBe("SomeName");
     }
 }

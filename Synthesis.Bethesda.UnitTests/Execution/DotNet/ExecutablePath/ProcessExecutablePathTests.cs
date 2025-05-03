@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using Noggog.Testing.AutoFixture;
 using NSubstitute;
@@ -28,7 +28,7 @@ public class ProcessExecutablePathTests
         sut.FileSystem.File.Exists(default).ReturnsForAnyArgs(false);
         sut.WorkingDirectoryProvider.WorkingDirectory.Returns(missingFolder);
         sut.Process(projPath, exePath)
-            .Should().Be(exePath);
+            .ShouldBe(exePath);
     }
         
     [Theory, SynthAutoData(FileSystem: TargetFileSystem.Substitute)]
@@ -42,6 +42,6 @@ public class ProcessExecutablePathTests
         sut.FileSystem.File.Exists(default).ReturnsForAnyArgs(false);
         sut.WorkingDirectoryProvider.WorkingDirectory.Returns(new DirectoryPath(workingDir));
         sut.Process(projPath, junkPath)
-            .Should().Be(actualPath);
+            .ShouldBe(actualPath);
     }
 }

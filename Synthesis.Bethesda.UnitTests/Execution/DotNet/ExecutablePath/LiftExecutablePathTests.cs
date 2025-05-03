@@ -1,6 +1,7 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Synthesis.Bethesda.Execution.DotNet.ExecutablePath;
 using Synthesis.Bethesda.UnitTests.AutoData;
+using Synthesis.Bethesda.UnitTests.Common;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.ExecutablePath;
 
@@ -11,8 +12,8 @@ public class LiftExecutablePathTests
     {
         var lines = File.ReadAllLines(Utility.BuildSuccessFile);
         sut.TryGet(lines, out var path)
-            .Should().BeTrue();
-        path.Should().Be(@"C:\Repos\Patchers\khajiitearsshow\KhajiitEarsShow\bin\Debug\net6.0\KhajiitEarsShow.dll");
+            .ShouldBeTrue();
+        path.ShouldBe(@"C:\Repos\Patchers\khajiitearsshow\KhajiitEarsShow\bin\Debug\net6.0\KhajiitEarsShow.dll");
     }
 
     [Theory, SynthAutoData]
@@ -20,8 +21,8 @@ public class LiftExecutablePathTests
     {
         var lines = File.ReadAllLines(Utility.BuildSuccessNonEnglishFile);
         sut.TryGet(lines, out var path)
-            .Should().BeTrue();
-        path.Should().Be(@"C:\Users\Andrew\AppData\Local\Temp\Synthesis\Loading\ugqvnbdg.i1q\bin\Debug\net6.0\win-x64\FaceFixer.dll");
+            .ShouldBeTrue();
+        path.ShouldBe(@"C:\Users\Andrew\AppData\Local\Temp\Synthesis\Loading\ugqvnbdg.i1q\bin\Debug\net6.0\win-x64\FaceFixer.dll");
     }
 
     [Theory, SynthAutoData]
@@ -29,7 +30,7 @@ public class LiftExecutablePathTests
     {
         var lines = File.ReadAllLines(Utility.BuildFailureFile);
         sut.TryGet(lines, out var _)
-            .Should().BeFalse();
+            .ShouldBeFalse();
     }
 
     [Theory, SynthInlineData("dll"), SynthInlineData("DLL")]
@@ -42,8 +43,8 @@ public class LiftExecutablePathTests
                 $"Text {LiftExecutablePath.Delimiter} Path",
                 $"Text {LiftExecutablePath.Delimiter} SomePath.{ext}"
             }, out var result)
-            .Should().BeTrue();
-        result.Should().Be($"SomePath.{ext}");
+            .ShouldBeTrue();
+        result.ShouldBe($"SomePath.{ext}");
     }
 
     [Theory, SynthInlineData("dll"), SynthInlineData("DLL")]
@@ -56,8 +57,8 @@ public class LiftExecutablePathTests
                 $"Text Path.{ext}",
                 $"Text {LiftExecutablePath.Delimiter} SomePath.{ext}"
             }, out var result)
-            .Should().BeTrue();
-        result.Should().Be($"SomePath.{ext}");
+            .ShouldBeTrue();
+        result.ShouldBe($"SomePath.{ext}");
     }
 
     [Theory, SynthInlineData("dll"), SynthInlineData("DLL")]
@@ -70,7 +71,7 @@ public class LiftExecutablePathTests
                 $"Text {LiftExecutablePath.Delimiter} SomePath.{ext}",
                 $"Text {LiftExecutablePath.Delimiter} SomePath2.{ext}"
             }, out var result)
-            .Should().BeTrue();
-        result.Should().Be($"SomePath2.{ext}");
+            .ShouldBeTrue();
+        result.ShouldBe($"SomePath2.{ext}");
     }
 }

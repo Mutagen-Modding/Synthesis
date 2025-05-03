@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Mutagen.Bethesda.Strings;
 using Noggog;
 using NSubstitute;
@@ -18,13 +18,13 @@ public class ConstructSolutionPatcherRunArgsTests
     {
         settings.TargetLanguage = language.ToString();
         var ret = sut.Construct(settings);
-        ret.DataFolderPath.Should().Be(settings.DataFolderPath);
-        ret.GameRelease.Should().Be(settings.GameRelease);
-        ret.LoadOrderFilePath.Should().Be(settings.LoadOrderFilePath);
-        ret.OutputPath.Should().Be(settings.OutputPath);
-        ret.SourcePath.Should().Be(settings.SourcePath);
-        ret.PatcherName.Should().Be(settings.PatcherName);
-        ret.PersistencePath.Should().Be(settings.PersistencePath);
+        ret.DataFolderPath.ShouldBe(settings.DataFolderPath);
+        ret.GameRelease.ShouldBe(settings.GameRelease);
+        ret.LoadOrderFilePath.ShouldBe(settings.LoadOrderFilePath);
+        ret.OutputPath.ShouldBe(settings.OutputPath);
+        ret.SourcePath.ShouldBe(settings.SourcePath);
+        ret.PatcherName.ShouldBe(settings.PatcherName);
+        ret.PersistencePath.ShouldBe(settings.PersistencePath);
     }
 
     [Theory, SynthAutoData]
@@ -37,7 +37,7 @@ public class ConstructSolutionPatcherRunArgsTests
         settings.TargetLanguage = language.ToString();
         sut.PatcherExtraDataPathProvider.Path.Returns(dir);
         sut.Construct(settings)
-            .ExtraDataFolder.Should().Be(dir);
+            .ExtraDataFolder.ShouldBe(dir);
     }
 
     [Theory, SynthAutoData]
@@ -50,7 +50,7 @@ public class ConstructSolutionPatcherRunArgsTests
         settings.TargetLanguage = language.ToString();
         sut.DefaultDataPathProvider.Path.Returns(missingDirectory);
         sut.Construct(settings)
-            .DefaultDataFolderPath.Should().BeNull();
+            .DefaultDataFolderPath.ShouldBeNull();
     }
 
     [Theory, SynthAutoData]
@@ -63,6 +63,6 @@ public class ConstructSolutionPatcherRunArgsTests
         settings.TargetLanguage = language.ToString();
         sut.DefaultDataPathProvider.Path.Returns(existingDirectory);
         sut.Construct(settings)
-            .DefaultDataFolderPath.Should().Be(existingDirectory);
+            .DefaultDataFolderPath.ShouldBe(existingDirectory);
     }
 }

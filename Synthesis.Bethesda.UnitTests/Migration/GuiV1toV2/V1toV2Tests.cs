@@ -1,5 +1,5 @@
 ﻿using System.IO.Abstractions;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Settings.Json;
@@ -27,8 +27,8 @@ public class V1toV2Tests
                 Substitute.For<IPipelineSettingsImporter>(),
                 new PipelineSettingsMigration(fs, new SettingsVersionRetriever(fs)),
                 pipelineSettingsPath);
-        import.Pipeline.BuildCorePercentage.Should().Be(.123);
-        import.Pipeline.WorkingDirectory.Should().Be("Testing123");
-        import.Pipeline.DotNetPathOverride.Should().Be("HelloWorld");
+        import.Pipeline.BuildCorePercentage.ShouldBe(.123);
+        import.Pipeline.WorkingDirectory.ShouldBe("Testing123");
+        import.Pipeline.DotNetPathOverride.ShouldBe("HelloWorld");
     }
 }

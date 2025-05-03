@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Versioning.Query;
@@ -15,7 +15,7 @@ public class QueryVersionProjectPathTests
     {
         sut.Paths.WorkingDirectory.Returns(workingDir);
         sut.BaseFolder.IsUnderneath(workingDir)
-            .Should().BeTrue();
+            .ShouldBeTrue();
     }
         
     [Theory, SynthAutoData]
@@ -25,7 +25,7 @@ public class QueryVersionProjectPathTests
     {
         sut.Paths.WorkingDirectory.Returns(workingDir);
         sut.SolutionFile.IsUnderneath(sut.BaseFolder)
-            .Should().BeTrue();
+            .ShouldBeTrue();
     }
         
     [Theory, SynthAutoData]
@@ -35,6 +35,6 @@ public class QueryVersionProjectPathTests
     {
         sut.Paths.WorkingDirectory.Returns(workingDir);
         sut.ProjectFile.IsUnderneath(sut.BaseFolder)
-            .Should().BeTrue();
+            .ShouldBeTrue();
     }
 }

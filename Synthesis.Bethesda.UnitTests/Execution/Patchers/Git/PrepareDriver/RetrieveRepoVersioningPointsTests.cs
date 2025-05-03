@@ -1,8 +1,9 @@
 ﻿using AutoFixture.Xunit2;
-using FluentAssertions;
+using Shouldly;
 using Noggog;
 using NSubstitute;
 using Noggog.GitRepository;
+using Noggog.Testing.Extensions;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.PrepareDriver;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
@@ -18,7 +19,7 @@ public class RetrieveRepoVersioningPointsTests
     {
         repo.Tags.Returns(repoTags);
         sut.Retrieve(repo, out var tags, out _);
-        tags.Should().Equal(
+        tags.ShouldEqual(
             repoTags.Select((t, i) => new DriverTag(i, t.FriendlyName, t.Sha)));
     }
         
@@ -30,7 +31,7 @@ public class RetrieveRepoVersioningPointsTests
     {
         repo.Branches.Returns(repoBranches);
         sut.Retrieve(repo, out _, out var branches);
-        ((IEnumerable<KeyValuePair<string, string>>)branches).Should().Equal(
+        ((IEnumerable<KeyValuePair<string, string>>)branches).ShouldEqual(
             repoBranches.Select((t) => new KeyValuePair<string, string>(t.FriendlyName, t.Tip.Sha)));
     }
         

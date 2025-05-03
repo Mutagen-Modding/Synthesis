@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Noggog.Testing.Extensions;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.UnitTests.AutoData;
@@ -16,7 +16,7 @@ public class LinesToReflectionConfigsTests
             "{\"Configs\":[{\"TypeName\":\"FaceFixer.Settings\",\"Nickname\":\"Settings\",\"Path\":\"settings.json\"}]}"
         });
 
-        ret.Configs.Should().Equal(
+        ret.Configs.ShouldEqual(
             new ReflectionSettingsConfig(
                 TypeName: "FaceFixer.Settings",
                 Nickname: "Settings",
@@ -35,7 +35,7 @@ public class LinesToReflectionConfigsTests
             + "]}"
         });
 
-        ret.Configs.Should().Equal(
+        ret.Configs.ShouldEqual(
             new ReflectionSettingsConfig(
                 TypeName: "FaceFixer.Settings",
                 Nickname: "Settings",
@@ -56,7 +56,7 @@ public class LinesToReflectionConfigsTests
             "{\"Configs\":[{\"TypeName\":\"FaceFixer.Settings\",\"Nickname\":\"Settings\",\"Path\":\"settings.json\"}]}"
         });
 
-        ret.Configs.Should().Equal(
+        ret.Configs.ShouldEqual(
             new ReflectionSettingsConfig(
                 TypeName: "FaceFixer.Settings",
                 Nickname: "Settings",
@@ -72,7 +72,7 @@ public class LinesToReflectionConfigsTests
             "\u001b]9;4;3;\u001b\\\u001b]9;4;0;\u001b{\"Configs\":[{\"TypeName\":\"FaceFixer.Settings\",\"Nickname\":\"Settings\",\"Path\":\"settings.json\"}]}"
         });
 
-        ret.Configs.Should().Equal(
+        ret.Configs.ShouldEqual(
             new ReflectionSettingsConfig(
                 TypeName: "FaceFixer.Settings",
                 Nickname: "Settings",

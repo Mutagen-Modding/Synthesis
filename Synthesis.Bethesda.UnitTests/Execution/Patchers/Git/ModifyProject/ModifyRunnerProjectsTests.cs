@@ -12,6 +12,7 @@ using Synthesis.Bethesda.Execution.Versioning;
 namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.ModifyProject;
 
 [Register(typeof(ModifyRunnerProjects))]
+[Register(typeof(TurnOffCetCompat))]
 [Register(typeof(SwapInDesiredVersionsForProjectString), typeof(ISwapInDesiredVersionsForProjectString))]
 [Register(typeof(ProvideCurrentVersions), typeof(IProvideCurrentVersions))]
 [Register(typeof(TurnOffNullability), typeof(ITurnOffNullability))]

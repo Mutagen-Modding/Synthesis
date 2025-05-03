@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using AutoFixture.Xunit2;
-using FluentAssertions;
+using Shouldly;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using NSubstitute;
@@ -86,7 +86,7 @@ public class CheckRunnabilityTests
         sut.ProcessRunner.RunWithCallback(default!, default!, default)
             .ReturnsForAnyArgs((int)Codes.NotRunnable);
         (await sut.Check(modKey, path, directExe, loadOrderPath, buildMetaPath, cancel))
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
 
     [Theory, SynthAutoData]
@@ -111,7 +111,7 @@ public class CheckRunnabilityTests
                 Arg.Any<CancellationToken>())
             .ReturnsForAnyArgs((int)Codes.NotRunnable);
         var resp = await sut.Check(modKey, path, directExe, loadOrderPath, buildMetaPath, cancel);
-        resp.Reason.Split(Environment.NewLine).Length.Should().Be(ExecuteRunnabilityCheck.MaxLines);
+        resp.Reason.Split(Environment.NewLine).Length.ShouldBe(ExecuteRunnabilityCheck.MaxLines);
     }
 
     [Theory, SynthAutoData]
@@ -127,6 +127,6 @@ public class CheckRunnabilityTests
         sut.ProcessRunner.RunWithCallback(default!, default!, default)
             .ReturnsForAnyArgs(((int)Codes.NotRunnable) + 1);
         (await sut.Check(modKey, path, directExe, loadOrderPath, buildMetaPath, cancel))
-            .Succeeded.Should().BeTrue();
+            .Succeeded.ShouldBeTrue();
     }
 }

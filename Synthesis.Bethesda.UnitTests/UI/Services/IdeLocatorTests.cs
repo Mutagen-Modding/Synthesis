@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
@@ -9,7 +9,7 @@ public class IdeLocatorTests
     [Theory, SynthAutoData]
     public void MissingPathsDoesNotThrow(IdeLocator sut)
     {
-        sut.VSPath.Should().BeNull();
-        sut.RiderPath.Should().BeNull();
+        sut.VSPath.ShouldBeNull();
+        sut.RiderPath.ShouldBeNull();
     }
 }

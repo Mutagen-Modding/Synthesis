@@ -1,5 +1,5 @@
 ﻿using AutoFixture.Xunit2;
-using FluentAssertions;
+using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -28,7 +28,7 @@ public class SettingsSingletonTests
     //         System.IO.File.ReadAllText("../../../../UI/Settings/pipelinesettings.json"));
     //     sut.FileSystem.Directory.SetCurrentDirectory(Directory.GetCurrentDirectory());
     //     
-    //     sut.Gui.SelectedProfile.Should().Be("u2gktfpj.frs");
+    //     sut.Gui.SelectedProfile.ShouldBe("u2gktfpj.frs");
     //     sut.Pipeline.Profiles.Should().NotBeEmpty();
     // }
 
@@ -42,7 +42,7 @@ public class SettingsSingletonTests
     {
         settingsImporter.Import(default).ReturnsForAnyArgs(settings);
         guiPaths.Path.Returns(missingPath);
-        sut().Gui.Should().Be(new SynthesisGuiSettings());
+        sut().Gui.ShouldBe(new SynthesisGuiSettings());
     }
 
     [Theory, SynthAutoData(GenerateDelegates: true)]
@@ -55,7 +55,7 @@ public class SettingsSingletonTests
     {
         settingsImporter.Import(existingPath).Returns(settings);
         guiPaths.Path.Returns(existingPath);
-        sut().Gui.Should().Be(settings);
+        sut().Gui.ShouldBe(settings);
     }
         
     [Theory, SynthAutoData(GenerateDelegates: true)]
@@ -68,7 +68,7 @@ public class SettingsSingletonTests
     {
         settingsImporter.Import(default).ReturnsForAnyArgs(settings);
         paths.Path.Returns(missingPath);
-        sut().Pipeline.Profiles.Should().BeEmpty();
+        sut().Pipeline.Profiles.ShouldBeEmpty();
     }
 
     [Theory, SynthAutoData(GenerateDelegates: true)]
@@ -81,6 +81,6 @@ public class SettingsSingletonTests
     {
         settingsImporter.Import(existingPath).Returns(settings);
         paths.Path.Returns(existingPath);
-        sut().Pipeline.Should().Be(settings);
+        sut().Pipeline.ShouldBe(settings);
     }
 }

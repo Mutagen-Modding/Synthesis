@@ -9,12 +9,12 @@ public class NewestLibraryVersionsTests
     //     sut.NewestSynthesisVersion.Subscribe();
     //     sut.NewestSynthesisVersion.Subscribe(x =>
     //     {
-    //         x.Should().BeNull();
+    //         x.ShouldBeNull();
     //     });
     //     sut.NewestMutagenVersion.Subscribe();
     //     sut.NewestMutagenVersion.Subscribe(x =>
     //     {
-    //         x.Should().BeNull();
+    //         x.ShouldBeNull();
     //     });
     // }
     //
@@ -31,12 +31,12 @@ public class NewestLibraryVersionsTests
     //     sut.NewestSynthesisVersion.Subscribe();
     //     sut.NewestSynthesisVersion.Subscribe(x =>
     //     {
-    //         x.Should().Be("PrereleaseSynthesisVersion");
+    //         x.ShouldBe("PrereleaseSynthesisVersion");
     //     });
     //     sut.NewestMutagenVersion.Subscribe();
     //     sut.NewestMutagenVersion.Subscribe(x =>
     //     {
-    //         x.Should().Be("PrereleaseMutagenVersion");
+    //         x.ShouldBe("PrereleaseMutagenVersion");
     //     });
     // }
     //
@@ -53,12 +53,12 @@ public class NewestLibraryVersionsTests
     //     sut.NewestSynthesisVersion.Subscribe();
     //     sut.NewestSynthesisVersion.Subscribe(x =>
     //     {
-    //         x.Should().Be("SynthesisVersion");
+    //         x.ShouldBe("SynthesisVersion");
     //     });
     //     sut.NewestMutagenVersion.Subscribe();
     //     sut.NewestMutagenVersion.Subscribe(x =>
     //     {
-    //         x.Should().Be("MutagenVersion");
+    //         x.ShouldBe("MutagenVersion");
     //     });
     // }
 }

@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.Groups;
@@ -16,6 +16,6 @@ public class RunLoadOrderPathProviderTests
         RunLoadOrderPathProvider sut)
     {
         sut.ProfileDirectories.WorkingDirectory.Returns(workingDirectory);
-        sut.PathFor(groupRun).IsUnderneath(workingDirectory).Should().BeTrue();
+        sut.PathFor(groupRun).IsUnderneath(workingDirectory).ShouldBeTrue();
     }
 }

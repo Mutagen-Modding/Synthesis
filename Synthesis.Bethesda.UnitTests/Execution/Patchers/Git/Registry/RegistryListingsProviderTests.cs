@@ -1,5 +1,6 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Noggog;
+using Noggog.Testing.Extensions;
 using NSubstitute;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.Registry;
@@ -18,7 +19,7 @@ public class RegistryListingsProviderTests
         sut.PrepRegistryRepository.Prep(cancel)
             .Returns(fail);
         sut.Get(cancel)
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -29,7 +30,7 @@ public class RegistryListingsProviderTests
     {
         sut.FilePathProvider.Path.Returns(missing);
         sut.Get(cancel)
-            .Succeeded.Should().BeFalse();
+            .Succeeded.ShouldBeFalse();
     }
         
     [Theory, SynthAutoData]
@@ -53,7 +54,7 @@ public class RegistryListingsProviderTests
         sut.FilePathProvider.Path.Returns(existing);
         sut.ListingReader.Read(default).ReturnsForAnyArgs(listing);
         var ret = sut.Get(cancel);
-        ret.Succeeded.Should().BeTrue();
-        ret.Value.Should().Equal(listing.Repositories);
+        ret.Succeeded.ShouldBeTrue();
+        ret.Value.ShouldEqual(listing.Repositories);
     }
 }
