@@ -1,4 +1,4 @@
-﻿using Noggog;
+using Noggog;
 using Noggog.IO;
 
 namespace Synthesis.Bethesda.Execution.Pathing;
@@ -10,23 +10,12 @@ public interface IWorkingDirectoryProvider
 
 public class WorkingDirectoryProvider : IWorkingDirectoryProvider
 {
-    private readonly ICurrentDirectoryProvider _currentDirectoryProvider;
     public IEnvironmentTemporaryDirectoryProvider TempDir { get; }
 
-    public WorkingDirectoryProvider(
-        ICurrentDirectoryProvider currentDirectoryProvider, 
-        IEnvironmentTemporaryDirectoryProvider tempDir)
+    public WorkingDirectoryProvider(IEnvironmentTemporaryDirectoryProvider tempDir)
     {
-        _currentDirectoryProvider = currentDirectoryProvider;
         TempDir = tempDir;
-        #if DEBUG
-        // Setting to current directory during development causes clashes with umbrella git repository
-        // of the synthesis repository itself
-        WorkingDirectory = Path.Combine(TempDir.Path, "Synthesis")!;
-        #else
-        WorkingDirectory = Path.Combine(_currentDirectoryProvider.CurrentDirectory, "Workspace")!;
-        #endif
     }
         
-    public DirectoryPath WorkingDirectory { get; }
+    public DirectoryPath WorkingDirectory => Path.Combine(TempDir.Path, "Synthesis")!;
 }
