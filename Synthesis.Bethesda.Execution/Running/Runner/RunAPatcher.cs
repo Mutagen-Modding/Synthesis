@@ -1,4 +1,5 @@
 ﻿using System.IO.Abstractions;
+using System.Runtime.ExceptionServices;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.Groups;
@@ -52,6 +53,7 @@ public class RunAPatcher : IRunAPatcher
             if (cancellation.IsCancellationRequested) return null;
             if (prepException != null)
             {
+                ExceptionDispatchInfo.Capture(prepException).Throw();
                 throw prepException;
             }
                 
