@@ -84,7 +84,7 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
         Assert.Equal(3, patch.Npcs.Count);
         Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
         Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
-        var awesomeNPC = patch.Npcs[new FormKey(PatchModKey, 0xD62)];
+        var awesomeNPC = patch.Npcs[new FormKey(PatchModKey, 0x800)];
         Assert.Equal(1, awesomeNPC.Items.Count);
         Assert.Equal(AwesomeNPCEdid, awesomeNPC.EditorID);
     }
@@ -114,7 +114,7 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
         Assert.Equal(3, patch.Npcs.Count);
         Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
         Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
-        var anotherNPC = patch.Npcs[new FormKey(PatchModKey, 0xD62)];
+        var anotherNPC = patch.Npcs[new FormKey(PatchModKey, 0x800)];
         Assert.Equal(1, anotherNPC.Items.Count);
         Assert.Equal(AnotherNPCEdid, anotherNPC.EditorID);
     }
@@ -164,10 +164,10 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
         Assert.Equal(4, patch.Npcs.Count);
         Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
         Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
-        var awesomeNPC = patch.Npcs[new FormKey(PatchModKey, 0xD62)];
+        var awesomeNPC = patch.Npcs[new FormKey(PatchModKey, 0x800)];
         Assert.Equal(2, awesomeNPC.Items.Count);
         Assert.Equal(AwesomeNPCEdid, awesomeNPC.EditorID);
-        var anotherNPC = patch.Npcs[new FormKey(PatchModKey, 0xD63)];
+        var anotherNPC = patch.Npcs[new FormKey(PatchModKey, 0x801)];
         Assert.Equal(1, anotherNPC.Items.Count);
         Assert.Equal(AnotherNPCEdid, anotherNPC.EditorID);
     }
@@ -217,10 +217,10 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
         Assert.Equal(4, patch.Npcs.Count);
         Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
         Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
-        var anotherNPC = patch.Npcs[new FormKey(PatchModKey, 0xD62)];
+        var anotherNPC = patch.Npcs[new FormKey(PatchModKey, 0x800)];
         Assert.Equal(2, anotherNPC.Items.Count);
         Assert.Equal(AnotherNPCEdid, anotherNPC.EditorID);
-        var awesomeNPC = patch.Npcs[new FormKey(PatchModKey, 0xD63)];
+        var awesomeNPC = patch.Npcs[new FormKey(PatchModKey, 0x801)];
         Assert.Equal(1, awesomeNPC.Items.Count);
         Assert.Equal(AwesomeNPCEdid, awesomeNPC.EditorID);
     }
@@ -279,10 +279,10 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
                 Assert.Equal(4, patch.Npcs.Count);
                 Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
                 Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
-                var awesomeNPC = patch.Npcs[new FormKey(PatchModKey, 0xD62)];
+                var awesomeNPC = patch.Npcs[new FormKey(PatchModKey, 0x800)];
                 Assert.Equal(2, awesomeNPC.Items.Count);
                 Assert.Equal(AwesomeNPCEdid, awesomeNPC.EditorID);
-                var anotherNPC = patch.Npcs[new FormKey(PatchModKey, 0xD63)];
+                var anotherNPC = patch.Npcs[new FormKey(PatchModKey, 0x801)];
                 Assert.Equal(1, anotherNPC.Items.Count);
                 Assert.Equal(AnotherNPCEdid, anotherNPC.EditorID);
             }
@@ -372,10 +372,10 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
             Assert.Equal(4, patch.Npcs.Count);
             Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
             Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
-            var awesomeNPC = patch.Npcs[new FormKey(PatchModKey, 0xD62)];
+            var awesomeNPC = patch.Npcs[new FormKey(PatchModKey, 0x800)];
             Assert.Equal(1, awesomeNPC.Items.Count);
             Assert.Equal(AwesomeNPCEdid, awesomeNPC.EditorID);
-            var anotherNPC = patch.Npcs[new FormKey(PatchModKey, 0xD63)];
+            var anotherNPC = patch.Npcs[new FormKey(PatchModKey, 0x801)];
             Assert.Equal(2, anotherNPC.Items.Count);
             Assert.Equal(AnotherNPCEdid, anotherNPC.EditorID);
         }

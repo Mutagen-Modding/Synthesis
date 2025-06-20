@@ -620,12 +620,15 @@ public class SynthesisPipelineTests
         var getStateLoadOrder = testEnv.GetStateLoadOrder();
         var listings = getStateLoadOrder.GetUnfilteredLoadOrder(false).ToList();
         listings.ShouldHaveCount(3);
-        listings.ShouldEqualEnumerable(new ILoadOrderListingGetter[]
-        {
-            new LoadOrderListing(Mutagen.Bethesda.Skyrim.Constants.Skyrim, true),
-            new LoadOrderListing(Utility.TestModKey, true),
-            new LoadOrderListing(Utility.OverrideModKey, false),
-        });
+        listings
+            .Select(x => new LoadOrderListing(x.ModKey, x.Enabled, x.GhostSuffix))
+            .OfType<ILoadOrderListingGetter>()
+            .ShouldEqualEnumerable(new ILoadOrderListingGetter[]
+            {
+                new LoadOrderListing(Mutagen.Bethesda.Skyrim.Constants.Skyrim, true),
+                new LoadOrderListing(Utility.TestModKey, true),
+                new LoadOrderListing(Utility.OverrideModKey, false),
+            });
     }
 
     [Fact]

@@ -67,7 +67,7 @@ public class MutagenSynthesisTests
         Assert.Equal(3, patch.Npcs.Count);
         Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
         Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
-        Assert.Equal(1, patch.Npcs[new FormKey(PatchModKey, 0xD62)].Items.Count);
+        Assert.Equal(1, patch.Npcs[new FormKey(PatchModKey, 0x800)].Items.Count);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class MutagenSynthesisTests
             Assert.Equal(3, patch.Npcs.Count);
             Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
             Assert.Equal(1, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
-            Assert.Equal(1, patch.Npcs[new FormKey(PatchModKey, 0xD62)].Items.Count);
+            Assert.Equal(1, patch.Npcs[new FormKey(PatchModKey, 0x800)].Items.Count);
         }
 
         // Run a second time, with sourcepath set containing previous patch
@@ -112,8 +112,8 @@ public class MutagenSynthesisTests
             Assert.Equal(4, patch.Npcs.Count);
             Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD62)].Items.Count);
             Assert.Equal(2, patch.Npcs[new FormKey(Utility.TestModKey, 0xD63)].Items.Count);
-            Assert.Equal(2, patch.Npcs[new FormKey(PatchModKey, 0xD62)].Items.Count);
-            Assert.Equal(1, patch.Npcs[new FormKey(PatchModKey, 0xD63)].Items.Count);
+            Assert.Equal(2, patch.Npcs[new FormKey(PatchModKey, 0x800)].Items.Count);
+            Assert.Equal(1, patch.Npcs[new FormKey(PatchModKey, 0x801)].Items.Count);
         }
     }
 
