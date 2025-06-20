@@ -77,7 +77,7 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
                 fileSystem: env.FileSystem);
 
         Assert.True(env.FileSystem.File.Exists(modPath.Path));
-        using var patch = OblivionMod.Create
+        using var patch = OblivionMod.Create(OblivionRelease.Oblivion)
             .FromPath(modPath)
             .WithFileSystem(env.FileSystem)
             .Construct();
@@ -107,7 +107,7 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
                 },
                 fileSystem: env.FileSystem);
         Assert.True(env.FileSystem.File.Exists(modPath.Path));
-        using var patch = OblivionMod.Create
+        using var patch = OblivionMod.Create(OblivionRelease.Oblivion)
             .FromPath(modPath)
             .WithFileSystem(env.FileSystem)
             .Construct();
@@ -157,7 +157,7 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
                 fileSystem: env.FileSystem);
 
         Assert.True(env.FileSystem.File.Exists(modPath.Path));
-        using var patch = OblivionMod.Create
+        using var patch = OblivionMod.Create(OblivionRelease.Oblivion)
             .FromPath(modPath)
             .WithFileSystem(env.FileSystem)
             .Construct();
@@ -210,7 +210,7 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
                 env.FileSystem);
 
         Assert.True(env.FileSystem.File.Exists(modPath.Path));
-        using var patch = OblivionMod.Create
+        using var patch = OblivionMod.Create(OblivionRelease.Oblivion)
             .FromPath(modPath)
             .WithFileSystem(env.FileSystem)
             .Construct();
@@ -272,7 +272,7 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
             if (i == 1)
             {
                 Assert.True(env.FileSystem.File.Exists(modPath.Path));
-                using var patch = OblivionMod.Create
+                using var patch = OblivionMod.Create(OblivionRelease.Oblivion)
                     .FromPath(modPath)
                     .WithFileSystem(env.FileSystem)
                     .Construct();
@@ -365,7 +365,7 @@ public class PersistentState_Tests : IClassFixture<LoquiUse>
                     fileSystem: env.FileSystem);
 
             Assert.True(env.FileSystem.File.Exists(modPath.Path));
-            using var patch = OblivionMod.Create
+            using var patch = OblivionMod.Create(OblivionRelease.Oblivion)
                 .FromPath(modPath)
                 .WithFileSystem(env.FileSystem)
                 .Construct();

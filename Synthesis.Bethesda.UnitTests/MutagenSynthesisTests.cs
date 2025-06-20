@@ -60,7 +60,7 @@ public class MutagenSynthesisTests
             fileSystem: env.FileSystem);
 #pragma warning restore CS0618 // Type or member is obsolete
         Assert.True(env.FileSystem.File.Exists(modPath.Path));
-        using var patch = OblivionMod.Create
+        using var patch = OblivionMod.Create(OblivionRelease.Oblivion)
             .FromPath(modPath)
             .WithFileSystem(env.FileSystem)
             .Construct();
@@ -87,7 +87,7 @@ public class MutagenSynthesisTests
         await new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(settings, PatchFunction, fileSystem: env.FileSystem);
 #pragma warning restore CS0618 // Type or member is obsolete
         Assert.True(env.FileSystem.File.Exists(modPath.Path));
-        using (var patch = OblivionMod.Create
+        using (var patch = OblivionMod.Create(OblivionRelease.Oblivion)
                    .FromPath(modPath)
                    .WithFileSystem(env.FileSystem)
                    .Construct())
@@ -104,7 +104,7 @@ public class MutagenSynthesisTests
         await new SynthesisPipeline().Patch<IOblivionMod, IOblivionModGetter>(settings, PatchFunction, fileSystem: env.FileSystem);
 #pragma warning restore CS0618 // Type or member is obsolete
         Assert.True(env.FileSystem.File.Exists(modPath.Path));
-        using (var patch = OblivionMod.Create
+        using (var patch = OblivionMod.Create(OblivionRelease.Oblivion)
                    .FromPath(modPath)
                    .WithFileSystem(env.FileSystem)
                    .Construct())
@@ -269,14 +269,14 @@ public class MutagenSynthesisTests
                 Utility.OverrideModKey.FileName
             });
 
-        var mod = new OblivionMod(Utility.TestModKey);
+        var mod = new OblivionMod(Utility.TestModKey, OblivionRelease.Oblivion);
         mod.BeginWrite
             .ToPath(Path.Combine(env.DataFolder, Utility.TestModKey.FileName))
             .WithNoLoadOrder()
             .WithFileSystem(env.FileSystem)
             .Write();
-        var mod2 = new OblivionMod(Utility.OverrideModKey);
-        mod2.Npcs.Add(new Npc(mod.GetNextFormKey()));
+        var mod2 = new OblivionMod(Utility.OverrideModKey, OblivionRelease.Oblivion);
+        mod2.Npcs.Add(new Npc(mod.GetNextFormKey(), OblivionRelease.Oblivion));
         mod2.BeginWrite
             .ToPath(Path.Combine(env.DataFolder, Utility.OverrideModKey.FileName))
             .WithNoLoadOrder()

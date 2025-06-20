@@ -16,7 +16,7 @@ public class LinesToReflectionConfigsTests
             "{\"Configs\":[{\"TypeName\":\"FaceFixer.Settings\",\"Nickname\":\"Settings\",\"Path\":\"settings.json\"}]}"
         });
 
-        ret.Configs.ShouldEqual(
+        ret.Configs.ShouldEqualEnumerable(
             new ReflectionSettingsConfig(
                 TypeName: "FaceFixer.Settings",
                 Nickname: "Settings",
@@ -35,7 +35,7 @@ public class LinesToReflectionConfigsTests
             + "]}"
         });
 
-        ret.Configs.ShouldEqual(
+        ret.Configs.ShouldEqualEnumerable(
             new ReflectionSettingsConfig(
                 TypeName: "FaceFixer.Settings",
                 Nickname: "Settings",
@@ -56,7 +56,7 @@ public class LinesToReflectionConfigsTests
             "{\"Configs\":[{\"TypeName\":\"FaceFixer.Settings\",\"Nickname\":\"Settings\",\"Path\":\"settings.json\"}]}"
         });
 
-        ret.Configs.ShouldEqual(
+        ret.Configs.ShouldEqualEnumerable(
             new ReflectionSettingsConfig(
                 TypeName: "FaceFixer.Settings",
                 Nickname: "Settings",
@@ -72,7 +72,7 @@ public class LinesToReflectionConfigsTests
             "\u001b]9;4;3;\u001b\\\u001b]9;4;0;\u001b{\"Configs\":[{\"TypeName\":\"FaceFixer.Settings\",\"Nickname\":\"Settings\",\"Path\":\"settings.json\"}]}"
         });
 
-        ret.Configs.ShouldEqual(
+        ret.Configs.ShouldEqualEnumerable(
             new ReflectionSettingsConfig(
                 TypeName: "FaceFixer.Settings",
                 Nickname: "Settings",
