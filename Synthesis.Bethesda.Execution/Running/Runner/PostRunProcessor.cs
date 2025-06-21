@@ -1,4 +1,5 @@
 ﻿using System.IO.Abstractions;
+using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Binary.Headers;
@@ -6,6 +7,8 @@ using Mutagen.Bethesda.Plugins.Binary.Parameters;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Plugins.Utility.DI;
+using Mutagen.Bethesda.Strings;
+using Mutagen.Bethesda.Strings.DI;
 using Noggog;
 using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Profile.Services;
@@ -36,6 +39,14 @@ public class PostRunProcessor
         _profileDirectories = profileDirectories;
         _modCompactor = modCompactor;
     }
+
+    private class Utf8EncodingWrapper : IMutagenEncodingProvider
+    {
+        public IMutagenEncoding GetEncoding(GameRelease release, Language language)
+        {
+            return MutagenEncoding._utf8;
+        }
+    }
     
     public async Task<FilePath> Run(
         IGroupRun groupRun,
@@ -62,7 +73,12 @@ public class PostRunProcessor
             new BinaryReadParameters()
             {
                 MasterFlagsLookup = lo,
-                FileSystem = _fileSystem
+                FileSystem = _fileSystem,
+                StringsParam = new StringsReadParameters()
+                {
+                    TargetLanguage = runParameters.TargetLanguage,
+                    EncodingProvider = runParameters.UseUtf8ForEmbeddedStrings ? new Utf8EncodingWrapper() : null
+                }
             });
 
         var postProcessPath = new FilePath(
