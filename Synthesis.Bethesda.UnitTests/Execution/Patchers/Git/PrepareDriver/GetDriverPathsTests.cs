@@ -49,6 +49,6 @@ public class GetDriverPathsTests
         var ret = sut.Get();
         ret.Succeeded.ShouldBeTrue();
         ret.Value.SolutionPath.ShouldBe(path);
-        ret.Value.AvailableProjects.ShouldEqual(paths);
+        ret.Value.AvailableProjects.ShouldEqualEnumerable(paths);
     }
 }

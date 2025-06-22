@@ -54,7 +54,7 @@ public class BuildOutputAccumulatorTests
         BuildOutputAccumulator sut)
     {
         sut.Process("Normal");
-        sut.Output.ShouldEqual("Normal");
+        sut.Output.ShouldEqualEnumerable("Normal");
     }
         
     [Theory, SynthAutoData]
@@ -62,7 +62,7 @@ public class BuildOutputAccumulatorTests
         BuildOutputAccumulator sut)
     {
         sut.Process("error 123");
-        sut.Output.ShouldEqual("error 123");
+        sut.Output.ShouldEqualEnumerable("error 123");
     }
         
     [Theory, SynthAutoData]
@@ -73,7 +73,7 @@ public class BuildOutputAccumulatorTests
         sut.Process("abcd");
         sut.Process("efgh");
         sut.Process("ijkl");
-        sut.Output.ShouldEqual(
+        sut.Output.ShouldEqualEnumerable(
             "abcd",
             "efgh");
     }

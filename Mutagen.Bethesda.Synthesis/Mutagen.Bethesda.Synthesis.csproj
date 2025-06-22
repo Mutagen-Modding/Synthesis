@@ -12,7 +12,7 @@
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <AssemblyName>Mutagen.Bethesda.Synthesis</AssemblyName>
     <PackageProjectUrl>https://github.com/Noggog/Synthesis</PackageProjectUrl>
-    <Copyright>2020</Copyright>
+    <Copyright>2025</Copyright>
     <IsPackable>true</IsPackable>
       <DebugType>portable</DebugType>
       <DebugSymbols>true</DebugSymbols>

@@ -40,7 +40,7 @@ public class ToStateTests : IClassFixture<LoquiUse>
             new PatcherPreferences(),
             Synthesis.Bethesda.Constants.SynthesisModKey);
         state.RawLoadOrder.ShouldHaveCount(3);
-        state.RawLoadOrder.Select(l => l.ModKey).ShouldEqual(new ModKey[]
+        state.RawLoadOrder.Select(l => l.ModKey).ShouldEqualEnumerable(new ModKey[]
         {
             Utility.TestFileName,
             Utility.OverrideModKey,
@@ -78,7 +78,7 @@ public class ToStateTests : IClassFixture<LoquiUse>
             new PatcherPreferences(),
             output.ModKey);
         state.RawLoadOrder.ShouldHaveCount(3);
-        state.RawLoadOrder.Select(l => l.ModKey).ShouldEqual(new ModKey[]
+        state.RawLoadOrder.Select(l => l.ModKey).ShouldEqualEnumerable(new ModKey[]
         {
             Utility.TestFileName,
             Utility.OverrideModKey,

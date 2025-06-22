@@ -14,7 +14,7 @@
     <Company>Mutagen</Company>
     <Product>Synthesis</Product>
     <Description>Library for helping bootstrap programs utilizing Mutagen to be compatible with Synthesis</Description>
-    <Copyright>2020</Copyright>
+    <Copyright>2025</Copyright>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Noggog/Synthesis</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

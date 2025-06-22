@@ -124,7 +124,7 @@ public class AddImplicitMastersTests
         };
         adder.Add(list);
         list.ShouldHaveCount(3);
-        list.Select(x => x.Enabled).ToArray().ShouldEqual(
+        list.Select(x => x.Enabled).ToArray().ShouldEqualEnumerable(
             true, false, true);
     }
         

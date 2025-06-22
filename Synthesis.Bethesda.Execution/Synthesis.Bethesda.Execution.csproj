@@ -12,7 +12,7 @@
     <Product>Synthesis</Product>
     <PackageId>Synthesis.Bethesda.Execution</PackageId>
     <PackageProjectUrl>https://github.com/Noggog/Synthesis</PackageProjectUrl>
-    <Copyright>2020</Copyright>
+    <Copyright>2025</Copyright>
     <IsPackable>true</IsPackable>
       <DebugType>portable</DebugType>
       <DebugSymbols>true</DebugSymbols>
@@ -34,7 +34,6 @@
     <PackageReference Include="Microsoft.CodeAnalysis" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
-    <PackageReference Include="Mutagen.Bethesda" />
     <PackageReference Include="Noggog.CSharpExt.Json" />
     <PackageReference Include="Noggog.Autofac" />
     <PackageReference Include="Noggog.GitRepository" />

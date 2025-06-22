@@ -115,13 +115,13 @@ public class SynthesisPipelineTests
         await SynthesisPipeline.Instance
             .AddPatch<ISkyrimMod, ISkyrimModGetter>((state) =>
             {
-                state.LoadOrder.ListedOrder.Select(x => x.ModKey).ShouldEqual(
+                state.LoadOrder.ListedOrder.Select(x => x.ModKey).ShouldEqualEnumerable(
                     gameEnvironment.LoadOrder.ListedOrder
                         .Where(x => x.Enabled)
                         .Select(x => x.ModKey)
                         .And(outputModKey));
                 state.LoadOrder.ListedOrder.Select(x => x.Mod).ShouldSatisfyAllConditions(x => x.ShouldNotBeNull());
-                state.LinkCache.ListedOrder.Select(x => x.ModKey).ShouldEqual(
+                state.LinkCache.ListedOrder.Select(x => x.ModKey).ShouldEqualEnumerable(
                     gameEnvironment.LoadOrder.ListedOrder
                         .Where(x => x.Enabled)
                         .Select(x => x.ModKey)
@@ -620,12 +620,15 @@ public class SynthesisPipelineTests
         var getStateLoadOrder = testEnv.GetStateLoadOrder();
         var listings = getStateLoadOrder.GetUnfilteredLoadOrder(false).ToList();
         listings.ShouldHaveCount(3);
-        listings.ShouldEqual(new ILoadOrderListingGetter[]
-        {
-            new LoadOrderListing(Mutagen.Bethesda.Skyrim.Constants.Skyrim, true),
-            new LoadOrderListing(Utility.TestModKey, true),
-            new LoadOrderListing(Utility.OverrideModKey, false),
-        });
+        listings
+            .Select(x => new LoadOrderListing(x.ModKey, x.Enabled, x.GhostSuffix))
+            .OfType<ILoadOrderListingGetter>()
+            .ShouldEqualEnumerable(new ILoadOrderListingGetter[]
+            {
+                new LoadOrderListing(Mutagen.Bethesda.Skyrim.Constants.Skyrim, true),
+                new LoadOrderListing(Utility.TestModKey, true),
+                new LoadOrderListing(Utility.OverrideModKey, false),
+            });
     }
 
     [Fact]

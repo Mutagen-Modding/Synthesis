@@ -54,8 +54,12 @@ public class ProvideReflectionSettingsBundle : IProvideReflectionSettingsBundle
                     {
                         try
                         {
-                            var t = assemb.GetType(s.TypeName);
-                            if (t == null) return null;
+                            var t = assemb.GetType(s.TypeName, throwOnError: true);
+                            if (t == null)
+                            {
+                                _Logger.Error("Type {TypeName} not found in assembly {Assembly}", s.TypeName, assemb.FullName);
+                                return null;
+                            }
                             return _reflFactory(
                                 ReflectionSettingsParameters.FromType(
                                     detectedLoadOrder.ObserveOn(RxApp.MainThreadScheduler),

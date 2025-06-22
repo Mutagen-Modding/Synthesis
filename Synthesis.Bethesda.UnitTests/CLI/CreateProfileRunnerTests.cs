@@ -33,7 +33,7 @@ public class CreateProfileRunnerTests
         var cont = b.Build();
         await cont.Resolve<CreateProfileRunner>().RunInternal(cmd);
         var pipeSettings = reader.Read(pipelineSettingsPath);
-        pipeSettings.Profiles.Select(x => x.Nickname).ShouldEqual(profileName);
-        pipeSettings.Profiles.SelectMany(x => x.Groups).Select(x => x.Name).ShouldEqual(initialGroupName);
+        pipeSettings.Profiles.Select(x => x.Nickname).ShouldEqualEnumerable(profileName);
+        pipeSettings.Profiles.SelectMany(x => x.Groups).Select(x => x.Name).ShouldEqualEnumerable(initialGroupName);
     }
 }

@@ -47,6 +47,6 @@ public class GetPatcherRunnersTests
         settings.ForEach(x => x.On = true);
         sut.PatcherSettingsToRunnerFactory.Convert(default!)
             .ReturnsSeriallyForAnyArgs(patcherRuns);
-        sut.Get(settings).ShouldEqual(patcherRuns);
+        sut.Get(settings).ShouldEqualEnumerable(patcherRuns);
     }
 }

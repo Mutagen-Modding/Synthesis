@@ -20,7 +20,7 @@ public class LoadOrderForRunProviderTests
     {
         sut.LoadOrderListingsProvider.Get(blacklist).Returns(listings);
         sut.Get(outputPath, blacklist)
-            .ShouldEqual(listings);
+            .ShouldEqualEnumerable(listings);
     }
         
     [Theory, SynthAutoData]
@@ -37,6 +37,6 @@ public class LoadOrderForRunProviderTests
                 .And(modListingGetter)
                 .Concat(listingsSecond));
         sut.Get(outputPath, blacklist)
-            .ShouldEqual(listingsFirst);
+            .ShouldEqualEnumerable(listingsFirst);
     }
 }
