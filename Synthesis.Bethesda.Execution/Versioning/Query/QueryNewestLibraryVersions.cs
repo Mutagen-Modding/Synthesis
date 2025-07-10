@@ -116,7 +116,7 @@ public class QueryNewestLibraryVersions : IQueryNewestLibraryVersions
     {
         _logger.Information("Restoring Version Query Project");
         var result = await _processRunner.RunAndCapture(
-            _dotNetCommandStartConstructor.Construct("restore", Pathing.ProjectFile),
+            _dotNetCommandStartConstructor.Construct("restore -maxcpucount:1", Pathing.ProjectFile),
             cancel: cancel).ConfigureAwait(false);
         if (result.Result != 0)
         {

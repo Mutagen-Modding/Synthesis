@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Synthesis.Bethesda.Execution.DotNet;
 
 namespace Synthesis.Bethesda.Execution.PatcherCommands;
@@ -25,7 +25,7 @@ public class ProjectRunProcessStartInfoProvider : IProjectRunProcessStartInfoPro
     {
         return CmdStartConstructor.Construct("run --project", path, 
             ExecutionParameters.Parameters,
-            build ? string.Empty : "--no-build",
+            build ? "-maxcpucount:1 /p:BuildInParallel=false --disable-build-servers" : "--no-build",
             args);
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Noggog;
 
 namespace Synthesis.Bethesda.Execution.DotNet.Builder;
@@ -23,6 +23,6 @@ public class BuildStartInfoProvider : IBuildStartInfoProvider
         
     public ProcessStartInfo Construct(FilePath path)
     {
-        return StartConstructor.Construct("build", path, ExecutionParameters.Parameters);
+        return StartConstructor.Construct("build -maxcpucount:1 /p:BuildInParallel=false --disable-build-servers", path, ExecutionParameters.Parameters);
     }
 }
