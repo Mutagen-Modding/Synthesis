@@ -37,7 +37,7 @@ public class AllModsMissingErrorVm : ViewModel, IEnvironmentErrorVm
             .Select(x => x > 0)
             .CombineLatest(
                 nonImplicit.Connect()
-                    .FilterOnObservable(i => i.WhenAnyValue(x => x.ExistsOnDisk))
+                    .FilterOnObservable(i => i.WhenAnyValue(x => x.ModExists))
                     .QueryWhenChanged(q => q.Count > 0),
                 (hasAny, anyExist) => hasAny && !anyExist)
             .ToGuiProperty(this, nameof(InError), deferSubscription: true);
