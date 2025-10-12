@@ -12,10 +12,10 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - name: Setup .NET
+    - name: Setup .NET 10
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 9.0.*
+        dotnet-version: 10.0.*
     - name: Install dependencies
       run: |
         dotnet clean Synthesis.Bethesda.sln -c Release && dotnet nuget locals all --clear
@@ -31,7 +31,7 @@ jobs:
       run: dotnet publish "Synthesis.Bethesda.GUI/Synthesis.Bethesda.GUI.csproj" --configuration Release -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true
     - name: Archive Release
       run: |
-        powershell Compress-Archive Synthesis.Bethesda.GUI/bin/Release/net8.0/win-x64/publish/* Synthesis.zip
+        powershell Compress-Archive Synthesis.Bethesda.GUI/bin/Release/net9.0/win-x64/publish/* Synthesis.zip
     - name: Publish Synthesis GUI to Github
       uses: svenstaro/upload-release-action@v2
       with:

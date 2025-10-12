@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+      <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <IsPackable>true</IsPackable>
       <DebugType>portable</DebugType>

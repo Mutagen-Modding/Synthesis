@@ -108,6 +108,8 @@ public class GitPatcherInitVm : ViewModel, IPatcherInitVm
                     var customization = listingsProvider.Get(CancellationToken.None);
                         
                     if (customization.Failed) return Observable.Empty<IChangeSet<PatcherStoreListingVm>>();
+                    
+                    logger.Information("Retreived {Count} patcher listings from the store", customization.Value.Count);
                         
                     return customization.Value
                         .Select(x => listingVmFactory(this, x.Patcher, x.Repository))

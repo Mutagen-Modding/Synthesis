@@ -6,7 +6,6 @@
       <CETCompat>false</CETCompat>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Platforms>x64</Platforms>
-    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable</WarningsAsErrors>
       <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>

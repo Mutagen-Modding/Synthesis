@@ -30,18 +30,29 @@ public class LogCleaner : IStartupTask
         
     public void Start()
     {
-        foreach (var dir in _fileSystem.Directory.EnumerateDirectoryPaths(LogSettings.LogFolder, includeSelf: false, recursive: false))
+        if (!_fileSystem.Directory.Exists(LogSettings.LogFolder)) return;
+
+        foreach (var file in _fileSystem.Directory.EnumerateFilePaths(LogSettings.LogFolder, recursive: false))
         {
-            if (!DateTime.TryParseExact(dir.Name, LogSettings.DateFormat, default, default, out var dt)) continue;
+            // Skip Current.log
+            if (string.Equals(file.Name, "Current.log", StringComparison.OrdinalIgnoreCase)) continue;
+
+            // Try to parse the date from the log file name format: MM-dd-yyyy_HHhMMmSSs.log
+            var fileName = file.NameWithoutExtension;
+            if (fileName.Length < 10) continue;
+
+            var datePart = fileName.Substring(0, 10); // MM-dd-yyyy
+            if (!DateTime.TryParseExact(datePart, "MM-dd-yyyy", default, default, out var dt)) continue;
+
             if ((NowProvider.NowLocal - dt).TotalDays > DaysToKeep)
             {
                 try
                 {
-                    _fileSystem.Directory.DeleteEntireFolder(dir);
+                    _fileSystem.File.Delete(file);
                 }
                 catch (Exception e)
                 {
-                    _logger.Error(e, "Failed to delete old log folder {Path}", dir.Path);
+                    _logger.Error(e, "Failed to delete old log file {Path}", file.Path);
                 }
             }
         }
