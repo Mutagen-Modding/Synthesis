@@ -16,24 +16,26 @@ public class LogCleanerTests
         LogCleaner cleaner)
     {
         cleaner.LogSettings.LogFolder.Returns(new DirectoryPath("C:/logs"));
-        cleaner.LogSettings.DateFormat.Returns(Log.DateFormat);
         cleaner.NowProvider.NowLocal.Returns(new DateTime(2021, 9, 16));
-            
+
         fs.Directory.CreateDirectory("C:/logs");
-        var keepDir = $"C:/logs/{new DateTime(2021, 9, 15).ToString(Log.DateFormat)}";
-        fs.Directory.CreateDirectory($"C:/logs/{new DateTime(2021, 9, 15).ToString(Log.DateFormat)}");
-        var keepFile = Path.Combine(keepDir, "SomeFile");
+
+        // Create a log file from yesterday (should be kept)
+        var keepFile = "C:/logs/09-15-2021_10h30m45s.log";
         fs.File.Create(keepFile);
-        var deleteDir = $"C:/logs/{new DateTime(2021, 9, 6).ToString(Log.DateFormat)}";
-        fs.Directory.CreateDirectory(deleteDir);
-        var deleteFile = Path.Combine(deleteDir, "SomeFile");
+
+        // Create a log file from 10 days ago (should be deleted)
+        var deleteFile = "C:/logs/09-06-2021_10h30m45s.log";
         fs.File.Create(deleteFile);
-            
+
+        // Create Current.log (should always be kept)
+        var currentLog = "C:/logs/Current.log";
+        fs.File.Create(currentLog);
+
         cleaner.Start();
 
-        fs.Directory.Exists(keepDir).ShouldBeTrue();
         fs.File.Exists(keepFile).ShouldBeTrue();
-        fs.Directory.Exists(deleteDir).ShouldBeFalse();
         fs.File.Exists(deleteFile).ShouldBeFalse();
+        fs.File.Exists(currentLog).ShouldBeTrue();
     }
 }

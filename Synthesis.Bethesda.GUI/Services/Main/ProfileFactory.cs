@@ -47,10 +47,6 @@ public class ProfileFactory : IProfileFactory
                 cfg.RegisterInstance(settings)
                     .AsSelf()
                     .AsImplementedInterfaces();
-                    
-                cfg.RegisterType<ProfileLogDecorator>()
-                    .AsImplementedInterfaces()
-                    .SingleInstance();
             });
         var profile = scope.Resolve<ProfileVm>();
         var factory = scope.Resolve<IGroupFactory>();
