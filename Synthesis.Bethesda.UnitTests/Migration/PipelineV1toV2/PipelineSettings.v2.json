@@ -137,5 +137,6 @@
   "Shortcircuit": true,
   "WorkingDirectory": "",
   "BuildCorePercentage": 0.5,
-  "DotNetPathOverride": ""
+  "DotNetPathOverride": "",
+  "Mo2Compatibility": true
 }

@@ -12,7 +12,19 @@
     <StackPanel Margin="15" Orientation="Vertical">
         <TextBlock Text="Processing" Style="{StaticResource SettingSectionHeaderStyle}" Margin="0,0,0,5" />
         <StackPanel Orientation="Vertical" Margin="15,5,5,5">
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Margin="5" Orientation="Horizontal">
+                <CheckBox
+                    x:Name="ShortCircuitBox"
+                    Content="Short Circuit Checks"
+                    ToolTip="Whether to track and skip building and other meta gathering steps when deemed appropriate" />
+            </StackPanel>
+            <StackPanel Margin="5" Orientation="Horizontal">
+                <CheckBox
+                    x:Name="Mo2CompatibilityBox"
+                    Content="MO2 Compatibility"
+                    ToolTip="[PLACEHOLDER: MO2 compatibility mode description]" />
+            </StackPanel>
+            <StackPanel x:Name="NumProcessorsPanel" Orientation="Horizontal">
                 <TextBlock
                     Margin="0,0,10,0"
                     VerticalAlignment="Center"
@@ -29,12 +41,6 @@
                     Margin="10,0"
                     VerticalAlignment="Center"
                     Text="Num Processors" />
-            </StackPanel>
-            <StackPanel Margin="5" Orientation="Horizontal">
-                <CheckBox
-                    x:Name="ShortCircuitBox"
-                    Content="Short Circuit Checks"
-                    ToolTip="Whether to track and skip building and other meta gathering steps when deemed appropriate" />
             </StackPanel>
         </StackPanel>
         <TextBlock Text="Pathing" Style="{StaticResource SettingSectionHeaderStyle}" Margin="0,25,0,5" />

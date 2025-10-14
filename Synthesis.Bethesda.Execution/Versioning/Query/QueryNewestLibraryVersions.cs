@@ -4,6 +4,7 @@ using Mutagen.Bethesda.Synthesis.Projects;
 using Noggog.IO;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Utility;
 using Noggog.WorkEngine;
 
@@ -20,6 +21,7 @@ public class QueryNewestLibraryVersions : IQueryNewestLibraryVersions
     private readonly IWorkDropoff _workDropoff;
     private readonly ISynthesisSubProcessRunner _processRunner;
     private readonly IDotNetCommandStartConstructor _dotNetCommandStartConstructor;
+    private readonly IMo2CompatibilitySettingsProvider _settings;
     public IQueryVersionProjectPathing Pathing { get; }
     public IQueryLibraryVersions QueryLibraryVersions { get; }
     public IFileSystem FileSystem { get; }
@@ -33,18 +35,20 @@ public class QueryNewestLibraryVersions : IQueryNewestLibraryVersions
         IFileSystem fileSystem,
         ICreateSolutionFile createSolutionFile,
         ICreateProject createProject,
-        IQueryVersionProjectPathing pathing, 
+        IQueryVersionProjectPathing pathing,
         IDeleteEntireDirectory deleteEntireDirectory,
         IAddProjectToSolution addProjectToSolution,
         IWorkDropoff workDropoff,
         ISynthesisSubProcessRunner processRunner,
         IDotNetCommandStartConstructor dotNetCommandStartConstructor,
-        IQueryLibraryVersions queryLibraryVersions)
+        IQueryLibraryVersions queryLibraryVersions,
+        IMo2CompatibilitySettingsProvider settings)
     {
         _logger = logger;
         _workDropoff = workDropoff;
         _processRunner = processRunner;
         _dotNetCommandStartConstructor = dotNetCommandStartConstructor;
+        _settings = settings;
         FileSystem = fileSystem;
         CreateSolutionFile = createSolutionFile;
         CreateProject = createProject;
@@ -115,8 +119,9 @@ public class QueryNewestLibraryVersions : IQueryNewestLibraryVersions
     private async Task Restore(CancellationToken cancel)
     {
         _logger.Information("Restoring Version Query Project");
+        var restoreCommand = _settings.Mo2Compatibility ? "restore -maxcpucount:1" : "restore";
         var result = await _processRunner.RunAndCapture(
-            _dotNetCommandStartConstructor.Construct("restore", Pathing.ProjectFile),
+            _dotNetCommandStartConstructor.Construct(restoreCommand, Pathing.ProjectFile),
             cancel: cancel).ConfigureAwait(false);
         if (result.Result != 0)
         {

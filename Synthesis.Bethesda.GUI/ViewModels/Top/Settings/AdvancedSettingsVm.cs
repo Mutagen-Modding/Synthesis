@@ -11,35 +11,40 @@ using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
-public class GlobalSettingsVm : ViewModel, 
-    IShortCircuitSettingsProvider, IDotNetPathSettingsProvider, 
+public class GlobalSettingsVm : ViewModel,
+    IShortCircuitSettingsProvider, IDotNetPathSettingsProvider,
     IModifySavingSettings, INumWorkThreadsController,
-    IExecutionParametersSettingsProvider
+    IExecutionParametersSettingsProvider, IMo2CompatibilitySettingsProvider
 {
     [Reactive] public bool Shortcircuit { get; set; }
+
+    [Reactive] public bool Mo2Compatibility { get; set; }
 
     [Reactive] public string DotNetPathOverride { get; set; }
 
     private readonly ObservableAsPropertyHelper<byte> _buildCores;
     public byte BuildCores => _buildCores.Value;
-        
+
     [Reactive] public double BuildCorePercentage { get; set; }
 
     [Reactive] public bool SpecifyTargetFramework { get; set; } = true;
 
     public string? TargetRuntime => SpecifyTargetFramework ? "win-x64" : null;
-    
+
     public GlobalSettingsVm(
         ISettingsSingleton settingsSingleton,
         BuildCoreCalculator calculator)
     {
         Shortcircuit = settingsSingleton.Pipeline.Shortcircuit;
+        Mo2Compatibility = settingsSingleton.Pipeline.Mo2Compatibility;
         DotNetPathOverride = settingsSingleton.Pipeline.DotNetPathOverride;
         BuildCorePercentage = settingsSingleton.Pipeline.BuildCorePercentage;
         SpecifyTargetFramework = settingsSingleton.Gui.SpecifyTargetFramework;
 
-        _buildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
-            .Select(calculator.Calculate)
+        _buildCores = this.WhenAnyValue(
+                x => x.BuildCorePercentage,
+                x => x.Mo2Compatibility)
+            .Select(x => calculator.Calculate(x.Item1, x.Item2))
             .ToGuiProperty(this, nameof(BuildCores), deferSubscription: true);
     }
 
@@ -49,6 +54,7 @@ public class GlobalSettingsVm : ViewModel,
         gui.SpecifyTargetFramework = SpecifyTargetFramework;
         pipe.DotNetPathOverride = DotNetPathOverride;
         pipe.Shortcircuit = Shortcircuit;
+        pipe.Mo2Compatibility = Mo2Compatibility;
     }
 
     public IObservable<int?> NumDesiredThreads => this.WhenAnyValue(x => x.BuildCores).Select(x => (int?)x);
