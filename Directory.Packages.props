@@ -19,21 +19,21 @@
     <PackageVersion Include="Microsoft.Build" Version="17.14.8" />
     <PackageVersion Include="Microsoft.Build.Tasks.Core" Version="17.14.8" />
     <PackageVersion Include="Microsoft.CodeAnalysis" Version="4.14.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.SourceGenerators.Testing" Version="1.1.2" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit" Version="1.1.2" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.14.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="4.9.2" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="4.14.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.14.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-    <PackageVersion Include="Mutagen.Bethesda" Version="[0.51.5]" />
-    <PackageVersion Include="Mutagen.Bethesda.Autofac" Version="[0.51.5]" />
-    <PackageVersion Include="Mutagen.Bethesda.Core" Version="[0.51.5]" />
-    <PackageVersion Include="Mutagen.Bethesda.Json" Version="[0.51.5]" />
-    <PackageVersion Include="Mutagen.Bethesda.Kernel" Version="[0.51.5]" />
-    <PackageVersion Include="Mutagen.Bethesda.Testing" Version="[0.51.5]" />
-    <PackageVersion Include="Mutagen.Bethesda.WPF" Version="[0.51.5]" />
+    <PackageVersion Include="Mutagen.Bethesda" Version="[0.52.0]" />
+    <PackageVersion Include="Mutagen.Bethesda.Autofac" Version="[0.52.0]" />
+    <PackageVersion Include="Mutagen.Bethesda.Core" Version="[0.52.0]" />
+    <PackageVersion Include="Mutagen.Bethesda.Json" Version="[0.52.0]" />
+    <PackageVersion Include="Mutagen.Bethesda.Kernel" Version="[0.52.0]" />
+    <PackageVersion Include="Mutagen.Bethesda.Testing" Version="[0.52.0]" />
+    <PackageVersion Include="Mutagen.Bethesda.WPF" Version="[0.52.0]" />
     <PackageVersion Include="Newtonsoft.Json">
       <Version>13.0.4</Version>
     </PackageVersion>
