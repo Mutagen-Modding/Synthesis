@@ -653,6 +653,7 @@ public class SynthesisPipeline
                         ? new EncodingBundle(NonTranslated: MutagenEncoding._1252, NonLocalized: MutagenEncoding._utf8)
                         : null)
                 .WithForcedLowerFormIdRangeUsage(args.FormIDRangeMode.ToForceBool())
+                .WithAutoSplit()
                 .WriteAsync();
         }
         catch (TooManyMastersException tooMany)

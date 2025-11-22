@@ -30,4 +30,5 @@ public interface ISynthesisProfileSettings : IProfileIdentifier, IGameReleaseCon
     public bool ExportAsMasterFiles { get; set; }
     public bool MasterStyleFallbackEnabled { get; set; }
     public MasterStyle MasterStyle { get; set; }
+    public bool SplitIfMaxMastersExceeded { get; set; }
 }

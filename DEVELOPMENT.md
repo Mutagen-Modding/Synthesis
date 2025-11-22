@@ -142,6 +142,32 @@ static void RunPatch(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
 
 The pipeline handles CLI parsing, load order construction, settings GUI integration, and plugin export.
 
+### Logging Guidelines: Runner vs Patcher
+
+Synthesis has two distinct "sides" with different logging approaches:
+
+**Runner Side** (Synthesis.Bethesda.Execution, Synthesis.Bethesda.GUI, Synthesis.Bethesda.CLI):
+- Code that orchestrates patcher execution, manages Git repos, handles compilation, etc.
+- **Use `ILogger`** for all logging
+- Inject via constructor: `private readonly ILogger _logger;`
+- Use appropriate log levels:
+  - `_logger.Information()` - General informational messages
+  - `_logger.Debug()` - Detailed debugging information
+  - `_logger.Warning()` - Warnings that don't prevent execution
+  - `_logger.Error()` - Errors that prevent operation
+- Examples: ExecuteRun, RunAGroup, GitPatcherRun, BuildPatcher
+
+**Patcher Side** (Mutagen.Bethesda.Synthesis, Synthesis.Bethesda):
+- Code that patchers directly use or that runs within the patcher process
+- **Use `Console.WriteLine()`** for logging
+- This output goes to the patcher's console and is captured by the runner
+- Examples: PatcherStateFactory, SynthesisPipeline, IPatcherState implementations
+
+**Why the distinction?**
+- The runner has access to full DI infrastructure and uses ILogger to route logs to GUI, files, or console
+- Patchers run as separate processes and their console output is captured and displayed by the runner
+- Mutagen.Bethesda.Synthesis is distributed as a NuGet package and cannot depend on Synthesis logging infrastructure
+
 ### Build System
 
 - Uses `dotnet build` via process execution (Synthesis.Bethesda.Execution/DotNet/Builder/Build.cs)
@@ -155,6 +181,35 @@ Patchers can specify Mutagen/Synthesis library versions:
 - **Match**: Match what the Git repo specifies
 - **Latest**: Always use latest available
 - **Manual**: User-specified version
+
+### Documentation Guidelines
+
+When writing Markdown documentation in the `docs/` folder:
+
+**List Formatting:**
+- **Always include a blank line before lists** (both bulleted and numbered)
+- Without the blank line, MkDocs will not render the list properly
+- This applies to lists after headers, paragraphs, or any other content
+
+**Example - Incorrect:**
+```markdown
+## Features
+- Feature 1
+- Feature 2
+```
+
+**Example - Correct:**
+```markdown
+## Features
+
+- Feature 1
+- Feature 2
+```
+
+**Why this matters:**
+- MkDocs uses Python-Markdown which requires blank lines before lists for proper parsing
+- Without blank lines, lists appear as plain text instead of formatted bullets/numbers
+- This is a common source of formatting issues in the documentation
 
 ## Important Notes
 

@@ -216,6 +216,7 @@ public class RunVm : ViewModel
                         masterFile: RunningProfile.MasterFile,
                         masterStyleFallbackEnabled: RunningProfile.MasterStyleFallbackEnabled,
                         masterStyle: RunningProfile.MasterStyle,
+                        splitIfMaxMastersExceeded: RunningProfile.SplitIfMaxMastersExceeded,
                         cancel: _cancel.Token).ConfigureAwait(false);
                 }
                 catch (TaskCanceledException)

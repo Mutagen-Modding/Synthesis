@@ -71,6 +71,7 @@ public class RunArgsConstructor : IRunArgsConstructor
             UseUtf8ForEmbeddedStrings = runParameters.UseUtf8ForEmbeddedStrings,
             HeaderVersionOverride = runParameters.HeaderVersionOverride,
             FormIDRangeMode = runParameters.FormIDRangeMode,
+            SplitIfMaxMastersExceeded = runParameters.SplitIfMaxMastersExceeded,
         };
     }
 }

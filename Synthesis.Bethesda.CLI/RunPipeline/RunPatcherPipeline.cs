@@ -54,10 +54,11 @@ public class RunPatcherPipeline
                     UseUtf8ForEmbeddedStrings: profile.UseUtf8ForEmbeddedStrings,
                     HeaderVersionOverride: profile.HeaderVersionOverride,
                     FormIDRangeMode: profile.FormIDRangeMode,
-                    PersistenceMode: _command.PersistenceMode ?? PersistenceMode.None, 
+                    PersistenceMode: _command.PersistenceMode ?? PersistenceMode.None,
                     PersistencePath: _command.PersistencePath,
                     Master: profile.ExportAsMasterFiles,
                     MasterStyleFallbackEnabled: profile.MasterStyleFallbackEnabled,
-                    MasterStyle: profile.MasterStyle)).ConfigureAwait(false);
+                    MasterStyle: profile.MasterStyle,
+                    SplitIfMaxMastersExceeded: profile.SplitIfMaxMastersExceeded)).ConfigureAwait(false);
     }
 }

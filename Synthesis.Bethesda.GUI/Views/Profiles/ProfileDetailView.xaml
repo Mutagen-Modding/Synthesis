@@ -115,6 +115,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="0">
                         <Grid.RowDefinitions>
@@ -285,6 +286,21 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0"
+                                   Margin="0,16,0,0"
+                                   Style="{StaticResource SettingSectionHeaderStyle}"
+                                   Text="Master Overflow Settings" />
+                        <CheckBox Grid.Row="1"
+                                  x:Name="SplitIfMaxMastersExceededCheckbox"
+                                  Margin="10,8,0,0"
+                                  Content="Split Files if Max Masters Exceeded"
+                                  ToolTip="Whether to split output files when the maximum number of masters is exceeded" />
+                    </Grid>
+                    <Grid Grid.Row="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
@@ -307,7 +323,7 @@
                                   Margin="10,8,0,0"
                                   ToolTip="Use UTF8 encoding when reading/writing localizable mod strings that are embedded" />
                     </Grid>
-                    <Grid Grid.Row="5">
+                    <Grid Grid.Row="6">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />

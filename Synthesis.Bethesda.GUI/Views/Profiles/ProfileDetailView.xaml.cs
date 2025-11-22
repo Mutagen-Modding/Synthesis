@@ -197,6 +197,9 @@ public partial class ProfileDetailView
             //    .DisposeWith(disposable);
             this.Bind(this.ViewModel, vm => vm.Profile!.SelectedPersistenceMode, v => v.PersistenceStyleSelector.SelectedItem)
                 .DisposeWith(disposable);
+
+            this.Bind(ViewModel, x => x.Profile!.SplitIfMaxMastersExceeded, x => x.SplitIfMaxMastersExceededCheckbox.IsChecked)
+                .DisposeWith(disposable);
         });
     }
 }

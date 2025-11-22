@@ -130,6 +130,9 @@ public class ProfileVm : ViewModel
     [Reactive]
     public MasterStyle MasterStyle { get; set; }
 
+    [Reactive]
+    public bool SplitIfMaxMastersExceeded { get; set; }
+
     public ProfileVm(
         ILifetimeScope scope,
         IPatcherInitializationVm initVm,
@@ -437,7 +440,8 @@ public class ProfileVm : ViewModel
             TargetLanguage = TargetLanguage,
             UseUtf8ForEmbeddedStrings = UseUtf8InEmbedded,
             FormIDRangeMode = FormIDRangeMode,
-            HeaderVersionOverride = HeaderVersionOverride
+            HeaderVersionOverride = HeaderVersionOverride,
+            SplitIfMaxMastersExceeded = SplitIfMaxMastersExceeded
         };
     }
 

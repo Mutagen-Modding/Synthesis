@@ -14,4 +14,5 @@ public record RunParameters(
     string? PersistencePath,
     bool Master,
     bool MasterStyleFallbackEnabled,
-    MasterStyle MasterStyle);
+    MasterStyle MasterStyle,
+    bool SplitIfMaxMastersExceeded);
