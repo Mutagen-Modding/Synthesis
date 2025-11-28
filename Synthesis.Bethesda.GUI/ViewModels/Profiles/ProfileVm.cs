@@ -21,6 +21,7 @@ using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Profile.Services;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.V2;
+using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Profile.Exporter;
 using Synthesis.Bethesda.GUI.Services.Profile.TopLevel;
 using Synthesis.Bethesda.GUI.Settings;
@@ -50,6 +51,10 @@ public class ProfileVm : ViewModel
     public ICommand ExpandAllGroupsCommand { get; }
     public ICommand ExportCommand { get; }
     public ReactiveCommand<Unit, Unit> UpdateAllPatchersCommand { get; }
+    public ICommand OpenPatchSettingsDocsCommand { get; }
+    public ICommand OpenCompactionDocsCommand { get; }
+    public ICommand OpenMasterOverflowDocsCommand { get; }
+    public ICommand OpenLanguageDocsCommand { get; }
 
     public string ID { get; private set; }
 
@@ -152,6 +157,7 @@ public class ProfileVm : ViewModel
         StartRun startRun,
         IGameReleaseContext gameReleaseContext,
         AddGitPatcherResponder addGitPatcherResponder,
+        INavigateTo navigateTo,
         ILogger logger)
     {
         Scope = scope;
@@ -344,6 +350,18 @@ public class ProfileVm : ViewModel
                 group.Expanded = false;
             }
         });
+
+        OpenPatchSettingsDocsCommand = ReactiveCommand.Create(() =>
+            navigateTo.Navigate("https://mutagen-modding.github.io/Synthesis/Patch-Settings"));
+
+        OpenCompactionDocsCommand = ReactiveCommand.Create(() =>
+            navigateTo.Navigate("https://mutagen-modding.github.io/Synthesis/Compaction"));
+
+        OpenMasterOverflowDocsCommand = ReactiveCommand.Create(() =>
+            navigateTo.Navigate("https://mutagen-modding.github.io/Synthesis/Master-Overflow-Settings"));
+
+        OpenLanguageDocsCommand = ReactiveCommand.Create(() =>
+            navigateTo.Navigate("https://mutagen-modding.github.io/Synthesis/Language-Settings"));
 
         var allCommands = Groups.Connect()
             .ObserveOnGui()

@@ -221,17 +221,29 @@
                             <RowDefinition Height="10" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                                   Margin="0,16,0,0"
-                                   Style="{StaticResource SettingSectionHeaderStyle}"
-                                   Text="Patch Settings" />
+                        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,16,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       Style="{StaticResource SettingSectionHeaderStyle}"
+                                       Text="Patch Settings" />
+                            <Button Grid.Column="1"
+                                    x:Name="PatchSettingsDocsButton"
+                                    Margin="8,0,0,0"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    ToolTip="View documentation">
+                                <icon:PackIconMaterial Kind="HelpCircleOutline" Width="16" Height="16" />
+                            </Button>
+                        </Grid>
                         <TextBlock Grid.Row="2" Grid.Column="0"
                                    Margin="10,0,5,0"
                                    VerticalAlignment="Center"
@@ -257,26 +269,47 @@
                                   Content="Master"
                                   Margin="10,8,0,0"
                                   ToolTip="Whether to export patches as master files" />
-                        <ComboBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" x:Name="MasterStylePicker"
-                                  Margin="10,8,0,0"
-                                  ItemsSource="{Binding MasterStyleOptions}"
-                                  SelectedItem="{Binding Profile.MasterStyle}"
-                                  ToolTip="What style of master to export patches as" />
-                        <CheckBox Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" x:Name="MasterStyleFallback"
-                                  Content="Fallback on Overflow"
-                                  Margin="10,8,0,0"
-                                  ToolTip="Whether to automatically fall back to larger master styles when needed" />
                     </Grid>
                     <Grid Grid.Row="3">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0"
-                                   Margin="0,16,0,0"
-                                   Style="{StaticResource SettingSectionHeaderStyle}"
-                                   Text="FormID Persistence" />
-                        <ComboBox Grid.Row="1"
+                        <Grid Grid.Row="0" Margin="0,16,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       Style="{StaticResource SettingSectionHeaderStyle}"
+                                       Text="Compaction" />
+                            <Button Grid.Column="1"
+                                    x:Name="CompactionDocsButton"
+                                    Margin="8,0,0,0"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    ToolTip="View documentation">
+                                <icon:PackIconMaterial Kind="HelpCircleOutline" Width="16" Height="16" />
+                            </Button>
+                        </Grid>
+                        <ComboBox Grid.Row="1" x:Name="MasterStylePicker"
+                                  Margin="10,8,0,0"
+                                  ItemsSource="{Binding MasterStyleOptions}"
+                                  SelectedItem="{Binding Profile.MasterStyle}"
+                                  ToolTip="What style of master to export patches as (Small/Medium/Full)" />
+                        <CheckBox Grid.Row="2" x:Name="MasterStyleFallback"
+                                  Content="Fallback on Overflow"
+                                  Margin="10,8,0,0"
+                                  ToolTip="Whether to automatically fall back to larger master styles when needed" />
+                        <TextBlock Grid.Row="3"
+                                   Margin="10,16,0,0"
+                                   Text="FormID Persistence"
+                                   FontWeight="SemiBold" />
+                        <ComboBox Grid.Row="4"
                                   x:Name="PersistenceStyleSelector"
                                   Margin="10,8,0,0"
                                   ItemsSource="{Binding PersistenceModes}"
@@ -287,10 +320,24 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0"
-                                   Margin="0,16,0,0"
-                                   Style="{StaticResource SettingSectionHeaderStyle}"
-                                   Text="Master Overflow Settings" />
+                        <Grid Grid.Row="0" Margin="0,16,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       Style="{StaticResource SettingSectionHeaderStyle}"
+                                       Text="Master Overflow Settings" />
+                            <Button Grid.Column="1"
+                                    x:Name="MasterOverflowDocsButton"
+                                    Margin="8,0,0,0"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    ToolTip="View documentation">
+                                <icon:PackIconMaterial Kind="HelpCircleOutline" Width="16" Height="16" />
+                            </Button>
+                        </Grid>
                         <CheckBox Grid.Row="1"
                                   x:Name="SplitIfMaxMastersExceededCheckbox"
                                   Margin="10,8,0,0"
@@ -304,10 +351,24 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0"
-                                   Margin="0,16,0,0"
-                                   Style="{StaticResource SettingSectionHeaderStyle}"
-                                   Text="Language" />
+                        <Grid Grid.Row="0" Margin="0,16,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       Style="{StaticResource SettingSectionHeaderStyle}"
+                                       Text="Language" />
+                            <Button Grid.Column="1"
+                                    x:Name="LanguageDocsButton"
+                                    Margin="8,0,0,0"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    ToolTip="View documentation">
+                                <icon:PackIconMaterial Kind="HelpCircleOutline" Width="16" Height="16" />
+                            </Button>
+                        </Grid>
                         <CheckBox Grid.Row="1" x:Name="Localize"
                                   Content="Localize"
                                   Margin="10,8,0,0"

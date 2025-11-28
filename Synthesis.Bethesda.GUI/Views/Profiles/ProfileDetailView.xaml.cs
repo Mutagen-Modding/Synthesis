@@ -200,6 +200,23 @@ public partial class ProfileDetailView
 
             this.Bind(ViewModel, x => x.Profile!.SplitIfMaxMastersExceeded, x => x.SplitIfMaxMastersExceededCheckbox.IsChecked)
                 .DisposeWith(disposable);
+
+            // Documentation links
+            this.WhenAnyValue(x => x.ViewModel!.Profile!.OpenPatchSettingsDocsCommand)
+                .BindTo(this, x => x.PatchSettingsDocsButton.Command)
+                .DisposeWith(disposable);
+
+            this.WhenAnyValue(x => x.ViewModel!.Profile!.OpenCompactionDocsCommand)
+                .BindTo(this, x => x.CompactionDocsButton.Command)
+                .DisposeWith(disposable);
+
+            this.WhenAnyValue(x => x.ViewModel!.Profile!.OpenMasterOverflowDocsCommand)
+                .BindTo(this, x => x.MasterOverflowDocsButton.Command)
+                .DisposeWith(disposable);
+
+            this.WhenAnyValue(x => x.ViewModel!.Profile!.OpenLanguageDocsCommand)
+                .BindTo(this, x => x.LanguageDocsButton.Command)
+                .DisposeWith(disposable);
         });
     }
 }
