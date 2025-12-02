@@ -89,15 +89,6 @@
             <BuildAction>None</BuildAction>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Migration\PipelineV1toV2\PipelineSettings.v2.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Migration\PipelineV1toV2\PipelineSettings.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Migration\GuiV1toV2\GuiSettings.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
 
     <ItemGroup>
