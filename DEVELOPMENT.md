@@ -1,14 +1,45 @@
-# CLAUDE.md
+# Development Notes
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file contains helpful information for developers and AI assistants working on this codebase.
 
-## Overview
+## About Synthesis
 
 Synthesis is a framework and GUI for creating Bethesda game mods via code instead of by hand. It allows users to run code-based "patchers" that read game data and output plugin files. The framework handles Git repository management, compilation, execution orchestration, and provides both GUI (WPF) and CLI interfaces.
 
-## Build & Development Commands
+## Project Structure
 
-### Building the Solution
+### Solutions
+
+The repository contains multiple solution files:
+
+- **Synthesis.Bethesda.sln** - Main solution (use this for development)
+- **Synthesis.Bethesda.SettingsHost.sln** - Settings-specific solution
+
+### Key Projects
+
+**Core Libraries:**
+- **Synthesis.Bethesda** - Core abstractions, DTOs, and command definitions. Minimal dependencies.
+- **Mutagen.Bethesda.Synthesis** - NuGet package that patcher developers reference. Provides `SynthesisPipeline` API and `IPatcher` interface for patcher discovery.
+- **Synthesis.Bethesda.Execution** - Orchestrates patcher discovery, Git operations, compilation, and execution. Heavy dependencies (Autofac, LibGit2Sharp, MSBuild, Roslyn).
+
+**UI Projects:**
+- **Synthesis.Bethesda.GUI** - Full WPF application with Autofac DI and ReactiveUI MVVM.
+- **Synthesis.Bethesda.CLI** - Command-line interface for running pipelines without GUI.
+- **Mutagen.Bethesda.Synthesis.WPF** - Reusable WPF components and ViewModels.
+
+**Testing:**
+- **Synthesis.Bethesda.UnitTests** - Unit test project
+- **Synthesis.Bethesda.IntegrationTests** - Integration test project
+
+## Building
+
+### Prerequisites
+
+- .NET 9.0 SDK
+- Windows (GUI is WPF-based and Windows-only)
+
+### Build Commands
+
 ```bash
 # Restore dependencies
 dotnet restore Synthesis.Bethesda.sln
@@ -20,7 +51,18 @@ dotnet build Synthesis.Bethesda.sln -c Release
 dotnet build Synthesis.Bethesda.GUI/Synthesis.Bethesda.GUI.csproj -c Release
 ```
 
+### Cleaning the Repository
+
+If you encounter build errors, clean the repository:
+
+```bash
+dotnet clean Synthesis.Bethesda.sln
+```
+
+## Testing
+
 ### Running Tests
+
 ```bash
 # Run all tests
 dotnet test Synthesis.Bethesda.sln -c Release
@@ -29,7 +71,8 @@ dotnet test Synthesis.Bethesda.sln -c Release
 dotnet test Synthesis.Bethesda.UnitTests/Synthesis.Bethesda.UnitTests.csproj -c Release
 ```
 
-### Running the Applications
+## Running the Applications
+
 ```bash
 # Run GUI (from project directory)
 dotnet run --project Synthesis.Bethesda.GUI/Synthesis.Bethesda.GUI.csproj
@@ -38,28 +81,14 @@ dotnet run --project Synthesis.Bethesda.GUI/Synthesis.Bethesda.GUI.csproj
 dotnet run --project Synthesis.Bethesda.CLI/Synthesis.Bethesda.CLI.csproj -- <command>
 ```
 
+## Architecture
+
 ### Package Management
+
 - This solution uses **Central Package Management** (Directory.Packages.props)
 - All package versions are defined centrally in Directory.Packages.props
 - Target framework: .NET 9.0 (defined in Directory.Build.props)
 - Platform: x64 only
-
-## Architecture
-
-### Project Structure
-
-**Core Libraries:**
-- **Synthesis.Bethesda**: Core abstractions, DTOs, and command definitions. Minimal dependencies.
-- **Mutagen.Bethesda.Synthesis**: NuGet package that patcher developers reference. Provides `SynthesisPipeline` API and `IPatcher` interface for patcher discovery.
-- **Synthesis.Bethesda.Execution**: Orchestrates patcher discovery, Git operations, compilation, and execution. Heavy dependencies (Autofac, LibGit2Sharp, MSBuild, Roslyn).
-
-**UI Projects:**
-- **Synthesis.Bethesda.GUI**: Full WPF application with Autofac DI and ReactiveUI MVVM.
-- **Synthesis.Bethesda.CLI**: Command-line interface for running pipelines without GUI.
-- **Mutagen.Bethesda.Synthesis.WPF**: Reusable WPF components and ViewModels.
-
-**Testing:**
-- **Synthesis.Bethesda.UnitTests**: Unit test project
 
 ### Key Architectural Patterns
 
@@ -182,6 +211,38 @@ Patchers can specify Mutagen/Synthesis library versions:
 - **Latest**: Always use latest available
 - **Manual**: User-specified version
 
+## Development Workflow
+
+### Always Verify Your Changes
+
+**Important**: After making code changes, always verify the solution builds and tests pass:
+
+```bash
+# 1. Clean the solution (if needed)
+dotnet clean Synthesis.Bethesda.sln
+
+# 2. Build the solution
+dotnet build Synthesis.Bethesda.sln
+
+# 3. Run tests to verify nothing broke
+dotnet test Synthesis.Bethesda.sln
+```
+
+This ensures your changes don't break the build or existing functionality.
+
+### File System Operations
+
+- **NEVER redirect to `nul`** - On Windows, `2>nul` creates unwanted files that Git tracks
+- Use proper null redirection: `2>/dev/null` (works on Windows with bash)
+- For temporary files, use `.claude/` subfolder or designated temp directories that are gitignored
+- Example: `ls directory 2>/dev/null || echo "Not found"` instead of `dir directory 2>nul`
+- **NEVER use `sed` for bulk find/replace** - `sed` does not preserve Windows CRLF line endings, creating massive spurious diffs
+  - On Windows, `sed -i` converts CRLF to LF, causing every line to show as changed in git
+  - Use targeted edits with the Edit tool instead of global sed replacements
+  - If you must do bulk replacements, only use tools that preserve line endings (e.g., PowerShell with `-Raw` and explicit encoding)
+  - Example (incorrect): `find . -name "*.cs" -exec sed -i 's/OldName/NewName/g' {} \;` - creates CRLF→LF changes on every touched file
+  - Example (correct): Use Edit tool on each file individually, or ask us
+
 ### Documentation Guidelines
 
 When writing Markdown documentation in the `docs/` folder:
@@ -211,18 +272,25 @@ When writing Markdown documentation in the `docs/` folder:
 - Without blank lines, lists appear as plain text instead of formatted bullets/numbers
 - This is a common source of formatting issues in the documentation
 
-### File System Operations
+## Releases
 
-- **NEVER redirect to `nul`** - On Windows, `2>nul` creates unwanted files that Git tracks
-- Use proper null redirection: `2>/dev/null` (works on Windows with bash)
-- For temporary files, use `.claude/` subfolder or designated temp directories that are gitignored
-- Example: `ls directory 2>/dev/null || echo "Not found"` instead of `dir directory 2>nul`
-- **NEVER use `sed` for bulk find/replace** - `sed` does not preserve Windows CRLF line endings, creating massive spurious diffs
-  - On Windows, `sed -i` converts CRLF to LF, causing every line to show as changed in git
-  - Use targeted edits with the Edit tool instead of global sed replacements
-  - If you must do bulk replacements, only use tools that preserve line endings (e.g., PowerShell with `-Raw` and explicit encoding)
-  - Example (incorrect): `find . -name "*.cs" -exec sed -i 's/OldName/NewName/g' {} \;` - creates CRLF→LF changes on every touched file
-  - Example (correct): Use Edit tool on each file individually, or ask us
+### Release Versioning
+
+- Create release tags using semantic versioning format: `<major>.<minor>.<patch>`
+- Always include the patch number, even if it's zero (e.g., `3.1.0`, not `3.1`)
+- **Do not prefix with `v`** (e.g., use `3.1.0`, not `v3.1.0`)
+- This format is required for GitVersion compatibility
+
+### Creating GitHub Release Drafts
+
+1. Find the last release tag: `git tag --sort=-version:refname`
+2. Get commits since last release: `git log --oneline <last-tag>..HEAD`
+3. Construct release notes by categorizing commits:
+   - **Enhancements**: New features, performance improvements, major changes
+   - **Bug Fixes**: Bug fixes and corrections
+   - **Testing & Documentation**: Test additions, documentation updates
+4. Create draft release: `gh release create <version> --draft --title "<version>" --notes "<release-notes>" --target main`
+5. Include full changelog link: `**Full Changelog**: https://github.com/Noggog/Synthesis/compare/<last-tag>...<new-tag>`
 
 ## Important Notes
 
@@ -233,18 +301,6 @@ When writing Markdown documentation in the `docs/` folder:
 - **Compilation**: Uses Microsoft.Build and Roslyn for project compilation and analysis
 - **WPF**: GUI is Windows-only (uses WPF and targets Windows platform)
 
-### Releases
-- Create release tags using semantic versioning format: `<major>.<minor>.<patch>`
-- Always include the patch number, even if it's zero (e.g., `3.1.0`, not `3.1`)
-- **Do not prefix with `v`** (e.g., use `3.1.0`, not `v3.1.0`)
-- This format is required for GitVersion compatibility
+## Contributing
 
-#### Creating GitHub Release Drafts
-1. Find the last release tag: `git tag --sort=-version:refname`
-2. Get commits since last release: `git log --oneline <last-tag>..HEAD`
-3. Construct release notes by categorizing commits:
-   - **Enhancements**: New features, performance improvements, major changes
-   - **Bug Fixes**: Bug fixes and corrections
-   - **Testing & Documentation**: Test additions, documentation updates
-4. Create draft release: `gh release create <version> --draft --title "<version>" --notes "<release-notes>" --target main`
-5. Include full changelog link: `**Full Changelog**: https://github.com/Noggog/CSharpExt/compare/<last-tag>...<new-tag>`
+See the main README.md and official documentation for contribution guidelines.
