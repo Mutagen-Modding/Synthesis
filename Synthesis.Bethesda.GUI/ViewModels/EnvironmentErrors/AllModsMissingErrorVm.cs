@@ -2,8 +2,10 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
 using Mutagen.Bethesda.Plugins.Implicit.DI;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
+using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
@@ -26,11 +28,12 @@ public class AllModsMissingErrorVm : ViewModel, IEnvironmentErrorVm
         IProfileOverridesVm overridesVm,
         OpenGlobalSettings openProfileSettings,
         IImplicitListingModKeyProvider implicitListingsProvider,
-        IProfileLoadOrder profileLoadOrder)
+        IProfileLoadOrder profileLoadOrder,
+        ISchedulerProvider schedulerProvider)
     {
         var nonImplicit = profileLoadOrder.LoadOrder.Connect()
             .Filter(x => !implicitListingsProvider.Listings.Contains(x.ModKey))
-            .ObserveOn(RxApp.MainThreadScheduler)
+            .ObserveOn(schedulerProvider.MainThread)
             .AsObservableList();
             
         _InError = nonImplicit.CountChanged

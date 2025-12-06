@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
@@ -29,7 +30,8 @@ public class GitPatcherState : IGitPatcherState
         IInstalledSdkFollower dotNetInstalled,
         IEnvironmentErrorsVm envErrors,
         IMissingMods missingMods,
-        ILogger logger)
+        ILogger logger,
+        ISchedulerProvider schedulerProvider)
     {
         State = Observable.CombineLatest(
                 driverRepositoryPreparation.DriverInfo
@@ -44,7 +46,7 @@ public class GitPatcherState : IGitPatcherState
                 envErrors.WhenAnyFallback(x => x.ActiveError!.ErrorString),
                 missingMods.Missing
                     .QueryWhenChanged()
-                    .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+                    .Throttle(TimeSpan.FromMilliseconds(200), schedulerProvider.MainThread)
                     .StartWith(Array.Empty<ModKey>()),
                 (driver, runner, checkout, runnability, dotnet, envError, reqModsMissing) =>
                 {

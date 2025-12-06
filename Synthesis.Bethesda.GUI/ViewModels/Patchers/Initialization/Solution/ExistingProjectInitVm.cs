@@ -4,6 +4,7 @@ using DynamicData;
 using DynamicData.Binding;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
@@ -30,14 +31,15 @@ public class ExistingProjectInitVm : ASolutionInitializer
 
     public ExistingProjectInitVm(
         IAvailableProjectsRetriever availableProjectsRetriever,
-        IPatcherFactory patcherFactory)
+        IPatcherFactory patcherFactory,
+        ISchedulerProvider schedulerProvider)
     {
         SolutionPath.PathType = PathPickerVM.PathTypeOptions.File;
         SolutionPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
         SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
 
         AvailableProjects = this.WhenAnyValue(x => x.SolutionPath.TargetPath)
-            .ObserveOn(RxApp.TaskpoolScheduler)
+            .ObserveOn(schedulerProvider.TaskPool)
             .Select(x => availableProjectsRetriever.Get(x))
             .Select(x => x.AsObservableChangeSet())
             .Switch()

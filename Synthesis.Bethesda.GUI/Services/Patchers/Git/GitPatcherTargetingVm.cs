@@ -1,6 +1,7 @@
 using System.Reactive;
 using System.Reactive.Linq;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -52,16 +53,17 @@ public class GitPatcherTargetingVm : ViewModel, IGitPatcherTargetingVm
 
     public GitPatcherTargetingVm(
         ILockToCurrentVersioning lockToCurrentVersioning,
-        IDriverRepositoryPreparationFollower driverRepositoryPreparation)
+        IDriverRepositoryPreparationFollower driverRepositoryPreparation,
+        ISchedulerProvider schedulerProvider)
     {
         var targetOriginBranchName = this.WhenAnyValue(x => x.TargetBranchName)
             .Select(x => $"origin/{x}")
             .Replay(1).RefCount();
-            
+
         // Set latest checkboxes to drive user input
         driverRepositoryPreparation.DriverInfo
             .FlowSwitch(this.WhenAnyValue(x => x.BranchFollowMain))
-            .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+            .Throttle(TimeSpan.FromMilliseconds(150), schedulerProvider.MainThread)
             .Subscribe(state =>
             {
                 if (state.RunnableState.Succeeded)
@@ -80,7 +82,7 @@ public class GitPatcherTargetingVm : ViewModel, IGitPatcherTargetingVm
                     this.WhenAnyValue(x => x.BranchAutoUpdate),
                     this.WhenAnyValue(x => x.PatcherVersioning),
                     (autoBranch, versioning) => autoBranch && versioning == PatcherVersioningEnum.Branch))
-            .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+            .Throttle(TimeSpan.FromMilliseconds(150), schedulerProvider.MainThread)
             .Subscribe(x =>
             {
                 if (x.Driver.RunnableState.Succeeded
@@ -99,7 +101,7 @@ public class GitPatcherTargetingVm : ViewModel, IGitPatcherTargetingVm
                     lockToCurrentVersioning.WhenAnyValue(x => x.Lock),
                     this.WhenAnyValue(x => x.PatcherVersioning),
                     (autoTag, locked, versioning) => !locked && autoTag && versioning == PatcherVersioningEnum.Tag))
-            .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+            .Throttle(TimeSpan.FromMilliseconds(150), schedulerProvider.MainThread)
             .Subscribe(x =>
             {
                 this.TargetTag = x?.Name ?? string.Empty;
@@ -130,7 +132,7 @@ public class GitPatcherTargetingVm : ViewModel, IGitPatcherTargetingVm
                 targetBranchSha,
                 this.WhenAnyValue(x => x.TargetCommit),
                 (targetBranchSha, targetCommit) => (targetBranchSha, targetCommit))
-            .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+            .Throttle(TimeSpan.FromMilliseconds(200), schedulerProvider.MainThread)
             .Where(x => x.targetBranchSha != null && TargetCommit.IsNullOrWhitespace())
             .Subscribe(x => { this.TargetCommit = x.targetBranchSha ?? string.Empty; })
             .DisposeWith(this);
@@ -138,7 +140,7 @@ public class GitPatcherTargetingVm : ViewModel, IGitPatcherTargetingVm
                 targetTag,
                 this.WhenAnyValue(x => x.TargetCommit),
                 (targetTagSha, targetCommit) => (targetTagSha, targetCommit))
-            .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+            .Throttle(TimeSpan.FromMilliseconds(200), schedulerProvider.MainThread)
             .Where(x => x.targetTagSha != null && TargetCommit.IsNullOrWhitespace())
             .Subscribe(x => { this.TargetCommit = x.targetTagSha?.Sha ?? string.Empty; })
             .DisposeWith(this);

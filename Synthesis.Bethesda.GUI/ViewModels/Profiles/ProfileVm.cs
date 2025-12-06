@@ -12,6 +12,7 @@ using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using Noggog.WPF.Containers;
 using ReactiveUI;
@@ -158,6 +159,7 @@ public class ProfileVm : ViewModel
         IGameReleaseContext gameReleaseContext,
         AddGitPatcherResponder addGitPatcherResponder,
         INavigateTo navigateTo,
+        ISchedulerProvider schedulerProvider,
         ILogger logger)
     {
         Scope = scope;
@@ -189,7 +191,7 @@ public class ProfileVm : ViewModel
 
         var enabledGroups = Groups.Connect()
             .ObserveOnGui()
-            .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
+            .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: schedulerProvider.MainThread)
             .RefCount();
 
         var enabledGroupModKeys = enabledGroups
@@ -211,10 +213,10 @@ public class ProfileVm : ViewModel
                                     .Select(groupModKeys => groupModKeys.Contains(x.ModKey)),
                                 (exists, isEnabledGroupKey) => !exists && !isEnabledGroupKey);
                         },
-                        scheduler: RxApp.MainThreadScheduler)
+                        scheduler: schedulerProvider.MainThread)
                     .QueryWhenChanged(q => q)
                     .StartWith(Array.Empty<ReadOnlyModListingVM>())
-                    .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler),
+                    .Throttle(TimeSpan.FromMilliseconds(200), schedulerProvider.MainThread),
                 this.WhenAnyValue(x => x.IgnoreMissingMods),
                 (dataFolder, loadOrder, missingMods, ignoreMissingMods) =>
                 {
@@ -249,7 +251,7 @@ public class ProfileVm : ViewModel
                     }
                     return GetResponse<ViewModel>.Succeed(null!);
                 })
-            .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+            .Throttle(TimeSpan.FromMilliseconds(200), schedulerProvider.MainThread)
             .Do(x =>
             {
                 if (x.Failed)
@@ -267,9 +269,9 @@ public class ProfileVm : ViewModel
                 this.WhenAnyValue(x => x.BlockingError),
                 Groups.Connect()
                     .ObserveOnGui()
-                    .AutoRefresh(x => x.IsOn, scheduler: RxApp.MainThreadScheduler)
+                    .AutoRefresh(x => x.IsOn, scheduler: schedulerProvider.MainThread)
                     .Filter(p => p.IsOn)
-                    .AutoRefresh(x => x.State, scheduler: RxApp.MainThreadScheduler)
+                    .AutoRefresh(x => x.State, scheduler: schedulerProvider.MainThread)
                     .Transform(p => p.State, transformOnRefresh: true)
                     .QueryWhenChanged(errs =>
                     {
@@ -399,7 +401,7 @@ public class ProfileVm : ViewModel
                     .Select(q => q.Where(x => x.Enabled).Select(x => x.ModKey).ToArray())
                     .StartWithEmpty(),
                 (dataFolder, rel, loadOrder) => (dataFolder, rel, loadOrder))
-            .Throttle(TimeSpan.FromMilliseconds(100), RxApp.TaskpoolScheduler)
+            .Throttle(TimeSpan.FromMilliseconds(100), schedulerProvider.TaskPool)
             .Select(x =>
             {
                 return Observable.Create<ILinkCache?>(obs =>

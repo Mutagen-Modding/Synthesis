@@ -211,6 +211,19 @@ When writing Markdown documentation in the `docs/` folder:
 - Without blank lines, lists appear as plain text instead of formatted bullets/numbers
 - This is a common source of formatting issues in the documentation
 
+### File System Operations
+
+- **NEVER redirect to `nul`** - On Windows, `2>nul` creates unwanted files that Git tracks
+- Use proper null redirection: `2>/dev/null` (works on Windows with bash)
+- For temporary files, use `.claude/` subfolder or designated temp directories that are gitignored
+- Example: `ls directory 2>/dev/null || echo "Not found"` instead of `dir directory 2>nul`
+- **NEVER use `sed` for bulk find/replace** - `sed` does not preserve Windows CRLF line endings, creating massive spurious diffs
+  - On Windows, `sed -i` converts CRLF to LF, causing every line to show as changed in git
+  - Use targeted edits with the Edit tool instead of global sed replacements
+  - If you must do bulk replacements, only use tools that preserve line endings (e.g., PowerShell with `-Raw` and explicit encoding)
+  - Example (incorrect): `find . -name "*.cs" -exec sed -i 's/OldName/NewName/g' {} \;` - creates CRLF→LF changes on every touched file
+  - Example (correct): Use Edit tool on each file individually, or ask us
+
 ## Important Notes
 
 - **Platform**: x64 only (defined in Directory.Build.props)

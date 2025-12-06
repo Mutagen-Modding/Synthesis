@@ -5,6 +5,7 @@ using System.Windows.Input;
 using DynamicData;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using Noggog.WPF.Containers;
 using ReactiveUI;
@@ -79,7 +80,8 @@ public class GroupVm : ViewModel, ISelected
         IProfileLoadOrder loadOrder,
         IConfirmationPanelControllerVm confirmation,
         IProfileDisplayControllerVm profileDisplayController,
-        ILogger logger)
+        ILogger logger,
+        ISchedulerProvider schedulerProvider)
     {
         _profileDisplayController = profileDisplayController;
         ProfileVm = profileVm;
@@ -113,7 +115,7 @@ public class GroupVm : ViewModel, ISelected
         _numEnabledPatchers = Patchers.Connect()
             .ObserveOnGui()
             .FilterOnObservable(group => group.WhenAnyValue(x => x.IsOn),
-                scheduler: RxApp.MainThreadScheduler)
+                scheduler: schedulerProvider.MainThread)
             .QueryWhenChanged(q => q)
             .StartWith(Array.Empty<PatcherVm>())
             .Select(x => x.Count)
@@ -121,7 +123,7 @@ public class GroupVm : ViewModel, ISelected
 
         var onPatchers = Patchers.Connect()
             .ObserveOnGui()
-            .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
+            .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: schedulerProvider.MainThread)
             .RefCount();
 
         var processingPatchers = onPatchers

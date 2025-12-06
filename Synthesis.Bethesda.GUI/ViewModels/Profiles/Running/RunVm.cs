@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -21,6 +22,7 @@ public class RunVm : ViewModel
 {
     private readonly ILogger _logger;
     private readonly IExecuteGuiRun _executeRun;
+    private readonly ISchedulerProvider _schedulerProvider;
     public RunDisplayControllerVm RunDisplayControllerVm { get; }
     public IRunReporter Reporter { get; }
     private readonly Dictionary<Guid, PatcherRunVm> _patchers;
@@ -59,11 +61,13 @@ public class RunVm : ViewModel
         IRunReporterWatcher reporterWatcher,
         IRunReporter reporter,
         IExecuteGuiRun executeRun,
+        ISchedulerProvider schedulerProvider,
         IEnumerable<GroupVm> groups,
         ProfileVm profile)
     {
         _logger = logger;
         _executeRun = executeRun;
+        _schedulerProvider = schedulerProvider;
         RunDisplayControllerVm = runDisplayControllerVm;
         Reporter = reporter;
         RunningProfile = profile;
@@ -200,7 +204,7 @@ public class RunVm : ViewModel
         await Observable.Return(Unit.Default)
             .ObserveOnGui()
             .Do(_ => Running = true)
-            .ObserveOn(RxApp.TaskpoolScheduler)
+            .ObserveOn(_schedulerProvider.TaskPool)
             .DoTask(async (_) =>
             {
                 try

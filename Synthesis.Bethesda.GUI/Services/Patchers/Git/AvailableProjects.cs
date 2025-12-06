@@ -1,8 +1,10 @@
 ﻿using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;
 
@@ -16,13 +18,14 @@ public class AvailableProjects : ViewModel, IAvailableProjects
     public IObservableCollection<string> Projects { get; }
 
     public AvailableProjects(
-        IDriverRepositoryPreparationFollower driverRepositoryPreparation)
+        IDriverRepositoryPreparationFollower driverRepositoryPreparation,
+        ISchedulerProvider schedulerProvider)
     {
         Projects = driverRepositoryPreparation.DriverInfo
             .Select(x => x.Item?.AvailableProjects ?? Enumerable.Empty<string>())
             .Select(x => x.AsObservableChangeSet<string>())
             .Switch()
-            .ObserveOn(RxApp.MainThreadScheduler)
+            .ObserveOn(schedulerProvider.MainThread)
             .ToObservableCollection(this);
     }
 }
