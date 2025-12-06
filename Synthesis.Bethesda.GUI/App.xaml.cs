@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Windows;
 using Autofac;
+using Noggog;
 using Noggog.IO;
 using Serilog;
 using Synthesis.Bethesda.Execution.Placement;
@@ -63,7 +64,8 @@ public partial class App : Application
             var container = builder.Build();
 
             container.Resolve<IStartup>()
-                .Initialize();
+                .Initialize()
+                .FireAndForget(ex => Log.Logger.Error(ex, "Error starting"));
         }
         catch (Exception ex)
         {

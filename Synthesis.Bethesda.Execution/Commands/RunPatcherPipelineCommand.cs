@@ -12,7 +12,8 @@ namespace Synthesis.Bethesda.Execution.Commands;
 [ExcludeFromCodeCoverage]
 public class RunPatcherPipelineCommand : 
     IPipelineSettingsPath,
-    IExecutionParametersSettingsProvider
+    IExecutionParametersSettingsProvider,
+    IMo2CompatibilitySettingsProvider
 {
     [Option('o', "OutputDirectory", Required = true, HelpText = "Path where the patcher should place its resulting file(s).")]
     public required string OutputDirectory { get; set; }
@@ -43,6 +44,9 @@ public class RunPatcherPipelineCommand :
     [Option('t', "TargetRuntime", Required = false, HelpText = "Target runtime to specify explicitly")]
     public string? TargetRuntime { get; set; }
 
+    [Option("Mo2Compatibility", Required = false, HelpText = "Whether to enable MO2 compatibility mode")]
+    public bool Mo2Compatibility { get; set; }
+
     public override string ToString()
     {
         return $"\n{nameof(RunSynthesisPatcher)} => \n"
@@ -54,7 +58,8 @@ public class RunPatcherPipelineCommand :
                + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}\n"
                + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
                + $"  {nameof(PersistenceMode)} => {this.PersistenceMode}\n"
-               + $"  {nameof(TargetRuntime)} => {this.TargetRuntime}";
+               + $"  {nameof(TargetRuntime)} => {this.TargetRuntime}\n"
+               + $"  {nameof(Mo2Compatibility)} => {this.Mo2Compatibility}";
     }
 
     FilePath IPipelineSettingsPath.Path => PipelineSettingsPath;

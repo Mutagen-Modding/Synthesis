@@ -2,7 +2,6 @@ using System.IO.Abstractions;
 using Autofac;
 using Noggog;
 using Synthesis.Bethesda.Execution.Commands;
-using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.CLI.RunPipeline;
 
@@ -23,10 +22,6 @@ public class RunPipelineLogic
             new RunPipelineModule(fileSystem.GetOrDefault(), cmd));
             
         var container = builder.Build();
-
-        container
-            .Resolve<IStartupTask[]>()
-            .ForEach(x => x.Start());
 
         await container
             .Resolve<RunPipelineLogic>()

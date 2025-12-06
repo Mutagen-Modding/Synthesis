@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0-windows7.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+        <Platforms>x64</Platforms>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="Mutagen.Bethesda" />
+        <PackageReference Include="Mutagen.Bethesda.Skyrim" />
+        <PackageReference Include="Shouldly" />
+        <PackageReference Include="Noggog.Testing" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Synthesis.Bethesda.Execution\Synthesis.Bethesda.Execution.csproj" />
+        <ProjectReference Include="..\Mutagen.Bethesda.Synthesis\Mutagen.Bethesda.Synthesis.csproj" />
+        <ProjectReference Include="..\Synthesis.Bethesda.GUI\Synthesis.Bethesda.GUI.csproj" />
+        <ProjectReference Include="..\Synthesis.Bethesda.CLI\Synthesis.Bethesda.CLI.csproj" />
+    </ItemGroup>
+
+</Project>

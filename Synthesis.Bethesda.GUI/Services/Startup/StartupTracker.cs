@@ -1,11 +1,19 @@
-﻿namespace Synthesis.Bethesda.GUI.Services.Startup;
+﻿using Noggog.WPF;
+using ReactiveUI;
+
+namespace Synthesis.Bethesda.GUI.Services.Startup;
 
 public interface IStartupTracker
 {
     bool Initialized { get; set; }
 }
 
-public class StartupTracker : IStartupTracker
+public class StartupTracker : ViewModel, IStartupTracker
 {
-    public bool Initialized { get; set; }
+    private bool _initialized;
+    public bool Initialized
+    {
+        get => _initialized;
+        set => this.RaiseAndSetIfChanged(ref _initialized, value);
+    }
 }

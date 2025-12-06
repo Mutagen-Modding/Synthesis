@@ -1,5 +1,4 @@
 ﻿using System.Reactive;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using Noggog;
 using Noggog.Reactive;
@@ -29,7 +28,7 @@ public class NewestLibraryVersionsVm : ViewModel, INewestLibraryVersionsVm
         ISchedulerProvider schedulerProvider)
     {
         _versions = Observable.Return(Unit.Default)
-            .ObserveOn(TaskPoolScheduler.Default)
+            .ObserveOn(schedulerProvider.TaskPool)
             .CombineLatest(
                 installedSdkFollower.DotNetSdkInstalled,
                 (_, DotNetVersions) => DotNetVersions)
@@ -46,7 +45,8 @@ public class NewestLibraryVersionsVm : ViewModel, INewestLibraryVersionsVm
                             new NugetVersionPair(null, null));
                     }
 
-                    return await queryNewest.GetLatestVersions(CancellationToken.None).ConfigureAwait(false);
+                    var ret = await queryNewest.GetLatestVersions(CancellationToken.None).ConfigureAwait(false);
+                    return ret;
                 }
                 catch (Exception e)
                 {

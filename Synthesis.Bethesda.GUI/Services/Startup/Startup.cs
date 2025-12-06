@@ -3,6 +3,7 @@ using Mutagen.Bethesda.Synthesis.Versioning;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Utility;
+using Synthesis.Bethesda.GUI.Logging;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 using Synthesis.Bethesda.GUI.Views;
 
@@ -10,7 +11,7 @@ namespace Synthesis.Bethesda.GUI.Services.Startup;
 
 public interface IStartup
 {
-    void Initialize();
+    Task Initialize();
 }
 
 public class Startup : IStartup
@@ -44,7 +45,7 @@ public class Startup : IStartup
         _printDotNetInfo = printDotNetInfo;
     }
         
-    public async void Initialize()
+    public async Task Initialize()
     {
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
         {
@@ -88,6 +89,10 @@ public class Startup : IStartup
         catch (Exception e)
         {
             _logger.Error(e, "Error initializing app");
+            if (LogPreferences.IsTesting)
+            {
+                throw;
+            }
             Application.Current.Shutdown();
         }
             

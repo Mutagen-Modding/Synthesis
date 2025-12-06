@@ -34,7 +34,6 @@ public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, IProfileLoadOrderP
         ILiveLoadOrderProvider liveLoadOrderProvider,
         IPluginListingsPathContext pluginListingsPathContext,
         ICreationClubListingsPathProvider cccListingsPathProvider,
-        IProfileIdentifier ident,
         IProfileOverridesVm overrides)
     {
         var loadOrderResult = overrides.WhenAnyValue(x => x.DataFolderResult)

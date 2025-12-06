@@ -1,9 +1,11 @@
 using Autofac;
+using Noggog;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.CLI.RunPipeline;
 
@@ -11,20 +13,26 @@ public class RunPatcherPipeline
 {
     private readonly ILifetimeScope _scope;
     private readonly ProfileProvider _profileProvider;
+    private readonly IStartupTask[] _startupTasks;
     private readonly RunPatcherPipelineCommand _command;
 
     public RunPatcherPipeline(
         ILifetimeScope scope,
         ProfileProvider profileProvider,
+        IStartupTask[] startupTasks,
         RunPatcherPipelineCommand command)
     {
         _scope = scope;
         _profileProvider = profileProvider;
+        _startupTasks = startupTasks;
         _command = command;
     }
         
     public async Task Run(CancellationToken cancel)
     {
+        _startupTasks
+            .ForEach(x => x.Start());
+
         var profile = _profileProvider.Profile.Value;
         using var profileScope = _scope.BeginLifetimeScope(LifetimeScopes.ProfileNickname, (b) =>
         {
