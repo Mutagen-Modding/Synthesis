@@ -64,13 +64,13 @@ public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, IProfileLoadOrderP
         LoadOrder = loadOrderResult
             .Select(x => x.Results)
             .Switch()
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .AsObservableList();
 
         _state = loadOrderResult
             .Select(x => x.State)
             .Switch()
-            .ToGuiProperty(this, nameof(State), ErrorResponse.Success, deferSubscription: true);
+            .ToGuiProperty(this, nameof(State), ErrorResponse.Success, schedulerProvider.MainThread, deferSubscription: true);
             
         loadOrderResult.Select(lo => lo.State)
             // Skip the uninitialized state

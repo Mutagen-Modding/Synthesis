@@ -1,5 +1,6 @@
 ﻿using System.Reactive.Linq;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -17,7 +18,8 @@ public class GitPatcherNameVm : ViewModel, IPatcherNameVm
 
     public GitPatcherNameVm(
         IConstructNameFromRepositoryPath nameFromRepositoryPathConstructor,
-        IGitRemoteRepoPathInputVm remoteRepoPathFollower)
+        IGitRemoteRepoPathInputVm remoteRepoPathFollower,
+        ISchedulerProvider schedulerProvider)
     {
         _name = remoteRepoPathFollower.WhenAnyValue(x => x.RemoteRepoPath)
             .Select(nameFromRepositoryPathConstructor.Construct)
@@ -25,6 +27,7 @@ public class GitPatcherNameVm : ViewModel, IPatcherNameVm
                 this.WhenAnyValue(x => x.Nickname),
                 (auto, nickname) => nickname.IsNullOrWhitespace() ? auto : nickname)
             .ToGuiProperty<string>(this, nameof(Name),
-                nameFromRepositoryPathConstructor.Construct(remoteRepoPathFollower.RemoteRepoPath), deferSubscription: true);
+                nameFromRepositoryPathConstructor.Construct(remoteRepoPathFollower.RemoteRepoPath),
+                schedulerProvider.MainThread, deferSubscription: true);
     }
 }

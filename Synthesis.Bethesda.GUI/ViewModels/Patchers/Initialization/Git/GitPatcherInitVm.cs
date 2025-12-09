@@ -91,7 +91,7 @@ public class GitPatcherInitVm : ViewModel, IPatcherInitVm
 
         _canCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid.Valid)
             .Select(x => ErrorResponse.Create(x))
-            .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
+            .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success, schedulerProvider.MainThread);
 
         var installedPatcherPaths =
             groups.Groups.Items
@@ -166,8 +166,7 @@ public class GitPatcherInitVm : ViewModel, IPatcherInitVm
                         });
                 }))
             .Sort(Comparer<PatcherStoreListingVm>.Create((x, y) => x.Name.CompareTo(y.Name)))
-            .ObserveOn(schedulerProvider.MainThread)
-            .ToObservableCollection(this);
+            .ToObservableCollection(this, schedulerProvider.MainThread);
 
         OpenPopulationInfoCommand = ReactiveCommand.Create(() => navigateTo.Navigate(Constants.ListingRepositoryAddress));
         ClearSearchCommand = ReactiveCommand.Create(() => Search = string.Empty);

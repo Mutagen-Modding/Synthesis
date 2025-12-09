@@ -37,19 +37,19 @@
     <PackageVersion Include="Newtonsoft.Json">
       <Version>13.0.4</Version>
     </PackageVersion>
-    <PackageVersion Include="Noggog.Autofac" Version="3.1.0" />
-    <PackageVersion Include="Noggog.CSharpExt" Version="3.1.0" />
-    <PackageVersion Include="Noggog.CSharpExt.Json" Version="3.1.0" />
-    <PackageVersion Include="Noggog.CSharpExt.Windows" Version="3.1.0" />
+    <PackageVersion Include="Noggog.Autofac" Version="3.2.0-alpha.4" />
+    <PackageVersion Include="Noggog.CSharpExt" Version="3.2.0-alpha.4" />
+    <PackageVersion Include="Noggog.CSharpExt.Json" Version="3.2.0-alpha.4" />
+    <PackageVersion Include="Noggog.CSharpExt.Windows" Version="3.2.0-alpha.4" />
     <PackageVersion Include="Noggog.GitRepository">
       <Version>1.7.0</Version>
     </PackageVersion>
-    <PackageVersion Include="Noggog.Nuget" Version="3.1.0" />
-    <PackageVersion Include="Noggog.SourceGenerators" Version="3.1.0" />
+    <PackageVersion Include="Noggog.Nuget" Version="3.2.0-alpha.4" />
+    <PackageVersion Include="Noggog.SourceGenerators" Version="3.2.0-alpha.4" />
     <PackageVersion Include="Noggog.Testing">
-      <Version>3.1.0</Version>
+      <Version>3.2.0-alpha.4</Version>
     </PackageVersion>
-    <PackageVersion Include="Noggog.WPF" Version="3.1.0" />
+    <PackageVersion Include="Noggog.WPF" Version="3.2.0-alpha.4" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
     <PackageVersion Include="NuGet.Versioning" Version="6.14.0" />
     <PackageVersion Include="ReactiveUI" Version="21.0.1" />

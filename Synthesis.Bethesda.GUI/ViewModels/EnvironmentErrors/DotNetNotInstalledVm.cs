@@ -1,6 +1,7 @@
 using System.Reactive.Linq;
 using System.Windows.Input;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.DotNet;
@@ -22,12 +23,12 @@ public class DotNetNotInstalledVm : ViewModel, IEnvironmentErrorVm
     private readonly ObservableAsPropertyHelper<string?> _ErrorString;
     public string? ErrorString => _ErrorString.Value;
         
-    public DotNetNotInstalledVm(IInstalledSdkFollower mvm, INavigateTo navigate)
+    public DotNetNotInstalledVm(IInstalledSdkFollower mvm, INavigateTo navigate, ISchedulerProvider schedulerProvider)
     {
         _InError = mvm.DotNetSdkInstalled
             .Select(x => !x.Acceptable)
-            .ToGuiProperty(this, nameof(InError), deferSubscription: true);
-            
+            .ToGuiProperty(this, nameof(InError), scheduler: schedulerProvider.MainThread, deferSubscription: true);
+
         _CustomDisplayString = mvm.DotNetSdkInstalled
             .Select(x =>
             {
@@ -41,16 +42,16 @@ public class DotNetNotInstalledVm : ViewModel, IEnvironmentErrorVm
                     return $"While an SDK was found, it was not an acceptable version.  You had {x.Version}, but it must be at least {ParseNugetVersionString.MinVersion}";
                 }
             })
-            .ToGuiProperty(this, nameof(CustomDisplayString), string.Empty, deferSubscription: true);
+            .ToGuiProperty(this, nameof(CustomDisplayString), string.Empty, schedulerProvider.MainThread, deferSubscription: true);
 
         DownloadCommand = ReactiveCommand.Create(
             () =>
             {
                 navigate.Navigate("https://dotnet.microsoft.com/download");
             });
-            
+
         _ErrorString = this.WhenAnyValue(x => x.InError)
             .Select(x => x ? $"DotNet SDK: Desired SDK not found" : null)
-            .ToGuiProperty(this, nameof(ErrorString), default, deferSubscription: true);
+            .ToGuiProperty(this, nameof(ErrorString), default, schedulerProvider.MainThread, deferSubscription: true);
     }
 }

@@ -177,7 +177,7 @@ public class ProfileVm : ViewModel
         ID = ident.ID;
         Release = gameReleaseContext.Release;
 
-        GroupsDisplay = new SourceListUiFunnel<GroupVm>(Groups, this);
+        GroupsDisplay = new SourceListUiFunnel<GroupVm>(Groups, this, schedulerProvider.MainThread);
 
         ProfileDirectory = dirs.ProfileDirectory;
         WorkingDirectory = dirs.WorkingDirectory;
@@ -185,12 +185,12 @@ public class ProfileVm : ViewModel
         EnvironmentErrors = environmentErrors;
 
         _dataFolder = overrides.WhenAnyValue(x => x.DataFolderResult.Value)
-            .ToGuiProperty<DirectoryPath>(this, nameof(DataFolder), string.Empty, deferSubscription: true);
+            .ToGuiProperty<DirectoryPath>(this, nameof(DataFolder), string.Empty, schedulerProvider.MainThread, deferSubscription: true);
 
         LoadOrder = loadOrder.LoadOrder;
 
         var enabledGroups = Groups.Connect()
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: schedulerProvider.MainThread)
             .RefCount();
 
@@ -230,7 +230,7 @@ public class ProfileVm : ViewModel
 
                     return GetResponse<ViewModel>.Succeed(null!);
                 })
-            .ToGuiProperty(this, nameof(GlobalError), GetResponse<ViewModel>.Fail("Uninitialized global error"), deferSubscription: true);
+            .ToGuiProperty(this, nameof(GlobalError), GetResponse<ViewModel>.Fail("Uninitialized global error"), schedulerProvider.MainThread, deferSubscription: true);
 
         _blockingError = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.GlobalError),
@@ -263,12 +263,12 @@ public class ProfileVm : ViewModel
                     logger.Information("No global error");
                 }
             })
-            .ToGuiProperty(this, nameof(BlockingError), GetResponse<ViewModel>.Fail("Uninitialized blocking error"), deferSubscription: true);
+            .ToGuiProperty(this, nameof(BlockingError), GetResponse<ViewModel>.Fail("Uninitialized blocking error"), schedulerProvider.MainThread, deferSubscription: true);
             
         _state = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.BlockingError),
                 Groups.Connect()
-                    .ObserveOnGui()
+                    .ObserveOn(schedulerProvider.MainThread)
                     .AutoRefresh(x => x.IsOn, scheduler: schedulerProvider.MainThread)
                     .Filter(p => p.IsOn)
                     .AutoRefresh(x => x.State, scheduler: schedulerProvider.MainThread)
@@ -284,11 +284,11 @@ public class ProfileVm : ViewModel
                     if (!overall.Succeeded) return overall;
                     return patcherState;
                 })
-            .ToGuiProperty<ErrorResponse>(this, nameof(State), ErrorResponse.Fail("Uninitialized state error"), deferSubscription: true);
+            .ToGuiProperty<ErrorResponse>(this, nameof(State), ErrorResponse.Fail("Uninitialized state error"), schedulerProvider.MainThread, deferSubscription: true);
 
         _isActive = selProfile.WhenAnyValue(x => x.SelectedProfile)
             .Select(x => x == this)
-            .ToGuiProperty(this, nameof(IsActive), deferSubscription: true);
+            .ToGuiProperty(this, nameof(IsActive), schedulerProvider.MainThread, deferSubscription: true);
 
         GoToErrorCommand = OverallErrorVm.CreateCommand(this.WhenAnyValue(x => x.BlockingError));
 
@@ -309,7 +309,7 @@ public class ProfileVm : ViewModel
             
         _selectedPatcher = this.WhenAnyValue(x => x.DisplayController.SelectedObject)
             .Select(x => x as PatcherVm)
-            .ToGuiProperty(this, nameof(SelectedPatcher), default, deferSubscription: true);
+            .ToGuiProperty(this, nameof(SelectedPatcher), default, schedulerProvider.MainThread, deferSubscription: true);
 
         SetAllToProfileCommand = ReactiveCommand.Create(
             execute: () =>
@@ -366,7 +366,7 @@ public class ProfileVm : ViewModel
             navigateTo.Navigate("https://mutagen-modding.github.io/Synthesis/Language-Settings"));
 
         var allCommands = Groups.Connect()
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .Transform(x => CommandVM.Factory(x.UpdateAllPatchersCommand))
             .AsObservableList();
         UpdateAllPatchersCommand = ReactiveCommand.CreateFromTask(

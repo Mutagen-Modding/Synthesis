@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData.Binding;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -53,7 +54,8 @@ public class SolutionPatcherInitVm : ViewModel, IPatcherInitVm
         ExistingSolutionInitVm existingSolutionInit,
         NewSolutionInitVm newSolutionInit,
         ExistingProjectInitVm existingProjectInit,
-        IPatcherInitializationVm init)
+        IPatcherInitializationVm init,
+        ISchedulerProvider schedulerProvider)
     {
         ShowHelpSetting = showHelpSetting;
         IdeOptions.AddRange(Enums<IDE>.Values);
@@ -85,10 +87,10 @@ public class SolutionPatcherInitVm : ViewModel, IPatcherInitVm
             .RefCount();
         _targetSolutionInitializer = initializer
             .Select(x => x.Succeeded ? x.Value : default(ASolutionInitializer.InitializerCall?))
-            .ToGuiProperty(this, nameof(TargetSolutionInitializer), default);
+            .ToGuiProperty(this, nameof(TargetSolutionInitializer), default, schedulerProvider.MainThread);
         _canCompleteConfiguration = initializer
             .Select(x => (ErrorResponse)x)
-            .ToGuiProperty<ErrorResponse>(this, nameof(CanCompleteConfiguration), ErrorResponse.Failure);
+            .ToGuiProperty<ErrorResponse>(this, nameof(CanCompleteConfiguration), ErrorResponse.Failure, schedulerProvider.MainThread);
     }
 
     public override void Dispose()

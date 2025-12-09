@@ -72,6 +72,6 @@ public class ProfileSimpleLinkCacheVm : ViewModel, IProfileSimpleLinkCacheVm
             .Switch()
             .DisposePrevious(x => x.Disposable)
             .Select(x => x.Cache)
-            .ToGuiProperty(this, nameof(SimpleLinkCache), default(ILinkCache?), deferSubscription: true);
+            .ToGuiProperty(this, nameof(SimpleLinkCache), default(ILinkCache?), schedulerProvider.MainThread, deferSubscription: true);
     }
 }

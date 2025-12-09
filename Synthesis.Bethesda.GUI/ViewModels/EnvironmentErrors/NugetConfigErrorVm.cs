@@ -6,6 +6,7 @@ using DynamicData.Kernel;
 using Noggog;
 using Noggog.Nuget.Errors;
 using Noggog.Nuget.Services.Singleton;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
@@ -28,7 +29,8 @@ public class NugetConfigErrorVm : ViewModel, IEnvironmentErrorVm
     public NugetConfigErrorVm(
         INugetConfigPathProvider nugetConfigPathProvider,
         IAnalyzeNugetConfig analyzeNugetConfig,
-        ILogger logger)
+        ILogger logger,
+        ISchedulerProvider schedulerProvider)
     {
         NugetConfigPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -41,7 +43,7 @@ public class NugetConfigErrorVm : ViewModel, IEnvironmentErrorVm
                 var err = analyzeNugetConfig.Analyze(NugetConfigPath);
 
                 if (err == null) return default(ErrorVM?);
-                    
+
                 if (err is CorruptError corr)
                 {
                     logger.Error(corr.Exception, "Nuget.Config corrupt");
@@ -50,13 +52,13 @@ public class NugetConfigErrorVm : ViewModel, IEnvironmentErrorVm
                 return new ErrorVM(this, logger, err);
             })
             .RetryWithBackOff<ErrorVM?, Exception>((_, times) => TimeSpan.FromMilliseconds(Math.Min(times * 250, 5000)))
-            .ToGuiProperty(this, nameof(Error), default, deferSubscription: true);
+            .ToGuiProperty(this, nameof(Error), default, schedulerProvider.MainThread, deferSubscription: true);
         _InError = this.WhenAnyValue(x => x.Error)
             .Select(x => x != null)
-            .ToGuiProperty(this, nameof(InError), deferSubscription: true);
+            .ToGuiProperty(this, nameof(InError), scheduler: schedulerProvider.MainThread, deferSubscription: true);
         _ErrorString = this.WhenAnyValue(x => x.Error)
             .Select(x => x != null ? $"Nuget Config: {x.ErrorText}" : null)
-            .ToGuiProperty(this, nameof(ErrorString), default, deferSubscription: true);
+            .ToGuiProperty(this, nameof(ErrorString), default, schedulerProvider.MainThread, deferSubscription: true);
     }
 
     public class ErrorVM

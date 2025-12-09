@@ -1,6 +1,7 @@
 using System.Reactive.Linq;
 using Autofac;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Common;
@@ -32,8 +33,9 @@ public class CliPatcherVm : PatcherVm, ICliInputSourceVm
         ILifetimeScope scope,
         PatcherRenameActionVm.Factory renameFactory,
         PatcherGroupTarget groupTarget,
+        ISchedulerProvider schedulerProvider,
         CliPatcherSettings? settings = null)
-        : base(scope, nameVm, selPatcher, confirmation, idProvider, renameFactory, groupTarget, settings)
+        : base(scope, nameVm, selPatcher, confirmation, idProvider, renameFactory, groupTarget, schedulerProvider, settings)
     {
         ExecutableInput = pathToExecutableInputVm;
         ShowHelpSetting = showHelpSetting;
@@ -50,7 +52,7 @@ public class CliPatcherVm : PatcherVm, ICliInputSourceVm
             .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
             {
                 IsHaltingError = false
-            }, deferSubscription: true);
+            }, schedulerProvider.MainThread, deferSubscription: true);
     }
 
     public override PatcherSettings Save()

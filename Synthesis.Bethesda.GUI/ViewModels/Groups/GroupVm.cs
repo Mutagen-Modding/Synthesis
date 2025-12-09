@@ -103,26 +103,26 @@ public class GroupVm : ViewModel, ISelected
 
                 return GetResponse<ModKey>.Failure;
             })
-            .ToGuiProperty(this, nameof(ModKey), GetResponse<ModKey>.Fail(Mutagen.Bethesda.Plugins.ModKey.Null), deferSubscription: true);
+            .ToGuiProperty(this, nameof(ModKey), GetResponse<ModKey>.Fail(Mutagen.Bethesda.Plugins.ModKey.Null), schedulerProvider.MainThread, deferSubscription: true);
 
         _isSelected = profileDisplayController.WhenAnyValue(x => x.SelectedObject)
             .Select(x => x == this)
             // Not GuiProperty, as it interacts with drag/drop oddly
             .ToProperty(this, nameof(IsSelected));
 
-        PatchersDisplay = new SourceListUiFunnel<PatcherVm>(Patchers, this);
+        PatchersDisplay = new SourceListUiFunnel<PatcherVm>(Patchers, this, schedulerProvider.MainThread);
 
         _numEnabledPatchers = Patchers.Connect()
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .FilterOnObservable(group => group.WhenAnyValue(x => x.IsOn),
                 scheduler: schedulerProvider.MainThread)
             .QueryWhenChanged(q => q)
             .StartWith(Array.Empty<PatcherVm>())
             .Select(x => x.Count)
-            .ToGuiProperty(this, nameof(NumEnabledPatchers), deferSubscription: true);
+            .ToGuiProperty(this, nameof(NumEnabledPatchers), schedulerProvider.MainThread, deferSubscription: true);
 
         var onPatchers = Patchers.Connect()
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: schedulerProvider.MainThread)
             .RefCount();
 
@@ -136,7 +136,7 @@ public class GroupVm : ViewModel, ISelected
 
         _patchersProcessing = processingPatchers
             .Select(x => x.Count > 0)
-            .ToGuiProperty(this, nameof(PatchersProcessing), false, deferSubscription: true);
+            .ToGuiProperty(this, nameof(PatchersProcessing), false, schedulerProvider.MainThread, deferSubscription: true);
 
         _state = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.NumEnabledPatchers),
@@ -177,9 +177,9 @@ public class GroupVm : ViewModel, ISelected
 
                     return new ConfigurationState<ViewModel>(this);
                 })
-            .ToGuiProperty(this, nameof(State), new ConfigurationState<ViewModel>(this), deferSubscription: true);
-            
-        ErrorDisplayVm = new ErrorDisplayVm(this, this.WhenAnyValue(x => x.State));
+            .ToGuiProperty(this, nameof(State), new ConfigurationState<ViewModel>(this), schedulerProvider.MainThread, deferSubscription: true);
+
+        ErrorDisplayVm = new ErrorDisplayVm(this, this.WhenAnyValue(x => x.State), schedulerProvider);
 
         GoToErrorCommand = overallErrorVm.CreateCommand(
             this.WhenAnyValue(x => x.State)
@@ -190,7 +190,7 @@ public class GroupVm : ViewModel, ISelected
                 }));
             
         var allCommands = Patchers.Connect()
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .WhereCastable<PatcherVm, GitPatcherVm>()
             .Transform(x => CommandVM.Factory(x.UpdateAllCommand.Command))
             .AsObservableList();

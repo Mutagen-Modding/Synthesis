@@ -3,8 +3,6 @@ using DynamicData;
 using DynamicData.Binding;
 using Noggog.Reactive;
 using Noggog.WPF;
-using ReactiveUI;
-using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;
 
@@ -25,7 +23,6 @@ public class AvailableProjects : ViewModel, IAvailableProjects
             .Select(x => x.Item?.AvailableProjects ?? Enumerable.Empty<string>())
             .Select(x => x.AsObservableChangeSet<string>())
             .Switch()
-            .ObserveOn(schedulerProvider.MainThread)
-            .ToObservableCollection(this);
+            .ToObservableCollection(this, schedulerProvider.MainThread);
     }
 }

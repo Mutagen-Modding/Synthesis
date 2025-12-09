@@ -43,8 +43,7 @@ public class ExistingProjectInitVm : ASolutionInitializer
             .Select(x => availableProjectsRetriever.Get(x))
             .Select(x => x.AsObservableChangeSet())
             .Switch()
-            .ObserveOnGui()
-            .ToObservableCollection(this);
+            .ToObservableCollection(this, schedulerProvider.MainThread);
 
         InitializationCall = SelectedProjects.Connect()
             .Transform(subPath =>

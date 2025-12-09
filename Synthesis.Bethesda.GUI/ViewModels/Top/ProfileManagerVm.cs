@@ -2,6 +2,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using DynamicData;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -36,13 +37,14 @@ public class ProfileManagerVm : ViewModel, ISelectedProfileControllerVm, IModify
 
     public ProfileManagerVm(
         IProfileFactory profileFactory,
-        StartingProfileOverrideProvider startingProfileOverrideProvider)
+        StartingProfileOverrideProvider startingProfileOverrideProvider,
+        ISchedulerProvider schedulerProvider)
     {
         _profileFactory = profileFactory;
         _startingProfileOverrideProvider = startingProfileOverrideProvider;
 
         _displayedObject = this.WhenAnyValue(x => x.SelectedProfile!.DisplayController.SelectedObject)
-            .ToGuiProperty(this, nameof(DisplayedObject), default, deferSubscription: true);
+            .ToGuiProperty(this, nameof(DisplayedObject), default, schedulerProvider.MainThread, deferSubscription: true);
 
         RunPatchers = NoggogCommand.CreateFromObject(
             objectSource: this.WhenAnyValue(x => x.SelectedProfile),

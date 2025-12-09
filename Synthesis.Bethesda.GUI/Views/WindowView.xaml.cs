@@ -24,7 +24,7 @@ public partial class WindowView
                 .BindTo(this, x => x.ConfirmationOverlay.Visibility)
                 .DisposeWith(disposable);
             this.WhenAnyValue(x => x.ViewModel!.InitialLoading)
-                .ObserveOnGui()
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                 .BindTo(this, x => x.InitialLoading.Visibility)
                 .DisposeWith(disposable);

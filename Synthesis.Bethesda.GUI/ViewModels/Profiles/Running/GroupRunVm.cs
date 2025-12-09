@@ -1,5 +1,6 @@
 using System.Reactive.Linq;
 using DynamicData;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -34,7 +35,8 @@ public class GroupRunVm : ViewModel, IRunItem
         GroupVm groupVm,
         IGroupRun run,
         RunDisplayControllerVm runDisplayControllerVm,
-        IEnumerable<PatcherRunVm> runVms)
+        IEnumerable<PatcherRunVm> runVms,
+        ISchedulerProvider schedulerProvider)
     {
         SourceVm = groupVm;
         GroupVm = groupVm;
@@ -47,7 +49,7 @@ public class GroupRunVm : ViewModel, IRunItem
             .FilterOnObservable(x => x.WhenAnyValue(x => x.State.Value)
                 .Select(x => x != RunState.NotStarted))
             .QueryWhenChanged(q => q.Count > 0)
-            .ToGuiProperty(this, nameof(HasStarted), deferSubscription: true);
+            .ToGuiProperty(this, nameof(HasStarted), schedulerProvider.MainThread, deferSubscription: true);
 
         _runTimeString = runVms.AsObservableChangeSet()
             .AutoRefresh(x => x.RunTime)
@@ -78,7 +80,7 @@ public class GroupRunVm : ViewModel, IRunItem
                 }
                 return $"{time.TotalSeconds:n1}s";
             })
-            .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty, deferSubscription: true);
+            .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty, schedulerProvider.MainThread, deferSubscription: true);
     }
 
     public override string ToString()

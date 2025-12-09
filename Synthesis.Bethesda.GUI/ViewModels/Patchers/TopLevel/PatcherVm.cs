@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using Autofac;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -45,6 +46,7 @@ public abstract class PatcherVm : ViewModel, ISelected
         IPatcherIdProvider idProvider,
         PatcherRenameActionVm.Factory renameFactory,
         PatcherGroupTarget groupTarget,
+        ISchedulerProvider schedulerProvider,
         PatcherSettings? settings)
     {
         GroupTarget = groupTarget;
@@ -76,7 +78,7 @@ public abstract class PatcherVm : ViewModel, ISelected
             confirmation.TargetConfirmation = renameFactory();
         });
             
-        ErrorDisplayVm = new ErrorDisplayVm(this, this.WhenAnyValue(x => x.State));
+        ErrorDisplayVm = new ErrorDisplayVm(this, this.WhenAnyValue(x => x.State), schedulerProvider);
     }
 
     public abstract PatcherSettings Save();

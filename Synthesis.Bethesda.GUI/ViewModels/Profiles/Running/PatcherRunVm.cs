@@ -61,7 +61,7 @@ public class PatcherRunVm : ViewModel, IRunItem
                     .Select(x => x.Reason))
             .Buffer(TimeSpan.FromMilliseconds(250), count: 1000, schedulerProvider.TaskPool)
             .Where(b => b.Count > 0)
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .Subscribe(output =>
             {
                 StringBuilder sb = new();
@@ -75,11 +75,11 @@ public class PatcherRunVm : ViewModel, IRunItem
 
         _isRunning = this.WhenAnyValue(x => x.State)
             .Select(x => x.Value == RunState.Started)
-            .ToGuiProperty(this, nameof(IsRunning), deferSubscription: true);
+            .ToGuiProperty(this, nameof(IsRunning), schedulerProvider.MainThread, deferSubscription: true);
 
         _isErrored = this.WhenAnyValue(x => x.State)
             .Select(x => x.Value == RunState.Error)
-            .ToGuiProperty(this, nameof(IsErrored), deferSubscription: true);
+            .ToGuiProperty(this, nameof(IsErrored), schedulerProvider.MainThread, deferSubscription: true);
 
         var runTime = Noggog.ObservableExt.TimePassed(TimeSpan.FromMilliseconds(100), schedulerProvider.MainThread)
             .FlowSwitch(this.WhenAnyValue(x => x.IsRunning))
@@ -106,7 +106,7 @@ public class PatcherRunVm : ViewModel, IRunItem
                 }
                 return $"{time.TotalSeconds:n1}s";
             })
-            .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty, deferSubscription: true);
+            .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty, schedulerProvider.MainThread, deferSubscription: true);
 
         this.WhenAnyValue(x => x.State)
             .Where(x => x.Succeeded && x.Value == RunState.Finished)

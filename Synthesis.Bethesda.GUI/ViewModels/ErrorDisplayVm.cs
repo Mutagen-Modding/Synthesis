@@ -1,6 +1,7 @@
 using System.Reactive.Linq;
 using System.Windows.Input;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -23,12 +24,13 @@ public class ErrorDisplayVm : ViewModel
 
     public ErrorDisplayVm(
         ISelected parent,
-        IObservable<IConfigurationState> state)
+        IObservable<IConfigurationState> state,
+        ISchedulerProvider schedulerProvider)
     {
         DisplayedObject = parent;
 
         _state = state
-            .ToGuiProperty(this, nameof(State), ConfigurationState.Success, deferSubscription: true);
+            .ToGuiProperty(this, nameof(State), ConfigurationState.Success, schedulerProvider.MainThread, deferSubscription: true);
             
         ErrorVM = new ErrorVM("Error", backAction: () =>
         {

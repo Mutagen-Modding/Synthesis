@@ -2,6 +2,7 @@
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.GUI.Settings;
+using Noggog.Reactive;
 using Noggog.WPF;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Settings.Calculators;
@@ -33,7 +34,8 @@ public class GlobalSettingsVm : ViewModel,
 
     public GlobalSettingsVm(
         ISettingsSingleton settingsSingleton,
-        BuildCoreCalculator calculator)
+        BuildCoreCalculator calculator,
+        ISchedulerProvider schedulerProvider)
     {
         Shortcircuit = settingsSingleton.Pipeline.Shortcircuit;
         Mo2Compatibility = settingsSingleton.Pipeline.Mo2Compatibility;
@@ -45,7 +47,7 @@ public class GlobalSettingsVm : ViewModel,
                 x => x.BuildCorePercentage,
                 x => x.Mo2Compatibility)
             .Select(x => calculator.Calculate(x.Item1, x.Item2))
-            .ToGuiProperty(this, nameof(BuildCores), deferSubscription: true);
+            .ToGuiProperty(this, nameof(BuildCores), scheduler: schedulerProvider.MainThread, deferSubscription: true);
     }
 
     public void Save(SynthesisGuiSettings gui, PipelineSettings pipe)

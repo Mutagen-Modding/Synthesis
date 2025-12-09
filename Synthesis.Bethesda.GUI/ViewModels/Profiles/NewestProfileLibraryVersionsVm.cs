@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Linq;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.GUI.Services.Profile.TopLevel;
@@ -24,19 +25,20 @@ public class NewestProfileLibraryVersionsVm : ViewModel, INewestProfileLibraryVe
 
     public NewestProfileLibraryVersionsVm(
         INewestLibraryVersionsVm newestLibraryVersionsVm,
-        IConsiderPrereleasePreference considerPrerelease)
+        IConsiderPrereleasePreference considerPrerelease,
+        ISchedulerProvider schedulerProvider)
     {
         ConsiderPrerelease = considerPrerelease;
-            
+
         _newestMutagenVersion = Observable.CombineLatest(
                 newestLibraryVersionsVm.WhenAnyValue(x => x.Versions),
                 considerPrerelease.ConsiderPrereleases,
                 (vers, prereleases) => prereleases ? vers.Prerelease.Mutagen : vers.Normal.Mutagen)
-            .ToGuiProperty(this, nameof(NewestMutagenVersion), default(string?), deferSubscription: true);
+            .ToGuiProperty(this, nameof(NewestMutagenVersion), default(string?), schedulerProvider.MainThread, deferSubscription: true);
         _newestSynthesisVersion = Observable.CombineLatest(
                 newestLibraryVersionsVm.WhenAnyValue(x => x.Versions),
                 considerPrerelease.ConsiderPrereleases,
                 (vers, prereleases) => prereleases ? vers.Prerelease.Synthesis : vers.Normal.Synthesis)
-            .ToGuiProperty(this, nameof(NewestSynthesisVersion), default(string?), deferSubscription: true);
+            .ToGuiProperty(this, nameof(NewestSynthesisVersion), default(string?), schedulerProvider.MainThread, deferSubscription: true);
     }
 }

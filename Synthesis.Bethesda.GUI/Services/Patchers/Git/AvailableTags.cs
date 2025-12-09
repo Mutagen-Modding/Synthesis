@@ -46,7 +46,6 @@ public class AvailableTags : ViewModel, IAvailableTags
                 }))
             .Sort(SortExpressionComparer<DriverTag>.Descending(x => x.Index))
             .Transform(x => x.Name)
-            .ObserveOn(schedulerProvider.MainThread)
-            .ToObservableCollection(this);
+            .ToObservableCollection(this, schedulerProvider.MainThread);
     }
 }

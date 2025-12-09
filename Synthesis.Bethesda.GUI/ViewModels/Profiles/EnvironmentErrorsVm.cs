@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Linq;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
@@ -22,7 +23,8 @@ public class EnvironmentErrorsVm : ViewModel, IEnvironmentErrorsVm
 
     public EnvironmentErrorsVm(
         ILogger logger,
-        IEnumerable<IEnvironmentErrorVm> envErrors)
+        IEnumerable<IEnvironmentErrorVm> envErrors,
+        ISchedulerProvider schedulerProvider)
     {
         var envErrorsArr = envErrors.ToArray();
 
@@ -30,7 +32,7 @@ public class EnvironmentErrorsVm : ViewModel, IEnvironmentErrorsVm
         {
             logger.Warning("No environment errors registered");
         }
-            
+
         _activeError =
             Observable.CombineLatest(
                     envErrorsArr.Select(env =>
@@ -40,10 +42,10 @@ public class EnvironmentErrorsVm : ViewModel, IEnvironmentErrorsVm
                             .Select(inErr => inErr ? env : default);
                     }),
                     (errs) => errs.FirstOrDefault(e => e != null))
-                .ToGuiProperty(this, nameof(ActiveError), default, deferSubscription: true);
+                .ToGuiProperty(this, nameof(ActiveError), default, schedulerProvider.MainThread, deferSubscription: true);
 
         _inError = this.WhenAnyValue(x => x.ActiveError)
             .Select(x => x == null)
-            .ToGuiProperty(this, nameof(InError), deferSubscription: true);
+            .ToGuiProperty(this, nameof(InError), scheduler: schedulerProvider.MainThread, deferSubscription: true);
     }
 }

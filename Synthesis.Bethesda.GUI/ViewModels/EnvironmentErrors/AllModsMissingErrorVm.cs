@@ -43,18 +43,18 @@ public class AllModsMissingErrorVm : ViewModel, IEnvironmentErrorVm
                     .FilterOnObservable(i => i.WhenAnyValue(x => x.ModExists))
                     .QueryWhenChanged(q => q.Count > 0),
                 (hasAny, anyExist) => hasAny && !anyExist)
-            .ToGuiProperty(this, nameof(InError), deferSubscription: true);
+            .ToGuiProperty(this, nameof(InError), scheduler: schedulerProvider.MainThread, deferSubscription: true);
 
         _ErrorString = nonImplicit.CountChanged
             .Select(count =>
             {
                 return $"Load order listed {count} mods, but none were found in the game's data folder";
             })
-            .ToGuiProperty(this, nameof(ErrorString), default(string?), deferSubscription: true);
+            .ToGuiProperty(this, nameof(ErrorString), default(string?), schedulerProvider.MainThread, deferSubscription: true);
 
         _DataFolderPath = overridesVm.WhenAnyValue(x => x.DataFolderResult.Value)
             .Select(x => x.Path)
-            .ToGuiProperty(this, nameof(DataFolderPath), string.Empty, deferSubscription: true);
+            .ToGuiProperty(this, nameof(DataFolderPath), string.Empty, schedulerProvider.MainThread, deferSubscription: true);
 
         GoToProfileSettingsCommand = openProfileSettings.OpenProfilesPageCommand;
     }

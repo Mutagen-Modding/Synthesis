@@ -1,6 +1,7 @@
 using System.Reactive;
 using System.Reactive.Linq;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -50,7 +51,8 @@ public class ProfileVersioning : ViewModel, IProfileVersioning
         ILogger logger,
         IProfileNameProvider nameProvider,
         CalculateProfileVersioning calculateProfileVersioning,
-        INewestProfileLibraryVersionsVm libs)
+        INewestProfileLibraryVersionsVm libs,
+        ISchedulerProvider schedulerProvider)
     {
         ActiveVersioning = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.MutagenVersioning),
@@ -66,7 +68,7 @@ public class ProfileVersioning : ViewModel, IProfileVersioning
                     );
                 })
             .Do(x => logger.Information("Swapped profile {Nickname} to {Versioning}", nameProvider.Name, x))
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .Replay(1)
             .RefCount();
 
@@ -92,7 +94,7 @@ public class ProfileVersioning : ViewModel, IProfileVersioning
 
         UpdateMutagenManualToLatestCommand = NoggogCommand.CreateFromObject(
             objectSource: libs.WhenAnyValue(x => x.NewestMutagenVersion)
-                .ObserveOnGui(),
+                .ObserveOn(schedulerProvider.MainThread),
             canExecute: v =>
             {
                 return Observable.CombineLatest(
@@ -104,13 +106,13 @@ public class ProfileVersioning : ViewModel, IProfileVersioning
                             if (versioning != NugetVersioningEnum.Manual) return false;
                             return latest != null && latest != manual;
                         })
-                    .ObserveOnGui();
+                    .ObserveOn(schedulerProvider.MainThread);
             },
             execute: v => ManualMutagenVersion = v ?? string.Empty,
             disposable: this);
         UpdateSynthesisManualToLatestCommand = NoggogCommand.CreateFromObject(
             objectSource: libs.WhenAnyValue(x => x.NewestSynthesisVersion)
-                .ObserveOnGui(),
+                .ObserveOn(schedulerProvider.MainThread),
             canExecute: v =>
             {
                 return Observable.CombineLatest(
@@ -122,7 +124,7 @@ public class ProfileVersioning : ViewModel, IProfileVersioning
                             if (versioning != NugetVersioningEnum.Manual) return false;
                             return latest != null && latest != manual;
                         })
-                    .ObserveOnGui();
+                    .ObserveOn(schedulerProvider.MainThread);
             },
             execute: v => ManualSynthesisVersion = v ?? string.Empty,
             disposable: this);
