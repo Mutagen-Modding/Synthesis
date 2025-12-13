@@ -15,7 +15,7 @@ public class FinalizePatcherRunTests
 {
     [Theory, SynthAutoData]
     public async Task OutputFileMissingReturnsNull(
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         ModPath missingOutput,
         FinalizePatcherRun sut)
     {
@@ -25,7 +25,7 @@ public class FinalizePatcherRunTests
 
     [Theory, SynthAutoData]
     public async Task OutputFileExistsReturnsOutputPath(
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         ModPath existingOutput,
         FinalizePatcherRun sut)
     {
@@ -36,7 +36,7 @@ public class FinalizePatcherRunTests
     [Theory]
     [SynthCustomInlineData(FileSystem: TargetFileSystem.Substitute)]
     public void SplitFilesExistReturnsBasePath(
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         IRunReporter reporter,
         [Frozen] IFileSystem fileSystem,
         FinalizePatcherRun sut)
@@ -71,7 +71,7 @@ public class FinalizePatcherRunTests
     [Theory]
     [SynthCustomInlineData(FileSystem: TargetFileSystem.Substitute)]
     public void NoOutputAndNoSplitFilesReturnsNull(
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         IRunReporter reporter,
         [Frozen] IFileSystem fileSystem,
         FinalizePatcherRun sut)

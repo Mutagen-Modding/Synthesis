@@ -10,7 +10,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner;
 public interface IFinalizePatcherRun
 {
     FilePath? Finalize(
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         FilePath outputPath);
 }
 
@@ -28,7 +28,7 @@ public class FinalizePatcherRun : IFinalizePatcherRun
     }
 
     public FilePath? Finalize(
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         FilePath outputPath)
     {
         if (_fileSystem.File.Exists(outputPath))

@@ -77,7 +77,7 @@ public class CliTests
             .As<IProjectSubpathProvider>()
             .As<IPatcherNicknameProvider>();
         var cont = builder.Build();
-        cont.Validate(typeof(ISolutionPatcherRun));
+        cont.Validate(typeof(ISolutionPatcherPrepAndRun));
     }
     
     [Theory, MutagenAutoData]

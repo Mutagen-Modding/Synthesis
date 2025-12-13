@@ -16,7 +16,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 public class PatcherRunVm : ViewModel, IRunItem
 {
     public Guid InternalID { get; }
-    public IPatcherRun Run { get; }
+    public IPatcherPrepAndRun Run { get; }
     public ViewModel SourceVm { get; }
 
     [Reactive]
@@ -41,12 +41,12 @@ public class PatcherRunVm : ViewModel, IRunItem
 
     [Reactive]
     public bool AutoScrolling { get; set; }
-        
+
     public string Name { get; }
 
     public delegate PatcherRunVm Factory(PatcherVm sourcePatcherVm);
 
-    public PatcherRunVm(PatcherVm sourcePatcherVm, IPatcherRun run, IReporterLoggerWrapper loggerWrapper, ISchedulerProvider schedulerProvider)
+    public PatcherRunVm(PatcherVm sourcePatcherVm, IPatcherPrepAndRun run, IReporterLoggerWrapper loggerWrapper, ISchedulerProvider schedulerProvider)
     {
         Name = sourcePatcherVm.NameVm.Name;
         InternalID = sourcePatcherVm.InternalID;

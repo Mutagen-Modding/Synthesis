@@ -3,11 +3,19 @@ using Synthesis.Bethesda.Commands;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running;
 
-public interface IPatcherRun : IDisposableDropoff
+public interface IPatcherPrepForRun : IDisposableDropoff
+{
+    Task Prep(CancellationToken cancel);
+}
+
+public interface IPatcherRunExecution : IDisposableDropoff
 {
     Guid Key { get; }
     int Index { get; }
     string Name { get; }
-    Task Prep(CancellationToken cancel);
     Task Run(RunSynthesisPatcher settings, CancellationToken cancel);
+}
+
+public interface IPatcherPrepAndRun : IPatcherPrepForRun, IPatcherRunExecution
+{
 }

@@ -10,7 +10,7 @@ namespace Synthesis.Bethesda.CLI.RunPipeline;
 
 public interface IPatcherSettingsToRunnerFactory
 {
-    IPatcherRun Convert(PatcherSettings patcherSettings);
+    IPatcherPrepAndRun Convert(PatcherSettings patcherSettings);
 }
 
 public class PatcherSettingsToRunnerFactory : IPatcherSettingsToRunnerFactory
@@ -21,8 +21,8 @@ public class PatcherSettingsToRunnerFactory : IPatcherSettingsToRunnerFactory
     {
         _scope = scope;
     }
-    
-    public IPatcherRun Convert(PatcherSettings patcherSettings)
+
+    public IPatcherPrepAndRun Convert(PatcherSettings patcherSettings)
     {
         switch (patcherSettings)
         {
@@ -59,7 +59,7 @@ public class PatcherSettingsToRunnerFactory : IPatcherSettingsToRunnerFactory
                         .AsImplementedInterfaces();
                 });
                 scope = scope.BeginLifetimeScope(LifetimeScopes.RunNickname);
-                return scope.Resolve<ISolutionPatcherRun>();
+                return scope.Resolve<ISolutionPatcherPrepAndRun>();
             }
             default:
                 throw new NotImplementedException();

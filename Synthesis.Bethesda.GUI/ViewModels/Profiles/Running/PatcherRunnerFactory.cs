@@ -25,7 +25,7 @@ public class PatcherRunnerFactory : IPatcherRunnerFactory
         {
             case GitPatcherVm:
             case SolutionPatcherVm:
-                return ToRunner<SolutionPatcherRun>(patcherVm);
+                return ToRunner<SolutionPatcherPrepAndRun>(patcherVm);
             case CliPatcherVm:
                 return ToRunner<CliPatcherRun>(patcherVm);
             default:
@@ -34,11 +34,11 @@ public class PatcherRunnerFactory : IPatcherRunnerFactory
     }
         
     private PatcherRunVm ToRunner<T>(PatcherVm patcherVm)
-        where T :  IPatcherRun
+        where T :  IPatcherPrepAndRun
     {
         var scope = patcherVm.Scope.BeginLifetimeScope(LifetimeScopes.RunNickname, c =>
         {
-            c.RegisterType<T>().As<IPatcherRun>();
+            c.RegisterType<T>().As<IPatcherPrepAndRun>();
             c.RegisterType<ReporterLoggerWrapper>()
                 .AsImplementedInterfaces()
                 .SingleInstance();

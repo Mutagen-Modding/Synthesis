@@ -287,7 +287,7 @@ public class RunnerTests
     //         }, env.FileSystem.File.ReadAllLines(Path.Combine(workingDir, Utility.PluginPath.Name)));
     // }
 
-    public class DummyPatcher : IPatcherRun
+    public class DummyPatcher : IPatcherPrepAndRun
     {
         private readonly IFileSystem _FileSystem;
         public Guid Key { get; }

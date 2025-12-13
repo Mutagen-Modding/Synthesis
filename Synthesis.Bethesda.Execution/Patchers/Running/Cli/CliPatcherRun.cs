@@ -10,7 +10,7 @@ using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli;
 
-public interface ICliPatcherRun : IPatcherRun
+public interface ICliPatcherRun : IPatcherPrepAndRun
 {
 }
 

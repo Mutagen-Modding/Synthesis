@@ -41,7 +41,7 @@ public class MainModule : Module
                 typeof(IQueryNewestLibraryVersions),
                 typeof(ISynthesisSubProcessRunner),
                 typeof(IWorkingDirectorySubPaths),
-                typeof(IPatcherRun),
+                typeof(IPatcherPrepAndRun),
                 typeof(IIsApplicableErrorLine),
                 typeof(IInstalledSdkFollower),
                 typeof(BuildCoreCalculator),

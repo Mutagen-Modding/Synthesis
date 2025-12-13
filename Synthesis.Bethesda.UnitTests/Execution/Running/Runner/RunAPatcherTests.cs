@@ -16,7 +16,7 @@ public class RunAPatcherTests
     [Theory, SynthAutoData]
     public async Task PrepExceptionReturnsNull(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancellation,
         FilePath? sourcePath,
         RunParameters runParameters,
@@ -38,7 +38,7 @@ public class RunAPatcherTests
     [Theory, SynthAutoData]
     public async Task CancelledReturnsNull(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancelled,
         FilePath? sourcePath,
         RunParameters runParameters,
@@ -58,7 +58,7 @@ public class RunAPatcherTests
     [Theory, SynthAutoData]
     public async Task RetrievesArgs(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancellation,
         FilePath? sourcePath,
         RunParameters runParameters,
@@ -85,7 +85,7 @@ public class RunAPatcherTests
     [Theory, SynthAutoData]
     public async Task PassesArgsToRun(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancellation,
         FilePath? sourcePath,
         ModPath outputPath,
@@ -110,7 +110,7 @@ public class RunAPatcherTests
     [Theory, SynthAutoData]
     public async Task GetArgsThrowsShouldThrow(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancellation,
         FilePath? sourcePath,
         RunParameters runParameters,
@@ -134,7 +134,7 @@ public class RunAPatcherTests
     [Theory, SynthAutoData]
     public async Task RunThrowsShouldThrow(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancellation,
         FilePath? sourcePath,
         RunParameters runParameters,
@@ -158,7 +158,7 @@ public class RunAPatcherTests
     [Theory, SynthAutoData]
     public async Task PassesArgsToFinalize(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancellation,
         FilePath? sourcePath,
         RunParameters runParameters,
@@ -184,7 +184,7 @@ public class RunAPatcherTests
     [Theory, SynthAutoData]
     public async Task ReturnsFinalizedResults(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancellation,
         FilePath? sourcePath,
         RunParameters runParameters,
