@@ -23,11 +23,16 @@ public class UpdateGitRunnerToSettings
     public async Task Sync(CancellationToken cancel)
     {
         var versions = await _getNugetVersions.Get(cancel);
-        await _prepareRunnerRepository.Checkout(
+        var result = await _prepareRunnerRepository.Checkout(
             new CheckoutInput(
                 LibraryNugets: versions,
                 Proj: _githubPatcherSettings.SelectedProjectSubpath,
                 PatcherVersioning: GitPatcherVersioning.Factory(_githubPatcherSettings)),
             cancel);
+
+        if (result.RunnableState.Failed)
+        {
+            throw new InvalidOperationException($"Failed to checkout: {result.RunnableState.Reason}");
+        }
     }
 }

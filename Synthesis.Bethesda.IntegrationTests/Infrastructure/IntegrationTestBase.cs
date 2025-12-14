@@ -328,6 +328,65 @@ public abstract class IntegrationTest : IDisposable
     }
 
     /// <summary>
+    /// Gets the latest commit SHA from a Git repository
+    /// </summary>
+    public string GetLatestCommitSha(DirectoryPath repoPath)
+    {
+        var result = RunGitCommand(repoPath, "rev-parse HEAD");
+        if (result.ExitCode != 0)
+        {
+            throw new InvalidOperationException($"Failed to get commit SHA: {result.Error}");
+        }
+        return result.Output.Trim();
+    }
+
+    /// <summary>
+    /// Creates a tag in a Git repository pointing to the current HEAD.
+    /// For bare repositories, this finds the working directory and creates the tag there, then pushes it.
+    /// </summary>
+    public void CreateTag(DirectoryPath repoPath, string tagName)
+    {
+        var repoPathStr = repoPath.Path;
+
+        // Check if this is a bare repository
+        if (repoPathStr.EndsWith(".git"))
+        {
+            // Find the working directory
+            var workingDir = repoPathStr.Replace(".git", "_working");
+            if (!Directory.Exists(workingDir))
+            {
+                throw new InvalidOperationException($"Working directory not found at {workingDir}");
+            }
+
+            // Create tag in working directory
+            var tagResult = RunGitCommand(workingDir, $"tag {tagName}");
+            if (tagResult.ExitCode != 0)
+            {
+                throw new InvalidOperationException($"Failed to create tag: {tagResult.Error}");
+            }
+
+            // Push the tag to the bare repo
+            var pushResult = RunGitCommand(workingDir, $"push origin {tagName}");
+            if (pushResult.ExitCode != 0)
+            {
+                throw new InvalidOperationException($"Failed to push tag: {pushResult.Error}");
+            }
+
+            Output.WriteLine($"Created and pushed tag '{tagName}' to repository at {repoPath}");
+        }
+        else
+        {
+            // Regular repository - just create the tag
+            var result = RunGitCommand(repoPath, $"tag {tagName}");
+            if (result.ExitCode != 0)
+            {
+                throw new InvalidOperationException($"Failed to create tag: {result.Error}");
+            }
+            Output.WriteLine($"Created tag '{tagName}' in repository at {repoPath}");
+        }
+    }
+
+    /// <summary>
     /// Creates a minimal patcher project in a specific directory
     /// </summary>
     private void CreateTestPatcherProjectInDirectory(
