@@ -10,10 +10,11 @@ namespace Synthesis.Bethesda.Execution.Commands;
 
 [Verb("run-pipeline", HelpText = "Run the patcher pipeline")]
 [ExcludeFromCodeCoverage]
-public class RunPatcherPipelineCommand : 
+public class RunPatcherPipelineCommand :
     IPipelineSettingsPath,
     IExecutionParametersSettingsProvider,
-    IMo2CompatibilitySettingsProvider
+    IMo2CompatibilitySettingsProvider,
+    IShortCircuitSettingsProvider
 {
     [Option('o', "OutputDirectory", Required = true, HelpText = "Path where the patcher should place its resulting file(s).")]
     public required string OutputDirectory { get; set; }
@@ -47,6 +48,9 @@ public class RunPatcherPipelineCommand :
     [Option("Mo2Compatibility", Required = false, HelpText = "Whether to enable MO2 compatibility mode")]
     public bool Mo2Compatibility { get; set; }
 
+    [Option("Shortcircuit", Required = false, HelpText = "Whether to enable build shortcircuiting when build metadata matches", Default = true)]
+    public bool Shortcircuit { get; set; } = true;
+
     public override string ToString()
     {
         return $"\n{nameof(RunSynthesisPatcher)} => \n"
@@ -59,7 +63,8 @@ public class RunPatcherPipelineCommand :
                + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
                + $"  {nameof(PersistenceMode)} => {this.PersistenceMode}\n"
                + $"  {nameof(TargetRuntime)} => {this.TargetRuntime}\n"
-               + $"  {nameof(Mo2Compatibility)} => {this.Mo2Compatibility}";
+               + $"  {nameof(Mo2Compatibility)} => {this.Mo2Compatibility}\n"
+               + $"  {nameof(Shortcircuit)} => {this.Shortcircuit}";
     }
 
     FilePath IPipelineSettingsPath.Path => PipelineSettingsPath;

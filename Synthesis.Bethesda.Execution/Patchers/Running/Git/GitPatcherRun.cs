@@ -22,16 +22,13 @@ public class GitPatcherRun : IGitPatcherRun
     public string Name => SolutionPatcherRunExecution.Name;
 
     public IGitPatcherPrep GitPatcherPrep { get; }
-    public ISolutionPatcherPrep SolutionPatcherPrep { get; }
     public ISolutionPatcherRunExecution SolutionPatcherRunExecution { get; }
 
     public GitPatcherRun(
         IGitPatcherPrep gitPatcherPrep,
-        ISolutionPatcherPrep solutionPatcherPrep,
         ISolutionPatcherRunExecution solutionPatcherRunExecution)
     {
         GitPatcherPrep = gitPatcherPrep;
-        SolutionPatcherPrep = solutionPatcherPrep;
         SolutionPatcherRunExecution = solutionPatcherRunExecution;
     }
 
@@ -48,7 +45,6 @@ public class GitPatcherRun : IGitPatcherRun
     public async Task Prep(CancellationToken cancel)
     {
         await GitPatcherPrep.Prep(cancel).ConfigureAwait(false);
-        await SolutionPatcherPrep.Prep(cancel).ConfigureAwait(false);
     }
 
     public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)

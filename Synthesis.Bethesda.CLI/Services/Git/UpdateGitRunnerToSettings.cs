@@ -20,7 +20,7 @@ public class UpdateGitRunnerToSettings
         _getNugetVersions = getNugetVersions;
     }
 
-    public async Task Sync(CancellationToken cancel)
+    public async Task<RunnerRepoInfo> Sync(CancellationToken cancel)
     {
         var versions = await _getNugetVersions.Get(cancel);
         var result = await _prepareRunnerRepository.Checkout(
@@ -34,5 +34,7 @@ public class UpdateGitRunnerToSettings
         {
             throw new InvalidOperationException($"Failed to checkout: {result.RunnableState.Reason}");
         }
+
+        return result.Item;
     }
 }
