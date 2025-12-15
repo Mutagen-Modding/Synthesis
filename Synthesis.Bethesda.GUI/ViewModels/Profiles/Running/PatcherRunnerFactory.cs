@@ -3,6 +3,7 @@ using Noggog;
 using Synthesis.Bethesda.Execution.Modules;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.Running.Cli;
+using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli;
@@ -24,6 +25,7 @@ public class PatcherRunnerFactory : IPatcherRunnerFactory
         switch (patcherVm)
         {
             case GitPatcherVm:
+                return ToRunner<GitPatcherRun>(patcherVm);
             case SolutionPatcherVm:
                 return ToRunner<SolutionPatcherPrepAndRun>(patcherVm);
             case CliPatcherVm:
