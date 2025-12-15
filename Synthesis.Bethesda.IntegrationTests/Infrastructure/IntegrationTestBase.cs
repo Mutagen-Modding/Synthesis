@@ -432,6 +432,8 @@ public abstract class IntegrationTest : IDisposable
         generateRunPatchContent(gameRelease, runPatchBodyBuilder);
 
         var programContent = $$"""
+            using Mutagen.Bethesda;
+            using Mutagen.Bethesda.Plugins;
             using Mutagen.Bethesda.Synthesis;
             using Mutagen.Bethesda.{{gameNamespace}};
 
