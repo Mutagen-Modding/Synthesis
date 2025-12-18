@@ -341,6 +341,62 @@ public abstract class IntegrationTest : IDisposable
     }
 
     /// <summary>
+    /// Creates a Git patcher repository and returns typical GithubPatcherSettings configured to use it.
+    /// This is a convenience method that combines CreateGitPatcherRepository with typical settings configuration.
+    /// </summary>
+    /// <param name="repositoryName">Name for the repository (will be {name}.git for bare repo)</param>
+    /// <param name="generateRunPatchContent">Callback to generate the RunPatch method body content</param>
+    /// <param name="nickname">Optional nickname for the patcher (defaults to repositoryName)</param>
+    /// <param name="projectName">Name for the C# project (defaults to "TestPatcher")</param>
+    /// <returns>Configured GithubPatcherSettings ready to use in tests</returns>
+    public GithubPatcherSettings CreateGitPatcherWithSettings(
+        string repositoryName,
+        Action<GameRelease, StructuredStringBuilder> generateRunPatchContent,
+        string? nickname = null,
+        string projectName = "TestPatcher")
+    {
+        var bareRepoPath = CreateGitPatcherRepository(repositoryName, generateRunPatchContent, projectName);
+        var commitSha = GetLatestCommitSha(bareRepoPath);
+
+        return new GithubPatcherSettings
+        {
+            On = true,
+            ID = Path.GetRandomFileName(),
+            Nickname = nickname ?? repositoryName,
+            RemoteRepoPath = bareRepoPath,
+            SelectedProjectSubpath = $"{projectName}.csproj",
+            PatcherVersioning = PatcherVersioningEnum.Commit,
+            TargetCommit = commitSha,
+            MutagenVersionType = PatcherNugetVersioningEnum.Profile,
+            SynthesisVersionType = PatcherNugetVersioningEnum.Profile
+        };
+    }
+
+    /// <summary>
+    /// Creates a solution patcher project and returns typical SolutionPatcherSettings configured to use it.
+    /// This is a convenience method that combines CreateTestPatcherProject with typical settings configuration.
+    /// </summary>
+    /// <param name="projectName">Name for the C# project</param>
+    /// <param name="generateRunPatchContent">Callback to generate the RunPatch method body content</param>
+    /// <param name="nickname">Optional nickname for the patcher (defaults to projectName)</param>
+    /// <returns>Configured SolutionPatcherSettings ready to use in tests</returns>
+    public SolutionPatcherSettings CreateSolutionPatcherWithSettings(
+        string projectName,
+        Action<GameRelease, StructuredStringBuilder> generateRunPatchContent,
+        string? nickname = null)
+    {
+        var projectFolder = CreateTestPatcherProject(projectName, generateRunPatchContent);
+
+        return new SolutionPatcherSettings
+        {
+            On = true,
+            Nickname = nickname ?? projectName,
+            SolutionPath = Path.Combine(projectFolder, $"{projectName}.sln"),
+            ProjectSubpath = $"{projectName}.csproj"
+        };
+    }
+
+    /// <summary>
     /// Creates a tag in a Git repository pointing to the current HEAD.
     /// For bare repositories, this finds the working directory and creates the tag there, then pushes it.
     /// </summary>
@@ -600,7 +656,7 @@ public abstract class IntegrationTest : IDisposable
         string? profileNickname = null,
         GameRelease? gameRelease = null)
     {
-        var profileId = Guid.NewGuid().ToString();
+        var profileId = Path.GetRandomFileName();
 
         // Get the Mutagen version from the currently loaded assembly
         var mutagenFullVersion = AssemblyVersions.For<FormKey>().ProductVersion

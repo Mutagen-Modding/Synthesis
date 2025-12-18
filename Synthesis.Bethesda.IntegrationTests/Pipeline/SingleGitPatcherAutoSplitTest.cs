@@ -41,26 +41,15 @@ public abstract class SingleGitPatcherAutoSplitTest : IntegrationTest
         }
 
         // Create a Git patcher that creates FormLists referencing all 256 masters
-        var bareRepoPath = CreateGitPatcherRepository("AutoSplitPatcher", GenerateFormListsFor256Masters());
+        var patcher = CreateGitPatcherWithSettings(
+            "AutoSplitPatcher",
+            GenerateFormListsFor256Masters(),
+            nickname: "AutoSplit Patcher");
 
         var groupName = "Test Group";
-        var settings = new GithubPatcherSettings
-        {
-            On = true,
-            Nickname = "AutoSplit Patcher",
-            RemoteRepoPath = bareRepoPath,
-            SelectedProjectSubpath = "TestPatcher.csproj",
-            PatcherVersioning = PatcherVersioningEnum.Branch,
-            TargetBranch = "master",
-            FollowDefaultBranch = false,
-            AutoUpdateToBranchTip = true,
-            MutagenVersionType = PatcherNugetVersioningEnum.Profile,
-            SynthesisVersionType = PatcherNugetVersioningEnum.Profile
-        };
-
         ExportSettingsWithPatchers(
             groupName: groupName,
-            patchers: new[] { settings });
+            patchers: new[] { patcher });
 
         // Act
         await Act();

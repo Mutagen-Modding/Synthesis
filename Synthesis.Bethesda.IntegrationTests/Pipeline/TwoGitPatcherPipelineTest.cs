@@ -2,6 +2,7 @@ using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Skyrim;
 using Shouldly;
+using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
@@ -11,15 +12,15 @@ using Xunit.Abstractions;
 namespace Synthesis.Bethesda.IntegrationTests.Pipeline;
 
 /// <summary>
-/// Integration test for two Git patcher pipeline execution
+/// Abstract base for two Git patcher pipeline execution tests
 /// </summary>
-public class TwoGitPatcherPipelineTest : IntegrationTest
+public abstract class TwoGitPatcherPipelineTest : IntegrationTest
 {
-    public TwoGitPatcherPipelineTest(ITestOutputHelper output) : base(output)
+    protected TwoGitPatcherPipelineTest(ITestOutputHelper output) : base(output)
     {
     }
 
-    protected override PipelineMode Mode => PipelineMode.UI;
+    protected abstract override PipelineMode Mode { get; }
 
     [Fact]
     public async Task TwoGitPatchers_BothProduceOutputInSameMod()
@@ -35,45 +36,28 @@ public class TwoGitPatcherPipelineTest : IntegrationTest
         });
         AddToLoadOrder(testModKey, enabled: true);
 
-        // Create two Git patcher repositories
-        var bareRepoPath1 = CreateGitPatcherRepository("FirstPatcherRepo", AddNpcToPatcher("FirstPatcherNPC", "First Patcher Was Here"));
-        var bareRepoPath2 = CreateGitPatcherRepository("SecondPatcherRepo", AddNpcToPatcher("SecondPatcherNPC", "Second Patcher Was Here"));
+        // Create two Git patcher repositories with settings
+        var firstPatcher = CreateGitPatcherWithSettings(
+            "FirstPatcherRepo",
+            AddNpcToPatcher("FirstPatcherNPC", "First Patcher Was Here"),
+            nickname: "First Patcher");
+
+        var secondPatcher = CreateGitPatcherWithSettings(
+            "SecondPatcherRepo",
+            AddNpcToPatcher("SecondPatcherNPC", "Second Patcher Was Here"),
+            nickname: "Second Patcher");
 
         // Export settings with both patchers
         var groupName = "Test Group";
         ExportSettingsWithPatchers(
             groupName: groupName,
-            patchers: new[]
-            {
-                new GithubPatcherSettings
-                {
-                    On = true,
-                    Nickname = "First Patcher",
-                    RemoteRepoPath = bareRepoPath1,
-                    SelectedProjectSubpath = "TestPatcher.csproj",
-                    PatcherVersioning = PatcherVersioningEnum.Branch,
-                    TargetBranch = "master",
-                    MutagenVersionType = PatcherNugetVersioningEnum.Profile,
-                    SynthesisVersionType = PatcherNugetVersioningEnum.Profile
-                },
-                new GithubPatcherSettings
-                {
-                    On = true,
-                    Nickname = "Second Patcher",
-                    RemoteRepoPath = bareRepoPath2,
-                    SelectedProjectSubpath = "TestPatcher.csproj",
-                    PatcherVersioning = PatcherVersioningEnum.Branch,
-                    TargetBranch = "master",
-                    MutagenVersionType = PatcherNugetVersioningEnum.Profile,
-                    SynthesisVersionType = PatcherNugetVersioningEnum.Profile
-                }
-            });
+            patchers: new[] { firstPatcher, secondPatcher });
 
         // Act - Initialize and run
-        await RunPatcherPipeline();
+        await Act();
 
         // Assert - Check results
-        EnsureActiveRunHasNoErrors();
+        await AssertNoErrors();
 
         // Verify output file exists
         var outputPath = Path.Combine(DataFolder, $"{groupName}.esp");
@@ -93,5 +77,53 @@ public class TwoGitPatcherPipelineTest : IntegrationTest
         var secondNpc = outputMod.Npcs.FirstOrDefault(n => n.EditorID == "SecondPatcherNPC");
         secondNpc.ShouldNotBeNull("Second patcher NPC should exist in output");
         secondNpc.Name?.String.ShouldBe("Second Patcher Was Here");
+    }
+
+    protected abstract Task Act();
+
+    protected virtual Task AssertNoErrors()
+    {
+        return Task.CompletedTask;
+    }
+}
+
+/// <summary>
+/// UI-based two Git patcher pipeline test
+/// </summary>
+public class TwoGitPatcherUIPipelineTest : TwoGitPatcherPipelineTest
+{
+    public TwoGitPatcherUIPipelineTest(ITestOutputHelper output) : base(output)
+    {
+    }
+
+    protected override PipelineMode Mode => PipelineMode.UI;
+
+    protected override async Task Act()
+    {
+        await RunPatcherPipeline();
+    }
+
+    protected override Task AssertNoErrors()
+    {
+        EnsureActiveRunHasNoErrors();
+        return Task.CompletedTask;
+    }
+}
+
+/// <summary>
+/// CLI-based two Git patcher pipeline test
+/// </summary>
+public class TwoGitPatcherCliPipelineTest : TwoGitPatcherPipelineTest
+{
+    public TwoGitPatcherCliPipelineTest(ITestOutputHelper output) : base(output)
+    {
+    }
+
+    protected override PipelineMode Mode => PipelineMode.CLI;
+
+    protected override async Task Act()
+    {
+        var runPipeline = GetComponentPayload<RunPatcherPipeline, object>();
+        await runPipeline.Run(CancellationToken.None);
     }
 }

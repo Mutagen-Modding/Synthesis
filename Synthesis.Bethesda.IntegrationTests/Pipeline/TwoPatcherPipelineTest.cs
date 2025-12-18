@@ -36,31 +36,22 @@ public abstract class TwoSolutionPatchersPipelineTest : IntegrationTest
         });
         AddToLoadOrder(testModKey, enabled: true);
 
-        // Create two test patcher projects
-        var projectFolder1 = CreateTestPatcherProject("FirstPatcher", AddNpcToPatcher("FirstPatcherNPC", "First Patcher Was Here"));
-        var projectFolder2 = CreateTestPatcherProject("SecondPatcher", AddNpcToPatcher("SecondPatcherNPC", "Second Patcher Was Here"));
+        // Create two test patcher projects with settings
+        var firstPatcher = CreateSolutionPatcherWithSettings(
+            "FirstPatcher",
+            AddNpcToPatcher("FirstPatcherNPC", "First Patcher Was Here"),
+            nickname: "First Patcher");
+
+        var secondPatcher = CreateSolutionPatcherWithSettings(
+            "SecondPatcher",
+            AddNpcToPatcher("SecondPatcherNPC", "Second Patcher Was Here"),
+            nickname: "Second Patcher");
 
         // Export settings with both patchers
         var groupName = "Test Group";
         ExportSettingsWithPatchers(
             groupName: groupName,
-            patchers: new[]
-            {
-                new SolutionPatcherSettings
-                {
-                    On = true,
-                    Nickname = "First Patcher",
-                    SolutionPath = Path.Combine(projectFolder1, "FirstPatcher.sln"),
-                    ProjectSubpath = "FirstPatcher.csproj"
-                },
-                new SolutionPatcherSettings
-                {
-                    On = true,
-                    Nickname = "Second Patcher",
-                    SolutionPath = Path.Combine(projectFolder2, "SecondPatcher.sln"),
-                    ProjectSubpath = "SecondPatcher.csproj"
-                }
-            });
+            patchers: new[] { firstPatcher, secondPatcher });
 
         // Act - Initialize and run
         await Act();

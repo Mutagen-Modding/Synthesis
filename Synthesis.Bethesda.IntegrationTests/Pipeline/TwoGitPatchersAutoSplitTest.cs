@@ -42,43 +42,21 @@ public abstract class TwoGitPatchersAutoSplitTest : IntegrationTest
         }
 
         // Create first Git patcher that creates FormLists referencing all 256 masters
-        var firstRepoPath = CreateGitPatcherRepository("FirstAutoSplitPatcher", GenerateFormListsFor256Masters());
+        var firstPatcher = CreateGitPatcherWithSettings(
+            "FirstAutoSplitPatcher",
+            GenerateFormListsFor256Masters(),
+            nickname: "First AutoSplit Patcher");
 
         // Create second Git patcher that modifies all FormLists by renaming their EDIDs
-        var secondRepoPath = CreateGitPatcherRepository("SecondModifyPatcher", GenerateFormListModifier());
+        var secondPatcher = CreateGitPatcherWithSettings(
+            "SecondModifyPatcher",
+            GenerateFormListModifier(),
+            nickname: "Second Modify Patcher");
 
         var groupName = "Test Group";
-        var firstSettings = new GithubPatcherSettings
-        {
-            On = true,
-            Nickname = "First AutoSplit Patcher",
-            RemoteRepoPath = firstRepoPath,
-            SelectedProjectSubpath = "TestPatcher.csproj",
-            PatcherVersioning = PatcherVersioningEnum.Branch,
-            TargetBranch = "master",
-            FollowDefaultBranch = false,
-            AutoUpdateToBranchTip = true,
-            MutagenVersionType = PatcherNugetVersioningEnum.Profile,
-            SynthesisVersionType = PatcherNugetVersioningEnum.Profile
-        };
-
-        var secondSettings = new GithubPatcherSettings
-        {
-            On = true,
-            Nickname = "Second Modify Patcher",
-            RemoteRepoPath = secondRepoPath,
-            SelectedProjectSubpath = "TestPatcher.csproj",
-            PatcherVersioning = PatcherVersioningEnum.Branch,
-            TargetBranch = "master",
-            FollowDefaultBranch = false,
-            AutoUpdateToBranchTip = true,
-            MutagenVersionType = PatcherNugetVersioningEnum.Profile,
-            SynthesisVersionType = PatcherNugetVersioningEnum.Profile
-        };
-
         ExportSettingsWithPatchers(
             groupName: groupName,
-            patchers: new[] { firstSettings, secondSettings });
+            patchers: new[] { firstPatcher, secondPatcher });
 
         // Act
         await Act();

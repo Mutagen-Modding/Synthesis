@@ -36,23 +36,14 @@ public abstract class SingleSolutionPatcherPipelineTest : IntegrationTest
         });
         AddToLoadOrder(testModKey, enabled: true);
 
-        // Create a test patcher project
-        var projectFolder = CreateTestPatcherProject("TestPatcher", AddTypicalPatcherNpc());
+        // Create a test patcher project with settings
+        var patcher = CreateSolutionPatcherWithSettings("TestPatcher", AddTypicalPatcherNpc(), nickname: "Test Patcher");
 
         // Export settings with patchers
         var groupName = "Test Group";
         ExportSettingsWithPatchers(
             groupName: groupName,
-            patchers: new[]
-            {
-                new SolutionPatcherSettings
-                {
-                    On = true,
-                    Nickname = "Test Patcher",
-                    SolutionPath = Path.Combine(projectFolder, "TestPatcher.sln"),
-                    ProjectSubpath = "TestPatcher.csproj"
-                }
-            });
+            patchers: new[] { patcher });
 
         // Act - Initialize and run
         await Act();
