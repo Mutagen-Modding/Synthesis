@@ -4,6 +4,7 @@ using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Reporters;
+using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.Running.Runner;
 
@@ -22,6 +23,7 @@ public class RunAPatcher : IRunAPatcher
     private readonly ILogger _logger;
     private readonly IRunReporter _reporter;
     private readonly IFileSystem _fs;
+    private readonly IFormatCommandLine _formatCommandLine;
     public IFinalizePatcherRun FinalizePatcherRun { get; }
     public IRunArgsConstructor GetRunArgs { get; }
 
@@ -29,12 +31,14 @@ public class RunAPatcher : IRunAPatcher
         ILogger logger,
         IRunReporter reporter,
         IFileSystem fs,
+        IFormatCommandLine formatCommandLine,
         IFinalizePatcherRun finalizePatcherRun,
         IRunArgsConstructor getRunArgs)
     {
         _logger = logger;
         _reporter = reporter;
         _fs = fs;
+        _formatCommandLine = formatCommandLine;
         FinalizePatcherRun = finalizePatcherRun;
         GetRunArgs = getRunArgs;
     }
@@ -66,6 +70,7 @@ public class RunAPatcher : IRunAPatcher
             _fs.Directory.CreateDirectory(args.OutputPath.Directory!);
                 
             _logger.Information("================= Starting Patcher {Patcher} Run =================", prepBundle.Run.Name);
+            _logger.Information(_formatCommandLine.Format(args));
 
             _reporter.ReportStartingRun(prepBundle.Run.Key, prepBundle.Run.Name);
             await prepBundle.Run.Run(args,
