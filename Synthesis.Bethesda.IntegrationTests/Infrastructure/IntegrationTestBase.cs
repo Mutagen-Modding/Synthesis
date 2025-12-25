@@ -28,6 +28,13 @@ using Xunit.Abstractions;
 namespace Synthesis.Bethesda.IntegrationTests.Infrastructure;
 
 /// <summary>
+/// Represents a NuGet package reference to add to a test patcher project
+/// </summary>
+/// <param name="PackageId">The NuGet package ID</param>
+/// <param name="Version">The package version</param>
+public record PackageReference(string PackageId, string Version);
+
+/// <summary>
 /// Abstract base class for integration tests that provides temp directory management and test utilities
 /// </summary>
 public abstract class IntegrationTest : IDisposable
@@ -205,10 +212,12 @@ public abstract class IntegrationTest : IDisposable
     /// <param name="repositoryName">Name for the repository (will be {name}.git for bare repo)</param>
     /// <param name="projectName">Name for the C# project</param>
     /// <param name="generateRunPatchContent">Optional callback to generate the RunPatch method body content. If null, uses default NPC-adding implementation.</param>
+    /// <param name="additionalPackageReferences">Optional additional package references to include in the project</param>
     public DirectoryPath CreateGitPatcherRepository(
         string repositoryName,
         Action<GameRelease, StructuredStringBuilder> generateRunPatchContent,
-        string projectName = "TestPatcher")
+        string projectName = "TestPatcher",
+        IEnumerable<PackageReference>? additionalPackageReferences = null)
     {
         // Create bare repository (acts as the "remote")
         var bareRepoPath = Path.Combine(TestFolder, $"{repositoryName}.git");
@@ -227,7 +236,7 @@ public abstract class IntegrationTest : IDisposable
         Output.WriteLine($"Created working directory {workingDir}");
 
         // Create the patcher project in the working directory
-        CreateTestPatcherProjectInDirectory(workingDir, projectName, generateRunPatchContent);
+        CreateTestPatcherProjectInDirectory(workingDir, projectName, generateRunPatchContent, additionalPackageReferences);
 
         // Configure git user for the working directory
         RunGitCommand(workingDir, "config user.email \"test@synthesis.com\"");
@@ -348,14 +357,16 @@ public abstract class IntegrationTest : IDisposable
     /// <param name="generateRunPatchContent">Callback to generate the RunPatch method body content</param>
     /// <param name="nickname">Optional nickname for the patcher (defaults to repositoryName)</param>
     /// <param name="projectName">Name for the C# project (defaults to "TestPatcher")</param>
+    /// <param name="additionalPackageReferences">Optional additional package references to include in the project</param>
     /// <returns>Configured GithubPatcherSettings ready to use in tests</returns>
     public GithubPatcherSettings CreateGitPatcherWithSettings(
         string repositoryName,
         Action<GameRelease, StructuredStringBuilder> generateRunPatchContent,
         string? nickname = null,
-        string projectName = "TestPatcher")
+        string projectName = "TestPatcher",
+        IEnumerable<PackageReference>? additionalPackageReferences = null)
     {
-        var bareRepoPath = CreateGitPatcherRepository(repositoryName, generateRunPatchContent, projectName);
+        var bareRepoPath = CreateGitPatcherRepository(repositoryName, generateRunPatchContent, projectName, additionalPackageReferences);
         var commitSha = GetLatestCommitSha(bareRepoPath);
 
         return new GithubPatcherSettings
@@ -379,13 +390,15 @@ public abstract class IntegrationTest : IDisposable
     /// <param name="projectName">Name for the C# project</param>
     /// <param name="generateRunPatchContent">Callback to generate the RunPatch method body content</param>
     /// <param name="nickname">Optional nickname for the patcher (defaults to projectName)</param>
+    /// <param name="additionalPackageReferences">Optional additional package references to include in the project</param>
     /// <returns>Configured SolutionPatcherSettings ready to use in tests</returns>
     public SolutionPatcherSettings CreateSolutionPatcherWithSettings(
         string projectName,
         Action<GameRelease, StructuredStringBuilder> generateRunPatchContent,
-        string? nickname = null)
+        string? nickname = null,
+        IEnumerable<PackageReference>? additionalPackageReferences = null)
     {
-        var projectFolder = CreateTestPatcherProject(projectName, generateRunPatchContent);
+        var projectFolder = CreateTestPatcherProject(projectName, generateRunPatchContent, additionalPackageReferences);
 
         return new SolutionPatcherSettings
         {
@@ -448,7 +461,8 @@ public abstract class IntegrationTest : IDisposable
     private void CreateTestPatcherProjectInDirectory(
         string projectFolder,
         string projectName,
-        Action<GameRelease, StructuredStringBuilder> generateRunPatchContent)
+        Action<GameRelease, StructuredStringBuilder> generateRunPatchContent,
+        IEnumerable<PackageReference>? additionalPackageReferences = null)
     {
 
         // Use Skyrim SE as the default game for tests
@@ -465,6 +479,20 @@ public abstract class IntegrationTest : IDisposable
         // Get Synthesis version
         var synthesisVersion = GetSynthesisVersion();
 
+        // Build the package references
+        var packageReferencesBuilder = new StructuredStringBuilder();
+        packageReferencesBuilder.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda\" Version=\"{mutagenVersion}\" />");
+        packageReferencesBuilder.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda.{gameNamespace}\" Version=\"{mutagenVersion}\" />");
+        packageReferencesBuilder.AppendLine($"<PackageReference Include=\"Mutagen.Bethesda.Synthesis\" Version=\"{synthesisVersion}\" />");
+
+        if (additionalPackageReferences != null)
+        {
+            foreach (var packageRef in additionalPackageReferences)
+            {
+                packageReferencesBuilder.AppendLine($"<PackageReference Include=\"{packageRef.PackageId}\" Version=\"{packageRef.Version}\" />");
+            }
+        }
+
         var csprojContent = $$"""
             <Project Sdk="Microsoft.NET.Sdk">
                 <PropertyGroup>
@@ -474,10 +502,7 @@ public abstract class IntegrationTest : IDisposable
                     <Nullable>enable</Nullable>
                 </PropertyGroup>
                 <ItemGroup>
-                    <PackageReference Include="Mutagen.Bethesda" Version="{{mutagenVersion}}" />
-                    <PackageReference Include="Mutagen.Bethesda.{{gameNamespace}}" Version="{{mutagenVersion}}" />
-                    <PackageReference Include="Mutagen.Bethesda.Synthesis" Version="{{synthesisVersion}}" />
-                </ItemGroup>
+            {{packageReferencesBuilder}}    </ItemGroup>
             </Project>
             """;
 
@@ -537,13 +562,15 @@ public abstract class IntegrationTest : IDisposable
     /// </summary>
     /// <param name="projectName">Name for the project</param>
     /// <param name="generateRunPatchContent">Optional callback to generate the RunPatch method body content. If null, uses default NPC-adding implementation.</param>
+    /// <param name="additionalPackageReferences">Optional additional package references to include in the project</param>
     public DirectoryPath CreateTestPatcherProject(
         string projectName,
-        Action<GameRelease, StructuredStringBuilder> generateRunPatchContent)
+        Action<GameRelease, StructuredStringBuilder> generateRunPatchContent,
+        IEnumerable<PackageReference>? additionalPackageReferences = null)
     {
         var projectFolder = Path.Combine(TestFolder, projectName);
         Directory.CreateDirectory(projectFolder);
-        CreateTestPatcherProjectInDirectory(projectFolder, projectName, generateRunPatchContent);
+        CreateTestPatcherProjectInDirectory(projectFolder, projectName, generateRunPatchContent, additionalPackageReferences);
 
         return projectFolder;
     }
@@ -654,7 +681,8 @@ public abstract class IntegrationTest : IDisposable
         string groupName,
         IEnumerable<PatcherSettings> patchers,
         string? profileNickname = null,
-        GameRelease? gameRelease = null)
+        GameRelease? gameRelease = null,
+        bool splitIfMaxMastersExceeded = true)
     {
         var profileId = Path.GetRandomFileName();
 
@@ -682,6 +710,7 @@ public abstract class IntegrationTest : IDisposable
                     MutagenManualVersion = mutagenVersion,
                     SynthesisVersioning = NugetVersioningEnum.Manual,
                     SynthesisManualVersion = synthesisVersion,
+                    SplitIfMaxMastersExceeded = splitIfMaxMastersExceeded,
                     Groups = new List<PatcherGroupSettings>
                     {
                         new PatcherGroupSettings
@@ -846,7 +875,7 @@ public abstract class IntegrationTest : IDisposable
     /// <summary>
     /// Gets the stored internal payload
     /// </summary>
-    private IInitializationPayload GetStoredPayload()
+    protected IInitializationPayload GetStoredPayload()
     {
         if (_internalPayload == null)
         {
