@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using Serilog;
 using Synthesis.Bethesda.Commands;
+using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Patchers.Cli;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Utility;
@@ -65,25 +66,26 @@ public class CliPatcherRun : ICliPatcherRun
     {
     }
 
-    public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)
+    public async Task Run(RunSynthesisPatcher settings, PatcherRunCapture capture, CancellationToken cancel)
     {
         if (cancel.IsCancellationRequested) return;
 
         var internalSettings = GenericToMutagenSettings.Convert(settings);
         var args = Format.Format(internalSettings);
-            
+
         try
         {
-            var result = await ProcessRunner.Run(
+            var exitCode = await ProcessRunner.RunWithCapture(
                 new ProcessStartInfo(ExePath.Path, args)
                 {
                     WorkingDirectory = ExePath.Path.Directory!
                 },
+                capture,
                 cancel).ConfigureAwait(false);
-            if (result != 0)
+            if (exitCode != 0)
             {
                 throw new CliUnsuccessfulRunException(
-                    result,
+                    exitCode,
                     $"Process exited in failure: {ExePath.Path} {internalSettings}");
             }
         }

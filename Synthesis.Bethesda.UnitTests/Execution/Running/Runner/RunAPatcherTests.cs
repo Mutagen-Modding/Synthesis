@@ -7,6 +7,7 @@ using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Running.Runner;
+using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner;
@@ -104,7 +105,7 @@ public class RunAPatcherTests
             cancellation,
             sourcePath,
             runParameters);
-        await patcher.Received(1).Run(args, cancellation);
+        await patcher.Received(1).Run(args, Arg.Any<PatcherRunCapture>(), cancellation);
     }
         
     [Theory, SynthAutoData]
@@ -140,7 +141,7 @@ public class RunAPatcherTests
         RunParameters runParameters,
         RunAPatcher sut)
     {
-        patcher.Run(default!, default)
+        patcher.Run(default!, default!, default)
             .ThrowsForAnyArgs<NotImplementedException>();
         await Assert.ThrowsAsync<NotImplementedException>(() =>
         {

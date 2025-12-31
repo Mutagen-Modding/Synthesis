@@ -5,6 +5,7 @@ using Mutagen.Bethesda.Skyrim;
 using Shouldly;
 using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Commands;
+using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
@@ -164,15 +165,31 @@ public class ReferencedModMissingErrorCliPipelineTest : ReferencedModMissingErro
         Output.WriteLine($"Exception message: {_caughtException.Message}");
 
         // Verify exception type and exit code
-        _caughtException.ShouldBeOfType<Synthesis.Bethesda.Execution.CliUnsuccessfulRunException>();
-        var cliException = (Synthesis.Bethesda.Execution.CliUnsuccessfulRunException)_caughtException;
-        cliException.ExitCode.ShouldNotBe(0, "Exit code should be non-zero indicating failure");
+        _caughtException.ShouldBeOfType<ClassifiedErrorException>();
 
-        // Verify the error message contains our expected text
-        var exceptionString = _caughtException.ToString();
-        exceptionString.ShouldContain("Referenced mod was not present on the load order being sorted against");
+        // In CLI mode, the actual error details are logged via ILogger
+        // We capture these logs to verify the ReferencedModMissing error was properly surfaced
+        var fullLog = LogSink.GetFullLog();
+        Output.WriteLine("=== Captured Log Output ===");
+        Output.WriteLine(fullLog);
+        Output.WriteLine("=== End Log Output ===");
 
-        Output.WriteLine("Successfully verified missing mod reference error was detected");
+        var errorMessages = LogSink.ErrorMessages;
+        Output.WriteLine($"=== Error Messages ({errorMessages.Count}) ===");
+        foreach (var msg in errorMessages)
+        {
+            Output.WriteLine(msg);
+        }
+        Output.WriteLine("=== End Error Messages ===");
+
+        // Verify that the error classification was detected and logged
+        // Check error messages specifically (Serilog renders property values with quotes)
+        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains("ReferencedModMissing"),
+            "Should have logged the error classification");
+        errorMessages.ShouldContain(msg => msg.Contains("Referenced mod was not present on the load order being sorted against"),
+            "Should have logged the error suggestion");
+
+        Output.WriteLine("Successfully verified ReferencedModMissing error was detected and classified");
         return Task.CompletedTask;
     }
 }

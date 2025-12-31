@@ -1,6 +1,7 @@
 using Noggog;
 using Noggog.GitRepository;
 using Serilog;
+using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.GitRepository;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Settings;

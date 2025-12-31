@@ -2,6 +2,7 @@
 using System.Runtime.ExceptionServices;
 using Noggog;
 using Serilog;
+using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Utility;
@@ -50,6 +51,8 @@ public class RunAPatcher : IRunAPatcher
         FilePath? sourcePath,
         RunParameters runParameters)
     {
+        var capture = new PatcherRunCapture();
+
         try
         {
             // Finish waiting for prep, if it didn't finish
@@ -60,7 +63,7 @@ public class RunAPatcher : IRunAPatcher
                 ExceptionDispatchInfo.Capture(prepException).Throw();
                 throw prepException;
             }
-                
+
             var args = GetRunArgs.GetArgs(
                 groupRun,
                 prepBundle.Run,
@@ -68,14 +71,14 @@ public class RunAPatcher : IRunAPatcher
                 runParameters);
 
             _fs.Directory.CreateDirectory(args.OutputPath.Directory!);
-                
+
             _logger.Information("================= Starting Patcher {Patcher} Run =================", prepBundle.Run.Name);
             _logger.Information(_formatCommandLine.Format(args));
 
             _reporter.ReportStartingRun(prepBundle.Run.Key, prepBundle.Run.Name);
-            await prepBundle.Run.Run(args,
+            await prepBundle.Run.Run(args, capture,
                 cancel: cancellation).ConfigureAwait(false);
-                
+
             if (cancellation.IsCancellationRequested) return null;
 
             return FinalizePatcherRun.Finalize(prepBundle.Run, args.OutputPath);
@@ -86,12 +89,22 @@ public class RunAPatcher : IRunAPatcher
         }
         catch (CliUnsuccessfulRunException)
         {
-            _reporter.ReportRunProblem(prepBundle.Run.Key, prepBundle.Run.Name, null);
+            _reporter.ReportRunProblem(
+                prepBundle.Run.Key,
+                prepBundle.Run.Name,
+                null,
+                capture.Output,
+                capture.Errors);
             throw;
         }
         catch (Exception ex)
         {
-            _reporter.ReportRunProblem(prepBundle.Run.Key, prepBundle.Run.Name, ex);
+            _reporter.ReportRunProblem(
+                prepBundle.Run.Key,
+                prepBundle.Run.Name,
+                ex,
+                capture.Output,
+                capture.Errors);
             throw;
         }
     }

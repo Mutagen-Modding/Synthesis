@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
+using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 
@@ -37,11 +38,11 @@ public class SolutionPatcherRunExecution : ISolutionPatcherRunExecution
         Index = indexDisseminator.GetNext();
     }
 
-    public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)
+    public async Task Run(RunSynthesisPatcher settings, PatcherRunCapture capture, CancellationToken cancel)
     {
         PrintShaIfApplicable.Print();
 
-        await SolutionPatcherRunner.Run(settings, cancel).ConfigureAwait(false);
+        await SolutionPatcherRunner.Run(settings, capture, cancel).ConfigureAwait(false);
     }
 
     public void Dispose()

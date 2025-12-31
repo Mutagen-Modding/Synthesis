@@ -2,6 +2,7 @@ using System.IO.Abstractions;
 using System.Reactive.Linq;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Running;
+using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Running;
 
@@ -332,7 +333,7 @@ public class RunnerTests
             }
         }
 
-        public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)
+        public async Task Run(RunSynthesisPatcher settings, PatcherRunCapture capture, CancellationToken cancel)
         {
             if (DoWork)
             {

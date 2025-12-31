@@ -1,5 +1,6 @@
 ﻿using Serilog;
 using Synthesis.Bethesda.Commands;
+using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 using Synthesis.Bethesda.Execution.Utility;
@@ -8,7 +9,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 
 public interface ISolutionPatcherRunner
 {
-    Task Run(RunSynthesisPatcher settings, CancellationToken cancel);
+    Task Run(RunSynthesisPatcher settings, PatcherRunCapture capture, CancellationToken cancel);
 }
 
 public class SolutionPatcherRunner : ISolutionPatcherRunner
@@ -36,20 +37,23 @@ public class SolutionPatcherRunner : ISolutionPatcherRunner
         _logger = logger;
     }
         
-    public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)
+    public async Task Run(RunSynthesisPatcher settings, PatcherRunCapture capture, CancellationToken cancel)
     {
         _logger.Information("Running");
         var args = ConstructArgs.Construct(settings);
-        var result = await ProcessRunner.Run(
+        var exitCode = await ProcessRunner.RunWithCapture(
             ProcessRunStartInfoProvider.GetStart(
                 PathToProjProvider.Path,
                 Formatter.Format(args),
                 build: false),
+            capture,
             cancel: cancel).ConfigureAwait(false);
-            
-        if (result != 0)
+
+        if (exitCode != 0)
         {
-            throw new CliUnsuccessfulRunException(result, "Error running solution patcher");
+            throw new CliUnsuccessfulRunException(
+                exitCode,
+                "Error running solution patcher");
         }
     }
 }

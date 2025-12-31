@@ -5,6 +5,7 @@ using Mutagen.Bethesda.Skyrim;
 using Shouldly;
 using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Commands;
+using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
@@ -167,10 +168,23 @@ public class CompressionErrorCliPipelineTest : CompressionErrorTest
         _caughtException.ShouldNotBeNull("Expected an exception to be thrown during patcher execution");
 
         // Verify exception type and exit code
-        _caughtException.ShouldBeOfType<Synthesis.Bethesda.Execution.CliUnsuccessfulRunException>();
-        var cliException = (Synthesis.Bethesda.Execution.CliUnsuccessfulRunException)_caughtException;
+        _caughtException.ShouldBeOfType<CliUnsuccessfulRunException>();
+        var cliException = (CliUnsuccessfulRunException)_caughtException;
         cliException.ExitCode.ShouldNotBe(0, "Exit code should be non-zero indicating failure");
 
+        // In CLI mode, the actual error details are logged via ILogger (to console/files)
+        // rather than being embedded in the exception. We capture these logs to verify
+        // the compression error was properly surfaced.
+        var fullLog = LogSink.GetFullLog();
+        Output.WriteLine("=== Captured Log Output ===");
+        Output.WriteLine(fullLog);
+        Output.WriteLine("=== End Log Output ===");
+
+        // Verify the compression error was logged
+        fullLog.ShouldContain("Ionic.Zlib.ZlibException");
+        fullLog.ShouldContain("Bad state (unknown compression method (0x0B))");
+
+        Output.WriteLine("Successfully verified compression error in logged output");
         return Task.CompletedTask;
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Synthesis.Bethesda.Execution;
+namespace Synthesis.Bethesda.Execution.Exceptions;
 
 [ExcludeFromCodeCoverage]
 public class SynthesisBuildFailure : Exception

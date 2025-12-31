@@ -53,7 +53,12 @@ public class RxReporter : IRunReporter, IRunReporterWatcher
         _prepProblem.OnNext((key, name, ex));
     }
 
-    public void ReportRunProblem(Guid key, string name, Exception? ex)
+    public void ReportRunProblem(
+        Guid key,
+        string name,
+        Exception? ex,
+        IReadOnlyList<string>? capturedOutput = null,
+        IReadOnlyList<string>? capturedErrors = null)
     {
         _runProblem.OnNext((key, name, ex));
     }

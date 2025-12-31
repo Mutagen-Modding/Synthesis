@@ -45,10 +45,13 @@ public class IntegrationTestModule : Module
         }
 
         // Override the logger registration from MainModule to write to test output
-        var testLogger = new LoggerConfiguration()
+        // and capture log events for assertion
+        var logConfig = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .WriteTo.TestOutput(_testBase.Output)
-            .CreateLogger();
+            .WriteTo.Sink(_testBase.LogSink);
+
+        var testLogger = logConfig.CreateLogger();
 
         builder.RegisterInstance(testLogger)
             .As<ILogger>()

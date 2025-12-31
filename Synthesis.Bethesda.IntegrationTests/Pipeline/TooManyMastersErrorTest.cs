@@ -198,6 +198,28 @@ public class TooManyMastersErrorCliPipelineTest : TooManyMastersErrorTest
         var exceptionString = _caughtException.ToString();
         exceptionString.ShouldContain("TooManyMastersException");
 
+        // In CLI mode, the actual error details are logged via ILogger
+        // We capture these logs to verify the TooManyMasters error was properly surfaced
+        var fullLog = LogSink.GetFullLog();
+        Output.WriteLine("=== Captured Log Output ===");
+        Output.WriteLine(fullLog);
+        Output.WriteLine("=== End Log Output ===");
+
+        var errorMessages = LogSink.ErrorMessages;
+        Output.WriteLine($"=== Error Messages ({errorMessages.Count}) ===");
+        foreach (var msg in errorMessages)
+        {
+            Output.WriteLine(msg);
+        }
+        Output.WriteLine("=== End Error Messages ===");
+
+        // Verify that the error classification was detected and logged
+        // Check error messages specifically (Serilog renders property values with quotes)
+        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains("TooManyMasters"),
+            "Should have logged the error classification");
+        errorMessages.ShouldContain(msg => msg.Contains("SplitIfMaxMastersExceeded"),
+            "Should have logged the error suggestion");
+
         Output.WriteLine("Successfully verified TooManyMasters error was detected and classified");
         return Task.CompletedTask;
     }

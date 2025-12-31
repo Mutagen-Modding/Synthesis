@@ -2,6 +2,7 @@ using System.IO.Abstractions;
 using Autofac;
 using Noggog;
 using Synthesis.Bethesda.Execution.Commands;
+using Synthesis.Bethesda.Execution.Exceptions;
 
 namespace Synthesis.Bethesda.CLI.RunPipeline;
 
@@ -23,9 +24,16 @@ public class RunPipelineLogic
             
         var container = builder.Build();
 
-        await container
-            .Resolve<RunPipelineLogic>()
-            .RunInternal().ConfigureAwait(false);
+        try
+        {
+            await container
+                .Resolve<RunPipelineLogic>()
+                .RunInternal().ConfigureAwait(false);
+        }
+        catch (ClassifiedErrorException)
+        {
+            return -1;
+        }
         return 0;
     }
 

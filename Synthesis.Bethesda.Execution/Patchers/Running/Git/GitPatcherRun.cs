@@ -5,6 +5,7 @@ using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Git;
 
@@ -47,8 +48,8 @@ public class GitPatcherRun : IGitPatcherRun
         await GitPatcherPrep.Prep(cancel).ConfigureAwait(false);
     }
 
-    public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)
+    public async Task Run(RunSynthesisPatcher settings, PatcherRunCapture capture, CancellationToken cancel)
     {
-        await SolutionPatcherRunExecution.Run(settings, cancel).ConfigureAwait(false);
+        await SolutionPatcherRunExecution.Run(settings, capture, cancel).ConfigureAwait(false);
     }
 }

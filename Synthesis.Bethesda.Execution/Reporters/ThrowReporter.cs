@@ -31,7 +31,12 @@ public class ThrowReporter : IRunReporter
         throw ex;
     }
 
-    public void ReportRunProblem(Guid key, string name, Exception? ex)
+    public void ReportRunProblem(
+        Guid key,
+        string name,
+        Exception? ex,
+        IReadOnlyList<string>? capturedOutput = null,
+        IReadOnlyList<string>? capturedErrors = null)
     {
         throw new Exception();
     }

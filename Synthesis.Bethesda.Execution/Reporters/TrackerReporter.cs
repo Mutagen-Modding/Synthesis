@@ -37,7 +37,12 @@ public class TrackerReporter : IRunReporter
         _prepProblems.Add((name, ex));
     }
 
-    public void ReportRunProblem(Guid key, string name, Exception? ex)
+    public void ReportRunProblem(
+        Guid key,
+        string name,
+        Exception? ex,
+        IReadOnlyList<string>? capturedOutput = null,
+        IReadOnlyList<string>? capturedErrors = null)
     {
         if (RunProblem != null)
         {

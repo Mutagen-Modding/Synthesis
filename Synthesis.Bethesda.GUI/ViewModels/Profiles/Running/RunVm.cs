@@ -10,6 +10,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.GUI.Services.Profile.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;

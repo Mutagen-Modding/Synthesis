@@ -46,6 +46,9 @@ public abstract class IntegrationTest : IDisposable
     // Internal payload stored for reuse in helper methods
     private IInitializationPayload? _internalPayload;
 
+    // Log sink for capturing log messages during test execution
+    public TestUtilities.CapturingLogSink LogSink { get; }
+
     public DirectoryPath TestFolder => _tempFolder.Dir;
     public DirectoryPath SynthesisRepoRoot { get; }
     public DirectoryPath DataFolder { get; private set; }
@@ -60,6 +63,9 @@ public abstract class IntegrationTest : IDisposable
     protected IntegrationTest(ITestOutputHelper output)
     {
         Output = output;
+
+        // Initialize log sink for capturing log messages during test execution
+        LogSink = new TestUtilities.CapturingLogSink();
 
         // Set logging to testing mode to avoid file I/O
         LogPreferences.IsTesting = true;

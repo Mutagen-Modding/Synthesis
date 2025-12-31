@@ -37,7 +37,8 @@ public class RunPipelineCliModule : Module
         builder.RegisterModule(new CommonCliModule(_fileSystem));
 
         builder.Register(_ => CancellationToken.None).AsSelf();
-        builder.RegisterInstance(new ConsoleReporter()).As<IRunReporter>();
+        builder.RegisterType<ErrorClassifier>().As<IErrorClassifier>().SingleInstance();
+        builder.RegisterType<ConsoleReporter>().As<IRunReporter>().SingleInstance();
 
         builder.RegisterType<PatcherIdProvider>().AsImplementedInterfaces()
             .InstancePerMatchingLifetimeScope(LifetimeScopes.RunNickname);
