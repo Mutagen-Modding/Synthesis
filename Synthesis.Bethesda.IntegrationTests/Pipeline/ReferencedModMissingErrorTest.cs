@@ -6,6 +6,7 @@ using Shouldly;
 using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Exceptions;
+using Synthesis.Bethesda.Execution.Reporters.Classifications;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
@@ -114,7 +115,7 @@ public class ReferencedModMissingErrorUiPipelineTest : ReferencedModMissingError
 
         // Verify that the ErrorClassification is populated with the correct type
         patcherRun.ErrorClassification.ShouldNotBeNull("ErrorClassification should be populated");
-        patcherRun.ErrorClassification.ShouldBeOfType<Synthesis.Bethesda.Execution.Reporters.ReferencedModMissingError>(
+        patcherRun.ErrorClassification.ShouldBeOfType<ReferencedModMissingError>(
             "ErrorClassification should be ReferencedModMissingError");
 
         Output.WriteLine($"Patcher State: {patcherRun.State.Value} (Failed: {patcherRun.State.Failed})");
