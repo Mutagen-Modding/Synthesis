@@ -143,10 +143,14 @@ public class MainModule : Autofac.Module
             .InstancePerMatchingLifetimeScope(LifetimeScopes.RunNickname)
             .AsSelf();
             
+        builder.RegisterType<ErrorClassifier>()
+            .As<IErrorClassifier>()
+            .InstancePerMatchingLifetimeScope(LifetimeScopes.ProfileNickname);
+
         builder.RegisterType<RxReporter>()
             .InstancePerMatchingLifetimeScope(LifetimeScopes.ProfileNickname)
             .AsImplementedInterfaces();
-            
+
 
         builder.RegisterModule<Synthesis.Bethesda.Execution.Modules.ProfileModule>();
     }

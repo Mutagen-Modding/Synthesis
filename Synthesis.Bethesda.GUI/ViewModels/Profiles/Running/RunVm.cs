@@ -125,7 +125,7 @@ public class RunVm : ViewModel
             })
             .DisposeWith(this);
         reporterWatcher.PrepProblem
-            .Select(data => (data: (data.Key, data.Run, Error: (Exception?)data.Error), type: "prepping"))
+            .Select(data => (data: (data.Key, data.Run, Error: (Exception?)data.Error, data.Classification), type: "prepping"))
             .Merge(reporterWatcher.RunProblem
                 .Select(data => (data, type: "running")))
             .Do(i =>
@@ -146,6 +146,8 @@ public class RunVm : ViewModel
                 {
                     vm.State = GetResponse<RunState>.Fail(RunState.Error, i.data.Error);
                 }
+                // Set the error classification if present
+                vm.ErrorClassification = i.data.Classification;
                 runDisplayControllerVm.SelectedObject = vm;
             })
             .DisposeWith(this);

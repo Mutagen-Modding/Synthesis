@@ -7,6 +7,7 @@ using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Running;
+using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
@@ -21,6 +22,9 @@ public class PatcherRunVm : ViewModel, IRunItem
 
     [Reactive]
     public GetResponse<RunState> State { get; set; } = GetResponse<RunState>.Succeed(RunState.NotStarted);
+
+    [Reactive]
+    public ErrorClassification? ErrorClassification { get; set; }
 
     public TextDocument OutputDisplay { get; } = new();
 

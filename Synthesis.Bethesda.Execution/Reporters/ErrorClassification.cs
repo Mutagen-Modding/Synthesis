@@ -23,7 +23,7 @@ public class TooManyMastersError : ErrorClassification
 {
     public const string SuggestionMessage = "The output plugin has too many masters. Consider enabling 'SplitIfMaxMastersExceeded' in your profile settings to automatically split the output into multiple plugins.";
 
-    public override string ErrorType => "TooManyMasters";
+    public override string ErrorType => "Too Many Masters";
     public override string Message => SuggestionMessage;
 }
 
@@ -34,6 +34,6 @@ public class ReferencedModMissingError : ErrorClassification
 {
     public const string SuggestionMessage = "A referenced mod was not present on the load order being sorted against. This typically happens when a patcher references a mod that isn't in your current load order. Check your load order and ensure all required mods are present and enabled.";
 
-    public override string ErrorType => "ReferencedModMissing";
+    public override string ErrorType => "Referenced Mod Missing";
     public override string Message => SuggestionMessage;
 }

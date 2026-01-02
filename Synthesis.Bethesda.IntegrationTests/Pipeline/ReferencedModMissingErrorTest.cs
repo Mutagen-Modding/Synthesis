@@ -112,15 +112,16 @@ public class ReferencedModMissingErrorUiPipelineTest : ReferencedModMissingError
         patcherRun.State.Value.ShouldBe(Synthesis.Bethesda.GUI.ViewModels.Profiles.Running.RunState.Error,
             "Patcher should be in Error state");
 
-        // In UI mode, the error details flow through IRunReporter which logs to ILogger
-        // Similar to CLI mode, we can capture those logs
-        // For now, verify that the patcher entered error state
-        Output.WriteLine($"Patcher State: {patcherRun.State.Value} (Failed: {patcherRun.State.Failed})");
-        Output.WriteLine("Successfully verified patcher entered error state");
+        // Verify that the ErrorClassification is populated with the correct type
+        patcherRun.ErrorClassification.ShouldNotBeNull("ErrorClassification should be populated");
+        patcherRun.ErrorClassification.ShouldBeOfType<Synthesis.Bethesda.Execution.Reporters.ReferencedModMissingError>(
+            "ErrorClassification should be ReferencedModMissingError");
 
-        // TODO: Future enhancement - capture the error details from logged output
-        // The error is logged via IRunReporter -> ILogger, similar to CLI mode
-        // We could set up LogSink for UI mode as well to capture this
+        Output.WriteLine($"Patcher State: {patcherRun.State.Value} (Failed: {patcherRun.State.Failed})");
+        Output.WriteLine($"Error Classification Type: {patcherRun.ErrorClassification.ErrorType}");
+        Output.WriteLine($"Error Message: {patcherRun.ErrorClassification.Message}");
+        Output.WriteLine("Successfully verified ReferencedModMissing error was detected and classified");
+
         await Task.CompletedTask;
     }
 }
