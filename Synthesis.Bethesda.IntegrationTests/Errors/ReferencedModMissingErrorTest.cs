@@ -13,7 +13,7 @@ using Synthesis.Bethesda.IntegrationTests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Synthesis.Bethesda.IntegrationTests.Pipeline;
+namespace Synthesis.Bethesda.IntegrationTests.Errors;
 
 /// <summary>
 /// Abstract base for missing mod reference error detection tests
