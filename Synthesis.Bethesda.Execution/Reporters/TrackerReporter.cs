@@ -1,5 +1,6 @@
 using Noggog;
 using System.Diagnostics.CodeAnalysis;
+using Mutagen.Bethesda.Plugins.Order;
 
 namespace Synthesis.Bethesda.Execution.Reporters;
 
@@ -42,7 +43,8 @@ public class TrackerReporter : IRunReporter
         string name,
         Exception? ex,
         IReadOnlyList<string>? capturedOutput = null,
-        IReadOnlyList<string>? capturedErrors = null)
+        IReadOnlyList<string>? capturedErrors = null,
+        IList<ILoadOrderListingGetter>? loadOrder = null)
     {
         if (RunProblem != null)
         {

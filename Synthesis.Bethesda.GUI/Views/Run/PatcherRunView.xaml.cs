@@ -77,15 +77,9 @@ public partial class PatcherRunView
                 .BindTo(this, x => x.OutputBoxTabbed.Document)
                 .DisposeWith(disposable);
 
-            // Bind error classification data to Error Report tab
+            // Bind error classification to ContentControl
             this.WhenAnyValue(x => x.ViewModel!.ErrorClassification)
-                .Select(classification => classification?.ErrorType ?? string.Empty)
-                .BindTo(this, x => x.ErrorTypeText.Text)
-                .DisposeWith(disposable);
-
-            this.WhenAnyValue(x => x.ViewModel!.ErrorClassification)
-                .Select(classification => classification?.Message ?? string.Empty)
-                .BindTo(this, x => x.ErrorMessageText.Text)
+                .BindTo(this, x => x.ErrorClassificationContent.Content)
                 .DisposeWith(disposable);
 
             // Set Error Report tab as default when tabs are visible

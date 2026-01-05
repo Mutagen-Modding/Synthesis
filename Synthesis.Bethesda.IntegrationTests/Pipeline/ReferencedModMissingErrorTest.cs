@@ -186,7 +186,7 @@ public class ReferencedModMissingErrorCliPipelineTest : ReferencedModMissingErro
 
         // Verify that the error classification was detected and logged
         // Check error messages specifically (Serilog renders property values with quotes)
-        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains("ReferencedModMissing"),
+        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains("Referenced Mod Missing"),
             "Should have logged the error classification");
         errorMessages.ShouldContain(msg => msg.Contains("Referenced mod was not present on the load order being sorted against"),
             "Should have logged the error suggestion");

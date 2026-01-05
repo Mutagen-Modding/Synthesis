@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Subjects;
+using Mutagen.Bethesda.Plugins.Order;
 
 namespace Synthesis.Bethesda.Execution.Reporters;
 
@@ -67,10 +68,11 @@ public class RxReporter : IRunReporter, IRunReporterWatcher
         string name,
         Exception? ex,
         IReadOnlyList<string>? capturedOutput = null,
-        IReadOnlyList<string>? capturedErrors = null)
+        IReadOnlyList<string>? capturedErrors = null,
+        IList<ILoadOrderListingGetter>? loadOrder = null)
     {
         // Attempt to classify the error based on captured output
-        var classification = _errorClassifier.Classify(capturedOutput, capturedErrors);
+        var classification = _errorClassifier.Classify(capturedOutput, capturedErrors, loadOrder);
         _runProblem.OnNext((key, name, ex, classification));
     }
 

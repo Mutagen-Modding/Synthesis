@@ -2,6 +2,7 @@ using Noggog;
 using Serilog;
 using System.Diagnostics.CodeAnalysis;
 using Synthesis.Bethesda.Execution.Exceptions;
+using Mutagen.Bethesda.Plugins.Order;
 
 namespace Synthesis.Bethesda.Execution.Reporters;
 
@@ -44,10 +45,11 @@ public class ConsoleReporter : IRunReporter
         string name,
         Exception? ex,
         IReadOnlyList<string>? capturedOutput = null,
-        IReadOnlyList<string>? capturedErrors = null)
+        IReadOnlyList<string>? capturedErrors = null,
+        IList<ILoadOrderListingGetter>? loadOrder = null)
     {
         // Attempt to classify the error and provide helpful suggestions
-        var classification = _errorClassifier.Classify(capturedOutput, capturedErrors);
+        var classification = _errorClassifier.Classify(capturedOutput, capturedErrors, loadOrder);
         if (classification != null)
         {
             if (ex != null)

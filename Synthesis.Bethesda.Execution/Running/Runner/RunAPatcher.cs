@@ -25,6 +25,7 @@ public class RunAPatcher : IRunAPatcher
     private readonly IRunReporter _reporter;
     private readonly IFileSystem _fs;
     private readonly IFormatCommandLine _formatCommandLine;
+    private readonly ILoadOrderForRunProvider _loadOrderForRunProvider;
     public IFinalizePatcherRun FinalizePatcherRun { get; }
     public IRunArgsConstructor GetRunArgs { get; }
 
@@ -34,7 +35,8 @@ public class RunAPatcher : IRunAPatcher
         IFileSystem fs,
         IFormatCommandLine formatCommandLine,
         IFinalizePatcherRun finalizePatcherRun,
-        IRunArgsConstructor getRunArgs)
+        IRunArgsConstructor getRunArgs,
+        ILoadOrderForRunProvider loadOrderForRunProvider)
     {
         _logger = logger;
         _reporter = reporter;
@@ -42,6 +44,7 @@ public class RunAPatcher : IRunAPatcher
         _formatCommandLine = formatCommandLine;
         FinalizePatcherRun = finalizePatcherRun;
         GetRunArgs = getRunArgs;
+        _loadOrderForRunProvider = loadOrderForRunProvider;
     }
 
     public async Task<FilePath?> Run(
@@ -89,22 +92,30 @@ public class RunAPatcher : IRunAPatcher
         }
         catch (CliUnsuccessfulRunException)
         {
+            // Get the load order for error classification
+            var loadOrder = _loadOrderForRunProvider.Get(groupRun.ModKey, groupRun.BlacklistedMods);
+
             _reporter.ReportRunProblem(
                 prepBundle.Run.Key,
                 prepBundle.Run.Name,
                 null,
                 capture.Output,
-                capture.Errors);
+                capture.Errors,
+                loadOrder);
             throw;
         }
         catch (Exception ex)
         {
+            // Get the load order for error classification
+            var loadOrder = _loadOrderForRunProvider.Get(groupRun.ModKey, groupRun.BlacklistedMods);
+
             _reporter.ReportRunProblem(
                 prepBundle.Run.Key,
                 prepBundle.Run.Name,
                 ex,
                 capture.Output,
-                capture.Errors);
+                capture.Errors,
+                loadOrder);
             throw;
         }
     }
