@@ -61,7 +61,7 @@ public class ConsoleReporter : IRunReporter
             _logger.Error("Error detected: {ErrorType}", classification.ErrorType);
             _logger.Error("{Message}", classification.Message);
 
-            throw new ClassifiedErrorException();
+            throw new ClassifiedErrorException(ex);
         }
     }
 

@@ -650,7 +650,8 @@ public class SynthesisPipelineTests
             GameRelease = GameRelease.SkyrimSE,
             SourcePath = sourcePath,
             OutputPath = Path.Combine(outputPath, outputModKey.FileName),
-            LoadOrderIncludesCreationClub = true
+            LoadOrderIncludesCreationClub = true,
+            SplitIfMaxMastersExceeded = true, // Enable auto-split
         };
 
         fileSystem.Directory.CreateDirectory(outputPath);

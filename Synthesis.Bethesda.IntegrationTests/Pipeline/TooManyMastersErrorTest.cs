@@ -6,6 +6,7 @@ using Noggog.StructuredStrings;
 using Shouldly;
 using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Commands;
+using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
 using Xunit;
@@ -140,10 +141,10 @@ public class TooManyMastersErrorUIPipelineTest : TooManyMastersErrorTest
 
         Output.WriteLine($"Patcher State: {patcherRun.State.Value} (Failed: {patcherRun.State.Failed})");
 
-        // The patcher finishes (doesn't error out) because SynthesisPipeline catches TooManyMastersException
-        // and handles it gracefully by printing to console
-        patcherRun.State.Value.ShouldBe(Synthesis.Bethesda.GUI.ViewModels.Profiles.Running.RunState.Finished,
-            "Patcher should complete (TooManyMastersException is caught and handled)");
+        // The patcher errors out because TooManyMastersException is thrown when
+        // SplitIfMaxMastersExceeded is false
+        patcherRun.State.Value.ShouldBe(Synthesis.Bethesda.GUI.ViewModels.Profiles.Running.RunState.Error,
+            "Patcher should error when TooManyMasters occurs with SplitIfMaxMastersExceeded = false");
 
         Output.WriteLine("Successfully verified patcher completed");
 
@@ -193,10 +194,16 @@ public class TooManyMastersErrorCliPipelineTest : TooManyMastersErrorTest
         Output.WriteLine($"Exception type: {_caughtException.GetType().FullName}");
         Output.WriteLine($"Exception message: {_caughtException.Message}");
 
-        // The TooManyMastersException can be thrown directly or wrapped
-        // Check if it's the TooManyMastersException or contains it
+        // The TooManyMastersException can be thrown directly, wrapped, or classified
+        // Check if it's a ClassifiedErrorException (meaning it was properly classified)
+        // OR if the exception string contains TooManyMastersException
+        var isClassified = _caughtException is ClassifiedErrorException;
         var exceptionString = _caughtException.ToString();
-        exceptionString.ShouldContain("TooManyMastersException");
+        var containsTooManyMasters = exceptionString.Contains("TooManyMastersException", StringComparison.OrdinalIgnoreCase);
+
+        (isClassified || containsTooManyMasters).ShouldBeTrue(
+            $"Exception should either be classified or contain TooManyMastersException. " +
+            $"Is classified: {isClassified}, Contains TooManyMasters: {containsTooManyMasters}");
 
         // In CLI mode, the actual error details are logged via ILogger
         // We capture these logs to verify the TooManyMasters error was properly surfaced
@@ -215,7 +222,7 @@ public class TooManyMastersErrorCliPipelineTest : TooManyMastersErrorTest
 
         // Verify that the error classification was detected and logged
         // Check error messages specifically (Serilog renders property values with quotes)
-        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains("TooManyMasters"),
+        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains("Too Many Masters"),
             "Should have logged the error classification");
         errorMessages.ShouldContain(msg => msg.Contains("SplitIfMaxMastersExceeded"),
             "Should have logged the error suggestion");

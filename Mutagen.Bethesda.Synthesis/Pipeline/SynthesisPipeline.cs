@@ -652,19 +652,24 @@ public class SynthesisPipeline
 
         try
         {
-            await state.PatchMod.BeginWrite
+            var writeBuilder = state.PatchMod.BeginWrite
                 .ToPath(args.OutputPath)
                 .WithLoadOrder(state.LoadOrderForPipeline)
                 .WithFileSystem(fileSystem)
                 .NoModKeySync()
                 .WithTargetLanguage(args.TargetLanguage)
                 .WithEmbeddedEncodings(
-                    args.UseUtf8ForEmbeddedStrings 
+                    args.UseUtf8ForEmbeddedStrings
                         ? new EncodingBundle(NonTranslated: MutagenEncoding._1252, NonLocalized: MutagenEncoding._utf8)
                         : null)
-                .WithForcedLowerFormIdRangeUsage(args.FormIDRangeMode.ToForceBool())
-                .WithAutoSplit()
-                .WriteAsync();
+                .WithForcedLowerFormIdRangeUsage(args.FormIDRangeMode.ToForceBool());
+
+            if (args.SplitIfMaxMastersExceeded)
+            {
+                writeBuilder = writeBuilder.WithAutoSplit();
+            }
+
+            await writeBuilder.WriteAsync();
         }
         catch (TooManyMastersException tooMany)
         {
