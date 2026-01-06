@@ -61,6 +61,11 @@ public class ConsoleReporter : IRunReporter
             _logger.Error("Error detected: {ErrorType}", classification.ErrorType);
             _logger.Error("{Message}", classification.Message);
 
+            if (!string.IsNullOrWhiteSpace(classification.DiscussionLink))
+            {
+                _logger.Error("Read more: {DiscussionLink}", classification.DiscussionLink);
+            }
+
             throw new ClassifiedErrorException(ex);
         }
     }

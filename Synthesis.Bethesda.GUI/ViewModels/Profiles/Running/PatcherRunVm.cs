@@ -24,7 +24,7 @@ public class PatcherRunVm : ViewModel, IRunItem
     public GetResponse<RunState> State { get; set; } = GetResponse<RunState>.Succeed(RunState.NotStarted);
 
     [Reactive]
-    public ErrorClassification? ErrorClassification { get; set; }
+    public object? ErrorClassification { get; set; }
 
     public TextDocument OutputDisplay { get; } = new();
 

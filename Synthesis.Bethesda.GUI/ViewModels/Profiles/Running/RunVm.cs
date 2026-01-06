@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using Autofac;
 using DynamicData;
 using Noggog;
 using Noggog.Reactive;
@@ -24,6 +25,8 @@ public class RunVm : ViewModel
     private readonly ILogger _logger;
     private readonly IExecuteGuiRun _executeRun;
     private readonly ISchedulerProvider _schedulerProvider;
+    private readonly IClassificationVmFactory _classificationVmFactory;
+    private readonly ILifetimeScope _scope;
     public RunDisplayControllerVm RunDisplayControllerVm { get; }
     public IRunReporter Reporter { get; }
     private readonly Dictionary<Guid, PatcherRunVm> _patchers;
@@ -63,12 +66,16 @@ public class RunVm : ViewModel
         IRunReporter reporter,
         IExecuteGuiRun executeRun,
         ISchedulerProvider schedulerProvider,
+        IClassificationVmFactory classificationVmFactory,
+        ILifetimeScope scope,
         IEnumerable<GroupVm> groups,
         ProfileVm profile)
     {
         _logger = logger;
         _executeRun = executeRun;
         _schedulerProvider = schedulerProvider;
+        _classificationVmFactory = classificationVmFactory;
+        _scope = scope;
         RunDisplayControllerVm = runDisplayControllerVm;
         Reporter = reporter;
         RunningProfile = profile;
@@ -146,8 +153,11 @@ public class RunVm : ViewModel
                 {
                     vm.State = GetResponse<RunState>.Fail(RunState.Error, i.data.Error);
                 }
-                // Set the error classification if present
-                vm.ErrorClassification = i.data.Classification;
+                // Set the error classification if present, wrapping it with a VM if needed
+                if (i.data.Classification != null)
+                {
+                    vm.ErrorClassification = _classificationVmFactory.CreateVm(i.data.Classification, _scope);
+                }
                 runDisplayControllerVm.SelectedObject = vm;
             })
             .DisposeWith(this);

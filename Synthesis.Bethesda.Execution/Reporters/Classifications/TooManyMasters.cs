@@ -44,8 +44,7 @@ public class TooManyMasters : IErrorClassificationDetector
 /// </summary>
 public class TooManyMastersError : ErrorClassification
 {
-    public const string SuggestionMessage = "The output plugin has too many masters. Consider enabling 'SplitIfMaxMastersExceeded' in your profile settings to automatically split the output into multiple plugins.";
-
     public override string ErrorType => "Too Many Masters";
-    public override string Message => SuggestionMessage;
+    public override string Message => "The output plugin has too many references to other mods.";
+    public override string? DiscussionLink => "https://github.com/Mutagen-Modding/Synthesis/discussions/300";
 }

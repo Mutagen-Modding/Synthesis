@@ -118,9 +118,10 @@ public class ReferencedModMissingErrorUiPipelineTest : ReferencedModMissingError
         patcherRun.ErrorClassification.ShouldBeOfType<ReferencedModMissingError>(
             "ErrorClassification should be ReferencedModMissingError");
 
+        var classification = (ReferencedModMissingError)patcherRun.ErrorClassification;
         Output.WriteLine($"Patcher State: {patcherRun.State.Value} (Failed: {patcherRun.State.Failed})");
-        Output.WriteLine($"Error Classification Type: {patcherRun.ErrorClassification.ErrorType}");
-        Output.WriteLine($"Error Message: {patcherRun.ErrorClassification.Message}");
+        Output.WriteLine($"Error Classification Type: {classification.ErrorType}");
+        Output.WriteLine($"Error Message: {classification.Message}");
         Output.WriteLine("Successfully verified ReferencedModMissing error was detected and classified");
 
         await Task.CompletedTask;
@@ -190,6 +191,8 @@ public class ReferencedModMissingErrorCliPipelineTest : ReferencedModMissingErro
             "Should have logged the error classification");
         errorMessages.ShouldContain(msg => msg.Contains("Referenced mod was not present on the load order being sorted against"),
             "Should have logged the error suggestion");
+        errorMessages.ShouldContain(msg => msg.Contains("Read more:") && msg.Contains("https://github.com/Mutagen-Modding/Synthesis/discussions/382"),
+            "Should have logged the discussion link");
 
         Output.WriteLine("Successfully verified ReferencedModMissing error was detected and classified");
         return Task.CompletedTask;

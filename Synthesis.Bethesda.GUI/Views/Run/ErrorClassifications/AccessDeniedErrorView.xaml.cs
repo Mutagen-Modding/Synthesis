@@ -3,11 +3,11 @@ using System.Windows.Controls;
 namespace Synthesis.Bethesda.GUI.Views.ErrorClassifications;
 
 /// <summary>
-/// Interaction logic for ReferencedModMissingErrorView.xaml
+/// Interaction logic for AccessDeniedErrorView.xaml
 /// </summary>
-public partial class ReferencedModMissingErrorView : UserControl
+public partial class AccessDeniedErrorView : UserControl
 {
-    public ReferencedModMissingErrorView()
+    public AccessDeniedErrorView()
     {
         InitializeComponent();
     }

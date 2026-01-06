@@ -1,14 +1,10 @@
 using System.Reactive.Linq;
 using Mutagen.Bethesda;
-using Mutagen.Bethesda.Plugins;
-using Mutagen.Bethesda.Skyrim;
 using Shouldly;
 using Synthesis.Bethesda.CLI.RunPipeline;
-using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Reporters.Classifications;
-using Synthesis.Bethesda.Execution.Settings;
-using Synthesis.Bethesda.Execution.Utility;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
@@ -16,35 +12,27 @@ using Xunit.Abstractions;
 namespace Synthesis.Bethesda.IntegrationTests.Errors;
 
 /// <summary>
-/// Abstract base for compression error detection tests
-/// Tests that we can detect and suggest fixes for known compression errors
-///
-/// Example usage with Git patcher:
-/// var patcher = CreateGitPatcherWithSettings(
-///     "MyRepo",
-///     GenerateCompressionErrorPatchContent(),
-///     additionalPackageReferences: new[] { new PackageReference("Ionic.Zip", "1.9.1.8") });
+/// Abstract base for file access denied error detection tests
+/// Tests that we can detect and suggest fixes for file access denied errors
 /// </summary>
-public abstract class CompressionErrorTest : IntegrationTest
+public abstract class AccessDeniedErrorTest : IntegrationTest
 {
-    protected CompressionErrorTest(ITestOutputHelper output) : base(output)
+    protected AccessDeniedErrorTest(ITestOutputHelper output) : base(output)
     {
     }
 
     protected abstract override PipelineMode Mode { get; }
 
     [Fact]
-    public async Task CompressionError_IsDetectedAndReported()
+    public async Task AccessDeniedError_IsDetectedAndReported()
     {
         // Arrange
 
-        // Create a test patcher that throws a compression error
-        // This uses the Ionic.Zip package to throw a realistic compression error
+        // Create a test patcher that throws an access denied error
         var patcher = CreateSolutionPatcherWithSettings(
-            "CompressionFailurePatcher",
-            GenerateCompressionErrorPatchContent(),
-            nickname: "Compression Error Patcher",
-            additionalPackageReferences: new[] { new PackageReference("Ionic.Zip", "1.9.1.8") });
+            "AccessDeniedPatcher",
+            GenerateAccessDeniedErrorPatchContent(),
+            nickname: "Access Denied Error Patcher");
 
         // Export settings with patchers
         var groupName = "Test Group";
@@ -60,16 +48,15 @@ public abstract class CompressionErrorTest : IntegrationTest
     }
 
     /// <summary>
-    /// Generates patcher content that throws a compression error
-    /// This simulates the error from CompressionFailureForced patcher
+    /// Generates patcher content that throws an access denied error
     /// </summary>
-    private static Action<GameRelease, Noggog.StructuredStrings.StructuredStringBuilder> GenerateCompressionErrorPatchContent()
+    private static Action<GameRelease, Noggog.StructuredStrings.StructuredStringBuilder> GenerateAccessDeniedErrorPatchContent()
     {
         return (gameRelease, sb) =>
         {
-            sb.AppendLine("// Simulate a compression error that can occur when reading corrupted mod files");
-            sb.AppendLine("// This is the error message from Ionic.Zlib when it encounters bad compression data");
-            sb.AppendLine("throw new Ionic.Zlib.ZlibException(\"Bad state (unknown compression method (0x0B))\");");
+            sb.AppendLine("// Simulate a file access denied error");
+            sb.AppendLine("var testPath = @\"C:\\Users\\Test\\Documents\\SomeFile.esp\";");
+            sb.AppendLine("throw new System.IO.IOException($\"The process cannot access the file '{testPath}' because it is being used by another process.\");");
         };
     }
 
@@ -82,11 +69,11 @@ public abstract class CompressionErrorTest : IntegrationTest
 }
 
 /// <summary>
-/// UI-based compression error detection test
+/// UI-based access denied error detection test
 /// </summary>
-public class CompressionErrorUIPipelineTest : CompressionErrorTest
+public class AccessDeniedErrorUIPipelineTest : AccessDeniedErrorTest
 {
-    public CompressionErrorUIPipelineTest(ITestOutputHelper output) : base(output)
+    public AccessDeniedErrorUIPipelineTest(ITestOutputHelper output) : base(output)
     {
     }
 
@@ -100,7 +87,6 @@ public class CompressionErrorUIPipelineTest : CompressionErrorTest
     protected override async Task AssertErrorOccurred()
     {
         // In UI mode, errors are captured in the PatcherRunVm's OutputDisplay TextDocument
-        // This is what gets shown to the user in the GUI
         var payload = GetStoredPayload();
 
         payload.ActiveRunVm.CurrentRun.ShouldNotBeNull("CurrentRun should be set");
@@ -118,27 +104,30 @@ public class CompressionErrorUIPipelineTest : CompressionErrorTest
 
         // Verify that the ErrorClassification is populated with the correct type
         patcherRun.ErrorClassification.ShouldNotBeNull("ErrorClassification should be populated");
-        patcherRun.ErrorClassification.ShouldBeOfType<CompressionErrorClassification>(
-            "ErrorClassification should be CompressionErrorClassification");
+        patcherRun.ErrorClassification.ShouldBeOfType<AccessDeniedErrorVm>(
+            "ErrorClassification should be AccessDeniedErrorVm");
 
-        var classification = (CompressionErrorClassification)patcherRun.ErrorClassification;
+        var vm = (AccessDeniedErrorVm)patcherRun.ErrorClassification;
         Output.WriteLine($"Patcher State: {patcherRun.State.Value} (Failed: {patcherRun.State.Failed})");
-        Output.WriteLine($"Error Classification Type: {classification.ErrorType}");
-        Output.WriteLine($"Error Message: {classification.Message}");
-        Output.WriteLine("Successfully verified compression error was detected and classified");
+        Output.WriteLine($"Error Classification Type: {vm.ErrorType}");
+        Output.WriteLine($"Error Message: {vm.Message}");
+        Output.WriteLine($"File Path: {vm.FilePath}");
+
+        vm.FilePath.ShouldNotBeNullOrEmpty("FilePath should be extracted from error message");
+        Output.WriteLine("Successfully verified access denied error was detected and classified");
 
         await Task.CompletedTask;
     }
 }
 
 /// <summary>
-/// CLI-based compression error detection test
+/// CLI-based access denied error detection test
 /// </summary>
-public class CompressionErrorCliPipelineTest : CompressionErrorTest
+public class AccessDeniedErrorCliPipelineTest : AccessDeniedErrorTest
 {
     private Exception? _caughtException;
 
-    public CompressionErrorCliPipelineTest(ITestOutputHelper output) : base(output)
+    public AccessDeniedErrorCliPipelineTest(ITestOutputHelper output) : base(output)
     {
     }
 
@@ -174,7 +163,6 @@ public class CompressionErrorCliPipelineTest : CompressionErrorTest
         _caughtException.ShouldBeOfType<ClassifiedErrorException>();
 
         // In CLI mode, the actual error details are logged via ILogger
-        // We capture these logs to verify the compression error was properly surfaced
         var fullLog = LogSink.GetFullLog();
         Output.WriteLine("=== Captured Log Output ===");
         Output.WriteLine(fullLog);
@@ -189,13 +177,12 @@ public class CompressionErrorCliPipelineTest : CompressionErrorTest
         Output.WriteLine("=== End Error Messages ===");
 
         // Verify that the error classification was detected and logged
-        // Check error messages specifically (Serilog renders property values with quotes)
-        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains("Compression Error"),
+        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains("File Access Denied"),
             "Should have logged the error classification");
-        errorMessages.ShouldContain(msg => msg.Contains("compression error occurred") || msg.Contains("corrupted or was compressed"),
-            "Should have logged the error suggestion");
+        errorMessages.ShouldContain(msg => msg.Contains("cannot access a file") || msg.Contains("being used by another process"),
+            "Should have logged the error message");
 
-        Output.WriteLine("Successfully verified compression error was detected and classified");
+        Output.WriteLine("Successfully verified access denied error was detected and classified");
         return Task.CompletedTask;
     }
 }

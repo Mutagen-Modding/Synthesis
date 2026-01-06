@@ -14,4 +14,9 @@ public abstract class ErrorClassification
     /// Detailed message to display to the user
     /// </summary>
     public abstract string Message { get; }
+
+    /// <summary>
+    /// Optional URL to a discussion or documentation page for more information
+    /// </summary>
+    public virtual string? DiscussionLink => null;
 }

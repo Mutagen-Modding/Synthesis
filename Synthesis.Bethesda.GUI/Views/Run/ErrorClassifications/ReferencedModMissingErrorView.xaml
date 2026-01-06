@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:common="clr-namespace:Synthesis.Bethesda.GUI.Views.Common"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -23,33 +24,27 @@
                    Foreground="{StaticResource SalmonBrush}"
                    Margin="0,0,0,10" />
 
-        <!-- Error Message -->
-        <TextBlock Grid.Row="1"
-                   FontSize="14"
-                   TextWrapping="Wrap"
-                   Foreground="White"
-                   Margin="0,0,0,15">
-            <Run Text="{Binding Message, Mode=OneWay}" />
-            <LineBreak />
-            <LineBreak />
-            <Hyperlink x:Name="ReadMoreLink"
-                       NavigateUri="https://github.com/Mutagen-Modding/Synthesis/discussions/382"
-                       Foreground="{StaticResource LightBlueBrush}"
-                       FontSize="20"
-                       FontWeight="Bold">
-                Read More
-            </Hyperlink>
-        </TextBlock>
+        <!-- Error Message with Read More Button -->
+        <StackPanel Grid.Row="1"
+                    Margin="0,0,0,15">
+            <TextBlock Text="{Binding Message}"
+                       FontSize="14"
+                       TextWrapping="Wrap"
+                       Foreground="White"
+                       Margin="0,0,0,10" />
+
+            <common:ReadMoreButton Command="{Binding ReadMoreCommand}" />
+        </StackPanel>
 
         <!-- Missing Mod Info -->
         <StackPanel Grid.Row="2" Margin="0,0,0,10">
             <TextBlock Text="Missing Mod:"
-                       FontSize="14"
+                       FontSize="16"
                        FontWeight="Bold"
                        Foreground="{StaticResource SalmonBrush}"
-                       Margin="0,0,0,3" />
+                       Margin="0,0,0,5" />
             <TextBlock Text="{Binding MissingModKey}"
-                       FontSize="15"
+                       FontSize="14"
                        FontWeight="Bold"
                        FontFamily="Consolas"
                        Margin="10,0,0,0" />
@@ -58,10 +53,10 @@
         <!-- Referenced By Info -->
         <StackPanel Grid.Row="3" Margin="0,0,0,15">
             <TextBlock Text="Referenced By Record:"
-                       FontSize="14"
+                       FontSize="16"
                        FontWeight="Bold"
                        Foreground="{StaticResource SalmonBrush}"
-                       Margin="0,0,0,3" />
+                       Margin="0,0,0,5" />
             <TextBlock Text="{Binding ReferencedBy}"
                        FontSize="14"
                        FontFamily="Consolas"

@@ -90,6 +90,7 @@ public class ReferencedModMissingError : ErrorClassification
 
     public override string ErrorType => "Referenced Mod Missing";
     public override string Message => SuggestionMessage;
+    public override string? DiscussionLink => "https://github.com/Mutagen-Modding/Synthesis/discussions/382";
 
     /// <summary>
     /// The load order at the time of the error, for user reference
