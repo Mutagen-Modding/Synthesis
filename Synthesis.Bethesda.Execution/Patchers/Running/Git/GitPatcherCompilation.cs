@@ -1,4 +1,5 @@
 ﻿using System.IO.Abstractions;
+using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
@@ -10,7 +11,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Git;
 
 public interface IGitPatcherCompilation
 {
-    Task<ErrorResponse> Compile(
+    Task<GetResponse<GitCompilationMeta>> Compile(
         RunnerRepoInfo info,
         DotNetVersion dotNetVersion,
         CancellationToken cancel);
@@ -25,6 +26,7 @@ public class GitPatcherCompilation : IGitPatcherCompilation
     private readonly ShouldShortCircuitCompilation _shortCircuitCompilation;
     private readonly BuildDirectoryCleaner _buildDirectoryCleaner;
     private readonly IBuildMetaFileReader _metaFileReader;
+    private readonly IProvideCurrentVersions _provideCurrentVersions;
 
     public GitPatcherCompilation(
         ILogger logger,
@@ -33,7 +35,8 @@ public class GitPatcherCompilation : IGitPatcherCompilation
         IWriteShortCircuitMeta writeShortCircuitMeta,
         ShouldShortCircuitCompilation shortCircuitCompilation,
         BuildDirectoryCleaner buildDirectoryCleaner,
-        IBuildMetaFileReader metaFileReader)
+        IBuildMetaFileReader metaFileReader,
+        IProvideCurrentVersions provideCurrentVersions)
     {
         _logger = logger;
         _fs = fs;
@@ -42,9 +45,10 @@ public class GitPatcherCompilation : IGitPatcherCompilation
         _shortCircuitCompilation = shortCircuitCompilation;
         _buildDirectoryCleaner = buildDirectoryCleaner;
         _metaFileReader = metaFileReader;
+        _provideCurrentVersions = provideCurrentVersions;
     }
         
-    public async Task<ErrorResponse> Compile(
+    public async Task<GetResponse<GitCompilationMeta>> Compile(
         RunnerRepoInfo info,
         DotNetVersion dotNetVersion,
         CancellationToken cancel)
@@ -55,9 +59,9 @@ public class GitPatcherCompilation : IGitPatcherCompilation
             if (_shortCircuitCompilation.ShouldShortCircuit(info, meta))
             {
                 _logger.Information("Short circuiting {Path} compilation because meta matched", info.Project.ProjPath);
-                return ErrorResponse.Success;
+                return GetResponse<GitCompilationMeta>.Succeed(meta!);
             }
-            
+
             _buildDirectoryCleaner.Clean(info, dotNetVersion, meta);
         }
         catch (Exception e)
@@ -75,20 +79,29 @@ public class GitPatcherCompilation : IGitPatcherCompilation
         {
             _logger.Error(e, "Failed when clearing short circuit meta");
         }
-        
+
         var resp = await _build.Compile(info.Project.ProjPath, cancel).ConfigureAwait(false);
-        if (resp.Failed) return resp;
+        if (resp.Failed) return resp.BubbleFailure<GitCompilationMeta>();
+
+        var compilationMeta = new GitCompilationMeta()
+        {
+            NetSdkVersion = dotNetVersion.Version,
+            SynthesisUiVersion = _provideCurrentVersions.SynthesisVersion,
+            MutagenVersion = info.TargetVersions.Mutagen ?? string.Empty,
+            SynthesisVersion = info.TargetVersions.Synthesis ?? string.Empty,
+            Sha = info.Target.TargetSha
+        };
 
         try
         {
-            _writeShortCircuitMeta.WriteMeta(info, dotNetVersion);
+            _writeShortCircuitMeta.WriteMeta(info.MetaPath, compilationMeta);
         }
         catch (Exception e)
         {
             _logger.Error(e, "Failed when saving short circuit meta");
-            return ErrorResponse.Fail(e);
+            return GetResponse<GitCompilationMeta>.Fail(e);
         }
 
-        return resp;
+        return GetResponse<GitCompilationMeta>.Succeed(compilationMeta);
     }
 }

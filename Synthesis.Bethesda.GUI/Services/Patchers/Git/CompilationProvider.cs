@@ -13,12 +13,12 @@ namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;
 
 public interface ICompilationProvider
 {
-    IObservable<ConfigurationState<RunnerRepoInfo>> State { get; }
+    IObservable<ConfigurationState<CompiledRunnerInfo>> State { get; }
 }
 
 public class CompilationProvider : ICompilationProvider
 {
-    public IObservable<ConfigurationState<RunnerRepoInfo>> State { get; }
+    public IObservable<ConfigurationState<CompiledRunnerInfo>> State { get; }
 
     public CompilationProvider(
         IGitPatcherCompilation build,
@@ -35,11 +35,11 @@ public class CompilationProvider : ICompilationProvider
                 (State, DotNet, _) => (State, DotNet))
             .Select(x =>
             {
-                return Observable.Create<ConfigurationState<RunnerRepoInfo>>(async (observer, cancel) =>
+                return Observable.Create<ConfigurationState<CompiledRunnerInfo>>(async (observer, cancel) =>
                 {
                     if (x.State.RunnableState.Failed)
                     {
-                        observer.OnNext(x.State);
+                        observer.OnNext(x.State.BubbleError<CompiledRunnerInfo>());
                         return;
                     }
 
@@ -47,10 +47,10 @@ public class CompilationProvider : ICompilationProvider
                     {
                         logger.Information("Compiling {Target}", x.State.Item);
                         // Return early with the values, but mark not complete
-                        observer.OnNext(new ConfigurationState<RunnerRepoInfo>(x.State.Item)
+                        observer.OnNext(new ConfigurationState<CompiledRunnerInfo>(
+                            ErrorResponse.Fail("Compiling").BubbleFailure<CompiledRunnerInfo>())
                         {
-                            IsHaltingError = false,
-                            RunnableState = ErrorResponse.Fail("Compiling")
+                            IsHaltingError = false
                         });
 
                         // Compile to help prep
@@ -65,26 +65,31 @@ public class CompilationProvider : ICompilationProvider
                                     errs.Add(s.ToString());
                                 });
                             observer.OnNext(
-                                GetResponse<RunnerRepoInfo>.Fail(string.Join(Environment.NewLine, errs)));
+                                GetResponse<CompiledRunnerInfo>.Fail(string.Join(Environment.NewLine, errs)));
                             return;
                         }
 
                         // Return things again, without error
                         logger.Information("Finished compiling {Target}", x.State.Item);
-                        observer.OnNext(x.State);
+                        var compiledInfo = new CompiledRunnerInfo(x.State.Item, compileResp.Value);
+                        observer.OnNext(new ConfigurationState<CompiledRunnerInfo>(compiledInfo)
+                        {
+                            IsHaltingError = false,
+                            RunnableState = GetResponse<CompiledRunnerInfo>.Succeed(compiledInfo)
+                        });
                     }
                     catch (Exception ex)
                     {
                         logger.Error(ex, "Error compiling");
-                        observer.OnNext(ErrorResponse.Fail($"Error compiling: {ex}").BubbleFailure<RunnerRepoInfo>());
+                        observer.OnNext(ErrorResponse.Fail($"Error compiling: {ex}").BubbleFailure<CompiledRunnerInfo>());
                     }
 
                     observer.OnCompleted();
                 });
             })
             .Switch()
-            .StartWith(new ConfigurationState<RunnerRepoInfo>(
-                GetResponse<RunnerRepoInfo>.Fail("Compilation uninitialized")))
+            .StartWith(new ConfigurationState<CompiledRunnerInfo>(
+                GetResponse<CompiledRunnerInfo>.Fail("Compilation uninitialized")))
             .Replay(1)
             .RefCount();
     }

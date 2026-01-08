@@ -57,13 +57,13 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
                 {
                     if (i.comp.RunnableState.Failed)
                     {
-                        observer.OnNext(i.comp);
+                        observer.OnNext(i.comp.BubbleError<RunnerRepoInfo>());
                         return;
                     }
 
                     logger.Information("Checking runnability");
                     // Return early with the values, but mark not complete
-                    observer.OnNext(new ConfigurationState<RunnerRepoInfo>(i.comp.Item)
+                    observer.OnNext(new ConfigurationState<RunnerRepoInfo>(i.comp.Item.RunnerRepoInfo)
                     {
                         IsHaltingError = false,
                         RunnableState = ErrorResponse.Fail("Checking runnability")
@@ -75,22 +75,22 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
                         if (modKey == null)
                         {
                             logger.Information($"Checking runnability failed: No known ModKey");
-                            observer.OnNext(new ConfigurationState<RunnerRepoInfo>(i.comp.Item)
+                            observer.OnNext(new ConfigurationState<RunnerRepoInfo>(i.comp.Item.RunnerRepoInfo)
                             {
                                 IsHaltingError = true,
                                 RunnableState = ErrorResponse.Fail("No known ModKey")
                             });
                             return;
                         }
-                        
+
                         using var tmpLoadOrder = temporaryLoadOrderProvider.Get(
                             i.loadOrder.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                         var runnability = await checkRunnability.Check(
-                            path: i.comp.Item.Project.ProjPath,
+                            path: i.comp.Item.RunnerRepoInfo.Project.ProjPath,
                             directExe: false,
                             cancel: cancel,
                             modKey: modKey.Value,
-                            buildMetaPath: i.comp.Item.MetaPath,
+                            buildMetaPath: i.comp.Item.RunnerRepoInfo.MetaPath,
                             loadOrderPath: tmpLoadOrder.File).ConfigureAwait(false);
                         if (runnability.Failed)
                         {
@@ -101,7 +101,11 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
 
                         // Return things again, without error
                         logger.Information("Checking runnability succeeded");
-                        observer.OnNext(i.comp);
+                        observer.OnNext(new ConfigurationState<RunnerRepoInfo>(i.comp.Item.RunnerRepoInfo)
+                        {
+                            IsHaltingError = false,
+                            RunnableState = GetResponse<RunnerRepoInfo>.Succeed(i.comp.Item.RunnerRepoInfo)
+                        });
                     }
                     catch (Exception ex)
                     {

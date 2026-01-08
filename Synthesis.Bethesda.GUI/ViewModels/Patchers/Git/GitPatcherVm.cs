@@ -188,14 +188,14 @@ public class GitPatcherVm : PatcherVm, IPathToSolutionFileProvider
         NavigateToInternalFilesCommand = ReactiveCommand.Create(() => navigate.Navigate(baseRepoDir.Path));
 
         PatcherSettings = settingsVmFactory(
-                false, 
+                false,
                 compilationProvider.State.Select(c =>
                     {
                         if (c.RunnableState.Failed)
                         {
                             return new PatcherUserSettingsVm.Inputs(c.RunnableState.BubbleFailure<TargetProject>(), null, default);
                         }
-                        return new PatcherUserSettingsVm.Inputs(GetResponse<TargetProject>.Succeed(c.Item.Project), c.Item.TargetVersions.Synthesis, c.Item.MetaPath);
+                        return new PatcherUserSettingsVm.Inputs(GetResponse<TargetProject>.Succeed(c.Item.RunnerRepoInfo.Project), c.Item.RunnerRepoInfo.TargetVersions.Synthesis, c.Item.RunnerRepoInfo.MetaPath);
                     })
                     .DistinctUntilChanged())
             .DisposeWith(this);
