@@ -99,7 +99,7 @@ public class GetSettingsStyle : IGetSettingsStyle
                 }
             }
 
-            var start = GetRunProcessStartInfoProvider.GetStart(path, directExe, new SettingsQuery(), build: false);
+            var start = GetRunProcessStartInfoProvider.GetStart(path, directExe, new SettingsQuery());
             
             var result = await ProcessRunner.RunAndCapture(
                 start,
