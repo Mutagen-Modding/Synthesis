@@ -44,8 +44,7 @@ public class SolutionPatcherRunner : ISolutionPatcherRunner
         var exitCode = await ProcessRunner.RunWithCapture(
             ProcessRunStartInfoProvider.GetStart(
                 PathToProjProvider.Path,
-                Formatter.Format(args),
-                build: false),
+                Formatter.Format(args)),
             capture,
             cancel: cancel).ConfigureAwait(false);
 
