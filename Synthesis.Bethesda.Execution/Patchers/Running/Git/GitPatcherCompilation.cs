@@ -94,7 +94,7 @@ public class GitPatcherCompilation : IGitPatcherCompilation
 
         try
         {
-            _writeShortCircuitMeta.WriteMeta(info.MetaPath, compilationMeta);
+            await _writeShortCircuitMeta.WriteMeta(info, dotNetVersion, cancel).ConfigureAwait(false);
         }
         catch (Exception e)
         {
