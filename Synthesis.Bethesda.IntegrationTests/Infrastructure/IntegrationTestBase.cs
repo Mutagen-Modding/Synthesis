@@ -56,6 +56,11 @@ public abstract class IntegrationTest : IDisposable
     public ITestOutputHelper Output { get; }
 
     /// <summary>
+    /// The profile ID created by ExportSettingsWithPatchers
+    /// </summary>
+    public string? ProfileID { get; private set; }
+
+    /// <summary>
     /// Pipeline execution mode - must be specified by derived test classes
     /// </summary>
     protected abstract PipelineMode Mode { get; }
@@ -70,19 +75,25 @@ public abstract class IntegrationTest : IDisposable
         // Set logging to testing mode to avoid file I/O
         LogPreferences.IsTesting = true;
 
-        // Create temp folder named after the test class
-        var testClassName = GetType().Name;
-        _tempFolder = TempFolder.FactoryByAddedPath(
-            Path.Combine(OverallTempFolderPath, testClassName),
-            throwIfUnsuccessfulDisposal: false,
-            deleteBefore: true,
-            deleteAfter: true);
-        _disposable.Add(_tempFolder);
-
         // Calculate repo root from assembly location
         // Test runner sets current directory to bin output folder, so we navigate up from there
         // Can be either bin/Debug/net9.0 (4 levels) or bin/x64/Debug/net9.0 (5 levels)
         var currentDir = Directory.GetCurrentDirectory();
+
+        // Extract target framework from current directory (e.g., "net9.0" or "net8.0")
+        // Directory structure is like: .../bin/Debug/net9.0 or .../bin/x64/Debug/net9.0
+        var dirParts = currentDir.Split(Path.DirectorySeparatorChar);
+        var targetFramework = dirParts.LastOrDefault(p => p.StartsWith("net")) ?? "unknown";
+
+        // Create temp folder named after test class and target framework to avoid conflicts
+        // when running tests for multiple target frameworks (e.g., net8.0 and net9.0)
+        var testClassName = GetType().Name;
+        _tempFolder = TempFolder.FactoryByAddedPath(
+            Path.Combine(OverallTempFolderPath, targetFramework, testClassName),
+            throwIfUnsuccessfulDisposal: false,
+            deleteBefore: true,
+            deleteAfter: true);
+        _disposable.Add(_tempFolder);
         if (currentDir.Contains($"{Path.DirectorySeparatorChar}x64{Path.DirectorySeparatorChar}"))
         {
             // bin/x64/Debug/net9.0 -> go up 5 levels to reach repo root
@@ -743,6 +754,9 @@ public abstract class IntegrationTest : IDisposable
         File.WriteAllText(guiSettingsPath,
             JsonConvert.SerializeObject(guiSettings, Formatting.Indented, Execution.Constants.JsonSettings));
 
+        // Store the profile ID for easy access in tests
+        ProfileID = profileId;
+
         return profileId;
     }
 
@@ -851,19 +865,22 @@ public abstract class IntegrationTest : IDisposable
             .Where(state => state.Succeeded)
             .FirstAsync()
             .Timeout(TimeSpan.FromSeconds(30));
-
-        profileState.Succeeded.ShouldBeTrue($"Profile state should be successful. Error: {profileState.Reason}");
-
+        
         // Check for any patcher errors after dispatcher flush
         Output.WriteLine("Checking patcher states...");
         foreach (var group in selectedProfile.Groups.Items)
         {
             foreach (var patcher in group.Patchers.Items)
             {
-                patcher.State.RunnableState.Succeeded.ShouldBeTrue(
-                    $"Patcher '{patcher.NameVm.Name}' should be in successful state. Error: {patcher.State.RunnableState.Reason}");
+                if (!patcher.State.RunnableState.Succeeded)
+                {
+                    if (patcher.State.RunnableState.Exception != null) throw patcher.State.RunnableState.Exception;
+                    throw new Exception(patcher.State.RunnableState.Reason);
+                }
             }
         }
+        
+        profileState.Succeeded.ShouldBeTrue($"Profile state should be successful. Error: {profileState.Reason}");
 
         // Wait for patcher to be ready (built and prepared)
         Output.WriteLine("Waiting for patcher to be ready...");
