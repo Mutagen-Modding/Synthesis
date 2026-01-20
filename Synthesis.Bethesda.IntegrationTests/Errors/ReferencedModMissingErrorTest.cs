@@ -115,10 +115,10 @@ public class ReferencedModMissingErrorUiPipelineTest : ReferencedModMissingError
 
         // Verify that the ErrorClassification is populated with the correct type
         patcherRun.ErrorClassification.ShouldNotBeNull("ErrorClassification should be populated");
-        patcherRun.ErrorClassification.ShouldBeOfType<ReferencedModMissingError>(
-            "ErrorClassification should be ReferencedModMissingError");
+        patcherRun.ErrorClassification.ShouldBeOfType<Synthesis.Bethesda.GUI.ViewModels.Profiles.Running.ReferencedModMissingErrorVm>(
+            "ErrorClassification should be ReferencedModMissingErrorVm");
 
-        var classification = (ReferencedModMissingError)patcherRun.ErrorClassification;
+        var classification = (Synthesis.Bethesda.GUI.ViewModels.Profiles.Running.ReferencedModMissingErrorVm)patcherRun.ErrorClassification;
         Output.WriteLine($"Patcher State: {patcherRun.State.Value} (Failed: {patcherRun.State.Failed})");
         Output.WriteLine($"Error Classification Type: {classification.ErrorType}");
         Output.WriteLine($"Error Message: {classification.Message}");

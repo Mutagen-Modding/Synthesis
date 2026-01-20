@@ -9,6 +9,7 @@ using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Reporters.Classifications;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Utility;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
@@ -118,13 +119,13 @@ public class CompressionErrorUIPipelineTest : CompressionErrorTest
 
         // Verify that the ErrorClassification is populated with the correct type
         patcherRun.ErrorClassification.ShouldNotBeNull("ErrorClassification should be populated");
-        patcherRun.ErrorClassification.ShouldBeOfType<CompressionErrorClassification>(
-            "ErrorClassification should be CompressionErrorClassification");
+        patcherRun.ErrorClassification.ShouldBeOfType<CompressionErrorVm>(
+            "ErrorClassification should be CompressionErrorVm");
 
-        var classification = (CompressionErrorClassification)patcherRun.ErrorClassification;
+        var vm = (CompressionErrorVm)patcherRun.ErrorClassification;
         Output.WriteLine($"Patcher State: {patcherRun.State.Value} (Failed: {patcherRun.State.Failed})");
-        Output.WriteLine($"Error Classification Type: {classification.ErrorType}");
-        Output.WriteLine($"Error Message: {classification.Message}");
+        Output.WriteLine($"Error Classification Type: {vm.ErrorType}");
+        Output.WriteLine($"Error Message: {vm.Message}");
         Output.WriteLine("Successfully verified compression error was detected and classified");
 
         await Task.CompletedTask;

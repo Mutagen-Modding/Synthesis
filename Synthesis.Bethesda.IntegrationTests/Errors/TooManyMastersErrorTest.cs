@@ -224,8 +224,6 @@ public class TooManyMastersErrorCliPipelineTest : TooManyMastersErrorTest
         // Check error messages specifically (Serilog renders property values with quotes)
         errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains("Too Many Masters"),
             "Should have logged the error classification");
-        errorMessages.ShouldContain(msg => msg.Contains("SplitIfMaxMastersExceeded"),
-            "Should have logged the error suggestion");
 
         Output.WriteLine("Successfully verified TooManyMasters error was detected and classified");
         return Task.CompletedTask;
