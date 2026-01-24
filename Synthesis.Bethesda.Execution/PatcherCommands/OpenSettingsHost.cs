@@ -54,7 +54,7 @@ public class OpenSettingsHost : IOpenSettingsHost
         using var loadOrderFile = _loadOrderProvider.Get(loadOrder);
 
         return await _processRunner.Run(
-            _runProcessStartInfoProvider.GetStart("SettingsHost/Synthesis.Bethesda.SettingsHost.exe", directExe: true, new HostSettings()
+            _runProcessStartInfoProvider.GetStart("SettingsHost/Synthesis.Bethesda.SettingsHost.exe", new HostSettings()
             {
                 PatcherName = _nameProvider.Name,
                 PatcherPath = path,

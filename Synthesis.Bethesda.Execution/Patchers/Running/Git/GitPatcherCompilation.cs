@@ -1,4 +1,4 @@
-﻿using System.IO.Abstractions;
+using System.IO.Abstractions;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using Serilog;
@@ -55,11 +55,18 @@ public class GitPatcherCompilation : IGitPatcherCompilation
     {
         try
         {
-            var meta = _metaFileReader.Read(info.MetaPath);
+var meta = _metaFileReader.Read(info.MetaPath);
             if (_shortCircuitCompilation.ShouldShortCircuit(info, meta))
             {
                 _logger.Information("Short circuiting {Path} compilation because meta matched", info.Project.ProjPath);
                 return GetResponse<GitCompilationMeta>.Succeed(meta!);
+            }
+
+            // Log why short circuiting failed
+            if (meta?.ExecutablePath != null && !_fs.File.Exists(meta.ExecutablePath))
+            {
+                _logger.Information("Cannot short circuit {Path} because executable path is missing: {ExePath}", 
+                    info.Project.ProjPath, meta.ExecutablePath);
             }
 
             _buildDirectoryCleaner.Clean(info, dotNetVersion, meta);
@@ -83,18 +90,10 @@ public class GitPatcherCompilation : IGitPatcherCompilation
         var resp = await _build.Compile(info.Project.ProjPath, cancel).ConfigureAwait(false);
         if (resp.Failed) return resp.BubbleFailure<GitCompilationMeta>();
 
-        var compilationMeta = new GitCompilationMeta()
-        {
-            NetSdkVersion = dotNetVersion.Version,
-            SynthesisUiVersion = _provideCurrentVersions.SynthesisVersion,
-            MutagenVersion = info.TargetVersions.Mutagen ?? string.Empty,
-            SynthesisVersion = info.TargetVersions.Synthesis ?? string.Empty,
-            Sha = info.Target.TargetSha
-        };
-
+        GitCompilationMeta compilationMeta;
         try
         {
-            await _writeShortCircuitMeta.WriteMeta(info, dotNetVersion, cancel).ConfigureAwait(false);
+            compilationMeta = await _writeShortCircuitMeta.WriteMeta(info, dotNetVersion, cancel).ConfigureAwait(false);
         }
         catch (Exception e)
         {

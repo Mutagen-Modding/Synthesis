@@ -10,7 +10,7 @@ namespace Synthesis.Bethesda.Execution.Patchers.Running.Git;
 
 public interface IWriteShortCircuitMeta
 {
-    Task WriteMeta(RunnerRepoInfo info, DotNetVersion dotNetVersion, CancellationToken cancel);
+    Task<GitCompilationMeta> WriteMeta(RunnerRepoInfo info, DotNetVersion dotNetVersion, CancellationToken cancel);
     void WriteMeta(string metaPath, GitCompilationMeta meta);
 }
 
@@ -33,7 +33,7 @@ public class WriteShortCircuitMeta : IWriteShortCircuitMeta
         _logger = logger;
     }
         
-    public async Task WriteMeta(RunnerRepoInfo info, DotNetVersion dotNetVersion, CancellationToken cancel)
+    public async Task<GitCompilationMeta> WriteMeta(RunnerRepoInfo info, DotNetVersion dotNetVersion, CancellationToken cancel)
     {
         // Query the executable path that was just built
         string? executablePath = null;
@@ -48,7 +48,8 @@ public class WriteShortCircuitMeta : IWriteShortCircuitMeta
             _logger.Warning("Failed to query executable path: {Reason}", execPathResult.Reason);
         }
 
-        WriteMeta(info.MetaPath, new GitCompilationMeta()
+
+        var ret = new GitCompilationMeta()
         {
             NetSdkVersion = dotNetVersion.Version,
             SynthesisUiVersion = _provideCurrentVersions.SynthesisVersion,
@@ -56,7 +57,9 @@ public class WriteShortCircuitMeta : IWriteShortCircuitMeta
             SynthesisVersion = info.TargetVersions.Synthesis ?? string.Empty,
             Sha = info.Target.TargetSha,
             ExecutablePath = executablePath
-        });
+        };
+        WriteMeta(info.MetaPath, ret);
+        return ret;
     }
         
     public void WriteMeta(string metaPath, GitCompilationMeta meta)

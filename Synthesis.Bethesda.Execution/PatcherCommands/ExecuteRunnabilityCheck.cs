@@ -16,8 +16,7 @@ public interface IExecuteRunnabilityCheck
 {
     Task<ErrorResponse> Check(
         ModKey modKey,
-        string path,
-        bool directExe,
+        string executablePath,
         string loadOrderPath,
         FilePath? buildMetaPath,
         CancellationToken cancel);
@@ -70,8 +69,7 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
 
     public async Task<ErrorResponse> Check(
         ModKey modKey,
-        string path,
-        bool directExe,
+        string executablePath,
         string loadOrderPath,
         FilePath? buildMetaPath,
         CancellationToken cancel)
@@ -90,7 +88,7 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
         }
 
         var defaultDataFolderPath = _defaultDataPathProvider.Path;
-        
+
         var checkState = new CheckRunnability()
         {
             DataFolderPath = DataDirectoryProvider.Path,
@@ -105,7 +103,7 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
         var result = (Codes)await Dropoff.EnqueueAndWait(() =>
         {
             return ProcessRunner.RunWithCallback(
-                RunProcessStartInfoProvider.GetStart(path, directExe, checkState),
+                RunProcessStartInfoProvider.GetStart(executablePath, checkState),
                 AddResult,
                 cancel: cancel);
         }).ConfigureAwait(false);

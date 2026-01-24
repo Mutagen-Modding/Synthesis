@@ -5,32 +5,22 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands;
 
 public interface IRunProcessStartInfoProvider
 {
-    ProcessStartInfo GetStart<T>(string path, bool directExe, T args);
+    ProcessStartInfo GetStart<T>(string executablePath, T args);
 }
 
 public class RunProcessStartInfoProvider : IRunProcessStartInfoProvider
 {
     public IFormatCommandLine Format { get; }
-    public IProjectRunProcessStartInfoProvider ProjectRunProcessStartInfoProvider { get; }
 
     public RunProcessStartInfoProvider(
-        IFormatCommandLine format,
-        IProjectRunProcessStartInfoProvider projectRunProcessStartInfoProvider)
+        IFormatCommandLine format)
     {
         Format = format;
-        ProjectRunProcessStartInfoProvider = projectRunProcessStartInfoProvider;
     }
 
-    public ProcessStartInfo GetStart<T>(string path, bool directExe, T args)
+    public ProcessStartInfo GetStart<T>(string executablePath, T args)
     {
         var formattedArgs = Format.Format(args);
-        if (directExe)
-        {
-            return new ProcessStartInfo(path, formattedArgs);
-        }
-        else
-        {
-            return ProjectRunProcessStartInfoProvider.GetStart(path, formattedArgs);
-        }
+        return new ProcessStartInfo(executablePath, formattedArgs);
     }
 }

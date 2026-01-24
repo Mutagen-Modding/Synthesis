@@ -83,11 +83,21 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
                             return;
                         }
 
+                        if (i.comp.Item.Meta.ExecutablePath == null)
+                        {
+                            logger.Error("ExecutablePath is null in compilation meta");
+                            observer.OnNext(new ConfigurationState<RunnerRepoInfo>(i.comp.Item.RunnerRepoInfo)
+                            {
+                                IsHaltingError = true,
+                                RunnableState = ErrorResponse.Fail("ExecutablePath is null in compilation meta. This likely indicates a compilation error.")
+                            });
+                            return;
+                        }
+
                         using var tmpLoadOrder = temporaryLoadOrderProvider.Get(
                             i.loadOrder.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm));
                         var runnability = await checkRunnability.Check(
-                            path: i.comp.Item.RunnerRepoInfo.Project.ProjPath,
-                            directExe: false,
+                            executablePath: i.comp.Item.Meta.ExecutablePath,
                             cancel: cancel,
                             modKey: modKey.Value,
                             buildMetaPath: i.comp.Item.RunnerRepoInfo.MetaPath,

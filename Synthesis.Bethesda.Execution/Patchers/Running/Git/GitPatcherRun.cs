@@ -1,10 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
-using Noggog;
 using Synthesis.Bethesda.Commands;
-using Synthesis.Bethesda.Execution.Patchers.Common;
-using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
-using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Git;
@@ -18,19 +14,19 @@ public class GitPatcherRun : IGitPatcherRun
 {
     private readonly CompositeDisposable _disposable = new();
 
-    public Guid Key => SolutionPatcherRunExecution.Key;
-    public int Index => SolutionPatcherRunExecution.Index;
-    public string Name => SolutionPatcherRunExecution.Name;
+    public Guid Key => GitPatcherRunExecution.Key;
+    public int Index => GitPatcherRunExecution.Index;
+    public string Name => GitPatcherRunExecution.Name;
 
     public IGitPatcherPrep GitPatcherPrep { get; }
-    public ISolutionPatcherRunExecution SolutionPatcherRunExecution { get; }
+    public IGitPatcherRunExecution GitPatcherRunExecution { get; }
 
     public GitPatcherRun(
         IGitPatcherPrep gitPatcherPrep,
-        ISolutionPatcherRunExecution solutionPatcherRunExecution)
+        IGitPatcherRunExecution gitPatcherRunExecution)
     {
         GitPatcherPrep = gitPatcherPrep;
-        SolutionPatcherRunExecution = solutionPatcherRunExecution;
+        GitPatcherRunExecution = gitPatcherRunExecution;
     }
 
     public void Dispose()
@@ -50,6 +46,6 @@ public class GitPatcherRun : IGitPatcherRun
 
     public async Task Run(RunSynthesisPatcher settings, PatcherRunCapture capture, CancellationToken cancel)
     {
-        await SolutionPatcherRunExecution.Run(settings, capture, cancel).ConfigureAwait(false);
+        await GitPatcherRunExecution.Run(settings, capture, cancel).ConfigureAwait(false);
     }
 }
