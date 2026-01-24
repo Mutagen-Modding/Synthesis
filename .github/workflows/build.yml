@@ -26,5 +26,7 @@ jobs:
       run: dotnet restore Synthesis.Bethesda.sln
     - name: Build
       run: dotnet build Synthesis.Bethesda.sln -c Release --no-restore
+    - name: Add local NuGet source
+      run: dotnet nuget add source ${{ github.workspace }}/nupkg --name local
     - name: Test
       run: dotnet test Synthesis.Bethesda.sln -c Release --no-build
