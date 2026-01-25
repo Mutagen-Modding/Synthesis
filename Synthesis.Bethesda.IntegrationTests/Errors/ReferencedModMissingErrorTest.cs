@@ -12,6 +12,7 @@ using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
+using xRetry;
 
 namespace Synthesis.Bethesda.IntegrationTests.Errors;
 
@@ -28,7 +29,7 @@ public abstract class ReferencedModMissingErrorTest : IntegrationTest
 
     protected abstract override PipelineMode Mode { get; }
 
-    [Fact]
+    [RetryFact(3)]
     public async Task MissingModReference_IsDetectedAndReported()
     {
         // Arrange

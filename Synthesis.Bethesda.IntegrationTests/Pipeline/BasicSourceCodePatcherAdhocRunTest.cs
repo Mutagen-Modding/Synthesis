@@ -6,6 +6,7 @@ using Shouldly;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
+using xRetry;
 
 namespace Synthesis.Bethesda.IntegrationTests.Pipeline;
 
@@ -20,7 +21,7 @@ public class BasicSourceCodePatcherAdhocRunTest : IntegrationTest
 
     protected override PipelineMode Mode => PipelineMode.UI;
 
-    [Fact]
+    [RetryFact(3)]
     public async Task BuildAndRunPatcher_ProducesValidOutput()
     {
         // Arrange

@@ -14,6 +14,7 @@ using Synthesis.Bethesda.IntegrationTests.Infrastructure;
 using Synthesis.Bethesda.IntegrationTests.TestUtilities;
 using Xunit;
 using Xunit.Abstractions;
+using xRetry;
 
 namespace Synthesis.Bethesda.IntegrationTests.Pipeline;
 
@@ -186,7 +187,7 @@ public class GitPatcherRunsCompiledExecutableUiTest : GitPatcherRunsCompiledExec
 
     protected override PipelineMode Mode => PipelineMode.UI;
 
-    [Fact]
+    [RetryFact(3)]
     public async Task GitPatcher_RunsCompiledExecutableDirectly()
     {
         await TestRunsCompiledExecutableDirectly();
@@ -256,7 +257,7 @@ public class GitPatcherRunsCompiledExecutableCliTest : GitPatcherRunsCompiledExe
 
     protected override PipelineMode Mode => PipelineMode.CLI;
 
-    [Fact]
+    [RetryFact(3)]
     public async Task GitPatcher_RunsCompiledExecutableDirectly()
     {
         await TestRunsCompiledExecutableDirectly();

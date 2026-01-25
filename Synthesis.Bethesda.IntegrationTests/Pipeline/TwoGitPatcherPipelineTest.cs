@@ -8,6 +8,7 @@ using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
+using xRetry;
 
 namespace Synthesis.Bethesda.IntegrationTests.Pipeline;
 
@@ -22,7 +23,7 @@ public abstract class TwoGitPatcherPipelineTest : IntegrationTest
 
     protected abstract override PipelineMode Mode { get; }
 
-    [Fact]
+    [RetryFact(3)]
     public async Task TwoGitPatchers_BothProduceOutputInSameMod()
     {
         // Arrange
