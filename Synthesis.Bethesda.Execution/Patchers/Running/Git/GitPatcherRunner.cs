@@ -2,8 +2,6 @@ using System.Diagnostics;
 using Serilog;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Exceptions;
-using Synthesis.Bethesda.Execution.PatcherCommands;
-using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.Execution.Utility;
 

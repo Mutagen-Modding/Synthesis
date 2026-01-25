@@ -27,13 +27,14 @@ public class ReporterLoggerWrapper : ILogger, IReporterLoggerWrapper
         IProfileNameProvider profileNameProvider,
         IPatcherNameProvider nameProvider,
         IPatcherIdProvider idProvider,
-        IRunReporter reporter)
+        IRunReporter reporter,
+        ILogger logger)
     {
         _nameProvider = nameProvider;
         _idProvider = idProvider;
         _reporter = reporter;
 
-        _logger = Log.Logger
+        _logger = logger
             .ForContext("PatcherName", nameProvider.Name)
             .ForContext("ProfileName", profileNameProvider.Name);
     }

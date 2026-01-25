@@ -103,7 +103,7 @@ public abstract class GitPatcherRunsCompiledExecutableTest : IntegrationTest
 
         // Assert - Verify that the patcher was run using the compiled executable directly
         // Check the captured logs for the execution command
-        var logMessages = LogSink.Messages;
+        var logMessages = GetLogMessages();
 
         // Find log messages that indicate process execution
         // SynthesisSubProcessRunner logs: "({WorkingDirectory}): {FileName} {Args}"
@@ -162,6 +162,15 @@ public abstract class GitPatcherRunsCompiledExecutableTest : IntegrationTest
     {
         return Task.CompletedTask;
     }
+
+    /// <summary>
+    /// Gets log messages for assertion. Override in derived classes to provide
+    /// mode-specific log capture (e.g., from IReporterLoggerWrapper.Events in UI mode).
+    /// </summary>
+    protected virtual IReadOnlyList<string> GetLogMessages()
+    {
+        return LogSink.Messages;
+    }
 }
 
 /// <summary>
@@ -169,6 +178,8 @@ public abstract class GitPatcherRunsCompiledExecutableTest : IntegrationTest
 /// </summary>
 public class GitPatcherRunsCompiledExecutableUiTest : GitPatcherRunsCompiledExecutableTest
 {
+    private List<string> _patcherOutputMessages = new();
+
     public GitPatcherRunsCompiledExecutableUiTest(ITestOutputHelper output) : base(output)
     {
     }
@@ -203,12 +214,34 @@ public class GitPatcherRunsCompiledExecutableUiTest : GitPatcherRunsCompiledExec
             .Timeout(TimeSpan.FromMinutes(2));
 
         Output.WriteLine("Run completed");
+
+        // Capture log messages from IReporterLoggerWrapper.Events via PatcherRunVm.OutputDisplay
+        // In UI mode, logs go through ReporterLoggerWrapper which emits to Events,
+        // and PatcherRunVm subscribes to those events and accumulates them in OutputDisplay
+        _patcherOutputMessages = payload.ActiveRunVm.CurrentRun.Groups
+            .SelectMany(g => g.Patchers)
+            .Select(p => p.OutputDisplay.Text)
+            .SelectMany(text => text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            .ToList();
+
+        Output.WriteLine($"Captured {_patcherOutputMessages.Count} log messages from patcher output");
     }
 
     protected override Task AssertNoErrors()
     {
         EnsureActiveRunHasNoErrors();
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// In UI mode, logs are captured from IReporterLoggerWrapper.Events via PatcherRunVm.OutputDisplay.
+    /// We combine both the patcher output and the standard LogSink messages.
+    /// </summary>
+    protected override IReadOnlyList<string> GetLogMessages()
+    {
+        // Combine messages from both sources - LogSink captures non-patcher logs,
+        // while patcher output captures logs from ReporterLoggerWrapper.Events
+        return LogSink.Messages.Concat(_patcherOutputMessages).ToList();
     }
 }
 
