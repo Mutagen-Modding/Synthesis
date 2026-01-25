@@ -255,16 +255,16 @@ public abstract class IntegrationTest : IDisposable
         // Create the patcher project in the working directory
         CreateTestPatcherProjectInDirectory(workingDir, projectName, generateRunPatchContent, additionalPackageReferences);
 
-        // Configure git user for the working directory
-        RunGitCommand(workingDir, "config user.email \"test@synthesis.com\"");
-        RunGitCommand(workingDir, "config user.name \"Synthesis Test\"");
-
         // Initialize git repo in working directory (since clone of empty bare repo doesn't create a branch)
         var workingInitResult = RunGitCommand(workingDir, "init");
         if (workingInitResult.ExitCode != 0)
         {
             throw new InvalidOperationException($"Failed to init git repo: {workingInitResult.Error}");
         }
+
+        // Configure git user for the working directory (must be after git init)
+        RunGitCommand(workingDir, "config user.email \"test@synthesis.com\"");
+        RunGitCommand(workingDir, "config user.name \"Synthesis Test\"");
 
         // Add the bare repo as remote
         var remoteAddResult = RunGitCommand(workingDir, $"remote add origin \"{bareRepoPath}\"");

@@ -122,16 +122,16 @@ public abstract class GitPatcherOlderCommitTest : IntegrationTest
             "TestPatcher",
             AddNpcToPatcher("TestPatcherNPC", firstCommitNpcName));
 
-        // Configure git user for the working directory
-        RunGitCommand(workingDir, "config user.email \"test@synthesis.com\"");
-        RunGitCommand(workingDir, "config user.name \"Synthesis Test\"");
-
         // Initialize git repo in working directory
         var workingInitResult = RunGitCommand(workingDir, "init");
         if (workingInitResult.ExitCode != 0)
         {
             throw new InvalidOperationException($"Failed to init git repo: {workingInitResult.Error}");
         }
+
+        // Configure git user for the working directory (must be after git init)
+        RunGitCommand(workingDir, "config user.email \"test@synthesis.com\"");
+        RunGitCommand(workingDir, "config user.name \"Synthesis Test\"");
 
         // Add the bare repo as remote
         var remoteAddResult = RunGitCommand(workingDir, $"remote add origin \"{bareRepoPath}\"");
