@@ -8,6 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
         <PackageReference Include="Mutagen.Bethesda" />
         <PackageReference Include="Mutagen.Bethesda.Skyrim" />
