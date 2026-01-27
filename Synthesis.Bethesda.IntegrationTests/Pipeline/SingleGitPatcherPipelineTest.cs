@@ -22,11 +22,13 @@ public abstract class SingleGitPatcherPipelineTest : IntegrationTest
 
     protected abstract override PipelineMode Mode { get; }
 
-    [Theory]
-    [InlineData(PatcherVersioningEnum.Branch)]
-    [InlineData(PatcherVersioningEnum.Commit)]
-    [InlineData(PatcherVersioningEnum.Tag)]
-    public async Task SingleGitPatcher_ProducesValidOutput(PatcherVersioningEnum versioningType)
+    /// <summary>
+    /// The versioning type to use for this test
+    /// </summary>
+    protected abstract PatcherVersioningEnum VersioningType { get; }
+
+    [Fact]
+    public async Task SingleGitPatcher_ProducesValidOutput()
     {
         // Arrange
 
@@ -52,12 +54,12 @@ public abstract class SingleGitPatcherPipelineTest : IntegrationTest
             Nickname = "Test Patcher",
             RemoteRepoPath = bareRepoPath,
             SelectedProjectSubpath = "TestPatcher.csproj",
-            PatcherVersioning = versioningType,
+            PatcherVersioning = VersioningType,
             MutagenVersionType = PatcherNugetVersioningEnum.Profile,
             SynthesisVersionType = PatcherNugetVersioningEnum.Profile
         };
 
-        switch (versioningType)
+        switch (VersioningType)
         {
             case PatcherVersioningEnum.Branch:
                 settings.TargetBranch = "master";
@@ -108,16 +110,19 @@ public abstract class SingleGitPatcherPipelineTest : IntegrationTest
     }
 }
 
+#region Branch Versioning Tests
+
 /// <summary>
-/// UI-based single Git patcher pipeline test
+/// UI-based single Git patcher pipeline test using Branch versioning
 /// </summary>
-public class SingleGitPatcherUIPipelineTest : SingleGitPatcherPipelineTest
+public class SingleGitPatcherBranchUIPipelineTest : SingleGitPatcherPipelineTest
 {
-    public SingleGitPatcherUIPipelineTest(ITestOutputHelper output) : base(output)
+    public SingleGitPatcherBranchUIPipelineTest(ITestOutputHelper output) : base(output)
     {
     }
 
     protected override PipelineMode Mode => PipelineMode.UI;
+    protected override PatcherVersioningEnum VersioningType => PatcherVersioningEnum.Branch;
 
     protected override async Task Act()
     {
@@ -132,20 +137,116 @@ public class SingleGitPatcherUIPipelineTest : SingleGitPatcherPipelineTest
 }
 
 /// <summary>
-/// CLI-based single Git patcher pipeline test
+/// CLI-based single Git patcher pipeline test using Branch versioning
 /// </summary>
-public class SingleGitPatcherCliPipelineTest : SingleGitPatcherPipelineTest
+public class SingleGitPatcherBranchCliPipelineTest : SingleGitPatcherPipelineTest
 {
-    public SingleGitPatcherCliPipelineTest(ITestOutputHelper output) : base(output)
+    public SingleGitPatcherBranchCliPipelineTest(ITestOutputHelper output) : base(output)
     {
     }
 
     protected override PipelineMode Mode => PipelineMode.CLI;
+    protected override PatcherVersioningEnum VersioningType => PatcherVersioningEnum.Branch;
 
     protected override async Task Act()
     {
-        // Use RunPatcherPipeline component directly instead of RunPipelineLogic.Run
         var runPipeline = GetComponentPayload<RunPatcherPipeline, object>();
         await runPipeline.Run(CancellationToken.None);
     }
 }
+
+#endregion
+
+#region Commit Versioning Tests
+
+/// <summary>
+/// UI-based single Git patcher pipeline test using Commit versioning
+/// </summary>
+public class SingleGitPatcherCommitUIPipelineTest : SingleGitPatcherPipelineTest
+{
+    public SingleGitPatcherCommitUIPipelineTest(ITestOutputHelper output) : base(output)
+    {
+    }
+
+    protected override PipelineMode Mode => PipelineMode.UI;
+    protected override PatcherVersioningEnum VersioningType => PatcherVersioningEnum.Commit;
+
+    protected override async Task Act()
+    {
+        await RunPatcherPipeline();
+    }
+
+    protected override Task AssertNoErrors()
+    {
+        EnsureActiveRunHasNoErrors();
+        return Task.CompletedTask;
+    }
+}
+
+/// <summary>
+/// CLI-based single Git patcher pipeline test using Commit versioning
+/// </summary>
+public class SingleGitPatcherCommitCliPipelineTest : SingleGitPatcherPipelineTest
+{
+    public SingleGitPatcherCommitCliPipelineTest(ITestOutputHelper output) : base(output)
+    {
+    }
+
+    protected override PipelineMode Mode => PipelineMode.CLI;
+    protected override PatcherVersioningEnum VersioningType => PatcherVersioningEnum.Commit;
+
+    protected override async Task Act()
+    {
+        var runPipeline = GetComponentPayload<RunPatcherPipeline, object>();
+        await runPipeline.Run(CancellationToken.None);
+    }
+}
+
+#endregion
+
+#region Tag Versioning Tests
+
+/// <summary>
+/// UI-based single Git patcher pipeline test using Tag versioning
+/// </summary>
+public class SingleGitPatcherTagUIPipelineTest : SingleGitPatcherPipelineTest
+{
+    public SingleGitPatcherTagUIPipelineTest(ITestOutputHelper output) : base(output)
+    {
+    }
+
+    protected override PipelineMode Mode => PipelineMode.UI;
+    protected override PatcherVersioningEnum VersioningType => PatcherVersioningEnum.Tag;
+
+    protected override async Task Act()
+    {
+        await RunPatcherPipeline();
+    }
+
+    protected override Task AssertNoErrors()
+    {
+        EnsureActiveRunHasNoErrors();
+        return Task.CompletedTask;
+    }
+}
+
+/// <summary>
+/// CLI-based single Git patcher pipeline test using Tag versioning
+/// </summary>
+public class SingleGitPatcherTagCliPipelineTest : SingleGitPatcherPipelineTest
+{
+    public SingleGitPatcherTagCliPipelineTest(ITestOutputHelper output) : base(output)
+    {
+    }
+
+    protected override PipelineMode Mode => PipelineMode.CLI;
+    protected override PatcherVersioningEnum VersioningType => PatcherVersioningEnum.Tag;
+
+    protected override async Task Act()
+    {
+        var runPipeline = GetComponentPayload<RunPatcherPipeline, object>();
+        await runPipeline.Run(CancellationToken.None);
+    }
+}
+
+#endregion
