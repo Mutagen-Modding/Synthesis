@@ -28,6 +28,9 @@ public class ClassificationVmFactory : IClassificationVmFactory
             AccessDeniedErrorClassification accessDeniedError =>
                 scope.Resolve<AccessDeniedErrorVm.Factory>()(accessDeniedError),
 
+            RanBuildInMo2ErrorClassification ranBuildInMo2Error =>
+                scope.Resolve<RanBuildInMo2ErrorVm.Factory>()(ranBuildInMo2Error),
+
             // For unrecognized error types, return the classification as-is
             _ => classification
         };

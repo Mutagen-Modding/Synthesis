@@ -1,4 +1,4 @@
-﻿<wpf:NoggogUserControl x:TypeArguments="settings:GlobalSettingsVm" x:Class="Synthesis.Bethesda.GUI.Views.AdvancedSettingsView"
+<wpf:NoggogUserControl x:TypeArguments="settings:GlobalSettingsVm" x:Class="Synthesis.Bethesda.GUI.Views.AdvancedSettingsView"
                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -52,6 +52,8 @@
             </TextBox>
         </StackPanel>
         <TextBlock Text="Dot Net" Style="{StaticResource SettingSectionHeaderStyle}" Margin="0,25,0,5" />
-        <CheckBox Content="Specify Target Framework" x:Name="SpecifyTargetFrameworkCheck" ToolTip="Specify the target framework win-x64 during builds" />
+        <StackPanel Orientation="Vertical" Margin="15,5,5,5">
+            <CheckBox Content="Specify Target Framework" x:Name="SpecifyTargetFrameworkCheck" ToolTip="Specify the target framework win-x64 during builds" />
+        </StackPanel>
     </StackPanel>
 </wpf:NoggogUserControl>

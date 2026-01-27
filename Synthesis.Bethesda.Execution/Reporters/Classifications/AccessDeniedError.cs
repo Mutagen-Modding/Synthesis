@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.Reporters.Classifications;
 
@@ -7,9 +8,16 @@ namespace Synthesis.Bethesda.Execution.Reporters.Classifications;
 /// </summary>
 public class AccessDeniedError : IErrorClassificationDetector
 {
+    private readonly IMo2EnvironmentDetector _mo2Detector;
+
     private static readonly Regex AccessDeniedPattern = new Regex(
         @"System\.IO\.IOException:\s+The process cannot access the file\s+'([^']+)'\s+because it is being used by another process",
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    public AccessDeniedError(IMo2EnvironmentDetector mo2Detector)
+    {
+        _mo2Detector = mo2Detector;
+    }
 
     public ErrorClassification? IsApplicable(
         IReadOnlyList<string>? capturedOutput,
@@ -38,6 +46,13 @@ public class AccessDeniedError : IErrorClassificationDetector
             if (match.Success)
             {
                 var filePath = match.Groups[1].Value;
+
+                // If running inside MO2, return the MO2-specific classification
+                if (_mo2Detector.IsRunningInsideMo2())
+                {
+                    return new RanBuildInMo2ErrorClassification(filePath);
+                }
+
                 return new AccessDeniedErrorClassification(filePath);
             }
         }
@@ -59,8 +74,7 @@ public class AccessDeniedErrorClassification : ErrorClassification
     }
 
     public override string ErrorType => "File Access Denied";
-    public override string Message => "The process cannot access a file because it is being used by another process.  This is typically a red herring due to other causes.\n\n" +
-                                      "Antivirus programs can cause interference:  https://github.com/Mutagen-Modding/Synthesis/discussions/203\n\n" +
-                                      "Mod Organizer also does not play well with the latest SDKs.   Try downgrading to SDK 9 if you are on 10.";
+    public override string Message => "The process cannot access a file because it is being used by another process. This is typically a red herring due to other causes.\n\n" +
+                                      "Antivirus programs can cause interference: https://github.com/Mutagen-Modding/Synthesis/discussions/203";
     public override string? DiscussionLink => "https://github.com/Mutagen-Modding/Synthesis/discussions/419";
 }
