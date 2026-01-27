@@ -29,4 +29,6 @@ jobs:
     - name: Add local NuGet source
       run: dotnet nuget add source ${{ github.workspace }}/nupkg --name local
     - name: Test
-      run: dotnet test Synthesis.Bethesda.sln -c Release --no-build
+      run: dotnet test Synthesis.Bethesda.sln -c Release --no-build -- xUnit.maxParallelThreads=1
+      env:
+        SYNTHESIS_TEST_TIMEOUT_SECONDS: 600

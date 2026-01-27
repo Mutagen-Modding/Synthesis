@@ -9,7 +9,6 @@ using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
-using xRetry;
 
 namespace Synthesis.Bethesda.IntegrationTests.Pipeline;
 
@@ -26,7 +25,7 @@ public abstract class TwoGitPatchersAutoSplitTest : IntegrationTest
 
     protected abstract override PipelineMode Mode { get; }
 
-    [RetryFact(3)]
+    [Fact]
     public async Task TwoGitPatchers_FirstCreatesSplitFiles_SecondModifiesContent()
     {
         // Arrange - Create 256 master mods to exceed the 254 master limit

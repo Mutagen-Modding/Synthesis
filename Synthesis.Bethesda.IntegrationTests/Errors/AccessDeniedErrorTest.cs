@@ -8,7 +8,6 @@ using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
-using xRetry;
 
 namespace Synthesis.Bethesda.IntegrationTests.Errors;
 
@@ -24,7 +23,7 @@ public abstract class AccessDeniedErrorTest : IntegrationTest
 
     protected abstract override PipelineMode Mode { get; }
 
-    [RetryFact(3)]
+    [Fact]
     public async Task AccessDeniedError_IsDetectedAndReported()
     {
         // Arrange

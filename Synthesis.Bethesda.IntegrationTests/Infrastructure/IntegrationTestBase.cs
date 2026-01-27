@@ -35,6 +35,35 @@ namespace Synthesis.Bethesda.IntegrationTests.Infrastructure;
 public record PackageReference(string PackageId, string Version);
 
 /// <summary>
+/// Provides configurable test timeouts via environment variable.
+/// Set SYNTHESIS_TEST_TIMEOUT_SECONDS to override the default timeout.
+/// Defaults to 60 seconds for local runs; CI can set to 600 (10 minutes) for stability.
+/// </summary>
+public static class TestTimeouts
+{
+    /// <summary>
+    /// Base timeout read from SYNTHESIS_TEST_TIMEOUT_SECONDS environment variable.
+    /// Defaults to 60 seconds if not set.
+    /// </summary>
+    public static TimeSpan Base { get; } = TimeSpan.FromSeconds(
+        int.TryParse(Environment.GetEnvironmentVariable("SYNTHESIS_TEST_TIMEOUT_SECONDS"), out var seconds)
+            ? seconds
+            : 60);
+
+    /// <summary>
+    /// Short timeout for quick operations (profile selection, state changes).
+    /// Half of the base timeout.
+    /// </summary>
+    public static TimeSpan Short => TimeSpan.FromTicks(Base.Ticks / 2);
+
+    /// <summary>
+    /// Long timeout for slow operations (builds, patcher runs).
+    /// Double the base timeout.
+    /// </summary>
+    public static TimeSpan Long => TimeSpan.FromTicks(Base.Ticks * 2);
+}
+
+/// <summary>
 /// Abstract base class for integration tests that provides temp directory management and test utilities
 /// </summary>
 public abstract class IntegrationTest : IDisposable
@@ -831,7 +860,7 @@ public abstract class IntegrationTest : IDisposable
         var initializedResult = await payload.StartupTracker.WhenAnyValue(x => x.Initialized)
             .Where(initialized => initialized)
             .FirstAsync()
-            .Timeout(TimeSpan.FromSeconds(60));
+            .Timeout(TestTimeouts.Base);
 
         initializedResult.ShouldBeTrue("StartupTracker should be initialized after Startup.Initialize()");
         Output.WriteLine("Startup completed and tracker initialized");
@@ -847,7 +876,7 @@ public abstract class IntegrationTest : IDisposable
         var selectedProfile = await payload.ProfileManager.WhenAnyValue(x => x.SelectedProfile)
             .Where(p => p != null)
             .FirstAsync()
-            .Timeout(TimeSpan.FromSeconds(30));
+            .Timeout(TestTimeouts.Short);
 
         selectedProfile.ShouldNotBeNull("SelectedProfile should be set after initialization");
 
@@ -864,8 +893,8 @@ public abstract class IntegrationTest : IDisposable
         var profileState = await selectedProfile.WhenAnyValue(x => x.State)
             .Where(state => state.Succeeded)
             .FirstAsync()
-            .Timeout(TimeSpan.FromSeconds(30));
-        
+            .Timeout(TestTimeouts.Short);
+
         // Check for any patcher errors after dispatcher flush
         Output.WriteLine("Checking patcher states...");
         foreach (var group in selectedProfile.Groups.Items)
@@ -886,7 +915,7 @@ public abstract class IntegrationTest : IDisposable
         Output.WriteLine("Waiting for patcher to be ready...");
         var readyToRun = await payload.ProfileManager.RunPatchers.CanExecute
             .FirstAsync(canExecute => canExecute)
-            .Timeout(TimeSpan.FromMinutes(2)); // Give it time to build
+            .Timeout(TestTimeouts.Long);
 
         readyToRun.ShouldBeTrue("RunPatchers command should be executable after build completes");
         
@@ -951,7 +980,7 @@ public abstract class IntegrationTest : IDisposable
         await payload.ActiveRunVm.CurrentRun.WhenAnyValue(x => x.Running)
             .Where(running => !running)
             .FirstAsync()
-            .Timeout(TimeSpan.FromMinutes(2));
+            .Timeout(TestTimeouts.Long);
 
         Output.WriteLine("Run completed");
     }
@@ -997,7 +1026,7 @@ public abstract class IntegrationTest : IDisposable
         await payload.ActiveRunVm.CurrentRun.WhenAnyValue(x => x.Running)
             .Where(running => !running)
             .FirstAsync()
-            .Timeout(TimeSpan.FromMinutes(2));
+            .Timeout(TestTimeouts.Long);
 
         Output.WriteLine("Run completed without calling IBuild.Compile (build meta caching worked!)");
     }

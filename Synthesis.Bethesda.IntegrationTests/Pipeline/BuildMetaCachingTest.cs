@@ -9,7 +9,6 @@ using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
-using xRetry;
 
 namespace Synthesis.Bethesda.IntegrationTests.Pipeline;
 
@@ -211,7 +210,7 @@ public class BuildMetaCachingUiTest_SkipsRebuild : BuildMetaCachingTest
 
     protected override PipelineMode Mode => PipelineMode.UI;
 
-    [RetryFact(3)]
+    [Fact]
     public async Task BuildMetaCaching_SkipsRebuildOnSecondRun()
     {
         await TestSkipsRebuildOnSecondRun();
@@ -245,7 +244,7 @@ public class BuildMetaCachingUiTest_RecompilesWhenMissing : BuildMetaCachingTest
 
     protected override PipelineMode Mode => PipelineMode.UI;
 
-    [RetryFact(3)]
+    [Fact]
     public async Task BuildMetaCaching_RecompilesWhenExecutableMissing()
     {
         await TestRecompilesWhenExecutableMissing();
@@ -279,7 +278,7 @@ public class BuildMetaCachingCliTest_SkipsRebuild : BuildMetaCachingTest
 
     protected override PipelineMode Mode => PipelineMode.CLI;
 
-    [RetryFact(3)]
+    [Fact]
     public async Task BuildMetaCaching_SkipsRebuildOnSecondRun()
     {
         await TestSkipsRebuildOnSecondRun();
@@ -309,7 +308,7 @@ public class BuildMetaCachingCliTest_RecompilesWhenMissing : BuildMetaCachingTes
 
     protected override PipelineMode Mode => PipelineMode.CLI;
 
-    [RetryFact(3)]
+    [Fact]
     public async Task BuildMetaCaching_RecompilesWhenExecutableMissing()
     {
         await TestRecompilesWhenExecutableMissing();
