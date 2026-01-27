@@ -15,11 +15,17 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 public class GlobalSettingsVm : ViewModel,
     IShortCircuitSettingsProvider, IDotNetPathSettingsProvider,
     IModifySavingSettings, INumWorkThreadsController,
-    IExecutionParametersSettingsProvider, IMo2CompatibilitySettingsProvider
+    IExecutionParametersSettingsProvider, IMo2CompatibilitySettingsProvider,
+    IBlockBuildingWithinMo2SettingsProvider
 {
     [Reactive] public bool Shortcircuit { get; set; }
 
     [Reactive] public bool Mo2Compatibility { get; set; }
+
+    [Reactive] public bool BlockBuildingWithinMo2 { get; set; }
+
+    private readonly ObservableAsPropertyHelper<bool> _isShortcircuitEditable;
+    public bool IsShortcircuitEditable => _isShortcircuitEditable.Value;
 
     [Reactive] public string DotNetPathOverride { get; set; }
 
@@ -39,6 +45,7 @@ public class GlobalSettingsVm : ViewModel,
     {
         Shortcircuit = settingsSingleton.Pipeline.Shortcircuit;
         Mo2Compatibility = settingsSingleton.Pipeline.Mo2Compatibility;
+        BlockBuildingWithinMo2 = settingsSingleton.Pipeline.BlockBuildingWithinMo2;
         DotNetPathOverride = settingsSingleton.Pipeline.DotNetPathOverride;
         BuildCorePercentage = settingsSingleton.Pipeline.BuildCorePercentage;
         SpecifyTargetFramework = settingsSingleton.Gui.SpecifyTargetFramework;
@@ -48,6 +55,15 @@ public class GlobalSettingsVm : ViewModel,
                 x => x.Mo2Compatibility)
             .Select(x => calculator.Calculate(x.Item1, x.Item2))
             .ToGuiProperty(this, nameof(BuildCores), scheduler: schedulerProvider.MainThread, deferSubscription: true);
+
+        // When BlockBuildingWithinMo2 is enabled, force Shortcircuit on
+        this.WhenAnyValue(x => x.BlockBuildingWithinMo2)
+            .Where(x => x)
+            .Subscribe(_ => Shortcircuit = true);
+
+        _isShortcircuitEditable = this.WhenAnyValue(x => x.BlockBuildingWithinMo2)
+            .Select(x => !x)
+            .ToGuiProperty(this, nameof(IsShortcircuitEditable), initialValue: !BlockBuildingWithinMo2, scheduler: schedulerProvider.MainThread);
     }
 
     public void Save(SynthesisGuiSettings gui, PipelineSettings pipe)
@@ -57,6 +73,7 @@ public class GlobalSettingsVm : ViewModel,
         pipe.DotNetPathOverride = DotNetPathOverride;
         pipe.Shortcircuit = Shortcircuit;
         pipe.Mo2Compatibility = Mo2Compatibility;
+        pipe.BlockBuildingWithinMo2 = BlockBuildingWithinMo2;
     }
 
     public IObservable<int?> NumDesiredThreads => this.WhenAnyValue(x => x.BuildCores).Select(x => (int?)x);

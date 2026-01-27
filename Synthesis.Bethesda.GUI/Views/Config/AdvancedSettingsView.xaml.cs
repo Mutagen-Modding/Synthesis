@@ -18,6 +18,10 @@ public partial class AdvancedSettingsView
                 .DisposeWith(dispose);
             this.Bind(ViewModel, x => x.Mo2Compatibility, x => x.Mo2CompatibilityBox.IsChecked)
                 .DisposeWith(dispose);
+            this.Bind(ViewModel, x => x.BlockBuildingWithinMo2, x => x.BlockBuildingWithinMo2Box.IsChecked)
+                .DisposeWith(dispose);
+            this.OneWayBind(ViewModel, x => x.IsShortcircuitEditable, x => x.ShortCircuitBox.IsEnabled)
+                .DisposeWith(dispose);
             this.Bind(ViewModel, x => x.DotNetPathOverride, x => x.DotNetPathOverrideBox.Text)
                 .DisposeWith(dispose);
             this.WhenAnyValue(x => x.ViewModel!.BuildCores)

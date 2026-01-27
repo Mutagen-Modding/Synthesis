@@ -12,4 +12,5 @@ public record PipelineSettings : IPipelineSettings
     public double BuildCorePercentage { get; set; } = 0.5d;
     public string DotNetPathOverride { get; set; } = string.Empty;
     public bool Mo2Compatibility { get; set; } = true;
+    public bool BlockBuildingWithinMo2 { get; set; } = false;
 }

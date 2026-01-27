@@ -1,5 +1,6 @@
 ﻿using Noggog;
 using Synthesis.Bethesda.Execution.DotNet.Builder.Transient;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Utility;
 using Noggog.WorkEngine;
 using Serilog;
@@ -13,7 +14,11 @@ public interface IBuild
 
 public class Build : IBuild
 {
+    public const string Mo2BlockedMarker = "[SYNTHESIS_MO2_BUILD_BLOCKED]";
+
     private readonly ILogger _logger;
+    private readonly IMo2EnvironmentDetector _mo2Detector;
+    private readonly IBlockBuildingWithinMo2SettingsProvider _mo2BuildBlockSettings;
     public IWorkDropoff Dropoff { get; }
     public Func<IBuildOutputAccumulator> OutputAccumulatorFactory { get; }
     public IBuildResultsProcessor ResultsProcessor { get; }
@@ -25,7 +30,9 @@ public class Build : IBuild
         IWorkDropoff workDropoff,
         Func<IBuildOutputAccumulator> outputAccumulatorFactory,
         IBuildResultsProcessor resultsProcessor,
-        IBuildStartInfoProvider buildStartInfoProvider, 
+        IBuildStartInfoProvider buildStartInfoProvider,
+        IMo2EnvironmentDetector mo2Detector,
+        IBlockBuildingWithinMo2SettingsProvider mo2BuildBlockSettings,
         ILogger logger)
     {
         Dropoff = workDropoff;
@@ -33,11 +40,19 @@ public class Build : IBuild
         ResultsProcessor = resultsProcessor;
         ProcessRunner = processRunner;
         BuildStartInfoProvider = buildStartInfoProvider;
+        _mo2Detector = mo2Detector;
+        _mo2BuildBlockSettings = mo2BuildBlockSettings;
         _logger = logger;
     }
-        
+
     public async Task<ErrorResponse> Compile(FilePath targetPath, CancellationToken cancel)
     {
+        if (_mo2BuildBlockSettings.BlockBuildingWithinMo2 && _mo2Detector.IsRunningInsideMo2())
+        {
+            _logger.Error("Build blocked: Running inside MO2 with BlockBuildingWithinMo2 setting enabled");
+            return ErrorResponse.Fail($"{Mo2BlockedMarker} Build blocked due to MO2 VFS incompatibility");
+        }
+
         _logger.Information("Preparing to build {TargetPath}", targetPath);
         var start = BuildStartInfoProvider.Construct(targetPath.Name.ToString());
         start.WorkingDirectory = targetPath.Directory!;

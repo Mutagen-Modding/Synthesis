@@ -9,4 +9,5 @@ public interface IPipelineSettings : IShortCircuitSettingsProvider
     double BuildCorePercentage { get; set; }
     string DotNetPathOverride { get; set; }
     bool Mo2Compatibility { get; set; }
+    bool BlockBuildingWithinMo2 { get; set; }
 }

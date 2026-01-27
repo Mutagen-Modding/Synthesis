@@ -14,6 +14,7 @@ public class RunPatcherPipelineCommand :
     IPipelineSettingsPath,
     IExecutionParametersSettingsProvider,
     IMo2CompatibilitySettingsProvider,
+    IBlockBuildingWithinMo2SettingsProvider,
     IShortCircuitSettingsProvider
 {
     [Option('o', "OutputDirectory", Required = true, HelpText = "Path where the patcher should place its resulting file(s).")]
@@ -47,6 +48,9 @@ public class RunPatcherPipelineCommand :
 
     [Option("Mo2Compatibility", Required = false, HelpText = "Whether to enable MO2 compatibility mode")]
     public bool Mo2Compatibility { get; set; }
+
+    [Option("BlockBuildingWithinMo2", Required = false, HelpText = "Whether to block building when running inside MO2", Default = false)]
+    public bool BlockBuildingWithinMo2 { get; set; } = false;
 
     [Option("Shortcircuit", Required = false, HelpText = "Whether to enable build shortcircuiting when build metadata matches", Default = true)]
     public bool Shortcircuit { get; set; } = true;

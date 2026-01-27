@@ -24,6 +24,12 @@
                     Content="MO2 Compatibility"
                     ToolTip="[PLACEHOLDER: MO2 compatibility mode description]" />
             </StackPanel>
+            <StackPanel Margin="5" Orientation="Horizontal">
+                <CheckBox
+                    x:Name="BlockBuildingWithinMo2Box"
+                    Content="Block Building Within MO2"
+                    ToolTip="When enabled, building is blocked if Synthesis detects it is running inside MO2's virtual file system. This prevents VFS-related build failures." />
+            </StackPanel>
             <StackPanel x:Name="NumProcessorsPanel" Orientation="Horizontal">
                 <TextBlock
                     Margin="0,0,10,0"
