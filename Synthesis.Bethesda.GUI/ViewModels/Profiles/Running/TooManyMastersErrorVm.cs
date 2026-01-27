@@ -1,6 +1,6 @@
-using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Reporters.Classifications;
 using Synthesis.Bethesda.GUI.Services.Main;
+using Synthesis.Bethesda.GUI.ViewModels.Errors;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;

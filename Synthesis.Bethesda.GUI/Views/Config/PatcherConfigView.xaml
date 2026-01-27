@@ -4,12 +4,16 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:cli="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:errorViews="clr-namespace:Synthesis.Bethesda.GUI.Views.ErrorClassifications"
     xmlns:git="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Git"
     xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reporters="clr-namespace:Synthesis.Bethesda.Execution.Reporters;assembly=Synthesis.Bethesda.Execution"
     xmlns:running="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
+    xmlns:runningVms="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
+    xmlns:errorVms="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Errors"
     xmlns:solution="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution"
     xmlns:wpf="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
     xmlns:topLevel="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel"
@@ -84,6 +88,31 @@
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type running:ErrorVM}">
                     <local:PatcherErrorView />
+                </DataTemplate>
+
+                <!-- Specific view for CompressionErrorVm -->
+                <DataTemplate DataType="{x:Type errorVms:CompressionErrorVm}">
+                    <errorViews:CompressionErrorView />
+                </DataTemplate>
+
+                <!-- Specific view for AccessDeniedErrorVm -->
+                <DataTemplate DataType="{x:Type errorVms:AccessDeniedErrorVm}">
+                    <errorViews:AccessDeniedErrorView />
+                </DataTemplate>
+
+                <!-- Specific view for RanBuildInMo2ErrorVm -->
+                <DataTemplate DataType="{x:Type errorVms:RanBuildInMo2ErrorVm}">
+                    <errorViews:RanBuildInMo2ErrorView />
+                </DataTemplate>
+
+                <!-- Specific view for Mo2BuildBlockedErrorVm -->
+                <DataTemplate DataType="{x:Type errorVms:Mo2BuildBlockedErrorVm}">
+                    <errorViews:Mo2BuildBlockedErrorView />
+                </DataTemplate>
+
+                <!-- Default view for all other error classifications -->
+                <DataTemplate DataType="{x:Type reporters:ErrorClassification}">
+                    <errorViews:DefaultErrorClassificationView />
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>

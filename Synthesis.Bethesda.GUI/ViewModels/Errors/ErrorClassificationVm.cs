@@ -1,4 +1,3 @@
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using Noggog.WPF;
@@ -6,7 +5,7 @@ using ReactiveUI;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.GUI.Services.Main;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
+namespace Synthesis.Bethesda.GUI.ViewModels.Errors;
 
 /// <summary>
 /// Base view model for error classifications with common functionality

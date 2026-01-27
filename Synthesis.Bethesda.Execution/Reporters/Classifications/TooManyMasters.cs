@@ -44,7 +44,9 @@ public class TooManyMasters : IErrorClassificationDetector
 /// </summary>
 public class TooManyMastersError : ErrorClassification
 {
-    public override string ErrorType => "Too Many Masters";
+    public const string ErrorTypeString = "Too Many Masters";
+
+    public override string ErrorType => ErrorTypeString;
     public override string Message => "The output plugin has too many references to other mods.";
     public override string? DiscussionLink => "https://github.com/Mutagen-Modding/Synthesis/discussions/300";
 }

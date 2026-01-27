@@ -14,7 +14,7 @@ public interface IRunReporterWatcher
     public IObservable<(Guid Key, string? Run, string String)> Output { get; }
     public IObservable<(Guid Key, string? Run, string String)> Error { get; }
 }
-    
+
 [ExcludeFromCodeCoverage]
 public class RxReporter : IRunReporter, IRunReporterWatcher
 {
@@ -57,9 +57,7 @@ public class RxReporter : IRunReporter, IRunReporterWatcher
 
     public void ReportPrepProblem(Guid key, string name, Exception ex)
     {
-        // Prep problems typically don't have captured output, so classification is unlikely
-        // But we'll try anyway in case the exception message contains recognizable patterns
-        var classification = _errorClassifier.Classify(null, null);
+        var classification = _errorClassifier.Classify(ex);
         _prepProblem.OnNext((key, name, ex, classification));
     }
 
@@ -71,8 +69,12 @@ public class RxReporter : IRunReporter, IRunReporterWatcher
         IReadOnlyList<string>? capturedErrors = null,
         IList<ILoadOrderListingGetter>? loadOrder = null)
     {
-        // Attempt to classify the error based on captured output
+        // Try captured output first (has more detail), then fall back to exception
         var classification = _errorClassifier.Classify(capturedOutput, capturedErrors, loadOrder);
+        if (classification == null && ex != null)
+        {
+            classification = _errorClassifier.Classify(ex);
+        }
         _runProblem.OnNext((key, name, ex, classification));
     }
 

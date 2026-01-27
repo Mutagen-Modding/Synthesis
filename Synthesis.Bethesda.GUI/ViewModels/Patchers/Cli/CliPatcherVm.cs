@@ -6,8 +6,10 @@ using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Patchers.Cli;
+using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
@@ -34,8 +36,9 @@ public class CliPatcherVm : PatcherVm, ICliInputSourceVm
         PatcherRenameActionVm.Factory renameFactory,
         PatcherGroupTarget groupTarget,
         ISchedulerProvider schedulerProvider,
+        ErrorDisplayVmFactory errorDisplayVmFactory,
         CliPatcherSettings? settings = null)
-        : base(scope, nameVm, selPatcher, confirmation, idProvider, renameFactory, groupTarget, schedulerProvider, settings)
+        : base(scope, nameVm, selPatcher, confirmation, idProvider, renameFactory, groupTarget, errorDisplayVmFactory, settings)
     {
         ExecutableInput = pathToExecutableInputVm;
         ShowHelpSetting = showHelpSetting;

@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using Autofac;
 using DynamicData;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
@@ -12,7 +13,9 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings.V2;
+using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
@@ -81,7 +84,8 @@ public class GroupVm : ViewModel, ISelected
         IConfirmationPanelControllerVm confirmation,
         IProfileDisplayControllerVm profileDisplayController,
         ILogger logger,
-        ISchedulerProvider schedulerProvider)
+        ISchedulerProvider schedulerProvider,
+        ErrorDisplayVmFactory errorDisplayVmFactory)
     {
         _profileDisplayController = profileDisplayController;
         ProfileVm = profileVm;
@@ -179,7 +183,7 @@ public class GroupVm : ViewModel, ISelected
                 })
             .ToGuiProperty(this, nameof(State), new ConfigurationState<ViewModel>(this), schedulerProvider.MainThread, deferSubscription: true);
 
-        ErrorDisplayVm = new ErrorDisplayVm(this, this.WhenAnyValue(x => x.State), schedulerProvider);
+        ErrorDisplayVm = errorDisplayVmFactory.Create(this, this.WhenAnyValue(x => x.State));
 
         GoToErrorCommand = overallErrorVm.CreateCommand(
             this.WhenAnyValue(x => x.State)

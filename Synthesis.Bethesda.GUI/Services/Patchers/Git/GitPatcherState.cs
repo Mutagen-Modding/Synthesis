@@ -86,6 +86,7 @@ public class GitPatcherState : IGitPatcherState
                     logger.Information("State returned success!");
                     return ConfigurationState.Success;
                 })
+            .DistinctUntilChanged()
             .Replay(1)
             .RefCount();
     }

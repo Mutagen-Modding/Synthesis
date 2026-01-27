@@ -13,6 +13,7 @@
     xmlns:reporters="clr-namespace:Synthesis.Bethesda.Execution.Reporters;assembly=Synthesis.Bethesda.Execution"
     xmlns:classifications="clr-namespace:Synthesis.Bethesda.Execution.Reporters.Classifications;assembly=Synthesis.Bethesda.Execution"
     xmlns:runningVms="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
+    xmlns:errorVms="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Errors"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -88,23 +89,33 @@
                                 Margin="0,10">
                     <ContentControl.Resources>
                         <!-- Specific view for ReferencedModMissingErrorVm -->
-                        <DataTemplate DataType="{x:Type runningVms:ReferencedModMissingErrorVm}">
+                        <DataTemplate DataType="{x:Type errorVms:ReferencedModMissingErrorVm}">
                             <errorViews:ReferencedModMissingErrorView />
                         </DataTemplate>
 
-                        <!-- Specific view for TooManyMastersErrorVm -->
+                        <!-- Specific view for TooManyMastersErrorVm (stays in Running namespace - needs ProfileVm) -->
                         <DataTemplate DataType="{x:Type runningVms:TooManyMastersErrorVm}">
                             <errorViews:TooManyMastersErrorView />
                         </DataTemplate>
 
                         <!-- Specific view for CompressionErrorVm -->
-                        <DataTemplate DataType="{x:Type runningVms:CompressionErrorVm}">
+                        <DataTemplate DataType="{x:Type errorVms:CompressionErrorVm}">
                             <errorViews:CompressionErrorView />
                         </DataTemplate>
 
                         <!-- Specific view for AccessDeniedErrorVm -->
-                        <DataTemplate DataType="{x:Type runningVms:AccessDeniedErrorVm}">
+                        <DataTemplate DataType="{x:Type errorVms:AccessDeniedErrorVm}">
                             <errorViews:AccessDeniedErrorView />
+                        </DataTemplate>
+
+                        <!-- Specific view for RanBuildInMo2ErrorVm -->
+                        <DataTemplate DataType="{x:Type errorVms:RanBuildInMo2ErrorVm}">
+                            <errorViews:RanBuildInMo2ErrorView />
+                        </DataTemplate>
+
+                        <!-- Specific view for Mo2BuildBlockedErrorVm -->
+                        <DataTemplate DataType="{x:Type errorVms:Mo2BuildBlockedErrorVm}">
+                            <errorViews:Mo2BuildBlockedErrorView />
                         </DataTemplate>
 
                         <!-- Default view for all other error classifications -->

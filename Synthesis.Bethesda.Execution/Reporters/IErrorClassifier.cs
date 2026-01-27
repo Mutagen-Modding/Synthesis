@@ -18,4 +18,11 @@ public interface IErrorClassifier
         IReadOnlyList<string>? capturedOutput,
         IReadOnlyList<string>? capturedErrors,
         IList<ILoadOrderListingGetter>? loadOrder = null);
+
+    /// <summary>
+    /// Attempts to classify an error based on an exception
+    /// </summary>
+    /// <param name="exception">The exception to classify</param>
+    /// <returns>An error classification if a known pattern is detected, otherwise null</returns>
+    ErrorClassification? Classify(Exception exception);
 }

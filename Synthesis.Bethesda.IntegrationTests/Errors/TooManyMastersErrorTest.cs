@@ -7,6 +7,7 @@ using Shouldly;
 using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Commands;
 using Synthesis.Bethesda.Execution.Exceptions;
+using Synthesis.Bethesda.Execution.Reporters.Classifications;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
 using Xunit;
@@ -222,7 +223,7 @@ public class TooManyMastersErrorCliPipelineTest : TooManyMastersErrorTest
 
         // Verify that the error classification was detected and logged
         // Check error messages specifically (Serilog renders property values with quotes)
-        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains("Too Many Masters"),
+        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains(TooManyMastersError.ErrorTypeString),
             "Should have logged the error classification");
 
         Output.WriteLine("Successfully verified TooManyMasters error was detected and classified");

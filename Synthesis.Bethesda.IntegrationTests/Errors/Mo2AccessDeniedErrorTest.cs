@@ -1,10 +1,15 @@
 using System.Reactive.Linq;
+using Autofac;
 using Mutagen.Bethesda;
+using ReactiveUI;
 using Shouldly;
 using Synthesis.Bethesda.CLI.RunPipeline;
 using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Reporters.Classifications;
+using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.GUI.ViewModels.Errors;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
+using Synthesis.Bethesda.IntegrationTests.Components;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
@@ -12,27 +17,27 @@ using Xunit.Abstractions;
 namespace Synthesis.Bethesda.IntegrationTests.Errors;
 
 /// <summary>
-/// Abstract base for file access denied error detection tests
-/// Tests that we can detect and suggest fixes for file access denied errors
+/// Abstract base for Mo2 access denied error detection tests.
+/// Tests that when running inside MO2 and an access denied error occurs,
+/// the error is classified as RanBuildInMo2ErrorClassification instead of AccessDeniedErrorClassification.
 /// </summary>
-public abstract class AccessDeniedErrorTest : IntegrationTest
+public abstract class Mo2AccessDeniedErrorTest : IntegrationTest
 {
-    protected AccessDeniedErrorTest(ITestOutputHelper output) : base(output)
+    protected Mo2AccessDeniedErrorTest(ITestOutputHelper output) : base(output)
     {
     }
 
     protected abstract override PipelineMode Mode { get; }
 
     [Fact]
-    public async Task AccessDeniedError_IsDetectedAndReported()
+    public async Task AccessDeniedError_InMo2_IsClassifiedAsRanBuildInMo2()
     {
         // Arrange
-
         // Create a test patcher that throws an access denied error
         var patcher = CreateSolutionPatcherWithSettings(
-            "AccessDeniedPatcher",
+            "Mo2AccessDeniedPatcher",
             GenerateAccessDeniedErrorPatchContent(),
-            nickname: "Access Denied Error Patcher");
+            nickname: "Mo2 Access Denied Error Patcher");
 
         // Export settings with patchers
         var groupName = "Test Group";
@@ -40,10 +45,10 @@ public abstract class AccessDeniedErrorTest : IntegrationTest
             groupName: groupName,
             patchers: new[] { patcher });
 
-        // Act - Initialize and run
+        // Act - Initialize and run (with Mo2 detection mocked to return true)
         await Act();
 
-        // Assert - Check that the error occurred and was properly classified
+        // Assert - Check that the error was classified as RanBuildInMo2
         await AssertErrorOccurred();
     }
 
@@ -66,14 +71,24 @@ public abstract class AccessDeniedErrorTest : IntegrationTest
     {
         return Task.CompletedTask;
     }
+
+    /// <summary>
+    /// Configures the container to mock Mo2 environment detection as running inside Mo2
+    /// </summary>
+    protected void ConfigureMo2Detection(ContainerBuilder builder)
+    {
+        builder.RegisterInstance(new Mo2EnvironmentDetectorInjection(isRunningInsideMo2: true))
+            .As<IMo2EnvironmentDetector>()
+            .SingleInstance();
+    }
 }
 
 /// <summary>
-/// UI-based access denied error detection test
+/// UI-based Mo2 access denied error detection test
 /// </summary>
-public class AccessDeniedErrorUIPipelineTest : AccessDeniedErrorTest
+public class Mo2AccessDeniedErrorUIPipelineTest : Mo2AccessDeniedErrorTest
 {
-    public AccessDeniedErrorUIPipelineTest(ITestOutputHelper output) : base(output)
+    public Mo2AccessDeniedErrorUIPipelineTest(ITestOutputHelper output) : base(output)
     {
     }
 
@@ -81,12 +96,32 @@ public class AccessDeniedErrorUIPipelineTest : AccessDeniedErrorTest
 
     protected override async Task Act()
     {
-        await RunPatcherPipeline();
+        await GetComponentPayloadAndInitialize<EmptyPayload>(ConfigureMo2Detection);
+        var payload = GetStoredPayload();
+
+        // Execute RunPatchers command on the UI thread
+        Output.WriteLine("Executing RunPatchers command...");
+        await Observable.Start(() =>
+        {
+            payload.ProfileManager.RunPatchers.Execute().Subscribe();
+        }, payload.SchedulerProvider.MainThread);
+
+        // Get the active run
+        payload.ActiveRunVm.CurrentRun.ShouldNotBeNull("CurrentRun should be set after executing RunPatchers");
+
+        // Wait for run to complete
+        Output.WriteLine("Waiting for run to complete...");
+        await payload.ActiveRunVm.CurrentRun.WhenAnyValue(x => x.Running)
+            .Where(running => !running)
+            .FirstAsync()
+            .Timeout(TestTimeouts.Long);
+
+        Output.WriteLine("Run completed");
     }
 
     protected override async Task AssertErrorOccurred()
     {
-        // In UI mode, errors are captured in the PatcherRunVm's OutputDisplay TextDocument
+        // In UI mode, errors are captured in the PatcherRunVm's ErrorClassification
         var payload = GetStoredPayload();
 
         payload.ActiveRunVm.CurrentRun.ShouldNotBeNull("CurrentRun should be set");
@@ -99,35 +134,34 @@ public class AccessDeniedErrorUIPipelineTest : AccessDeniedErrorTest
         patcherRun.ShouldNotBeNull("Should have at least one patcher run");
 
         // Verify the patcher is in error state
-        patcherRun.State.Value.ShouldBe(Synthesis.Bethesda.GUI.ViewModels.Profiles.Running.RunState.Error,
+        patcherRun.State.Value.ShouldBe(RunState.Error,
             "Patcher should be in Error state");
 
-        // Verify that the ErrorClassification is populated with the correct type
+        // Verify that the ErrorClassification is RanBuildInMo2ErrorVm (not AccessDeniedErrorVm)
         patcherRun.ErrorClassification.ShouldNotBeNull("ErrorClassification should be populated");
-        patcherRun.ErrorClassification.ShouldBeOfType<AccessDeniedErrorVm>(
-            "ErrorClassification should be AccessDeniedErrorVm");
+        patcherRun.ErrorClassification.ShouldBeOfType<RanBuildInMo2ErrorVm>(
+            "ErrorClassification should be RanBuildInMo2ErrorVm when running inside Mo2");
 
-        var vm = (AccessDeniedErrorVm)patcherRun.ErrorClassification;
+        var vm = (RanBuildInMo2ErrorVm)patcherRun.ErrorClassification;
         Output.WriteLine($"Patcher State: {patcherRun.State.Value} (Failed: {patcherRun.State.Failed})");
         Output.WriteLine($"Error Classification Type: {vm.ErrorType}");
         Output.WriteLine($"Error Message: {vm.Message}");
-        Output.WriteLine($"File Path: {vm.FilePath}");
 
-        vm.FilePath.ShouldNotBeNullOrEmpty("FilePath should be extracted from error message");
-        Output.WriteLine("Successfully verified access denied error was detected and classified");
+        vm.ErrorType.ShouldBe(RanBuildInMo2ErrorClassification.ErrorTypeString);
+        Output.WriteLine("Successfully verified access denied error in Mo2 was classified as RanBuildInMo2");
 
         await Task.CompletedTask;
     }
 }
 
 /// <summary>
-/// CLI-based access denied error detection test
+/// CLI-based Mo2 access denied error detection test
 /// </summary>
-public class AccessDeniedErrorCliPipelineTest : AccessDeniedErrorTest
+public class Mo2AccessDeniedErrorCliPipelineTest : Mo2AccessDeniedErrorTest
 {
     private Exception? _caughtException;
 
-    public AccessDeniedErrorCliPipelineTest(ITestOutputHelper output) : base(output)
+    public Mo2AccessDeniedErrorCliPipelineTest(ITestOutputHelper output) : base(output)
     {
     }
 
@@ -135,8 +169,8 @@ public class AccessDeniedErrorCliPipelineTest : AccessDeniedErrorTest
 
     protected override async Task Act()
     {
-        // Use RunPatcherPipeline component directly
-        var runPipeline = GetComponentPayload<RunPatcherPipeline, object>();
+        // Use RunPatcherPipeline component directly with Mo2 detection mocked
+        var runPipeline = GetComponentPayload<RunPatcherPipeline, object>(ConfigureMo2Detection);
 
         // We expect this to throw or complete with an error
         try
@@ -176,13 +210,13 @@ public class AccessDeniedErrorCliPipelineTest : AccessDeniedErrorTest
         }
         Output.WriteLine("=== End Error Messages ===");
 
-        // Verify that the error classification was detected and logged
-        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains(AccessDeniedErrorClassification.ErrorTypeString),
-            "Should have logged the error classification");
-        errorMessages.ShouldContain(msg => msg.Contains("cannot access a file") || msg.Contains("being used by another process"),
-            "Should have logged the error message");
+        // Verify that the error classification was detected and logged as RanBuildInMo2
+        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains(RanBuildInMo2ErrorClassification.ErrorTypeString),
+            "Should have logged the Mo2 error classification");
+        errorMessages.ShouldContain(msg => msg.Contains("MO2's virtual file system"),
+            "Should have logged the Mo2 error message");
 
-        Output.WriteLine("Successfully verified access denied error was detected and classified");
+        Output.WriteLine("Successfully verified access denied error in Mo2 was classified as RanBuildInMo2");
         return Task.CompletedTask;
     }
 }

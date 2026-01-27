@@ -10,13 +10,16 @@ public class ErrorClassifier : IErrorClassifier
 {
     private readonly IErrorClassificationDetector[] _detectors;
     private readonly IGroupRunErrorClassificationDetector[] _groupRunDetectors;
+    private readonly IExceptionClassificationDetector[] _exceptionDetectors;
 
     public ErrorClassifier(
         IErrorClassificationDetector[] detectors,
-        IGroupRunErrorClassificationDetector[] groupRunDetectors)
+        IGroupRunErrorClassificationDetector[] groupRunDetectors,
+        IExceptionClassificationDetector[] exceptionDetectors)
     {
         _detectors = detectors;
         _groupRunDetectors = groupRunDetectors;
+        _exceptionDetectors = exceptionDetectors;
     }
 
     public ErrorClassification? Classify(
@@ -48,5 +51,32 @@ public class ErrorClassifier : IErrorClassifier
         }
 
         return null;
+    }
+
+    public ErrorClassification? Classify(Exception exception)
+    {
+        // First try exception-type detectors
+        foreach (var detector in _exceptionDetectors)
+        {
+            var classification = detector.IsApplicable(exception);
+            if (classification != null)
+            {
+                return classification;
+            }
+        }
+
+        // Fall back to string-based classification from exception messages
+        var exceptionLines = new List<string>();
+        var current = exception;
+        while (current != null)
+        {
+            if (!string.IsNullOrWhiteSpace(current.Message))
+            {
+                exceptionLines.Add(current.Message);
+            }
+            current = current.InnerException;
+        }
+
+        return Classify(exceptionLines, null);
     }
 }

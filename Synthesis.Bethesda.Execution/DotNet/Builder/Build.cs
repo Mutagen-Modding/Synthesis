@@ -1,5 +1,6 @@
 ﻿using Noggog;
 using Synthesis.Bethesda.Execution.DotNet.Builder.Transient;
+using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Utility;
 using Noggog.WorkEngine;
@@ -14,8 +15,6 @@ public interface IBuild
 
 public class Build : IBuild
 {
-    public const string Mo2BlockedMarker = "[SYNTHESIS_MO2_BUILD_BLOCKED]";
-
     private readonly ILogger _logger;
     private readonly IMo2EnvironmentDetector _mo2Detector;
     private readonly IBlockBuildingWithinMo2SettingsProvider _mo2BuildBlockSettings;
@@ -49,8 +48,7 @@ public class Build : IBuild
     {
         if (_mo2BuildBlockSettings.BlockBuildingWithinMo2 && _mo2Detector.IsRunningInsideMo2())
         {
-            _logger.Error("Build blocked: Running inside MO2 with BlockBuildingWithinMo2 setting enabled");
-            return ErrorResponse.Fail($"{Mo2BlockedMarker} Build blocked due to MO2 VFS incompatibility");
+            throw new Mo2BuildBlockedException();
         }
 
         _logger.Information("Preparing to build {TargetPath}", targetPath);

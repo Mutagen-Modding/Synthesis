@@ -45,9 +45,10 @@ public class CompressionError : IErrorClassificationDetector
 /// </summary>
 public class CompressionErrorClassification : ErrorClassification
 {
+    public const string ErrorTypeString = "Compression Error";
     public const string SuggestionMessage = "A compression error occurred while reading a mod file. This typically happens when a mod file is corrupted or was compressed using an unsupported method. Try verifying your game files or re-downloading the affected mod.";
 
-    public override string ErrorType => "Compression Error";
+    public override string ErrorType => ErrorTypeString;
     public override string Message => SuggestionMessage;
     public override string? DiscussionLink => "https://github.com/Mutagen-Modding/Synthesis/discussions/544";
 }

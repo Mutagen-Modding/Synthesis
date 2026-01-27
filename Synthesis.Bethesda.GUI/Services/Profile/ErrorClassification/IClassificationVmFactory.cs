@@ -1,7 +1,7 @@
 using Autofac;
 using Synthesis.Bethesda.Execution.Reporters;
 
-namespace Synthesis.Bethesda.GUI.Services.Profile.Running;
+namespace Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 
 /// <summary>
 /// Factory for creating view models for error classifications
@@ -16,5 +16,5 @@ public interface IClassificationVmFactory
     /// <param name="classification">The error classification to wrap</param>
     /// <param name="scope">The DI scope to resolve dependencies from</param>
     /// <returns>An object to use as the DataContext (either the classification or a VM wrapper)</returns>
-    object CreateVm(ErrorClassification classification, ILifetimeScope scope);
+    object CreateVm(Execution.Reporters.ErrorClassification classification, ILifetimeScope scope);
 }

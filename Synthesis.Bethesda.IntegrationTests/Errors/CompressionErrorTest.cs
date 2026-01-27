@@ -9,7 +9,7 @@ using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Reporters.Classifications;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Utility;
-using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
+using Synthesis.Bethesda.GUI.ViewModels.Errors;
 using Synthesis.Bethesda.IntegrationTests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
@@ -191,7 +191,7 @@ public class CompressionErrorCliPipelineTest : CompressionErrorTest
 
         // Verify that the error classification was detected and logged
         // Check error messages specifically (Serilog renders property values with quotes)
-        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains("Compression Error"),
+        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains(CompressionErrorClassification.ErrorTypeString),
             "Should have logged the error classification");
         errorMessages.ShouldContain(msg => msg.Contains("compression error occurred") || msg.Contains("corrupted or was compressed"),
             "Should have logged the error suggestion");

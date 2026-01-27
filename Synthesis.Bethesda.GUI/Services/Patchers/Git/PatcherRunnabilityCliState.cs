@@ -119,9 +119,13 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
                     }
                     catch (Exception ex)
                     {
-                        var str = $"Error checking runnability on runner repository: {ex}";
-                        logger.Error(str);
-                        observer.OnNext(ErrorResponse.Fail(str).BubbleFailure<RunnerRepoInfo>());
+                        logger.Error(ex, "Error checking runnability on runner repository");
+                        // Preserve the exception for error classification
+                        observer.OnNext(new ConfigurationState<RunnerRepoInfo>(i.comp.Item.RunnerRepoInfo)
+                        {
+                            IsHaltingError = true,
+                            RunnableState = GetResponse<RunnerRepoInfo>.Fail(default!, ex)
+                        });
                     }
 
                     observer.OnCompleted();

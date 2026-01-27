@@ -21,12 +21,14 @@ using Synthesis.Bethesda.GUI.Json;
 using Synthesis.Bethesda.GUI.Logging;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Profile.Exporter;
+using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 using Synthesis.Bethesda.GUI.Services.Profile.Running;
 using Synthesis.Bethesda.GUI.Services.Profile.TopLevel;
 using Synthesis.Bethesda.GUI.Services.Startup;
 using Synthesis.Bethesda.GUI.Services.Versioning;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
+using Synthesis.Bethesda.GUI.ViewModels.Errors;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Confirmations;
@@ -126,7 +128,8 @@ public class MainModule : Autofac.Module
         builder.RegisterAssemblyTypes(typeof(ProfileVm).Assembly)
             .InNamespacesOf(
                 typeof(GroupVm),
-                typeof(IProfileExporter))
+                typeof(IProfileExporter),
+                typeof(IClassificationVmFactory))
             .AsImplementedInterfaces()
             .AsSelf();
             
@@ -134,7 +137,12 @@ public class MainModule : Autofac.Module
             .InNamespacesOf(
                 typeof(IEnvironmentErrorVm))
             .AsImplementedInterfaces();
-            
+
+        // Register error VMs at profile scope so they're available during config phase
+        builder.RegisterAssemblyTypes(typeof(ErrorClassificationVm).Assembly)
+            .InNamespacesOf(typeof(ErrorClassificationVm))
+            .AsSelf();
+
         builder.RegisterAssemblyTypes(typeof(ProfileVm).Assembly)
             .InNamespacesOf(
                 typeof(RunVm),

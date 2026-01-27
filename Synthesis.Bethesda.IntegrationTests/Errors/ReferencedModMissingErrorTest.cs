@@ -115,10 +115,10 @@ public class ReferencedModMissingErrorUiPipelineTest : ReferencedModMissingError
 
         // Verify that the ErrorClassification is populated with the correct type
         patcherRun.ErrorClassification.ShouldNotBeNull("ErrorClassification should be populated");
-        patcherRun.ErrorClassification.ShouldBeOfType<Synthesis.Bethesda.GUI.ViewModels.Profiles.Running.ReferencedModMissingErrorVm>(
+        patcherRun.ErrorClassification.ShouldBeOfType<Synthesis.Bethesda.GUI.ViewModels.Errors.ReferencedModMissingErrorVm>(
             "ErrorClassification should be ReferencedModMissingErrorVm");
 
-        var classification = (Synthesis.Bethesda.GUI.ViewModels.Profiles.Running.ReferencedModMissingErrorVm)patcherRun.ErrorClassification;
+        var classification = (Synthesis.Bethesda.GUI.ViewModels.Errors.ReferencedModMissingErrorVm)patcherRun.ErrorClassification;
         Output.WriteLine($"Patcher State: {patcherRun.State.Value} (Failed: {patcherRun.State.Failed})");
         Output.WriteLine($"Error Classification Type: {classification.ErrorType}");
         Output.WriteLine($"Error Message: {classification.Message}");
@@ -187,7 +187,7 @@ public class ReferencedModMissingErrorCliPipelineTest : ReferencedModMissingErro
 
         // Verify that the error classification was detected and logged
         // Check error messages specifically (Serilog renders property values with quotes)
-        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains("Referenced Mod Missing"),
+        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains(ReferencedModMissingError.ErrorTypeString),
             "Should have logged the error classification");
         errorMessages.ShouldContain(msg => msg.Contains("Referenced mod was not present on the load order being sorted against"),
             "Should have logged the error suggestion");

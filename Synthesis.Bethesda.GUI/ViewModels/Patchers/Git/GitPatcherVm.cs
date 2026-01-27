@@ -15,10 +15,12 @@ using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
+using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Patchers.Git;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
+using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
@@ -118,10 +120,11 @@ public class GitPatcherVm : PatcherVm, IPathToSolutionFileProvider
         PatcherUserSettingsVm.Factory settingsVmFactory,
         PatcherGroupTarget groupTarget,
         ISchedulerProvider schedulerProvider,
+        ErrorDisplayVmFactory errorDisplayVmFactory,
         GithubPatcherSettings? settings = null)
         : base(
             scope, nameVm, selPatcher,
-            confirmation, idProvider, renameFactory, groupTarget, schedulerProvider, settings)
+            confirmation, idProvider, renameFactory, groupTarget, errorDisplayVmFactory, settings)
     {
         _logger = logger;
         _copyOverExtraData = copyOverExtraData;

@@ -1,8 +1,7 @@
-using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Reporters.Classifications;
 using Synthesis.Bethesda.GUI.Services.Main;
 
-namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
+namespace Synthesis.Bethesda.GUI.ViewModels.Errors;
 
 /// <summary>
 /// View model wrapper for AccessDeniedErrorClassification

@@ -38,6 +38,20 @@ public class ConsoleReporter : IRunReporter
     {
         System.Console.Error.WriteLine($"[{name}] Preparation error:");
         System.Console.Error.WriteLine(ex);
+
+        var classification = _errorClassifier.Classify(ex);
+        if (classification != null)
+        {
+            _logger.Error("Error detected: {ErrorType}", classification.ErrorType);
+            _logger.Error("{Message}", classification.Message);
+
+            if (!string.IsNullOrWhiteSpace(classification.DiscussionLink))
+            {
+                _logger.Error("Read more: {DiscussionLink}", classification.DiscussionLink);
+            }
+
+            throw new ClassifiedErrorException(ex);
+        }
     }
 
     public void ReportRunProblem(

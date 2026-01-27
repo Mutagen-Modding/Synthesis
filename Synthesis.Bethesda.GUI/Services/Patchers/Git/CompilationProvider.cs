@@ -64,8 +64,11 @@ public class CompilationProvider : ICompilationProvider
                                 {
                                     errs.Add(s.ToString());
                                 });
-                            observer.OnNext(
-                                GetResponse<CompiledRunnerInfo>.Fail(string.Join(Environment.NewLine, errs)));
+                            // Preserve the original exception for error classification
+                            var failureResponse = compileResp.Exception != null
+                                ? GetResponse<CompiledRunnerInfo>.Fail(default!, compileResp.Exception)
+                                : GetResponse<CompiledRunnerInfo>.Fail(string.Join(Environment.NewLine, errs));
+                            observer.OnNext(failureResponse);
                             return;
                         }
 
@@ -81,7 +84,11 @@ public class CompilationProvider : ICompilationProvider
                     catch (Exception ex)
                     {
                         logger.Error(ex, "Error compiling");
-                        observer.OnNext(ErrorResponse.Fail($"Error compiling: {ex}").BubbleFailure<CompiledRunnerInfo>());
+                        observer.OnNext(new ConfigurationState<CompiledRunnerInfo>(
+                            GetResponse<CompiledRunnerInfo>.Fail(ex))
+                        {
+                            IsHaltingError = true
+                        });
                     }
 
                     observer.OnCompleted();
