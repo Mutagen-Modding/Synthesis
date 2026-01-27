@@ -1,6 +1,5 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Windows;
 using ReactiveUI;
 
 namespace Synthesis.Bethesda.GUI.Views;
@@ -16,8 +15,6 @@ public partial class AdvancedSettingsView
                 .DisposeWith(dispose);
             this.Bind(ViewModel, x => x.Shortcircuit, x => x.ShortCircuitBox.IsChecked)
                 .DisposeWith(dispose);
-            this.Bind(ViewModel, x => x.Mo2Compatibility, x => x.Mo2CompatibilityBox.IsChecked)
-                .DisposeWith(dispose);
             this.Bind(ViewModel, x => x.BlockBuildingWithinMo2, x => x.BlockBuildingWithinMo2Box.IsChecked)
                 .DisposeWith(dispose);
             this.OneWayBind(ViewModel, x => x.IsShortcircuitEditable, x => x.ShortCircuitBox.IsEnabled)
@@ -29,12 +26,6 @@ public partial class AdvancedSettingsView
                 .BindTo(this, x => x.ActiveProcessorsText.Text)
                 .DisposeWith(dispose);
             this.Bind(ViewModel, x => x.SpecifyTargetFramework, x => x.SpecifyTargetFrameworkCheck.IsChecked)
-                .DisposeWith(dispose);
-
-            // Hide Num Processors panel when MO2 Compatibility is enabled
-            this.WhenAnyValue(x => x.ViewModel!.Mo2Compatibility)
-                .Select(mo2 => mo2 ? Visibility.Collapsed : Visibility.Visible)
-                .BindTo(this, x => x.NumProcessorsPanel.Visibility)
                 .DisposeWith(dispose);
         });
     }

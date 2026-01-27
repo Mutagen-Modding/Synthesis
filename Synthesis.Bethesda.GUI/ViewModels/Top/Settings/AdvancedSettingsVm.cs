@@ -15,12 +15,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 public class GlobalSettingsVm : ViewModel,
     IShortCircuitSettingsProvider, IDotNetPathSettingsProvider,
     IModifySavingSettings, INumWorkThreadsController,
-    IExecutionParametersSettingsProvider, IMo2CompatibilitySettingsProvider,
+    IExecutionParametersSettingsProvider,
     IBlockBuildingWithinMo2SettingsProvider
 {
     [Reactive] public bool Shortcircuit { get; set; }
-
-    [Reactive] public bool Mo2Compatibility { get; set; }
 
     [Reactive] public bool BlockBuildingWithinMo2 { get; set; }
 
@@ -44,16 +42,13 @@ public class GlobalSettingsVm : ViewModel,
         ISchedulerProvider schedulerProvider)
     {
         Shortcircuit = settingsSingleton.Pipeline.Shortcircuit;
-        Mo2Compatibility = settingsSingleton.Pipeline.Mo2Compatibility;
         BlockBuildingWithinMo2 = settingsSingleton.Pipeline.BlockBuildingWithinMo2;
         DotNetPathOverride = settingsSingleton.Pipeline.DotNetPathOverride;
         BuildCorePercentage = settingsSingleton.Pipeline.BuildCorePercentage;
         SpecifyTargetFramework = settingsSingleton.Gui.SpecifyTargetFramework;
 
-        _buildCores = this.WhenAnyValue(
-                x => x.BuildCorePercentage,
-                x => x.Mo2Compatibility)
-            .Select(x => calculator.Calculate(x.Item1, x.Item2))
+        _buildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
+            .Select(x => calculator.Calculate(x))
             .ToGuiProperty(this, nameof(BuildCores), scheduler: schedulerProvider.MainThread, deferSubscription: true);
 
         // When BlockBuildingWithinMo2 is enabled, force Shortcircuit on
@@ -72,7 +67,6 @@ public class GlobalSettingsVm : ViewModel,
         gui.SpecifyTargetFramework = SpecifyTargetFramework;
         pipe.DotNetPathOverride = DotNetPathOverride;
         pipe.Shortcircuit = Shortcircuit;
-        pipe.Mo2Compatibility = Mo2Compatibility;
         pipe.BlockBuildingWithinMo2 = BlockBuildingWithinMo2;
     }
 

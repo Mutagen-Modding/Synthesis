@@ -13,7 +13,6 @@ namespace Synthesis.Bethesda.Execution.Commands;
 public class RunPatcherPipelineCommand :
     IPipelineSettingsPath,
     IExecutionParametersSettingsProvider,
-    IMo2CompatibilitySettingsProvider,
     IBlockBuildingWithinMo2SettingsProvider,
     IShortCircuitSettingsProvider
 {
@@ -46,9 +45,6 @@ public class RunPatcherPipelineCommand :
     [Option('t', "TargetRuntime", Required = false, HelpText = "Target runtime to specify explicitly")]
     public string? TargetRuntime { get; set; }
 
-    [Option("Mo2Compatibility", Required = false, HelpText = "Whether to enable MO2 compatibility mode")]
-    public bool Mo2Compatibility { get; set; }
-
     [Option("BlockBuildingWithinMo2", Required = false, HelpText = "Whether to block building when running inside MO2", Default = false)]
     public bool BlockBuildingWithinMo2 { get; set; } = false;
 
@@ -67,7 +63,7 @@ public class RunPatcherPipelineCommand :
                + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
                + $"  {nameof(PersistenceMode)} => {this.PersistenceMode}\n"
                + $"  {nameof(TargetRuntime)} => {this.TargetRuntime}\n"
-               + $"  {nameof(Mo2Compatibility)} => {this.Mo2Compatibility}\n"
+               + $"  {nameof(BlockBuildingWithinMo2)} => {this.BlockBuildingWithinMo2}\n"
                + $"  {nameof(Shortcircuit)} => {this.Shortcircuit}";
     }
 
