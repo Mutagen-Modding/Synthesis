@@ -211,7 +211,49 @@ Patchers can specify Mutagen/Synthesis library versions:
 - **Latest**: Always use latest available
 - **Manual**: User-specified version
 
-## Development Workflow
+### Documentation Guidelines
+
+When writing Markdown documentation in the `docs/` folder:
+
+**List Formatting:**
+- **Always include a blank line before lists** (both bulleted and numbered)
+- Without the blank line, MkDocs will not render the list properly
+- This applies to lists after headers, paragraphs, or any other content
+
+**Example - Incorrect:**
+```markdown
+## Features
+- Feature 1
+- Feature 2
+```
+
+**Example - Correct:**
+```markdown
+## Features
+
+- Feature 1
+- Feature 2
+```
+
+**Why this matters:**
+- MkDocs uses Python-Markdown which requires blank lines before lists for proper parsing
+- Without blank lines, lists appear as plain text instead of formatted bullets/numbers
+- This is a common source of formatting issues in the documentation
+
+### File System Operations
+
+- **NEVER redirect to `nul`** - On Windows, `2>nul` creates unwanted files that Git tracks
+- Use proper null redirection: `2>/dev/null` (works on Windows with bash)
+- For temporary files, use `.claude/` subfolder or designated temp directories that are gitignored
+- Example: `ls directory 2>/dev/null || echo "Not found"` instead of `dir directory 2>nul`
+- **NEVER use `sed` for bulk find/replace** - `sed` does not preserve Windows CRLF line endings, creating massive spurious diffs
+  - On Windows, `sed -i` converts CRLF to LF, causing every line to show as changed in git
+  - Use targeted edits with the Edit tool instead of global sed replacements
+  - If you must do bulk replacements, only use tools that preserve line endings (e.g., PowerShell with `-Raw` and explicit encoding)
+  - Example (incorrect): `find . -name "*.cs" -exec sed -i 's/OldName/NewName/g' {} \;` - creates CRLF→LF changes on every touched file
+  - Example (correct): Use Edit tool on each file individually, or ask us
+
+## Important Notes
 
 ### Always Verify Your Changes
 
