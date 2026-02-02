@@ -12,6 +12,7 @@ using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using Noggog.WPF.Containers;
 using ReactiveUI;
@@ -21,6 +22,7 @@ using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Profile.Services;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.V2;
+using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Profile.Exporter;
 using Synthesis.Bethesda.GUI.Services.Profile.TopLevel;
 using Synthesis.Bethesda.GUI.Settings;
@@ -149,6 +151,7 @@ public class ProfileVm : ViewModel
         StartRun startRun,
         IGameReleaseContext gameReleaseContext,
         AddGitPatcherResponder addGitPatcherResponder,
+        ISchedulerProvider schedulerProvider,
         ILogger logger)
     {
         Scope = scope;
@@ -166,7 +169,7 @@ public class ProfileVm : ViewModel
         ID = ident.ID;
         Release = gameReleaseContext.Release;
 
-        GroupsDisplay = new SourceListUiFunnel<GroupVm>(Groups, this);
+        GroupsDisplay = new SourceListUiFunnel<GroupVm>(Groups, this, schedulerProvider.MainThread);
 
         ProfileDirectory = dirs.ProfileDirectory;
         WorkingDirectory = dirs.WorkingDirectory;
@@ -174,13 +177,13 @@ public class ProfileVm : ViewModel
         EnvironmentErrors = environmentErrors;
 
         _dataFolder = overrides.WhenAnyValue(x => x.DataFolderResult.Value)
-            .ToGuiProperty<DirectoryPath>(this, nameof(DataFolder), string.Empty, deferSubscription: true);
+            .ToGuiProperty<DirectoryPath>(this, nameof(DataFolder), string.Empty, schedulerProvider.MainThread, deferSubscription: true);
 
         LoadOrder = loadOrder.LoadOrder;
 
         var enabledGroups = Groups.Connect()
-            .ObserveOnGui()
-            .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
+            .ObserveOn(schedulerProvider.MainThread)
+            .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: schedulerProvider.MainThread)
             .RefCount();
 
         var enabledGroupModKeys = enabledGroups
@@ -202,10 +205,10 @@ public class ProfileVm : ViewModel
                                     .Select(groupModKeys => groupModKeys.Contains(x.ModKey)),
                                 (exists, isEnabledGroupKey) => !exists && !isEnabledGroupKey);
                         },
-                        scheduler: RxApp.MainThreadScheduler)
+                        scheduler: schedulerProvider.MainThread)
                     .QueryWhenChanged(q => q)
                     .StartWith(Array.Empty<ReadOnlyModListingVM>())
-                    .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler),
+                    .Throttle(TimeSpan.FromMilliseconds(200), schedulerProvider.MainThread),
                 this.WhenAnyValue(x => x.IgnoreMissingMods),
                 (dataFolder, loadOrder, missingMods, ignoreMissingMods) =>
                 {
@@ -219,7 +222,7 @@ public class ProfileVm : ViewModel
 
                     return GetResponse<ViewModel>.Succeed(null!);
                 })
-            .ToGuiProperty(this, nameof(GlobalError), GetResponse<ViewModel>.Fail("Uninitialized global error"), deferSubscription: true);
+            .ToGuiProperty(this, nameof(GlobalError), GetResponse<ViewModel>.Fail("Uninitialized global error"), schedulerProvider.MainThread, deferSubscription: true);
 
         _blockingError = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.GlobalError),
@@ -240,7 +243,7 @@ public class ProfileVm : ViewModel
                     }
                     return GetResponse<ViewModel>.Succeed(null!);
                 })
-            .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+            .Throttle(TimeSpan.FromMilliseconds(200), schedulerProvider.MainThread)
             .Do(x =>
             {
                 if (x.Failed)
@@ -252,15 +255,15 @@ public class ProfileVm : ViewModel
                     logger.Information("No global error");
                 }
             })
-            .ToGuiProperty(this, nameof(BlockingError), GetResponse<ViewModel>.Fail("Uninitialized blocking error"), deferSubscription: true);
+            .ToGuiProperty(this, nameof(BlockingError), GetResponse<ViewModel>.Fail("Uninitialized blocking error"), schedulerProvider.MainThread, deferSubscription: true);
             
         _state = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.BlockingError),
                 Groups.Connect()
-                    .ObserveOnGui()
-                    .AutoRefresh(x => x.IsOn, scheduler: RxApp.MainThreadScheduler)
+                    .ObserveOn(schedulerProvider.MainThread)
+                    .AutoRefresh(x => x.IsOn, scheduler: schedulerProvider.MainThread)
                     .Filter(p => p.IsOn)
-                    .AutoRefresh(x => x.State, scheduler: RxApp.MainThreadScheduler)
+                    .AutoRefresh(x => x.State, scheduler: schedulerProvider.MainThread)
                     .Transform(p => p.State, transformOnRefresh: true)
                     .QueryWhenChanged(errs =>
                     {
@@ -273,11 +276,11 @@ public class ProfileVm : ViewModel
                     if (!overall.Succeeded) return overall;
                     return patcherState;
                 })
-            .ToGuiProperty<ErrorResponse>(this, nameof(State), ErrorResponse.Fail("Uninitialized state error"), deferSubscription: true);
+            .ToGuiProperty<ErrorResponse>(this, nameof(State), ErrorResponse.Fail("Uninitialized state error"), schedulerProvider.MainThread, deferSubscription: true);
 
         _isActive = selProfile.WhenAnyValue(x => x.SelectedProfile)
             .Select(x => x == this)
-            .ToGuiProperty(this, nameof(IsActive), deferSubscription: true);
+            .ToGuiProperty(this, nameof(IsActive), schedulerProvider.MainThread, deferSubscription: true);
 
         GoToErrorCommand = OverallErrorVm.CreateCommand(this.WhenAnyValue(x => x.BlockingError));
 
@@ -298,7 +301,7 @@ public class ProfileVm : ViewModel
             
         _selectedPatcher = this.WhenAnyValue(x => x.DisplayController.SelectedObject)
             .Select(x => x as PatcherVm)
-            .ToGuiProperty(this, nameof(SelectedPatcher), default, deferSubscription: true);
+            .ToGuiProperty(this, nameof(SelectedPatcher), default, schedulerProvider.MainThread, deferSubscription: true);
 
         SetAllToProfileCommand = ReactiveCommand.Create(
             execute: () =>
@@ -343,7 +346,7 @@ public class ProfileVm : ViewModel
         });
 
         var allCommands = Groups.Connect()
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .Transform(x => CommandVM.Factory(x.UpdateAllPatchersCommand))
             .AsObservableList();
         UpdateAllPatchersCommand = ReactiveCommand.CreateFromTask(
@@ -378,7 +381,7 @@ public class ProfileVm : ViewModel
                     .Select(q => q.Where(x => x.Enabled).Select(x => x.ModKey).ToArray())
                     .StartWithEmpty(),
                 (dataFolder, rel, loadOrder) => (dataFolder, rel, loadOrder))
-            .Throttle(TimeSpan.FromMilliseconds(100), RxApp.TaskpoolScheduler)
+            .Throttle(TimeSpan.FromMilliseconds(100), schedulerProvider.TaskPool)
             .Select(x =>
             {
                 return Observable.Create<ILinkCache?>(obs =>

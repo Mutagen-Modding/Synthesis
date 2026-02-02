@@ -28,7 +28,7 @@ public partial class TopProfileSelectorView
                 {
                     return ImageUtility.BitmapImageFromResource(ResourceConstants.AssemblyName, ResourceConstants.GetIcon(gameRelease));
                 })
-                .ObserveOnGui()
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .BindTo(this, x => x.GameIconImage.Source)
                 .DisposeWith(dispose);
 

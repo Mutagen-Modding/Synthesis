@@ -3,6 +3,7 @@ using System.Windows.Input;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -68,9 +69,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             ISelectedProfileControllerVm selectedProfile,
             ISettingsSingleton settingsSingleton,
             IActivePanelControllerVm activePanelControllerVm,
-            ILogger logger, 
+            ILogger logger,
             UiUpdateVm uiUpdateVm,
-            NewProfileVm.Factory newProfileVmFactory)
+            NewProfileVm.Factory newProfileVmFactory,
+            ISchedulerProvider schedulerProvider)
         {
             _selectedProfileController = selectedProfile;
             _settingsSingleton = settingsSingleton;
@@ -79,13 +81,13 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _newProfileVmFactory = newProfileVmFactory;
             UiUpdateVm = uiUpdateVm;
             _activePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel!.ViewModel)
-                .ToGuiProperty(this, nameof(ActivePanel), default, deferSubscription: true);
+                .ToGuiProperty(this, nameof(ActivePanel), default, schedulerProvider.MainThread, deferSubscription: true);
             ProfileManager = profileManager;
             activePanelControllerVm.ActivePanel = ProfileManager;
             Confirmation = confirmationControllerVm;
 
             _selectedProfile = _selectedProfileController.WhenAnyValue(x => x.SelectedProfile)
-                .ToGuiProperty(this, nameof(SelectedProfile), default, deferSubscription: true);
+                .ToGuiProperty(this, nameof(SelectedProfile), default, schedulerProvider.MainThread, deferSubscription: true);
 
             OpenGlobalSettingsCommand = openGlobalSettings.OpenGlobalSettingsCommand;
             OpenProfilesPageCommand = openGlobalSettings.OpenProfilesPageCommand;
@@ -105,7 +107,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                 })
                 .Switch()
                 .DistinctUntilChanged()
-                .ToGuiProperty(this, nameof(Hot), deferSubscription: true);
+                .ToGuiProperty(this, nameof(Hot), schedulerProvider.MainThread, deferSubscription: true);
 
             Task.Run(Warmup.Init).FireAndForget();
 
@@ -130,11 +132,11 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
                             $"{openPatcher.NameVm.Name} is open(ing) for settings manipulation.",
                             toDo: null);
                     })
-                .ToGuiProperty(this, nameof(ActiveConfirmation), default(ConfirmationActionVm?), deferSubscription: true);
+                .ToGuiProperty(this, nameof(ActiveConfirmation), default(ConfirmationActionVm?), schedulerProvider.MainThread, deferSubscription: true);
 
             _inModal = this.WhenAnyValue(x => x.ActiveConfirmation)
                 .Select(x => x != null)
-                .ToGuiProperty(this, nameof(InModal), deferSubscription: true);
+                .ToGuiProperty(this, nameof(InModal), schedulerProvider.MainThread, deferSubscription: true);
         }
 
         public async Task Load()

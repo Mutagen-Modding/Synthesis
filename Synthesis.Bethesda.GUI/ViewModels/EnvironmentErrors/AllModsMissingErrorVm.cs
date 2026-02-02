@@ -2,8 +2,10 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
 using Mutagen.Bethesda.Plugins.Implicit.DI;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
+using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
@@ -26,11 +28,12 @@ public class AllModsMissingErrorVm : ViewModel, IEnvironmentErrorVm
         IProfileOverridesVm overridesVm,
         OpenGlobalSettings openProfileSettings,
         IImplicitListingModKeyProvider implicitListingsProvider,
-        IProfileLoadOrder profileLoadOrder)
+        IProfileLoadOrder profileLoadOrder,
+        ISchedulerProvider schedulerProvider)
     {
         var nonImplicit = profileLoadOrder.LoadOrder.Connect()
             .Filter(x => !implicitListingsProvider.Listings.Contains(x.ModKey))
-            .ObserveOn(RxApp.MainThreadScheduler)
+            .ObserveOn(schedulerProvider.MainThread)
             .AsObservableList();
             
         _InError = nonImplicit.CountChanged
@@ -40,18 +43,18 @@ public class AllModsMissingErrorVm : ViewModel, IEnvironmentErrorVm
                     .FilterOnObservable(i => i.WhenAnyValue(x => x.ModExists))
                     .QueryWhenChanged(q => q.Count > 0),
                 (hasAny, anyExist) => hasAny && !anyExist)
-            .ToGuiProperty(this, nameof(InError), deferSubscription: true);
+            .ToGuiProperty(this, nameof(InError), scheduler: schedulerProvider.MainThread, deferSubscription: true);
 
         _ErrorString = nonImplicit.CountChanged
             .Select(count =>
             {
                 return $"Load order listed {count} mods, but none were found in the game's data folder";
             })
-            .ToGuiProperty(this, nameof(ErrorString), default(string?), deferSubscription: true);
+            .ToGuiProperty(this, nameof(ErrorString), default(string?), schedulerProvider.MainThread, deferSubscription: true);
 
         _DataFolderPath = overridesVm.WhenAnyValue(x => x.DataFolderResult.Value)
             .Select(x => x.Path)
-            .ToGuiProperty(this, nameof(DataFolderPath), string.Empty, deferSubscription: true);
+            .ToGuiProperty(this, nameof(DataFolderPath), string.Empty, schedulerProvider.MainThread, deferSubscription: true);
 
         GoToProfileSettingsCommand = openProfileSettings.OpenProfilesPageCommand;
     }

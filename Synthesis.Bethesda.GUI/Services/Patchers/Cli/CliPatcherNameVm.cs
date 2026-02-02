@@ -1,5 +1,6 @@
 ﻿using System.Reactive.Linq;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -19,7 +20,8 @@ public class CliPatcherNameVm : ViewModel, IPatcherNameVm
 
     public CliPatcherNameVm(
         ICliNameConverter cliNameConverter,
-        IPathToExecutableInputVm pathToExecutableInputVm)
+        IPathToExecutableInputVm pathToExecutableInputVm,
+        ISchedulerProvider schedulerProvider)
     {
         _cliNameConverter = cliNameConverter;
         _Name = pathToExecutableInputVm.WhenAnyValue(x => x.Picker.TargetPath)
@@ -27,6 +29,6 @@ public class CliPatcherNameVm : ViewModel, IPatcherNameVm
             .CombineLatest(
                 this.WhenAnyValue(x => x.Nickname),
                 (auto, nickname) => nickname.IsNullOrWhitespace() ? auto : nickname)
-            .ToGuiProperty<string>(this, nameof(Name), string.Empty, deferSubscription: true);
+            .ToGuiProperty<string>(this, nameof(Name), string.Empty, schedulerProvider.MainThread, deferSubscription: true);
     }
 }

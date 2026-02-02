@@ -21,7 +21,7 @@ public partial class PatcherConfigListingView
         {
             this.WhenAnyFallback(x => x.ViewModel!.IsSelected)
                 .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                .ObserveOnGui()
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .BindTo(this, x => x.SelectedGlow.Visibility)
                 .DisposeWith(disposable);
             this.Bind(this.ViewModel, vm => vm.IsOn, view => view.OnToggle.IsOn)

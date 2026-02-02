@@ -31,7 +31,7 @@ public class SynthesisPipelineTests
     {
         args.ModKey = modKey.FileName;
         args.DataFolderPath = gameEnvironment.DataFolderPath;
-        args.LoadOrderFilePath = gameEnvironment.LoadOrderFilePath;
+        args.LoadOrderFilePath = gameEnvironment.LoadOrderFilePath!.Value;
         args.GameRelease = gameEnvironment.GameRelease;
         args.SourcePath = sourcePath;
         args.OutputPath = outputPath;
@@ -90,7 +90,7 @@ public class SynthesisPipelineTests
                 state.OutputPath.Path.ShouldBe(runSynthesisMutagenPatcher.OutputPath);
                 state.SourcePath.ShouldBe(sourcePath);
                 state.DataFolderPath.ShouldBe(gameEnvironment.DataFolderPath);
-                state.LoadOrderFilePath.ShouldBe(gameEnvironment.LoadOrderFilePath);
+                state.LoadOrderFilePath.ShouldBe(gameEnvironment.LoadOrderFilePath!.Value);
                 state.ExtraSettingsDataPath!.Value.Path.ShouldBe(runSynthesisMutagenPatcher.ExtraDataFolder);
                 state.PatchMod.ShouldNotBeNull();
                 state.PatchMod.ModKey.ShouldBe(outputModKey);
@@ -256,7 +256,7 @@ public class SynthesisPipelineTests
     {
         args.ModKey = modKey.FileName;
         args.DataFolderPath = gameEnvironment.DataFolderPath;
-        args.LoadOrderFilePath = gameEnvironment.LoadOrderFilePath;
+        args.LoadOrderFilePath = gameEnvironment.LoadOrderFilePath!.Value;
         args.GameRelease = gameEnvironment.GameRelease;
     }
     
@@ -318,7 +318,7 @@ public class SynthesisPipelineTests
             {
                 state.GameRelease.ShouldBe(gameEnvironment.GameRelease);
                 state.DataFolderPath.ShouldBe(gameEnvironment.DataFolderPath);
-                state.LoadOrderFilePath.ShouldBe(gameEnvironment.LoadOrderFilePath);
+                state.LoadOrderFilePath.ShouldBe(gameEnvironment.LoadOrderFilePath!.Value);
                 state.ExtraSettingsDataPath.ShouldBe<DirectoryPath?>(checkRunnability.ExtraDataFolder);
             })
             .Run(checkRunnability, fileSystem);
@@ -582,7 +582,7 @@ public class SynthesisPipelineTests
             {
                 state.GameRelease.ShouldBe(gameEnvironment.GameRelease);
                 state.DataFolderPath.ShouldBe(gameEnvironment.DataFolderPath);
-                state.LoadOrderFilePath.ShouldBe(gameEnvironment.LoadOrderFilePath);
+                state.LoadOrderFilePath.ShouldBe(gameEnvironment.LoadOrderFilePath!.Value);
                 state.ExtraSettingsDataPath!.Value.Path.ShouldBe(run.ExtraDataFolder);
                 return 1753;
             })

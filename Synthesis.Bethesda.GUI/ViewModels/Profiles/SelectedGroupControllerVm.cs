@@ -1,5 +1,6 @@
 using System.Reactive.Linq;
 using DynamicData;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
@@ -19,12 +20,13 @@ public class SelectedGroupControllerVm : ViewModel, ISelectedGroupControllerVm
 
     public SelectedGroupControllerVm(
         IProfileGroupsList groupsList,
-        IProfileDisplayControllerVm selected)
+        IProfileDisplayControllerVm selected,
+        ISchedulerProvider schedulerProvider)
     {
         _selectedGroup = Observable.CombineLatest(
                 selected.WhenAnyValue(x => x.SelectedObject),
                 groupsList.Groups.Connect()
-                    .ObserveOnGui()
+                    .ObserveOn(schedulerProvider.MainThread)
                     .QueryWhenChanged(q => q),
                 (selected, groups) => selected ?? groups.FirstOrDefault())
             .Select(x =>
@@ -33,6 +35,6 @@ public class SelectedGroupControllerVm : ViewModel, ISelectedGroupControllerVm
                 if (x is PatcherVm patcher) return patcher.GroupTarget.Group;
                 return default(GroupVm?);
             })
-            .ToGuiProperty(this, nameof(SelectedGroup), default(GroupVm?), deferSubscription: true);
+            .ToGuiProperty(this, nameof(SelectedGroup), default(GroupVm?), schedulerProvider.MainThread, deferSubscription: true);
     }
 }

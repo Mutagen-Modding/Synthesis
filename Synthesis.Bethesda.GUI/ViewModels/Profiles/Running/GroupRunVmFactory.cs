@@ -1,3 +1,4 @@
+using Noggog.Reactive;
 using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
@@ -14,15 +15,18 @@ public class GroupRunVmFactory : IGroupRunVmFactory
     private readonly RunDisplayControllerVm _runDisplayControllerVm;
     private readonly IPatcherRunnerFactory _runnerFactory;
     private readonly IPrepPatcherForRun _prepPatcherForRun;
+    private readonly ISchedulerProvider _schedulerProvider;
 
     public GroupRunVmFactory(
         RunDisplayControllerVm runDisplayControllerVm,
         IPatcherRunnerFactory runnerFactory,
-        IPrepPatcherForRun prepPatcherForRun)
+        IPrepPatcherForRun prepPatcherForRun,
+        ISchedulerProvider schedulerProvider)
     {
         _runDisplayControllerVm = runDisplayControllerVm;
         _runnerFactory = runnerFactory;
         _prepPatcherForRun = prepPatcherForRun;
+        _schedulerProvider = schedulerProvider;
     }
         
     public GroupRunVm ToRunner(GroupVm groupVm, CancellationToken cancel)
@@ -47,6 +51,7 @@ public class GroupRunVmFactory : IGroupRunVmFactory
                 preps,
                 groupVm.BlacklistedModKeys.ToHashSet()),
             _runDisplayControllerVm,
-            patcherVms);
+            patcherVms,
+            _schedulerProvider);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Linq;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 
@@ -16,12 +17,13 @@ public class RepoClonesValidStateVm : ViewModel, IRepoClonesValidStateVm
 
     public RepoClonesValidStateVm(
         IDriverRepositoryPreparationFollower driverRepositoryPreparation,
-        IRunnerRepositoryPreparation runnerRepositoryPreparation)
+        IRunnerRepositoryPreparation runnerRepositoryPreparation,
+        ISchedulerProvider schedulerProvider)
     {
         _Valid = Observable.CombineLatest(
                 driverRepositoryPreparation.DriverInfo,
                 runnerRepositoryPreparation.State,
                 (driver, runner) => driver.RunnableState.Succeeded && runner.RunnableState.Succeeded)
-            .ToGuiProperty(this, nameof(Valid), deferSubscription: true);
+            .ToGuiProperty(this, nameof(Valid), schedulerProvider.MainThread, deferSubscription: true);
     }
 }

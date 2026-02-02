@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Linq;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -21,7 +22,8 @@ public class NugetDiffProviderVm : ViewModel, INugetDiffProviderVm
 
     public NugetDiffProviderVm(
         IRunnableStateProvider runnableStateProvider,
-        IGitNugetTargetingVm nugetTargetingVm)
+        IGitNugetTargetingVm nugetTargetingVm,
+        ISchedulerProvider schedulerProvider)
     {
         var cleanState = runnableStateProvider.WhenAnyValue(x => x.State)
             .Select(x => x.Item ?? default(RunnerRepoInfo?));
@@ -30,12 +32,12 @@ public class NugetDiffProviderVm : ViewModel, INugetDiffProviderVm
                 cleanState.Select(x => x?.ListedVersions.Mutagen),
                 nugetTargetingVm.ActiveNugetVersion.Select(x => x.Value?.Mutagen.Version),
                 (matchVersion, selVersion) => new NugetVersionDiff(matchVersion, selVersion))
-            .ToGuiProperty(this, nameof(MutagenVersionDiff), new NugetVersionDiff(null, null), deferSubscription: true);
+            .ToGuiProperty(this, nameof(MutagenVersionDiff), new NugetVersionDiff(null, null), schedulerProvider.MainThread, deferSubscription: true);
 
         _SynthesisVersionDiff = Observable.CombineLatest(
                 cleanState.Select(x => x?.ListedVersions.Synthesis),
                 nugetTargetingVm.ActiveNugetVersion.Select(x => x.Value?.Synthesis.Version),
                 (matchVersion, selVersion) => new NugetVersionDiff(matchVersion, selVersion))
-            .ToGuiProperty(this, nameof(SynthesisVersionDiff), new NugetVersionDiff(null, null), deferSubscription: true);
+            .ToGuiProperty(this, nameof(SynthesisVersionDiff), new NugetVersionDiff(null, null), schedulerProvider.MainThread, deferSubscription: true);
     }
 }

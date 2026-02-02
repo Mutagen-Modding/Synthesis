@@ -6,9 +6,11 @@ using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Records;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
+using Synthesis.Bethesda.GUI.Services;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 
@@ -26,7 +28,8 @@ public class ProfileSimpleLinkCacheVm : ViewModel, IProfileSimpleLinkCacheVm
         ILogger logger,
         IGameReleaseContext gameReleaseContext,
         IProfileLoadOrder loadOrder,
-        IProfileOverridesVm overrides)
+        IProfileOverridesVm overrides,
+        ISchedulerProvider schedulerProvider)
     {
         _simpleLinkCache = Observable.CombineLatest(
                 overrides.WhenAnyValue(x => x.DataFolderResult.Value),
@@ -35,7 +38,7 @@ public class ProfileSimpleLinkCacheVm : ViewModel, IProfileSimpleLinkCacheVm
                     .Select(q => q.Where(x => x.Enabled).Select(x => x.ModKey).ToArray())
                     .StartWithEmpty(),
                 (dataFolder, loadOrder) => (dataFolder, loadOrder))
-            .Throttle(TimeSpan.FromMilliseconds(100), RxApp.TaskpoolScheduler)
+            .Throttle(TimeSpan.FromMilliseconds(100), schedulerProvider.TaskPool)
             .Select(x =>
             {
                 return Observable.Create<(ILinkCache? Cache, IDisposable Disposable)>(obs =>
@@ -69,6 +72,6 @@ public class ProfileSimpleLinkCacheVm : ViewModel, IProfileSimpleLinkCacheVm
             .Switch()
             .DisposePrevious(x => x.Disposable)
             .Select(x => x.Cache)
-            .ToGuiProperty(this, nameof(SimpleLinkCache), default(ILinkCache?), deferSubscription: true);
+            .ToGuiProperty(this, nameof(SimpleLinkCache), default(ILinkCache?), schedulerProvider.MainThread, deferSubscription: true);
     }
 }

@@ -4,6 +4,7 @@ using DynamicData.Binding;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Synthesis.Profiles;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -36,7 +37,8 @@ public class NewProfileVm : ViewModel
     public NewProfileVm(
         IProfileFactory profileFactory,
         CreateProfileId createProfileId,
-        ProfileManagerVm config, 
+        ISchedulerProvider schedulerProvider,
+        ProfileManagerVm config,
         Action<ProfileVm>? postRun = null)
     {
         _config = config;
@@ -45,8 +47,7 @@ public class NewProfileVm : ViewModel
         ReleaseOptions = this.WhenAnyValue(x => x.SelectedCategory)
             .Select(x => x?.GetRelatedReleases().AsObservableChangeSet() ?? Observable.Return(ChangeSet<GameRelease>.Empty))
             .Switch()
-            .ObserveOnGui()
-            .ToObservableCollection(this);
+            .ToObservableCollection(this, schedulerProvider.MainThread);
 
         this.WhenAnyValue(x => x.SelectedCategory)
             .WhereNotNull()

@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using Mutagen.Bethesda.Plugins.Order.DI;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
@@ -20,10 +21,11 @@ public class PluginsTxtMissingVm : ViewModel, IEnvironmentErrorVm
 
     public PluginsTxtMissingVm(
         ILogger logger,
-        IPluginListingsPathContext listingsPathProvider)
+        IPluginListingsPathContext listingsPathProvider,
+        ISchedulerProvider schedulerProvider)
     {
         PluginFilePath = listingsPathProvider.Path;
-        
+
         _inError = Noggog.ObservableExt.WatchFile(PluginFilePath)
             .StartWith(Unit.Default)
             .Select(_ =>
@@ -38,7 +40,7 @@ public class PluginsTxtMissingVm : ViewModel, IEnvironmentErrorVm
                     return true;
                 }
             })
-            .ToGuiProperty(this, nameof(InError), deferSubscription: true);
+            .ToGuiProperty(this, nameof(InError), scheduler: schedulerProvider.MainThread, deferSubscription: true);
 
         ErrorString = $"Could not find plugin file to read the load order from. \n\n" +
                       $"- Run your game once, to generate the file\n" +

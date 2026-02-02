@@ -4,6 +4,7 @@ using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -69,14 +70,15 @@ public class GitPatcherInitVm : ViewModel, IPatcherInitVm
         IAddPatchersToSelectedGroupVm addNewPatchers,
         ILogger logger,
         IPatcherFactory patcherFactory,
-        INavigateTo navigateTo, 
+        INavigateTo navigateTo,
         IPathSanitation pathSanitation,
         PatcherStoreListingVm.Factory listingVmFactory,
         IProfileDisplayControllerVm displayControllerVm,
         ApplicablePatcherListingsProvider listingsProvider,
         IProfileGroupsList groups,
         InitializationSettingsVm initializationSettingsVm,
-        PatcherInitRenameValidator renamer)
+        PatcherInitRenameValidator renamer,
+        ISchedulerProvider schedulerProvider)
     {
         InitializationSettingsVm = initializationSettingsVm;
         _init = init;
@@ -89,7 +91,7 @@ public class GitPatcherInitVm : ViewModel, IPatcherInitVm
 
         _canCompleteConfiguration = this.WhenAnyValue(x => x.Patcher.RepoClonesValid.Valid)
             .Select(x => ErrorResponse.Create(x))
-            .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
+            .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success, schedulerProvider.MainThread);
 
         var installedPatcherPaths =
             groups.Groups.Items
@@ -100,7 +102,7 @@ public class GitPatcherInitVm : ViewModel, IPatcherInitVm
                 .ToHashSet();
 
         PatcherRepos = Observable.Return(Unit.Default)
-            .ObserveOn(RxApp.TaskpoolScheduler)
+            .ObserveOn(schedulerProvider.TaskPool)
             .SelectTask(async _ =>
             {
                 try
@@ -146,7 +148,7 @@ public class GitPatcherInitVm : ViewModel, IPatcherInitVm
                         return !installedPatcherPaths.Contains(p.RepoPath);
                     })))
             .Filter(this.WhenAnyValue(x => x.Search)
-                .Debounce(TimeSpan.FromMilliseconds(350), RxApp.MainThreadScheduler)
+                .Debounce(TimeSpan.FromMilliseconds(350), schedulerProvider.MainThread)
                 .Select(x => x.Trim())
                 .DistinctUntilChanged()
                 .Select(search =>
@@ -164,8 +166,7 @@ public class GitPatcherInitVm : ViewModel, IPatcherInitVm
                         });
                 }))
             .Sort(Comparer<PatcherStoreListingVm>.Create((x, y) => x.Name.CompareTo(y.Name)))
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .ToObservableCollection(this);
+            .ToObservableCollection(this, schedulerProvider.MainThread);
 
         OpenPopulationInfoCommand = ReactiveCommand.Create(() => navigateTo.Navigate(Constants.ListingRepositoryAddress));
         ClearSearchCommand = ReactiveCommand.Create(() => Search = string.Empty);

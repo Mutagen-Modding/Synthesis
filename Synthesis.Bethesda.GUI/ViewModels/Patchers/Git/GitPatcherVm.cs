@@ -5,6 +5,7 @@ using Autofac;
 using DynamicData.Binding;
 using Microsoft.Win32;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -88,7 +89,7 @@ public class GitPatcherVm : PatcherVm, IPathToSolutionFileProvider
         IConfirmationPanelControllerVm confirmation,
         ISelectedProjectInputVm selectedProjectInput,
         IGitRemoteRepoPathInputVm remoteRepoPathInputVm,
-        INavigateTo navigate, 
+        INavigateTo navigate,
         IAvailableTags availableTags,
         ILockToCurrentVersioning lockToCurrentVersioning,
         IAvailableProjects availableProjects,
@@ -116,10 +117,11 @@ public class GitPatcherVm : PatcherVm, IPathToSolutionFileProvider
         DeleteUserData deleteUserData,
         PatcherUserSettingsVm.Factory settingsVmFactory,
         PatcherGroupTarget groupTarget,
+        ISchedulerProvider schedulerProvider,
         GithubPatcherSettings? settings = null)
         : base(
             scope, nameVm, selPatcher,
-            confirmation, idProvider, renameFactory, groupTarget, settings)
+            confirmation, idProvider, renameFactory, groupTarget, schedulerProvider, settings)
     {
         _logger = logger;
         _copyOverExtraData = copyOverExtraData;
@@ -143,7 +145,7 @@ public class GitPatcherVm : PatcherVm, IPathToSolutionFileProvider
 
         _repoValidity = getRepoPathValidity.RepoPath
             .Select(r => r.RunnableState)
-            .ToGuiProperty(this, nameof(RepoValidity), deferSubscription: true);
+            .ToGuiProperty(this, nameof(RepoValidity), schedulerProvider.MainThread, deferSubscription: true);
 
         AvailableProjects = availableProjects.Projects;
 
@@ -151,16 +153,16 @@ public class GitPatcherVm : PatcherVm, IPathToSolutionFileProvider
 
         _attemptedCheckout = checkoutInputProvider.Input
             .Select(attemptedCheckout.Attempted)
-            .ToGuiProperty(this, nameof(AttemptedCheckout), deferSubscription: true);
+            .ToGuiProperty(this, nameof(AttemptedCheckout), schedulerProvider.MainThread, deferSubscription: true);
 
         _runnableData = runnableStateProvider.WhenAnyValue(x => x.State.Item)
-            .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?), deferSubscription: true);
+            .ToGuiProperty(this, nameof(RunnableData), default(RunnerRepoInfo?), schedulerProvider.MainThread, deferSubscription: true);
 
         _state = state.State
             .ToGuiProperty(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
             {
                 IsHaltingError = false
-            }, deferSubscription: true);
+            }, schedulerProvider.MainThread, deferSubscription: true);
 
         OpenGitPageCommand = ReactiveCommand.Create(
             canExecute: this.WhenAnyValue(x => x.RepoValidity)
@@ -204,7 +206,7 @@ public class GitPatcherVm : PatcherVm, IPathToSolutionFileProvider
                     Text: "Initializing",
                     Processing: false,
                     Blocking: false,
-                    Command: null), deferSubscription: true);
+                    Command: null), schedulerProvider.MainThread, deferSubscription: true);
 
         SetToLastSuccessfulRunCommand = ReactiveCommand.Create(
             canExecute: this.WhenAnyValue(x => x.LastSuccessfulRun)

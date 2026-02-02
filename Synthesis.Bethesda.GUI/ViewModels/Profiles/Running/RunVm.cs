@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -21,6 +22,7 @@ public class RunVm : ViewModel
 {
     private readonly ILogger _logger;
     private readonly IExecuteGuiRun _executeRun;
+    private readonly ISchedulerProvider _schedulerProvider;
     public RunDisplayControllerVm RunDisplayControllerVm { get; }
     public IRunReporter Reporter { get; }
     private readonly Dictionary<Guid, PatcherRunVm> _patchers;
@@ -59,11 +61,13 @@ public class RunVm : ViewModel
         IRunReporterWatcher reporterWatcher,
         IRunReporter reporter,
         IExecuteGuiRun executeRun,
+        ISchedulerProvider schedulerProvider,
         IEnumerable<GroupVm> groups,
         ProfileVm profile)
     {
         _logger = logger;
         _executeRun = executeRun;
+        _schedulerProvider = schedulerProvider;
         RunDisplayControllerVm = runDisplayControllerVm;
         Reporter = reporter;
         RunningProfile = profile;
@@ -105,7 +109,7 @@ public class RunVm : ViewModel
             .DisposeWith(this);
         reporterWatcher.Exceptions
             .Do(ex => logger.Error(ex, "Error while running patcher pipeline"))
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .Subscribe(ex =>
             {
                 ResultError = ex;
@@ -113,7 +117,7 @@ public class RunVm : ViewModel
             .DisposeWith(this);
         reporterWatcher.Exceptions
             .Do(ex => logger.Error(ex, "Error while running patcher pipeline"))
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .Subscribe(ex =>
             {
                 ResultError = ex;
@@ -129,7 +133,7 @@ public class RunVm : ViewModel
                     .ForContext(nameof(IPatcherNameVm.Name), i.data.Run)
                     .Error(i.data.Error, $"Error while {i.type}: {i.data.Error}");
             })
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .Subscribe(i =>
             {
                 var vm = _patchers[i.data.Key];
@@ -151,7 +155,7 @@ public class RunVm : ViewModel
                     .ForContext(nameof(IPatcherNameVm.Name), i.Run)
                     .Information($"Starting");
             })
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .Subscribe(i =>
             {
                 var vm = _patchers[i.Key];
@@ -174,7 +178,7 @@ public class RunVm : ViewModel
                     .ForContext(nameof(IPatcherNameVm.Name), i.Run)
                     .Information("Finished {RunTime}", vm.RunTime);
             })
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .Subscribe(i =>
             {
                 var vm = _patchers[i.Key];
@@ -192,15 +196,15 @@ public class RunVm : ViewModel
                     .Select(i => i as object),
                 this.ShowOverallErrorCommand.EndingExecution()
                     .Select(_ => ResultError == null ? null : new ErrorVM("Patching Error", ResultError.ToString())))
-            .ToGuiProperty(this, nameof(DetailDisplay), default, deferSubscription: true);
+            .ToGuiProperty(this, nameof(DetailDisplay), default, schedulerProvider.MainThread, deferSubscription: true);
     }
 
     public async Task Run()
     {
         await Observable.Return(Unit.Default)
-            .ObserveOnGui()
+            .ObserveOn(_schedulerProvider.MainThread)
             .Do(_ => Running = true)
-            .ObserveOn(RxApp.TaskpoolScheduler)
+            .ObserveOn(_schedulerProvider.TaskPool)
             .DoTask(async (_) =>
             {
                 try
@@ -229,7 +233,7 @@ public class RunVm : ViewModel
                     Reporter.ReportOverallProblem(ex);
                 }
             })
-            .ObserveOnGui()
+            .ObserveOn(_schedulerProvider.MainThread)
             .Do(_ =>
             {
                 Running = false;

@@ -1,5 +1,6 @@
 using System.Windows.Input;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Settings;
@@ -26,11 +27,12 @@ public class CliPatcherInitVm : ViewModel, ICliInputSourceVm, IPatcherInitVm
     public ErrorResponse CanCompleteConfiguration => _canCompleteConfiguration.Value;
 
     public CliPatcherInitVm(
-        IPatcherNameVm nameVm, 
+        IPatcherNameVm nameVm,
         IPatcherInitializationVm init,
         IShowHelpSetting showHelpSetting,
         IPathToExecutableInputVm executableInputVm,
-        IPatcherFactory factory)
+        IPatcherFactory factory,
+        ISchedulerProvider schedulerProvider)
     {
         _init = init;
         Factory = factory;
@@ -39,7 +41,7 @@ public class CliPatcherInitVm : ViewModel, ICliInputSourceVm, IPatcherInitVm
         ExecutableInput = executableInputVm;
         _canCompleteConfiguration = executableInputVm.WhenAnyValue(x => x.Picker.ErrorState)
             .Cast<ErrorResponse, ErrorResponse>()
-            .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success);
+            .ToGuiProperty(this, nameof(CanCompleteConfiguration), ErrorResponse.Success, schedulerProvider.MainThread);
     }
 
     public async IAsyncEnumerable<PatcherVm> Construct()

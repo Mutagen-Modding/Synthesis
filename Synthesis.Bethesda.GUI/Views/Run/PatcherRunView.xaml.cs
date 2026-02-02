@@ -49,7 +49,7 @@ public partial class PatcherRunView
                 .BindTo(this, x => x.OutputBox.Visibility)
                 .DisposeWith(disposable);
             this.WhenAnyValue(x => x.ViewModel!.OutputDisplay)
-                .ObserveOnGui()
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Delay(TimeSpan.FromMilliseconds(50), RxApp.MainThreadScheduler)
                 .Subscribe(_ =>
                 {

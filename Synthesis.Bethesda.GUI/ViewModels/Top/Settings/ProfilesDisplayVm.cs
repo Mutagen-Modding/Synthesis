@@ -1,8 +1,10 @@
-﻿using System.Windows.Input;
+﻿using System.Reactive.Linq;
+using System.Windows.Input;
 using Autofac;
 using DynamicData;
 using DynamicData.Binding;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -26,7 +28,8 @@ public class ProfilesDisplayVm : ViewModel
 
     public ProfilesDisplayVm(
         ProfileManagerVm parent,
-        NewProfileVm.Factory newProfileVmFactory)
+        NewProfileVm.Factory newProfileVmFactory,
+        ISchedulerProvider schedulerProvider)
     {
         Config = parent;
         AddCommand = ReactiveCommand.Create(() =>
@@ -49,8 +52,7 @@ public class ProfilesDisplayVm : ViewModel
                     DisplayedProfile = p;
                 }
             })
-            .ObserveOnGui()
-            .ToObservableCollection(this);
+            .ToObservableCollection(this, schedulerProvider.MainThread);
 
         this.WhenAnyValue(x => x.DisplayedProfile)
             .NotNull()

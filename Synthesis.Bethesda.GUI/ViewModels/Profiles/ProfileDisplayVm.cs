@@ -6,6 +6,7 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Meta;
 using Mutagen.Bethesda.Strings;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
@@ -48,20 +49,21 @@ public class ProfileDisplayVm : ViewModel
     public ProfileDisplayVm(
         ProfilesDisplayVm parent,
         ILogger logger,
-        INavigateTo navigate, 
+        INavigateTo navigate,
         ISelectedProfileControllerVm selProfile,
         IConfirmationPanelControllerVm confirmation,
-        ProfileVm profile)
+        ProfileVm profile,
+        ISchedulerProvider schedulerProvider)
     {
         Parent = parent;
         Profile = profile;
 
         _isDisplaying = parent.WhenAnyValue(x => x.DisplayedProfile)
             .Select(x => x == this)
-            .ToGuiProperty(this, nameof(IsDisplaying), deferSubscription: true);
+            .ToGuiProperty(this, nameof(IsDisplaying), scheduler: schedulerProvider.MainThread, deferSubscription: true);
 
         _isActive = this.WhenAnyValue(x => x.Profile.IsActive)
-            .ToGuiProperty(this, nameof(IsActive), deferSubscription: true);
+            .ToGuiProperty(this, nameof(IsActive), scheduler: schedulerProvider.MainThread, deferSubscription: true);
 
         var constants = GameConstants.Get(profile.Release);
         
@@ -115,6 +117,6 @@ public class ProfileDisplayVm : ViewModel
                 if (x.Succeeded) return x.Value.ToString();
                 return x.Value.Path.IsNullOrWhitespace() ? "Failed to locate" : x.Value;
             })
-            .ToGuiProperty(this, nameof(DataFolderWatermark), string.Empty);
+            .ToGuiProperty(this, nameof(DataFolderWatermark), string.Empty, schedulerProvider.MainThread);
     }
 }

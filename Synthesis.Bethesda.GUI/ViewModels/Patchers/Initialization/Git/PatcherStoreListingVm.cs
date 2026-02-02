@@ -2,6 +2,7 @@ using System.IO;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.DTO;
@@ -32,7 +33,8 @@ public class PatcherStoreListingVm : ViewModel
         GitPatcherInitVm gitInit,
         PatcherListing listing,
         RepositoryListing repositoryListing,
-        INavigateTo navigate)
+        INavigateTo navigate,
+        ISchedulerProvider schedulerProvider)
     {
         Repository = new RepositoryStoreListingVm(repositoryListing);
         Raw = listing;
@@ -46,7 +48,7 @@ public class PatcherStoreListingVm : ViewModel
         }
         _isSelected = gitInit.WhenAnyValue(x => x.SelectedPatcher)
             .Select(x => x == this)
-            .ToGuiProperty(this, nameof(IsSelected));
+            .ToGuiProperty(this, nameof(IsSelected), schedulerProvider.MainThread);
         OpenWebsite = ReactiveCommand.Create(() => navigate.Navigate(RepoPath));
         AddCommand = ReactiveCommand.CreateFromTask(async () =>
         {

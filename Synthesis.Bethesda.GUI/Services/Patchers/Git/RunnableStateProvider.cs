@@ -33,7 +33,7 @@ public class RunnableStateProvider : ViewModel, IRunnableStateProvider, IPathToP
                 GetResponse<RunnerRepoInfo>.Fail("Constructing runnable state"))
             {
                 IsHaltingError = false
-            }, deferSubscription: true);
+            }, schedulerProvider.MainThread, deferSubscription: true);
     }
             
     FilePath IPathToProjProvider.Path => State?.Item?.Project.ProjPath ??

@@ -1,7 +1,8 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.GUI.Settings;
+using Noggog.Reactive;
 using Noggog.WPF;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Settings.Calculators;
@@ -31,7 +32,8 @@ public class GlobalSettingsVm : ViewModel,
     
     public GlobalSettingsVm(
         ISettingsSingleton settingsSingleton,
-        BuildCoreCalculator calculator)
+        BuildCoreCalculator calculator,
+        ISchedulerProvider schedulerProvider)
     {
         Shortcircuit = settingsSingleton.Pipeline.Shortcircuit;
         DotNetPathOverride = settingsSingleton.Pipeline.DotNetPathOverride;
@@ -40,7 +42,7 @@ public class GlobalSettingsVm : ViewModel,
 
         _buildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
             .Select(calculator.Calculate)
-            .ToGuiProperty(this, nameof(BuildCores), deferSubscription: true);
+            .ToGuiProperty(this, nameof(BuildCores), scheduler: schedulerProvider.MainThread, deferSubscription: true);
     }
 
     public void Save(SynthesisGuiSettings gui, PipelineSettings pipe)

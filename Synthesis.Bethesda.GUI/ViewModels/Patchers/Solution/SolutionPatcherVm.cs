@@ -6,6 +6,7 @@ using DynamicData;
 using DynamicData.Binding;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
@@ -55,7 +56,7 @@ public class SolutionPatcherVm : PatcherVm
         IProfileLoadOrder loadOrder,
         IInstalledSdkFollower dotNetSdkFollowerInstalled,
         IProfileDisplayControllerVm profileDisplay,
-        IConfirmationPanelControllerVm confirmation, 
+        IConfirmationPanelControllerVm confirmation,
         ISolutionPathInputVm solutionPathInput,
         ISelectedProjectInputVm selectedProjectInput,
         PatcherUserSettingsVm.Factory settingsVmFactory,
@@ -67,8 +68,9 @@ public class SolutionPatcherVm : PatcherVm
         SolutionPatcherSettingsVm settingsVm,
         PatcherRenameActionVm.Factory renameFactory,
         PatcherGroupTarget groupTarget,
+        ISchedulerProvider schedulerProvider,
         SolutionPatcherSettings? settings = null)
-        : base(scope, nameVm, profileDisplay, confirmation, idProvider, renameFactory, groupTarget, settings)
+        : base(scope, nameVm, profileDisplay, confirmation, idProvider, renameFactory, groupTarget, schedulerProvider, settings)
     {
         SolutionPathInput = solutionPathInput;
         SelectedProjectInput = selectedProjectInput;
@@ -79,8 +81,7 @@ public class SolutionPatcherVm : PatcherVm
 
         AvailableProjects = availableProjectsFollower.Process(
                 this.WhenAnyValue(x => x.SolutionPathInput.Picker.TargetPath).Select(x => new FilePath(x)))
-            .ObserveOnGui()
-            .ToObservableCollection(this);
+            .ToObservableCollection(this, schedulerProvider.MainThread);
 
         _state = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.SolutionPathInput.Picker.ErrorState),
@@ -95,7 +96,7 @@ public class SolutionPatcherVm : PatcherVm
             .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
             {
                 IsHaltingError = false
-            }, deferSubscription: true);
+            }, schedulerProvider.MainThread, deferSubscription: true);
 
         OpenSolutionCommand = ReactiveCommand.Create(
             canExecute: this.WhenAnyValue(x => x.SolutionPathInput.Picker.InError)

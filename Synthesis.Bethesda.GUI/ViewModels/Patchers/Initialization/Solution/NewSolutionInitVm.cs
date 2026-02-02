@@ -2,6 +2,7 @@ using System.IO;
 using System.Reactive.Linq;
 using Mutagen.Bethesda.Synthesis.Projects;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -34,7 +35,8 @@ public class NewSolutionInitVm : ASolutionInitializer
     public NewSolutionInitVm(
         IPatcherFactory patcherFactory,
         IValidateProjectPath validateProjectPath,
-        CreateTemplatePatcherSolution createTemplatePatcherSolution)
+        CreateTemplatePatcherSolution createTemplatePatcherSolution,
+        ISchedulerProvider schedulerProvider)
     {
         ParentDirPath.PathType = PathPickerVM.PathTypeOptions.Folder;
         ParentDirPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
@@ -68,7 +70,7 @@ public class NewSolutionInitVm : ASolutionInitializer
                         return GetResponse<string>.Fail(val: slnName, reason: "Improper solution name. Go simpler.");
                     }
                 })
-            .ToGuiProperty(this, nameof(SolutionPath));
+            .ToGuiProperty(this, nameof(SolutionPath), schedulerProvider.MainThread);
 
         var validation = Observable.CombineLatest(
                 this.ParentDirPath.PathState(),
@@ -89,7 +91,7 @@ public class NewSolutionInitVm : ASolutionInitializer
 
         _projectError = validation
             .Select(i => (ErrorResponse)i.validation)
-            .ToGuiProperty<ErrorResponse>(this, nameof(ProjectError), ErrorResponse.Success);
+            .ToGuiProperty<ErrorResponse>(this, nameof(ProjectError), ErrorResponse.Success, schedulerProvider.MainThread);
 
         InitializationCall = validation
             .Select((i) =>
@@ -112,7 +114,7 @@ public class NewSolutionInitVm : ASolutionInitializer
 
         _projectNameWatermark = this.WhenAnyValue(x => x.SolutionName)
             .Select(x => string.IsNullOrWhiteSpace(x) ? "The name of the patcher" : SolutionNameProcessor(x))
-            .ToGuiProperty<string>(this, nameof(ProjectNameWatermark), string.Empty);
+            .ToGuiProperty<string>(this, nameof(ProjectNameWatermark), string.Empty, schedulerProvider.MainThread);
     }
 
     private string SolutionNameProcessor(string slnName) => slnName.Replace(" ", string.Empty);

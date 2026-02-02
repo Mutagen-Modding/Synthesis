@@ -52,7 +52,7 @@ public static class NoggogCommand
         return ReactiveCommand.CreateFromTask(
             canExecute: Observable.CombineLatest(
                 canExecute ?? Observable.Return(true),
-                gotInput.ObserveOnGui(),
+                gotInput.ObserveOn(RxApp.MainThreadScheduler),
                 (canExecute, gotInput) => canExecute && gotInput),
             outputScheduler: outputScheduler,
             execute: async () =>
@@ -174,7 +174,7 @@ public static class NoggogCommand
             .Subscribe(l => latest = l)
             .DisposeWith(disposable);
         return ReactiveCommand.Create(
-            canExecute: canExecute(objectSource.ObserveOnGui()),
+            canExecute: canExecute(objectSource.ObserveOn(RxApp.MainThreadScheduler)),
             execute: () =>
             {
                 execute(latest);
@@ -194,7 +194,7 @@ public static class NoggogCommand
             .DisposeWith(disposable);
         return ReactiveCommand.Create(
             canExecute: Observable.CombineLatest(
-                canExecute(objectSource.ObserveOnGui()),
+                canExecute(objectSource.ObserveOn(RxApp.MainThreadScheduler)),
                 extraCanExecute,
                 (obj, extra) => obj && extra),
             execute: () =>

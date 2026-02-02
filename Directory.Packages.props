@@ -27,29 +27,29 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.14.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-    <PackageVersion Include="Mutagen.Bethesda" Version="[0.52.0]" />
-    <PackageVersion Include="Mutagen.Bethesda.Autofac" Version="[0.52.0]" />
-    <PackageVersion Include="Mutagen.Bethesda.Core" Version="[0.52.0]" />
-    <PackageVersion Include="Mutagen.Bethesda.Json" Version="[0.52.0]" />
-    <PackageVersion Include="Mutagen.Bethesda.Kernel" Version="[0.52.0]" />
-    <PackageVersion Include="Mutagen.Bethesda.Testing" Version="[0.52.0]" />
-    <PackageVersion Include="Mutagen.Bethesda.WPF" Version="[0.52.0]" />
+    <PackageVersion Include="Mutagen.Bethesda" Version="[0.53.0]" />
+    <PackageVersion Include="Mutagen.Bethesda.Autofac" Version="[0.53.0]" />
+    <PackageVersion Include="Mutagen.Bethesda.Core" Version="[0.53.0]" />
+    <PackageVersion Include="Mutagen.Bethesda.Json" Version="[0.53.0]" />
+    <PackageVersion Include="Mutagen.Bethesda.Kernel" Version="[0.53.0]" />
+    <PackageVersion Include="Mutagen.Bethesda.Testing" Version="[0.53.0]" />
+    <PackageVersion Include="Mutagen.Bethesda.WPF" Version="[0.53.0]" />
     <PackageVersion Include="Newtonsoft.Json">
       <Version>13.0.4</Version>
     </PackageVersion>
-    <PackageVersion Include="Noggog.Autofac" Version="3.1.0" />
-    <PackageVersion Include="Noggog.CSharpExt" Version="3.1.0" />
-    <PackageVersion Include="Noggog.CSharpExt.Json" Version="3.1.0" />
-    <PackageVersion Include="Noggog.CSharpExt.Windows" Version="3.1.0" />
+    <PackageVersion Include="Noggog.Autofac" Version="4.0.0" />
+    <PackageVersion Include="Noggog.CSharpExt" Version="4.0.0" />
+    <PackageVersion Include="Noggog.CSharpExt.Json" Version="4.0.0" />
+    <PackageVersion Include="Noggog.CSharpExt.Windows" Version="4.0.0" />
     <PackageVersion Include="Noggog.GitRepository">
       <Version>1.7.0</Version>
     </PackageVersion>
-    <PackageVersion Include="Noggog.Nuget" Version="3.1.0" />
-    <PackageVersion Include="Noggog.SourceGenerators" Version="3.1.0" />
+    <PackageVersion Include="Noggog.Nuget" Version="4.0.0" />
+    <PackageVersion Include="Noggog.SourceGenerators" Version="4.0.0" />
     <PackageVersion Include="Noggog.Testing">
-      <Version>3.1.0</Version>
+      <Version>4.0.0</Version>
     </PackageVersion>
-    <PackageVersion Include="Noggog.WPF" Version="3.1.0" />
+    <PackageVersion Include="Noggog.WPF" Version="4.0.0" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
     <PackageVersion Include="NuGet.Versioning" Version="6.14.0" />
     <PackageVersion Include="ReactiveUI" Version="21.0.1" />

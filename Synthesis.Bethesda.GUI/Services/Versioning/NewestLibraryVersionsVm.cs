@@ -2,6 +2,7 @@
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
@@ -24,7 +25,8 @@ public class NewestLibraryVersionsVm : ViewModel, INewestLibraryVersionsVm
     public NewestLibraryVersionsVm(
         ILogger logger,
         IQueryNewestLibraryVersions queryNewest,
-        IInstalledSdkFollower installedSdkFollower)
+        IInstalledSdkFollower installedSdkFollower,
+        ISchedulerProvider schedulerProvider)
     {
         _versions = Observable.Return(Unit.Default)
             .ObserveOn(TaskPoolScheduler.Default)
@@ -56,6 +58,6 @@ public class NewestLibraryVersionsVm : ViewModel, INewestLibraryVersionsVm
             })
             .ToGuiProperty(this, nameof(Versions), new NugetVersionOptions(
                 new NugetVersionPair(null, null),
-                new NugetVersionPair(null, null)), deferSubscription: true);
+                new NugetVersionPair(null, null)), schedulerProvider.MainThread, deferSubscription: true);
     }
 }

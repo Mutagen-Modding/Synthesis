@@ -2,11 +2,13 @@ using System.Reactive.Linq;
 using System.Text;
 using ICSharpCode.AvalonEdit.Document;
 using Noggog;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Running;
+using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
@@ -44,7 +46,7 @@ public class PatcherRunVm : ViewModel, IRunItem
 
     public delegate PatcherRunVm Factory(PatcherVm sourcePatcherVm);
 
-    public PatcherRunVm(PatcherVm sourcePatcherVm, IPatcherRun run, IReporterLoggerWrapper loggerWrapper)
+    public PatcherRunVm(PatcherVm sourcePatcherVm, IPatcherRun run, IReporterLoggerWrapper loggerWrapper, ISchedulerProvider schedulerProvider)
     {
         Name = sourcePatcherVm.NameVm.Name;
         InternalID = sourcePatcherVm.InternalID;
@@ -57,9 +59,9 @@ public class PatcherRunVm : ViewModel, IRunItem
                 this.WhenAnyValue(x => x.State)
                     .Where(x => x.Value == RunState.Error)
                     .Select(x => x.Reason))
-            .Buffer(TimeSpan.FromMilliseconds(250), count: 1000, RxApp.TaskpoolScheduler)
+            .Buffer(TimeSpan.FromMilliseconds(250), count: 1000, schedulerProvider.TaskPool)
             .Where(b => b.Count > 0)
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .Subscribe(output =>
             {
                 StringBuilder sb = new();
@@ -73,13 +75,13 @@ public class PatcherRunVm : ViewModel, IRunItem
 
         _isRunning = this.WhenAnyValue(x => x.State)
             .Select(x => x.Value == RunState.Started)
-            .ToGuiProperty(this, nameof(IsRunning), deferSubscription: true);
+            .ToGuiProperty(this, nameof(IsRunning), schedulerProvider.MainThread, deferSubscription: true);
 
         _isErrored = this.WhenAnyValue(x => x.State)
             .Select(x => x.Value == RunState.Error)
-            .ToGuiProperty(this, nameof(IsErrored), deferSubscription: true);
+            .ToGuiProperty(this, nameof(IsErrored), schedulerProvider.MainThread, deferSubscription: true);
 
-        var runTime = Noggog.ObservableExt.TimePassed(TimeSpan.FromMilliseconds(100), RxApp.MainThreadScheduler)
+        var runTime = Noggog.ObservableExt.TimePassed(TimeSpan.FromMilliseconds(100), schedulerProvider.MainThread)
             .FlowSwitch(this.WhenAnyValue(x => x.IsRunning))
             .Publish()
             .RefCount();
@@ -104,7 +106,7 @@ public class PatcherRunVm : ViewModel, IRunItem
                 }
                 return $"{time.TotalSeconds:n1}s";
             })
-            .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty, deferSubscription: true);
+            .ToGuiProperty<string>(this, nameof(RunTimeString), string.Empty, schedulerProvider.MainThread, deferSubscription: true);
 
         this.WhenAnyValue(x => x.State)
             .Where(x => x.Succeeded && x.Value == RunState.Finished)

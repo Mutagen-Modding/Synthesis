@@ -2,6 +2,7 @@ using System.IO;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
+using Noggog.Reactive;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.PrepareDriver;
@@ -21,7 +22,8 @@ public class AvailableTags : ViewModel, IAvailableTags
     public AvailableTags(
         ISelectedProjectInputVm selectedProjectInput,
         IDriverRepositoryPreparationFollower driverRepositoryPreparation,
-        IAvailableProjects availableProjects)
+        IAvailableProjects availableProjects,
+        ISchedulerProvider schedulerProvider)
     {
         var tagInput = Observable.CombineLatest(
             selectedProjectInput.Picker.WhenAnyValue(x => x.TargetPath),
@@ -44,7 +46,6 @@ public class AvailableTags : ViewModel, IAvailableTags
                 }))
             .Sort(SortExpressionComparer<DriverTag>.Descending(x => x.Index))
             .Transform(x => x.Name)
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .ToObservableCollection(this);
+            .ToObservableCollection(this, schedulerProvider.MainThread);
     }
 }

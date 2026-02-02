@@ -63,7 +63,7 @@ public class SolutionMetaFileSync : ISolutionMetaFileSync
             .Select(path =>
             {
                 return Noggog.ObservableExt.WatchFile(path)
-                    .Throttle(TimeSpan.FromMilliseconds(500), RxApp.MainThreadScheduler)
+                    .Throttle(TimeSpan.FromMilliseconds(500), _schedulerProvider.MainThread)
                     .StartWith(Unit.Default)
                     .Select(_ =>
                     {
@@ -101,7 +101,7 @@ public class SolutionMetaFileSync : ISolutionMetaFileSync
                 MetaPath,
                 (nickname, slnSettings, meta) => (nickname, slnSettings, meta))
             .DistinctUntilChanged()
-            .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+            .Throttle(TimeSpan.FromMilliseconds(200), _schedulerProvider.MainThread)
             .Skip(1)
             .Subscribe(x =>
             {
