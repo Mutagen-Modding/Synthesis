@@ -11,4 +11,9 @@ public class PluginListingsPathInjection : IPluginListingsPathContext
     {
         Path = path;
     }
+    
+    public FilePath? TryGetPath()
+    {
+        return Path;
+    }
 }
