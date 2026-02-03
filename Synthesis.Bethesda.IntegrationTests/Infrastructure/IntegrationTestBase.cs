@@ -890,10 +890,24 @@ public abstract class IntegrationTest : IDisposable
 
         // Wait for profile state to be successful (load order loaded, etc)
         Output.WriteLine("Waiting for profile state to be successful...");
-        var profileState = await selectedProfile.WhenAnyValue(x => x.State)
-            .Where(state => state.Succeeded)
-            .FirstAsync()
-            .Timeout(TestTimeouts.Short);
+        GetResponse<object> profileState;
+        try
+        {
+            profileState = await selectedProfile.WhenAnyValue(x => x.State)
+                .Where(state => state.Succeeded)
+                .FirstAsync()
+                .Timeout(TestTimeouts.Short);
+        }
+        catch (TimeoutException)
+        {
+            var currentState = selectedProfile.State;
+            Output.WriteLine($"Timeout waiting for profile state. Current state: Succeeded={currentState.Succeeded}, Reason={currentState.Reason}");
+            if (currentState.Exception != null)
+            {
+                Output.WriteLine($"Exception: {currentState.Exception}");
+            }
+            throw;
+        }
 
         // Check for any patcher errors after dispatcher flush
         Output.WriteLine("Checking patcher states...");
