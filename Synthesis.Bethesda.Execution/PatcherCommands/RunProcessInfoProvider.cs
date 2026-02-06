@@ -21,6 +21,6 @@ public class RunProcessStartInfoProvider : IRunProcessStartInfoProvider
     public ProcessStartInfo GetStart<T>(string executablePath, T args)
     {
         var formattedArgs = Format.Format(args);
-        return new ProcessStartInfo(executablePath, formattedArgs);
+        return new ProcessStartInfo("dotnet", $"\"{executablePath}\" {formattedArgs}");
     }
 }

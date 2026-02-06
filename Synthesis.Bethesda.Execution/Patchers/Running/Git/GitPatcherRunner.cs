@@ -1,7 +1,7 @@
-using System.Diagnostics;
 using Serilog;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Exceptions;
+using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.Execution.Utility;
 
@@ -16,18 +16,18 @@ public class GitPatcherRunner : IGitPatcherRunner
 {
     private readonly IConstructSolutionPatcherRunArgs _constructArgs;
     private readonly ISynthesisSubProcessRunner _processRunner;
-    private readonly IFormatCommandLine _formatter;
+    private readonly IRunProcessStartInfoProvider _runProcessStartInfoProvider;
     private readonly ILogger _logger;
 
     public GitPatcherRunner(
         IConstructSolutionPatcherRunArgs constructArgs,
         ISynthesisSubProcessRunner processRunner,
-        IFormatCommandLine formatter,
+        IRunProcessStartInfoProvider runProcessStartInfoProvider,
         ILogger logger)
     {
         _constructArgs = constructArgs;
         _processRunner = processRunner;
-        _formatter = formatter;
+        _runProcessStartInfoProvider = runProcessStartInfoProvider;
         _logger = logger;
     }
 
@@ -48,7 +48,7 @@ public class GitPatcherRunner : IGitPatcherRunner
         var args = _constructArgs.Construct(settings);
 
         var exitCode = await _processRunner.RunWithCapture(
-            new ProcessStartInfo("dotnet", $"\"{meta.ExecutablePath}\" {_formatter.Format(args)}"),
+            _runProcessStartInfoProvider.GetStart(meta.ExecutablePath, args),
             capture,
             cancel: cancel).ConfigureAwait(false);
 
