@@ -2,6 +2,7 @@ using Autofac;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Reporters.Classifications;
 using Synthesis.Bethesda.GUI.ViewModels.Errors;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
@@ -12,13 +13,13 @@ namespace Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 public class ClassificationVmFactory : IClassificationVmFactory
 {
     /// <inheritdoc />
-    public object CreateVm(Execution.Reporters.ErrorClassification classification, ILifetimeScope scope)
+    public object CreateVm(Execution.Reporters.ErrorClassification classification, ILifetimeScope scope, PatcherVm? patcher = null)
     {
         // Wrap each error type with its corresponding VM for enhanced UI functionality
         return classification switch
         {
             TooManyMastersError tooManyMastersError =>
-                scope.Resolve<TooManyMastersErrorVm.Factory>()(tooManyMastersError),
+                scope.Resolve<TooManyMastersErrorVm.Factory>()(tooManyMastersError, patcher),
 
             ReferencedModMissingError referencedModMissingError =>
                 scope.Resolve<ReferencedModMissingErrorVm.Factory>()(referencedModMissingError),

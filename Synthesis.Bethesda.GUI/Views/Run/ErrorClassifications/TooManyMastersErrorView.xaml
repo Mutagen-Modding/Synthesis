@@ -11,6 +11,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <!-- Error Type Header -->
@@ -54,6 +55,53 @@
                       FontSize="14"
                       Foreground="White"
                       Margin="0,0,0,0" />
+        </StackPanel>
+
+        <!-- Old Patcher Warning Section (visible only if ShowOldPatcherWarning is true) -->
+        <StackPanel Grid.Row="3"
+                    Margin="0,0,0,10"
+                    Visibility="{Binding ShowOldPatcherWarning, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Text="Older Patcher Detected"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource SalmonBrush}"
+                       Margin="0,0,0,5" />
+
+            <TextBlock FontSize="14"
+                       TextWrapping="Wrap"
+                       Foreground="White"
+                       Margin="0,0,0,10">
+                <Run>This patcher is using Synthesis version</Run>
+                <Run Text="{Binding PatcherSynthesisVersion, Mode=OneWay}" FontWeight="Bold" />
+                <Run>, which does not support the split masters feature (requires v0.36.0+).</Run>
+            </TextBlock>
+
+            <TextBlock Text="To resolve this issue:"
+                       FontSize="14"
+                       Foreground="White"
+                       Margin="0,0,0,5" />
+
+            <TextBlock FontSize="14"
+                       TextWrapping="Wrap"
+                       Foreground="LightGray"
+                       Margin="10,0,0,5">
+                <Run FontWeight="Bold">1.</Run>
+                <Run>Move this patcher earlier in your group - Place it before patchers that might cause the master count to exceed the limit.</Run>
+            </TextBlock>
+
+            <TextBlock FontSize="14"
+                       TextWrapping="Wrap"
+                       Foreground="LightGray"
+                       Margin="10,0,0,10">
+                <Run FontWeight="Bold">2.</Run>
+                <Run>Upgrade the patcher to use the latest Synthesis version.</Run>
+            </TextBlock>
+
+            <Button Content="Learn More About Versioning"
+                    Command="{Binding VersioningDocsCommand}"
+                    HorizontalAlignment="Left"
+                    Padding="10,5"
+                    Margin="0,0,0,0" />
         </StackPanel>
     </Grid>
 </UserControl>

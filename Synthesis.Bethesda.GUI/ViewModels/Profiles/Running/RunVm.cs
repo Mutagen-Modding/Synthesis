@@ -157,7 +157,10 @@ public class RunVm : ViewModel
                 // Set the error classification if present, wrapping it with a VM if needed
                 if (i.data.Classification != null)
                 {
-                    vm.ErrorClassification = _classificationVmFactory.CreateVm(i.data.Classification, _scope);
+                    vm.ErrorClassification = _classificationVmFactory.CreateVm(
+                        i.data.Classification,
+                        _scope,
+                        vm.PatcherSourceVm);
                 }
                 runDisplayControllerVm.SelectedObject = vm;
             })

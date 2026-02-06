@@ -19,6 +19,7 @@ public class PatcherRunVm : ViewModel, IRunItem
     public Guid InternalID { get; }
     public IPatcherPrepAndRun Run { get; }
     public ViewModel SourceVm { get; }
+    public PatcherVm PatcherSourceVm { get; }
 
     [Reactive]
     public GetResponse<RunState> State { get; set; } = GetResponse<RunState>.Succeed(RunState.NotStarted);
@@ -56,6 +57,7 @@ public class PatcherRunVm : ViewModel, IRunItem
         InternalID = sourcePatcherVm.InternalID;
         Run = run;
         SourceVm = sourcePatcherVm;
+        PatcherSourceVm = sourcePatcherVm;
 
         Observable.Merge(
                 loggerWrapper.Events
