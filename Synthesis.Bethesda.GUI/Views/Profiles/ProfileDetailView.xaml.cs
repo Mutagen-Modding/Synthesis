@@ -201,6 +201,13 @@ public partial class ProfileDetailView
             this.Bind(ViewModel, x => x.Profile!.SplitIfMaxMastersExceeded, x => x.SplitIfMaxMastersExceededCheckbox.IsChecked)
                 .DisposeWith(disposable);
 
+            this.Bind(ViewModel, x => x.Profile!.UpdateLoadOrderAfterRun, x => x.UpdateLoadOrderAfterRunCheckbox.IsChecked)
+                .DisposeWith(disposable);
+
+            this.WhenAnyValue(x => x.ViewModel!.Profile!.SplitIfMaxMastersExceeded)
+                .BindTo(this, x => x.UpdateLoadOrderAfterRunCheckbox.IsEnabled)
+                .DisposeWith(disposable);
+
             // Documentation links
             this.WhenAnyValue(x => x.ViewModel!.Profile!.OpenPatchSettingsDocsCommand)
                 .BindTo(this, x => x.PatchSettingsDocsButton.Command)

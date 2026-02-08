@@ -67,6 +67,7 @@ public class RunPatcherPipeline
                     Master: profile.ExportAsMasterFiles,
                     MasterStyleFallbackEnabled: profile.MasterStyleFallbackEnabled,
                     MasterStyle: profile.MasterStyle,
-                    SplitIfMaxMastersExceeded: profile.SplitIfMaxMastersExceeded)).ConfigureAwait(false);
+                    SplitIfMaxMastersExceeded: profile.SplitIfMaxMastersExceeded,
+                    UpdateLoadOrderAfterRun: profile.UpdateLoadOrderAfterRun)).ConfigureAwait(false);
     }
 }

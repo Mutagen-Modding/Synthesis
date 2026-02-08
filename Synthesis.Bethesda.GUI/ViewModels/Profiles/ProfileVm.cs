@@ -143,6 +143,9 @@ public class ProfileVm : ViewModel
     [Reactive]
     public bool SplitIfMaxMastersExceeded { get; set; }
 
+    [Reactive]
+    public bool UpdateLoadOrderAfterRun { get; set; }
+
     public ProfileVm(
         ILifetimeScope scope,
         IPatcherInitializationVm initVm,
@@ -486,7 +489,8 @@ public class ProfileVm : ViewModel
             UseUtf8ForEmbeddedStrings = UseUtf8InEmbedded,
             FormIDRangeMode = FormIDRangeMode,
             HeaderVersionOverride = HeaderVersionOverride,
-            SplitIfMaxMastersExceeded = SplitIfMaxMastersExceeded
+            SplitIfMaxMastersExceeded = SplitIfMaxMastersExceeded,
+            UpdateLoadOrderAfterRun = UpdateLoadOrderAfterRun
         };
     }
 

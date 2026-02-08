@@ -71,6 +71,7 @@ public class ProfileFactory : IProfileFactory
         profile.MasterStyleFallbackEnabled = settings.MasterStyleFallbackEnabled;
         profile.MasterStyle = settings.MasterStyle;
         profile.SplitIfMaxMastersExceeded = settings.SplitIfMaxMastersExceeded;
+        profile.UpdateLoadOrderAfterRun = settings.UpdateLoadOrderAfterRun;
 
         profile.Groups.AddRange(settings.Groups.Select(x => factory.Get(x)));
 

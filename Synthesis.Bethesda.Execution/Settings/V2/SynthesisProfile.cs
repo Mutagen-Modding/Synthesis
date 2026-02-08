@@ -34,5 +34,6 @@ public class SynthesisProfile : ISynthesisProfileSettings
     public bool MasterStyleFallbackEnabled { get; set; }
     public MasterStyle MasterStyle { get; set; }
     public bool SplitIfMaxMastersExceeded { get; set; } = true;
+    public bool UpdateLoadOrderAfterRun { get; set; } = true;
     string IProfileNameProvider.Name => Nickname;
 }

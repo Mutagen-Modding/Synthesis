@@ -1,4 +1,5 @@
 ﻿using System.IO.Abstractions;
+using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.IO.DI;
 using Noggog;
 using Synthesis.Bethesda.Execution.Profile.Services;
@@ -8,7 +9,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner;
 
 public interface IMoveFinalResults
 {
-    void Move(
+    IReadOnlyList<ModKey> Move(
         FilePath finalPatch,
         DirectoryPath outputPath);
 }
@@ -35,7 +36,7 @@ public class MoveFinalResults : IMoveFinalResults
         FileSystem = fileSystem;
     }
 
-    public void Move(
+    public IReadOnlyList<ModKey> Move(
         FilePath finalPatch,
         DirectoryPath outputPath)
     {
@@ -49,8 +50,10 @@ public class MoveFinalResults : IMoveFinalResults
             FileSystem.Directory.CreateDirectory(outputPath);
         }
 
+        var associatedFiles = _associatedFilesLocator.GetAssociatedFiles(finalPatch).ToList();
+
         _reporter.WriteOverall("Files to export:");
-        foreach (var file in _associatedFilesLocator.GetAssociatedFiles(finalPatch))
+        foreach (var file in associatedFiles)
         {
             _reporter.WriteOverall($"   {file.GetRelativePathTo(finalPatch.Directory!.Value)}");
         }
@@ -59,5 +62,11 @@ public class MoveFinalResults : IMoveFinalResults
         _reporter.WriteOverall($"Exported patch to workspace: {workspaceOutput}");
         _modFilesMover.CopyModTo(finalPatch, outputPath, overwrite: true);
         _reporter.WriteOverall($"Exported patch to final destination: {outputPath.Path}");
+
+        // Return the ModKeys for the plugin files that were moved
+        return associatedFiles
+            .Select(f => (FileName?)f.Name)
+            .SelectWhere<FileName?, ModKey>(ModKey.TryFromFileName)
+            .ToList();
     }
 }

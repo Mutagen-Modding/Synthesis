@@ -319,6 +319,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0" Margin="0,16,0,0">
                             <Grid.ColumnDefinitions>
@@ -343,6 +344,11 @@
                                   Margin="10,8,0,0"
                                   Content="Split Files if Max Masters Exceeded"
                                   ToolTip="Whether to split output files when the maximum number of masters is exceeded" />
+                        <CheckBox Grid.Row="2"
+                                  x:Name="UpdateLoadOrderAfterRunCheckbox"
+                                  Margin="30,8,0,0"
+                                  Content="Update Load Order After Run"
+                                  ToolTip="Update Plugins.txt with the current set of output files after a successful run" />
                     </Grid>
                     <Grid Grid.Row="5">
                         <Grid.RowDefinitions>

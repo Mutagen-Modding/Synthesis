@@ -15,4 +15,5 @@ public record RunParameters(
     bool Master,
     bool MasterStyleFallbackEnabled,
     MasterStyle MasterStyle,
-    bool SplitIfMaxMastersExceeded);
+    bool SplitIfMaxMastersExceeded,
+    bool UpdateLoadOrderAfterRun);
