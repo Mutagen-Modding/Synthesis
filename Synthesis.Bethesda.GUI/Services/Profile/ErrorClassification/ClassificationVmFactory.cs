@@ -36,6 +36,12 @@ public class ClassificationVmFactory : IClassificationVmFactory
             Mo2BuildBlockedErrorClassification mo2BuildBlockedError =>
                 scope.Resolve<Mo2BuildBlockedErrorVm.Factory>()(mo2BuildBlockedError),
 
+            MissingModsErrorClassification missingModsError =>
+                scope.Resolve<MissingModsErrorVm.Factory>()(missingModsError),
+
+            NonAdjacentSplitModsErrorClassification nonAdjacentSplitModsError =>
+                scope.Resolve<NonAdjacentSplitModsErrorVm.Factory>()(nonAdjacentSplitModsError),
+
             // For unrecognized error types, return the classification as-is
             _ => classification
         };

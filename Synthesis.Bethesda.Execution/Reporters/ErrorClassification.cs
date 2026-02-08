@@ -19,4 +19,11 @@ public abstract class ErrorClassification
     /// Optional URL to a discussion or documentation page for more information
     /// </summary>
     public virtual string? DiscussionLink => null;
+
+    /// <summary>
+    /// Logs classification-specific details for CLI output.
+    /// Override in subclasses to provide custom logging.
+    /// </summary>
+    /// <param name="log">Action to log a message</param>
+    public virtual void LogCliDetails(Action<string> log) { }
 }

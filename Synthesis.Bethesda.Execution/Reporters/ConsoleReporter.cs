@@ -2,6 +2,7 @@ using Noggog;
 using Serilog;
 using System.Diagnostics.CodeAnalysis;
 using Synthesis.Bethesda.Execution.Exceptions;
+using Synthesis.Bethesda.Execution.Reporters.Classifications;
 using Mutagen.Bethesda.Plugins.Order;
 
 namespace Synthesis.Bethesda.Execution.Reporters;
@@ -42,13 +43,7 @@ public class ConsoleReporter : IRunReporter
         var classification = _errorClassifier.Classify(ex);
         if (classification != null)
         {
-            _logger.Error("Error detected: {ErrorType}", classification.ErrorType);
-            _logger.Error("{Message}", classification.Message);
-
-            if (!string.IsNullOrWhiteSpace(classification.DiscussionLink))
-            {
-                _logger.Error("Read more: {DiscussionLink}", classification.DiscussionLink);
-            }
+            LogClassification(classification);
 
             throw new ClassifiedErrorException(ex);
         }
@@ -71,16 +66,21 @@ public class ConsoleReporter : IRunReporter
                 _logger.Error(ex, $"[{name}] Run error:");
             }
 
-            // Also log via ILogger so tests can capture it
-            _logger.Error("Error detected: {ErrorType}", classification.ErrorType);
-            _logger.Error("{Message}", classification.Message);
-
-            if (!string.IsNullOrWhiteSpace(classification.DiscussionLink))
-            {
-                _logger.Error("Read more: {DiscussionLink}", classification.DiscussionLink);
-            }
+            LogClassification(classification);
 
             throw new ClassifiedErrorException(ex);
+        }
+    }
+
+    private void LogClassification(ErrorClassification classification)
+    {
+        _logger.Error("Error detected: {ErrorType}", classification.ErrorType);
+        _logger.Error("{Message}", classification.Message);
+        classification.LogCliDetails(msg => _logger.Error("{Message}", msg));
+
+        if (!string.IsNullOrWhiteSpace(classification.DiscussionLink))
+        {
+            _logger.Error("Read more: {DiscussionLink}", classification.DiscussionLink);
         }
     }
 

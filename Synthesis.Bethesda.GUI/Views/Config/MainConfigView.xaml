@@ -12,6 +12,8 @@
     xmlns:topLevel="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel"
     xmlns:wpf="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
     xmlns:top="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Top"
+    xmlns:errors="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Errors"
+    xmlns:errorViews="clr-namespace:Synthesis.Bethesda.GUI.Views.ErrorClassifications"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -297,6 +299,12 @@
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type running:ErrorVM}">
                     <local:ErrorView Margin="15,15,15,0" />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type errors:MissingModsErrorVm}">
+                    <errorViews:MissingModsErrorView Margin="15,15,15,0" />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type errors:NonAdjacentSplitModsErrorVm}">
+                    <errorViews:NonAdjacentSplitModsErrorView Margin="15,15,15,0" />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type groups:GroupVm}">
                     <local:GroupConfigView Margin="9,11,15,0" />

@@ -11,16 +11,34 @@ public class NonAdjacentSplitModsErrorClassification : ErrorClassification
 
     public ModKey BaseModKey { get; }
     public IReadOnlyList<ModKey> SplitModKeys { get; }
+    public IReadOnlyList<ModKey> LoadOrder { get; }
 
-    public NonAdjacentSplitModsErrorClassification(ModKey baseModKey, IReadOnlyList<ModKey> splitModKeys)
+    public NonAdjacentSplitModsErrorClassification(ModKey baseModKey, IReadOnlyList<ModKey> splitModKeys, IReadOnlyList<ModKey> loadOrder)
     {
         BaseModKey = baseModKey;
         SplitModKeys = splitModKeys;
+        LoadOrder = loadOrder;
     }
 
     public override string ErrorType => ErrorTypeString;
 
-    public override string Message => $"Split mod files for '{BaseModKey}' must be adjacent in the load order.\n\n" +
-                                      $"Found split files: {string.Join(", ", SplitModKeys)}\n\n" +
-                                      "Please ensure all split files are consecutive in your plugins.txt with no other mods between them.";
+    public override string Message => "Please ensure all split files are consecutive in your plugins.txt with no other mods between them.";
+
+    public override void LogCliDetails(Action<string> log)
+    {
+        log($"Base mod: {BaseModKey}");
+        log("Split files that must be adjacent:");
+        foreach (var mod in SplitModKeys)
+        {
+            log($"  - {mod}");
+        }
+        if (LoadOrder.Count > 0)
+        {
+            log("Load order at time of error:");
+            foreach (var mod in LoadOrder)
+            {
+                log($"  - {mod}");
+            }
+        }
+    }
 }

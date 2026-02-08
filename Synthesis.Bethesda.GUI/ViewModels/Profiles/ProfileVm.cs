@@ -32,6 +32,8 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
+using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
+using Synthesis.Bethesda.Execution.Reporters.Classifications;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles;
 
@@ -39,6 +41,7 @@ public class ProfileVm : ViewModel
 {
     private readonly StartRun _startRun;
     private readonly ILogger _logger;
+    private readonly IClassificationVmFactory _classificationVmFactory;
 
     public GameRelease Release { get; }
 
@@ -161,9 +164,11 @@ public class ProfileVm : ViewModel
         AddGitPatcherResponder addGitPatcherResponder,
         INavigateTo navigateTo,
         ISchedulerProvider schedulerProvider,
-        ILogger logger)
+        ILogger logger,
+        IClassificationVmFactory classificationVmFactory)
     {
         Scope = scope;
+        _classificationVmFactory = classificationVmFactory;
         Init = initVm;
         OverallErrorVm = overallErrorVm;
         NameVm = nameProvider;
@@ -223,21 +228,29 @@ public class ProfileVm : ViewModel
                     .QueryWhenChanged(q => SplitModsAdjacencyValidator.ValidateLoadOrder(q.Select(x => x.ModKey).ToList()))
                     .StartWith(new SplitModsValidationResult(false, null, null))
                     .Throttle(TimeSpan.FromMilliseconds(200), schedulerProvider.MainThread),
-                (dataFolder, loadOrder, missingMods, ignoreMissingMods, splitModsValidation) =>
+                LoadOrder.Connect()
+                    .QueryWhenChanged(q => q.ToList())
+                    .StartWith(Array.Empty<ReadOnlyModListingVM>().ToList()),
+                (dataFolder, loadOrderState, missingMods, ignoreMissingMods, splitModsValidation, fullLoadOrder) =>
                 {
                     if (!dataFolder.Succeeded) return GetResponse<ViewModel>.Fail(reason: $"DataFolder: {dataFolder.Reason}");
-                    if (!loadOrder.Succeeded) return GetResponse<ViewModel>.Fail(reason: $"LoadOrder: {dataFolder.Reason}");
+                    if (!loadOrderState.Succeeded) return GetResponse<ViewModel>.Fail(reason: $"LoadOrder: {dataFolder.Reason}");
                     if (!ignoreMissingMods && missingMods.Count > 0)
                     {
-                        return GetResponse<ViewModel>.Fail(
-                            $"Load order had mods that were missing:{Environment.NewLine}{string.Join(Environment.NewLine, missingMods.Select(x => x.ModKey))}");
+                        var missingModKeys = missingMods.Select(x => x.ModKey).ToList();
+                        var classification = new MissingModsErrorClassification(missingModKeys);
+                        var vm = _classificationVmFactory.CreateVm(classification, Scope);
+                        return GetResponse<ViewModel>.Fail((ViewModel)vm, classification.Message);
                     }
                     if (splitModsValidation.HasError)
                     {
-                        var modNames = string.Join(", ", splitModsValidation.AllModKeys!.Select(m => m.FileName));
-                        return GetResponse<ViewModel>.Fail(
-                            $"Split mods for '{splitModsValidation.BaseModKey!.Value.FileName}' are not adjacent in the load order. " +
-                            $"The following mods must be placed next to each other: {modNames}");
+                        var loadOrderModKeys = fullLoadOrder.Select(x => x.ModKey).ToList();
+                        var classification = new NonAdjacentSplitModsErrorClassification(
+                            splitModsValidation.BaseModKey!.Value,
+                            splitModsValidation.AllModKeys!.ToList(),
+                            loadOrderModKeys);
+                        var vm = _classificationVmFactory.CreateVm(classification, Scope);
+                        return GetResponse<ViewModel>.Fail((ViewModel)vm, classification.Message);
                     }
 
                     return GetResponse<ViewModel>.Succeed(null!);
