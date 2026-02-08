@@ -1,4 +1,5 @@
 ﻿using System.IO.Abstractions;
+using Mutagen.Bethesda.Plugins.IO.DI;
 using Noggog;
 using Synthesis.Bethesda.Execution.Profile.Services;
 using Synthesis.Bethesda.Execution.Reporters;
@@ -15,19 +16,25 @@ public interface IMoveFinalResults
 public class MoveFinalResults : IMoveFinalResults
 {
     private readonly IRunReporter _reporter;
+    private readonly IModFilesMover _modFilesMover;
+    private readonly IAssociatedFilesLocator _associatedFilesLocator;
     public IProfileDirectories ProfileDirectories { get; }
     public IFileSystem FileSystem { get; }
 
     public MoveFinalResults(
         IRunReporter reporter,
         IProfileDirectories profileProfileDirectories,
-        IFileSystem fileSystem)
+        IFileSystem fileSystem,
+        IModFilesMover modFilesMover,
+        IAssociatedFilesLocator associatedFilesLocator)
     {
         _reporter = reporter;
+        _modFilesMover = modFilesMover;
+        _associatedFilesLocator = associatedFilesLocator;
         ProfileDirectories = profileProfileDirectories;
         FileSystem = fileSystem;
     }
-        
+
     public void Move(
         FilePath finalPatch,
         DirectoryPath outputPath)
@@ -37,18 +44,20 @@ public class MoveFinalResults : IMoveFinalResults
         {
             FileSystem.Directory.CreateDirectory(workspaceOutput);
         }
-            
-        var finalPatchFolder = finalPatch.Directory!;
-            
-        _reporter.WriteOverall("Files to export:");
-        foreach (var file in finalPatchFolder.Value.EnumerateFiles(true, fileSystem: FileSystem))
+        if (!FileSystem.Directory.Exists(outputPath))
         {
-            _reporter.WriteOverall($"   {file.GetRelativePathTo(finalPatchFolder.Value)}");
+            FileSystem.Directory.CreateDirectory(outputPath);
         }
-            
-        FileSystem.Directory.DeepCopy(finalPatchFolder.Value.Path, workspaceOutput);
+
+        _reporter.WriteOverall("Files to export:");
+        foreach (var file in _associatedFilesLocator.GetAssociatedFiles(finalPatch))
+        {
+            _reporter.WriteOverall($"   {file.GetRelativePathTo(finalPatch.Directory!.Value)}");
+        }
+
+        _modFilesMover.CopyModTo(finalPatch, workspaceOutput, overwrite: true);
         _reporter.WriteOverall($"Exported patch to workspace: {workspaceOutput}");
-        FileSystem.Directory.DeepCopy(finalPatchFolder.Value.Path, outputPath.Path, overwrite: true);
+        _modFilesMover.CopyModTo(finalPatch, outputPath, overwrite: true);
         _reporter.WriteOverall($"Exported patch to final destination: {outputPath.Path}");
     }
 }
