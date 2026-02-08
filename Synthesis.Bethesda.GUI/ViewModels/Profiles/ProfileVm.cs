@@ -20,6 +20,7 @@ using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Profile.Services;
+using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.GUI.Services.Main;
@@ -218,7 +219,11 @@ public class ProfileVm : ViewModel
                     .StartWith(Array.Empty<ReadOnlyModListingVM>())
                     .Throttle(TimeSpan.FromMilliseconds(200), schedulerProvider.MainThread),
                 this.WhenAnyValue(x => x.IgnoreMissingMods),
-                (dataFolder, loadOrder, missingMods, ignoreMissingMods) =>
+                LoadOrder.Connect()
+                    .QueryWhenChanged(q => SplitModsAdjacencyValidator.ValidateLoadOrder(q.Select(x => x.ModKey).ToList()))
+                    .StartWith(new SplitModsValidationResult(false, null, null))
+                    .Throttle(TimeSpan.FromMilliseconds(200), schedulerProvider.MainThread),
+                (dataFolder, loadOrder, missingMods, ignoreMissingMods, splitModsValidation) =>
                 {
                     if (!dataFolder.Succeeded) return GetResponse<ViewModel>.Fail(reason: $"DataFolder: {dataFolder.Reason}");
                     if (!loadOrder.Succeeded) return GetResponse<ViewModel>.Fail(reason: $"LoadOrder: {dataFolder.Reason}");
@@ -226,6 +231,13 @@ public class ProfileVm : ViewModel
                     {
                         return GetResponse<ViewModel>.Fail(
                             $"Load order had mods that were missing:{Environment.NewLine}{string.Join(Environment.NewLine, missingMods.Select(x => x.ModKey))}");
+                    }
+                    if (splitModsValidation.HasError)
+                    {
+                        var modNames = string.Join(", ", splitModsValidation.AllModKeys!.Select(m => m.FileName));
+                        return GetResponse<ViewModel>.Fail(
+                            $"Split mods for '{splitModsValidation.BaseModKey!.Value.FileName}' are not adjacent in the load order. " +
+                            $"The following mods must be placed next to each other: {modNames}");
                     }
 
                     return GetResponse<ViewModel>.Succeed(null!);
