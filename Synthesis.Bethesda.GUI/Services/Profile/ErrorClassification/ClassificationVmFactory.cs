@@ -42,6 +42,9 @@ public class ClassificationVmFactory : IClassificationVmFactory
             NonAdjacentSplitModsErrorClassification nonAdjacentSplitModsError =>
                 scope.Resolve<NonAdjacentSplitModsErrorVm.Factory>()(nonAdjacentSplitModsError),
 
+            OutputFileLockedErrorClassification outputFileLockedError =>
+                scope.Resolve<OutputFileLockedErrorVm.Factory>()(outputFileLockedError),
+
             // For unrecognized error types, return the classification as-is
             _ => classification
         };

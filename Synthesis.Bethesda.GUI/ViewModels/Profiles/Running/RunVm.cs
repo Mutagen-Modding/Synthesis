@@ -13,6 +13,7 @@ using Serilog;
 using Synthesis.Bethesda.Execution;
 using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Reporters;
+using Synthesis.Bethesda.Execution.Reporters.Classifications;
 using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 using Synthesis.Bethesda.GUI.Services.Profile.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
@@ -27,6 +28,7 @@ public class RunVm : ViewModel
     private readonly IExecuteGuiRun _executeRun;
     private readonly ISchedulerProvider _schedulerProvider;
     private readonly IClassificationVmFactory _classificationVmFactory;
+    private readonly IErrorClassifier _errorClassifier;
     private readonly ILifetimeScope _scope;
     public RunDisplayControllerVm RunDisplayControllerVm { get; }
     public IRunReporter Reporter { get; }
@@ -38,6 +40,9 @@ public class RunVm : ViewModel
 
     [Reactive]
     public Exception? ResultError { get; private set; }
+
+    [Reactive]
+    public object? ResultErrorClassification { get; private set; }
 
     [Reactive]
     public bool Running { get; private set; } = true;
@@ -68,6 +73,7 @@ public class RunVm : ViewModel
         IExecuteGuiRun executeRun,
         ISchedulerProvider schedulerProvider,
         IClassificationVmFactory classificationVmFactory,
+        IErrorClassifier errorClassifier,
         ILifetimeScope scope,
         IEnumerable<GroupVm> groups,
         ProfileVm profile)
@@ -76,6 +82,7 @@ public class RunVm : ViewModel
         _executeRun = executeRun;
         _schedulerProvider = schedulerProvider;
         _classificationVmFactory = classificationVmFactory;
+        _errorClassifier = errorClassifier;
         _scope = scope;
         RunDisplayControllerVm = runDisplayControllerVm;
         Reporter = reporter;
@@ -122,14 +129,20 @@ public class RunVm : ViewModel
             .Subscribe(ex =>
             {
                 ResultError = ex;
-            })
-            .DisposeWith(this);
-        reporterWatcher.Exceptions
-            .Do(ex => logger.Error(ex, "Error while running patcher pipeline"))
-            .ObserveOn(schedulerProvider.MainThread)
-            .Subscribe(ex =>
-            {
-                ResultError = ex;
+                var classification = _errorClassifier.Classify(ex);
+                if (classification != null)
+                {
+                    ResultErrorClassification = _classificationVmFactory.CreateVm(
+                        classification,
+                        _scope,
+                        patcher: null);
+                }
+                else
+                {
+                    ResultErrorClassification = null;
+                }
+                // Auto-show the error immediately
+                ShowOverallErrorCommand.Execute().Subscribe();
             })
             .DisposeWith(this);
         reporterWatcher.PrepProblem
@@ -212,7 +225,12 @@ public class RunVm : ViewModel
                 runDisplayControllerVm.WhenAnyValue(x => x.SelectedObject)
                     .Select(i => i as object),
                 this.ShowOverallErrorCommand.EndingExecution()
-                    .Select(_ => ResultError == null ? null : new ErrorVM("Patching Error", ResultError.ToString())))
+                    .Select(_ =>
+                    {
+                        if (ResultError == null) return null;
+                        // Use classified error view if available, otherwise fall back to raw error display
+                        return ResultErrorClassification ?? (object)new ErrorVM("Patching Error", ResultError.ToString());
+                    }))
             .ToGuiProperty(this, nameof(DetailDisplay), default, schedulerProvider.MainThread, deferSubscription: true);
     }
 
