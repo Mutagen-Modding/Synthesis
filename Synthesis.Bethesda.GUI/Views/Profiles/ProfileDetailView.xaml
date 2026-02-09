@@ -123,18 +123,15 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0"
+                        <TextBlock Grid.Row="0"
                                    Margin="0,8,0,0"
                                    Style="{StaticResource SettingSectionHeaderStyle}"
                                    Text="Nuget Versions" />
-                        <local:NugetsVersioningView Grid.Row="1" Grid.Column="0"
-                                                    x:Name="Nugets"
-                                                    Margin="10,8,0,0" />
-                        <StackPanel Grid.Row="2" Grid.Column="0"
+                        <local:ProfileNugetsVersioningView Grid.Row="1"
+                                                          x:Name="Nugets"
+                                                          DataContext="{Binding Profile}"
+                                                          Margin="10,8,0,0" />
+                        <StackPanel Grid.Row="2"
                                     x:Name="ResetVersioningGrid"
                                     Margin="15,5,5,5"
                                     Orientation="Horizontal">
@@ -150,45 +147,6 @@
                                 Reset Patchers to Profile
                             </Button>
                         </StackPanel>
-                        <ToggleButton Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
-                                      x:Name="LockToCurrentVersioning"
-                                      Margin="5,0,0,0"
-                                      VerticalAlignment="Center"
-                                      ToolTip="Will disable all interaction with versioning systems, to help keep everything in its current state">
-                            <ToggleButton.Style>
-                                <Style TargetType="ToggleButton" BasedOn="{StaticResource BaseToggleButtonStyle}">
-                                    <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray4}"></Setter>
-                                    <Setter Property="Content">
-                                        <Setter.Value>
-                                            <icon:PackIconFontAwesome Kind="UnlockKeyholeSolid"
-                                                                      Width="20"
-                                                                      Height="20"
-                                                                      VerticalAlignment="Center" />
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsChecked" Value="True">
-                                            <Setter Property="Content">
-                                                <Setter.Value>
-                                                    <icon:PackIconFontAwesome Kind="LockSolid"
-                                                                              Width="20"
-                                                                              Height="20"
-                                                                              VerticalAlignment="Center" />
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Trigger>
-                                        <MultiTrigger>
-                                            <MultiTrigger.Conditions>
-                                                <Condition Property="IsMouseOver" Value="False" />
-                                                <Condition Property="IsChecked" Value="True" />
-                                            </MultiTrigger.Conditions>
-                                            <Setter Property="Foreground"
-                                                    Value="{DynamicResource MahApps.Brushes.ThemeForeground}" />
-                                        </MultiTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ToggleButton.Style>
-                        </ToggleButton>
                     </Grid>
                     <Grid Grid.Row="1">
                         <Grid.RowDefinitions>

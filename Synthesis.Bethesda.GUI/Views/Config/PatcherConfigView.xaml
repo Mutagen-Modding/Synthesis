@@ -110,6 +110,11 @@
                     <errorViews:Mo2BuildBlockedErrorView />
                 </DataTemplate>
 
+                <!-- Specific view for LibraryVersionMismatchErrorVm -->
+                <DataTemplate DataType="{x:Type errorVms:LibraryVersionMismatchErrorVm}">
+                    <errorViews:LibraryVersionMismatchErrorView />
+                </DataTemplate>
+
                 <!-- Default view for all other error classifications -->
                 <DataTemplate DataType="{x:Type reporters:ErrorClassification}">
                     <errorViews:DefaultErrorClassificationView />

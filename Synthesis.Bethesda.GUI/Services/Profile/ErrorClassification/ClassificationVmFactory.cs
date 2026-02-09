@@ -45,6 +45,9 @@ public class ClassificationVmFactory : IClassificationVmFactory
             OutputFileLockedErrorClassification outputFileLockedError =>
                 scope.Resolve<OutputFileLockedErrorVm.Factory>()(outputFileLockedError),
 
+            LibraryVersionMismatchErrorClassification libraryVersionMismatchError =>
+                scope.Resolve<LibraryVersionMismatchErrorVm.Factory>()(libraryVersionMismatchError, patcher),
+
             // For unrecognized error types, return the classification as-is
             _ => classification
         };
