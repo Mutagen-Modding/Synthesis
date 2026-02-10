@@ -64,7 +64,7 @@ public class PrepareGitPatcherForCli
             var compileResult = await _gitPatcherCompilation.Compile(repoInfo, dotNetVersion, cancel);
             if (compileResult.Failed)
             {
-                throw new InvalidOperationException($"Failed to compile Git patcher: {compileResult.Reason}");
+                throw new SynthesisBuildFailure(compileResult.Reason);
             }
 
             _logger.Information("Git patcher compilation completed successfully");

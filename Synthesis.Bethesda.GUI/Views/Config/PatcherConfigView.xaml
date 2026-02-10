@@ -115,6 +115,11 @@
                     <errorViews:LibraryVersionMismatchErrorView />
                 </DataTemplate>
 
+                <!-- Specific view for CompilationErrorVm -->
+                <DataTemplate DataType="{x:Type errorVms:CompilationErrorVm}">
+                    <errorViews:CompilationErrorView />
+                </DataTemplate>
+
                 <!-- Default view for all other error classifications -->
                 <DataTemplate DataType="{x:Type reporters:ErrorClassification}">
                     <errorViews:DefaultErrorClassificationView />

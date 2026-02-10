@@ -10,6 +10,7 @@ using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 using Synthesis.Bethesda.GUI.Services.Profile.Running;
+using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 
 namespace Synthesis.Bethesda.GUI.ViewModels;
@@ -86,7 +87,7 @@ public class ErrorDisplayVm : ViewModel
                     // If we have a classification, wrap it with a VM and display that instead
                     if (classification != null)
                     {
-                        _currentErrorObject = classificationVmFactory.CreateVm(classification, scope);
+                        _currentErrorObject = classificationVmFactory.CreateVm(classification, scope, parent as PatcherVm);
                         ErrorTitle = classification.ErrorType;
                     }
                     else

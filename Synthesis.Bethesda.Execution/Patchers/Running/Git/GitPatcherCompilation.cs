@@ -4,6 +4,7 @@ using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
 using Synthesis.Bethesda.Execution.DotNet.Dto;
+using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 
@@ -88,7 +89,7 @@ var meta = _metaFileReader.Read(info.MetaPath);
         }
 
         var resp = await _build.Compile(info.Project.ProjPath, cancel).ConfigureAwait(false);
-        if (resp.Failed) return resp.BubbleFailure<GitCompilationMeta>();
+        if (resp.Failed) return GetResponse<GitCompilationMeta>.Fail(default!, new SynthesisBuildFailure(resp.Reason));
 
         GitCompilationMeta compilationMeta;
         try

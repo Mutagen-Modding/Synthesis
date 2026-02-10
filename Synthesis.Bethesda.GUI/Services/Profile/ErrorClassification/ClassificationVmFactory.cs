@@ -48,6 +48,9 @@ public class ClassificationVmFactory : IClassificationVmFactory
             LibraryVersionMismatchErrorClassification libraryVersionMismatchError =>
                 scope.Resolve<LibraryVersionMismatchErrorVm.Factory>()(libraryVersionMismatchError, patcher),
 
+            CompilationErrorClassification compilationError =>
+                scope.Resolve<CompilationErrorVm.Factory>()(compilationError, patcher),
+
             // For unrecognized error types, return the classification as-is
             _ => classification
         };
