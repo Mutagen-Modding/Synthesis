@@ -59,5 +59,25 @@ If you must use older patchers (< v0.36.0) alongside newer ones:
 3. **Place heavy patchers last**: Patchers that add many masters should come after old patchers
 4. This ensures old patchers run before split files are created
 
+---
+
+## Update Load Order After Run
+When split files are created, your `Plugins.txt` needs to be updated to include the new split files so that the game and other tools recognize them. This setting automates that process.
+
+**Default:** ON (enabled by default)
+
+After a successful run, Synthesis will update `Plugins.txt` to reflect the current set of output files:
+
+- **Adds** any new split files (e.g., `Patch_2.esp`, `Patch_3.esp`) that were created
+- **Removes** old split file entries that are no longer produced
+- **Preserves** the original position and enabled/disabled state of the base mod in the load order
+- New entries are inserted adjacent to the base mod entry so that split files remain consecutive
+
+### When to Disable
+You may want to turn this off if you manage your `Plugins.txt` manually or through another tool and don't want Synthesis modifying it.
+
+!!! note
+    This setting only takes effect when **Split Files if Max Masters Exceeded** is also enabled.
+
 ## Location in Settings
-This setting is found in the Profile settings under **Master Overflow Settings**, located near the FormID Persistence settings.
+These settings are found in the Profile settings under **Master Overflow Settings**, located near the FormID Persistence settings.
