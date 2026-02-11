@@ -17,6 +17,11 @@ public partial class CompilationErrorView
                 .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                 .BindTo(this, x => x.PatcherVersioningPanel.Visibility)
                 .DisposeWith(disposable);
+
+            this.WhenAnyValue(x => x.ViewModel!.CompilationText)
+                .Select(x => string.IsNullOrWhiteSpace(x) ? Visibility.Collapsed : Visibility.Visible)
+                .BindTo(this, x => x.CompilationTextPanel.Visibility)
+                .DisposeWith(disposable);
         });
     }
 }

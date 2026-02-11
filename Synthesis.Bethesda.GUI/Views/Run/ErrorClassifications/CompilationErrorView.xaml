@@ -18,6 +18,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <!-- Error Type Header -->
@@ -172,10 +173,40 @@
             <TextBlock Text="Patcher Versioning Settings"
                        FontSize="14"
                        FontWeight="SemiBold"
-                       Foreground="{StaticResource PurpleForegroundBrush}"
+                       Foreground="{StaticResource SalmonBrush}"
                        Margin="0,0,0,8" />
 
             <local:PatcherNugetsVersioningView DataContext="{Binding PatcherVm}" />
+        </StackPanel>
+
+        <!-- Compilation Error Text -->
+        <StackPanel x:Name="CompilationTextPanel" Grid.Row="5" Margin="0,15,0,0">
+            <TextBlock Text="Compilation Output"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource SalmonBrush}"
+                       Margin="0,0,0,8" />
+
+            <Border Background="#1E1E1E"
+                    BorderBrush="#333333"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="10"
+                    MaxHeight="300">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Auto">
+                    <TextBox x:Name="CompilationTextBox"
+                             Text="{Binding CompilationText, Mode=OneWay}"
+                             IsReadOnly="True"
+                             Background="Transparent"
+                             Foreground="#D4D4D4"
+                             BorderThickness="0"
+                             FontFamily="Consolas"
+                             FontSize="12"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True" />
+                </ScrollViewer>
+            </Border>
         </StackPanel>
     </Grid>
 </wpf:NoggogUserControl>

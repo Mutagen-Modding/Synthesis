@@ -28,6 +28,11 @@ public class CompilationErrorVm : ErrorClassificationVm
     public bool IsGitPatcher { get; }
 
     /// <summary>
+    /// The actual compilation error text from the build failure
+    /// </summary>
+    public string CompilationText { get; }
+
+    /// <summary>
     /// Sets both Mutagen and Synthesis versioning to Match
     /// </summary>
     public ICommand SetToMatchCommand { get; }
@@ -45,6 +50,7 @@ public class CompilationErrorVm : ErrorClassificationVm
     {
         PatcherVm = patcher;
         IsGitPatcher = patcher is GitPatcherVm;
+        CompilationText = error.CompilationText;
 
         var gitPatcher = patcher as GitPatcherVm;
 

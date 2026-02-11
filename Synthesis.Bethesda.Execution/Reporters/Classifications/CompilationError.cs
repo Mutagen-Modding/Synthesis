@@ -14,9 +14,9 @@ public class CompilationExceptionDetector : IExceptionClassificationDetector
         var current = exception;
         while (current != null)
         {
-            if (current is SynthesisBuildFailure)
+            if (current is SynthesisBuildFailure buildFailure)
             {
-                return new CompilationErrorClassification();
+                return new CompilationErrorClassification(buildFailure.Message);
             }
             current = current.InnerException;
         }
@@ -37,6 +37,13 @@ public class CompilationErrorClassification : ErrorClassification
         "patcher's code. Consider adjusting the versioning settings to target a version that the patcher " +
         "was built against, or opening an issue on the patcher's source code to nudge them to update.";
     public const string VersioningDocsLink = "https://mutagen-modding.github.io/Synthesis/Versioning/#recommended-setup";
+
+    public string CompilationText { get; }
+
+    public CompilationErrorClassification(string compilationText)
+    {
+        CompilationText = compilationText;
+    }
 
     public override string ErrorType => ErrorTypeString;
     public override string Message => SuggestionMessage;
