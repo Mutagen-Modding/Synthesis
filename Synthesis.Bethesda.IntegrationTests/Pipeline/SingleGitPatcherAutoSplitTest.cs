@@ -58,11 +58,10 @@ public abstract class SingleGitPatcherAutoSplitTest : IntegrationTest
         await AssertNoErrors();
 
         // Verify split files were created
-        var baseOutputPath = Path.Combine(DataFolder, $"{groupName}.esp");
-        var splitFile1Path = Path.Combine(DataFolder, $"{groupName}_1.esp");
+        // First split has no suffix (base name), second split is _2
+        var splitFile1Path = Path.Combine(DataFolder, $"{groupName}.esp");
         var splitFile2Path = Path.Combine(DataFolder, $"{groupName}_2.esp");
 
-        File.Exists(baseOutputPath).ShouldBeFalse("Base output file should not exist");
         File.Exists(splitFile1Path).ShouldBeTrue("First split file should exist");
         File.Exists(splitFile2Path).ShouldBeTrue("Second split file should exist");
 

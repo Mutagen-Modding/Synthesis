@@ -65,15 +65,14 @@ public abstract class TwoGitPatchersAutoSplitTest : IntegrationTest
         await AssertNoErrors();
 
         // Verify split files were created
-        var baseOutputPath = Path.Combine(DataFolder, $"{groupName}.esp");
-        var splitFile1Path = Path.Combine(DataFolder, $"{groupName}_1.esp");
+        // First split has no suffix (base name), second split is _2
+        var splitFile1Path = Path.Combine(DataFolder, $"{groupName}.esp");
         var splitFile2Path = Path.Combine(DataFolder, $"{groupName}_2.esp");
 
-        File.Exists(baseOutputPath).ShouldBeFalse("Base output file should not exist");
         File.Exists(splitFile1Path).ShouldBeTrue("First split file should exist");
         File.Exists(splitFile2Path).ShouldBeTrue("Second split file should exist");
 
-        // Verify the base file and split files can be loaded
+        // Verify the split files can be loaded
         using var split1Mod = SkyrimMod.CreateFromBinaryOverlay(splitFile1Path, SkyrimRelease.SkyrimSE);
         using var split2Mod = SkyrimMod.CreateFromBinaryOverlay(splitFile2Path, SkyrimRelease.SkyrimSE);
 

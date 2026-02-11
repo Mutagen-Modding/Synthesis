@@ -648,7 +648,7 @@ public class SynthesisPipeline
         if (prefs.NoPatch) return;
             
         System.Console.WriteLine($"Writing to output: {args.OutputPath}");
-        Directory.CreateDirectory(Path.GetDirectoryName(args.OutputPath)!);
+        fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(args.OutputPath)!);
 
         try
         {

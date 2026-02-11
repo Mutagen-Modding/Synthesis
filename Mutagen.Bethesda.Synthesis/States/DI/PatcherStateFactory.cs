@@ -291,9 +291,39 @@ public class PatcherStateFactory : IPatcherStateFactory
             {
                 var modPath = new ModPath(exportKey, settings.SourcePath!);
 
-                if (_fileSystem.File.Exists(modPath.Path))
+                // Check for split files first when enabled, since the base name
+                // file may itself be the first split file
+                if (settings.SplitIfMaxMastersExceeded)
                 {
-                    // Normal case - source file exists
+                    var sourceModKey = ModKey.FromFileName(Path.GetFileName(settings.SourcePath!));
+                    var sourceModPath = new ModPath(sourceModKey, settings.SourcePath!);
+
+                    if (MultiModFileAnalysis.IsMultiModFile(sourceModPath, fileSystem: _fileSystem))
+                    {
+                        patchMod = ImportAndMergeSplitFiles<TModSetter, TModGetter>(
+                            sourceModPath,
+                            exportKey,
+                            settings,
+                            stringReadParams);
+                    }
+                    else if (_fileSystem.File.Exists(modPath.Path))
+                    {
+                        patchMod = ModFactory<TModSetter>.Importer(
+                            modPath,
+                            settings.GameRelease,
+                            new BinaryReadParameters()
+                            {
+                                FileSystem = _fileSystem,
+                                StringsParam = stringReadParams
+                            });
+                    }
+                    else
+                    {
+                        throw new FileNotFoundException(modPath.Path);
+                    }
+                }
+                else if (_fileSystem.File.Exists(modPath.Path))
+                {
                     patchMod = ModFactory<TModSetter>.Importer(
                         modPath,
                         settings.GameRelease,
@@ -305,30 +335,7 @@ public class PatcherStateFactory : IPatcherStateFactory
                 }
                 else
                 {
-                    // Check for split files only if enabled
-                    if (settings.SplitIfMaxMastersExceeded)
-                    {
-                        var sourceModKey = ModKey.FromFileName(Path.GetFileName(settings.SourcePath!));
-                        var sourceModPath = new ModPath(sourceModKey, settings.SourcePath!);
-
-                        if (MultiModFileAnalysis.IsMultiModFile(sourceModPath, fileSystem: _fileSystem))
-                        {
-                            // Split files exist - read and merge them
-                            patchMod = ImportAndMergeSplitFiles<TModSetter, TModGetter>(
-                                sourceModPath,
-                                exportKey,
-                                settings,
-                                stringReadParams);
-                        }
-                        else
-                        {
-                            throw new FileNotFoundException(modPath.Path);
-                        }
-                    }
-                    else
-                    {
-                        throw new FileNotFoundException(modPath.Path);
-                    }
+                    throw new FileNotFoundException(modPath.Path);
                 }
             }
             if (settings.PersistencePath is not null && settings.PatcherName is not null)

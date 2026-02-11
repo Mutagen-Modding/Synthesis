@@ -689,10 +689,11 @@ public class SynthesisPipelineTests
             .Run(runArgs, fileSystem);
 
         // Verify multiple output files were created
+        // First split has no suffix (base name), second split is _2
         var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(outputModKey.FileName);
         var extension = Path.GetExtension(outputModKey.FileName);
 
-        var splitFile1 = Path.Combine(outputPath, $"{fileNameWithoutExtension}_1{extension}");
+        var splitFile1 = Path.Combine(outputPath, $"{fileNameWithoutExtension}{extension}");
         var splitFile2 = Path.Combine(outputPath, $"{fileNameWithoutExtension}_2{extension}");
 
         fileSystem.File.Exists(splitFile1).ShouldBeTrue($"Expected split file 1 to exist: {splitFile1}");
@@ -783,7 +784,8 @@ public class SynthesisPipelineTests
         }
         expectedFormLists.Add((formList1.EditorID, items1));
 
-        var splitFile1Path = Path.Combine(dataFolder, $"{sourceModKey.Name}_1{Path.GetExtension(sourceModKey.FileName)}");
+        // First split file uses the base name (no suffix)
+        var splitFile1Path = Path.Combine(dataFolder, sourceModKey.FileName);
         splitMod1.BeginWrite
             .ToPath(splitFile1Path)
             .WithNoLoadOrder()
@@ -805,6 +807,7 @@ public class SynthesisPipelineTests
         }
         expectedFormLists.Add((formList2.EditorID, items2));
 
+        // Second split file uses _2 suffix
         var splitFile2Path = Path.Combine(dataFolder, $"{sourceModKey.Name}_2{Path.GetExtension(sourceModKey.FileName)}");
         splitMod2.BeginWrite
             .ToPath(splitFile2Path)
@@ -816,7 +819,7 @@ public class SynthesisPipelineTests
         // Create plugins.txt with all masters AND the split files
         var pluginPath = Path.Combine(dataFolder, "Plugins.txt");
         var pluginLines = masterModKeys.Select(k => $"*{k.FileName}").ToList();
-        pluginLines.Add($"*{sourceModKey.Name}_1{Path.GetExtension(sourceModKey.FileName)}");
+        pluginLines.Add($"*{sourceModKey.FileName}");
         pluginLines.Add($"*{sourceModKey.Name}_2{Path.GetExtension(sourceModKey.FileName)}");
         fileSystem.File.WriteAllLines(pluginPath, pluginLines);
 
@@ -828,7 +831,7 @@ public class SynthesisPipelineTests
             DataFolderPath = dataFolder,
             LoadOrderFilePath = pluginPath,
             GameRelease = GameRelease.SkyrimSE,
-            SourcePath = Path.Combine(dataFolder, sourceModKey.FileName), // Base name, doesn't exist
+            SourcePath = Path.Combine(dataFolder, sourceModKey.FileName), // Base name (first split file)
             OutputPath = Path.Combine(outputPath, outputModKey.FileName),
             LoadOrderIncludesCreationClub = true,
             SplitIfMaxMastersExceeded = true // Enable split file detection
@@ -878,11 +881,8 @@ public class SynthesisPipelineTests
         loadOrderKeys.ShouldContain(outputModKey,
             $"Load order should contain output ModKey {outputModKey}");
 
-        // Should NOT contain the split file keys
-        var splitKey1 = new ModKey($"{sourceModKey.Name}_1", sourceModKey.Type);
+        // Should NOT contain the split sibling file key
         var splitKey2 = new ModKey($"{sourceModKey.Name}_2", sourceModKey.Type);
-        loadOrderKeys.ShouldNotContain(splitKey1,
-            $"Load order should not contain split file {splitKey1}");
         loadOrderKeys.ShouldNotContain(splitKey2,
             $"Load order should not contain split file {splitKey2}");
     }
