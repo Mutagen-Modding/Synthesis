@@ -757,6 +757,7 @@ public abstract class IntegrationTest : IDisposable
                     SynthesisVersioning = NugetVersioningEnum.Manual,
                     SynthesisManualVersion = synthesisVersion,
                     SplitIfMaxMastersExceeded = splitIfMaxMastersExceeded,
+                    UpdateLoadOrderAfterRun = false,
                     Groups = new List<PatcherGroupSettings>
                     {
                         new PatcherGroupSettings
@@ -917,8 +918,14 @@ public abstract class IntegrationTest : IDisposable
             {
                 if (!patcher.State.RunnableState.Succeeded)
                 {
-                    if (patcher.State.RunnableState.Exception != null) throw patcher.State.RunnableState.Exception;
-                    throw new Exception(patcher.State.RunnableState.Reason);
+                    var reason = patcher.State.RunnableState.Reason;
+                    var msg = $"Patcher '{patcher.NameVm.Name}' is not runnable. Reason: {reason}";
+                    Output.WriteLine(msg);
+                    if (patcher.State.RunnableState.Exception != null)
+                    {
+                        throw new Exception(msg, patcher.State.RunnableState.Exception);
+                    }
+                    throw new Exception(msg);
                 }
             }
         }

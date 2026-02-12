@@ -6,8 +6,16 @@ on:
       - main
       - prerelease
       - dev
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'mkdocs.yml'
   pull_request:
     branches: [ release ]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'mkdocs.yml'
 
 jobs:
   build:
