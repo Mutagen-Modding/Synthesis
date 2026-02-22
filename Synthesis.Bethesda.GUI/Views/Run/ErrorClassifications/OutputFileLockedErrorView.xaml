@@ -21,12 +21,15 @@
                    Margin="0,0,0,8" />
 
         <!-- File Path -->
-        <TextBlock Text="{Binding FilePath}"
-                   FontSize="13"
-                   FontFamily="Consolas"
-                   Foreground="{StaticResource PaleYellowBrush}"
-                   TextWrapping="Wrap"
-                   Margin="0,0,0,15" />
+        <TextBox Text="{Binding FilePath, Mode=OneWay}"
+                 FontSize="13"
+                 FontFamily="Consolas"
+                 Foreground="{StaticResource PaleYellowBrush}"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 IsReadOnly="True"
+                 TextWrapping="Wrap"
+                 Margin="0,0,0,15" />
 
         <!-- Rest of message -->
         <TextBlock FontSize="14"
