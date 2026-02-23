@@ -13,6 +13,7 @@ using Synthesis.Bethesda.GUI.Modules;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Cli;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
+using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.Views;
 
 namespace Synthesis.Bethesda.UnitTests.Containers;
@@ -34,6 +35,7 @@ public class PatcherVmTests
         builder.RegisterMock<IPipelineSettingsPath>();
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<IGameReleaseContext>();
+        builder.RegisterMock<IProfileGroupModKeyProvider>();
         var cont = builder.Build();
         cont.Validate(
             typeof(GitPatcherVm));
@@ -54,6 +56,7 @@ public class PatcherVmTests
         builder.RegisterMock<IPipelineSettingsPath>();
         builder.RegisterMock<IProfileIdentifier>();
         builder.RegisterMock<IGameReleaseContext>();
+        builder.RegisterMock<IProfileGroupModKeyProvider>();
         var cont = builder.Build();
         cont.Validate(
             typeof(SolutionPatcherVm));
