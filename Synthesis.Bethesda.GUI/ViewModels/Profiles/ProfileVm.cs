@@ -37,7 +37,7 @@ using Synthesis.Bethesda.Execution.Reporters.Classifications;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles;
 
-public class ProfileVm : ViewModel
+public class ProfileVm : ViewModel, IProfileGroupModKeyProvider
 {
     private readonly StartRun _startRun;
     private readonly ILogger _logger;
@@ -99,6 +99,8 @@ public class ProfileVm : ViewModel
     public OverallErrorVm OverallErrorVm { get; }
 
     public IObservable<ILinkCache?> SimpleLinkCache { get; }
+
+    public IObservable<IReadOnlySet<ModKey>> GroupModKeys { get; }
 
     public ILockToCurrentVersioning LockSetting { get; }
     public IProfileExporter Exporter { get; }
@@ -206,6 +208,22 @@ public class ProfileVm : ViewModel
         var enabledGroupModKeys = enabledGroups
             .Transform(x => x.ModKey)
             .QueryWhenChanged(q => q.ToHashSet())
+            .Replay(1).RefCount();
+
+        // All group mod keys (enabled and disabled) for filtering from link cache imports.
+        // Includes disabled groups since their output files may still exist in the data directory.
+        GroupModKeys = Groups.Connect()
+            .Transform(x => x.ModKey)
+            .QueryWhenChanged(q =>
+            {
+                var set = new HashSet<ModKey>();
+                foreach (var r in q)
+                {
+                    if (r.Succeeded) set.Add(r.Value);
+                }
+                return (IReadOnlySet<ModKey>)set;
+            })
+            .StartWith((IReadOnlySet<ModKey>)new HashSet<ModKey>())
             .Replay(1).RefCount();
 
         _globalError = Observable.CombineLatest(
