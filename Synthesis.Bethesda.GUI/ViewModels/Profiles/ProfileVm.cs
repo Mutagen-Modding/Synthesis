@@ -1,5 +1,4 @@
 using System.Reactive;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using Autofac;
@@ -7,8 +6,6 @@ using DynamicData;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
-using Mutagen.Bethesda.Plugins.Cache;
-using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Noggog;
@@ -97,8 +94,6 @@ public class ProfileVm : ViewModel, IProfileGroupModKeyProvider
     public IProfileDisplayControllerVm DisplayController { get; }
 
     public OverallErrorVm OverallErrorVm { get; }
-
-    public IObservable<ILinkCache?> SimpleLinkCache { get; }
 
     public IObservable<IReadOnlySet<ModKey>> GroupModKeys { get; }
 
@@ -438,41 +433,6 @@ public class ProfileVm : ViewModel, IProfileGroupModKeyProvider
                         }
                     }));
             });
-
-        SimpleLinkCache = Observable.CombineLatest(
-                this.WhenAnyValue(x => x.DataFolder),
-                this.WhenAnyValue(x => x.Release),
-                this.LoadOrder.Connect()
-                    .QueryWhenChanged()
-                    .Select(q => q.Where(x => x.Enabled).Select(x => x.ModKey).ToArray())
-                    .StartWithEmpty(),
-                (dataFolder, rel, loadOrder) => (dataFolder, rel, loadOrder))
-            .Throttle(TimeSpan.FromMilliseconds(100), schedulerProvider.TaskPool)
-            .Select(x =>
-            {
-                return Observable.Create<ILinkCache?>(obs =>
-                {
-                    try
-                    {
-                        var loadOrder = Mutagen.Bethesda.Plugins.Order.LoadOrder.Import(
-                            x.dataFolder,
-                            x.loadOrder,
-                            x.rel,
-                            factory: (modPath) => ModInstantiator.Importer(modPath, x.rel));
-                        obs.OnNext(loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()));
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Error(ex, "Error creating simple link cache for GUI lookups");
-                        obs.OnNext(null);
-                    }
-                    obs.OnCompleted();
-                    return Disposable.Empty;
-                });
-            })
-            .Switch()
-            .Replay(1)
-            .RefCount();
 
         ExportCommand = ReactiveCommand.Create(Export);
 
