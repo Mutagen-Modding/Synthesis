@@ -74,6 +74,8 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
         FilePath? buildMetaPath,
         CancellationToken cancel)
     {
+        cancel.ThrowIfCancellationRequested();
+
         var meta = buildMetaPath != null ? MetaFileReader.Read(buildMetaPath.Value) : default;
 
         if (_shortCircuitSettingsProvider.Shortcircuit && meta is { DoesNotHaveRunnability: true }) return ErrorResponse.Success;
@@ -100,6 +102,8 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
             ModKey = modKey.ToString()
         };
 
+        cancel.ThrowIfCancellationRequested();
+
         var result = (Codes)await Dropoff.EnqueueAndWait(() =>
         {
             return ProcessRunner.RunWithCallback(
@@ -113,7 +117,9 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
             return ErrorResponse.Fail(string.Join(Environment.NewLine, results));
         }
 
-        if (result == Codes.NotNeeded 
+        cancel.ThrowIfCancellationRequested();
+
+        if (result == Codes.NotNeeded
             && meta != null
             && buildMetaPath != null)
         {

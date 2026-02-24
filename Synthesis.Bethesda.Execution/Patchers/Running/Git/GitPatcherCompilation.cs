@@ -54,6 +54,8 @@ public class GitPatcherCompilation : IGitPatcherCompilation
         DotNetVersion dotNetVersion,
         CancellationToken cancel)
     {
+        cancel.ThrowIfCancellationRequested();
+
         try
         {
 var meta = _metaFileReader.Read(info.MetaPath);
@@ -77,6 +79,8 @@ var meta = _metaFileReader.Read(info.MetaPath);
             _logger.Warning(e, "Failed when checking if we could short circuit compilation");
         }
 
+        cancel.ThrowIfCancellationRequested();
+
         try
         {
             _logger.Information("Clearing short circuit meta");
@@ -88,8 +92,12 @@ var meta = _metaFileReader.Read(info.MetaPath);
             _logger.Error(e, "Failed when clearing short circuit meta");
         }
 
+        cancel.ThrowIfCancellationRequested();
+
         var resp = await _build.Compile(info.Project.ProjPath, cancel).ConfigureAwait(false);
         if (resp.Failed) return GetResponse<GitCompilationMeta>.Fail(default!, new SynthesisBuildFailure(resp.Reason));
+
+        cancel.ThrowIfCancellationRequested();
 
         GitCompilationMeta compilationMeta;
         try

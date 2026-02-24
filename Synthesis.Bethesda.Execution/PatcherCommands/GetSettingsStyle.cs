@@ -68,6 +68,8 @@ public class GetSettingsStyle : IGetSettingsStyle
         FilePath? buildMetaPath,
         CancellationToken cancel)
     {
+        cancel.ThrowIfCancellationRequested();
+
         var meta = buildMetaPath != null ? _metaFileReader.Read(buildMetaPath.Value) : default;
 
         if (_shortCircuitSettingsProvider.Shortcircuit && meta?.SettingsConfiguration != null)
@@ -77,6 +79,8 @@ public class GetSettingsStyle : IGetSettingsStyle
         }
 
         var settingsConfig = await ExecuteSettingsRetrievalFromExecutable(executablePath, cancel);
+
+        cancel.ThrowIfCancellationRequested();
 
         if (meta != null
             && buildMetaPath != null)
