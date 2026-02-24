@@ -767,13 +767,16 @@ public class SynthesisPipelineTests
         }
 
         // Create split source files simulating a previous patcher's output
-        // Note: When Mutagen splits a mod, records keep FormKeys pointing to the merged mod key
-        var sourceModKey = ModKey.FromFileName("PreviousPatch.esp");
+        // In real usage, source and output share the same mod name but live in different directories
+        var patchModKey = ModKey.FromFileName("Patch.esp");
         var expectedFormLists = new List<(string EditorID, List<FormKey> Items)>();
 
+        // Create a source directory (simulating a previous run's working directory)
+        var sourceDir = Path.Combine(dataFolder, "Previous");
+        fileSystem.Directory.CreateDirectory(sourceDir);
+
         // Create first split file with first 128 masters
-        // Use merged mod key for the mod, then write with NoModKeySync to preserve FormKeys
-        var splitMod1 = new SkyrimMod(sourceModKey, SkyrimRelease.SkyrimSE);
+        var splitMod1 = new SkyrimMod(patchModKey, SkyrimRelease.SkyrimSE);
         var formList1 = splitMod1.FormLists.AddNew();
         formList1.EditorID = "NpcFormList_0";
         var items1 = new List<FormKey>();
@@ -785,7 +788,7 @@ public class SynthesisPipelineTests
         expectedFormLists.Add((formList1.EditorID, items1));
 
         // First split file uses the base name (no suffix)
-        var splitFile1Path = Path.Combine(dataFolder, sourceModKey.FileName);
+        var splitFile1Path = Path.Combine(sourceDir, patchModKey.FileName);
         splitMod1.BeginWrite
             .ToPath(splitFile1Path)
             .WithNoLoadOrder()
@@ -794,9 +797,9 @@ public class SynthesisPipelineTests
             .Write();
 
         // Create second split file with remaining masters
-        var splitMod2 = new SkyrimMod(sourceModKey, SkyrimRelease.SkyrimSE);
+        var splitMod2 = new SkyrimMod(patchModKey, SkyrimRelease.SkyrimSE);
         // Use RecordWith to create a record with a specific FormKey to avoid conflicts
-        var formList2 = new Mutagen.Bethesda.Skyrim.FormList(new FormKey(sourceModKey, 0x900), SkyrimRelease.SkyrimSE);
+        var formList2 = new Mutagen.Bethesda.Skyrim.FormList(new FormKey(patchModKey, 0x900), SkyrimRelease.SkyrimSE);
         formList2.EditorID = "NpcFormList_1";
         splitMod2.FormLists.RecordCache.Set(formList2);
         var items2 = new List<FormKey>();
@@ -808,7 +811,7 @@ public class SynthesisPipelineTests
         expectedFormLists.Add((formList2.EditorID, items2));
 
         // Second split file uses _2 suffix
-        var splitFile2Path = Path.Combine(dataFolder, $"{sourceModKey.Name}_2{Path.GetExtension(sourceModKey.FileName)}");
+        var splitFile2Path = Path.Combine(sourceDir, $"{patchModKey.Name}_2{Path.GetExtension(patchModKey.FileName)}");
         splitMod2.BeginWrite
             .ToPath(splitFile2Path)
             .WithNoLoadOrder()
@@ -819,20 +822,19 @@ public class SynthesisPipelineTests
         // Create plugins.txt with all masters AND the split files
         var pluginPath = Path.Combine(dataFolder, "Plugins.txt");
         var pluginLines = masterModKeys.Select(k => $"*{k.FileName}").ToList();
-        pluginLines.Add($"*{sourceModKey.FileName}");
-        pluginLines.Add($"*{sourceModKey.Name}_2{Path.GetExtension(sourceModKey.FileName)}");
+        pluginLines.Add($"*{patchModKey.FileName}");
+        pluginLines.Add($"*{patchModKey.Name}_2{Path.GetExtension(patchModKey.FileName)}");
         fileSystem.File.WriteAllLines(pluginPath, pluginLines);
 
-        // Setup run arguments - SourcePath points to base name that doesn't exist
-        var outputModKey = ModKey.FromFileName("Output.esp");
+        // Setup run arguments - SourcePath is in a different directory than output
         var runArgs = new RunSynthesisMutagenPatcher
         {
-            ModKey = outputModKey.FileName,
+            ModKey = patchModKey.FileName,
             DataFolderPath = dataFolder,
             LoadOrderFilePath = pluginPath,
             GameRelease = GameRelease.SkyrimSE,
-            SourcePath = Path.Combine(dataFolder, sourceModKey.FileName), // Base name (first split file)
-            OutputPath = Path.Combine(outputPath, outputModKey.FileName),
+            SourcePath = splitFile1Path, // Source in Previous/ directory
+            OutputPath = Path.Combine(outputPath, patchModKey.FileName),
             LoadOrderIncludesCreationClub = true,
             SplitIfMaxMastersExceeded = true // Enable split file detection
         };
@@ -874,15 +876,15 @@ public class SynthesisPipelineTests
         // Verify load order was modified correctly
         capturedLoadOrder.ShouldNotBeNull();
 
-        // The load order should contain the output mod key (patchMod), not the split files
+        // The load order should contain the patch mod key, not the split files
         var loadOrderKeys = capturedLoadOrder!.ListedOrder.Select(x => x.ModKey).ToList();
 
-        // Should contain the output mod key (the patchMod)
-        loadOrderKeys.ShouldContain(outputModKey,
-            $"Load order should contain output ModKey {outputModKey}");
+        // Should contain the patch mod key
+        loadOrderKeys.ShouldContain(patchModKey,
+            $"Load order should contain patch ModKey {patchModKey}");
 
         // Should NOT contain the split sibling file key
-        var splitKey2 = new ModKey($"{sourceModKey.Name}_2", sourceModKey.Type);
+        var splitKey2 = new ModKey($"{patchModKey.Name}_2", patchModKey.Type);
         loadOrderKeys.ShouldNotContain(splitKey2,
             $"Load order should not contain split file {splitKey2}");
     }

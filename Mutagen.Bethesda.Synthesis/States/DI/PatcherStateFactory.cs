@@ -114,58 +114,6 @@ public class PatcherStateFactory : IPatcherStateFactory
         }
     }
 
-    private TModSetter ImportAndMergeSplitFiles<TModSetter, TModGetter>(
-        ModPath sourceModPath,
-        ModKey exportKey,
-        RunSynthesisMutagenPatcher settings,
-        StringsReadParameters stringReadParams)
-        where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
-        where TModGetter : class, IContextGetterMod<TModSetter, TModGetter>
-    {
-        var sourcePathModKey = ModKey.FromFileName(Path.GetFileName(sourceModPath.Path));
-        var splitFiles = MultiModFileAnalysis.GetSplitModFiles(sourceModPath, fileSystem: _fileSystem);
-
-        System.Console.WriteLine($"Detected split source files for {sourcePathModKey}");
-        System.Console.WriteLine($"  Found {splitFiles.Count} split files");
-
-        // Create a new mod to merge into
-        var patchMod = ModFactory<TModSetter>.Activator(
-            exportKey,
-            settings.GameRelease,
-            headerVersion: settings.HeaderVersionOverride,
-            forceUseLowerFormIDRanges: settings.FormIDRangeMode.ToForceBool());
-
-        // Read each split file and copy records into the merged mod
-        foreach (var splitFile in splitFiles)
-        {
-            System.Console.WriteLine($"  Reading split file: {splitFile}");
-            // Use the export mod key when reading, so records have correct FormKeys
-            var splitMod = ModFactory<TModGetter>.Importer(
-                new ModPath(exportKey, splitFile),
-                settings.GameRelease,
-                new BinaryReadParameters()
-                {
-                    FileSystem = _fileSystem,
-                    StringsParam = stringReadParams
-                });
-
-            // Copy all records from split mod to merged mod
-            foreach (var rec in splitMod.EnumerateMajorRecords())
-            {
-                var recRegis = rec.Registration;
-                patchMod.GetTopLevelGroup(recRegis.GetterType).AddUntyped(rec.DeepCopy());
-            }
-
-            // Dispose if possible
-            if (splitMod is IDisposable disposable)
-            {
-                disposable.Dispose();
-            }
-        }
-
-        return patchMod;
-    }
-        
 #pragma warning disable CS0618
     public SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
         where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
@@ -291,36 +239,17 @@ public class PatcherStateFactory : IPatcherStateFactory
             {
                 var modPath = new ModPath(exportKey, settings.SourcePath!);
 
-                // Check for split files first when enabled, since the base name
-                // file may itself be the first split file
                 if (settings.SplitIfMaxMastersExceeded)
                 {
-                    var sourceModKey = ModKey.FromFileName(Path.GetFileName(settings.SourcePath!));
-                    var sourceModPath = new ModPath(sourceModKey, settings.SourcePath!);
-
-                    if (MultiModFileAnalysis.IsMultiModFile(sourceModPath, fileSystem: _fileSystem))
-                    {
-                        patchMod = ImportAndMergeSplitFiles<TModSetter, TModGetter>(
-                            sourceModPath,
-                            exportKey,
-                            settings,
-                            stringReadParams);
-                    }
-                    else if (_fileSystem.File.Exists(modPath.Path))
-                    {
-                        patchMod = ModFactory<TModSetter>.Importer(
-                            modPath,
-                            settings.GameRelease,
-                            new BinaryReadParameters()
-                            {
-                                FileSystem = _fileSystem,
-                                StringsParam = stringReadParams
-                            });
-                    }
-                    else
-                    {
-                        throw new FileNotFoundException(modPath.Path);
-                    }
+                    patchMod = (TModSetter)ModFactory.ImportSetterWithMultiFileDetection(
+                        modPath,
+                        loadOrderListing.ProcessedLoadOrder.Select(x => x.ModKey),
+                        settings.GameRelease,
+                        new BinaryReadParameters()
+                        {
+                            FileSystem = _fileSystem,
+                            StringsParam = stringReadParams
+                        });
                 }
                 else if (_fileSystem.File.Exists(modPath.Path))
                 {

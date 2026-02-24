@@ -69,7 +69,7 @@ public class PostRunProcessor
         
         var mod = ModFactory.ImportSetterWithMultiFileDetection(
             path,
-            lo.ListedOrder,
+            lo.ListedOrder.Select(x => x.ModKey),
             _gameReleaseContext.Release,
             new BinaryReadParameters()
             {
