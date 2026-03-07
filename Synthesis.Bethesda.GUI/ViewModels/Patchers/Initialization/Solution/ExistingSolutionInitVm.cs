@@ -18,7 +18,7 @@ public class ExistingSolutionInitVm : ASolutionInitializer
 {
     public override IObservable<GetResponse<InitializerCall>> InitializationCall { get; }
 
-    public PathPickerVM SolutionPath { get; } = new PathPickerVM();
+    public PathPickerVM SolutionPath { get; }
 
     [Reactive]
     public string ProjectName { get; set; } = string.Empty;
@@ -34,8 +34,11 @@ public class ExistingSolutionInitVm : ASolutionInitializer
         IAddProjectToSolution addProjectToSolution,
         ISchedulerProvider schedulerProvider)
     {
-        SolutionPath.PathType = PathPickerVM.PathTypeOptions.File;
-        SolutionPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
+        SolutionPath = new PathPickerVM(schedulerProvider)
+        {
+            PathType = PathPickerVM.PathTypeOptions.File,
+            ExistCheckOption = PathPickerVM.CheckOptions.On,
+        };
         SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
 
         var validation = Observable.CombineLatest(

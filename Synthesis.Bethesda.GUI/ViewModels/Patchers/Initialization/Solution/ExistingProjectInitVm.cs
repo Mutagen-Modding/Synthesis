@@ -17,25 +17,32 @@ public class ExistingProjectInitVm : ASolutionInitializer
 {
     public override IObservable<GetResponse<InitializerCall>> InitializationCall { get; }
 
-    public PathPickerVM SolutionPath { get; } = new();
+    public PathPickerVM SolutionPath { get; }
 
     public IObservableCollection<string> AvailableProjects { get; }
 
     public SourceList<string> SelectedProjects { get; } = new();
 
-    public PathPickerVM SelectedProjectPath { get; } = new()
-    {
-        ExistCheckOption = PathPickerVM.CheckOptions.On,
-        PathType = PathPickerVM.PathTypeOptions.File,
-    };
+    public PathPickerVM SelectedProjectPath { get; }
+
+    private readonly ISchedulerProvider _schedulerProvider;
 
     public ExistingProjectInitVm(
         IAvailableProjectsRetriever availableProjectsRetriever,
         IPatcherFactory patcherFactory,
         ISchedulerProvider schedulerProvider)
     {
-        SolutionPath.PathType = PathPickerVM.PathTypeOptions.File;
-        SolutionPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
+        _schedulerProvider = schedulerProvider;
+        SolutionPath = new PathPickerVM(schedulerProvider)
+        {
+            PathType = PathPickerVM.PathTypeOptions.File,
+            ExistCheckOption = PathPickerVM.CheckOptions.On,
+        };
+        SelectedProjectPath = new PathPickerVM(schedulerProvider)
+        {
+            ExistCheckOption = PathPickerVM.CheckOptions.On,
+            PathType = PathPickerVM.PathTypeOptions.File,
+        };
         SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
 
         AvailableProjects = this.WhenAnyValue(x => x.SolutionPath.TargetPath)
@@ -60,7 +67,7 @@ public class ExistingProjectInitVm : ASolutionInitializer
             })
             .Transform(path =>
             {
-                var pathPicker = new PathPickerVM
+                var pathPicker = new PathPickerVM(_schedulerProvider)
                 {
                     PathType = PathPickerVM.PathTypeOptions.File,
                     ExistCheckOption = PathPickerVM.CheckOptions.On,

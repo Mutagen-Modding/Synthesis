@@ -4,6 +4,7 @@ using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Linq;
 using Noggog;
+using Noggog.Reactive;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
@@ -19,17 +20,19 @@ public class SelectedProjectInputVm : ViewModel, ISelectedProjectInputVm
 {
     [Reactive]
     public string ProjectSubpath { get; set; } = string.Empty;
-        
-    public PathPickerVM Picker { get; } = new()
-    {
-        ExistCheckOption = PathPickerVM.CheckOptions.On,
-        PathType = PathPickerVM.PathTypeOptions.File,
-    };
+
+    public PathPickerVM Picker { get; }
 
     public SelectedProjectInputVm(
         IProjectPathConstructor pathConstructor,
-        ISolutionFilePathFollower solutionFilePathFollower)
+        ISolutionFilePathFollower solutionFilePathFollower,
+        ISchedulerProvider schedulerProvider)
     {
+        Picker = new PathPickerVM(schedulerProvider)
+        {
+            ExistCheckOption = PathPickerVM.CheckOptions.On,
+            PathType = PathPickerVM.PathTypeOptions.File,
+        };
         Picker.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
             
         this.WhenAnyValue(x => x.ProjectSubpath)

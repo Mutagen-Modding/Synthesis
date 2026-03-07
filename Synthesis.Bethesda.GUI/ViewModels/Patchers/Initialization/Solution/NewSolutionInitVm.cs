@@ -13,7 +13,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution;
 
 public class NewSolutionInitVm : ASolutionInitializer
 {
-    public PathPickerVM ParentDirPath { get; } = new PathPickerVM();
+    public PathPickerVM ParentDirPath { get; }
 
     [Reactive]
     public string SolutionName { get; set; } = string.Empty;
@@ -38,8 +38,11 @@ public class NewSolutionInitVm : ASolutionInitializer
         CreateTemplatePatcherSolution createTemplatePatcherSolution,
         ISchedulerProvider schedulerProvider)
     {
-        ParentDirPath.PathType = PathPickerVM.PathTypeOptions.Folder;
-        ParentDirPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
+        ParentDirPath = new PathPickerVM(schedulerProvider)
+        {
+            PathType = PathPickerVM.PathTypeOptions.Folder,
+            ExistCheckOption = PathPickerVM.CheckOptions.On,
+        };
 
         _solutionPath = Observable.CombineLatest(
                 this.ParentDirPath.PathState(),
