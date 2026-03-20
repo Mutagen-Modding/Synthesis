@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag to publish (e.g. 0.36.0). Updates the tag to point to the current commit.'
-        required: true
+        description: 'Optional: Release tag to re-publish (e.g. 0.36.0). Moves the tag to current commit and re-uploads. Leave empty for build/test/nuget only.'
+        required: false
         type: string
   release:
     types: [published]
@@ -20,7 +20,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Update tag to current commit
-      if: github.event_name == 'workflow_dispatch'
+      if: inputs.tag != ''
       run: |
         git tag -f ${{ env.RELEASE_TAG }}
         git push origin ${{ env.RELEASE_TAG }} --force
@@ -36,7 +36,7 @@ jobs:
       run: dotnet build Synthesis.Bethesda.sln -c Release --no-restore /p:GeneratePackageOnBuild=false
     - name: Pack
       run: |
-        dotnet pack Synthesis.Bethesda.sln -c Release --no-build --no-restore -o out --include-symbols -p:SymbolPackageFormat=snupkg  -p:PackageReleaseNotes="See https://github.com/Mutagen-Modding/Synthesis/releases/tag/${{ env.RELEASE_TAG }}"
+        dotnet pack Synthesis.Bethesda.sln -c Release --no-build --no-restore -o out --include-symbols -p:SymbolPackageFormat=snupkg
     - name: Add local NuGet source
       run: dotnet nuget add source ${{ github.workspace }}/out --name local
     - name: Test
@@ -49,6 +49,7 @@ jobs:
       run: |
         powershell Compress-Archive Synthesis.Bethesda.GUI/bin/Release/net9.0/win-x64/publish/* Synthesis.zip
     - name: Publish Synthesis GUI to Github
+      if: env.RELEASE_TAG != ''
       uses: svenstaro/upload-release-action@v2
       with:
         file: Synthesis.zip
