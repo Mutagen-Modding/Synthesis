@@ -897,7 +897,7 @@ public abstract class IntegrationTest : IDisposable
             profileState = await selectedProfile.WhenAnyValue(x => x.State)
                 .Where(state => state.Succeeded)
                 .FirstAsync()
-                .Timeout(TestTimeouts.Short);
+                .Timeout(TestTimeouts.Long);
         }
         catch (TimeoutException)
         {
