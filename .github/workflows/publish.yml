@@ -28,7 +28,9 @@ jobs:
     - name: Add local NuGet source
       run: dotnet nuget add source ${{ github.workspace }}/out --name local
     - name: Test
-      run: dotnet test Synthesis.Bethesda.sln --no-build -c Release
+      run: dotnet test Synthesis.Bethesda.sln --no-build -c Release -- xUnit.maxParallelThreads=1
+      env:
+        SYNTHESIS_TEST_TIMEOUT_SECONDS: 600
     - name: Pack GUI
       run: dotnet publish "Synthesis.Bethesda.GUI/Synthesis.Bethesda.GUI.csproj" --configuration Release -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true
     - name: Archive Release
