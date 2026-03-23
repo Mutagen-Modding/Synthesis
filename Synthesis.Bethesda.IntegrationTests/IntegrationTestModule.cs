@@ -88,5 +88,11 @@ public class IntegrationTestModule : Module
             .RegisterInstance(new CreationClubListingsPathStub())
             .AsImplementedInterfaces()
             .SingleInstance();
+
+        // Override IExecutionParameters to disable shared Roslyn compilation server,
+        // preventing file locking issues between test runs on CI
+        builder.RegisterType<TestExecutionParameters>()
+            .As<Synthesis.Bethesda.Execution.DotNet.IExecutionParameters>()
+            .SingleInstance();
     }
 }
