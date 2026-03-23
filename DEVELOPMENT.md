@@ -242,7 +242,7 @@ When writing Markdown documentation in the `docs/` folder:
 
 ### File System Operations
 
-- **NEVER redirect to `nul`** - On Windows, `2>nul` creates unwanted files that Git tracks
+- **NEVER redirect to `nul`** - in PowerShell and bash on Windows, `2>nul` creates unwanted files that Git tracks.
 - Use proper null redirection: `2>/dev/null` (works on Windows with bash)
 - For temporary files, use `.claude/` subfolder or designated temp directories that are gitignored
 - Example: `ls directory 2>/dev/null || echo "Not found"` instead of `dir directory 2>nul`
