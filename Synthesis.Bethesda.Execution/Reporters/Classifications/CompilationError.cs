@@ -34,7 +34,7 @@ public class CompilationErrorClassification : ErrorClassification
     public const string SuggestionMessage =
         "The patcher failed to compile. This typically occurs when the patcher targets a newer version of " +
         "the Mutagen or Synthesis libraries whose API has changed in ways that are incompatible with the " +
-        "patcher's code. Consider adjusting the versioning settings to target a version that the patcher " +
+        "patcher's code. Consider using \"Set to Match\" to target a version that the patcher " +
         "was built against, or opening an issue on the patcher's source code to nudge them to update.";
     public const string VersioningDocsLink = "https://mutagen-modding.github.io/Synthesis/Versioning/#recommended-setup";
 
