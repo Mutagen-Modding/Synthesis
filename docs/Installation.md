@@ -10,9 +10,6 @@ You can get the typical SDK installation from Microsoft's official page
 !!! tip "Restart"
     It's usually a good idea to restart your computer after installing DotNet SDK to help things settle in.
 
-!!! bug "Avoid SDK 10 if using Mo2"
-    Mo2 is not interacting well with SDK 10 at the moment.  Work is being done to help avoid the issue, but in the meantime, grab SDK 9.
-
 !!! bug "Avoid install/uninstalling SDKs repeatedly"
     If after installing the .NET SDK as instructed above it doesn't work, try following [this FAQ first](https://github.com/Mutagen-Modding/Synthesis/discussions/135)
 
