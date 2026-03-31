@@ -14,7 +14,8 @@ public class CompilationExceptionDetector : IExceptionClassificationDetector
         var current = exception;
         while (current != null)
         {
-            if (current is SynthesisBuildFailure buildFailure)
+            if (current is SynthesisBuildFailure buildFailure
+                && !CscCrashErrorClassification.IsCscCrash(buildFailure.Message))
             {
                 return new CompilationErrorClassification(buildFailure.Message);
             }

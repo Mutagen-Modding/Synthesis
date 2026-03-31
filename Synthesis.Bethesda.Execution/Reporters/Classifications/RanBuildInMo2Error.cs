@@ -17,10 +17,13 @@ public class RanBuildInMo2ErrorClassification : ErrorClassification
     }
 
     public override string? DiscussionLink => "https://github.com/Mutagen-Modding/Synthesis/discussions/562";
+    public const string SuggestionMessage =
+        "MO2's virtual file system (VFS) is causing build errors.\n\n" +
+        "Please run Synthesis outside of Mod Organizer 2 when building patchers.  Once built, " +
+        "you can open from within Mo2 for the actual patching run.";
+
     public override string ErrorType => ErrorTypeString;
-    public override string Message => "MO2's virtual file system (VFS) is causing build errors.\n\n" +
-                                      "Please run Synthesis outside of Mod Organizer 2 when building patchers.  Once built, " +
-                                      "you can open from within Mo2 for the actual patching run.";
+    public override string Message => SuggestionMessage;
 }
 
 /// <summary>

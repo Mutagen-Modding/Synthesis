@@ -51,6 +51,9 @@ public class ClassificationVmFactory : IClassificationVmFactory
             CompilationErrorClassification compilationError =>
                 scope.Resolve<CompilationErrorVm.Factory>()(compilationError, patcher),
 
+            CscCrashErrorClassification cscCrashError =>
+                scope.Resolve<CscCrashErrorVm.Factory>()(cscCrashError),
+
             // For unrecognized error types, return the classification as-is
             _ => classification
         };
