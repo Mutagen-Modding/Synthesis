@@ -54,6 +54,9 @@ public class ClassificationVmFactory : IClassificationVmFactory
             CscCrashErrorClassification cscCrashError =>
                 scope.Resolve<CscCrashErrorVm.Factory>()(cscCrashError),
 
+            DotNetRuntimeMissingErrorClassification dotNetRuntimeMissingError =>
+                scope.Resolve<DotNetRuntimeMissingErrorVm.Factory>()(dotNetRuntimeMissingError),
+
             // For unrecognized error types, return the classification as-is
             _ => classification
         };
