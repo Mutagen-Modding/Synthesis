@@ -120,6 +120,16 @@
                     <errorViews:CompilationErrorView />
                 </DataTemplate>
 
+                <!-- Specific view for CscCrashErrorVm -->
+                <DataTemplate DataType="{x:Type errorVms:CscCrashErrorVm}">
+                    <errorViews:CscCrashErrorView />
+                </DataTemplate>
+
+                <!-- Specific view for DotNetRuntimeMissingErrorVm -->
+                <DataTemplate DataType="{x:Type errorVms:DotNetRuntimeMissingErrorVm}">
+                    <errorViews:DotNetRuntimeMissingErrorView />
+                </DataTemplate>
+
                 <!-- Default view for all other error classifications -->
                 <DataTemplate DataType="{x:Type reporters:ErrorClassification}">
                     <errorViews:DefaultErrorClassificationView />

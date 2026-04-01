@@ -139,6 +139,12 @@
                 <DataTemplate DataType="{x:Type errorVms:OutputFileLockedErrorVm}">
                     <errorViews:OutputFileLockedErrorView Margin="15" />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type errorVms:CscCrashErrorVm}">
+                    <errorViews:CscCrashErrorView Margin="15" />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type errorVms:DotNetRuntimeMissingErrorVm}">
+                    <errorViews:DotNetRuntimeMissingErrorView Margin="15" />
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type reporters:ErrorClassification}">
                     <errorViews:DefaultErrorClassificationView Margin="15" />
                 </DataTemplate>
