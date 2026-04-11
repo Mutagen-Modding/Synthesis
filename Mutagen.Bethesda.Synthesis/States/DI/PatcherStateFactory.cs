@@ -3,6 +3,7 @@ using Mutagen.Bethesda.Archives.DI;
 using Mutagen.Bethesda.Assets.DI;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Inis.DI;
+using Mutagen.Bethesda.Installs.DI;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Allocators;
 using Mutagen.Bethesda.Plugins.Analysis;
@@ -321,7 +322,8 @@ public class PatcherStateFactory : IPatcherStateFactory
                             new IniPathProvider(
                                 rel,
                                 new IniPathLookup(
-                                    gameDirectoryLookup))),
+                                    gameDirectoryLookup,
+                                    new ProtonPrefixProvider()))),
                         new ArchiveNameFromModKeyProvider(rel))),
                 rel));
 
