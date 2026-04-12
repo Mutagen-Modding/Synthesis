@@ -1,0 +1,7 @@
+branches:
+  pre-release:
+    regex: ^pre-release$
+    label: prerelease
+    increment: Patch
+    priority: 200
+    source-branches: [dev, main]
