@@ -1,6 +1,6 @@
 branches:
-  pre-release:
-    regex: ^pre-release$
+  prerelease:
+    regex: ^prerelease$
     label: prerelease
     increment: Patch
     priority: 200
