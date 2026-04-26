@@ -38,13 +38,16 @@ To download Synthesis itself, go is the GitHub release section
 
 On the latest release, download _just_ the **Synthesis.zip** file.  The other files are not needed.
 
-Unzip the archive somewhere you like
+Unzip the archive into a dedicated folder of its own, somewhere outside of your game install and outside of any mod manager's managed directories.
 
 !!! bug "Unzip All Files"
     Make sure you bring along ALL the files within the zip, not just `Synthesis.exe`
 
+!!! danger "Do NOT Install Inside The Data Folder"
+    Synthesis is a tool, not a mod.  Do not place it inside your game's `Data` folder, your Mod Organizer 2 `mods` folder, a Vortex-managed folder, or anywhere else a mod manager virtualizes.  Tools installed in those locations can have their file operations redirected by the virtual file system in ways that may corrupt or delete unrelated files.  A safe choice is something like `C:\Tools\Synthesis\` — a path that no mod manager touches.
+
 !!! tip "Dedicated Folder"
-    The app will create a few files nearby itself, so it is good to put it within its own folder.
+    Synthesis creates several files alongside its executable (settings, logs, a small backup repo).  Always give it its own folder so those files don't mingle with anything else.
 
 ## Run Synthesis
 You're ready to run Synthesis!
