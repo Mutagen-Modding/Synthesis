@@ -44,7 +44,7 @@ Unzip the archive into a dedicated folder of its own, somewhere outside of your 
     Make sure you bring along ALL the files within the zip, not just `Synthesis.exe`
 
 !!! danger "Do NOT Install Inside The Data Folder"
-    Synthesis is a tool, not a mod.  Do not place it inside your game's `Data` folder, your Mod Organizer 2 `mods` folder, a Vortex-managed folder, or anywhere else a mod manager virtualizes.  Tools installed in those locations can have their file operations redirected by the virtual file system in ways that may corrupt or delete unrelated files.  A safe choice is something like `C:\Tools\Synthesis\` — a path that no mod manager touches.
+    Synthesis is a tool, not a mod.  Do not place it inside your game's `Data` folder, your Mod Organizer 2 `mods` folder, a Vortex-managed folder, or anywhere else a mod manager virtualizes.  A safe choice is something like `C:\Tools\Synthesis\`, or another path that no mod manager touches.
 
 !!! tip "Dedicated Folder"
     Synthesis creates several files alongside its executable (settings, logs, a small backup repo).  Always give it its own folder so those files don't mingle with anything else.
