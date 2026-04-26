@@ -71,7 +71,7 @@ public class BackupSettings : IStartupTask
         {
             case LibGit2SharpException:
             case NullReferenceException:
-                WipeBackup(ex);
+                _logger.Warning(ex, "Could not back up settings.");
                 break;
             case AggregateException agg:
                 HandleException(agg.InnerException);
@@ -81,12 +81,6 @@ public class BackupSettings : IStartupTask
             default:
                 throw ex;
         }
-    }
-
-    private void WipeBackup(Exception ex)
-    {
-        _logger.Warning(ex, "Wiping backup settings.");
-        _fileSystem.Directory.DeleteEntireFolder(RepoDirectory);
     }
 
     private void CreateGitIgnore()
