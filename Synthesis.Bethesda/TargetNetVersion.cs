@@ -3,5 +3,5 @@
 public static class TargetNetVersion
 {
     public static string Target => $"net{NetNum}.0";
-    public const int NetNum = 8;
+    public const int NetNum = 10;
 }
