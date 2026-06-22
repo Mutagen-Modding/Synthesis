@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Mutagen.Bethesda.Synthesis.Projects;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -36,9 +37,10 @@ public class NewSolutionInitVm : ASolutionInitializer
         IPatcherFactory patcherFactory,
         IValidateProjectPath validateProjectPath,
         CreateTemplatePatcherSolution createTemplatePatcherSolution,
-        ISchedulerProvider schedulerProvider)
+        ISchedulerProvider schedulerProvider,
+        IPathPickerDialogProvider pathPickerDialogProvider)
     {
-        ParentDirPath = new PathPickerVM(schedulerProvider)
+        ParentDirPath = new PathPickerVM(schedulerProvider, pathPickerDialogProvider)
         {
             PathType = PathPickerVM.PathTypeOptions.Folder,
             ExistCheckOption = PathPickerVM.CheckOptions.On,

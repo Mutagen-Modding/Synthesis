@@ -1,7 +1,8 @@
-﻿using System.Reactive;
+using System.Reactive;
 using System.Reactive.Linq;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;

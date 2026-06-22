@@ -1,6 +1,7 @@
-﻿using System.IO.Abstractions;
+using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using Newtonsoft.Json;
 using Noggog.Reactive;

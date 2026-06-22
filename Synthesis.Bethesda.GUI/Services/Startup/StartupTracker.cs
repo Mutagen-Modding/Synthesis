@@ -1,4 +1,5 @@
-﻿using Noggog.WPF;
+using Noggog.UI;
+using Noggog.WPF;
 using ReactiveUI;
 
 namespace Synthesis.Bethesda.GUI.Services.Startup;

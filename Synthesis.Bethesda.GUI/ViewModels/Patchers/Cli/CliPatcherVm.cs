@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using Autofac;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Common;

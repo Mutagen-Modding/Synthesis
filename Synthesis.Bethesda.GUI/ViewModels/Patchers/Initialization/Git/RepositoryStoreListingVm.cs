@@ -1,3 +1,4 @@
+using Noggog.UI;
 using Noggog.WPF;
 using Synthesis.Bethesda.DTO;
 

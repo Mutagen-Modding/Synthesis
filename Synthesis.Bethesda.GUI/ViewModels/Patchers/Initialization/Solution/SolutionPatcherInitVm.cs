@@ -3,6 +3,7 @@ using System.Windows.Input;
 using DynamicData.Binding;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

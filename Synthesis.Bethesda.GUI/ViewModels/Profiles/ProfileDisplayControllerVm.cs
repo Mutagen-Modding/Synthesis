@@ -1,3 +1,4 @@
+using Noggog.UI;
 using Noggog.WPF;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles;

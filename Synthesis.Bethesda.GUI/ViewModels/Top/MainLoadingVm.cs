@@ -1,4 +1,5 @@
-﻿using Noggog.WPF;
+using Noggog.UI;
+using Noggog.WPF;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top;
 

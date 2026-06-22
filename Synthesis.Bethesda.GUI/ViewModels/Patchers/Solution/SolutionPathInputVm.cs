@@ -1,8 +1,9 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
@@ -19,14 +20,15 @@ public class SolutionPathInputVm : ViewModel, ISolutionPathInputVm
     public PathPickerVM Picker { get; }
 
     public SolutionPathInputVm(
-        ISchedulerProvider schedulerProvider)
+        ISchedulerProvider schedulerProvider,
+        IPathPickerDialogProvider pathPickerDialogProvider)
     {
-        Picker = new PathPickerVM(schedulerProvider)
+        Picker = new PathPickerVM(schedulerProvider, pathPickerDialogProvider)
         {
             ExistCheckOption = PathPickerVM.CheckOptions.On,
             PathType = PathPickerVM.PathTypeOptions.File,
         };
-        Picker.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
+        Picker.Filters.Add(new DialogFileFilter("Solution", ".sln"));
     }
 
     public IObservable<FilePath> Path => Picker.WhenAnyValue(x => x.TargetPath)

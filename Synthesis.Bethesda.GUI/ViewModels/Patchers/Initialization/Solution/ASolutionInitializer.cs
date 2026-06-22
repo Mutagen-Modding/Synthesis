@@ -1,4 +1,5 @@
 using Noggog;
+using Noggog.UI;
 using Noggog.WPF;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Solution;
 

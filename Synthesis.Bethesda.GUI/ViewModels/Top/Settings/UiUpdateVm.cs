@@ -3,6 +3,7 @@ using System.Windows.Input;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using NuGet.Versioning;
 using ReactiveUI;

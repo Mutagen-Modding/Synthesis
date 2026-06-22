@@ -6,6 +6,7 @@ using DynamicData.Binding;
 using Microsoft.Win32;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

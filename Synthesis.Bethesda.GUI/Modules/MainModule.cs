@@ -9,6 +9,7 @@ using Noggog.Autofac;
 using Noggog.Autofac.Modules;
 using Noggog.Nuget.Services.Singleton;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
@@ -57,6 +58,8 @@ public class MainModule : Autofac.Module
         builder.RegisterInstance(Log.Logger).As<ILogger>();
 
         // Noggog
+        builder.RegisterType<WpfPathPickerDialogProvider>().As<IPathPickerDialogProvider>()
+            .SingleInstance();
         builder.RegisterType<WatchFile>().As<IWatchFile>()
             .SingleInstance();
         builder.RegisterType<WatchDirectory>().As<IWatchDirectory>()

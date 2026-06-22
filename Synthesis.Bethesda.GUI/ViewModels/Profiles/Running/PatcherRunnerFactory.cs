@@ -1,4 +1,4 @@
-﻿using Autofac;
+using Autofac;
 using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Execution.Modules;

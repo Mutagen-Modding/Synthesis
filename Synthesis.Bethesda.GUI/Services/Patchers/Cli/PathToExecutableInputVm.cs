@@ -1,5 +1,6 @@
-﻿using Noggog;
+using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using Synthesis.Bethesda.Execution.Patchers.Cli;
 using Synthesis.Bethesda.Execution.Settings;
@@ -19,9 +20,10 @@ public class PathToExecutableInputVm : ViewModel, IPathToExecutableInputVm
 
     public PathToExecutableInputVm(
         ISchedulerProvider schedulerProvider,
+        IPathPickerDialogProvider pathPickerDialogProvider,
         CliPatcherSettings settings)
     {
-        Picker = new(schedulerProvider)
+        Picker = new(schedulerProvider, pathPickerDialogProvider)
         {
             PathType = PathPickerVM.PathTypeOptions.File,
             ExistCheckOption = PathPickerVM.CheckOptions.On,

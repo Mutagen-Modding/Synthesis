@@ -1,5 +1,6 @@
-﻿using DynamicData;
+using DynamicData;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Linq;
@@ -26,14 +27,15 @@ public class SelectedProjectInputVm : ViewModel, ISelectedProjectInputVm
     public SelectedProjectInputVm(
         IProjectPathConstructor pathConstructor,
         ISolutionFilePathFollower solutionFilePathFollower,
-        ISchedulerProvider schedulerProvider)
+        ISchedulerProvider schedulerProvider,
+        IPathPickerDialogProvider pathPickerDialogProvider)
     {
-        Picker = new PathPickerVM(schedulerProvider)
+        Picker = new PathPickerVM(schedulerProvider, pathPickerDialogProvider)
         {
             ExistCheckOption = PathPickerVM.CheckOptions.On,
             PathType = PathPickerVM.PathTypeOptions.File,
         };
-        Picker.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
+        Picker.Filters.Add(new DialogFileFilter("Project", ".csproj"));
             
         this.WhenAnyValue(x => x.ProjectSubpath)
             // Need to filter nulls, as bindings flip to null temporarily, which we want to skip

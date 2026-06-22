@@ -3,6 +3,7 @@ using System.Windows.Input;
 using DynamicData;
 using Mutagen.Bethesda.Plugins.Implicit.DI;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.GUI.Services;

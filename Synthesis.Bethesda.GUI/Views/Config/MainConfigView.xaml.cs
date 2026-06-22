@@ -1,10 +1,11 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Noggog.UI;
 using Noggog.WPF;
 using System.Windows;
 using System.Windows.Controls;
 using DynamicData;
-using Noggog.WPF.Containers;
+using Noggog.UI.Containers;
 using ReactiveUI;
 using Noggog;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;

@@ -1,8 +1,9 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.GUI.Settings;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using Synthesis.Bethesda.Execution.DotNet;
 using Synthesis.Bethesda.Execution.Settings.Calculators;

@@ -1,6 +1,8 @@
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Windows;
 using System.Windows.Input;
 using System.Reactive.Linq;
@@ -23,12 +25,12 @@ public partial class TopProfileSelectorView
                 .DisposeWith(dispose);
 
             this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Release, GameRelease.SkyrimSE)
-                .ObserveOn(RxApp.TaskpoolScheduler)
+                .ObserveOn(RxSchedulers.TaskpoolScheduler)
                 .Select(gameRelease =>
                 {
                     return ImageUtility.BitmapImageFromResource(ResourceConstants.AssemblyName, ResourceConstants.GetIcon(gameRelease));
                 })
-                .ObserveOn(RxApp.MainThreadScheduler)
+                .ObserveOn(RxSchedulers.MainThreadScheduler)
                 .BindTo(this, x => x.GameIconImage.Source)
                 .DisposeWith(dispose);
 

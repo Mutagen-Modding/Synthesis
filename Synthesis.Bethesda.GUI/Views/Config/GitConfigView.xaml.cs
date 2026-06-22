@@ -1,3 +1,4 @@
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
@@ -54,7 +55,7 @@ public partial class GitConfigView
                     this.WhenAnyValue(x => x.ViewModel!.AttemptedCheckout),
                     this.WhenAnyValue(x => x.ViewModel!.RunnableData),
                     (attempted, data) => attempted && data == null)
-                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                .Throttle(TimeSpan.FromMilliseconds(150), RxSchedulers.MainThreadScheduler)
                 .Subscribe(x => this.PatcherVersioning.CurrentCommit.SetValue(ControlsHelper.InErrorProperty, x))
                 .DisposeWith(disposable);
             this.Bind(this.ViewModel, vm => vm.PatcherTargeting.TargetBranchName, view => view.PatcherVersioning.BranchNameBox.Text)
@@ -72,7 +73,7 @@ public partial class GitConfigView
                     this.WhenAnyValue(x => x.ViewModel!.RunnableData),
                     this.WhenAnyValue(x => x.ViewModel!.PatcherTargeting.PatcherVersioning),
                     (attempted, data, patcher) => attempted && data == null && patcher == PatcherVersioningEnum.Branch)
-                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                .Throttle(TimeSpan.FromMilliseconds(150), RxSchedulers.MainThreadScheduler)
                 .Subscribe(x => this.PatcherVersioning.BranchNameBox.SetValue(ControlsHelper.InErrorProperty, x))
                 .DisposeWith(disposable);
 
@@ -124,7 +125,7 @@ public partial class GitConfigView
 
             #region Status Block
             this.WhenAnyFallback(x => x.ViewModel!.StatusDisplay.Text)
-                .Throttle(TimeSpan.FromMilliseconds(50), RxApp.MainThreadScheduler)
+                .Throttle(TimeSpan.FromMilliseconds(50), RxSchedulers.MainThreadScheduler)
                 .BindTo(this, x => x.StatusBlock.Text)
                 .DisposeWith(disposable);
             #endregion

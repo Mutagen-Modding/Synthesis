@@ -1,6 +1,5 @@
 using DynamicData;
 using Noggog;
-using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda;
 using System.Reactive;
@@ -8,6 +7,7 @@ using System.Reactive.Linq;
 using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Order;
 using Noggog.Reactive;
+using Noggog.UI;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 
 namespace Mutagen.Bethesda.Synthesis.WPF;

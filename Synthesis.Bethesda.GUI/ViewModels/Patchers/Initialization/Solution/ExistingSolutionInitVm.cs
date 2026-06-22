@@ -6,6 +6,7 @@ using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Synthesis.Projects;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -32,14 +33,15 @@ public class ExistingSolutionInitVm : ASolutionInitializer
         IValidateProjectPath validateProjectPath,
         ICreateProject createProject,
         IAddProjectToSolution addProjectToSolution,
-        ISchedulerProvider schedulerProvider)
+        ISchedulerProvider schedulerProvider,
+        IPathPickerDialogProvider pathPickerDialogProvider)
     {
-        SolutionPath = new PathPickerVM(schedulerProvider)
+        SolutionPath = new PathPickerVM(schedulerProvider, pathPickerDialogProvider)
         {
             PathType = PathPickerVM.PathTypeOptions.File,
             ExistCheckOption = PathPickerVM.CheckOptions.On,
         };
-        SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
+        SolutionPath.Filters.Add(new DialogFileFilter("Solution", ".sln"));
 
         var validation = Observable.CombineLatest(
                 SolutionPath.PathState(),

@@ -7,6 +7,7 @@ using Mutagen.Bethesda.Plugins.Meta;
 using Mutagen.Bethesda.Strings;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;

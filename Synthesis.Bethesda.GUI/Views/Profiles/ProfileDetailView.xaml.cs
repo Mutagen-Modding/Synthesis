@@ -1,5 +1,6 @@
 using Mutagen.Bethesda;
 using Noggog;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
@@ -29,12 +30,12 @@ public partial class ProfileDetailView
                 .DisposeWith(disposable);
 
             this.WhenAnyFallback(x => x.ViewModel!.Profile!.Release, GameRelease.SkyrimSE)
-                .ObserveOn(RxApp.TaskpoolScheduler)
+                .ObserveOn(RxSchedulers.TaskpoolScheduler)
                 .Select(gameRelease =>
                 {
                     return ImageUtility.BitmapImageFromResource(ResourceConstants.AssemblyName, ResourceConstants.GetIcon(gameRelease));
                 })
-                .ObserveOn(RxApp.MainThreadScheduler)
+                .ObserveOn(RxSchedulers.MainThreadScheduler)
                 .BindTo(this, x => x.GameIconImage.Source)
                 .DisposeWith(disposable);
 

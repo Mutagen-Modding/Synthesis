@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
 using Noggog;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Settings;
@@ -43,12 +44,12 @@ public partial class PatcherNugetsVersioningView
             // Error state for manual version boxes
             this.WhenAnyValue(x => x.ViewModel!.NugetTargeting.ManualMutagenVersion)
                 .Select(x => x.IsNullOrWhitespace())
-                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                .Throttle(TimeSpan.FromMilliseconds(150), RxSchedulers.MainThreadScheduler)
                 .Subscribe(x => Mutagen.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
                 .DisposeWith(disposable);
             this.WhenAnyValue(x => x.ViewModel!.NugetTargeting.ManualSynthesisVersion)
                 .Select(x => x.IsNullOrWhitespace())
-                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                .Throttle(TimeSpan.FromMilliseconds(150), RxSchedulers.MainThreadScheduler)
                 .Subscribe(x => Synthesis.ManualVersionBox.SetValue(ControlsHelper.InErrorProperty, x))
                 .DisposeWith(disposable);
 
@@ -73,7 +74,7 @@ public partial class PatcherNugetsVersioningView
                         return true;
                     })
                 .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                .Throttle(TimeSpan.FromMilliseconds(150), RxSchedulers.MainThreadScheduler)
                 .BindTo(this, x => x.Mutagen.VersionChangeArrow.Visibility)
                 .DisposeWith(disposable);
             Observable.CombineLatest(
@@ -86,19 +87,19 @@ public partial class PatcherNugetsVersioningView
                         return true;
                     })
                 .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                .Throttle(TimeSpan.FromMilliseconds(150), RxSchedulers.MainThreadScheduler)
                 .BindTo(this, x => x.Synthesis.VersionChangeArrow.Visibility)
                 .DisposeWith(disposable);
 
             // Listed version text
             this.WhenAnyValue(x => x.ViewModel!.NugetDiff.MutagenVersionDiff)
                 .Select(x => x.MatchVersion)
-                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                .Throttle(TimeSpan.FromMilliseconds(150), RxSchedulers.MainThreadScheduler)
                 .BindTo(this, x => x.Mutagen.ListedVersionText.Text)
                 .DisposeWith(disposable);
             this.WhenAnyValue(x => x.ViewModel!.NugetDiff.SynthesisVersionDiff)
                 .Select(x => x.MatchVersion)
-                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                .Throttle(TimeSpan.FromMilliseconds(150), RxSchedulers.MainThreadScheduler)
                 .BindTo(this, x => x.Synthesis.ListedVersionText.Text)
                 .DisposeWith(disposable);
 
@@ -113,7 +114,7 @@ public partial class PatcherNugetsVersioningView
                         return true;
                     })
                 .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                .Throttle(TimeSpan.FromMilliseconds(150), RxSchedulers.MainThreadScheduler)
                 .BindTo(this, x => x.Mutagen.ListedVersionText.Visibility)
                 .DisposeWith(disposable);
             Observable.CombineLatest(
@@ -126,7 +127,7 @@ public partial class PatcherNugetsVersioningView
                         return true;
                     })
                 .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
-                .Throttle(TimeSpan.FromMilliseconds(150), RxApp.MainThreadScheduler)
+                .Throttle(TimeSpan.FromMilliseconds(150), RxSchedulers.MainThreadScheduler)
                 .BindTo(this, x => x.Synthesis.ListedVersionText.Visibility)
                 .DisposeWith(disposable);
 

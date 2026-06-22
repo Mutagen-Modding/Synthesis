@@ -5,6 +5,7 @@ using DynamicData.Binding;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
@@ -26,24 +27,27 @@ public class ExistingProjectInitVm : ASolutionInitializer
     public PathPickerVM SelectedProjectPath { get; }
 
     private readonly ISchedulerProvider _schedulerProvider;
+    private readonly IPathPickerDialogProvider _pathPickerDialogProvider;
 
     public ExistingProjectInitVm(
         IAvailableProjectsRetriever availableProjectsRetriever,
         IPatcherFactory patcherFactory,
-        ISchedulerProvider schedulerProvider)
+        ISchedulerProvider schedulerProvider,
+        IPathPickerDialogProvider pathPickerDialogProvider)
     {
         _schedulerProvider = schedulerProvider;
-        SolutionPath = new PathPickerVM(schedulerProvider)
+        _pathPickerDialogProvider = pathPickerDialogProvider;
+        SolutionPath = new PathPickerVM(schedulerProvider, pathPickerDialogProvider)
         {
             PathType = PathPickerVM.PathTypeOptions.File,
             ExistCheckOption = PathPickerVM.CheckOptions.On,
         };
-        SelectedProjectPath = new PathPickerVM(schedulerProvider)
+        SelectedProjectPath = new PathPickerVM(schedulerProvider, pathPickerDialogProvider)
         {
             ExistCheckOption = PathPickerVM.CheckOptions.On,
             PathType = PathPickerVM.PathTypeOptions.File,
         };
-        SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
+        SolutionPath.Filters.Add(new DialogFileFilter("Solution", ".sln"));
 
         AvailableProjects = this.WhenAnyValue(x => x.SolutionPath.TargetPath)
             .ObserveOn(schedulerProvider.TaskPool)
@@ -67,13 +71,13 @@ public class ExistingProjectInitVm : ASolutionInitializer
             })
             .Transform(path =>
             {
-                var pathPicker = new PathPickerVM(_schedulerProvider)
+                var pathPicker = new PathPickerVM(_schedulerProvider, _pathPickerDialogProvider)
                 {
                     PathType = PathPickerVM.PathTypeOptions.File,
                     ExistCheckOption = PathPickerVM.CheckOptions.On,
                     TargetPath = path
                 };
-                pathPicker.Filters.Add(new CommonFileDialogFilter("Project", ".csproj"));
+                pathPicker.Filters.Add(new DialogFileFilter("Project", ".csproj"));
                 return pathPicker;
             })
             .DisposeMany()

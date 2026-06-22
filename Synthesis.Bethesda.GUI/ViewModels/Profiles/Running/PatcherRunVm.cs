@@ -3,6 +3,7 @@ using System.Text;
 using ICSharpCode.AvalonEdit.Document;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

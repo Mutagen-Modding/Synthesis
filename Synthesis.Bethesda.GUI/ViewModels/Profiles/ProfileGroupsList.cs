@@ -1,4 +1,5 @@
 using DynamicData;
+using Noggog.UI;
 using Noggog.WPF;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;

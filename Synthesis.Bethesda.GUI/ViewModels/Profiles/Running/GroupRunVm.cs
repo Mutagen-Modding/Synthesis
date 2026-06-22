@@ -1,6 +1,7 @@
 using System.Reactive.Linq;
 using DynamicData;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

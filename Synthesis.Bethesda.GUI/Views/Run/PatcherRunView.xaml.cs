@@ -1,6 +1,8 @@
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Windows;
 using System.Reactive.Linq;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
@@ -64,8 +66,8 @@ public partial class PatcherRunView
                 .BindTo(this, x => x.OutputBox.Document)
                 .DisposeWith(disposable);
             this.WhenAnyValue(x => x.ViewModel!.OutputDisplay)
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Delay(TimeSpan.FromMilliseconds(50), RxApp.MainThreadScheduler)
+                .ObserveOn(RxSchedulers.MainThreadScheduler)
+                .Delay(TimeSpan.FromMilliseconds(50), RxSchedulers.MainThreadScheduler)
                 .Subscribe(_ =>
                 {
                     OutputBox.SetValue(TextEditorEx.DoScrollOnChangeProperty, true);
