@@ -7,7 +7,6 @@
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:muta="clr-namespace:Mutagen.Bethesda;assembly=Mutagen.Bethesda.Kernel"
     xmlns:wpf="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
     xmlns:profiles="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles"
     xmlns:xwpf="http://schemas.xceed.com/wpf/xaml/toolkit"
@@ -15,34 +14,6 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Grid Margin="15,15,15,0">
-        <Image Grid.Row="0" Grid.RowSpan="3"
-               x:Name="GameIconImage"
-               Width="40"
-               Height="40"
-               Margin="3,5"
-               HorizontalAlignment="Right"
-               VerticalAlignment="Top">
-            <Image.Resources>
-                <DropShadowEffect
-                    x:Key="GlowEffect"
-                    BlurRadius="4"
-                    Opacity="0.9"
-                    ShadowDepth="0"
-                    Color="{StaticResource LightBlue}" />
-            </Image.Resources>
-            <Image.Style>
-                <Style TargetType="Image">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Profile.Release}" Value="{x:Static muta:GameRelease.Oblivion}">
-                            <Setter Property="Effect" Value="{StaticResource GlowEffect}" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Profile.Release}" Value="{x:Static muta:GameRelease.SkyrimLE}">
-                            <Setter Property="Effect" Value="{StaticResource GlowEffect}" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Image.Style>
-        </Image>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />

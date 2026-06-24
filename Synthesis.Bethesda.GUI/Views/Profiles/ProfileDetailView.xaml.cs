@@ -29,16 +29,6 @@ public partial class ProfileDetailView
                 .BindTo(this, x => x.SelectButton.Command)
                 .DisposeWith(disposable);
 
-            this.WhenAnyFallback(x => x.ViewModel!.Profile!.Release, GameRelease.SkyrimSE)
-                .ObserveOn(RxSchedulers.TaskpoolScheduler)
-                .Select(gameRelease =>
-                {
-                    return ImageUtility.BitmapImageFromResource(ResourceConstants.AssemblyName, ResourceConstants.GetIcon(gameRelease));
-                })
-                .ObserveOn(RxSchedulers.MainThreadScheduler)
-                .BindTo(this, x => x.GameIconImage.Source)
-                .DisposeWith(disposable);
-
             this.WhenAnyValue(x => x.ViewModel!.OpenInternalProfileFolderCommand)
                 .BindTo(this, x => x.ProfileInternalFilesButton.Command)
                 .DisposeWith(disposable);

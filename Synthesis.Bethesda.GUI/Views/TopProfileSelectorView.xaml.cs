@@ -24,16 +24,6 @@ public partial class TopProfileSelectorView
                 .BindTo(this, x => x.ProfileNameBlock.Text)
                 .DisposeWith(dispose);
 
-            this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.Release, GameRelease.SkyrimSE)
-                .ObserveOn(RxSchedulers.TaskpoolScheduler)
-                .Select(gameRelease =>
-                {
-                    return ImageUtility.BitmapImageFromResource(ResourceConstants.AssemblyName, ResourceConstants.GetIcon(gameRelease));
-                })
-                .ObserveOn(RxSchedulers.MainThreadScheduler)
-                .BindTo(this, x => x.GameIconImage.Source)
-                .DisposeWith(dispose);
-
             this.WhenAnyValue(x => x.ViewModel!.OpenProfilesPageCommand)
                 .BindTo(this, x => x.OpenProfilesPageButton.Command)
                 .DisposeWith(dispose);

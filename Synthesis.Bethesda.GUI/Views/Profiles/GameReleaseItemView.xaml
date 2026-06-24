@@ -14,38 +14,12 @@
         BorderThickness="1"
         CornerRadius="5">
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0"
-                       Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"
-                       Margin="3"
-                       VerticalAlignment="Center"
-                       FontWeight="Bold"
-                       FontSize="16" />
-            <local:GameIconView Grid.Column="1"
-                                VerticalAlignment="Center"
-                                Width="25" Height="25" 
-                                Margin="6">
-                <local:GameIconView.Style>
-                    <Style TargetType="local:GameIconView">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=MainGrid}" Value="True">
-                                <Setter Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect
-                                            BlurRadius="10"
-                                            Opacity="1"
-                                            ShadowDepth="0"
-                                            Color="{StaticResource LightBlue}" />
-                                    </Setter.Value>
-                                </Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </local:GameIconView.Style>
-            </local:GameIconView>
+            <TextBlock
+                Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"
+                Margin="3"
+                VerticalAlignment="Center"
+                FontWeight="Bold"
+                FontSize="16" />
         </Grid>
     </Border>
 </UserControl>
