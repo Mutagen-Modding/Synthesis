@@ -48,6 +48,12 @@ public class RunVm : ViewModel
     [Reactive]
     public bool Running { get; private set; } = true;
 
+    private readonly ObservableAsPropertyHelper<bool> _overallErrored;
+    /// <summary>
+    /// True if an overall problem was reported or any patcher ended in an error state.
+    /// </summary>
+    public bool OverallErrored => _overallErrored.Value;
+
     public ObservableCollection<GroupRunVm> Groups { get; } = new();
 
     public ICommand BackCommand { get; }
@@ -97,7 +103,19 @@ public class RunVm : ViewModel
         {
             runDisplayControllerVm.SelectedObject = run;
         }
-            
+
+        var anyPatcherErrored = _patchers.Count == 0
+            ? Observable.Return(false)
+            : _patchers.Values
+                .Select(p => p.WhenAnyValue(x => x.State).Select(s => s.Value == RunState.Error))
+                .CombineLatest()
+                .Select(states => states.Any(x => x));
+        _overallErrored = Observable.CombineLatest(
+                anyPatcherErrored,
+                this.WhenAnyValue(x => x.ResultError),
+                (patcherErrored, resultError) => patcherErrored || resultError != null)
+            .ToGuiProperty(this, nameof(OverallErrored), false, schedulerProvider.MainThread, deferSubscription: true);
+
         BackCommand = ReactiveCommand.Create(() =>
             {
                 profile.DisplayController.SelectedObject = runDisplayControllerVm.SelectedObject?.SourceVm;

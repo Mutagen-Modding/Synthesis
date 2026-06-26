@@ -77,6 +77,9 @@ public class GroupVm : ViewModel, ISelected
 
     public ObservableCollection<ModKey> BlacklistedModKeys { get; } = new();
 
+    /// <summary>Live stream of whether the app is in MO2 prep mode (run buttons hidden).</summary>
+    public IObservable<bool> Mo2PrepMode { get; }
+
     public GroupVm(
         ProfileVm profileVm,
         OverallErrorVm overallErrorVm,
@@ -84,12 +87,14 @@ public class GroupVm : ViewModel, ISelected
         IProfileLoadOrder loadOrder,
         IConfirmationPanelControllerVm confirmation,
         IProfileDisplayControllerVm profileDisplayController,
+        IMo2PrepModeProvider mo2PrepMode,
         ILogger logger,
         ISchedulerProvider schedulerProvider,
         ErrorDisplayVmFactory errorDisplayVmFactory)
     {
         _profileDisplayController = profileDisplayController;
         ProfileVm = profileVm;
+        Mo2PrepMode = mo2PrepMode.ActiveObservable;
         LoadOrder = loadOrder.LoadOrder.Connect()
             .Transform(x => x.ModKey);
         DisplayController = profileVm.DisplayController;

@@ -28,6 +28,8 @@ public partial class AdvancedSettingsView
                 .DisposeWith(dispose);
             this.Bind(ViewModel, x => x.SpecifyTargetFramework, x => x.SpecifyTargetFrameworkCheck.IsChecked)
                 .DisposeWith(dispose);
+            this.OneWayBind(ViewModel, x => x.GoToMo2FaqCommand, x => x.Mo2FaqLink.Command)
+                .DisposeWith(dispose);
         });
     }
 }

@@ -1,6 +1,8 @@
 using System.Reactive.Linq;
+using System.Windows.Input;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Settings;
 using Noggog.Reactive;
 using Noggog.UI;
@@ -37,11 +39,17 @@ public class GlobalSettingsVm : ViewModel,
 
     public string? TargetRuntime => SpecifyTargetFramework ? "win-x64" : null;
 
+    public const string Mo2FaqPage = "https://github.com/Mutagen-Modding/Synthesis/discussions/562";
+
+    public ICommand GoToMo2FaqCommand { get; }
+
     public GlobalSettingsVm(
         ISettingsSingleton settingsSingleton,
         BuildCoreCalculator calculator,
+        INavigateTo navigateTo,
         ISchedulerProvider schedulerProvider)
     {
+        GoToMo2FaqCommand = ReactiveCommand.Create(() => navigateTo.Navigate(Mo2FaqPage));
         Shortcircuit = settingsSingleton.Pipeline.Shortcircuit;
         BlockBuildingWithinMo2 = settingsSingleton.Pipeline.BlockBuildingWithinMo2;
         DotNetPathOverride = settingsSingleton.Pipeline.DotNetPathOverride;

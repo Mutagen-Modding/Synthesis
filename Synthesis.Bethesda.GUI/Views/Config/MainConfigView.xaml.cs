@@ -10,6 +10,7 @@ using ReactiveUI;
 using Noggog;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
@@ -71,17 +72,51 @@ public partial class MainConfigView
             this.WhenAnyValue(x => x.ViewModel!.RunPatchers)
                 .BindTo(this, x => x.GoButton.Command)
                 .DisposeWith(disposable);
-            overallErr
-                .Select(err => err.Succeeded ? Visibility.Visible : Visibility.Collapsed)
+            // Hide the run button when there's a blocking error, or when in MO2 prep mode
+            // (running standalone with MO2 mode on), where the build status is shown instead.
+            Observable.CombineLatest(
+                    overallErr.Select(x => x.Succeeded),
+                    this.WhenAnyValue(x => x.ViewModel!.Mo2PrepMode),
+                    (succeeded, prepMode) => succeeded && !prepMode)
+                .Select(show => show ? Visibility.Visible : Visibility.Collapsed)
                 .BindTo(this, x => x.GoButton.Visibility)
                 .DisposeWith(disposable);
 
-            this.WhenAnyValue(x => x.ViewModel!.RunPatchers.CanExecute)
-                .Switch()
-                .CombineLatest(this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.BlockingError, GetResponse<ViewModel>.Succeed(null!)),
-                    (can, overall) => !can && overall.Succeeded)
+            Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.ViewModel!.RunPatchers.CanExecute).Switch(),
+                    this.WhenAnyFallback(x => x.ViewModel!.SelectedProfile!.BlockingError, GetResponse<ViewModel>.Succeed(null!)),
+                    this.WhenAnyValue(x => x.ViewModel!.Mo2PrepMode),
+                    (can, overall, prepMode) => !can && overall.Succeeded && !prepMode)
                 .Select(show => show ? Visibility.Visible : Visibility.Collapsed)
                 .BindTo(this, x => x.ProcessingCircle.Visibility)
+                .DisposeWith(disposable);
+
+            // MO2 prep mode: show the build status block in place of the run button.
+            Observable.CombineLatest(
+                    this.WhenAnyValue(x => x.ViewModel!.Mo2PrepMode),
+                    overallErr.Select(x => x.Succeeded),
+                    (prepMode, succeeded) => prepMode && succeeded)
+                .Select(show => show ? Visibility.Visible : Visibility.Collapsed)
+                .BindTo(this, x => x.Mo2BuildStatusPanel.Visibility)
+                .DisposeWith(disposable);
+            var mo2BuildStatus = this.WhenAnyValue(x => x.ViewModel!.Mo2BuildStatus);
+            mo2BuildStatus
+                .Select(s => s == Mo2BuildStatus.Building ? Visibility.Visible : Visibility.Collapsed)
+                .BindTo(this, x => x.Mo2BuildingPanel.Visibility)
+                .DisposeWith(disposable);
+            mo2BuildStatus
+                .Select(s => s == Mo2BuildStatus.Succeeded ? Visibility.Visible : Visibility.Collapsed)
+                .BindTo(this, x => x.Mo2SucceededPanel.Visibility)
+                .DisposeWith(disposable);
+            mo2BuildStatus
+                .Select(s => s == Mo2BuildStatus.Failed ? Visibility.Visible : Visibility.Collapsed)
+                .BindTo(this, x => x.Mo2FailedPanel.Visibility)
+                .DisposeWith(disposable);
+            this.WhenAnyValue(x => x.ViewModel!.Mo2PrepMode)
+                .Select(prepMode => prepMode ? Visibility.Visible : Visibility.Collapsed)
+                .BindTo(this, x => x.Mo2ModeBanner.Visibility)
+                .DisposeWith(disposable);
+            this.OneWayBind(this.ViewModel, vm => vm.OpenMo2SettingsCommand, view => view.Mo2ModeBanner.Command)
                 .DisposeWith(disposable);
                 
             Drag.ListBoxDrops<ViewModel>(

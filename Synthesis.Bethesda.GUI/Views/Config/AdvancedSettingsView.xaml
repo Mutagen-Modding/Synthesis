@@ -18,12 +18,6 @@
                     Content="Short Circuit Checks"
                     ToolTip="Whether to track and skip building and other meta gathering steps when deemed appropriate" />
             </StackPanel>
-            <StackPanel Margin="5" Orientation="Horizontal">
-                <CheckBox
-                    x:Name="BlockBuildingWithinMo2Box"
-                    Content="Block Building Within MO2"
-                    ToolTip="When enabled, building is blocked if Synthesis detects it is running inside MO2's virtual file system. This prevents VFS-related build failures." />
-            </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock
                     Margin="0,0,10,0"
@@ -54,6 +48,23 @@
         <TextBlock Text="Dot Net" Style="{StaticResource SettingSectionHeaderStyle}" Margin="0,25,0,5" />
         <StackPanel Orientation="Vertical" Margin="15,5,5,5">
             <CheckBox Content="Specify Target Framework" x:Name="SpecifyTargetFrameworkCheck" ToolTip="Specify the target framework win-x64 during builds" />
+        </StackPanel>
+        <TextBlock Text="MO2" Style="{StaticResource SettingSectionHeaderStyle}" Margin="0,25,0,5" />
+        <StackPanel Orientation="Vertical" Margin="15,5,5,5">
+            <CheckBox
+                x:Name="BlockBuildingWithinMo2Box"
+                Content="MO2 Mode"
+                ToolTip="Refuse to build while running inside MO2, to avoid Virtual File System build failures." />
+            <TextBlock
+                Margin="0,8,0,0"
+                HorizontalAlignment="Left"
+                FontSize="12"
+                Foreground="Gray"
+                TextWrapping="Wrap"
+                Text="Turns on protections and patterns to avoid build errors when running inside Mo2." />
+            <TextBlock Margin="0,8,0,0" FontSize="12">
+                <Hyperlink x:Name="Mo2FaqLink">Read the MO2 + Synthesis FAQ</Hyperlink>
+            </TextBlock>
         </StackPanel>
     </StackPanel>
 </wpf:NoggogUserControl>
