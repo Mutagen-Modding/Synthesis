@@ -9,7 +9,8 @@ public interface ISynthesisGuiSettings
     string SelectedProfile { get; set; }
     BrowserSettings BrowserSettings { get; set; }
     bool SpecifyTargetFramework { get; set; }
-    
+    bool HasSeenMo2Prompt { get; set; }
+
 }
 
 public record SynthesisGuiSettings : ISynthesisGuiSettings
@@ -22,6 +23,7 @@ public record SynthesisGuiSettings : ISynthesisGuiSettings
     public string SelectedProfile { get; set; } = string.Empty;
     public BrowserSettings BrowserSettings { get; set; } = new(ShowUnlisted: false, ShowInstalled: true);
     public bool SpecifyTargetFramework { get; set; } = true;
+    public bool HasSeenMo2Prompt { get; set; } = false;
     public string? TargetRuntime => SpecifyTargetFramework ? "win-x64" : null;
 }
 

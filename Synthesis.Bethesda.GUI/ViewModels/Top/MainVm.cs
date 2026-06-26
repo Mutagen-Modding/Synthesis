@@ -30,6 +30,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
         private readonly IActivePanelControllerVm _activePanelControllerVm;
         private readonly ILogger _logger;
         private readonly NewProfileVm.Factory _newProfileVmFactory;
+        private readonly Mo2PromptVm _mo2PromptVm;
         public ProfileManagerVm ProfileManager { get; }
 
         private readonly ObservableAsPropertyHelper<ViewModel?> _activePanel;
@@ -73,6 +74,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             ILogger logger,
             UiUpdateVm uiUpdateVm,
             NewProfileVm.Factory newProfileVmFactory,
+            Mo2PromptVm mo2PromptVm,
             ISchedulerProvider schedulerProvider)
         {
             _selectedProfileController = selectedProfile;
@@ -80,6 +82,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _activePanelControllerVm = activePanelControllerVm;
             _logger = logger;
             _newProfileVmFactory = newProfileVmFactory;
+            _mo2PromptVm = mo2PromptVm;
             UiUpdateVm = uiUpdateVm;
             _activePanel = activePanelControllerVm.WhenAnyValue(x => x.ActivePanel!.ViewModel)
                 .ToGuiProperty(this, nameof(ActivePanel), default, schedulerProvider.MainThread, deferSubscription: true);
@@ -138,6 +141,10 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             _inModal = this.WhenAnyValue(x => x.ActiveConfirmation)
                 .Select(x => x != null)
                 .ToGuiProperty(this, nameof(InModal), schedulerProvider.MainThread, deferSubscription: true);
+
+            _mo2PromptVm.ConfirmCommand
+                .Subscribe(_ => _activePanelControllerVm.ActivePanel = ProfileManager)
+                .DisposeWith(this);
         }
 
         public async Task Load()
@@ -158,14 +165,30 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Top
             if (ProfileManager.Profiles.Count == 0)
             {
                 _activePanelControllerVm.ActivePanel = _newProfileVmFactory(
-                    this.ProfileManager, 
+                    this.ProfileManager,
                     (profile) =>
                     {
                         _selectedProfileController.SelectedProfile = profile;
-                        _activePanelControllerVm.ActivePanel = ProfileManager;
+                        ShowMainOrMo2Prompt();
                     });
             }
+            else
+            {
+                ShowMainOrMo2Prompt();
+            }
             InitialLoading = false;
+        }
+
+        private void ShowMainOrMo2Prompt()
+        {
+            if (_mo2PromptVm.ShouldShow)
+            {
+                _activePanelControllerVm.ActivePanel = _mo2PromptVm;
+            }
+            else
+            {
+                _activePanelControllerVm.ActivePanel = ProfileManager;
+            }
         }
     }
 }
