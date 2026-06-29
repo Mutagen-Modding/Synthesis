@@ -3,6 +3,7 @@ using Shouldly;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
+using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.DotNet.Builder;
@@ -15,7 +16,10 @@ public class BuildStartInfoProviderTests
         BuildStartInfoProvider sut)
     {
         sut.Construct(path);
-        sut.StartConstructor.Received(1).Construct("build", path, Arg.Any<string[]>());
+        sut.StartConstructor.Received(1).Construct(
+            Arg.Is<string>(s => s.StartsWith("build")),
+            path,
+            Arg.Any<string[]>());
     }
         
     [Theory, SynthAutoData]

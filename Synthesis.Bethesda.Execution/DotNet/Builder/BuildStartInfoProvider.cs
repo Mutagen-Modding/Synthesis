@@ -20,7 +20,7 @@ public class BuildStartInfoProvider : IBuildStartInfoProvider
         ExecutionParameters = executionParameters;
         StartConstructor = startConstructor;
     }
-        
+
     public ProcessStartInfo Construct(FilePath path)
     {
         return StartConstructor.Construct("build", path, ExecutionParameters.Parameters);

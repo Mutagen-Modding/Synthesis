@@ -2,6 +2,7 @@
 using Noggog.IO;
 using Serilog;
 using Synthesis.Bethesda.Execution.Utility;
+using Synthesis.Bethesda.GUI.Logging;
 
 namespace Synthesis.Bethesda.GUI.Services.Startup;
 
@@ -16,6 +17,7 @@ public class RegisterMetaFileType : IStartupTask
     
     public void Start()
     {
+        if (LogPreferences.IsTesting) return;
         try
         {
             FileAssociations.EnsureAssociationsSet(

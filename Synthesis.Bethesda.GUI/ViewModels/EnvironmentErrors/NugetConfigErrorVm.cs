@@ -7,6 +7,7 @@ using Noggog;
 using Noggog.Nuget.Errors;
 using Noggog.Nuget.Services.Singleton;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;

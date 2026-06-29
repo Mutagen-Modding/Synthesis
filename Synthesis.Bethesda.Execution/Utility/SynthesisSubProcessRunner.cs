@@ -10,7 +10,7 @@ public interface ISynthesisSubProcessRunner
     Task<ProcessRunReturn> RunAndCapture(
         ProcessStartInfo startInfo,
         CancellationToken cancel);
-        
+
     Task<int> Run(
         ProcessStartInfo startInfo,
         CancellationToken cancel,
@@ -25,6 +25,15 @@ public interface ISynthesisSubProcessRunner
     Task<int> RunWithCallback(
         ProcessStartInfo startInfo,
         Action<string> callback,
+        CancellationToken cancel);
+
+    Task<ProcessRunReturn> RunAndCaptureWithLogging(
+        ProcessStartInfo startInfo,
+        CancellationToken cancel);
+
+    Task<int> RunWithCapture(
+        ProcessStartInfo startInfo,
+        PatcherRunCapture capture,
         CancellationToken cancel);
 }
 
@@ -115,7 +124,7 @@ public class SynthesisSubProcessRunner : ISynthesisSubProcessRunner
 
     public async Task<int> RunWithCallback(
         ProcessStartInfo startInfo,
-        Action<string> callback, 
+        Action<string> callback,
         CancellationToken cancel)
     {
         return await RunWithCallback(
@@ -123,5 +132,47 @@ public class SynthesisSubProcessRunner : ISynthesisSubProcessRunner
             callback,
             callback,
             cancel).ConfigureAwait(false);;
+    }
+
+    public async Task<ProcessRunReturn> RunAndCaptureWithLogging(
+        ProcessStartInfo startInfo,
+        CancellationToken cancel)
+    {
+        var outs = new List<string>();
+        var errs = new List<string>();
+        var ret = await RunWithCallback(
+            startInfo,
+            outputCallback: line =>
+            {
+                outs.Add(line);
+                Logger.Information(line);
+            },
+            errorCallback: line =>
+            {
+                errs.Add(line);
+                Logger.Error(line);
+            },
+            cancel).ConfigureAwait(false);
+        return new(ret, outs, errs);
+    }
+
+    public async Task<int> RunWithCapture(
+        ProcessStartInfo startInfo,
+        PatcherRunCapture capture,
+        CancellationToken cancel)
+    {
+        return await RunWithCallback(
+            startInfo,
+            outputCallback: line =>
+            {
+                capture.Output.Add(line);
+                Logger.Information(line);
+            },
+            errorCallback: line =>
+            {
+                capture.Errors.Add(line);
+                Logger.Error(line);
+            },
+            cancel).ConfigureAwait(false);
     }
 }

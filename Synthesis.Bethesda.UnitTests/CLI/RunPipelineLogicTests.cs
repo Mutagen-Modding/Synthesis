@@ -8,6 +8,7 @@ using Mutagen.Bethesda.Testing.AutoData;
 using Noggog.IO;
 using Noggog.Testing.AutoFixture;
 using Noggog.Testing.Extensions;
+using TempFile = Noggog.IO.TempFile;
 using Synthesis.Bethesda.CLI.AddSolutionPatcher;
 using Synthesis.Bethesda.CLI.CreateProfileCli;
 using Synthesis.Bethesda.CLI.CreateTemplatePatcher;

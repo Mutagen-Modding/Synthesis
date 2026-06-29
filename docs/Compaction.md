@@ -1,16 +1,55 @@
 # Compaction
 
-Mods in newer Bethesda games can have specific flags marked to enforce specific compaction of their records so the game can load more of them.   The game engine can load more of these mods with smaller compaction, but the tradeoff is those mods can define less overall records.
+Compaction settings control how your patch files store records, affecting how many mods can be loaded and how many records each mod can contain.
 
-These are often referred to as `Small`/`Medium`/`Full` master mods.  Skyrim often refers to `Small` as `Light`.   By default, Synthesis exports as `Full`, for simplicity, and to allow as many records as possible to be defined within a patch mod.
+## Overview
 
-If you would like to adjust the compaction style of your patches, the profile settings have a few settings.
+Modern Bethesda games use compaction flags to determine how records are stored in plugin files. The game engine can load more mods with smaller compaction levels, but each mod can define fewer total records. This creates a trade-off: smaller compaction allows more mods in your load order, but each individual mod can contain fewer records.
 
-![Compaction Settings](images/compaction-settings.png)
+**Default:** Full - This allows the maximum number of records per patch while keeping configuration simple.
 
-Here, you can select `Small`/`Medium`/`Full` as applicable to your target game.
+## Compaction Style
 
-Additionally, `Fallback on Overflow` can be selected to automatically use "larger" compaction settings if the smaller one selected overflows and contains too many records.
+Select the compaction level for your patches:
 
-!!! bug "Starfield"
-    Starfield is less flexible with compaction styles changing on the fly, so "Fallback on Overflow" is not recommended, and changing compaction styles in general should be done rarely.
+- **Small/Light** - Best for small patches that modify few records
+- **Medium** - Balanced option for moderate-sized patches (Starfield only)
+- **Full** - Best for large comprehensive patches (default)
+
+Choose the smallest compaction level that can accommodate your patch size to maximize the number of mods your load order can support.
+
+**Game Availability:**
+
+- **Skyrim/Fallout 4/Fallout 76:** Small and Full only
+- **Starfield:** Small, Medium, and Full
+
+## Fallback on Overflow
+
+When enabled, Synthesis will automatically switch to a larger compaction level if your patch exceeds the record limit for the selected level.
+
+**Example:** If you select "Small" but your patch exceeds the Small record limit, Synthesis will automatically export as "Medium" or "Full" instead.
+
+**Default:** Enabled (recommended)
+
+!!! warning "Starfield Compatibility"
+    Starfield is less flexible with compaction styles. Changing compaction levels can cause compatibility issues with existing saves.
+
+    - **Fallback on Overflow is NOT recommended** for Starfield
+    - Avoid changing compaction settings frequently
+    - Choose your target compaction level carefully before starting a playthrough
+
+## FormID Persistence
+
+This setting controls how Synthesis maintains consistent FormIDs across rebuilds of your patch.
+
+- **None** - No FormID persistence (FormIDs may change between rebuilds)
+- **Text** - Uses text-based persistence files
+- **Binary** - Uses binary persistence files (more efficient)
+
+Consistent FormIDs are important for save game compatibility. If you rebuild your patch and FormIDs change, existing saves may experience issues.
+
+**Default:** Text mode (recommended)
+
+## Location in Settings
+
+These settings are found in the Profile settings under the **Compaction** section.

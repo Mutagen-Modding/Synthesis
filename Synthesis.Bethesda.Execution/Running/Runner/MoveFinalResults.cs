@@ -1,4 +1,6 @@
 ﻿using System.IO.Abstractions;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.IO.DI;
 using Noggog;
 using Synthesis.Bethesda.Execution.Profile.Services;
 using Synthesis.Bethesda.Execution.Reporters;
@@ -7,7 +9,7 @@ namespace Synthesis.Bethesda.Execution.Running.Runner;
 
 public interface IMoveFinalResults
 {
-    void Move(
+    IReadOnlyList<ModKey> Move(
         FilePath finalPatch,
         DirectoryPath outputPath);
 }
@@ -15,20 +17,26 @@ public interface IMoveFinalResults
 public class MoveFinalResults : IMoveFinalResults
 {
     private readonly IRunReporter _reporter;
+    private readonly IModFilesMover _modFilesMover;
+    private readonly IAssociatedFilesLocator _associatedFilesLocator;
     public IProfileDirectories ProfileDirectories { get; }
     public IFileSystem FileSystem { get; }
 
     public MoveFinalResults(
         IRunReporter reporter,
         IProfileDirectories profileProfileDirectories,
-        IFileSystem fileSystem)
+        IFileSystem fileSystem,
+        IModFilesMover modFilesMover,
+        IAssociatedFilesLocator associatedFilesLocator)
     {
         _reporter = reporter;
+        _modFilesMover = modFilesMover;
+        _associatedFilesLocator = associatedFilesLocator;
         ProfileDirectories = profileProfileDirectories;
         FileSystem = fileSystem;
     }
-        
-    public void Move(
+
+    public IReadOnlyList<ModKey> Move(
         FilePath finalPatch,
         DirectoryPath outputPath)
     {
@@ -37,18 +45,29 @@ public class MoveFinalResults : IMoveFinalResults
         {
             FileSystem.Directory.CreateDirectory(workspaceOutput);
         }
-            
-        var finalPatchFolder = finalPatch.Directory!;
-            
-        _reporter.WriteOverall("Files to export:");
-        foreach (var file in finalPatchFolder.Value.EnumerateFiles(true, fileSystem: FileSystem))
+        if (!FileSystem.Directory.Exists(outputPath))
         {
-            _reporter.WriteOverall($"   {file.GetRelativePathTo(finalPatchFolder.Value)}");
+            FileSystem.Directory.CreateDirectory(outputPath);
         }
-            
-        FileSystem.Directory.DeepCopy(finalPatchFolder.Value.Path, workspaceOutput);
+
+        var associatedFiles = _associatedFilesLocator.GetAssociatedFiles(finalPatch).ToList();
+
+        _reporter.WriteOverall("Files to export:");
+        foreach (var file in associatedFiles)
+        {
+            _reporter.WriteOverall($"   {file.GetRelativePathTo(finalPatch.Directory!.Value)}");
+        }
+
+        _modFilesMover.CopyModTo(finalPatch, workspaceOutput, overwrite: true);
         _reporter.WriteOverall($"Exported patch to workspace: {workspaceOutput}");
-        FileSystem.Directory.DeepCopy(finalPatchFolder.Value.Path, outputPath.Path, overwrite: true);
+        _modFilesMover.CopyModTo(finalPatch, outputPath, overwrite: true);
         _reporter.WriteOverall($"Exported patch to final destination: {outputPath.Path}");
+
+        // Return the ModKeys for the plugin files that were moved
+        return associatedFiles
+            .Select(f => (FileName?)f.Name)
+            .SelectWhere<FileName?, ModKey>(ModKey.TryFromFileName)
+            .ToList();
     }
+
 }

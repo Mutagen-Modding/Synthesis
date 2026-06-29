@@ -2,16 +2,28 @@ name: Publish
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Optional: Release tag to re-publish (e.g. 0.36.0). Moves the tag to current commit and re-uploads. Leave empty for build/test/nuget only.'
+        required: false
+        type: string
   release:
     types: [published]
 
-jobs:    
+jobs:
   build-test-push:
     runs-on: windows-latest
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
+    - name: Update tag to current commit
+      if: inputs.tag != ''
+      run: |
+        git tag -f ${{ env.RELEASE_TAG }}
+        git push origin ${{ env.RELEASE_TAG }} --force
     - name: Setup .NET 10
       uses: actions/setup-dotnet@v4
       with:
@@ -22,25 +34,31 @@ jobs:
         dotnet restore Synthesis.Bethesda.sln
     - name: Build
       run: dotnet build Synthesis.Bethesda.sln -c Release --no-restore /p:GeneratePackageOnBuild=false
-    - name: Test
-      run: dotnet test Synthesis.Bethesda.sln --no-build -c Release
     - name: Pack
       run: |
-        dotnet pack Synthesis.Bethesda.sln -c Release --no-build --no-restore -o out --include-symbols -p:SymbolPackageFormat=snupkg  -p:PackageReleaseNotes="See https://github.com/Mutagen-Modding/Synthesis/releases/tag/${{ github.event.release.tag_name }}"
+        dotnet pack Synthesis.Bethesda.sln -c Release --no-build --no-restore -o out --include-symbols -p:SymbolPackageFormat=snupkg
+    - name: Add local NuGet source
+      run: dotnet nuget add source ${{ github.workspace }}/out --name local
+    - name: Test
+      run: dotnet test Synthesis.Bethesda.sln --no-build -c Release -- xUnit.maxParallelThreads=1
+      env:
+        SYNTHESIS_TEST_TIMEOUT_SECONDS: 600
     - name: Pack GUI
       run: dotnet publish "Synthesis.Bethesda.GUI/Synthesis.Bethesda.GUI.csproj" --configuration Release -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true
     - name: Archive Release
       run: |
         powershell Compress-Archive Synthesis.Bethesda.GUI/bin/Release/net9.0/win-x64/publish/* Synthesis.zip
     - name: Publish Synthesis GUI to Github
+      if: env.RELEASE_TAG != ''
       uses: svenstaro/upload-release-action@v2
       with:
         file: Synthesis.zip
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ github.event.release.tag_name }}
+        tag: ${{ env.RELEASE_TAG }}
+        overwrite: true
     - name: Publish to Nuget.org
       run: |
         Get-ChildItem "out/*.nupkg" | ForEach-Object {
           Write-Host "Pushing $($_.Name)"
           dotnet nuget push $_.FullName --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
-        }  
+        }

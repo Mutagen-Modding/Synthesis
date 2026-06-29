@@ -190,7 +190,7 @@ public class SynthesisPipeline
         }
         catch (Exception ex)
         {
-            System.Console.Error.Write(ex);
+            PrintException(ex);
             return Codes.NotRunnable;
         }
         return 0;
@@ -388,6 +388,16 @@ public class SynthesisPipeline
         return await HandleOnShutdown(() => InternalRun(args, null, fileSystem: fileSystem));
     }
 
+    private void PrintException(Exception ex)
+    {
+        System.Console.Error.WriteLine(ex);
+        while (ex.InnerException != null)
+        {
+            ex = ex.InnerException;
+            System.Console.Error.WriteLine(ex);
+        }
+    }
+
     private async Task<int> InternalRun(
         string[] args,
         RunPreferences? preferences = null,
@@ -412,7 +422,7 @@ public class SynthesisPipeline
                 }
                 catch (Exception ex)
                 {
-                    System.Console.Error.WriteLine(ex);
+                    PrintException(ex);
                     if (preferences.ActionsForEmptyArgs.BlockAutomaticExit)
                     {
                         System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
@@ -430,7 +440,7 @@ public class SynthesisPipeline
             }
             catch (Exception ex)
             {
-                System.Console.Error.WriteLine(ex);
+                PrintException(ex);
                 throw;
             }
             return -1;
@@ -456,7 +466,7 @@ public class SynthesisPipeline
                     }
                     catch (Exception ex)
                     {
-                        System.Console.Error.WriteLine(ex);
+                        PrintException(ex);
                         if (preferences?.ActionsForEmptyArgs?.BlockAutomaticExit ?? false)
                         {
                             System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
@@ -535,7 +545,7 @@ public class SynthesisPipeline
                 when (Environment.GetCommandLineArgs().Length == 0
                       && (preferences?.ActionsForEmptyArgs?.BlockAutomaticExit ?? false))
             {
-                System.Console.Error.WriteLine(ex);
+                PrintException(ex);
                 System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
                 System.Console.ReadLine();
             }
@@ -638,22 +648,28 @@ public class SynthesisPipeline
         if (prefs.NoPatch) return;
             
         System.Console.WriteLine($"Writing to output: {args.OutputPath}");
-        Directory.CreateDirectory(Path.GetDirectoryName(args.OutputPath)!);
+        fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(args.OutputPath)!);
 
         try
         {
-            await state.PatchMod.BeginWrite
+            var writeBuilder = state.PatchMod.BeginWrite
                 .ToPath(args.OutputPath)
                 .WithLoadOrder(state.LoadOrderForPipeline)
                 .WithFileSystem(fileSystem)
                 .NoModKeySync()
                 .WithTargetLanguage(args.TargetLanguage)
                 .WithEmbeddedEncodings(
-                    args.UseUtf8ForEmbeddedStrings 
+                    args.UseUtf8ForEmbeddedStrings
                         ? new EncodingBundle(NonTranslated: MutagenEncoding._1252, NonLocalized: MutagenEncoding._utf8)
                         : null)
-                .WithForcedLowerFormIdRangeUsage(args.FormIDRangeMode.ToForceBool())
-                .WriteAsync();
+                .WithForcedLowerFormIdRangeUsage(args.FormIDRangeMode.ToForceBool());
+
+            if (args.SplitIfMaxMastersExceeded)
+            {
+                writeBuilder = writeBuilder.WithAutoSplit();
+            }
+
+            await writeBuilder.WriteAsync();
         }
         catch (TooManyMastersException tooMany)
         {
@@ -760,7 +776,7 @@ public class SynthesisPipeline
             when (Environment.GetCommandLineArgs().Length == 0
                   && (userPreferences?.ToRunPrefs().ActionsForEmptyArgs?.BlockAutomaticExit ?? false))
         {
-            System.Console.Error.WriteLine(ex);
+            PrintException(ex);
             System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
             System.Console.ReadLine();
         }
@@ -793,7 +809,7 @@ public class SynthesisPipeline
             when (Environment.GetCommandLineArgs().Length == 0
                   && (userPreferences?.ToRunPrefs().ActionsForEmptyArgs?.BlockAutomaticExit ?? false))
         {
-            System.Console.Error.WriteLine(ex);
+            PrintException(ex);
             System.Console.Error.WriteLine("Error occurred.  Press enter to exit");
             System.Console.ReadLine();
         }

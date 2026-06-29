@@ -1,7 +1,8 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;

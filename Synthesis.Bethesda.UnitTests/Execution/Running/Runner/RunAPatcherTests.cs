@@ -7,6 +7,7 @@ using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Groups;
 using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Running.Runner;
+using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.UnitTests.AutoData;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Running.Runner;
@@ -16,7 +17,7 @@ public class RunAPatcherTests
     [Theory, SynthAutoData]
     public async Task PrepExceptionReturnsNull(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancellation,
         FilePath? sourcePath,
         RunParameters runParameters,
@@ -38,7 +39,7 @@ public class RunAPatcherTests
     [Theory, SynthAutoData]
     public async Task CancelledReturnsNull(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancelled,
         FilePath? sourcePath,
         RunParameters runParameters,
@@ -58,7 +59,7 @@ public class RunAPatcherTests
     [Theory, SynthAutoData]
     public async Task RetrievesArgs(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancellation,
         FilePath? sourcePath,
         RunParameters runParameters,
@@ -85,7 +86,7 @@ public class RunAPatcherTests
     [Theory, SynthAutoData]
     public async Task PassesArgsToRun(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancellation,
         FilePath? sourcePath,
         ModPath outputPath,
@@ -104,13 +105,13 @@ public class RunAPatcherTests
             cancellation,
             sourcePath,
             runParameters);
-        await patcher.Received(1).Run(args, cancellation);
+        await patcher.Received(1).Run(args, Arg.Any<PatcherRunCapture>(), cancellation);
     }
         
     [Theory, SynthAutoData]
     public async Task GetArgsThrowsShouldThrow(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancellation,
         FilePath? sourcePath,
         RunParameters runParameters,
@@ -134,13 +135,13 @@ public class RunAPatcherTests
     [Theory, SynthAutoData]
     public async Task RunThrowsShouldThrow(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancellation,
         FilePath? sourcePath,
         RunParameters runParameters,
         RunAPatcher sut)
     {
-        patcher.Run(default!, default)
+        patcher.Run(default!, default!, default)
             .ThrowsForAnyArgs<NotImplementedException>();
         await Assert.ThrowsAsync<NotImplementedException>(() =>
         {
@@ -158,7 +159,7 @@ public class RunAPatcherTests
     [Theory, SynthAutoData]
     public async Task PassesArgsToFinalize(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancellation,
         FilePath? sourcePath,
         RunParameters runParameters,
@@ -184,7 +185,7 @@ public class RunAPatcherTests
     [Theory, SynthAutoData]
     public async Task ReturnsFinalizedResults(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         CancellationToken cancellation,
         FilePath? sourcePath,
         RunParameters runParameters,

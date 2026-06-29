@@ -7,6 +7,7 @@ using DynamicData.Binding;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
@@ -14,9 +15,11 @@ using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.DotNet.Singleton;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
+using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
@@ -69,8 +72,9 @@ public class SolutionPatcherVm : PatcherVm
         PatcherRenameActionVm.Factory renameFactory,
         PatcherGroupTarget groupTarget,
         ISchedulerProvider schedulerProvider,
+        ErrorDisplayVmFactory errorDisplayVmFactory,
         SolutionPatcherSettings? settings = null)
-        : base(scope, nameVm, profileDisplay, confirmation, idProvider, renameFactory, groupTarget, schedulerProvider, settings)
+        : base(scope, nameVm, profileDisplay, confirmation, idProvider, renameFactory, groupTarget, errorDisplayVmFactory, settings)
     {
         SolutionPathInput = solutionPathInput;
         SelectedProjectInput = selectedProjectInput;

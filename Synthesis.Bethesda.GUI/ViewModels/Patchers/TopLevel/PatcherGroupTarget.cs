@@ -1,4 +1,5 @@
-﻿using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;

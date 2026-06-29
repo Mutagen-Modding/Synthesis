@@ -9,4 +9,5 @@ public record GitCompilationMeta
     public required string Sha { get; init; }
     public bool DoesNotHaveRunnability { get; init; }
     public SettingsConfiguration? SettingsConfiguration { get; init; }
+    public string? ExecutablePath { get; init; }
 }

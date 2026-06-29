@@ -22,6 +22,8 @@ public interface IExecuteGuiRun
         bool masterFile,
         bool masterStyleFallbackEnabled,
         MasterStyle masterStyle,
+        bool splitIfMaxMastersExceeded,
+        bool updateLoadOrderAfterRun,
         CancellationToken cancel);
 }
 
@@ -52,6 +54,8 @@ public class ExecuteGuiRun : IExecuteGuiRun
         bool masterFile,
         bool masterStyleFallbackEnabled,
         MasterStyle masterStyle,
+        bool splitIfMaxMastersExceeded,
+        bool updateLoadOrderAfterRun,
         CancellationToken cancel)
     {
         var outputDir = _dataDirectoryProvider.Path;
@@ -69,6 +73,8 @@ public class ExecuteGuiRun : IExecuteGuiRun
                 PersistencePath: Path.Combine(_profileDirectories.ProfileDirectory, "Persistence"),
                 Master: masterFile,
                 MasterStyleFallbackEnabled: masterStyleFallbackEnabled,
-                MasterStyle: masterStyle)).ConfigureAwait(false);
+                MasterStyle: masterStyle,
+                SplitIfMaxMastersExceeded: splitIfMaxMastersExceeded,
+                UpdateLoadOrderAfterRun: updateLoadOrderAfterRun)).ConfigureAwait(false);
     }
 }

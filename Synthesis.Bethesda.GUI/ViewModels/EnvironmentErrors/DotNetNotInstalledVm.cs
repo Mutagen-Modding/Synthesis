@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.DotNet;
@@ -13,6 +14,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
 public class DotNetNotInstalledVm : ViewModel, IEnvironmentErrorVm
 {
     public ICommand DownloadCommand { get; }
+    public ICommand TroubleshootCommand { get; }
 
     private readonly ObservableAsPropertyHelper<string> _CustomDisplayString;
     public string CustomDisplayString => _CustomDisplayString.Value;
@@ -48,6 +50,12 @@ public class DotNetNotInstalledVm : ViewModel, IEnvironmentErrorVm
             () =>
             {
                 navigate.Navigate("https://dotnet.microsoft.com/download");
+            });
+
+        TroubleshootCommand = ReactiveCommand.Create(
+            () =>
+            {
+                navigate.Navigate("https://github.com/Mutagen-Modding/Synthesis/discussions/135");
             });
 
         _ErrorString = this.WhenAnyValue(x => x.InError)

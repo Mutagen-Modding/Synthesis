@@ -5,7 +5,7 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands;
 
 public interface IProjectRunProcessStartInfoProvider
 {
-    ProcessStartInfo GetStart(string path, string args, bool build = false);
+    ProcessStartInfo GetStart(string path, string args);
 }
 
 public class ProjectRunProcessStartInfoProvider : IProjectRunProcessStartInfoProvider
@@ -20,12 +20,12 @@ public class ProjectRunProcessStartInfoProvider : IProjectRunProcessStartInfoPro
         ExecutionParameters = executionParameters;
         CmdStartConstructor = cmdStartConstructor;
     }
-        
-    public ProcessStartInfo GetStart(string path, string args, bool build = false)
+
+    public ProcessStartInfo GetStart(string path, string args)
     {
-        return CmdStartConstructor.Construct("run --project", path, 
+        return CmdStartConstructor.Construct("run --project", path,
             ExecutionParameters.Parameters,
-            build ? string.Empty : "--no-build",
+            "--no-build",
             args);
     }
 }

@@ -7,6 +7,7 @@ using Mutagen.Bethesda.Synthesis.WPF;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
@@ -14,6 +15,8 @@ using Synthesis.Bethesda.DTO;
 using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services;
+using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.GUI.Services.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
@@ -26,6 +29,7 @@ public class PatcherUserSettingsVm : ViewModel
     
     private readonly IInitRepository _initRepository;
     private readonly IProvideRepositoryCheckouts _repoCheckouts;
+    private readonly IBuildMetaFileReader _metaFileReader;
 
     public ReactiveCommand<Unit, Unit> OpenSettingsCommand { get; }
 
@@ -64,10 +68,12 @@ public class PatcherUserSettingsVm : ViewModel
         IExecuteOpenForSettings executeOpenForSettings,
         IPatcherRunnabilityCliState runnabilityCliState,
         IOpenSettingsHost openSettingsHost,
+        IBuildMetaFileReader metaFileReader,
         ISchedulerProvider schedulerProvider)
     {
         _initRepository = initRepository;
         _repoCheckouts = repoCheckouts;
+        _metaFileReader = metaFileReader;
         _settingsConfiguration = source
             .Select(i =>
             {
@@ -78,12 +84,31 @@ public class PatcherUserSettingsVm : ViewModel
 
                     try
                     {
-                        var result = await getSettingsStyle.Get(
-                            i.TargetProject.Value.ProjPath,
-                            directExe: false,
-                            cancel: cancel,
-                            buildMetaPath: i.MetaPath,
-                            build: needBuild).ConfigureAwait(false);
+                        SettingsConfiguration result;
+
+                        if (needBuild)
+                        {
+                            // Solution patcher - compile and get
+                            result = await getSettingsStyle.CompileAndGetForProject(
+                                projectPath: i.TargetProject.Value.ProjPath,
+                                cancel: cancel).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            // Git patcher - use pre-compiled executable
+                            var meta = _metaFileReader.Read(i.MetaPath);
+                            if (meta?.ExecutablePath == null)
+                            {
+                                logger.Error("ExecutablePath is null in compilation meta at {MetaPath}", i.MetaPath);
+                                observer.OnCompleted();
+                                return;
+                            }
+
+                            result = await getSettingsStyle.Get(
+                                executablePath: meta.ExecutablePath,
+                                buildMetaPath: i.MetaPath,
+                                cancel: cancel).ConfigureAwait(false);
+                        }
                         logger.Information("Settings type: {Result}", result);
                         observer.OnNext(result);
                     }
@@ -99,10 +124,10 @@ public class PatcherUserSettingsVm : ViewModel
 
         OpenSettingsCommand = NoggogCommand.CreateFromObject(
             objectSource: Observable.CombineLatest(
-                source.Select(x => x.TargetProject),
+                source,
                 this.WhenAnyValue(x => x.SettingsConfiguration),
-                (Proj, Conf) => (Proj, Conf)),
-            canExecute: x => x.Proj.Succeeded 
+                (Input, Conf) => (Input, Conf)),
+            canExecute: x => x.Input.TargetProject.Succeeded
                              && (x.Conf.Style == SettingsStyle.Open || x.Conf.Style == SettingsStyle.Host),
             execute: async (o) =>
             {
@@ -114,10 +139,22 @@ public class PatcherUserSettingsVm : ViewModel
                         logger.Information($"Checking runnability failed: No known ModKey");
                         return;
                     }
-                    
+
+                    if (needBuild)
+                    {
+                        logger.Error("Solution patchers do not support OpenForSettings style");
+                        return;
+                    }
+
+                    var meta = _metaFileReader.Read(o.Input.MetaPath);
+                    if (meta?.ExecutablePath == null)
+                    {
+                        logger.Error("ExecutablePath is null in compilation meta at {MetaPath}", o.Input.MetaPath);
+                        return;
+                    }
+
                     await executeOpenForSettings.Open(
-                        o.Proj.Value.ProjPath,
-                        directExe: false,
+                        executablePath: meta.ExecutablePath,
                         modKey: modKey.Value,
                         cancel: CancellationToken.None,
                         loadOrder: loadOrder.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm)).ConfigureAwait(false);
@@ -125,7 +162,7 @@ public class PatcherUserSettingsVm : ViewModel
                 else
                 {
                     await openSettingsHost.Open(
-                        path: o.Proj.Value.ProjPath,
+                        path: o.Input.TargetProject.Value.ProjPath,
                         cancel: CancellationToken.None,
                         loadOrder: loadOrder.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm)).ConfigureAwait(false);
                 }

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-      <TargetFramework>net9.0</TargetFramework>
+      <TargetFramework>net10.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <AssemblyName>Synthesis</AssemblyName>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
@@ -65,20 +65,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\Fallout4.png" />
     <Resource Include="Resources\mushroom.ico" />
-    <Resource Include="Resources\Oblivion.png" />
-    <Resource Include="Resources\SkyrimLE.png" />
-    <Resource Include="Resources\SkyrimSSE.png" />
-    <Resource Include="Resources\SkyrimVR.png" />
-    <None Remove="Resources\enderal.png" />
-    <Resource Include="Resources\enderal.png" />
-    <None Remove="Resources\enderal-se.png" />
-    <Resource Include="Resources\enderal-se.png" />
-    <None Remove="Resources\starfield.png" />
-    <Resource Include="Resources\starfield.png" />
-    <None Remove="Resources\Fallout4VR.png" />
-    <Resource Include="Resources\Fallout4VR.png" />
   </ItemGroup>
 
   <ItemGroup>

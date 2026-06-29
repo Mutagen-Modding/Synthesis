@@ -6,6 +6,7 @@ using Mutagen.Bethesda.Plugins.Order.DI;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
@@ -34,7 +35,6 @@ public class ProfileLoadOrder : ViewModel, IProfileLoadOrder, IProfileLoadOrderP
         ILiveLoadOrderProvider liveLoadOrderProvider,
         IPluginListingsPathContext pluginListingsPathContext,
         ICreationClubListingsPathProvider cccListingsPathProvider,
-        IProfileIdentifier ident,
         IProfileOverridesVm overrides)
     {
         var loadOrderResult = overrides.WhenAnyValue(x => x.DataFolderResult)

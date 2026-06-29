@@ -1,6 +1,8 @@
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Windows;
 
@@ -24,7 +26,7 @@ public partial class WindowView
                 .BindTo(this, x => x.ConfirmationOverlay.Visibility)
                 .DisposeWith(disposable);
             this.WhenAnyValue(x => x.ViewModel!.InitialLoading)
-                .ObserveOn(RxApp.MainThreadScheduler)
+                .ObserveOn(RxSchedulers.MainThreadScheduler)
                 .Select(x => x ? Visibility.Visible : Visibility.Collapsed)
                 .BindTo(this, x => x.InitialLoading.Visibility)
                 .DisposeWith(disposable);

@@ -1,5 +1,7 @@
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Windows.Input;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 

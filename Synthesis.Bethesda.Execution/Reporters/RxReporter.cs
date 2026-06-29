@@ -1,37 +1,44 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Subjects;
+using Mutagen.Bethesda.Plugins.Order;
 
 namespace Synthesis.Bethesda.Execution.Reporters;
 
 public interface IRunReporterWatcher
-{       
+{
     public IObservable<Exception> Exceptions { get; }
-    public IObservable<(Guid Key, string Run, Exception Error)> PrepProblem { get; }
-    public IObservable<(Guid Key, string Run, Exception? Error)> RunProblem { get; }
+    public IObservable<(Guid Key, string Run, Exception Error, ErrorClassification? Classification)> PrepProblem { get; }
+    public IObservable<(Guid Key, string Run, Exception? Error, ErrorClassification? Classification)> RunProblem { get; }
     public IObservable<(Guid Key, string Run, string OutputPath)> RunSuccessful { get; }
     public IObservable<(Guid Key, string Run)> Starting { get; }
     public IObservable<(Guid Key, string? Run, string String)> Output { get; }
     public IObservable<(Guid Key, string? Run, string String)> Error { get; }
 }
-    
+
 [ExcludeFromCodeCoverage]
 public class RxReporter : IRunReporter, IRunReporterWatcher
 {
+    private readonly IErrorClassifier _errorClassifier;
     private readonly Subject<Exception> _overall = new();
-    private readonly Subject<(Guid, string, Exception)> _prepProblem = new();
-    private readonly Subject<(Guid, string, Exception?)> _runProblem = new();
+    private readonly Subject<(Guid, string, Exception, ErrorClassification?)> _prepProblem = new();
+    private readonly Subject<(Guid, string, Exception?, ErrorClassification?)> _runProblem = new();
     private readonly Subject<(Guid, string, string)> _runSuccessful = new();
     private readonly Subject<(Guid, string)> _starting = new();
     private readonly Subject<(Guid Key, string? Run, string String)> _output = new();
     private readonly Subject<(Guid Key, string? Run, string String)> _error = new();
 
     public IObservable<Exception> Exceptions => _overall;
-    public IObservable<(Guid Key, string Run, Exception Error)> PrepProblem => _prepProblem;
-    public IObservable<(Guid Key, string Run, Exception? Error)> RunProblem => _runProblem;
+    public IObservable<(Guid Key, string Run, Exception Error, ErrorClassification? Classification)> PrepProblem => _prepProblem;
+    public IObservable<(Guid Key, string Run, Exception? Error, ErrorClassification? Classification)> RunProblem => _runProblem;
     public IObservable<(Guid Key, string Run, string OutputPath)> RunSuccessful => _runSuccessful;
     public IObservable<(Guid Key, string Run)> Starting => _starting;
     public IObservable<(Guid Key, string? Run, string String)> Output => _output;
     public IObservable<(Guid Key, string? Run, string String)> Error => _error;
+
+    public RxReporter(IErrorClassifier errorClassifier)
+    {
+        _errorClassifier = errorClassifier;
+    }
 
     public void WriteError(Guid key, string? name, string str)
     {
@@ -50,12 +57,25 @@ public class RxReporter : IRunReporter, IRunReporterWatcher
 
     public void ReportPrepProblem(Guid key, string name, Exception ex)
     {
-        _prepProblem.OnNext((key, name, ex));
+        var classification = _errorClassifier.Classify(ex);
+        _prepProblem.OnNext((key, name, ex, classification));
     }
 
-    public void ReportRunProblem(Guid key, string name, Exception? ex)
+    public void ReportRunProblem(
+        Guid key,
+        string name,
+        Exception? ex,
+        IReadOnlyList<string>? capturedOutput = null,
+        IReadOnlyList<string>? capturedErrors = null,
+        IList<ILoadOrderListingGetter>? loadOrder = null)
     {
-        _runProblem.OnNext((key, name, ex));
+        // Try captured output first (has more detail), then fall back to exception
+        var classification = _errorClassifier.Classify(capturedOutput, capturedErrors, loadOrder);
+        if (classification == null && ex != null)
+        {
+            classification = _errorClassifier.Classify(ex);
+        }
+        _runProblem.OnNext((key, name, ex, classification));
     }
 
     public void ReportRunSuccessful(Guid key, string name, string outputPath)

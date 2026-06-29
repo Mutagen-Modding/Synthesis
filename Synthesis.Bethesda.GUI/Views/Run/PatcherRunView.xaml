@@ -5,10 +5,15 @@
     xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
+    xmlns:errorViews="clr-namespace:Synthesis.Bethesda.GUI.Views.ErrorClassifications"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:noggog="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     xmlns:running="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
+    xmlns:reporters="clr-namespace:Synthesis.Bethesda.Execution.Reporters;assembly=Synthesis.Bethesda.Execution"
+    xmlns:classifications="clr-namespace:Synthesis.Bethesda.Execution.Reporters.Classifications;assembly=Synthesis.Bethesda.Execution"
+    xmlns:runningVms="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
+    xmlns:errorVms="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Errors"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -58,6 +63,7 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center" />
         </Grid>
+        <!-- Non-tabbed console (shown when no error classification) -->
         <avalon:TextEditor Grid.Row="1"
             x:Name="OutputBox"
             Margin="0,10"
@@ -71,5 +77,84 @@
             IsReadOnly="True"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             Visibility="Hidden" />
+
+        <!-- Tabbed view (shown when error classification exists) -->
+        <TabControl Grid.Row="1"
+            x:Name="ErrorTabs"
+            Margin="0,10"
+            Visibility="Collapsed">
+            <!-- Error Report Tab -->
+            <TabItem Header="Error Report">
+                <ContentControl x:Name="ErrorClassificationContent"
+                                Margin="0,10">
+                    <ContentControl.Resources>
+                        <!-- Specific view for ReferencedModMissingErrorVm -->
+                        <DataTemplate DataType="{x:Type errorVms:ReferencedModMissingErrorVm}">
+                            <errorViews:ReferencedModMissingErrorView />
+                        </DataTemplate>
+
+                        <!-- Specific view for TooManyMastersErrorVm (stays in Running namespace - needs ProfileVm) -->
+                        <DataTemplate DataType="{x:Type runningVms:TooManyMastersErrorVm}">
+                            <errorViews:TooManyMastersErrorView />
+                        </DataTemplate>
+
+                        <!-- Specific view for CompressionErrorVm -->
+                        <DataTemplate DataType="{x:Type errorVms:CompressionErrorVm}">
+                            <errorViews:CompressionErrorView />
+                        </DataTemplate>
+
+                        <!-- Specific view for AccessDeniedErrorVm -->
+                        <DataTemplate DataType="{x:Type errorVms:AccessDeniedErrorVm}">
+                            <errorViews:AccessDeniedErrorView />
+                        </DataTemplate>
+
+                        <!-- Specific view for RanBuildInMo2ErrorVm -->
+                        <DataTemplate DataType="{x:Type errorVms:RanBuildInMo2ErrorVm}">
+                            <errorViews:RanBuildInMo2ErrorView />
+                        </DataTemplate>
+
+                        <!-- Specific view for Mo2BuildBlockedErrorVm -->
+                        <DataTemplate DataType="{x:Type errorVms:Mo2BuildBlockedErrorVm}">
+                            <errorViews:Mo2BuildBlockedErrorView />
+                        </DataTemplate>
+
+                        <!-- Specific view for LibraryVersionMismatchErrorVm -->
+                        <DataTemplate DataType="{x:Type errorVms:LibraryVersionMismatchErrorVm}">
+                            <errorViews:LibraryVersionMismatchErrorView />
+                        </DataTemplate>
+
+                        <!-- Specific view for CscCrashErrorVm -->
+                        <DataTemplate DataType="{x:Type errorVms:CscCrashErrorVm}">
+                            <errorViews:CscCrashErrorView />
+                        </DataTemplate>
+
+                        <!-- Specific view for DotNetRuntimeMissingErrorVm -->
+                        <DataTemplate DataType="{x:Type errorVms:DotNetRuntimeMissingErrorVm}">
+                            <errorViews:DotNetRuntimeMissingErrorView />
+                        </DataTemplate>
+
+                        <!-- Default view for all other error classifications -->
+                        <DataTemplate DataType="{x:Type reporters:ErrorClassification}">
+                            <errorViews:DefaultErrorClassificationView />
+                        </DataTemplate>
+                    </ContentControl.Resources>
+                </ContentControl>
+            </TabItem>
+
+            <!-- Console Tab -->
+            <TabItem Header="Console">
+                <avalon:TextEditor
+                    x:Name="OutputBoxTabbed"
+                    Margin="0"
+                    Padding="4,2"
+                    noggog:TextEditorEx.AutoScrollToEnd="True"
+                    Background="#33000000"
+                    BorderBrush="{StaticResource MahApps.Brushes.Gray}"
+                    BorderThickness="1"
+                    Foreground="White"
+                    IsReadOnly="True"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+            </TabItem>
+        </TabControl>
     </Grid>
 </noggog:NoggogUserControl>

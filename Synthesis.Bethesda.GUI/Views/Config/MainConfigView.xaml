@@ -12,6 +12,8 @@
     xmlns:topLevel="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel"
     xmlns:wpf="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
     xmlns:top="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Top"
+    xmlns:errors="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Errors"
+    xmlns:errorViews="clr-namespace:Synthesis.Bethesda.GUI.Views.ErrorClassifications"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -19,6 +21,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition
@@ -260,6 +263,72 @@
                     ToolTip="Preparing"
                     ToolTipService.InitialShowDelay="0" />
             </Grid>
+            <Grid Grid.Row="2"
+                x:Name="Mo2BuildStatusPanel"
+                Margin="4,6,0,6"
+                Visibility="Collapsed">
+                <StackPanel x:Name="Mo2BuildingPanel"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Visibility="Collapsed">
+                    <icon:PackIconMaterial
+                        Width="16"
+                        Height="16"
+                        VerticalAlignment="Center"
+                        Foreground="{StaticResource LightPurpleBrush}"
+                        Kind="Cog" />
+                    <TextBlock
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="13"
+                        Text="Building patchers…" />
+                </StackPanel>
+                <StackPanel x:Name="Mo2SucceededPanel"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Visibility="Collapsed">
+                    <icon:PackIconMaterial
+                        Width="22"
+                        Height="22"
+                        VerticalAlignment="Center"
+                        Foreground="{StaticResource Noggog.Brushes.Green.Foreground}"
+                        Kind="CheckCircle" />
+                    <StackPanel Margin="8,0,0,0" VerticalAlignment="Center">
+                        <TextBlock
+                            FontSize="13"
+                            FontWeight="Bold"
+                            Text="Built and ready" />
+                        <TextBlock
+                            FontSize="11"
+                            Opacity="0.75"
+                            Text="Start Synthesis from within MO2" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel x:Name="Mo2FailedPanel"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Visibility="Collapsed">
+                    <icon:PackIconMaterial
+                        Width="22"
+                        Height="22"
+                        VerticalAlignment="Center"
+                        Foreground="{StaticResource Noggog.Brushes.Red.Foreground}"
+                        Kind="CloseCircle" />
+                    <StackPanel Margin="8,0,0,0" VerticalAlignment="Center">
+                        <TextBlock
+                            FontSize="13"
+                            FontWeight="Bold"
+                            Text="Build failed" />
+                        <TextBlock
+                            FontSize="11"
+                            Opacity="0.75"
+                            Text="See the patcher output for details" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
         </Grid>
         <StackPanel Grid.Row="1" Grid.Column="0"
             x:Name="AddSomePatchersHelpGrid"
@@ -289,6 +358,45 @@
             Margin="0,0,-4,0"
             Fill="#AA000000"
             Visibility="Collapsed" />
+        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+            x:Name="Mo2ModeBanner"
+            Panel.ZIndex="1"
+            Cursor="Hand"
+            HorizontalContentAlignment="Stretch"
+            ToolTip="Open MO2 settings"
+            Visibility="Collapsed">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="BannerBorder"
+                        Background="{StaticResource DarkPurpleBrush}"
+                        BorderThickness="0,1,0,0"
+                        BorderBrush="#557458DB">
+                        <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="BannerBorder" Property="Background" Value="#2A2358" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
+            <StackPanel
+                Margin="0,5"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+                <icon:PackIconMaterial
+                    Width="14"
+                    Height="14"
+                    VerticalAlignment="Center"
+                    Foreground="{StaticResource LightPurpleBrush}"
+                    Kind="InformationOutline" />
+                <TextBlock
+                    Margin="8,0,0,0"
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    Text="MO2 Mode enabled while running outside MO2.  Just preparing patchers." />
+            </StackPanel>
+        </Button>
         <ContentControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"
             x:Name="DetailControl">
             <ContentControl.Resources>
@@ -297,6 +405,12 @@
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type running:ErrorVM}">
                     <local:ErrorView Margin="15,15,15,0" />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type errors:MissingModsErrorVm}">
+                    <errorViews:MissingModsErrorView Margin="15,15,15,0" />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type errors:NonAdjacentSplitModsErrorVm}">
+                    <errorViews:NonAdjacentSplitModsErrorView Margin="15,15,15,0" />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type groups:GroupVm}">
                     <local:GroupConfigView Margin="9,11,15,0" />

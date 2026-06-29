@@ -1,18 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
-using Noggog;
-using Serilog;
 using Synthesis.Bethesda.Commands;
-using Noggog.GitRepository;
-using Synthesis.Bethesda.Execution.GitRepository;
-using Synthesis.Bethesda.Execution.Patchers.Common;
-using Synthesis.Bethesda.Execution.Patchers.Git.Services;
-using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
-using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Git;
 
-public interface IGitPatcherRun : IPatcherRun
+public interface IGitPatcherRun : IPatcherPrepAndRun
 {
 }
 
@@ -21,38 +14,21 @@ public class GitPatcherRun : IGitPatcherRun
 {
     private readonly CompositeDisposable _disposable = new();
 
-    public Guid Key { get; }
-    public int Index { get; }
-    public string Name { get; }
-        
-    private readonly GithubPatcherSettings _settings;
-    private readonly ILogger _logger;
-    private readonly IRunnerRepoDirectoryProvider _runnerRepoDirectoryProvider;
-    private readonly ICheckIfRepositoryDesirable _checkIfRepositoryDesirable;
-    private readonly ICheckOrCloneRepo _checkOrClone;
-    public ISolutionPatcherRun SolutionPatcherRun { get; }
+    public Guid Key => GitPatcherRunExecution.Key;
+    public int Index => GitPatcherRunExecution.Index;
+    public string Name => GitPatcherRunExecution.Name;
+
+    public IGitPatcherPrep GitPatcherPrep { get; }
+    public IGitPatcherRunExecution GitPatcherRunExecution { get; }
 
     public GitPatcherRun(
-        GithubPatcherSettings settings,
-        ILogger logger,
-        IPatcherIdProvider idProvider,
-        IIndexDisseminator indexDisseminator,
-        IRunnerRepoDirectoryProvider runnerRepoDirectoryProvider,
-        ICheckIfRepositoryDesirable checkIfRepositoryDesirable,
-        ISolutionPatcherRun solutionPatcherRun,
-        ICheckOrCloneRepo checkOrClone)
+        IGitPatcherPrep gitPatcherPrep,
+        IGitPatcherRunExecution gitPatcherRunExecution)
     {
-        Key = idProvider.InternalId;
-        SolutionPatcherRun = solutionPatcherRun;
-        _settings = settings;
-        _logger = logger;
-        _runnerRepoDirectoryProvider = runnerRepoDirectoryProvider;
-        _checkIfRepositoryDesirable = checkIfRepositoryDesirable;
-        _checkOrClone = checkOrClone;
-        Index = indexDisseminator.GetNext();
-        Name = $"{settings.Nickname.Decorate(x => $"{x} => ")}{settings.RemoteRepoPath} => {Path.GetFileNameWithoutExtension(settings.SelectedProjectSubpath)}";
+        GitPatcherPrep = gitPatcherPrep;
+        GitPatcherRunExecution = gitPatcherRunExecution;
     }
-        
+
     public void Dispose()
     {
         _disposable.Dispose();
@@ -65,22 +41,11 @@ public class GitPatcherRun : IGitPatcherRun
 
     public async Task Prep(CancellationToken cancel)
     {
-        _logger.Information("Cloning repository");
-        var cloneResult = _checkOrClone.Check(
-            GetResponse<string>.Succeed(_settings.RemoteRepoPath),
-            _runnerRepoDirectoryProvider.Path,
-            isDesirable: _checkIfRepositoryDesirable.IsDesirable,
-            cancel: cancel);
-        if (cloneResult.Failed)
-        {
-            throw new SynthesisBuildFailure(cloneResult.Reason);
-        }
-
-        await SolutionPatcherRun.Prep(cancel).ConfigureAwait(false);
+        await GitPatcherPrep.Prep(cancel).ConfigureAwait(false);
     }
 
-    public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)
+    public async Task Run(RunSynthesisPatcher settings, PatcherRunCapture capture, CancellationToken cancel)
     {
-        await SolutionPatcherRun.Run(settings, cancel).ConfigureAwait(false);
+        await GitPatcherRunExecution.Run(settings, capture, cancel).ConfigureAwait(false);
     }
 }

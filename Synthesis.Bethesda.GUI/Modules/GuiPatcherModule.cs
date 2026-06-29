@@ -23,7 +23,7 @@ public class GuiPatcherModule : Autofac.Module
             .AsSelf();
         builder.RegisterAssemblyTypes(typeof(IPatcherNameProvider).Assembly)
             .InNamespacesOf(
-                typeof(IPatcherRun))
+                typeof(IPatcherPrepAndRun))
             .AsImplementedInterfaces();
     }
 }

@@ -3,6 +3,7 @@ using System.IO.Abstractions;
 using LibGit2Sharp;
 using Noggog;
 using Noggog.GitRepository;
+using Noggog.IO;
 using Serilog;
 using Synthesis.Bethesda.Execution.Utility;
 
@@ -10,22 +11,25 @@ namespace Synthesis.Bethesda.GUI.Settings;
 
 public class BackupSettings : IStartupTask
 {
+    private readonly ICurrentDirectoryProvider _currentDirectoryProvider;
     private readonly ILogger _logger;
     private readonly IFileSystem _fileSystem;
     private readonly IInitRepository _initRepository;
     private readonly IProvideRepositoryCheckouts _repositoryCheckouts;
 
-    private DirectoryPath RepoDirectory => Directory.GetCurrentDirectory();
+    private DirectoryPath RepoDirectory => _currentDirectoryProvider.CurrentDirectory;
     private FilePath GitIgnorePath => Path.Combine(RepoDirectory, ".gitignore");
     private FilePath PipelineSettings => Path.Combine(RepoDirectory, "PipelineSettings.json");
     private FilePath GuiSettings => Path.Combine(RepoDirectory, "GuiSettings.json");
     
     public BackupSettings(
+        ICurrentDirectoryProvider currentDirectoryProvider,
         ILogger logger,
         IFileSystem fileSystem,
         IInitRepository initRepository,
         IProvideRepositoryCheckouts repositoryCheckouts)
     {
+        _currentDirectoryProvider = currentDirectoryProvider;
         _logger = logger;
         _fileSystem = fileSystem;
         _initRepository = initRepository;
@@ -67,7 +71,7 @@ public class BackupSettings : IStartupTask
         {
             case LibGit2SharpException:
             case NullReferenceException:
-                WipeBackup(ex);
+                _logger.Warning(ex, "Could not back up settings.");
                 break;
             case AggregateException agg:
                 HandleException(agg.InnerException);
@@ -77,12 +81,6 @@ public class BackupSettings : IStartupTask
             default:
                 throw ex;
         }
-    }
-
-    private void WipeBackup(Exception ex)
-    {
-        _logger.Warning(ex, "Wiping backup settings.");
-        _fileSystem.Directory.DeleteEntireFolder(RepoDirectory);
     }
 
     private void CreateGitIgnore()

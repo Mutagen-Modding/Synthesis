@@ -16,8 +16,7 @@ public interface IExecuteRunnabilityCheck
 {
     Task<ErrorResponse> Check(
         ModKey modKey,
-        string path,
-        bool directExe,
+        string executablePath,
         string loadOrderPath,
         FilePath? buildMetaPath,
         CancellationToken cancel);
@@ -70,12 +69,13 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
 
     public async Task<ErrorResponse> Check(
         ModKey modKey,
-        string path,
-        bool directExe,
+        string executablePath,
         string loadOrderPath,
         FilePath? buildMetaPath,
         CancellationToken cancel)
     {
+        cancel.ThrowIfCancellationRequested();
+
         var meta = buildMetaPath != null ? MetaFileReader.Read(buildMetaPath.Value) : default;
 
         if (_shortCircuitSettingsProvider.Shortcircuit && meta is { DoesNotHaveRunnability: true }) return ErrorResponse.Success;
@@ -90,7 +90,7 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
         }
 
         var defaultDataFolderPath = _defaultDataPathProvider.Path;
-        
+
         var checkState = new CheckRunnability()
         {
             DataFolderPath = DataDirectoryProvider.Path,
@@ -102,10 +102,12 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
             ModKey = modKey.ToString()
         };
 
+        cancel.ThrowIfCancellationRequested();
+
         var result = (Codes)await Dropoff.EnqueueAndWait(() =>
         {
             return ProcessRunner.RunWithCallback(
-                RunProcessStartInfoProvider.GetStart(path, directExe, checkState),
+                RunProcessStartInfoProvider.GetStart(executablePath, checkState),
                 AddResult,
                 cancel: cancel);
         }).ConfigureAwait(false);
@@ -115,7 +117,9 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
             return ErrorResponse.Fail(string.Join(Environment.NewLine, results));
         }
 
-        if (result == Codes.NotNeeded 
+        cancel.ThrowIfCancellationRequested();
+
+        if (result == Codes.NotNeeded
             && meta != null
             && buildMetaPath != null)
         {

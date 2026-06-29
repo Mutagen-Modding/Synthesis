@@ -2,15 +2,20 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using Autofac;
 using DynamicData;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Reporters;
+using Synthesis.Bethesda.Execution.Reporters.Classifications;
+using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 using Synthesis.Bethesda.GUI.Services.Profile.Running;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
@@ -23,6 +28,9 @@ public class RunVm : ViewModel
     private readonly ILogger _logger;
     private readonly IExecuteGuiRun _executeRun;
     private readonly ISchedulerProvider _schedulerProvider;
+    private readonly IClassificationVmFactory _classificationVmFactory;
+    private readonly IErrorClassifier _errorClassifier;
+    private readonly ILifetimeScope _scope;
     public RunDisplayControllerVm RunDisplayControllerVm { get; }
     public IRunReporter Reporter { get; }
     private readonly Dictionary<Guid, PatcherRunVm> _patchers;
@@ -35,7 +43,16 @@ public class RunVm : ViewModel
     public Exception? ResultError { get; private set; }
 
     [Reactive]
+    public object? ResultErrorClassification { get; private set; }
+
+    [Reactive]
     public bool Running { get; private set; } = true;
+
+    private readonly ObservableAsPropertyHelper<bool> _overallErrored;
+    /// <summary>
+    /// True if an overall problem was reported or any patcher ended in an error state.
+    /// </summary>
+    public bool OverallErrored => _overallErrored.Value;
 
     public ObservableCollection<GroupRunVm> Groups { get; } = new();
 
@@ -62,12 +79,18 @@ public class RunVm : ViewModel
         IRunReporter reporter,
         IExecuteGuiRun executeRun,
         ISchedulerProvider schedulerProvider,
+        IClassificationVmFactory classificationVmFactory,
+        IErrorClassifier errorClassifier,
+        ILifetimeScope scope,
         IEnumerable<GroupVm> groups,
         ProfileVm profile)
     {
         _logger = logger;
         _executeRun = executeRun;
         _schedulerProvider = schedulerProvider;
+        _classificationVmFactory = classificationVmFactory;
+        _errorClassifier = errorClassifier;
+        _scope = scope;
         RunDisplayControllerVm = runDisplayControllerVm;
         Reporter = reporter;
         RunningProfile = profile;
@@ -80,7 +103,19 @@ public class RunVm : ViewModel
         {
             runDisplayControllerVm.SelectedObject = run;
         }
-            
+
+        var anyPatcherErrored = _patchers.Count == 0
+            ? Observable.Return(false)
+            : _patchers.Values
+                .Select(p => p.WhenAnyValue(x => x.State).Select(s => s.Value == RunState.Error))
+                .CombineLatest()
+                .Select(states => states.Any(x => x));
+        _overallErrored = Observable.CombineLatest(
+                anyPatcherErrored,
+                this.WhenAnyValue(x => x.ResultError),
+                (patcherErrored, resultError) => patcherErrored || resultError != null)
+            .ToGuiProperty(this, nameof(OverallErrored), false, schedulerProvider.MainThread, deferSubscription: true);
+
         BackCommand = ReactiveCommand.Create(() =>
             {
                 profile.DisplayController.SelectedObject = runDisplayControllerVm.SelectedObject?.SourceVm;
@@ -113,18 +148,24 @@ public class RunVm : ViewModel
             .Subscribe(ex =>
             {
                 ResultError = ex;
-            })
-            .DisposeWith(this);
-        reporterWatcher.Exceptions
-            .Do(ex => logger.Error(ex, "Error while running patcher pipeline"))
-            .ObserveOn(schedulerProvider.MainThread)
-            .Subscribe(ex =>
-            {
-                ResultError = ex;
+                var classification = _errorClassifier.Classify(ex);
+                if (classification != null)
+                {
+                    ResultErrorClassification = _classificationVmFactory.CreateVm(
+                        classification,
+                        _scope,
+                        patcher: null);
+                }
+                else
+                {
+                    ResultErrorClassification = null;
+                }
+                // Auto-show the error immediately
+                ShowOverallErrorCommand.Execute().Subscribe();
             })
             .DisposeWith(this);
         reporterWatcher.PrepProblem
-            .Select(data => (data: (data.Key, data.Run, Error: (Exception?)data.Error), type: "prepping"))
+            .Select(data => (data: (data.Key, data.Run, Error: (Exception?)data.Error, data.Classification), type: "prepping"))
             .Merge(reporterWatcher.RunProblem
                 .Select(data => (data, type: "running")))
             .Do(i =>
@@ -144,6 +185,14 @@ public class RunVm : ViewModel
                 else
                 {
                     vm.State = GetResponse<RunState>.Fail(RunState.Error, i.data.Error);
+                }
+                // Set the error classification if present, wrapping it with a VM if needed
+                if (i.data.Classification != null)
+                {
+                    vm.ErrorClassification = _classificationVmFactory.CreateVm(
+                        i.data.Classification,
+                        _scope,
+                        vm.PatcherSourceVm);
                 }
                 runDisplayControllerVm.SelectedObject = vm;
             })
@@ -195,7 +244,12 @@ public class RunVm : ViewModel
                 runDisplayControllerVm.WhenAnyValue(x => x.SelectedObject)
                     .Select(i => i as object),
                 this.ShowOverallErrorCommand.EndingExecution()
-                    .Select(_ => ResultError == null ? null : new ErrorVM("Patching Error", ResultError.ToString())))
+                    .Select(_ =>
+                    {
+                        if (ResultError == null) return null;
+                        // Use classified error view if available, otherwise fall back to raw error display
+                        return ResultErrorClassification ?? (object)new ErrorVM("Patching Error", ResultError.ToString());
+                    }))
             .ToGuiProperty(this, nameof(DetailDisplay), default, schedulerProvider.MainThread, deferSubscription: true);
     }
 
@@ -220,6 +274,8 @@ public class RunVm : ViewModel
                         masterFile: RunningProfile.MasterFile,
                         masterStyleFallbackEnabled: RunningProfile.MasterStyleFallbackEnabled,
                         masterStyle: RunningProfile.MasterStyle,
+                        splitIfMaxMastersExceeded: RunningProfile.SplitIfMaxMastersExceeded,
+                        updateLoadOrderAfterRun: RunningProfile.UpdateLoadOrderAfterRun,
                         cancel: _cancel.Token).ConfigureAwait(false);
                 }
                 catch (TaskCanceledException)

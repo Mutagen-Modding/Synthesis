@@ -1,0 +1,59 @@
+<UserControl x:Class="Synthesis.Bethesda.GUI.Views.ErrorClassifications.RanBuildInMo2ErrorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:common="clr-namespace:Synthesis.Bethesda.GUI.Views.Common"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Margin="0,0,0,15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Error Type Header -->
+        <TextBlock Grid.Row="0"
+                   Text="{Binding ErrorType}"
+                   FontSize="20"
+                   FontWeight="Bold"
+                   Foreground="{StaticResource SalmonBrush}"
+                   Margin="0,0,0,10" />
+
+        <!-- Error Message with Read More Button -->
+        <StackPanel Grid.Row="1"
+                    Margin="0,0,0,15">
+            <TextBlock Text="{Binding Message}"
+                       FontSize="14"
+                       TextWrapping="Wrap"
+                       Foreground="White"
+                       Margin="0,0,0,10" />
+
+            <common:ReadMoreButton Command="{Binding ReadMoreCommand}" />
+        </StackPanel>
+
+        <!-- Enable Protection Section (visible only if ShowEnableProtection is true) -->
+        <StackPanel Grid.Row="2"
+                    Margin="0,0,0,10"
+                    Visibility="{Binding ShowEnableProtection, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Text="Enable Build Protection"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource SalmonBrush}"
+                       Margin="0,0,0,5" />
+
+            <TextBlock Text="You can enable the setting below to have Synthesis refuse to even attempt building when running inside MO2. This just makes it more proactive in reminding you to exit Mo2 when building things."
+                       FontSize="14"
+                       TextWrapping="Wrap"
+                       Foreground="White"
+                       Margin="0,0,0,10" />
+
+            <CheckBox Content="Block Building Within MO2"
+                      IsChecked="{Binding GlobalSettings.BlockBuildingWithinMo2}"
+                      FontSize="14"
+                      Foreground="White"
+                      Margin="0,0,0,0" />
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -3,10 +3,12 @@ using System.Text;
 using ICSharpCode.AvalonEdit.Document;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Running;
+using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Running;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
@@ -16,11 +18,15 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
 public class PatcherRunVm : ViewModel, IRunItem
 {
     public Guid InternalID { get; }
-    public IPatcherRun Run { get; }
+    public IPatcherPrepAndRun Run { get; }
     public ViewModel SourceVm { get; }
+    public PatcherVm PatcherSourceVm { get; }
 
     [Reactive]
     public GetResponse<RunState> State { get; set; } = GetResponse<RunState>.Succeed(RunState.NotStarted);
+
+    [Reactive]
+    public object? ErrorClassification { get; set; }
 
     public TextDocument OutputDisplay { get; } = new();
 
@@ -41,17 +47,18 @@ public class PatcherRunVm : ViewModel, IRunItem
 
     [Reactive]
     public bool AutoScrolling { get; set; }
-        
+
     public string Name { get; }
 
     public delegate PatcherRunVm Factory(PatcherVm sourcePatcherVm);
 
-    public PatcherRunVm(PatcherVm sourcePatcherVm, IPatcherRun run, IReporterLoggerWrapper loggerWrapper, ISchedulerProvider schedulerProvider)
+    public PatcherRunVm(PatcherVm sourcePatcherVm, IPatcherPrepAndRun run, IReporterLoggerWrapper loggerWrapper, ISchedulerProvider schedulerProvider)
     {
         Name = sourcePatcherVm.NameVm.Name;
         InternalID = sourcePatcherVm.InternalID;
         Run = run;
         SourceVm = sourcePatcherVm;
+        PatcherSourceVm = sourcePatcherVm;
 
         Observable.Merge(
                 loggerWrapper.Events

@@ -1,5 +1,4 @@
 using System.Reactive;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using Autofac;
@@ -7,19 +6,19 @@ using DynamicData;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Plugins;
-using Mutagen.Bethesda.Plugins.Cache;
-using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
-using Noggog.WPF.Containers;
+using Noggog.UI.Containers;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Profile.Services;
+using Synthesis.Bethesda.Execution.Running.Runner;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.GUI.Services.Main;
@@ -31,13 +30,16 @@ using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
+using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
+using Synthesis.Bethesda.Execution.Reporters.Classifications;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Profiles;
 
-public class ProfileVm : ViewModel
+public class ProfileVm : ViewModel, IProfileGroupModKeyProvider
 {
     private readonly StartRun _startRun;
     private readonly ILogger _logger;
+    private readonly IClassificationVmFactory _classificationVmFactory;
 
     public GameRelease Release { get; }
 
@@ -52,6 +54,10 @@ public class ProfileVm : ViewModel
     public ICommand ExpandAllGroupsCommand { get; }
     public ICommand ExportCommand { get; }
     public ReactiveCommand<Unit, Unit> UpdateAllPatchersCommand { get; }
+    public ICommand OpenPatchSettingsDocsCommand { get; }
+    public ICommand OpenCompactionDocsCommand { get; }
+    public ICommand OpenMasterOverflowDocsCommand { get; }
+    public ICommand OpenLanguageDocsCommand { get; }
 
     public string ID { get; private set; }
 
@@ -90,7 +96,7 @@ public class ProfileVm : ViewModel
 
     public OverallErrorVm OverallErrorVm { get; }
 
-    public IObservable<ILinkCache?> SimpleLinkCache { get; }
+    public IObservable<IReadOnlySet<ModKey>> GroupModKeys { get; }
 
     public ILockToCurrentVersioning LockSetting { get; }
     public IProfileExporter Exporter { get; }
@@ -132,6 +138,12 @@ public class ProfileVm : ViewModel
     [Reactive]
     public MasterStyle MasterStyle { get; set; }
 
+    [Reactive]
+    public bool SplitIfMaxMastersExceeded { get; set; }
+
+    [Reactive]
+    public bool UpdateLoadOrderAfterRun { get; set; }
+
     public ProfileVm(
         ILifetimeScope scope,
         IPatcherInitializationVm initVm,
@@ -151,10 +163,13 @@ public class ProfileVm : ViewModel
         StartRun startRun,
         IGameReleaseContext gameReleaseContext,
         AddGitPatcherResponder addGitPatcherResponder,
+        INavigateTo navigateTo,
         ISchedulerProvider schedulerProvider,
-        ILogger logger)
+        ILogger logger,
+        IClassificationVmFactory classificationVmFactory)
     {
         Scope = scope;
+        _classificationVmFactory = classificationVmFactory;
         Init = initVm;
         OverallErrorVm = overallErrorVm;
         NameVm = nameProvider;
@@ -191,6 +206,22 @@ public class ProfileVm : ViewModel
             .QueryWhenChanged(q => q.ToHashSet())
             .Replay(1).RefCount();
 
+        // All group mod keys (enabled and disabled) for filtering from link cache imports.
+        // Includes disabled groups since their output files may still exist in the data directory.
+        GroupModKeys = Groups.Connect()
+            .Transform(x => x.ModKey)
+            .QueryWhenChanged(q =>
+            {
+                var set = new HashSet<ModKey>();
+                foreach (var r in q)
+                {
+                    if (r.Succeeded) set.Add(r.Value);
+                }
+                return (IReadOnlySet<ModKey>)set;
+            })
+            .StartWith((IReadOnlySet<ModKey>)new HashSet<ModKey>())
+            .Replay(1).RefCount();
+
         _globalError = Observable.CombineLatest(
                 overrides.WhenAnyValue(x => x.DataFolderResult),
                 loadOrder.WhenAnyValue(x => x.State),
@@ -210,14 +241,33 @@ public class ProfileVm : ViewModel
                     .StartWith(Array.Empty<ReadOnlyModListingVM>())
                     .Throttle(TimeSpan.FromMilliseconds(200), schedulerProvider.MainThread),
                 this.WhenAnyValue(x => x.IgnoreMissingMods),
-                (dataFolder, loadOrder, missingMods, ignoreMissingMods) =>
+                LoadOrder.Connect()
+                    .QueryWhenChanged(q => SplitModsAdjacencyValidator.ValidateLoadOrder(q.Select(x => x.ModKey).ToList()))
+                    .StartWith(new SplitModsValidationResult(false, null, null))
+                    .Throttle(TimeSpan.FromMilliseconds(200), schedulerProvider.MainThread),
+                LoadOrder.Connect()
+                    .QueryWhenChanged(q => q.ToList())
+                    .StartWith(Array.Empty<ReadOnlyModListingVM>().ToList()),
+                (dataFolder, loadOrderState, missingMods, ignoreMissingMods, splitModsValidation, fullLoadOrder) =>
                 {
                     if (!dataFolder.Succeeded) return GetResponse<ViewModel>.Fail(reason: $"DataFolder: {dataFolder.Reason}");
-                    if (!loadOrder.Succeeded) return GetResponse<ViewModel>.Fail(reason: $"LoadOrder: {dataFolder.Reason}");
+                    if (!loadOrderState.Succeeded) return GetResponse<ViewModel>.Fail(reason: $"LoadOrder: {dataFolder.Reason}");
                     if (!ignoreMissingMods && missingMods.Count > 0)
                     {
-                        return GetResponse<ViewModel>.Fail(
-                            $"Load order had mods that were missing:{Environment.NewLine}{string.Join(Environment.NewLine, missingMods.Select(x => x.ModKey))}");
+                        var missingModKeys = missingMods.Select(x => x.ModKey).ToList();
+                        var classification = new MissingModsErrorClassification(missingModKeys);
+                        var vm = _classificationVmFactory.CreateVm(classification, Scope);
+                        return GetResponse<ViewModel>.Fail((ViewModel)vm, classification.Message);
+                    }
+                    if (splitModsValidation.HasError)
+                    {
+                        var loadOrderModKeys = fullLoadOrder.Select(x => x.ModKey).ToList();
+                        var classification = new NonAdjacentSplitModsErrorClassification(
+                            splitModsValidation.BaseModKey!.Value,
+                            splitModsValidation.AllModKeys!.ToList(),
+                            loadOrderModKeys);
+                        var vm = _classificationVmFactory.CreateVm(classification, Scope);
+                        return GetResponse<ViewModel>.Fail((ViewModel)vm, classification.Message);
                     }
 
                     return GetResponse<ViewModel>.Succeed(null!);
@@ -345,6 +395,18 @@ public class ProfileVm : ViewModel
             }
         });
 
+        OpenPatchSettingsDocsCommand = ReactiveCommand.Create(() =>
+            navigateTo.Navigate("https://mutagen-modding.github.io/Synthesis/Patch-Settings"));
+
+        OpenCompactionDocsCommand = ReactiveCommand.Create(() =>
+            navigateTo.Navigate("https://mutagen-modding.github.io/Synthesis/Compaction"));
+
+        OpenMasterOverflowDocsCommand = ReactiveCommand.Create(() =>
+            navigateTo.Navigate("https://mutagen-modding.github.io/Synthesis/Master-Overflow-Settings"));
+
+        OpenLanguageDocsCommand = ReactiveCommand.Create(() =>
+            navigateTo.Navigate("https://mutagen-modding.github.io/Synthesis/Language-Settings"));
+
         var allCommands = Groups.Connect()
             .ObserveOn(schedulerProvider.MainThread)
             .Transform(x => CommandVM.Factory(x.UpdateAllPatchersCommand))
@@ -372,41 +434,6 @@ public class ProfileVm : ViewModel
                         }
                     }));
             });
-
-        SimpleLinkCache = Observable.CombineLatest(
-                this.WhenAnyValue(x => x.DataFolder),
-                this.WhenAnyValue(x => x.Release),
-                this.LoadOrder.Connect()
-                    .QueryWhenChanged()
-                    .Select(q => q.Where(x => x.Enabled).Select(x => x.ModKey).ToArray())
-                    .StartWithEmpty(),
-                (dataFolder, rel, loadOrder) => (dataFolder, rel, loadOrder))
-            .Throttle(TimeSpan.FromMilliseconds(100), schedulerProvider.TaskPool)
-            .Select(x =>
-            {
-                return Observable.Create<ILinkCache?>(obs =>
-                {
-                    try
-                    {
-                        var loadOrder = Mutagen.Bethesda.Plugins.Order.LoadOrder.Import(
-                            x.dataFolder,
-                            x.loadOrder,
-                            x.rel,
-                            factory: (modPath) => ModInstantiator.Importer(modPath, x.rel));
-                        obs.OnNext(loadOrder.ToUntypedImmutableLinkCache(LinkCachePreferences.OnlyIdentifiers()));
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Error(ex, "Error creating simple link cache for GUI lookups");
-                        obs.OnNext(null);
-                    }
-                    obs.OnCompleted();
-                    return Disposable.Empty;
-                });
-            })
-            .Switch()
-            .Replay(1)
-            .RefCount();
 
         ExportCommand = ReactiveCommand.Create(Export);
 
@@ -440,7 +467,9 @@ public class ProfileVm : ViewModel
             TargetLanguage = TargetLanguage,
             UseUtf8ForEmbeddedStrings = UseUtf8InEmbedded,
             FormIDRangeMode = FormIDRangeMode,
-            HeaderVersionOverride = HeaderVersionOverride
+            HeaderVersionOverride = HeaderVersionOverride,
+            SplitIfMaxMastersExceeded = SplitIfMaxMastersExceeded,
+            UpdateLoadOrderAfterRun = UpdateLoadOrderAfterRun
         };
     }
 

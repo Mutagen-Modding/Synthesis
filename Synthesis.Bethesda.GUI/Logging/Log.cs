@@ -13,6 +13,17 @@ public static class Log
     {
         StartTime = DateTime.Now;
 
+        if (LogPreferences.IsTesting)
+        {
+            // Create a dummy logger for testing that doesn't write to files
+            Serilog.Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .CreateLogger();
+
+            Logger = Serilog.Log.Logger;
+            return;
+        }
+
         var startTime = $"{StartTime:HH_mm_ss}";
         startTime = startTime.Remove(5, 1);
         startTime = startTime.Remove(2, 1);

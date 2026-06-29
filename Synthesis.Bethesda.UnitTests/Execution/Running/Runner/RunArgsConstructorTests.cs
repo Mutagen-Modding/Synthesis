@@ -14,7 +14,7 @@ public class RunArgsConstructorTests
     [Theory, SynthAutoData]
     public void PassesPatcherNameToSanitizer(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         FilePath? sourcePath,
         RunParameters runParameters,
         RunArgsConstructor sut)
@@ -26,7 +26,7 @@ public class RunArgsConstructorTests
     [Theory, SynthAutoData]
     public void OutputPathUnderWorkingDirectory(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         FilePath? sourcePath,
         RunParameters runParameters,
         RunArgsConstructor sut)
@@ -39,7 +39,7 @@ public class RunArgsConstructorTests
     [Theory, SynthAutoData]
     public void PatcherNameShouldBeSanitizedName(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         FilePath? sourcePath,
         RunParameters runParameters,
         string sanitize,
@@ -53,7 +53,7 @@ public class RunArgsConstructorTests
     [Theory, SynthAutoData]
     public void OutputPathShouldNotContainOriginalName(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         FilePath? sourcePath,
         RunParameters runParameters,
         string sanitize,
@@ -67,7 +67,7 @@ public class RunArgsConstructorTests
     [Theory, SynthAutoData]
     public void TypicalPassalong(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         FilePath sourcePath,
         RunParameters runParameters,
         DirectoryPath dataDir,

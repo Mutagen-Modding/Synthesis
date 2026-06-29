@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Mutagen.Bethesda.Plugins.Order;
 
 namespace Synthesis.Bethesda.Execution.Reporters;
 
@@ -31,7 +32,13 @@ public class ThrowReporter : IRunReporter
         throw ex;
     }
 
-    public void ReportRunProblem(Guid key, string name, Exception? ex)
+    public void ReportRunProblem(
+        Guid key,
+        string name,
+        Exception? ex,
+        IReadOnlyList<string>? capturedOutput = null,
+        IReadOnlyList<string>? capturedErrors = null,
+        IList<ILoadOrderListingGetter>? loadOrder = null)
     {
         throw new Exception();
     }

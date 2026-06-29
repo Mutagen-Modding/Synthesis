@@ -1,6 +1,8 @@
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Windows;
 using System.Reactive.Linq;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;
@@ -40,20 +42,54 @@ public partial class PatcherRunView
                 .BindTo(this, x => x.StatusBlock.Text)
                 .DisposeWith(disposable);
 
-            // Set up text output
+            // Determine if we should show tabs (when ErrorClassification exists)
+            var hasErrorClassification = this.WhenAnyValue(x => x.ViewModel!.ErrorClassification)
+                .Select(classification => classification != null);
+
+            // Show/hide tabbed vs non-tabbed views
+            hasErrorClassification
+                .Select(hasClassification => hasClassification ? Visibility.Visible : Visibility.Collapsed)
+                .BindTo(this, x => x.ErrorTabs.Visibility)
+                .DisposeWith(disposable);
+
+            // Non-tabbed output box visibility (when no error classification AND has output)
+            this.WhenAnyValue(
+                    x => x.ViewModel!.ErrorClassification,
+                    x => x.ViewModel!.OutputDisplay.TextLength,
+                    (classification, textLength) => classification == null && textLength > 0)
+                .Select(shouldShow => shouldShow ? Visibility.Visible : Visibility.Hidden)
+                .BindTo(this, x => x.OutputBox.Visibility)
+                .DisposeWith(disposable);
+
+            // Set up non-tabbed text output
             this.WhenAnyValue(x => x.ViewModel!.OutputDisplay)
                 .BindTo(this, x => x.OutputBox.Document)
                 .DisposeWith(disposable);
-            this.WhenAnyValue(x => x.ViewModel!.OutputDisplay.TextLength)
-                .Select(count => count > 0 ? Visibility.Visible : Visibility.Hidden)
-                .BindTo(this, x => x.OutputBox.Visibility)
-                .DisposeWith(disposable);
             this.WhenAnyValue(x => x.ViewModel!.OutputDisplay)
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Delay(TimeSpan.FromMilliseconds(50), RxApp.MainThreadScheduler)
+                .ObserveOn(RxSchedulers.MainThreadScheduler)
+                .Delay(TimeSpan.FromMilliseconds(50), RxSchedulers.MainThreadScheduler)
                 .Subscribe(_ =>
                 {
                     OutputBox.SetValue(TextEditorEx.DoScrollOnChangeProperty, true);
+                })
+                .DisposeWith(disposable);
+
+            // Set up tabbed console output
+            this.WhenAnyValue(x => x.ViewModel!.OutputDisplay)
+                .BindTo(this, x => x.OutputBoxTabbed.Document)
+                .DisposeWith(disposable);
+
+            // Bind error classification to ContentControl
+            this.WhenAnyValue(x => x.ViewModel!.ErrorClassification)
+                .BindTo(this, x => x.ErrorClassificationContent.Content)
+                .DisposeWith(disposable);
+
+            // Set Error Report tab as default when tabs are visible
+            hasErrorClassification
+                .Where(hasClassification => hasClassification)
+                .Subscribe(_ =>
+                {
+                    ErrorTabs.SelectedIndex = 0; // Error Report tab
                 })
                 .DisposeWith(disposable);
         });

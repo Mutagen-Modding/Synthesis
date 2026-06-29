@@ -41,7 +41,7 @@ public class GetPatcherRunnersTests
     [Theory, SynthAutoData]
     public void ReturnsPatchers(
         List<PatcherSettings> settings,
-        IPatcherRun[] patcherRuns,
+        IPatcherPrepAndRun[] patcherRuns,
         GetPatcherRunners sut)
     {
         settings.ForEach(x => x.On = true);

@@ -67,8 +67,9 @@ public class PostRunProcessor
                 })
                 .WhereNotNull());
         
-        var mod = ModInstantiator.ImportSetter(
+        var mod = ModFactory.ImportSetterWithMultiFileDetection(
             path,
+            lo.ListedOrder.Select(x => x.ModKey),
             _gameReleaseContext.Release,
             new BinaryReadParameters()
             {
@@ -98,11 +99,17 @@ public class PostRunProcessor
             }
         }
         
-        await mod.BeginWrite
+        var writeBuilder = mod.BeginWrite
             .ToPath(postProcessPath)
             .WithLoadOrder(lo)
-            .WithFileSystem(_fileSystem)
-            .WriteAsync();
+            .WithFileSystem(_fileSystem);
+
+        if (runParameters.SplitIfMaxMastersExceeded)
+        {
+            writeBuilder = writeBuilder.WithAutoSplit();
+        }
+
+        await writeBuilder.WriteAsync();
         
         return postProcessPath;
     }

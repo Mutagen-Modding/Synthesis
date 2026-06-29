@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Noggog;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.PrepareRunner;
+using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.Execution.Versioning;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Git;
@@ -19,3 +20,8 @@ public record RunnerRepoInfo(
     DateTime CommitDate,
     NugetVersionPair ListedVersions,
     NugetVersionPair TargetVersions);
+
+[ExcludeFromCodeCoverage]
+public record CompiledRunnerInfo(
+    RunnerRepoInfo RunnerRepoInfo,
+    GitCompilationMeta Meta);

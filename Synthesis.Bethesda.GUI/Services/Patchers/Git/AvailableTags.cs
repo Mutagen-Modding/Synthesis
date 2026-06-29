@@ -3,7 +3,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using Noggog.Reactive;
-using Noggog.WPF;
+using Noggog.UI;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.PrepareDriver;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;

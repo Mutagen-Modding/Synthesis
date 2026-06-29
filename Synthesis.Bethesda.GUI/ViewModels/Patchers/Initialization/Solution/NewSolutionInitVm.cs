@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Mutagen.Bethesda.Synthesis.Projects;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -13,7 +14,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution;
 
 public class NewSolutionInitVm : ASolutionInitializer
 {
-    public PathPickerVM ParentDirPath { get; } = new PathPickerVM();
+    public PathPickerVM ParentDirPath { get; }
 
     [Reactive]
     public string SolutionName { get; set; } = string.Empty;
@@ -36,10 +37,14 @@ public class NewSolutionInitVm : ASolutionInitializer
         IPatcherFactory patcherFactory,
         IValidateProjectPath validateProjectPath,
         CreateTemplatePatcherSolution createTemplatePatcherSolution,
-        ISchedulerProvider schedulerProvider)
+        ISchedulerProvider schedulerProvider,
+        IPathPickerDialogProvider pathPickerDialogProvider)
     {
-        ParentDirPath.PathType = PathPickerVM.PathTypeOptions.Folder;
-        ParentDirPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
+        ParentDirPath = new PathPickerVM(schedulerProvider, pathPickerDialogProvider)
+        {
+            PathType = PathPickerVM.PathTypeOptions.Folder,
+            ExistCheckOption = PathPickerVM.CheckOptions.On,
+        };
 
         _solutionPath = Observable.CombineLatest(
                 this.ParentDirPath.PathState(),

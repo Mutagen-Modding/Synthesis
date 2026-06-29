@@ -8,6 +8,9 @@
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:running="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Profiles.Running"
+    xmlns:reporters="clr-namespace:Synthesis.Bethesda.Execution.Reporters;assembly=Synthesis.Bethesda.Execution"
+    xmlns:errorViews="clr-namespace:Synthesis.Bethesda.GUI.Views.ErrorClassifications"
+    xmlns:errorVms="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.Errors"
     xmlns:vm="clr-namespace:Synthesis.Bethesda.GUI"
     xmlns:wpf="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
     d:DesignHeight="450"
@@ -132,6 +135,18 @@
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type running:ErrorVM}">
                     <local:ErrorView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type errorVms:OutputFileLockedErrorVm}">
+                    <errorViews:OutputFileLockedErrorView Margin="15" />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type errorVms:CscCrashErrorVm}">
+                    <errorViews:CscCrashErrorView Margin="15" />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type errorVms:DotNetRuntimeMissingErrorVm}">
+                    <errorViews:DotNetRuntimeMissingErrorView Margin="15" />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type reporters:ErrorClassification}">
+                    <errorViews:DefaultErrorClassificationView Margin="15" />
                 </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>

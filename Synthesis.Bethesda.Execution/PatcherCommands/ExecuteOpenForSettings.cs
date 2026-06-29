@@ -14,8 +14,7 @@ namespace Synthesis.Bethesda.Execution.PatcherCommands;
 public interface IExecuteOpenForSettings
 {
     Task<int> Open(
-        string path,
-        bool directExe,
+        string executablePath,
         ModKey modKey,
         IEnumerable<IModListingGetter> loadOrder,
         CancellationToken cancel);
@@ -61,8 +60,7 @@ public class ExecuteOpenForSettings : IExecuteOpenForSettings
     }
         
     public async Task<int> Open(
-        string path,
-        bool directExe,
+        string executablePath,
         ModKey modKey,
         IEnumerable<IModListingGetter> loadOrder,
         CancellationToken cancel)
@@ -72,7 +70,7 @@ public class ExecuteOpenForSettings : IExecuteOpenForSettings
         var defaultDataFolderPath = _defaultDataPathProvider.Path;
 
         return await ProcessRunner.Run(
-            RunProcessStartInfoProvider.GetStart(path, directExe, new OpenForSettings()
+            RunProcessStartInfoProvider.GetStart(executablePath, new OpenForSettings()
             {
                 Left = (int)WindowPlacement.Left,
                 Top = (int)WindowPlacement.Top,

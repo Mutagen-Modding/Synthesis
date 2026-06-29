@@ -2,17 +2,21 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using Autofac;
 using DynamicData;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
-using Noggog.WPF.Containers;
+using Noggog.UI.Containers;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings.V2;
+using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
@@ -73,6 +77,9 @@ public class GroupVm : ViewModel, ISelected
 
     public ObservableCollection<ModKey> BlacklistedModKeys { get; } = new();
 
+    /// <summary>Live stream of whether the app is in MO2 prep mode (run buttons hidden).</summary>
+    public IObservable<bool> Mo2PrepMode { get; }
+
     public GroupVm(
         ProfileVm profileVm,
         OverallErrorVm overallErrorVm,
@@ -80,11 +87,14 @@ public class GroupVm : ViewModel, ISelected
         IProfileLoadOrder loadOrder,
         IConfirmationPanelControllerVm confirmation,
         IProfileDisplayControllerVm profileDisplayController,
+        IMo2PrepModeProvider mo2PrepMode,
         ILogger logger,
-        ISchedulerProvider schedulerProvider)
+        ISchedulerProvider schedulerProvider,
+        ErrorDisplayVmFactory errorDisplayVmFactory)
     {
         _profileDisplayController = profileDisplayController;
         ProfileVm = profileVm;
+        Mo2PrepMode = mo2PrepMode.ActiveObservable;
         LoadOrder = loadOrder.LoadOrder.Connect()
             .Transform(x => x.ModKey);
         DisplayController = profileVm.DisplayController;
@@ -179,7 +189,7 @@ public class GroupVm : ViewModel, ISelected
                 })
             .ToGuiProperty(this, nameof(State), new ConfigurationState<ViewModel>(this), schedulerProvider.MainThread, deferSubscription: true);
 
-        ErrorDisplayVm = new ErrorDisplayVm(this, this.WhenAnyValue(x => x.State), schedulerProvider);
+        ErrorDisplayVm = errorDisplayVmFactory.Create(this, this.WhenAnyValue(x => x.State));
 
         GoToErrorCommand = overallErrorVm.CreateCommand(
             this.WhenAnyValue(x => x.State)

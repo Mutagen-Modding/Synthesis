@@ -1,6 +1,8 @@
-﻿using Noggog.WPF;
+using Noggog.UI;
+using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 
 namespace Synthesis.Bethesda.GUI.Views;

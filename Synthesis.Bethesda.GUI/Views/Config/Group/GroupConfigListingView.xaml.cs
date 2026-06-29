@@ -1,5 +1,7 @@
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
+using Noggog.UI;
 using Noggog.WPF;
 using System.Windows;
 using ReactiveUI;
@@ -70,8 +72,14 @@ public partial class GroupConfigListingView
             this.WhenAnyValue(x => x.ViewModel!.RunPatchersCommand)
                 .BindTo(this, x => x.GoButton.Command)
                 .DisposeWith(disposable);
-            this.WhenAnyFallback(x => x.ViewModel!.State, new ConfigurationState<ViewModel>(null!))
-                .Select(err => !err.IsHaltingError ? Visibility.Visible : Visibility.Collapsed)
+            // Hide the per-group run button on halting errors, or when in MO2 prep mode
+            // (running standalone with MO2 mode on), where the app only builds patchers.
+            Observable.CombineLatest(
+                    this.WhenAnyFallback(x => x.ViewModel!.State, new ConfigurationState<ViewModel>(null!))
+                        .Select(err => !err.IsHaltingError),
+                    this.WhenAnyValue(x => x.ViewModel!.Mo2PrepMode).Switch().StartWith(false),
+                    (runnable, prepMode) => runnable && !prepMode)
+                .Select(show => show ? Visibility.Visible : Visibility.Collapsed)
                 .BindTo(this, x => x.GoButton.Visibility)
                 .DisposeWith(disposable);
 

@@ -33,9 +33,9 @@ public class PrepForRun
                     {
                         c.RegisterModule<GitPatcherModule>();
                         
-                        c.RegisterAssemblyTypes(typeof(PrepareGitPatcher).Assembly)
+                        c.RegisterAssemblyTypes(typeof(PrepareGitPatcherForCli).Assembly)
                             .InNamespacesOf(
-                                typeof(PrepareGitPatcher))
+                                typeof(PrepareGitPatcherForCli))
                             .AsSelf()
                             .AsImplementedInterfaces()
                             .SingleInstance();
@@ -45,7 +45,7 @@ public class PrepForRun
                             .AsImplementedInterfaces()
                             .SingleInstance();
                     });
-                    await gitScope.Resolve<PrepareGitPatcher>().Prepare(cancel);
+                    await gitScope.Resolve<PrepareGitPatcherForCli>().Prepare(cancel);
                     break;
                 case SolutionPatcherSettings solutionPatcherSettings:
                     var slnScope = _scope.BeginLifetimeScope(LifetimeScopes.PatcherNickname, c =>

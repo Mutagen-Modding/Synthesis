@@ -1,4 +1,5 @@
 using Noggog;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive;
@@ -52,7 +53,7 @@ public static class NoggogCommand
         return ReactiveCommand.CreateFromTask(
             canExecute: Observable.CombineLatest(
                 canExecute ?? Observable.Return(true),
-                gotInput.ObserveOn(RxApp.MainThreadScheduler),
+                gotInput.ObserveOn(RxSchedulers.MainThreadScheduler),
                 (canExecute, gotInput) => canExecute && gotInput),
             outputScheduler: outputScheduler,
             execute: async () =>
@@ -174,7 +175,7 @@ public static class NoggogCommand
             .Subscribe(l => latest = l)
             .DisposeWith(disposable);
         return ReactiveCommand.Create(
-            canExecute: canExecute(objectSource.ObserveOn(RxApp.MainThreadScheduler)),
+            canExecute: canExecute(objectSource.ObserveOn(RxSchedulers.MainThreadScheduler)),
             execute: () =>
             {
                 execute(latest);
@@ -194,7 +195,7 @@ public static class NoggogCommand
             .DisposeWith(disposable);
         return ReactiveCommand.Create(
             canExecute: Observable.CombineLatest(
-                canExecute(objectSource.ObserveOn(RxApp.MainThreadScheduler)),
+                canExecute(objectSource.ObserveOn(RxSchedulers.MainThreadScheduler)),
                 extraCanExecute,
                 (obj, extra) => obj && extra),
             execute: () =>

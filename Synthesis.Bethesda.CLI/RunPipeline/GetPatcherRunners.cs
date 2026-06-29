@@ -6,7 +6,7 @@ namespace Synthesis.Bethesda.CLI.RunPipeline;
 
 public interface IGetPatcherRunners
 {
-    IPatcherRun[] Get(IEnumerable<PatcherSettings> patcherSettings);
+    IPatcherPrepAndRun[] Get(IEnumerable<PatcherSettings> patcherSettings);
 }
 
 public class GetPatcherRunners : IGetPatcherRunners
@@ -21,8 +21,8 @@ public class GetPatcherRunners : IGetPatcherRunners
         _logger = logger;
         PatcherSettingsToRunnerFactory = patcherSettingsToRunnerFactory;
     }
-        
-    public IPatcherRun[] Get(IEnumerable<PatcherSettings> patcherSettings)
+
+    public IPatcherPrepAndRun[] Get(IEnumerable<PatcherSettings> patcherSettings)
     {
         return patcherSettings
             .Where(p => p.On)
