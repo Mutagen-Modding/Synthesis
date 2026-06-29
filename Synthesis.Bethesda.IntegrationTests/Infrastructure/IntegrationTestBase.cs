@@ -916,7 +916,15 @@ public abstract class IntegrationTest : IDisposable
         {
             foreach (var patcher in group.Patchers.Items)
             {
-                if (!patcher.State.RunnableState.Succeeded)
+                if (!patcher.IsOn) continue;
+                try
+                {
+                    await patcher.WhenAnyValue(x => x.State)
+                        .Where(state => state.RunnableState.Succeeded)
+                        .FirstAsync()
+                        .Timeout(TestTimeouts.Long);
+                }
+                catch (TimeoutException)
                 {
                     var reason = patcher.State.RunnableState.Reason;
                     var msg = $"Patcher '{patcher.NameVm.Name}' is not runnable. Reason: {reason}";
