@@ -104,6 +104,14 @@ public abstract class IntegrationTest : IDisposable
         // Set logging to testing mode to avoid file I/O
         LogPreferences.IsTesting = true;
 
+        // Disable MSBuild node reuse for all child "dotnet build" processes spawned during the
+        // test. A reused worker node can keep a handle on a patcher's deps.json after a build
+        // finishes, causing a subsequent build of the same project to fail in the GenerateDepsFile
+        // task with "being used by another process". Child processes inherit this environment
+        // variable, and unlike a /nodeReuse command-line switch it does not get forwarded to (and
+        // rejected by) the patcher executable when these parameters are reused for "dotnet run".
+        Environment.SetEnvironmentVariable("MSBUILDDISABLENODEREUSE", "1");
+
         // Calculate repo root from assembly location
         // Test runner sets current directory to bin output folder, so we navigate up from there
         // Can be either bin/Debug/net9.0 (4 levels) or bin/x64/Debug/net9.0 (5 levels)
@@ -916,7 +924,15 @@ public abstract class IntegrationTest : IDisposable
         {
             foreach (var patcher in group.Patchers.Items)
             {
-                if (!patcher.State.RunnableState.Succeeded)
+                if (!patcher.IsOn) continue;
+                try
+                {
+                    await patcher.WhenAnyValue(x => x.State)
+                        .Where(state => state.RunnableState.Succeeded)
+                        .FirstAsync()
+                        .Timeout(TestTimeouts.Long);
+                }
+                catch (TimeoutException)
                 {
                     var reason = patcher.State.RunnableState.Reason;
                     var msg = $"Patcher '{patcher.NameVm.Name}' is not runnable. Reason: {reason}";
