@@ -14,7 +14,7 @@ public class TestExecutionParameters : IExecutionParameters
 {
     private readonly IExecutionParametersSettingsProvider _parametersSettingsProvider;
 
-    public string Parameters => $"{(_parametersSettingsProvider.TargetRuntime == null ? null : $"--runtime {_parametersSettingsProvider.TargetRuntime} ")}-c Release /p:UseSharedCompilation=false /nodeReuse:false";
+    public string Parameters => $"{(_parametersSettingsProvider.TargetRuntime == null ? null : $"--runtime {_parametersSettingsProvider.TargetRuntime} ")}-c Release /p:UseSharedCompilation=false";
 
     public TestExecutionParameters(IExecutionParametersSettingsProvider parametersSettingsProvider)
     {
