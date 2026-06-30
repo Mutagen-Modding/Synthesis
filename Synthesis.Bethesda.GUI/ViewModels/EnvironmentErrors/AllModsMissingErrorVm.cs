@@ -8,6 +8,7 @@ using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.GUI.Services;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 using Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
@@ -30,20 +31,22 @@ public class AllModsMissingErrorVm : ViewModel, IEnvironmentErrorVm
         OpenGlobalSettings openProfileSettings,
         IImplicitListingModKeyProvider implicitListingsProvider,
         IProfileLoadOrder profileLoadOrder,
+        IMo2PrepModeProvider mo2PrepMode,
         ISchedulerProvider schedulerProvider)
     {
         var nonImplicit = profileLoadOrder.LoadOrder.Connect()
             .Filter(x => !implicitListingsProvider.Listings.Contains(x.ModKey))
             .ObserveOn(schedulerProvider.MainThread)
             .AsObservableList();
-            
+
         _InError = nonImplicit.CountChanged
             .Select(x => x > 0)
             .CombineLatest(
                 nonImplicit.Connect()
                     .FilterOnObservable(i => i.WhenAnyValue(x => x.ModExists))
                     .QueryWhenChanged(q => q.Count > 0),
-                (hasAny, anyExist) => hasAny && !anyExist)
+                mo2PrepMode.ActiveObservable,
+                (hasAny, anyExist, prepMode) => hasAny && !anyExist && !prepMode)
             .ToGuiProperty(this, nameof(InError), scheduler: schedulerProvider.MainThread, deferSubscription: true);
 
         _ErrorString = nonImplicit.CountChanged
