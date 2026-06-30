@@ -68,7 +68,7 @@ public static class TestTimeouts
 /// </summary>
 public abstract class IntegrationTest : IDisposable
 {
-    private const string OverallTempFolderPath = "SynthesisIntegrationTests";
+    private const string OverallTempFolderPath = "SynthIT";
     private readonly TempFolder _tempFolder;
     private readonly CompositeDisposable _disposable = new();
 
@@ -118,9 +118,18 @@ public abstract class IntegrationTest : IDisposable
         var currentDir = Directory.GetCurrentDirectory();
 
         // Extract target framework from current directory (e.g., "net9.0" or "net8.0")
-        // Directory structure is like: .../bin/Debug/net9.0 or .../bin/x64/Debug/net9.0
+        // Directory structure is like: .../bin/Debug/net10.0-windows7.0 or .../bin/x64/Debug/net10.0-windows7.0
         var dirParts = currentDir.Split(Path.DirectorySeparatorChar);
         var targetFramework = dirParts.LastOrDefault(p => p.StartsWith("net")) ?? "unknown";
+
+        // Drop the platform suffix (e.g. "-windows7.0") from the moniker. It adds ~12 chars to every temp
+        // path for no disambiguation value here, and the deep clone/build tree underneath this folder can
+        // otherwise push past Windows' 260-char MAX_PATH that libgit2 enforces during checkout.
+        var dashIndex = targetFramework.IndexOf('-');
+        if (dashIndex > 0)
+        {
+            targetFramework = targetFramework.Substring(0, dashIndex);
+        }
 
         // Create temp folder named after test class and target framework to avoid conflicts
         // when running tests for multiple target frameworks (e.g., net8.0 and net9.0)
