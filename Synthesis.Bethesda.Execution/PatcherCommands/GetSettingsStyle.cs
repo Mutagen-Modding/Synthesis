@@ -1,8 +1,9 @@
-﻿using Noggog;
+using Noggog;
 using Serilog;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
+using Synthesis.Bethesda.Execution.DotNet.ExecutablePath;
 using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.Execution.Utility;
@@ -29,10 +30,10 @@ public class GetSettingsStyle : IGetSettingsStyle
     private readonly IWorkDropoff _workDropoff;
     private readonly IBuildMetaFileReader _metaFileReader;
     private readonly IBuild _build;
+    private readonly IBuildLock _buildLock;
+    private readonly IQueryExecutablePath _queryExecutablePath;
     private readonly IShortCircuitSettingsProvider _shortCircuitSettingsProvider;
     private readonly IWriteShortCircuitMeta _writeShortCircuitMeta;
-    private readonly IProjectRunProcessStartInfoProvider _projectRunProcessStartInfoProvider;
-    private readonly IFormatCommandLine _formatCommandLine;
     public ILinesToReflectionConfigsParser LinesToConfigsParser { get; }
     public ISynthesisSubProcessRunner ProcessRunner { get; }
     public IRunProcessStartInfoProvider GetRunProcessStartInfoProvider { get; }
@@ -43,21 +44,21 @@ public class GetSettingsStyle : IGetSettingsStyle
         IWorkDropoff workDropoff,
         IBuildMetaFileReader metaFileReader,
         IBuild build,
+        IBuildLock buildLock,
+        IQueryExecutablePath queryExecutablePath,
         IShortCircuitSettingsProvider shortCircuitSettingsProvider,
         ILinesToReflectionConfigsParser linesToConfigsParser,
         IWriteShortCircuitMeta writeShortCircuitMeta,
-        IRunProcessStartInfoProvider getRunProcessStartInfoProvider,
-        IProjectRunProcessStartInfoProvider projectRunProcessStartInfoProvider,
-        IFormatCommandLine formatCommandLine)
+        IRunProcessStartInfoProvider getRunProcessStartInfoProvider)
     {
         _logger = logger;
         _workDropoff = workDropoff;
         _metaFileReader = metaFileReader;
         _build = build;
+        _buildLock = buildLock;
+        _queryExecutablePath = queryExecutablePath;
         _shortCircuitSettingsProvider = shortCircuitSettingsProvider;
         _writeShortCircuitMeta = writeShortCircuitMeta;
-        _projectRunProcessStartInfoProvider = projectRunProcessStartInfoProvider;
-        _formatCommandLine = formatCommandLine;
         LinesToConfigsParser = linesToConfigsParser;
         ProcessRunner = processRunner;
         GetRunProcessStartInfoProvider = getRunProcessStartInfoProvider;
@@ -108,7 +109,10 @@ public class GetSettingsStyle : IGetSettingsStyle
                 return new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>());
             }
 
-            return await ExecuteSettingsRetrievalFromProject(projectPath, cancel);
+            using (await _buildLock.GetLock(projectPath).WaitAsync())
+            {
+                return await ExecuteSettingsRetrievalFromProject(projectPath, cancel);
+            }
         }, cancel).ConfigureAwait(false);
     }
 
@@ -128,8 +132,14 @@ public class GetSettingsStyle : IGetSettingsStyle
 
     private async Task<SettingsConfiguration> ExecuteSettingsRetrievalFromProject(string projectPath, CancellationToken cancel)
     {
-        var formattedArgs = _formatCommandLine.Format(new SettingsQuery());
-        var start = _projectRunProcessStartInfoProvider.GetStart(projectPath, formattedArgs);
+        var executablePath = await _queryExecutablePath.Query(projectPath, cancel).ConfigureAwait(false);
+        if (executablePath.Failed)
+        {
+            _logger.Error("Could not locate built solution patcher executable to query for settings: {Error}", executablePath.Reason);
+            return new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>());
+        }
+
+        var start = GetRunProcessStartInfoProvider.GetStart(executablePath.Value, new SettingsQuery());
 
         var result = await ProcessRunner.RunAndCapture(
             start,
