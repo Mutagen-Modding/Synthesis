@@ -86,11 +86,10 @@ public class GetSettingsStyle : IGetSettingsStyle
         if (meta != null
             && buildMetaPath != null)
         {
-            meta = meta with
+            _writeShortCircuitMeta.UpdateMeta(buildMetaPath.Value, m => m with
             {
                 SettingsConfiguration = settingsConfig
-            };
-            _writeShortCircuitMeta.WriteMeta(buildMetaPath.Value, meta);
+            });
         }
 
         return settingsConfig;
