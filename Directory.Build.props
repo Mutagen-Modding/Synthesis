@@ -1,7 +1,15 @@
 <Project>
  
-  <PropertyGroup> 
-    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally> 
+  <PropertyGroup>
+    <!-- Central .NET targeting. Bump these two when moving to a new .NET version. -->
+    <DotNetCurrent>net10.0</DotNetCurrent>
+    <DotNetPrevious>net9.0</DotNetPrevious>
+    <AppTargetFramework>$(DotNetCurrent)</AppTargetFramework>
+    <LibraryTargetFrameworks>$(DotNetPrevious);$(DotNetCurrent)</LibraryTargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <ImplicitUsings>true</ImplicitUsings>
       <CETCompat>false</CETCompat>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
