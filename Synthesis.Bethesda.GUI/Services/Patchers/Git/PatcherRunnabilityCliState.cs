@@ -1,4 +1,4 @@
-﻿using System.Reactive;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using DynamicData;
@@ -11,6 +11,7 @@ using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;
 
@@ -34,6 +35,7 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
         IExecuteRunnabilityCheck checkRunnability,
         ITemporaryLoadOrderProvider temporaryLoadOrderProvider,
         IModKeyProvider modKeyProvider,
+        IMo2PrepModeProvider mo2PrepMode,
         ILogger logger)
     {
         Runnable = Observable.CombineLatest(
@@ -42,7 +44,8 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
                 loadOrder.LoadOrder.Connect()
                     .QueryWhenChanged()
                     .StartWith(Array.Empty<ReadOnlyModListingVM>()),
-                (comp, data, loadOrder) => (comp, data, loadOrder))
+                mo2PrepMode.ActiveObservable,
+                (comp, data, loadOrder, prepMode) => (comp, data, loadOrder, prepMode))
             // ToDo
             // Replace with RepublishLatestOnSignal
             .Select(x =>
@@ -58,6 +61,18 @@ public class PatcherRunnabilityCliState : IPatcherRunnabilityCliState
                     if (i.comp.RunnableState.Failed)
                     {
                         observer.OnNext(i.comp.BubbleError<RunnerRepoInfo>());
+                        return;
+                    }
+
+                    if (i.prepMode)
+                    {
+                        logger.Information("Skipping runnability check while in MO2 prep mode");
+                        observer.OnNext(new ConfigurationState<RunnerRepoInfo>(i.comp.Item.RunnerRepoInfo)
+                        {
+                            IsHaltingError = false,
+                            RunnableState = GetResponse<RunnerRepoInfo>.Succeed(i.comp.Item.RunnerRepoInfo)
+                        });
+                        observer.OnCompleted();
                         return;
                     }
 

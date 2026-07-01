@@ -123,11 +123,10 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
             && meta != null
             && buildMetaPath != null)
         {
-            meta = meta with
+            _writeShortCircuitMeta.UpdateMeta(buildMetaPath, m => m with
             {
                 DoesNotHaveRunnability = true
-            };
-            _writeShortCircuitMeta.WriteMeta(buildMetaPath, meta);
+            });
         }
 
         // Other error codes are likely the target app just not handling runnability checks, so return as runnable unless

@@ -11,6 +11,7 @@ using Synthesis.Bethesda.Execution.DotNet.Dto;
 using Synthesis.Bethesda.Execution.DotNet.Singleton;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;
 
@@ -31,6 +32,7 @@ public class GitPatcherState : IGitPatcherState
         IInstalledSdkFollower dotNetInstalled,
         IEnvironmentErrorsVm envErrors,
         IMissingMods missingMods,
+        IMo2PrepModeProvider mo2PrepMode,
         ILogger logger,
         ISchedulerProvider schedulerProvider)
     {
@@ -49,7 +51,8 @@ public class GitPatcherState : IGitPatcherState
                     .QueryWhenChanged()
                     .Throttle(TimeSpan.FromMilliseconds(200), schedulerProvider.MainThread)
                     .StartWith(Array.Empty<ModKey>()),
-                (driver, runner, checkout, runnability, dotnet, envError, reqModsMissing) =>
+                mo2PrepMode.ActiveObservable,
+                (driver, runner, checkout, runnability, dotnet, envError, reqModsMissing, prepMode) =>
                 {
                     if (driver.IsHaltingError) return driver;
                     if (runner.IsHaltingError) return runner;
@@ -68,15 +71,18 @@ public class GitPatcherState : IGitPatcherState
                         return new ConfigurationState(ErrorResponse.Fail(envError));
                     }
 
-                    if (reqModsMissing.Count > 0)
+                    if (!prepMode)
                     {
-                        return new ConfigurationState(ErrorResponse.Fail(
-                            $"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));
-                    }
+                        if (reqModsMissing.Count > 0)
+                        {
+                            return new ConfigurationState(ErrorResponse.Fail(
+                                $"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));
+                        }
 
-                    if (runnability.RunnableState.Failed)
-                    {
-                        return runnability.BubbleError();
+                        if (runnability.RunnableState.Failed)
+                        {
+                            return runnability.BubbleError();
+                        }
                     }
 
                     if (checkout.RunnableState.Failed)

@@ -166,7 +166,8 @@ public class ProfileVm : ViewModel, IProfileGroupModKeyProvider
         INavigateTo navigateTo,
         ISchedulerProvider schedulerProvider,
         ILogger logger,
-        IClassificationVmFactory classificationVmFactory)
+        IClassificationVmFactory classificationVmFactory,
+        IMo2PrepModeProvider mo2PrepMode)
     {
         Scope = scope;
         _classificationVmFactory = classificationVmFactory;
@@ -248,11 +249,12 @@ public class ProfileVm : ViewModel, IProfileGroupModKeyProvider
                 LoadOrder.Connect()
                     .QueryWhenChanged(q => q.ToList())
                     .StartWith(Array.Empty<ReadOnlyModListingVM>().ToList()),
-                (dataFolder, loadOrderState, missingMods, ignoreMissingMods, splitModsValidation, fullLoadOrder) =>
+                mo2PrepMode.ActiveObservable,
+                (dataFolder, loadOrderState, missingMods, ignoreMissingMods, splitModsValidation, fullLoadOrder, prepMode) =>
                 {
                     if (!dataFolder.Succeeded) return GetResponse<ViewModel>.Fail(reason: $"DataFolder: {dataFolder.Reason}");
                     if (!loadOrderState.Succeeded) return GetResponse<ViewModel>.Fail(reason: $"LoadOrder: {dataFolder.Reason}");
-                    if (!ignoreMissingMods && missingMods.Count > 0)
+                    if (!ignoreMissingMods && !prepMode && missingMods.Count > 0)
                     {
                         var missingModKeys = missingMods.Select(x => x.ModKey).ToList();
                         var classification = new MissingModsErrorClassification(missingModKeys);

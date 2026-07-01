@@ -8,7 +8,6 @@ using Mutagen.Bethesda.WPF.Plugins.Order;
 using Noggog;
 using Noggog.Reactive;
 using Noggog.UI;
-using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.DTO;
@@ -16,7 +15,6 @@ using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
-using Synthesis.Bethesda.Execution.Patchers.Running.Git;
 using Synthesis.Bethesda.GUI.Services.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
@@ -120,7 +118,7 @@ public class PatcherUserSettingsVm : ViewModel
                 });
             })
             .Switch()
-            .ToGuiProperty(this, nameof(SettingsConfiguration), new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()), schedulerProvider.MainThread);
+            .ToGuiProperty(this, nameof(SettingsConfiguration), new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()), schedulerProvider.MainThread, deferSubscription: true);
 
         OpenSettingsCommand = NoggogCommand.CreateFromObject(
             objectSource: Observable.CombineLatest(
