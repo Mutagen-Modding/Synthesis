@@ -79,6 +79,9 @@ public class ProfileVm : ViewModel, IProfileGroupModKeyProvider
     private readonly ObservableAsPropertyHelper<GetResponse<ViewModel>> _blockingError;
     public GetResponse<ViewModel> BlockingError => _blockingError.Value;
 
+    private readonly ObservableAsPropertyHelper<bool> _mo2BuildBlockedError;
+    public bool Mo2BuildBlockedError => _mo2BuildBlockedError.Value;
+
     public IObservableList<ReadOnlyModListingVM> LoadOrder { get; }
 
     private readonly ObservableAsPropertyHelper<bool> _isActive;
@@ -308,7 +311,14 @@ public class ProfileVm : ViewModel, IProfileGroupModKeyProvider
                 }
             })
             .ToGuiProperty(this, nameof(BlockingError), GetResponse<ViewModel>.Fail("Uninitialized blocking error"), schedulerProvider.MainThread, deferSubscription: true);
-            
+
+        _mo2BuildBlockedError = Groups.Connect()
+            .ObserveOn(schedulerProvider.MainThread)
+            .FilterOnObservable(g => g.WhenAnyValue(x => x.Mo2BuildBlockedError))
+            .QueryWhenChanged(q => q.Count > 0)
+            .StartWith(false)
+            .ToGuiProperty(this, nameof(Mo2BuildBlockedError), false, schedulerProvider.MainThread, deferSubscription: true);
+
         _state = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.BlockingError),
                 Groups.Connect()

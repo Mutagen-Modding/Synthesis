@@ -71,18 +71,15 @@ public class GitPatcherState : IGitPatcherState
                         return new ConfigurationState(ErrorResponse.Fail(envError));
                     }
 
-                    if (!prepMode)
+                    if (!prepMode && reqModsMissing.Count > 0)
                     {
-                        if (reqModsMissing.Count > 0)
-                        {
-                            return new ConfigurationState(ErrorResponse.Fail(
-                                $"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));
-                        }
+                        return new ConfigurationState(ErrorResponse.Fail(
+                            $"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));
+                    }
 
-                        if (runnability.RunnableState.Failed)
-                        {
-                            return runnability.BubbleError();
-                        }
+                    if (runnability.RunnableState.Failed)
+                    {
+                        return runnability.BubbleError();
                     }
 
                     if (checkout.RunnableState.Failed)

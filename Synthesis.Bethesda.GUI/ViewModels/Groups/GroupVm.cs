@@ -15,6 +15,7 @@ using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Reporters;
+using Synthesis.Bethesda.Execution.Reporters.Classifications;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
@@ -70,6 +71,9 @@ public class GroupVm : ViewModel, ISelected
 
     private readonly ObservableAsPropertyHelper<bool> _patchersProcessing;
     public bool PatchersProcessing => _patchersProcessing.Value;
+
+    private readonly ObservableAsPropertyHelper<bool> _mo2BuildBlockedError;
+    public bool Mo2BuildBlockedError => _mo2BuildBlockedError.Value;
         
     public ErrorDisplayVm ErrorDisplayVm { get; }
         
@@ -147,6 +151,16 @@ public class GroupVm : ViewModel, ISelected
         _patchersProcessing = processingPatchers
             .Select(x => x.Count > 0)
             .ToGuiProperty(this, nameof(PatchersProcessing), false, schedulerProvider.MainThread, deferSubscription: true);
+
+        _mo2BuildBlockedError = Patchers.Connect()
+            .ObserveOn(schedulerProvider.MainThread)
+            .FilterOnObservable(p => p.ErrorDisplayVm.WhenAnyValue(x => x.ErrorTitle)
+                .Select(title =>
+                    title == Mo2BuildBlockedErrorClassification.ErrorTypeString
+                    || title == RanBuildInMo2ErrorClassification.ErrorTypeString))
+            .QueryWhenChanged(q => q.Count > 0)
+            .StartWith(false)
+            .ToGuiProperty(this, nameof(Mo2BuildBlockedError), false, schedulerProvider.MainThread, deferSubscription: true);
 
         _state = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.NumEnabledPatchers),
