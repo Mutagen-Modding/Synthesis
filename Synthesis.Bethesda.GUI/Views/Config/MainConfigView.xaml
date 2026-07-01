@@ -358,45 +358,137 @@
             Margin="0,0,-4,0"
             Fill="#AA000000"
             Visibility="Collapsed" />
-        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
             x:Name="Mo2ModeBanner"
             Panel.ZIndex="1"
-            Cursor="Hand"
-            HorizontalContentAlignment="Stretch"
-            ToolTip="Open MO2 settings"
+            Background="{StaticResource DarkPurpleBrush}"
+            BorderThickness="0,1,0,0"
+            BorderBrush="#557458DB"
             Visibility="Collapsed">
-            <Button.Template>
-                <ControlTemplate TargetType="Button">
-                    <Border x:Name="BannerBorder"
-                        Background="{StaticResource DarkPurpleBrush}"
-                        BorderThickness="0,1,0,0"
-                        BorderBrush="#557458DB">
-                        <ContentPresenter />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="BannerBorder" Property="Background" Value="#2A2358" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Button.Template>
-            <StackPanel
-                Margin="0,5"
-                HorizontalAlignment="Center"
-                Orientation="Horizontal">
-                <icon:PackIconMaterial
-                    Width="14"
-                    Height="14"
+            <Grid Margin="0,5">
+                <Button x:Name="Mo2ModeSettingsButton"
+                    HorizontalAlignment="Right"
                     VerticalAlignment="Center"
-                    Foreground="{StaticResource LightPurpleBrush}"
-                    Kind="InformationOutline" />
-                <TextBlock
-                    Margin="8,0,0,0"
+                    Margin="0,0,10,0"
+                    Cursor="Hand"
+                    ToolTip="Open MO2 settings">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter TextBlock.Foreground="{TemplateBinding Foreground}" />
+                        </ControlTemplate>
+                    </Button.Template>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <icon:PackIconMaterial
+                            Width="14"
+                            Height="14"
+                            VerticalAlignment="Center"
+                            Foreground="{StaticResource LightPurpleBrush}"
+                            Kind="InformationOutline" />
+                        <TextBlock
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            FontSize="12"
+                            TextDecorations="Underline"
+                            Text="MO2 mode" />
+                    </StackPanel>
+                </Button>
+                <StackPanel
+                    HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    FontSize="12"
-                    Text="MO2 Mode enabled while running outside MO2.  Just preparing patchers." />
-            </StackPanel>
-        </Button>
+                    Orientation="Horizontal">
+                    <icon:PackIconMaterial
+                        Width="12"
+                        Height="12"
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        Kind="Circle"
+                        ToolTip="Build status">
+                        <icon:PackIconMaterial.Style>
+                            <Style TargetType="icon:PackIconMaterial">
+                                <Setter Property="Foreground" Value="{StaticResource Noggog.Brushes.Green.Foreground}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedProfile.State.Succeeded}" Value="False">
+                                        <Setter Property="Foreground" Value="{StaticResource LightPurpleBrush}" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedProfile.BlockingError.Succeeded}" Value="False">
+                                        <Setter Property="Foreground" Value="{StaticResource Noggog.Brushes.Red.Foreground}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </icon:PackIconMaterial.Style>
+                    </icon:PackIconMaterial>
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="12">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="Building complete.  Open in MO2 to run" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedProfile.State.Succeeded}" Value="False">
+                                        <Setter Property="Text" Value="Preparing patchers" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedProfile.BlockingError.Succeeded}" Value="False">
+                                        <Setter Property="Text" Value="Patcher errors to handle" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
+        </Border>
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+            x:Name="Mo2InsideBanner"
+            Panel.ZIndex="1"
+            Background="{StaticResource DarkPurpleBrush}"
+            BorderThickness="0,1,0,0"
+            BorderBrush="#557458DB"
+            Visibility="Collapsed">
+            <Grid Margin="0,5">
+                <Button x:Name="Mo2InsideSettingsButton"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="0,0,10,0"
+                    Cursor="Hand"
+                    ToolTip="Open MO2 settings">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter TextBlock.Foreground="{TemplateBinding Foreground}" />
+                        </ControlTemplate>
+                    </Button.Template>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <icon:PackIconMaterial
+                            Width="14"
+                            Height="14"
+                            VerticalAlignment="Center"
+                            Foreground="{StaticResource LightPurpleBrush}"
+                            Kind="InformationOutline" />
+                        <TextBlock
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            FontSize="12"
+                            TextDecorations="Underline"
+                            Text="MO2 mode" />
+                    </StackPanel>
+                </Button>
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <icon:PackIconMaterial
+                        Width="12"
+                        Height="12"
+                        VerticalAlignment="Center"
+                        Foreground="{StaticResource Noggog.Brushes.Red.Foreground}"
+                        Kind="Circle" />
+                    <TextBlock
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="12"
+                        Text="Build required. Close and reopen outside of MO2" />
+                </StackPanel>
+            </Grid>
+        </Border>
         <ContentControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"
             x:Name="DetailControl">
             <ContentControl.Resources>

@@ -46,6 +46,9 @@ public class ProfileManagerVm : ViewModel, ISelectedProfileControllerVm, IModify
     private readonly ObservableAsPropertyHelper<Mo2BuildStatus> _mo2BuildStatus;
     public Mo2BuildStatus Mo2BuildStatus => _mo2BuildStatus.Value;
 
+    private readonly ObservableAsPropertyHelper<bool> _mo2BuildBlockedError;
+    public bool Mo2BuildBlockedError => _mo2BuildBlockedError.Value;
+
     /// <summary>Opens the Advanced settings page, where the MO2 mode setting lives.</summary>
     public ICommand OpenMo2SettingsCommand { get; }
 
@@ -90,6 +93,9 @@ public class ProfileManagerVm : ViewModel, ISelectedProfileControllerVm, IModify
             })
             .Switch()
             .ToGuiProperty(this, nameof(Mo2BuildStatus), Mo2BuildStatus.None, schedulerProvider.MainThread, deferSubscription: true);
+
+        _mo2BuildBlockedError = this.WhenAnyValue(x => x.SelectedProfile!.Mo2BuildBlockedError)
+            .ToGuiProperty(this, nameof(Mo2BuildBlockedError), false, schedulerProvider.MainThread, deferSubscription: true);
 
         RunPatchers = NoggogCommand.CreateFromObject(
             objectSource: this.WhenAnyValue(x => x.SelectedProfile),

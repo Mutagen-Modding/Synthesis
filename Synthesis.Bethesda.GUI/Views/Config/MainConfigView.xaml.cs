@@ -116,7 +116,13 @@ public partial class MainConfigView
                 .Select(prepMode => prepMode ? Visibility.Visible : Visibility.Collapsed)
                 .BindTo(this, x => x.Mo2ModeBanner.Visibility)
                 .DisposeWith(disposable);
-            this.OneWayBind(this.ViewModel, vm => vm.OpenMo2SettingsCommand, view => view.Mo2ModeBanner.Command)
+            this.OneWayBind(this.ViewModel, vm => vm.OpenMo2SettingsCommand, view => view.Mo2ModeSettingsButton.Command)
+                .DisposeWith(disposable);
+            this.WhenAnyValue(x => x.ViewModel!.Mo2BuildBlockedError)
+                .Select(blocked => blocked ? Visibility.Visible : Visibility.Collapsed)
+                .BindTo(this, x => x.Mo2InsideBanner.Visibility)
+                .DisposeWith(disposable);
+            this.OneWayBind(this.ViewModel, vm => vm.OpenMo2SettingsCommand, view => view.Mo2InsideSettingsButton.Command)
                 .DisposeWith(disposable);
                 
             Drag.ListBoxDrops<ViewModel>(
