@@ -11,21 +11,37 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <TabControl Margin="0,5,0,0">
-        <TabItem Header="Source">
-            <local:SolutionSourceConfigView />
-        </TabItem>
-        <TabItem Header="Store Details">
-            <local:SolutionStoreConfigView />
-        </TabItem>
-        <TabItem Header="Required Mods">
-            <plugins:ModKeyMultiPicker x:Name="RequiredMods" />
-        </TabItem>
-        <TabItem Header="Target Games">
-            <local:SolutionTargetGamesConfigView />
-        </TabItem>
-        <TabItem Header="User Settings">
-            <local:SolutionUserSettingsConfigView />
-        </TabItem>
-    </TabControl>
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+            <TextBlock Margin="0,4,0,0"
+                       Opacity="0.75"
+                       TextWrapping="Wrap">
+                Solution Patchers are primarily for modifying settings for developers.<LineBreak />
+                Running from this UI is not recommended.  Develop and run the patcher straight from the coding IDE.
+            </TextBlock>
+            <TextBlock Margin="0,4,0,0"
+                       FontWeight="Bold"
+                       TextWrapping="Wrap"
+                       Foreground="{StaticResource Noggog.Brushes.Warning.Foreground}"
+                       Text="Mo2 has problems building/running solution patchers"
+                       Visibility="{Binding RunningInsideMo2, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </StackPanel>
+        <TabControl Margin="0,5,0,0">
+            <TabItem Header="Source">
+                <local:SolutionSourceConfigView />
+            </TabItem>
+            <TabItem Header="Store Details">
+                <local:SolutionStoreConfigView />
+            </TabItem>
+            <TabItem Header="Required Mods">
+                <plugins:ModKeyMultiPicker x:Name="RequiredMods" />
+            </TabItem>
+            <TabItem Header="Target Games">
+                <local:SolutionTargetGamesConfigView />
+            </TabItem>
+            <TabItem Header="User Settings">
+                <local:SolutionUserSettingsConfigView />
+            </TabItem>
+        </TabControl>
+    </DockPanel>
 </wpf:NoggogUserControl>
