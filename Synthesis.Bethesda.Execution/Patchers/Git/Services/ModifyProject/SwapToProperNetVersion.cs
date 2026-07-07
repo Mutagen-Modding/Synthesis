@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Xml.Linq;
 using Serilog;
 using Noggog;
@@ -92,9 +92,13 @@ public class SwapToProperNetVersion : ISwapToProperNetVersion
 
     private void UpgradeTo(XElement elem, byte targetNetVersion)
     {
-        if (!NeedsUpgrade(elem.Value, targetNetVersion)) return;
+        var dashIndex = elem.Value.IndexOf('-');
+        var framework = dashIndex == -1 ? elem.Value : elem.Value.Substring(0, dashIndex);
+        var platformSuffix = dashIndex == -1 ? string.Empty : elem.Value.Substring(dashIndex);
 
-        elem.Value = $"net{targetNetVersion}.0";
+        if (!NeedsUpgrade(framework, targetNetVersion)) return;
+
+        elem.Value = $"net{targetNetVersion}.0{platformSuffix}";
         _logger.Information("Swapping to {Target}", elem.Value);
     }
 
