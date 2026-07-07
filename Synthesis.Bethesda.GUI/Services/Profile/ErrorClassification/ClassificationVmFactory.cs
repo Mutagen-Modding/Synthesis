@@ -57,6 +57,9 @@ public class ClassificationVmFactory : IClassificationVmFactory
             DotNetRuntimeMissingErrorClassification dotNetRuntimeMissingError =>
                 scope.Resolve<DotNetRuntimeMissingErrorVm.Factory>()(dotNetRuntimeMissingError),
 
+            DotNetSdkOutdatedErrorClassification dotNetSdkOutdatedError =>
+                scope.Resolve<DotNetSdkOutdatedErrorVm.Factory>()(dotNetSdkOutdatedError),
+
             // For unrecognized error types, return the classification as-is
             _ => classification
         };
