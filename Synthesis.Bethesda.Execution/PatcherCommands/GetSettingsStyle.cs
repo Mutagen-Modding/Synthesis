@@ -19,7 +19,7 @@ public interface IGetSettingsStyle
         FilePath? buildMetaPath,
         CancellationToken cancel);
 
-    Task<SettingsConfiguration> CompileAndGetForProject(
+    Task<(SettingsConfiguration Settings, string? ExecutablePath)> CompileAndGetForProject(
         string projectPath,
         CancellationToken cancel);
 }
@@ -95,7 +95,7 @@ public class GetSettingsStyle : IGetSettingsStyle
         return settingsConfig;
     }
 
-    public async Task<SettingsConfiguration> CompileAndGetForProject(
+    public async Task<(SettingsConfiguration Settings, string? ExecutablePath)> CompileAndGetForProject(
         string projectPath,
         CancellationToken cancel)
     {
@@ -105,7 +105,7 @@ public class GetSettingsStyle : IGetSettingsStyle
             if (buildResult.Failed)
             {
                 _logger.Error("Could not build solution patcher in order to query for settings: {Error}", buildResult);
-                return new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>());
+                return (new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()), (string?)null);
             }
 
             using (await _buildLock.GetLock(projectPath).WaitAsync())
@@ -129,13 +129,13 @@ public class GetSettingsStyle : IGetSettingsStyle
         }, cancel).ConfigureAwait(false);
     }
 
-    private async Task<SettingsConfiguration> ExecuteSettingsRetrievalFromProject(string projectPath, CancellationToken cancel)
+    private async Task<(SettingsConfiguration Settings, string? ExecutablePath)> ExecuteSettingsRetrievalFromProject(string projectPath, CancellationToken cancel)
     {
         var executablePath = await _queryExecutablePath.Query(projectPath, cancel).ConfigureAwait(false);
         if (executablePath.Failed)
         {
             _logger.Error("Could not locate built solution patcher executable to query for settings: {Error}", executablePath.Reason);
-            return new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>());
+            return (new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()), null);
         }
 
         var start = GetRunProcessStartInfoProvider.GetStart(executablePath.Value, new SettingsQuery());
@@ -144,7 +144,7 @@ public class GetSettingsStyle : IGetSettingsStyle
             start,
             cancel: cancel);
 
-        return ParseSettingsResult(result);
+        return (ParseSettingsResult(result), executablePath.Value);
     }
 
     private SettingsConfiguration ParseSettingsResult(ProcessRunReturn result)
