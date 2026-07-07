@@ -17,6 +17,7 @@ using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
 using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
@@ -53,6 +54,8 @@ public class SolutionPatcherVm : PatcherVm
     
     public SolutionPatcherSettingsVm Settings { get; }
 
+    public bool RunningInsideMo2 { get; }
+
     public SolutionPatcherVm(
         ILifetimeScope scope,
         IPatcherNameVm nameVm,
@@ -73,6 +76,7 @@ public class SolutionPatcherVm : PatcherVm
         PatcherGroupTarget groupTarget,
         ISchedulerProvider schedulerProvider,
         ErrorDisplayVmFactory errorDisplayVmFactory,
+        IMo2EnvironmentDetector mo2Detector,
         SolutionPatcherSettings? settings = null)
         : base(scope, nameVm, profileDisplay, confirmation, idProvider, renameFactory, groupTarget, errorDisplayVmFactory, settings)
     {
@@ -81,6 +85,7 @@ public class SolutionPatcherVm : PatcherVm
         Settings = settingsVm;
         _loadOrder = loadOrder;
         _logger = logger;
+        RunningInsideMo2 = mo2Detector.IsRunningInsideMo2();
         CopyInSettings(settings);
 
         AvailableProjects = availableProjectsFollower.Process(

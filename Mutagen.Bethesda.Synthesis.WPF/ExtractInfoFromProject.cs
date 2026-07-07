@@ -1,4 +1,4 @@
-﻿using System.IO.Abstractions;
+using System.IO.Abstractions;
 using Path = System.IO.Path;
 using System.Reflection;
 using System.Runtime.Loader;
@@ -6,7 +6,6 @@ using Noggog;
 using Noggog.IO;
 using Noggog.Utility;
 using Serilog;
-using Synthesis.Bethesda.Execution.DotNet.ExecutablePath;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.Execution.Pathing;
 
@@ -16,6 +15,7 @@ public interface IExtractInfoFromProject
 {
     Task<GetResponse<(TRet Item, TempFolder Temp)>> Extract<TRet>(
         TargetProject targetProject,
+        string prebuiltExecutablePath,
         CancellationToken cancel,
         Func<Assembly, GetResponse<TRet>> getter);
 }
@@ -25,31 +25,30 @@ public class ExtractInfoFromProject : IExtractInfoFromProject
     private readonly IFileSystem _fileSystem;
     private readonly IWorkingDirectorySubPaths _paths;
     private readonly ICopyDirectory _copyDirectory;
-    private readonly IQueryExecutablePath _queryExecutablePath;
     private readonly ILogger _logger;
 
     public ExtractInfoFromProject(
         IFileSystem fileSystem,
         IWorkingDirectorySubPaths paths,
         ICopyDirectory copyDirectory,
-        IQueryExecutablePath queryExecutablePath,
         ILogger logger)
     {
         _fileSystem = fileSystem;
         _paths = paths;
         _copyDirectory = copyDirectory;
-        _queryExecutablePath = queryExecutablePath;
         _logger = logger;
     }
 
     public async Task<GetResponse<(TRet Item, TempFolder Temp)>> Extract<TRet>(
         TargetProject targetProject,
+        string prebuiltExecutablePath,
         CancellationToken cancel,
         Func<Assembly, GetResponse<TRet>> getter)
     {
         if (cancel.IsCancellationRequested) return GetResponse<(TRet Item, TempFolder Temp)>.Fail("Cancelled");
 
-        // Copy to a temp folder for build + loading, just to keep the main one free to be swapped/modified as needed
+        // Load from a throwaway copy: the assembly stays locked for the lifetime of the settings panel,
+        // and that lock must not land on the live runner directory.
         var tempFolder = TempFolder.FactoryByPath(Path.Combine(_paths.LoadingFolder, Path.GetRandomFileName()));
         if (cancel.IsCancellationRequested) return GetResponse<(TRet Item, TempFolder Temp)>.Fail("Cancelled");
         var overallDir = Path.GetDirectoryName(targetProject.SolutionPath)!;
@@ -57,16 +56,26 @@ public class ExtractInfoFromProject : IExtractInfoFromProject
             overallDir,
             tempFolder.Dir.Path);
         _copyDirectory.Copy(overallDir, tempFolder.Dir.Path, cancel);
-        var projPath = Path.Combine(tempFolder.Dir.Path, targetProject.ProjSubPath);
-        _logger.Information("Retrieving executable path from {ProjPath}", projPath);
-        var exec = await _queryExecutablePath.Query(projPath, cancel).ConfigureAwait(false);
-        if (exec.Failed) return exec.BubbleFailure<(TRet Item, TempFolder Temp)>();
-        _logger.Information("Located executable path for {ProjPath}: {Result}", projPath, exec.Value);
-        var ret = ExecuteAndUnload(exec.Value, getter);
+
+        var relative = Path.GetRelativePath(overallDir, prebuiltExecutablePath);
+        var copiedExec = Path.Combine(tempFolder.Dir.Path, relative);
+        if (!_fileSystem.File.Exists(copiedExec))
+        {
+            _logger.Error(
+                "Prebuilt executable {Prebuilt} was not found in the copied project at {Copied}; " +
+                "the previous build likely had issues.  Refusing to build during settings open",
+                prebuiltExecutablePath, copiedExec);
+            return GetResponse<(TRet Item, TempFolder Temp)>.Fail(
+                $"Prebuilt executable was not found in the copied project: {copiedExec}");
+        }
+
+        _logger.Information("Using prebuilt executable for settings extraction: {Prebuilt} -> {Copied}",
+            prebuiltExecutablePath, copiedExec);
+        var ret = ExecuteAndUnload(copiedExec, getter);
         if (ret.Failed) return ret.BubbleFailure<(TRet Item, TempFolder Temp)>();
         return (ret.Value, tempFolder);
     }
-        
+
     private GetResponse<TRet> ExecuteAndUnload<TRet>(string exec, Func<Assembly, GetResponse<TRet>> getter)
     {
         return AssemblyLoading.ExecuteAndForceUnload(exec, getter, () => new FormKeyAssemblyLoadContext(_fileSystem, exec));

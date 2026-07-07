@@ -16,6 +16,7 @@ public interface IProvideReflectionSettingsBundle
 {
     Task<GetResponse<ReflectionSettingsBundleVm>> ExtractBundle(
         TargetProject targetProject,
+        string prebuiltExecutablePath,
         ReflectionSettingsConfig[] targets,
         IObservable<IChangeSet<IModListingGetter>> detectedLoadOrder,
         IObservable<ILinkCache?> linkCache,
@@ -43,6 +44,7 @@ public class ProvideReflectionSettingsBundle : IProvideReflectionSettingsBundle
         
     public async Task<GetResponse<ReflectionSettingsBundleVm>> ExtractBundle(
         TargetProject targetProject,
+        string prebuiltExecutablePath,
         ReflectionSettingsConfig[] targets,
         IObservable<IChangeSet<IModListingGetter>> detectedLoadOrder,
         IObservable<ILinkCache?> linkCache,
@@ -50,6 +52,7 @@ public class ProvideReflectionSettingsBundle : IProvideReflectionSettingsBundle
     {
         var vms = await _Extract.Extract<ReflectionSettingsVM[]>(
             targetProject: targetProject,
+            prebuiltExecutablePath: prebuiltExecutablePath,
             cancel: cancel,
             getter: (assemb) =>
             {
