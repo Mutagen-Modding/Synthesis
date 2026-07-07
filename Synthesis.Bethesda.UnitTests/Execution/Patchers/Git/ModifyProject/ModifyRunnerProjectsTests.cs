@@ -24,7 +24,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.ModifyProject;
 [Register(typeof(AvailableProjectsRetriever), typeof(IAvailableProjectsRetriever))]
 [Register(typeof(SwapToProperNetVersion), typeof(ISwapToProperNetVersion))]
 [Register(typeof(AddAllReleasesToOldVersions), typeof(AddAllReleasesToOldVersions))]
-[Register(typeof(TurnOffWindowsSpecificationInTargetFramework), typeof(ITurnOffWindowsSpecificationInTargetFramework))]
 partial class ModifyRunnerProjectsContainer : IContainer<ModifyRunnerProjects>
 {
 	[Instance] private readonly IFileSystem _fileSystem;
@@ -354,7 +353,7 @@ public class ModifyRunnerProjectsTests
 	}
 	
 	[Theory, DefaultAutoData]
-	public async Task RemoveWindowsSpec(
+	public async Task KeepWindowsSpec(
 		IFileSystem fileSystem,
 		FilePath existingSlnPath)
 	{

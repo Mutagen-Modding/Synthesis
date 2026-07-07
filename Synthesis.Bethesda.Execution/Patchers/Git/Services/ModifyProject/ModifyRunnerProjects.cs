@@ -29,7 +29,6 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
     private readonly IRemoveGitInfo _removeGitInfo;
     private readonly IAddNewtonsoftToOldSetups _addNewtonsoftToOldSetups;
     private readonly ISwapInDesiredVersionsForProjectString _swapDesiredVersions;
-    private readonly ITurnOffWindowsSpecificationInTargetFramework _turnOffWindowsSpec;
     private readonly ISwapVersioning _swapVersioning;
     private readonly ITurnOffNullability _turnOffNullability;
     private readonly IProcessProjUsings _processProjUsings;
@@ -45,7 +44,6 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         IRemoveGitInfo removeGitInfo,
         IAddNewtonsoftToOldSetups addNewtonsoftToOldSetups,
         ISwapInDesiredVersionsForProjectString swapDesiredVersions,
-        ITurnOffWindowsSpecificationInTargetFramework turnOffWindowsSpec,
         ISwapVersioning swapVersioning,
         ITurnOffNullability turnOffNullability,
         IProcessProjUsings processProjUsings,
@@ -60,7 +58,6 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
         _removeGitInfo = removeGitInfo;
         _addNewtonsoftToOldSetups = addNewtonsoftToOldSetups;
         _swapDesiredVersions = swapDesiredVersions;
-        _turnOffWindowsSpec = turnOffWindowsSpec;
         _swapVersioning = swapVersioning;
         _turnOffNullability = turnOffNullability;
         _processProjUsings = processProjUsings;
@@ -129,7 +126,6 @@ public class ModifyRunnerProjects : IModifyRunnerProjects
                 out var curListedVersions);
             _turnOffNullability.TurnOff(projXml);
             _removeGitInfo.Remove(projXml);
-            _turnOffWindowsSpec.TurnOff(projXml);
             _turnOffCetCompat.TurnOff(projXml);
             var mutaVersion = SemanticVersionParse(curListedVersions.Mutagen);
             var synthVersion = SemanticVersionParse(curListedVersions.Synthesis);
