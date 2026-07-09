@@ -30,7 +30,7 @@
                                            HorizontalAlignment="Left"
                                            Margin="{TemplateBinding Padding}">
                                     <TextBlock x:Name="ReadMoreText"
-                                              Text="Read More"
+                                              Text="{Binding Text, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                               FontSize="18"
                                               FontWeight="Bold"
                                               Foreground="{StaticResource LightBlueBrush}"
@@ -42,7 +42,36 @@
                                                              Height="18"
                                                              Margin="0,2,0,0"
                                                              Foreground="{StaticResource LightBlueBrush}"
-                                                             VerticalAlignment="Center" />
+                                                             VerticalAlignment="Center">
+                                        <icon:PackIconSimpleIcons.Style>
+                                            <Style TargetType="icon:PackIconSimpleIcons">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ShowDownloadIcon, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </icon:PackIconSimpleIcons.Style>
+                                    </icon:PackIconSimpleIcons>
+                                    <icon:PackIconMaterial x:Name="DownloadIcon"
+                                                          Kind="Download"
+                                                          Width="18"
+                                                          Height="18"
+                                                          Margin="0,2,0,0"
+                                                          Foreground="{StaticResource LightBlueBrush}"
+                                                          VerticalAlignment="Center">
+                                        <icon:PackIconMaterial.Style>
+                                            <Style TargetType="icon:PackIconMaterial">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ShowDownloadIcon, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </icon:PackIconMaterial.Style>
+                                    </icon:PackIconMaterial>
                                 </StackPanel>
                             </Grid>
 
@@ -50,6 +79,7 @@
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter TargetName="ReadMoreText" Property="Foreground" Value="{StaticResource PaleBlueHoverBrush}" />
                                     <Setter TargetName="ReadMoreIcon" Property="Foreground" Value="{StaticResource PaleBlueHoverBrush}" />
+                                    <Setter TargetName="DownloadIcon" Property="Foreground" Value="{StaticResource PaleBlueHoverBrush}" />
                                     <Setter Property="Effect">
                                         <Setter.Value>
                                             <DropShadowEffect

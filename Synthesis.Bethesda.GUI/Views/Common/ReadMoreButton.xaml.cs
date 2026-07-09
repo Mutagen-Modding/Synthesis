@@ -22,6 +22,35 @@ public partial class ReadMoreButton : UserControl
         set => SetValue(CommandProperty, value);
     }
 
+    public static readonly DependencyProperty TextProperty =
+        DependencyProperty.Register(
+            nameof(Text),
+            typeof(string),
+            typeof(ReadMoreButton),
+            new PropertyMetadata("Read More"));
+
+    public string Text
+    {
+        get => (string)GetValue(TextProperty);
+        set => SetValue(TextProperty, value);
+    }
+
+    public static readonly DependencyProperty ShowDownloadIconProperty =
+        DependencyProperty.Register(
+            nameof(ShowDownloadIcon),
+            typeof(bool),
+            typeof(ReadMoreButton),
+            new PropertyMetadata(false));
+
+    /// <summary>
+    /// When true, shows a Material "Download" icon instead of the default "Read More" book icon.
+    /// </summary>
+    public bool ShowDownloadIcon
+    {
+        get => (bool)GetValue(ShowDownloadIconProperty);
+        set => SetValue(ShowDownloadIconProperty, value);
+    }
+
     public ReadMoreButton()
     {
         InitializeComponent();

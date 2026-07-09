@@ -133,6 +133,11 @@
                             <errorViews:DotNetRuntimeMissingErrorView />
                         </DataTemplate>
 
+                        <!-- Specific view for DotNetSdkOutdatedErrorVm -->
+                        <DataTemplate DataType="{x:Type errorVms:DotNetSdkOutdatedErrorVm}">
+                            <errorViews:DotNetSdkOutdatedErrorView />
+                        </DataTemplate>
+
                         <!-- Default view for all other error classifications -->
                         <DataTemplate DataType="{x:Type reporters:ErrorClassification}">
                             <errorViews:DefaultErrorClassificationView />
