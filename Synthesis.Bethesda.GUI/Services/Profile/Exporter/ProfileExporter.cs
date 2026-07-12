@@ -60,10 +60,10 @@ public class ProfileExporter : IProfileExporter
             Directory.CreateDirectory(subDir);
         }
         File.WriteAllText(
-            Path.Combine(subDir, PipelinePaths.Path),
+            Path.Combine(subDir, Path.GetFileName(PipelinePaths.Path)),
             JsonConvert.SerializeObject(pipeSettings, Formatting.Indented, Execution.Constants.JsonSettings));
         File.WriteAllText(
-            Path.Combine(subDir, GuiPaths.Path),
+            Path.Combine(subDir, Path.GetFileName(GuiPaths.Path)),
             JsonConvert.SerializeObject(guiSettings, Formatting.Indented, Execution.Constants.JsonSettings));
         var dataDir = new DirectoryInfo("Data");
         if (dataDir.Exists)
