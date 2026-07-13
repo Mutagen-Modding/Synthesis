@@ -70,10 +70,28 @@ Global
 	EndGlobalSection
 EndGlobal
 ");
+        var sep = System.IO.Path.DirectorySeparatorChar;
         sut.Get(filePath)
 	        .Select(x => x.TrimStart(filePath.Directory!, StringComparison.InvariantCulture))
             .ShouldEqualEnumerable(
-		        "RaceCompatibilityDialogue\\RaceCompatibilityDialogue.csproj",
-		        "Tests\\Tests.csproj");
+		        $"RaceCompatibilityDialogue{sep}RaceCompatibilityDialogue.csproj",
+		        $"Tests{sep}Tests.csproj");
+    }
+
+    [Theory, SynthAutoData]
+    public void WindowsSeparatorsNormalizedSoFileNameIsExtractable(
+        [Frozen]IFileSystem fs,
+        FilePath filePath,
+        AvailableProjectsRetriever sut)
+    {
+        // .sln files always store project paths with Windows separators.  On non-Windows Path.GetFileName
+        // does not treat '\\' as a separator, so unless we normalize, project lookup by file name fails.
+        fs.File.WriteAllText(filePath,  @"Microsoft Visual Studio Solution File, Format Version 12.00
+Project(""{9A19103F-16F7-4668-BE54-9A1E7A4F7556}"") = ""SorcererPatcher"", ""SorcererPatcher\SorcererPatcher.csproj"", ""{8BA2E1B7-DD65-42B6-A780-17E4037A3C1B}""
+EndProject
+");
+        sut.Get(filePath)
+            .Select(x => System.IO.Path.GetFileName(x))
+            .ShouldEqualEnumerable("SorcererPatcher.csproj");
     }
 }
