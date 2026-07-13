@@ -173,7 +173,8 @@ public class SolutionPatcherSettingsVm : ViewModel, ISolutionPatcherSettingsSync
                             throw new NotImplementedException();
                     }
                 })
-                .FilterOnObservable(x => x.WhenAnyValue(x => x.IsChecked).Select(x => x ?? true))
+                // Null means no opinion -> empty
+                .FilterOnObservable(x => x.WhenAnyValue(x => x.IsChecked).Select(x => x ?? false))
                 .QueryWhenChanged()
                 .Select(x => x.Select(x => x.Release))
                 .StartWith(Enumerable.Empty<GameRelease>()),
