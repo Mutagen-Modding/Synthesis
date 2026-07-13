@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.IO.Abstractions;
 using Newtonsoft.Json;
 using Noggog;
 using Synthesis.Bethesda.Execution.Pathing;
@@ -15,17 +16,20 @@ public interface IProfileExporter
 
 public class ProfileExporter : IProfileExporter
 {
+    public IFileSystem FileSystem { get; }
     public INavigateTo Navigate { get; }
     public IRetrieveSaveSettings RetrieveSaveSettings { get; }
     public IPipelineSettingsPath PipelinePaths { get; }
     public IGuiSettingsPath GuiPaths { get; }
 
     public ProfileExporter(
+        IFileSystem fileSystem,
         INavigateTo navigate,
         IRetrieveSaveSettings retrieveSaveSettings,
         IPipelineSettingsPath pipelinePaths,
         IGuiSettingsPath guiPaths)
     {
+        FileSystem = fileSystem;
         Navigate = navigate;
         RetrieveSaveSettings = retrieveSaveSettings;
         PipelinePaths = pipelinePaths;
@@ -51,24 +55,24 @@ public class ProfileExporter : IProfileExporter
             gitPatcher.LatestTag = false;
         }
         DirectoryPath subDir = "Export";
-        if (subDir.Exists)
+        if (FileSystem.Directory.Exists(subDir))
         {
-            subDir.DeleteEntireFolder(deleteFolderItself: false);
+            FileSystem.Directory.DeleteEntireFolder(subDir, deleteFolderItself: false);
         }
         else
         {
-            Directory.CreateDirectory(subDir);
+            FileSystem.Directory.CreateDirectory(subDir);
         }
-        File.WriteAllText(
+        FileSystem.File.WriteAllText(
             Path.Combine(subDir, Path.GetFileName(PipelinePaths.Path)),
             JsonConvert.SerializeObject(pipeSettings, Formatting.Indented, Execution.Constants.JsonSettings));
-        File.WriteAllText(
+        FileSystem.File.WriteAllText(
             Path.Combine(subDir, Path.GetFileName(GuiPaths.Path)),
             JsonConvert.SerializeObject(guiSettings, Formatting.Indented, Execution.Constants.JsonSettings));
-        var dataDir = new DirectoryInfo("Data");
-        if (dataDir.Exists)
+        DirectoryPath dataDir = "Data";
+        if (FileSystem.Directory.Exists(dataDir))
         {
-            dataDir.DeepCopy(new DirectoryInfo(Path.Combine(subDir, "Data")));
+            FileSystem.Directory.DeepCopy(dataDir, Path.Combine(subDir, "Data"));
         }
         Navigate.Navigate(subDir);
     }
