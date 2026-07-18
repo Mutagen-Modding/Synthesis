@@ -24,6 +24,7 @@ public class AddWorkConsumer : IStartupTask
         _workConsumer.CurrentCpuCount
             .Select(x => x.DesiredCPUs)
             .DistinctUntilChanged()
+            .Skip(1)
             .Subscribe(desired => _logger.Information(
                 "Work engine desired worker threads: {DesiredThreads}", desired));
         _workConsumer.Start();

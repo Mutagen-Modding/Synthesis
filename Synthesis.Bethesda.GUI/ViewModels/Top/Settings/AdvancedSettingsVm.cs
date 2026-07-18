@@ -62,8 +62,8 @@ public class GlobalSettingsVm : ViewModel,
         SpecifyTargetFramework = settingsSingleton.Gui.SpecifyTargetFramework;
 
         _buildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
-            .Select(x => calculator.Calculate(x))
-            .ToGuiProperty(this, nameof(BuildCores), scheduler: schedulerProvider.MainThread, deferSubscription: true);
+            .Select(calculator.Calculate)
+            .ToGuiProperty<byte>(this, nameof(BuildCores), scheduler: schedulerProvider.MainThread, initialValue: 2, deferSubscription: true);
 
         _isBuildCoresLimitedForMo2 = Observable.Return(mo2Detector.IsRunningInsideMo2())
             .ToGuiProperty(this, nameof(IsBuildCoresLimitedForMo2), initialValue: mo2Detector.IsRunningInsideMo2(), scheduler: schedulerProvider.MainThread);
@@ -86,6 +86,6 @@ public class GlobalSettingsVm : ViewModel,
         pipe.Shortcircuit = Shortcircuit;
         pipe.BlockBuildingWithinMo2 = BlockBuildingWithinMo2;
     }
-
+    
     public IObservable<int?> NumDesiredThreads => this.WhenAnyValue(x => x.BuildCores).Select(x => (int?)x);
 }
