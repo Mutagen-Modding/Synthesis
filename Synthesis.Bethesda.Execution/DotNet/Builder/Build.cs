@@ -2,6 +2,7 @@
 using Synthesis.Bethesda.Execution.DotNet.Builder.Transient;
 using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
+using Synthesis.Bethesda.Execution.Reporters.Classifications;
 using Synthesis.Bethesda.Execution.Utility;
 using Noggog.WorkEngine;
 using Serilog;
@@ -77,6 +78,12 @@ public class Build : IBuild
         }, cancel).ConfigureAwait(false);
             
         if (result == 0) return ErrorResponse.Success;
+
+        if (_mo2Detector.IsRunningInsideMo2()
+            && AccessDeniedDetection.TryFind(accumulator.Output, out var deniedPath))
+        {
+            throw new Mo2BuildException(deniedPath);
+        }
 
         return ResultsProcessor.GetResults(
             targetPath,
