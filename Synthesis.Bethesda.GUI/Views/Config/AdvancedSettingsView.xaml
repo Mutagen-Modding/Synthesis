@@ -36,6 +36,14 @@
                     VerticalAlignment="Center"
                     Text="Num Processors" />
             </StackPanel>
+            <TextBlock
+                x:Name="Mo2ProcessorLimitBlurb"
+                Margin="0,8,0,0"
+                HorizontalAlignment="Left"
+                FontSize="12"
+                Foreground="Gray"
+                TextWrapping="Wrap"
+                Text="Processors locked to 2 while inside Mo2" />
         </StackPanel>
         <TextBlock Text="Pathing" Style="{StaticResource SettingSectionHeaderStyle}" Margin="0,25,0,5" />
         <StackPanel Orientation="Vertical" Margin="15,5,5,5">

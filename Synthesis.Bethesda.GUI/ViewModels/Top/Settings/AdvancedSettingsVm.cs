@@ -12,6 +12,7 @@ using Synthesis.Bethesda.Execution.Settings.Calculators;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Noggog.WorkEngine;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
+using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.Top.Settings;
 
@@ -33,6 +34,9 @@ public class GlobalSettingsVm : ViewModel,
     private readonly ObservableAsPropertyHelper<byte> _buildCores;
     public byte BuildCores => _buildCores.Value;
 
+    private readonly ObservableAsPropertyHelper<bool> _isBuildCoresLimitedForMo2;
+    public bool IsBuildCoresLimitedForMo2 => _isBuildCoresLimitedForMo2.Value;
+
     [Reactive] public double BuildCorePercentage { get; set; }
 
     [Reactive] public bool SpecifyTargetFramework { get; set; } = true;
@@ -46,6 +50,7 @@ public class GlobalSettingsVm : ViewModel,
     public GlobalSettingsVm(
         ISettingsSingleton settingsSingleton,
         BuildCoreCalculator calculator,
+        IMo2EnvironmentDetector mo2Detector,
         INavigateTo navigateTo,
         ISchedulerProvider schedulerProvider)
     {
@@ -59,6 +64,9 @@ public class GlobalSettingsVm : ViewModel,
         _buildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
             .Select(x => calculator.Calculate(x))
             .ToGuiProperty(this, nameof(BuildCores), scheduler: schedulerProvider.MainThread, deferSubscription: true);
+
+        _isBuildCoresLimitedForMo2 = Observable.Return(mo2Detector.IsRunningInsideMo2())
+            .ToGuiProperty(this, nameof(IsBuildCoresLimitedForMo2), initialValue: mo2Detector.IsRunningInsideMo2(), scheduler: schedulerProvider.MainThread);
 
         // When BlockBuildingWithinMo2 is enabled, force Shortcircuit on
         this.WhenAnyValue(x => x.BlockBuildingWithinMo2)

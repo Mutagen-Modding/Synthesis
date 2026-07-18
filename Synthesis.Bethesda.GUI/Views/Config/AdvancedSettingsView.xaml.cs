@@ -26,6 +26,12 @@ public partial class AdvancedSettingsView
                 .Select(x => x == 0 ? Environment.ProcessorCount : x)
                 .BindTo(this, x => x.ActiveProcessorsText.Text)
                 .DisposeWith(dispose);
+            this.WhenAnyValue(x => x.ViewModel!.IsBuildCoresLimitedForMo2)
+                .Select(x => !x)
+                .BindTo(this, x => x.ProcessorPercentSlider.IsEnabled)
+                .DisposeWith(dispose);
+            this.OneWayBind(ViewModel, x => x.IsBuildCoresLimitedForMo2, x => x.Mo2ProcessorLimitBlurb.Visibility)
+                .DisposeWith(dispose);
             this.Bind(ViewModel, x => x.SpecifyTargetFramework, x => x.SpecifyTargetFrameworkCheck.IsChecked)
                 .DisposeWith(dispose);
             this.OneWayBind(ViewModel, x => x.GoToMo2FaqCommand, x => x.Mo2FaqLink.Command)
