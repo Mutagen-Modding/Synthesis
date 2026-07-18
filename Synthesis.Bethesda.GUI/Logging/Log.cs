@@ -9,6 +9,10 @@ public static class Log
     public static readonly DateTime StartTime;
     public const string LogFolder = "logs";
 
+    // File sink default template plus thread id.
+    private const string OutputTemplate =
+        "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [T{ThreadId}] {Message:lj}{NewLine}{Exception}";
+
     static Log()
     {
         StartTime = DateTime.Now;
@@ -40,8 +44,9 @@ public static class Log
 
         Serilog.Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
-            .WriteTo.File(Path.Combine(LogFolder, logFileName), retainedFileTimeLimit: TimeSpan.FromDays(7))
-            .WriteTo.File(curLog)
+            .Enrich.WithThreadId()
+            .WriteTo.File(Path.Combine(LogFolder, logFileName), outputTemplate: OutputTemplate, retainedFileTimeLimit: TimeSpan.FromDays(7))
+            .WriteTo.File(curLog, outputTemplate: OutputTemplate)
             .CreateLogger();
 
         Logger = Serilog.Log.Logger;
