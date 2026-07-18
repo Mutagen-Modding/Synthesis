@@ -13,7 +13,17 @@ public class Mo2RetryCoordinator : IMo2RetryCoordinator
     private const int MaxAttempts = 5;
     private const int BaseBackoffMs = 250;
     private const int MaxBackoffMs = 2000;
-    private const int ErrorAccessDenied = 5;
+
+    // Transient Win32 codes MO2's usvfs can surface when a child-process spawn collides
+    // with the virtual file system. Retried only inside MO2; a persistent failure still
+    // propagates after the final attempt.
+    private static readonly HashSet<int> RetriableErrorCodes = new()
+    {
+        5,    // ERROR_ACCESS_DENIED
+        32,   // ERROR_SHARING_VIOLATION
+        33,   // ERROR_LOCK_VIOLATION
+        1920, // ERROR_CANT_ACCESS_FILE
+    };
 
     private readonly ILogger _logger;
     private readonly IMo2EnvironmentDetector _mo2Detector;
@@ -45,12 +55,12 @@ public class Mo2RetryCoordinator : IMo2RetryCoordinator
             {
                 return await spawn().ConfigureAwait(false);
             }
-            catch (Win32Exception ex) when (attempt < MaxAttempts && ex.NativeErrorCode == ErrorAccessDenied)
+            catch (Win32Exception ex) when (attempt < MaxAttempts && RetriableErrorCodes.Contains(ex.NativeErrorCode))
             {
                 var backoff = Math.Min(MaxBackoffMs, BaseBackoffMs << (attempt - 1));
                 _logger.Warning(ex,
-                    "Process spawn failed at start inside MO2 (attempt {Attempt}/{MaxAttempts}); retrying in {BackoffMs}ms",
-                    attempt, MaxAttempts, backoff);
+                    "Process spawn failed at start inside MO2 with Win32 code {ErrorCode} (attempt {Attempt}/{MaxAttempts}); retrying in {BackoffMs}ms",
+                    ex.NativeErrorCode, attempt, MaxAttempts, backoff);
                 await Task.Delay(backoff, cancel).ConfigureAwait(false);
             }
         }
