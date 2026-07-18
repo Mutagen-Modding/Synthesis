@@ -1,5 +1,6 @@
 using Serilog;
 using Synthesis.Bethesda.Execution.DotNet.Builder;
+using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Patchers.Solution;
 
 namespace Synthesis.Bethesda.Execution.Patchers.Running.Solution;

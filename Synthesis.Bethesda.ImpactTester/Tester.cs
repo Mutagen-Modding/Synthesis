@@ -72,7 +72,7 @@ public class Tester
                 repository: RegistryConstants.GithubRepoName,
                 packageID: RegistryConstants.PackageId,
                 pages: byte.MaxValue)
-            .ToArrayAsync();
+            .ToArrayAsync(cancel);
 
         bool doThreading = false;
 

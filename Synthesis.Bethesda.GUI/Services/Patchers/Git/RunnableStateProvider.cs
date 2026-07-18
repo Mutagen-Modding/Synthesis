@@ -1,6 +1,7 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
 using Noggog;
 using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -33,7 +34,7 @@ public class RunnableStateProvider : ViewModel, IRunnableStateProvider, IPathToP
                 GetResponse<RunnerRepoInfo>.Fail("Constructing runnable state"))
             {
                 IsHaltingError = false
-            }, deferSubscription: true);
+            }, schedulerProvider.MainThread, deferSubscription: true);
     }
             
     FilePath IPathToProjProvider.Path => State?.Item?.Project.ProjPath ??

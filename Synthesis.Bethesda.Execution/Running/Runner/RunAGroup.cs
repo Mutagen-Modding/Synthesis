@@ -18,6 +18,7 @@ public class RunAGroup : IRunAGroup
 {
     private readonly ILogger _logger;
     private readonly PostRunProcessor _postRunProcessor;
+    private readonly ILoadOrderMaintainer _loadOrderMaintainer;
     public IMoveFinalResults MoveFinalResults { get; }
     public IGroupRunPreparer GroupRunPreparer { get; }
     public IRunSomePatchers RunSomePatchers { get; }
@@ -27,10 +28,12 @@ public class RunAGroup : IRunAGroup
         IGroupRunPreparer groupRunPreparer,
         IRunSomePatchers runSomePatchers,
         IMoveFinalResults moveFinalResults,
-        PostRunProcessor postRunProcessor)
+        PostRunProcessor postRunProcessor,
+        ILoadOrderMaintainer loadOrderMaintainer)
     {
         _logger = logger;
         _postRunProcessor = postRunProcessor;
+        _loadOrderMaintainer = loadOrderMaintainer;
         GroupRunPreparer = groupRunPreparer;
         RunSomePatchers = runSomePatchers;
         MoveFinalResults = moveFinalResults;
@@ -74,7 +77,13 @@ public class RunAGroup : IRunAGroup
             runParameters);
         
         cancellation.ThrowIfCancellationRequested();
-        MoveFinalResults.Move(postRunPath, outputDir);
+        var movedModKeys = MoveFinalResults.Move(postRunPath, outputDir);
+
+        if (runParameters.SplitIfMaxMastersExceeded && runParameters.UpdateLoadOrderAfterRun)
+        {
+            _loadOrderMaintainer.UpdateLoadOrder(groupRun.ModKey, movedModKeys);
+        }
+
         return true;
     }
 }

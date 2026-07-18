@@ -365,3 +365,6 @@ Synthesis.Bethesda.ImpactTester/Synthesis.Bethesda.Execution.xml
 Mutagen.Bethesda.Synthesis.WPF/Synthesis.Bethesda.Execution.xml
 
 nupkg/
+
+# Claude Code files
+.claude

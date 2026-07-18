@@ -19,8 +19,10 @@ using Synthesis.Bethesda.Execution.Versioning.Query;
 using Noggog.WorkEngine;
 using Serilog;
 using Synthesis.Bethesda.Execution.GitRepository;
+using Synthesis.Bethesda.Execution.DotNet.Builder;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.Execution.Patchers.Git.Services.Instantiation;
+using Synthesis.Bethesda.Execution.Reporters.Classifications;
 using Synthesis.Bethesda.Execution.Startup;
 
 namespace Synthesis.Bethesda.Execution.Modules;
@@ -35,13 +37,15 @@ public class MainModule : Module
             b.AddSerilog(dispose: true);
         });
         builder.Populate(services);
-        
+
+        builder.RegisterType<BuildLock>().As<IBuildLock>().SingleInstance();
+
         builder.RegisterAssemblyTypes(typeof(ISynthesisSubProcessRunner).Assembly)
             .InNamespacesOf(
                 typeof(IQueryNewestLibraryVersions),
                 typeof(ISynthesisSubProcessRunner),
                 typeof(IWorkingDirectorySubPaths),
-                typeof(IPatcherRun),
+                typeof(IPatcherPrepAndRun),
                 typeof(IIsApplicableErrorLine),
                 typeof(IInstalledSdkFollower),
                 typeof(BuildCoreCalculator),
@@ -57,6 +61,12 @@ public class MainModule : Module
                 typeof(IInstalledSdkFollower),
                 typeof(IBuildOutputAccumulator))
             .TypicalRegistrations()
+            .AsSelf();
+        
+        builder.RegisterAssemblyTypes(typeof(ISynthesisSubProcessRunner).Assembly)
+            .InNamespacesOf(
+                typeof(ErrorClassifier))
+            .AsImplementedInterfaces()
             .AsSelf();
         
         builder.RegisterAssemblyTypes(typeof(AddWorkConsumer).Assembly)

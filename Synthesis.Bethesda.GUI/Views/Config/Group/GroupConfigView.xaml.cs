@@ -1,5 +1,7 @@
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 
@@ -33,7 +35,7 @@ public partial class GroupConfigView
                 .DisposeWith(disposable);
 
             this.WhenAnyFallback(x => x.ViewModel!.State)
-                .Throttle(TimeSpan.FromMilliseconds(50), RxApp.MainThreadScheduler)
+                .Throttle(TimeSpan.FromMilliseconds(50), RxSchedulers.MainThreadScheduler)
                 .Select(state =>
                 {
                     if (state.IsHaltingError) return "Blocking Error";

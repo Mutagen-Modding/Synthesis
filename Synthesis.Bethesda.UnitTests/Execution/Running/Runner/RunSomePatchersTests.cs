@@ -56,10 +56,10 @@ public class RunSomePatchersTests
         PatcherPrepBundle[] patchers = new[]
         {
             new PatcherPrepBundle(
-                Substitute.For<IPatcherRun>(),
+                Substitute.For<IPatcherPrepAndRun>(),
                 Task.FromResult<Exception?>(null)),
             new PatcherPrepBundle(
-                Substitute.For<IPatcherRun>(),
+                Substitute.For<IPatcherPrepAndRun>(),
                 Task.FromResult<Exception?>(null)),
         };
             
@@ -116,10 +116,10 @@ public class RunSomePatchersTests
         PatcherPrepBundle[] patchers = new[]
         {
             new PatcherPrepBundle(
-                Substitute.For<IPatcherRun>(),
+                Substitute.For<IPatcherPrepAndRun>(),
                 Task.FromResult<Exception?>(null)),
             new PatcherPrepBundle(
-                Substitute.For<IPatcherRun>(),
+                Substitute.For<IPatcherPrepAndRun>(),
                 Task.FromResult<Exception?>(null)),
         };
             
@@ -160,10 +160,10 @@ public class RunSomePatchersTests
         PatcherPrepBundle[] patchers = new[]
         {
             new PatcherPrepBundle(
-                Substitute.For<IPatcherRun>(),
+                Substitute.For<IPatcherPrepAndRun>(),
                 Task.FromResult<Exception?>(null)),
             new PatcherPrepBundle(
-                Substitute.For<IPatcherRun>(),
+                Substitute.For<IPatcherPrepAndRun>(),
                 Task.FromResult<Exception?>(null)),
         };
 

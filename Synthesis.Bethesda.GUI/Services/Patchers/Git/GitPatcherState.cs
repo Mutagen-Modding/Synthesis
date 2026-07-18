@@ -2,6 +2,8 @@ using System.Reactive.Linq;
 using DynamicData;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
+using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
@@ -9,6 +11,7 @@ using Synthesis.Bethesda.Execution.DotNet.Dto;
 using Synthesis.Bethesda.Execution.DotNet.Singleton;
 using Synthesis.Bethesda.Execution.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.Services.Patchers.Git;
 
@@ -29,7 +32,9 @@ public class GitPatcherState : IGitPatcherState
         IInstalledSdkFollower dotNetInstalled,
         IEnvironmentErrorsVm envErrors,
         IMissingMods missingMods,
-        ILogger logger)
+        IMo2PrepModeProvider mo2PrepMode,
+        ILogger logger,
+        ISchedulerProvider schedulerProvider)
     {
         State = Observable.CombineLatest(
                 driverRepositoryPreparation.DriverInfo
@@ -44,9 +49,10 @@ public class GitPatcherState : IGitPatcherState
                 envErrors.WhenAnyFallback(x => x.ActiveError!.ErrorString),
                 missingMods.Missing
                     .QueryWhenChanged()
-                    .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+                    .Throttle(TimeSpan.FromMilliseconds(200), schedulerProvider.MainThread)
                     .StartWith(Array.Empty<ModKey>()),
-                (driver, runner, checkout, runnability, dotnet, envError, reqModsMissing) =>
+                mo2PrepMode.ActiveObservable,
+                (driver, runner, checkout, runnability, dotnet, envError, reqModsMissing, prepMode) =>
                 {
                     if (driver.IsHaltingError) return driver;
                     if (runner.IsHaltingError) return runner;
@@ -65,7 +71,7 @@ public class GitPatcherState : IGitPatcherState
                         return new ConfigurationState(ErrorResponse.Fail(envError));
                     }
 
-                    if (reqModsMissing.Count > 0)
+                    if (!prepMode && reqModsMissing.Count > 0)
                     {
                         return new ConfigurationState(ErrorResponse.Fail(
                             $"Required mods missing from load order:{Environment.NewLine}{string.Join(Environment.NewLine, reqModsMissing)}"));
@@ -84,6 +90,7 @@ public class GitPatcherState : IGitPatcherState
                     logger.Information("State returned success!");
                     return ConfigurationState.Success;
                 })
+            .DistinctUntilChanged()
             .Replay(1)
             .RefCount();
     }

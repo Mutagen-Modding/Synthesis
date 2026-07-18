@@ -10,9 +10,11 @@ namespace Synthesis.Bethesda.Execution.Commands;
 
 [Verb("run-pipeline", HelpText = "Run the patcher pipeline")]
 [ExcludeFromCodeCoverage]
-public class RunPatcherPipelineCommand : 
+public class RunPatcherPipelineCommand :
     IPipelineSettingsPath,
-    IExecutionParametersSettingsProvider
+    IExecutionParametersSettingsProvider,
+    IBlockBuildingWithinMo2SettingsProvider,
+    IShortCircuitSettingsProvider
 {
     [Option('o', "OutputDirectory", Required = true, HelpText = "Path where the patcher should place its resulting file(s).")]
     public required string OutputDirectory { get; set; }
@@ -43,6 +45,12 @@ public class RunPatcherPipelineCommand :
     [Option('t', "TargetRuntime", Required = false, HelpText = "Target runtime to specify explicitly")]
     public string? TargetRuntime { get; set; }
 
+    [Option("BlockBuildingWithinMo2", Required = false, HelpText = "Whether to block building when running inside MO2", Default = false)]
+    public bool BlockBuildingWithinMo2 { get; set; } = false;
+
+    [Option("Shortcircuit", Required = false, HelpText = "Whether to enable build shortcircuiting when build metadata matches", Default = true)]
+    public bool Shortcircuit { get; set; } = true;
+
     public override string ToString()
     {
         return $"\n{nameof(RunSynthesisPatcher)} => \n"
@@ -54,7 +62,9 @@ public class RunPatcherPipelineCommand :
                + $"  {nameof(ExtraDataFolder)} => {this.ExtraDataFolder}\n"
                + $"  {nameof(PersistencePath)} => {this.PersistencePath}\n"
                + $"  {nameof(PersistenceMode)} => {this.PersistenceMode}\n"
-               + $"  {nameof(TargetRuntime)} => {this.TargetRuntime}";
+               + $"  {nameof(TargetRuntime)} => {this.TargetRuntime}\n"
+               + $"  {nameof(BlockBuildingWithinMo2)} => {this.BlockBuildingWithinMo2}\n"
+               + $"  {nameof(Shortcircuit)} => {this.Shortcircuit}";
     }
 
     FilePath IPipelineSettingsPath.Path => PipelineSettingsPath;

@@ -1,5 +1,6 @@
 using ReactiveUI;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 
 namespace Synthesis.Bethesda.GUI.Views;
 
@@ -18,6 +19,9 @@ public partial class NoDotNetSdkInstalledView
                 .DisposeWith(dispose);
             this.WhenAnyValue(x => x.ViewModel!.CustomDisplayString)
                 .BindTo(this, x => x.CustomTextBlock.Text)
+                .DisposeWith(dispose);
+            this.WhenAnyValue(x => x.ViewModel!.TroubleshootCommand)
+                .BindTo(this, x => x.TroubleshootButton.Command)
                 .DisposeWith(dispose);
         });
     }

@@ -1,12 +1,16 @@
 using System.Reactive.Linq;
 using Autofac;
 using Noggog;
+using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
 using Synthesis.Bethesda.GUI.Services.Patchers.Cli;
+using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 using Synthesis.Bethesda.GUI.Settings;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
@@ -32,8 +36,10 @@ public class CliPatcherVm : PatcherVm, ICliInputSourceVm
         ILifetimeScope scope,
         PatcherRenameActionVm.Factory renameFactory,
         PatcherGroupTarget groupTarget,
+        ISchedulerProvider schedulerProvider,
+        ErrorDisplayVmFactory errorDisplayVmFactory,
         CliPatcherSettings? settings = null)
-        : base(scope, nameVm, selPatcher, confirmation, idProvider, renameFactory, groupTarget, settings)
+        : base(scope, nameVm, selPatcher, confirmation, idProvider, renameFactory, groupTarget, errorDisplayVmFactory, settings)
     {
         ExecutableInput = pathToExecutableInputVm;
         ShowHelpSetting = showHelpSetting;
@@ -50,7 +56,7 @@ public class CliPatcherVm : PatcherVm, ICliInputSourceVm
             .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
             {
                 IsHaltingError = false
-            }, deferSubscription: true);
+            }, schedulerProvider.MainThread, deferSubscription: true);
     }
 
     public override PatcherSettings Save()

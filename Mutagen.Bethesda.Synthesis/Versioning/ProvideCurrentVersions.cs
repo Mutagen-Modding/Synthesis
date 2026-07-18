@@ -45,18 +45,20 @@ public sealed class ProvideCurrentVersions : IProvideCurrentVersions
             return new VersionQuery(
                 MutagenSha: GetGitSha(typeof(FormKey).Assembly),
                 SynthesisSha: GetGitSha(typeof(BaseSynthesis.Constants).Assembly),
-                MutagenVersion: GetVersion(AssemblyVersions.For<FormKey>()),
-                SynthesisVersion: GetVersion(AssemblyVersions.For<BaseSynthesis.Codes>()),
-                NewtonsoftVersion: GetVersion(AssemblyVersions.For<Newtonsoft.Json.JsonSerializer>()));
+                MutagenVersion: GetVersion(typeof(FormKey).Assembly, "Mutagen.Bethesda.Core"),
+                SynthesisVersion: GetVersion(typeof(BaseSynthesis.Codes).Assembly, "Synthesis.Bethesda"),
+                NewtonsoftVersion: GetVersion(typeof(Newtonsoft.Json.JsonSerializer).Assembly, "Json.NET"));
 
         }, LazyThreadSafetyMode.ExecutionAndPublication);
     }
 
-    private string GetVersion(AssemblyVersions versions)
+    private string GetVersion(Assembly assembly, string prettyName)
     {
         try
         {
-            var version = versions.ProductVersion;
+            var version = assembly
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                ?.InformationalVersion;
             var plusIndex = version!.IndexOf("+", StringComparison.OrdinalIgnoreCase);
             if (plusIndex != -1)
             {
@@ -67,7 +69,7 @@ public sealed class ProvideCurrentVersions : IProvideCurrentVersions
         catch (Exception e)
         {
             throw new Exception(
-                $"Error retrieving product version for {versions.PrettyName}",
+                $"Error retrieving product version for {prettyName}",
                 e);
         }
     }

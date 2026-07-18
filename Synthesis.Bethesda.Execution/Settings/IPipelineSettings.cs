@@ -8,4 +8,5 @@ public interface IPipelineSettings : IShortCircuitSettingsProvider
     string WorkingDirectory { get; set; }
     double BuildCorePercentage { get; set; }
     string DotNetPathOverride { get; set; }
+    bool BlockBuildingWithinMo2 { get; set; }
 }

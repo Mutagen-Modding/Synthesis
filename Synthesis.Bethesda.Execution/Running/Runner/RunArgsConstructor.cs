@@ -13,7 +13,7 @@ public interface IRunArgsConstructor
 {
     RunSynthesisPatcher GetArgs(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         FilePath? sourcePath,
         RunParameters runParameters);
 }
@@ -39,10 +39,10 @@ public class RunArgsConstructor : IRunArgsConstructor
         ProfileDirectories = profileDirectories;
         PatcherNameSanitizer = patcherNameSanitizer;
     }
-        
+
     public RunSynthesisPatcher GetArgs(
         IGroupRun groupRun,
-        IPatcherRun patcher,
+        IPatcherPrepAndRun patcher,
         FilePath? sourcePath,
         RunParameters runParameters)
     {
@@ -71,6 +71,7 @@ public class RunArgsConstructor : IRunArgsConstructor
             UseUtf8ForEmbeddedStrings = runParameters.UseUtf8ForEmbeddedStrings,
             HeaderVersionOverride = runParameters.HeaderVersionOverride,
             FormIDRangeMode = runParameters.FormIDRangeMode,
+            SplitIfMaxMastersExceeded = runParameters.SplitIfMaxMastersExceeded,
         };
     }
 }

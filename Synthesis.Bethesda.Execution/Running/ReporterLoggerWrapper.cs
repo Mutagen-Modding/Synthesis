@@ -2,7 +2,6 @@
 using System.Reactive.Subjects;
 using Serilog;
 using Serilog.Events;
-using Synthesis.Bethesda.Execution.Logging;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Profile;
 using Synthesis.Bethesda.Execution.Reporters;
@@ -28,15 +27,16 @@ public class ReporterLoggerWrapper : ILogger, IReporterLoggerWrapper
         IProfileNameProvider profileNameProvider,
         IPatcherNameProvider nameProvider,
         IPatcherIdProvider idProvider,
-        IRunReporter reporter)
+        IRunReporter reporter,
+        ILogger logger)
     {
         _nameProvider = nameProvider;
         _idProvider = idProvider;
         _reporter = reporter;
 
-        _logger = Log.Logger
-            .ForContext(FunnelNames.Patcher, nameProvider.Name)
-            .ForContext(FunnelNames.Profile, profileNameProvider.Name);
+        _logger = logger
+            .ForContext("PatcherName", nameProvider.Name)
+            .ForContext("ProfileName", profileNameProvider.Name);
     }
 
     public void Write(LogEvent logEvent)

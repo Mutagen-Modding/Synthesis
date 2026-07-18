@@ -5,6 +5,8 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Synthesis.Projects;
 using Noggog;
+using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -17,7 +19,7 @@ public class ExistingSolutionInitVm : ASolutionInitializer
 {
     public override IObservable<GetResponse<InitializerCall>> InitializationCall { get; }
 
-    public PathPickerVM SolutionPath { get; } = new PathPickerVM();
+    public PathPickerVM SolutionPath { get; }
 
     [Reactive]
     public string ProjectName { get; set; } = string.Empty;
@@ -30,11 +32,16 @@ public class ExistingSolutionInitVm : ASolutionInitializer
         IPatcherFactory patcherFactory,
         IValidateProjectPath validateProjectPath,
         ICreateProject createProject,
-        IAddProjectToSolution addProjectToSolution)
+        IAddProjectToSolution addProjectToSolution,
+        ISchedulerProvider schedulerProvider,
+        IPathPickerDialogProvider pathPickerDialogProvider)
     {
-        SolutionPath.PathType = PathPickerVM.PathTypeOptions.File;
-        SolutionPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
-        SolutionPath.Filters.Add(new CommonFileDialogFilter("Solution", ".sln"));
+        SolutionPath = new PathPickerVM(schedulerProvider, pathPickerDialogProvider)
+        {
+            PathType = PathPickerVM.PathTypeOptions.File,
+            ExistCheckOption = PathPickerVM.CheckOptions.On,
+        };
+        SolutionPath.Filters.Add(new DialogFileFilter("Solution", ".sln"));
 
         var validation = Observable.CombineLatest(
                 SolutionPath.PathState(),
@@ -45,7 +52,7 @@ public class ExistingSolutionInitVm : ASolutionInitializer
 
         _projectError = validation
             .Select(i => (ErrorResponse)i.validation)
-            .ToGuiProperty<ErrorResponse>(this, nameof(ProjectError), ErrorResponse.Success);
+            .ToGuiProperty<ErrorResponse>(this, nameof(ProjectError), ErrorResponse.Success, schedulerProvider.MainThread);
 
         InitializationCall = validation
             .Select((i) =>

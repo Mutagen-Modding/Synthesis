@@ -1,4 +1,5 @@
-﻿using System.Reactive.Disposables;
+using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using ReactiveUI;
 
@@ -15,6 +16,10 @@ public partial class AdvancedSettingsView
                 .DisposeWith(dispose);
             this.Bind(ViewModel, x => x.Shortcircuit, x => x.ShortCircuitBox.IsChecked)
                 .DisposeWith(dispose);
+            this.Bind(ViewModel, x => x.BlockBuildingWithinMo2, x => x.BlockBuildingWithinMo2Box.IsChecked)
+                .DisposeWith(dispose);
+            this.OneWayBind(ViewModel, x => x.IsShortcircuitEditable, x => x.ShortCircuitBox.IsEnabled)
+                .DisposeWith(dispose);
             this.Bind(ViewModel, x => x.DotNetPathOverride, x => x.DotNetPathOverrideBox.Text)
                 .DisposeWith(dispose);
             this.WhenAnyValue(x => x.ViewModel!.BuildCores)
@@ -22,6 +27,8 @@ public partial class AdvancedSettingsView
                 .BindTo(this, x => x.ActiveProcessorsText.Text)
                 .DisposeWith(dispose);
             this.Bind(ViewModel, x => x.SpecifyTargetFramework, x => x.SpecifyTargetFrameworkCheck.IsChecked)
+                .DisposeWith(dispose);
+            this.OneWayBind(ViewModel, x => x.GoToMo2FaqCommand, x => x.Mo2FaqLink.Command)
                 .DisposeWith(dispose);
         });
     }

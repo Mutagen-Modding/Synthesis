@@ -1,6 +1,7 @@
-﻿using System.IO.Abstractions;
+using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using Newtonsoft.Json;
 using Noggog.Reactive;
@@ -63,7 +64,7 @@ public class SolutionMetaFileSync : ISolutionMetaFileSync
             .Select(path =>
             {
                 return Noggog.ObservableExt.WatchFile(path)
-                    .Throttle(TimeSpan.FromMilliseconds(500), RxApp.MainThreadScheduler)
+                    .Throttle(TimeSpan.FromMilliseconds(500), _schedulerProvider.MainThread)
                     .StartWith(Unit.Default)
                     .Select(_ =>
                     {
@@ -101,7 +102,7 @@ public class SolutionMetaFileSync : ISolutionMetaFileSync
                 MetaPath,
                 (nickname, slnSettings, meta) => (nickname, slnSettings, meta))
             .DistinctUntilChanged()
-            .Throttle(TimeSpan.FromMilliseconds(200), RxApp.MainThreadScheduler)
+            .Throttle(TimeSpan.FromMilliseconds(200), _schedulerProvider.MainThread)
             .Skip(1)
             .Subscribe(x =>
             {

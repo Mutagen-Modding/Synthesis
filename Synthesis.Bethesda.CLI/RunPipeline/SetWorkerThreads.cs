@@ -18,5 +18,7 @@ public class SetWorkerThreads : INumWorkThreadsController
     }
 
     public IObservable<int?> NumDesiredThreads => Observable
-        .Return(_coreCalculator.Calculate(_pipelineSettings.Settings.BuildCorePercentage)).Select(x => (int?)x);
+        .Return(_coreCalculator.Calculate(
+            percent: _pipelineSettings.Settings.BuildCorePercentage))
+        .Select(x => (int?)x);
 }

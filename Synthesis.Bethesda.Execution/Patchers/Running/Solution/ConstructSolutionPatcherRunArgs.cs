@@ -53,6 +53,8 @@ public class ConstructSolutionPatcherRunArgs : IConstructSolutionPatcherRunArgs
             UseUtf8ForEmbeddedStrings = settings.UseUtf8ForEmbeddedStrings,
             HeaderVersionOverride = settings.HeaderVersionOverride,
             FormIDRangeMode = settings.FormIDRangeMode,
+            SplitIfMaxMastersExceeded = settings.SplitIfMaxMastersExceeded,
+            LoadOrderIncludesCreationClub = settings.LoadOrderIncludesCreationClub,
         };
     }
 }

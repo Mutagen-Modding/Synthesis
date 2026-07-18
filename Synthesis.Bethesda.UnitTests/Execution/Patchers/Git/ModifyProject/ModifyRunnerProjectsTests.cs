@@ -24,7 +24,6 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Git.ModifyProject;
 [Register(typeof(AvailableProjectsRetriever), typeof(IAvailableProjectsRetriever))]
 [Register(typeof(SwapToProperNetVersion), typeof(ISwapToProperNetVersion))]
 [Register(typeof(AddAllReleasesToOldVersions), typeof(AddAllReleasesToOldVersions))]
-[Register(typeof(TurnOffWindowsSpecificationInTargetFramework), typeof(ITurnOffWindowsSpecificationInTargetFramework))]
 partial class ModifyRunnerProjectsContainer : IContainer<ModifyRunnerProjects>
 {
 	[Instance] private readonly IFileSystem _fileSystem;
@@ -159,6 +158,27 @@ public class ModifyRunnerProjectsTests
 			new NugetVersionPair(
 				"0.49",
 				"0.30"),
+			out var pair);
+		await Verify(fileSystem.File.ReadAllText(projPath));
+	}
+
+	[Theory, DefaultAutoData]
+	public async Task Net10_ByMutagenVersion(
+		IFileSystem fileSystem,
+		FilePath existingSlnPath)
+	{
+		var subPath = Path.Combine("SomeProj", "SomeProj.csproj");
+		fileSystem.File.WriteAllText(existingSlnPath, Sln);
+		var projPath = Path.Combine(Path.GetDirectoryName(existingSlnPath)!, subPath);
+		fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(projPath)!);
+		fileSystem.File.WriteAllText(projPath, NetCoreProj);
+		var sut = new ModifyRunnerProjectsContainer(fileSystem);
+		sut.Resolve().Value.Modify(
+			existingSlnPath,
+			subPath,
+			new NugetVersionPair(
+				"0.54.0",
+				"0.36"),
 			out var pair);
 		await Verify(fileSystem.File.ReadAllText(projPath));
 	}
@@ -333,7 +353,7 @@ public class ModifyRunnerProjectsTests
 	}
 	
 	[Theory, DefaultAutoData]
-	public async Task RemoveWindowsSpec(
+	public async Task KeepWindowsSpec(
 		IFileSystem fileSystem,
 		FilePath existingSlnPath)
 	{

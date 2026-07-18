@@ -1,4 +1,5 @@
 ﻿using Noggog;
+using Noggog.IO;
 
 namespace Synthesis.Bethesda.GUI.Services.Main;
 
@@ -9,5 +10,12 @@ public interface IGuiSettingsPath
 
 public class GuiSettingsPath : IGuiSettingsPath
 {
-    public FilePath Path { get; } = "GuiSettings.json";
+    private readonly ICurrentDirectoryProvider _currentDirectoryProvider;
+
+    public GuiSettingsPath(ICurrentDirectoryProvider currentDirectoryProvider)
+    {
+        _currentDirectoryProvider = currentDirectoryProvider;
+    }
+
+    public FilePath Path => System.IO.Path.Combine(_currentDirectoryProvider.CurrentDirectory, "GuiSettings.json");
 }

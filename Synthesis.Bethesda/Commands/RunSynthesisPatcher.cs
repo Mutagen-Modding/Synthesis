@@ -49,6 +49,9 @@ public class RunSynthesisPatcher
     [Option("FormIDRangeMode", Required = false, HelpText = "Whether to override the header version when making a new mod object")]
     public FormIDRangeMode FormIDRangeMode { get; set; }
 
+    [Option("SplitIfMaxMastersExceeded", Required = false, HelpText = "Whether to split files if max masters exceeded")]
+    public bool SplitIfMaxMastersExceeded { get; set; }
+
     public override string ToString()
     {
         return $"{nameof(RunSynthesisPatcher)} => \n"
@@ -65,6 +68,7 @@ public class RunSynthesisPatcher
                + $"  {nameof(ModKey)} => {ModKey}\n"
                + $"  {nameof(HeaderVersionOverride)} => {HeaderVersionOverride}\n"
                + $"  {nameof(FormIDRangeMode)} => {FormIDRangeMode}\n"
-               + $"  {nameof(UseUtf8ForEmbeddedStrings)} => {UseUtf8ForEmbeddedStrings}";
+               + $"  {nameof(UseUtf8ForEmbeddedStrings)} => {UseUtf8ForEmbeddedStrings}\n"
+               + $"  {nameof(SplitIfMaxMastersExceeded)} => {SplitIfMaxMastersExceeded}";
     }
 }

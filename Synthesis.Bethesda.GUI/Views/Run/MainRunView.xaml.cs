@@ -1,5 +1,6 @@
-﻿using ReactiveUI;
+using ReactiveUI;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Windows;
 using System.Reactive.Linq;
 

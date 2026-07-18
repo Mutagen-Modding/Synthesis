@@ -2,6 +2,7 @@ using System.IO.Abstractions;
 using System.Reactive.Linq;
 using Synthesis.Bethesda.Commands;
 using Synthesis.Bethesda.Execution.Patchers.Running;
+using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.UnitTests.Execution.Running;
 
@@ -287,7 +288,7 @@ public class RunnerTests
     //         }, env.FileSystem.File.ReadAllLines(Path.Combine(workingDir, Utility.PluginPath.Name)));
     // }
 
-    public class DummyPatcher : IPatcherRun
+    public class DummyPatcher : IPatcherPrepAndRun
     {
         private readonly IFileSystem _FileSystem;
         public Guid Key { get; }
@@ -332,7 +333,7 @@ public class RunnerTests
             }
         }
 
-        public async Task Run(RunSynthesisPatcher settings, CancellationToken cancel)
+        public async Task Run(RunSynthesisPatcher settings, PatcherRunCapture capture, CancellationToken cancel)
         {
             if (DoWork)
             {

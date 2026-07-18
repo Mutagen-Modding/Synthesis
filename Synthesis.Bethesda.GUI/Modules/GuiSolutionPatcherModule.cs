@@ -21,11 +21,7 @@ public class GuiSolutionPatcherModule : Autofac.Module
             .NotInjection()
             .AsImplementedInterfaces()
             .AsSelf();
-            
-        builder.RegisterType<PatcherLogDecorator>()
-            .AsImplementedInterfaces()
-            .SingleInstance();
-            
+
         base.Load(builder);
     }
 }

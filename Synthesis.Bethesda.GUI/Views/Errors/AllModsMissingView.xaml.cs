@@ -1,4 +1,6 @@
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 

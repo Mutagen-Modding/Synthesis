@@ -1,6 +1,8 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
 using DynamicData;
 using Noggog;
+using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
@@ -23,7 +25,8 @@ public class AddPatchersToSelectedGroupVm : ViewModel, IAddPatchersToSelectedGro
     
     public AddPatchersToSelectedGroupVm(
         IProfileGroupsList groupsList,
-        ISelectedGroupControllerVm selectedGroupControllerVm)
+        ISelectedGroupControllerVm selectedGroupControllerVm,
+        ISchedulerProvider schedulerProvider)
     {
         _groupsList = groupsList;
         _selectedGroupControllerVm = selectedGroupControllerVm;
@@ -31,7 +34,7 @@ public class AddPatchersToSelectedGroupVm : ViewModel, IAddPatchersToSelectedGro
         _canAddPatchers = _selectedGroupControllerVm.WhenAnyValue(x => x.SelectedGroup)
             .CombineLatest(groupsList.Groups.Connect().QueryWhenChanged())
             .Select(x => (x.First ?? x.Second.LastOrDefault()) != null)
-            .ToGuiProperty(this, nameof(CanAddPatchers));
+            .ToGuiProperty(this, nameof(CanAddPatchers), scheduler: schedulerProvider.MainThread);
     }
 
     public void AddNewPatchers(params PatcherVm[] patchersToAdd)

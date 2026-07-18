@@ -2,12 +2,16 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using Autofac;
 using Noggog;
+using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Top;
 
@@ -45,6 +49,7 @@ public abstract class PatcherVm : ViewModel, ISelected
         IPatcherIdProvider idProvider,
         PatcherRenameActionVm.Factory renameFactory,
         PatcherGroupTarget groupTarget,
+        ErrorDisplayVmFactory errorDisplayVmFactory,
         PatcherSettings? settings)
     {
         GroupTarget = groupTarget;
@@ -75,8 +80,8 @@ public abstract class PatcherVm : ViewModel, ISelected
         {
             confirmation.TargetConfirmation = renameFactory();
         });
-            
-        ErrorDisplayVm = new ErrorDisplayVm(this, this.WhenAnyValue(x => x.State));
+
+        ErrorDisplayVm = errorDisplayVmFactory.Create(this, this.WhenAnyValue(x => x.State));
     }
 
     public abstract PatcherSettings Save();

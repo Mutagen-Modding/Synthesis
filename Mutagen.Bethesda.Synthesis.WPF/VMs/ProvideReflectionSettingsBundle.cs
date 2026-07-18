@@ -4,7 +4,8 @@ using Mutagen.Bethesda.Plugins.Cache;
 using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.WPF.Reflection;
 using Noggog;
-using ReactiveUI;
+using Noggog.Reactive;
+using Noggog.WPF;
 using Serilog;
 using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.Patchers.Git;
@@ -15,6 +16,7 @@ public interface IProvideReflectionSettingsBundle
 {
     Task<GetResponse<ReflectionSettingsBundleVm>> ExtractBundle(
         TargetProject targetProject,
+        string prebuiltExecutablePath,
         ReflectionSettingsConfig[] targets,
         IObservable<IChangeSet<IModListingGetter>> detectedLoadOrder,
         IObservable<ILinkCache?> linkCache,
@@ -26,19 +28,23 @@ public class ProvideReflectionSettingsBundle : IProvideReflectionSettingsBundle
     private readonly ILogger _Logger;
     private readonly ReflectionSettingsVM.Factory _reflFactory;
     private readonly IExtractInfoFromProject _Extract;
+    private readonly ISchedulerProvider _schedulerProvider;
 
     public ProvideReflectionSettingsBundle(
         ILogger logger,
         ReflectionSettingsVM.Factory reflFactory,
-        IExtractInfoFromProject extract)
+        IExtractInfoFromProject extract,
+        ISchedulerProvider schedulerProvider)
     {
         _Logger = logger;
         _reflFactory = reflFactory;
         _Extract = extract;
+        _schedulerProvider = schedulerProvider;
     }
         
     public async Task<GetResponse<ReflectionSettingsBundleVm>> ExtractBundle(
         TargetProject targetProject,
+        string prebuiltExecutablePath,
         ReflectionSettingsConfig[] targets,
         IObservable<IChangeSet<IModListingGetter>> detectedLoadOrder,
         IObservable<ILinkCache?> linkCache,
@@ -46,6 +52,7 @@ public class ProvideReflectionSettingsBundle : IProvideReflectionSettingsBundle
     {
         var vms = await _Extract.Extract<ReflectionSettingsVM[]>(
             targetProject: targetProject,
+            prebuiltExecutablePath: prebuiltExecutablePath,
             cancel: cancel,
             getter: (assemb) =>
             {
@@ -62,7 +69,7 @@ public class ProvideReflectionSettingsBundle : IProvideReflectionSettingsBundle
                             }
                             return _reflFactory(
                                 ReflectionSettingsParameters.FromType(
-                                    detectedLoadOrder.ObserveOn(RxApp.MainThreadScheduler),
+                                    detectedLoadOrder.ObserveOn(_schedulerProvider.MainThread),
                                     linkCache,
                                     t,
                                     Activator.CreateInstance(t)),

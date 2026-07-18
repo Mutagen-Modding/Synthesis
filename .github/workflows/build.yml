@@ -6,8 +6,16 @@ on:
       - main
       - prerelease
       - dev
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'mkdocs.yml'
   pull_request:
     branches: [ release ]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'mkdocs.yml'
 
 jobs:
   build:
@@ -18,13 +26,17 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - name: Setup .NET
+    - name: Setup .NET 10
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 9.0.*
+        dotnet-version: 10.0.*
     - name: Install dependencies
       run: dotnet restore Synthesis.Bethesda.sln
     - name: Build
       run: dotnet build Synthesis.Bethesda.sln -c Release --no-restore
+    - name: Add local NuGet source
+      run: dotnet nuget add source ${{ github.workspace }}/nupkg --name local
     - name: Test
-      run: dotnet test Synthesis.Bethesda.sln -c Release --no-build
+      run: dotnet test Synthesis.Bethesda.sln -c Release --no-build -- xUnit.maxParallelThreads=1
+      env:
+        SYNTHESIS_TEST_TIMEOUT_SECONDS: 600

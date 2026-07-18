@@ -1,6 +1,7 @@
 ﻿using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Execution;
+using Synthesis.Bethesda.Execution.Exceptions;
 using Synthesis.Bethesda.Execution.Patchers.Running.Solution;
 using Synthesis.Bethesda.UnitTests.AutoData;
 

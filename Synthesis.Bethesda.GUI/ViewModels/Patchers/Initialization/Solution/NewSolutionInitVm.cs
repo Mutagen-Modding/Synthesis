@@ -2,6 +2,8 @@ using System.IO;
 using System.Reactive.Linq;
 using Mutagen.Bethesda.Synthesis.Projects;
 using Noggog;
+using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -12,7 +14,7 @@ namespace Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Solution;
 
 public class NewSolutionInitVm : ASolutionInitializer
 {
-    public PathPickerVM ParentDirPath { get; } = new PathPickerVM();
+    public PathPickerVM ParentDirPath { get; }
 
     [Reactive]
     public string SolutionName { get; set; } = string.Empty;
@@ -34,10 +36,15 @@ public class NewSolutionInitVm : ASolutionInitializer
     public NewSolutionInitVm(
         IPatcherFactory patcherFactory,
         IValidateProjectPath validateProjectPath,
-        CreateTemplatePatcherSolution createTemplatePatcherSolution)
+        CreateTemplatePatcherSolution createTemplatePatcherSolution,
+        ISchedulerProvider schedulerProvider,
+        IPathPickerDialogProvider pathPickerDialogProvider)
     {
-        ParentDirPath.PathType = PathPickerVM.PathTypeOptions.Folder;
-        ParentDirPath.ExistCheckOption = PathPickerVM.CheckOptions.On;
+        ParentDirPath = new PathPickerVM(schedulerProvider, pathPickerDialogProvider)
+        {
+            PathType = PathPickerVM.PathTypeOptions.Folder,
+            ExistCheckOption = PathPickerVM.CheckOptions.On,
+        };
 
         _solutionPath = Observable.CombineLatest(
                 this.ParentDirPath.PathState(),
@@ -68,7 +75,7 @@ public class NewSolutionInitVm : ASolutionInitializer
                         return GetResponse<string>.Fail(val: slnName, reason: "Improper solution name. Go simpler.");
                     }
                 })
-            .ToGuiProperty(this, nameof(SolutionPath));
+            .ToGuiProperty(this, nameof(SolutionPath), schedulerProvider.MainThread);
 
         var validation = Observable.CombineLatest(
                 this.ParentDirPath.PathState(),
@@ -89,7 +96,7 @@ public class NewSolutionInitVm : ASolutionInitializer
 
         _projectError = validation
             .Select(i => (ErrorResponse)i.validation)
-            .ToGuiProperty<ErrorResponse>(this, nameof(ProjectError), ErrorResponse.Success);
+            .ToGuiProperty<ErrorResponse>(this, nameof(ProjectError), ErrorResponse.Success, schedulerProvider.MainThread);
 
         InitializationCall = validation
             .Select((i) =>
@@ -112,7 +119,7 @@ public class NewSolutionInitVm : ASolutionInitializer
 
         _projectNameWatermark = this.WhenAnyValue(x => x.SolutionName)
             .Select(x => string.IsNullOrWhiteSpace(x) ? "The name of the patcher" : SolutionNameProcessor(x))
-            .ToGuiProperty<string>(this, nameof(ProjectNameWatermark), string.Empty);
+            .ToGuiProperty<string>(this, nameof(ProjectNameWatermark), string.Empty, schedulerProvider.MainThread);
     }
 
     private string SolutionNameProcessor(string slnName) => slnName.Replace(" ", string.Empty);

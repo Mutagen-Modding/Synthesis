@@ -1,4 +1,6 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
+using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -18,12 +20,14 @@ public class SolutionPatcherNameVm : ViewModel, IPatcherNameVm
     public SolutionPatcherNameVm(
         IProjectSubpathDefaultSettings defaultSettings,
         SolutionNameConstructor nameConstructor,
-        ISelectedProjectInputVm selectedProjectInputVm)
+        ISelectedProjectInputVm selectedProjectInputVm,
+        ISchedulerProvider schedulerProvider)
     {
         _name = selectedProjectInputVm.WhenAnyValue(x => x.Picker.TargetPath)
             .CombineLatest(
                 this.WhenAnyValue(x => x.Nickname),
                 (path, nickname) => nameConstructor.Construct(nickname, path))
-            .ToGuiProperty<string>(this, nameof(Name), nameConstructor.Construct(Nickname, defaultSettings.ProjectSubpath), deferSubscription: true);
+            .ToGuiProperty<string>(this, nameof(Name), nameConstructor.Construct(Nickname, defaultSettings.ProjectSubpath),
+                schedulerProvider.MainThread, deferSubscription: true);
     }
 }

@@ -6,13 +6,15 @@ using Mutagen.Bethesda.Plugins.Order;
 using Mutagen.Bethesda.Synthesis.WPF;
 using Mutagen.Bethesda.WPF.Plugins.Order;
 using Noggog;
-using Noggog.WPF;
+using Noggog.Reactive;
+using Noggog.UI;
 using ReactiveUI;
 using Serilog;
 using Synthesis.Bethesda.DTO;
 using Noggog.GitRepository;
 using Synthesis.Bethesda.Execution.PatcherCommands;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Patchers.Git.Services;
 using Synthesis.Bethesda.GUI.Services.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Groups;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
@@ -25,6 +27,7 @@ public class PatcherUserSettingsVm : ViewModel
     
     private readonly IInitRepository _initRepository;
     private readonly IProvideRepositoryCheckouts _repoCheckouts;
+    private readonly IBuildMetaFileReader _metaFileReader;
 
     public ReactiveCommand<Unit, Unit> OpenSettingsCommand { get; }
 
@@ -62,28 +65,58 @@ public class PatcherUserSettingsVm : ViewModel
         IModKeyProvider modKeyProvider,
         IExecuteOpenForSettings executeOpenForSettings,
         IPatcherRunnabilityCliState runnabilityCliState,
-        IOpenSettingsHost openSettingsHost)
+        IOpenSettingsHost openSettingsHost,
+        IBuildMetaFileReader metaFileReader,
+        ISchedulerProvider schedulerProvider)
     {
         _initRepository = initRepository;
         _repoCheckouts = repoCheckouts;
-        _settingsConfiguration = source
+        _metaFileReader = metaFileReader;
+        var settingsResults = source
             .Select(i =>
             {
-                return Observable.Create<SettingsConfiguration>(async (observer, cancel) =>
+                return Observable.Create<(SettingsConfiguration Config, string? ExecutablePath, GetResponse<TargetProject> TargetProject)>(async (observer, cancel) =>
                 {
-                    observer.OnNext(new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()));
-                    if (i.TargetProject.Failed) return;
+                    observer.OnNext((new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()), null, i.TargetProject));
+                    if (i.TargetProject.Failed)
+                    {
+                        observer.OnCompleted();
+                        return;
+                    }
 
                     try
                     {
-                        var result = await getSettingsStyle.Get(
-                            i.TargetProject.Value.ProjPath,
-                            directExe: false,
-                            cancel: cancel,
-                            buildMetaPath: i.MetaPath,
-                            build: needBuild).ConfigureAwait(false);
+                        SettingsConfiguration result;
+                        string? executablePath;
+
+                        if (needBuild)
+                        {
+                            // Solution patcher - compile and get
+                            var compiled = await getSettingsStyle.CompileAndGetForProject(
+                                projectPath: i.TargetProject.Value.ProjPath,
+                                cancel: cancel).ConfigureAwait(false);
+                            result = compiled.Settings;
+                            executablePath = compiled.ExecutablePath;
+                        }
+                        else
+                        {
+                            // Git patcher - use pre-compiled executable
+                            var meta = _metaFileReader.Read(i.MetaPath);
+                            if (meta?.ExecutablePath == null)
+                            {
+                                logger.Error("ExecutablePath is null in compilation meta at {MetaPath}", i.MetaPath);
+                                observer.OnCompleted();
+                                return;
+                            }
+
+                            executablePath = meta.ExecutablePath;
+                            result = await getSettingsStyle.Get(
+                                executablePath: meta.ExecutablePath,
+                                buildMetaPath: i.MetaPath,
+                                cancel: cancel).ConfigureAwait(false);
+                        }
                         logger.Information("Settings type: {Result}", result);
-                        observer.OnNext(result);
+                        observer.OnNext((result, executablePath, i.TargetProject));
                     }
                     catch (Exception ex)
                     {
@@ -93,14 +126,19 @@ public class PatcherUserSettingsVm : ViewModel
                 });
             })
             .Switch()
-            .ToGuiProperty(this, nameof(SettingsConfiguration), new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()));
+            .Replay(1)
+            .RefCount();
+
+        _settingsConfiguration = settingsResults
+            .Select(x => x.Config)
+            .ToGuiProperty(this, nameof(SettingsConfiguration), new SettingsConfiguration(SettingsStyle.None, Array.Empty<ReflectionSettingsConfig>()), schedulerProvider.MainThread, deferSubscription: true);
 
         OpenSettingsCommand = NoggogCommand.CreateFromObject(
             objectSource: Observable.CombineLatest(
-                source.Select(x => x.TargetProject),
+                source,
                 this.WhenAnyValue(x => x.SettingsConfiguration),
-                (Proj, Conf) => (Proj, Conf)),
-            canExecute: x => x.Proj.Succeeded 
+                (Input, Conf) => (Input, Conf)),
+            canExecute: x => x.Input.TargetProject.Succeeded
                              && (x.Conf.Style == SettingsStyle.Open || x.Conf.Style == SettingsStyle.Host),
             execute: async (o) =>
             {
@@ -112,10 +150,22 @@ public class PatcherUserSettingsVm : ViewModel
                         logger.Information($"Checking runnability failed: No known ModKey");
                         return;
                     }
-                    
+
+                    if (needBuild)
+                    {
+                        logger.Error("Solution patchers do not support OpenForSettings style");
+                        return;
+                    }
+
+                    var meta = _metaFileReader.Read(o.Input.MetaPath);
+                    if (meta?.ExecutablePath == null)
+                    {
+                        logger.Error("ExecutablePath is null in compilation meta at {MetaPath}", o.Input.MetaPath);
+                        return;
+                    }
+
                     await executeOpenForSettings.Open(
-                        o.Proj.Value.ProjPath,
-                        directExe: false,
+                        executablePath: meta.ExecutablePath,
                         modKey: modKey.Value,
                         cancel: CancellationToken.None,
                         loadOrder: loadOrder.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm)).ConfigureAwait(false);
@@ -123,7 +173,7 @@ public class PatcherUserSettingsVm : ViewModel
                 else
                 {
                     await openSettingsHost.Open(
-                        path: o.Proj.Value.ProjPath,
+                        path: o.Input.TargetProject.Value.ProjPath,
                         cancel: CancellationToken.None,
                         loadOrder: loadOrder.LoadOrder.Items.Select<ReadOnlyModListingVM, IModListingGetter>(lvm => lvm)).ConfigureAwait(false);
                 }
@@ -132,26 +182,27 @@ public class PatcherUserSettingsVm : ViewModel
             disposable: this);
 
         _settingsOpen = OpenSettingsCommand.IsExecuting
-            .ToGuiProperty(this, nameof(SettingsOpen), deferSubscription: true);
+            .ToGuiProperty(this, nameof(SettingsOpen), schedulerProvider.MainThread, deferSubscription: true);
 
-        _reflectionSettings = Observable.CombineLatest(
-                this.WhenAnyValue(x => x.SettingsConfiguration),
-                source.Select(x => x.TargetProject),
-                (SettingsConfig, TargetProject) => (SettingsConfig, TargetProject))
+        _reflectionSettings = settingsResults
             .Select(x =>
             {
                 if (x.TargetProject.Failed
-                    || x.SettingsConfig.Style != SettingsStyle.SpecifiedClass
-                    || x.SettingsConfig.Targets.Length == 0)
+                    || x.Config.Style != SettingsStyle.SpecifiedClass
+                    || x.Config.Targets.Length == 0
+                    // A null executable means the build phase had issues; don't build here just to show settings.
+                    || x.ExecutablePath == null)
                 {
                     return default(AutogeneratedSettingsVm?);
                 }
-                return autoGenSettingsProvider.Get(x.SettingsConfig,
+
+                return autoGenSettingsProvider.Get(x.Config,
                     targetProject: x.TargetProject.Value,
+                    prebuiltExecutablePath: x.ExecutablePath,
                     loadOrder: loadOrder.LoadOrder.Connect().Transform<ReadOnlyModListingVM, IModListingGetter>(x => x),
                     linkCache: linkCacheVm.WhenAnyValue(x => x.SimpleLinkCache));
             })
-            .ToGuiProperty<AutogeneratedSettingsVm?>(this, nameof(ReflectionSettings), initialValue: null, deferSubscription: true);
+            .ToGuiProperty<AutogeneratedSettingsVm?>(this, nameof(ReflectionSettings), initialValue: null, schedulerProvider.MainThread, deferSubscription: true);
     }
 
     public void Persist()

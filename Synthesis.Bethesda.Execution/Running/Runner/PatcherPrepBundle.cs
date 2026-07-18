@@ -2,4 +2,4 @@
 
 namespace Synthesis.Bethesda.Execution.Running.Runner;
 
-public record PatcherPrepBundle(IPatcherRun Run, Task<Exception?> Prep);
+public record PatcherPrepBundle(IPatcherPrepAndRun Run, Task<Exception?> Prep);

@@ -15,6 +15,6 @@ public class GitPatcherModule : Module
                 typeof(IGitPatcherRun))
             .NotInjection()
             .AsImplementedInterfaces()
-            .SingleInstance();
+            .AsSelf();
     }
 }

@@ -1,10 +1,11 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

@@ -1,5 +1,6 @@
-﻿using System.Reactive;
+using System.Reactive;
 using Noggog;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Running;

@@ -33,7 +33,7 @@ public class QueryNewestLibraryVersions : IQueryNewestLibraryVersions
         IFileSystem fileSystem,
         ICreateSolutionFile createSolutionFile,
         ICreateProject createProject,
-        IQueryVersionProjectPathing pathing, 
+        IQueryVersionProjectPathing pathing,
         IDeleteEntireDirectory deleteEntireDirectory,
         IAddProjectToSolution addProjectToSolution,
         IWorkDropoff workDropoff,

@@ -3,8 +3,10 @@ using Mutagen.Bethesda.Archives.DI;
 using Mutagen.Bethesda.Assets.DI;
 using Mutagen.Bethesda.Environments.DI;
 using Mutagen.Bethesda.Inis.DI;
+using Mutagen.Bethesda.Installs.DI;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Allocators;
+using Mutagen.Bethesda.Plugins.Analysis;
 using Mutagen.Bethesda.Plugins.Binary.Headers;
 using Mutagen.Bethesda.Plugins.Binary.Parameters;
 using Mutagen.Bethesda.Plugins.Cache;
@@ -54,7 +56,65 @@ public class PatcherStateFactory : IPatcherStateFactory
             return MutagenEncoding._utf8;
         }
     }
-        
+
+    private void MergeLoadOrderForSplitFiles(
+        RunSynthesisMutagenPatcher settings,
+        GetStateLoadOrder.LoadOrderReturn loadOrderListing)
+    {
+        if (settings.SourcePath == null) return;
+
+        // Get the ModKey from the source file name
+        var sourceModKey = ModKey.FromFileName(Path.GetFileName(settings.SourcePath));
+        var sourceModPath = new ModPath(sourceModKey, settings.SourcePath);
+
+        if (!MultiModFileAnalysis.IsMultiModFile(sourceModPath, fileSystem: _fileSystem))
+        {
+            return;
+        }
+
+        var splitFiles = MultiModFileAnalysis.GetSplitModFiles(sourceModPath, fileSystem: _fileSystem);
+        var splitModKeys = splitFiles
+            .Select(f => ModKey.FromFileName(Path.GetFileName(f)))
+            .ToHashSet();
+
+        // Remove split file entries from processed load order
+        // (don't insert merged entry - it will be added when patchMod is created)
+        RemoveModKeysFromList(loadOrderListing.ProcessedLoadOrder, splitModKeys);
+
+        // Replace split entries with merged entry in raw load order
+        int? firstSplitIndex = null;
+        for (int i = loadOrderListing.Raw.Count - 1; i >= 0; i--)
+        {
+            if (splitModKeys.Contains(loadOrderListing.Raw[i].ModKey))
+            {
+                if (firstSplitIndex == null || i < firstSplitIndex)
+                {
+                    firstSplitIndex = i;
+                }
+                loadOrderListing.Raw.RemoveAt(i);
+            }
+        }
+
+        if (firstSplitIndex != null)
+        {
+            loadOrderListing.Raw.Insert(firstSplitIndex.Value, new LoadOrderListing(sourceModPath.ModKey, enabled: true));
+        }
+
+        System.Console.WriteLine($"Removed {splitModKeys.Count} split file entries from load order (merged into {sourceModPath.ModKey})");
+    }
+
+    private static void RemoveModKeysFromList<T>(IList<T> list, HashSet<ModKey> modKeysToRemove)
+        where T : IModKeyed
+    {
+        for (int i = list.Count - 1; i >= 0; i--)
+        {
+            if (modKeysToRemove.Contains(list[i].ModKey))
+            {
+                list.RemoveAt(i);
+            }
+        }
+    }
+
 #pragma warning disable CS0618
     public SynthesisState<TModSetter, TModGetter> ToState<TModSetter, TModGetter>(RunSynthesisMutagenPatcher settings, PatcherPreferences userPrefs, ModKey exportKey)
         where TModSetter : class, IContextMod<TModSetter, TModGetter>, TModGetter
@@ -83,6 +143,11 @@ public class PatcherStateFactory : IPatcherStateFactory
             dataFolderPath: settings.DataFolderPath,
             addCcMods: !settings.LoadOrderIncludesCreationClub,
             userPrefs: userPrefs);
+
+        if (settings.SplitIfMaxMastersExceeded)
+        {
+            MergeLoadOrderForSplitFiles(settings, loadOrderListing);
+        }
 
         var stringReadParams = new StringsReadParameters()
         {
@@ -113,7 +178,7 @@ public class PatcherStateFactory : IPatcherStateFactory
             TModGetter readOnlyPatchMod;
             if (settings.SourcePath == null)
             {
-                readOnlyPatchMod = ModInstantiator<TModGetter>.Activator(exportKey, settings.GameRelease);
+                readOnlyPatchMod = ModFactory<TModGetter>.Activator(exportKey, settings.GameRelease);
             }
             else
             {
@@ -132,9 +197,9 @@ public class PatcherStateFactory : IPatcherStateFactory
                     }
                 }
 
-                readOnlyPatchMod = ModInstantiator<TModGetter>.Importer(
+                readOnlyPatchMod = ModFactory<TModGetter>.Importer(
                     new ModPath(exportKey, settings.SourcePath),
-                    settings.GameRelease, 
+                    settings.GameRelease,
                     new BinaryReadParameters()
                     {
                         FileSystem = _fileSystem,
@@ -164,7 +229,7 @@ public class PatcherStateFactory : IPatcherStateFactory
                 {
                     Console.WriteLine($"  Force FormID Lower Range: {forceFormIdLowerRange}");
                 }
-                patchMod = ModInstantiator<TModSetter>.Activator(
+                patchMod = ModFactory<TModSetter>.Activator(
                     exportKey,
                     settings.GameRelease,
                     headerVersion: settings.HeaderVersionOverride,
@@ -173,14 +238,35 @@ public class PatcherStateFactory : IPatcherStateFactory
             }
             else
             {
-                patchMod = ModInstantiator<TModSetter>.Importer(
-                    new ModPath(exportKey, settings.SourcePath), 
-                    settings.GameRelease,
-                    new BinaryReadParameters()
-                    {
-                        FileSystem = _fileSystem,
-                        StringsParam = stringReadParams
-                    });
+                var modPath = new ModPath(exportKey, settings.SourcePath!);
+
+                if (settings.SplitIfMaxMastersExceeded)
+                {
+                    patchMod = (TModSetter)ModFactory.ImportSetterWithMultiFileDetection(
+                        modPath,
+                        loadOrderListing.ProcessedLoadOrder.Select(x => x.ModKey),
+                        settings.GameRelease,
+                        new BinaryReadParameters()
+                        {
+                            FileSystem = _fileSystem,
+                            StringsParam = stringReadParams
+                        });
+                }
+                else if (_fileSystem.File.Exists(modPath.Path))
+                {
+                    patchMod = ModFactory<TModSetter>.Importer(
+                        modPath,
+                        settings.GameRelease,
+                        new BinaryReadParameters()
+                        {
+                            FileSystem = _fileSystem,
+                            StringsParam = stringReadParams
+                        });
+                }
+                else
+                {
+                    throw new FileNotFoundException(modPath.Path);
+                }
             }
             if (settings.PersistencePath is not null && settings.PatcherName is not null)
             {
@@ -236,7 +322,8 @@ public class PatcherStateFactory : IPatcherStateFactory
                             new IniPathProvider(
                                 rel,
                                 new IniPathLookup(
-                                    gameDirectoryLookup))),
+                                    gameDirectoryLookup,
+                                    new ProtonPrefixProvider()))),
                         new ArchiveNameFromModKeyProvider(rel))),
                 rel));
 

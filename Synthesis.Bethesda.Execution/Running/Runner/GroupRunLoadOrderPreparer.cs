@@ -15,6 +15,7 @@ public interface IGroupRunLoadOrderPreparer
 public class GroupRunLoadOrderPreparer : IGroupRunLoadOrderPreparer
 {
     private readonly IFileSystem _fileSystem;
+    private readonly ISplitModsAdjacencyValidator _splitModsValidator;
     public ILoadOrderForRunProvider LoadOrderForRunProvider { get; }
     public ILoadOrderPrinter Printer { get; }
     public IRunLoadOrderPathProvider LoadOrderPathProvider { get; }
@@ -25,13 +26,15 @@ public class GroupRunLoadOrderPreparer : IGroupRunLoadOrderPreparer
         ILoadOrderForRunProvider loadOrderForRunProvider,
         ILoadOrderPrinter printer,
         IRunLoadOrderPathProvider runLoadOrderPathProvider,
-        ILoadOrderWriter loadOrderWriter)
+        ILoadOrderWriter loadOrderWriter,
+        ISplitModsAdjacencyValidator splitModsValidator)
     {
         _fileSystem = fileSystem;
         LoadOrderForRunProvider = loadOrderForRunProvider;
         Printer = printer;
         LoadOrderPathProvider = runLoadOrderPathProvider;
         LoadOrderWriter = loadOrderWriter;
+        _splitModsValidator = splitModsValidator;
     }
 
     public void Write(
@@ -39,7 +42,9 @@ public class GroupRunLoadOrderPreparer : IGroupRunLoadOrderPreparer
         IReadOnlySet<ModKey> blackListedMods)
     {
         var loadOrderList = LoadOrderForRunProvider.Get(groupRun.ModKey, blackListedMods);
-            
+
+        _splitModsValidator.Validate(loadOrderList);
+
         Printer.Print(loadOrderList);
 
         var loadOrderPath = LoadOrderPathProvider.PathFor(groupRun);

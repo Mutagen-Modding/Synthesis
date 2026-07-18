@@ -1,11 +1,24 @@
 using Noggog;
+using Serilog;
 using System.Diagnostics.CodeAnalysis;
+using Synthesis.Bethesda.Execution.Exceptions;
+using Synthesis.Bethesda.Execution.Reporters.Classifications;
+using Mutagen.Bethesda.Plugins.Order;
 
 namespace Synthesis.Bethesda.Execution.Reporters;
 
 [ExcludeFromCodeCoverage]
 public class ConsoleReporter : IRunReporter
 {
+    private readonly IErrorClassifier _errorClassifier;
+    private readonly ILogger _logger;
+
+    public ConsoleReporter(IErrorClassifier errorClassifier, ILogger logger)
+    {
+        _errorClassifier = errorClassifier;
+        _logger = logger;
+    }
+
     public void ReportOverallProblem(Exception ex)
     {
         System.Console.Error.WriteLine("Overall error:");
@@ -26,18 +39,48 @@ public class ConsoleReporter : IRunReporter
     {
         System.Console.Error.WriteLine($"[{name}] Preparation error:");
         System.Console.Error.WriteLine(ex);
+
+        var classification = _errorClassifier.Classify(ex);
+        if (classification != null)
+        {
+            LogClassification(classification);
+
+            throw new ClassifiedErrorException(ex);
+        }
     }
 
-    public void ReportRunProblem(Guid key, string name, Exception? ex)
+    public void ReportRunProblem(
+        Guid key,
+        string name,
+        Exception? ex,
+        IReadOnlyList<string>? capturedOutput = null,
+        IReadOnlyList<string>? capturedErrors = null,
+        IList<ILoadOrderListingGetter>? loadOrder = null)
     {
-        if (ex == null)
+        // Attempt to classify the error and provide helpful suggestions
+        var classification = _errorClassifier.Classify(capturedOutput, capturedErrors, loadOrder);
+        if (classification != null)
         {
-            System.Console.Error.WriteLine($"[{name}] Run error");
+            if (ex != null)
+            {
+                _logger.Error(ex, $"[{name}] Run error:");
+            }
+
+            LogClassification(classification);
+
+            throw new ClassifiedErrorException(ex);
         }
-        else
+    }
+
+    private void LogClassification(ErrorClassification classification)
+    {
+        _logger.Error("Error detected: {ErrorType}", classification.ErrorType);
+        _logger.Error("{Message}", classification.Message);
+        classification.LogCliDetails(msg => _logger.Error("{Message}", msg));
+
+        if (!string.IsNullOrWhiteSpace(classification.DiscussionLink))
         {
-            System.Console.Error.WriteLine($"[{name}] Run error:");
-            System.Console.Error.WriteLine(ex);
+            _logger.Error("Read more: {DiscussionLink}", classification.DiscussionLink);
         }
     }
 

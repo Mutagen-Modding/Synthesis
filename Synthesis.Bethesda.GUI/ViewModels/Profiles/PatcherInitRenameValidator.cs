@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
+using Noggog.UI;
 using Noggog.WPF;
 using Serilog;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;

@@ -1,4 +1,5 @@
-﻿using System.Reactive.Disposables;
+using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Windows;
 using ReactiveUI;
@@ -29,9 +30,7 @@ public partial class BottomErrorDisplayView
             errorDisp
                 .BindTo(this, x => x.ErrorGlow.Visibility)
                 .DisposeWith(disposable);
-            this.WhenAnyValue(x => x.ViewModel!.State)
-                .Select(x => x.RunnableState.Reason)
-                .Select(x => x?.Split(Environment.NewLine).FirstOrDefault())
+            this.WhenAnyValue(x => x.ViewModel!.ErrorTitle)
                 .BindTo(this, x => x.ErrorTextBlock.Text)
                 .DisposeWith(disposable);
         });

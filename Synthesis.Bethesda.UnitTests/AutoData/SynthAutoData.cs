@@ -122,6 +122,7 @@ public class SynthAutoDataCustomization : ICustomization
         fixture.OmitAutoProperties = _omitAutoProperties;
         fixture.Customize(new MutagenBaseCustomization());
         fixture.Customize(new MutagenReleaseCustomization(GameRelease.SkyrimSE));
+        fixture.Customizations.Add(new OrderBuilder());
         fixture.Customize(new DefaultCustomization(_targetFileSystem));
         if (_useMockRepositoryProvider)
         {

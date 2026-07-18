@@ -71,12 +71,13 @@ public class CliTests
         builder.RegisterMock<IDotNetPathSettingsProvider>();
         builder.RegisterMock<IShortCircuitSettingsProvider>();
         builder.RegisterMock<IExecutionParametersSettingsProvider>();
+        builder.RegisterMock<IBlockBuildingWithinMo2SettingsProvider>();
         builder.RegisterMock<SolutionPatcherSettings>()
             .As<IPathToSolutionFileProvider>()
             .As<IProjectSubpathProvider>()
             .As<IPatcherNicknameProvider>();
         var cont = builder.Build();
-        cont.Validate(typeof(ISolutionPatcherRun));
+        cont.Validate(typeof(ISolutionPatcherPrepAndRun));
     }
     
     [Theory, MutagenAutoData]
@@ -94,6 +95,7 @@ public class CliTests
         builder.RegisterMock<IDotNetPathSettingsProvider>();
         builder.RegisterMock<IShortCircuitSettingsProvider>();
         builder.RegisterMock<IExecutionParametersSettingsProvider>();
+        builder.RegisterMock<IBlockBuildingWithinMo2SettingsProvider>();
         builder.RegisterMock<GithubPatcherSettings>()
             .As<IGithubPatcherIdentifier>()
             .As<IProjectSubpathProvider>()

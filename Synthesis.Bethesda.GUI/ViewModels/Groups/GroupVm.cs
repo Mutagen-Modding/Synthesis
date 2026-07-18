@@ -2,16 +2,22 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using Autofac;
 using DynamicData;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
+using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
-using Noggog.WPF.Containers;
+using Noggog.UI.Containers;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Reporters;
+using Synthesis.Bethesda.Execution.Reporters.Classifications;
 using Synthesis.Bethesda.Execution.Settings.V2;
+using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Git;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
@@ -65,12 +71,18 @@ public class GroupVm : ViewModel, ISelected
 
     private readonly ObservableAsPropertyHelper<bool> _patchersProcessing;
     public bool PatchersProcessing => _patchersProcessing.Value;
+
+    private readonly ObservableAsPropertyHelper<bool> _mo2BuildBlockedError;
+    public bool Mo2BuildBlockedError => _mo2BuildBlockedError.Value;
         
     public ErrorDisplayVm ErrorDisplayVm { get; }
         
     public IObservable<IChangeSet<ModKey>> LoadOrder { get; }
 
     public ObservableCollection<ModKey> BlacklistedModKeys { get; } = new();
+
+    /// <summary>Live stream of whether the app is in MO2 prep mode (run buttons hidden).</summary>
+    public IObservable<bool> Mo2PrepMode { get; }
 
     public GroupVm(
         ProfileVm profileVm,
@@ -79,10 +91,14 @@ public class GroupVm : ViewModel, ISelected
         IProfileLoadOrder loadOrder,
         IConfirmationPanelControllerVm confirmation,
         IProfileDisplayControllerVm profileDisplayController,
-        ILogger logger)
+        IMo2PrepModeProvider mo2PrepMode,
+        ILogger logger,
+        ISchedulerProvider schedulerProvider,
+        ErrorDisplayVmFactory errorDisplayVmFactory)
     {
         _profileDisplayController = profileDisplayController;
         ProfileVm = profileVm;
+        Mo2PrepMode = mo2PrepMode.ActiveObservable;
         LoadOrder = loadOrder.LoadOrder.Connect()
             .Transform(x => x.ModKey);
         DisplayController = profileVm.DisplayController;
@@ -101,27 +117,27 @@ public class GroupVm : ViewModel, ISelected
 
                 return GetResponse<ModKey>.Failure;
             })
-            .ToGuiProperty(this, nameof(ModKey), GetResponse<ModKey>.Fail(Mutagen.Bethesda.Plugins.ModKey.Null), deferSubscription: true);
+            .ToGuiProperty(this, nameof(ModKey), GetResponse<ModKey>.Fail(Mutagen.Bethesda.Plugins.ModKey.Null), schedulerProvider.MainThread, deferSubscription: true);
 
         _isSelected = profileDisplayController.WhenAnyValue(x => x.SelectedObject)
             .Select(x => x == this)
             // Not GuiProperty, as it interacts with drag/drop oddly
             .ToProperty(this, nameof(IsSelected));
 
-        PatchersDisplay = new SourceListUiFunnel<PatcherVm>(Patchers, this);
+        PatchersDisplay = new SourceListUiFunnel<PatcherVm>(Patchers, this, schedulerProvider.MainThread);
 
         _numEnabledPatchers = Patchers.Connect()
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .FilterOnObservable(group => group.WhenAnyValue(x => x.IsOn),
-                scheduler: RxApp.MainThreadScheduler)
+                scheduler: schedulerProvider.MainThread)
             .QueryWhenChanged(q => q)
             .StartWith(Array.Empty<PatcherVm>())
             .Select(x => x.Count)
-            .ToGuiProperty(this, nameof(NumEnabledPatchers), deferSubscription: true);
+            .ToGuiProperty(this, nameof(NumEnabledPatchers), schedulerProvider.MainThread, deferSubscription: true);
 
         var onPatchers = Patchers.Connect()
-            .ObserveOnGui()
-            .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: RxApp.MainThreadScheduler)
+            .ObserveOn(schedulerProvider.MainThread)
+            .FilterOnObservable(p => p.WhenAnyValue(x => x.IsOn), scheduler: schedulerProvider.MainThread)
             .RefCount();
 
         var processingPatchers = onPatchers
@@ -134,7 +150,17 @@ public class GroupVm : ViewModel, ISelected
 
         _patchersProcessing = processingPatchers
             .Select(x => x.Count > 0)
-            .ToGuiProperty(this, nameof(PatchersProcessing), false, deferSubscription: true);
+            .ToGuiProperty(this, nameof(PatchersProcessing), false, schedulerProvider.MainThread, deferSubscription: true);
+
+        _mo2BuildBlockedError = Patchers.Connect()
+            .ObserveOn(schedulerProvider.MainThread)
+            .FilterOnObservable(p => p.ErrorDisplayVm.WhenAnyValue(x => x.ErrorTitle)
+                .Select(title =>
+                    title == Mo2BuildBlockedErrorClassification.ErrorTypeString
+                    || title == RanBuildInMo2ErrorClassification.ErrorTypeString))
+            .QueryWhenChanged(q => q.Count > 0)
+            .StartWith(false)
+            .ToGuiProperty(this, nameof(Mo2BuildBlockedError), false, schedulerProvider.MainThread, deferSubscription: true);
 
         _state = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.NumEnabledPatchers),
@@ -175,9 +201,9 @@ public class GroupVm : ViewModel, ISelected
 
                     return new ConfigurationState<ViewModel>(this);
                 })
-            .ToGuiProperty(this, nameof(State), new ConfigurationState<ViewModel>(this), deferSubscription: true);
-            
-        ErrorDisplayVm = new ErrorDisplayVm(this, this.WhenAnyValue(x => x.State));
+            .ToGuiProperty(this, nameof(State), new ConfigurationState<ViewModel>(this), schedulerProvider.MainThread, deferSubscription: true);
+
+        ErrorDisplayVm = errorDisplayVmFactory.Create(this, this.WhenAnyValue(x => x.State));
 
         GoToErrorCommand = overallErrorVm.CreateCommand(
             this.WhenAnyValue(x => x.State)
@@ -188,7 +214,7 @@ public class GroupVm : ViewModel, ISelected
                 }));
             
         var allCommands = Patchers.Connect()
-            .ObserveOnGui()
+            .ObserveOn(schedulerProvider.MainThread)
             .WhereCastable<PatcherVm, GitPatcherVm>()
             .Transform(x => CommandVM.Factory(x.UpdateAllCommand.Command))
             .AsObservableList();

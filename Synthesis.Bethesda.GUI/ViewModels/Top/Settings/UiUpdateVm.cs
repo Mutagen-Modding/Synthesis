@@ -2,6 +2,8 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using Mutagen.Bethesda.Synthesis.Versioning;
 using Noggog;
+using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using NuGet.Versioning;
 using ReactiveUI;
@@ -39,7 +41,8 @@ public class UiUpdateVm : ViewModel
         INavigateTo navigateTo,
         INewestLibraryVersionsVm libVersionsVm,
         IProvideCurrentVersions currentVersions,
-        SemanticVersionParsing semanticVersionParsing)
+        SemanticVersionParsing semanticVersionParsing,
+        ISchedulerProvider schedulerProvider)
     {
         _semanticVersionParsing = semanticVersionParsing;
         SynthesisVersion = currentVersions.SynthesisVersion;
@@ -67,7 +70,7 @@ public class UiUpdateVm : ViewModel
 
                 return x.Prerelease.Synthesis;
             })
-            .ToGuiProperty(this, nameof(NewestSynthesisVersion), default, deferSubscription: true);
+            .ToGuiProperty(this, nameof(NewestSynthesisVersion), default, schedulerProvider.MainThread, deferSubscription: true);
 
         GoToWikiCommand = ReactiveCommand.Create(() => navigateTo.Navigate(WikiPage));
 
@@ -87,7 +90,7 @@ public class UiUpdateVm : ViewModel
                         logger.Information("Failed to parse newest version");
                         return false;
                     }
-                    
+
                     return newestVersion > curVersion;
                 }
                 catch (Exception e)
@@ -96,6 +99,6 @@ public class UiUpdateVm : ViewModel
                     return false;
                 }
             })
-            .ToGuiProperty(this, nameof(HasUpdate), deferSubscription: true);
+            .ToGuiProperty(this, nameof(HasUpdate), scheduler: schedulerProvider.MainThread, deferSubscription: true);
     }
 }

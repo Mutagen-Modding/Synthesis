@@ -2,6 +2,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Linq;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

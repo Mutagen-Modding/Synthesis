@@ -61,7 +61,7 @@
                             x:Name="PatcherVersioning"
                             Margin="0,15,0,0"
                             HorizontalAlignment="Left" />
-                        <local:NugetsVersioningView Grid.Row="2"
+                        <local:PatcherNugetsVersioningView Grid.Row="2"
                             x:Name="Nugets"
                             Margin="0,5,0,0" />
                         <Button Grid.Row="3"

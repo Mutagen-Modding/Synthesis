@@ -1,4 +1,5 @@
-﻿using Noggog.WPF;
+using Noggog.UI;
+using Noggog.WPF;
 using ReactiveUI.Fody.Helpers;
 using Synthesis.Bethesda.Execution.Settings.V2;
 using Synthesis.Bethesda.GUI.Settings;

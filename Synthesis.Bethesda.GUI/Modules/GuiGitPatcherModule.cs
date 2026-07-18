@@ -32,11 +32,7 @@ public class GuiGitPatcherModule : Autofac.Module
             .NotInjection()
             .AsImplementedInterfaces()
             .AsSelf();
-            
-        builder.RegisterType<PatcherLogDecorator>()
-            .AsImplementedInterfaces()
-            .SingleInstance();
-            
+
         base.Load(builder);
     }
 }

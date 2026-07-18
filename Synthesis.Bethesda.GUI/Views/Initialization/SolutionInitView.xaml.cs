@@ -1,6 +1,8 @@
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Windows.Controls.Primitives;
 using DynamicData;
@@ -65,7 +67,7 @@ public partial class SolutionInitView
                 .BindTo(this, x => x.AvailableProjects.ItemsSource)
                 .DisposeWith(dispose);
             this.AvailableProjects.Events().SelectionChanged
-                .Throttle(TimeSpan.FromMilliseconds(300), RxApp.MainThreadScheduler)
+                .Throttle(TimeSpan.FromMilliseconds(300), RxSchedulers.MainThreadScheduler)
                 .WithLatestFrom(
                     this.WhenAnyValue(x => x.ViewModel),
                     (change, vm) => (change, vm))

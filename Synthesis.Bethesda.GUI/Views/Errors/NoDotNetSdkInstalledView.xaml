@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:Synthesis.Bethesda.GUI.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:wpf="clr-namespace:Noggog.WPF;assembly=Noggog.WPF"
+    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:environmentErrors="clr-namespace:Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -15,26 +16,177 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+
+        <!-- Header -->
         <TextBlock Grid.Row="0"
             Margin="20,10"
             FontSize="35"
             Foreground="{StaticResource SalmonBrush}"
             Text="Install DotNet SDK" />
+
+        <!-- Description -->
         <TextBlock Grid.Row="1"
             x:Name="CustomTextBlock"
-            Margin="20,0" />
+            Margin="20,0"
+            TextWrapping="Wrap" />
+
+        <!-- Download SDK Button -->
         <Button Grid.Row="2"
             x:Name="DownloadButton"
-            Margin="20,20"
+            Margin="20,15"
             HorizontalAlignment="Left"
-            FontSize="24">
-            Download
+            Cursor="Hand"
+            Background="Transparent"
+            BorderThickness="0"
+            Padding="0,8,12,8">
+            <Button.Effect>
+                <DropShadowEffect
+                    BlurRadius="15"
+                    Opacity="0.5"
+                    ShadowDepth="0"
+                    Color="{StaticResource LightBlue}" />
+            </Button.Effect>
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Grid HorizontalAlignment="Left" Background="Transparent">
+                                    <StackPanel Orientation="Horizontal"
+                                               HorizontalAlignment="Left"
+                                               Margin="{TemplateBinding Padding}">
+                                        <icon:PackIconMaterial x:Name="DownloadIcon"
+                                                              Kind="Download"
+                                                              Width="20"
+                                                              Height="20"
+                                                              Margin="0,2,8,0"
+                                                              Foreground="{StaticResource LightBlueBrush}"
+                                                              VerticalAlignment="Center" />
+                                        <TextBlock x:Name="DownloadText"
+                                                  Text="Download SDK"
+                                                  FontSize="22"
+                                                  FontWeight="Bold"
+                                                  Foreground="{StaticResource LightBlueBrush}"
+                                                  VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="DownloadText" Property="Foreground" Value="{StaticResource PaleBlueHoverBrush}" />
+                                        <Setter TargetName="DownloadIcon" Property="Foreground" Value="{StaticResource PaleBlueHoverBrush}" />
+                                        <Setter Property="Effect">
+                                            <Setter.Value>
+                                                <DropShadowEffect
+                                                    BlurRadius="18"
+                                                    Opacity="0.8"
+                                                    ShadowDepth="0"
+                                                    Color="{StaticResource PaleBlueHover}" />
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Button.Style>
         </Button>
+
+        <!-- Salmon Divider -->
+        <Rectangle Grid.Row="3"
+            Margin="20,5"
+            Height="1"
+            HorizontalAlignment="Stretch">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Offset="0.05" Color="{StaticResource DarkSalmonTransparent}" />
+                    <GradientStop Offset="0.4" Color="{StaticResource DarkSalmon}" />
+                    <GradientStop Offset="0.6" Color="{StaticResource DarkSalmon}" />
+                    <GradientStop Offset="0.95" Color="{StaticResource DarkSalmonTransparent}" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+            <Rectangle.Effect>
+                <DropShadowEffect
+                    BlurRadius="12"
+                    ShadowDepth="0"
+                    Color="Red" />
+            </Rectangle.Effect>
+        </Rectangle>
+
+        <!-- Troubleshoot Text -->
         <TextBlock Grid.Row="4"
-            Margin="20,20"
-            Text="If you have already installed the SDK, try restarting Synthesis and/or your computer." />
+            Margin="20,10,20,0"
+            TextWrapping="Wrap"
+            Text="If you have already installed the SDK and are still having issues, check the FAQ." />
+
+        <!-- Troubleshoot FAQ Button -->
+        <Button Grid.Row="5"
+            x:Name="TroubleshootButton"
+            Margin="20,10"
+            HorizontalAlignment="Left"
+            Cursor="Hand"
+            Background="Transparent"
+            BorderThickness="0"
+            Padding="0,8,12,8">
+            <Button.Effect>
+                <DropShadowEffect
+                    BlurRadius="15"
+                    Opacity="0.5"
+                    ShadowDepth="0"
+                    Color="{StaticResource LightBlue}" />
+            </Button.Effect>
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Grid HorizontalAlignment="Left" Background="Transparent">
+                                    <StackPanel Orientation="Horizontal"
+                                               HorizontalAlignment="Left"
+                                               Margin="{TemplateBinding Padding}">
+                                        <TextBlock x:Name="TroubleshootText"
+                                                  Text="Troubleshoot FAQ"
+                                                  FontSize="22"
+                                                  FontWeight="Bold"
+                                                  Foreground="{StaticResource LightBlueBrush}"
+                                                  VerticalAlignment="Center"
+                                                  Margin="0,0,8,0" />
+                                        <icon:PackIconMaterial x:Name="TroubleshootIcon"
+                                                              Kind="HelpCircle"
+                                                              Width="20"
+                                                              Height="20"
+                                                              Margin="0,2,0,0"
+                                                              Foreground="{StaticResource LightBlueBrush}"
+                                                              VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="TroubleshootText" Property="Foreground" Value="{StaticResource PaleBlueHoverBrush}" />
+                                        <Setter TargetName="TroubleshootIcon" Property="Foreground" Value="{StaticResource PaleBlueHoverBrush}" />
+                                        <Setter Property="Effect">
+                                            <Setter.Value>
+                                                <DropShadowEffect
+                                                    BlurRadius="18"
+                                                    Opacity="0.8"
+                                                    ShadowDepth="0"
+                                                    Color="{StaticResource PaleBlueHover}" />
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Button.Style>
+        </Button>
     </Grid>
 </wpf:NoggogUserControl>

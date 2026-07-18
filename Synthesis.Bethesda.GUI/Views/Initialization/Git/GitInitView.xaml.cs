@@ -1,5 +1,6 @@
 using ReactiveUI;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.Initialization.Git;
 
 namespace Synthesis.Bethesda.GUI.Views;

@@ -6,14 +6,14 @@ namespace Synthesis.Bethesda.Execution.Running.Runner;
 
 public interface IPrepPatcherForRun
 {
-    PatcherPrepBundle Prep(IPatcherRun patcher, CancellationToken cancellation);
+    PatcherPrepBundle Prep(IPatcherPrepAndRun patcher, CancellationToken cancellation);
 }
 
 public class PrepPatcherForRun : IPrepPatcherForRun
 {
     private readonly IWorkDropoff _workDropoff;
     public IRunReporter Reporter { get; }
-        
+
     public PrepPatcherForRun(
         IWorkDropoff workDropoff,
         IRunReporter reporter)
@@ -21,8 +21,8 @@ public class PrepPatcherForRun : IPrepPatcherForRun
         _workDropoff = workDropoff;
         Reporter = reporter;
     }
-        
-    public PatcherPrepBundle Prep(IPatcherRun patcher, CancellationToken cancellation)
+
+    public PatcherPrepBundle Prep(IPatcherPrepAndRun patcher, CancellationToken cancellation)
     {
         return new PatcherPrepBundle(
             patcher,

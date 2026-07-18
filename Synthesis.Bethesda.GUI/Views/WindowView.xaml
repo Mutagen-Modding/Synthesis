@@ -21,6 +21,9 @@
                 <DataTemplate DataType="{x:Type top:NewProfileVm}">
                     <local:NoProfileView />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type top:Mo2PromptVm}">
+                    <local:Mo2PromptView />
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type running:RunVm}">
                     <local:MainRunView />
                 </DataTemplate>

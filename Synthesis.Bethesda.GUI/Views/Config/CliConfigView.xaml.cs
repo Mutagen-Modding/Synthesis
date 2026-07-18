@@ -1,5 +1,6 @@
 using ReactiveUI;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 
 namespace Synthesis.Bethesda.GUI.Views;
 

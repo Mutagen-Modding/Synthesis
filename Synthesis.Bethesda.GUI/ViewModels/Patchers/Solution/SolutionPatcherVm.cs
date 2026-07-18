@@ -6,6 +6,8 @@ using DynamicData;
 using DynamicData.Binding;
 using Mutagen.Bethesda.Plugins;
 using Noggog;
+using Noggog.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
@@ -13,9 +15,12 @@ using Synthesis.Bethesda.DTO;
 using Synthesis.Bethesda.Execution.DotNet.Singleton;
 using Synthesis.Bethesda.Execution.Patchers.Common;
 using Synthesis.Bethesda.Execution.Patchers.Git;
+using Synthesis.Bethesda.Execution.Reporters;
 using Synthesis.Bethesda.Execution.Settings;
+using Synthesis.Bethesda.Execution.Utility;
 using Synthesis.Bethesda.GUI.Services.Main;
 using Synthesis.Bethesda.GUI.Services.Patchers.Solution;
+using Synthesis.Bethesda.GUI.Services.Profile.ErrorClassification;
 using Synthesis.Bethesda.GUI.ViewModels.Patchers.TopLevel;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles;
 using Synthesis.Bethesda.GUI.ViewModels.Profiles.Plugins;
@@ -49,13 +54,15 @@ public class SolutionPatcherVm : PatcherVm
     
     public SolutionPatcherSettingsVm Settings { get; }
 
+    public bool RunningInsideMo2 { get; }
+
     public SolutionPatcherVm(
         ILifetimeScope scope,
         IPatcherNameVm nameVm,
         IProfileLoadOrder loadOrder,
         IInstalledSdkFollower dotNetSdkFollowerInstalled,
         IProfileDisplayControllerVm profileDisplay,
-        IConfirmationPanelControllerVm confirmation, 
+        IConfirmationPanelControllerVm confirmation,
         ISolutionPathInputVm solutionPathInput,
         ISelectedProjectInputVm selectedProjectInput,
         PatcherUserSettingsVm.Factory settingsVmFactory,
@@ -67,20 +74,23 @@ public class SolutionPatcherVm : PatcherVm
         SolutionPatcherSettingsVm settingsVm,
         PatcherRenameActionVm.Factory renameFactory,
         PatcherGroupTarget groupTarget,
+        ISchedulerProvider schedulerProvider,
+        ErrorDisplayVmFactory errorDisplayVmFactory,
+        IMo2EnvironmentDetector mo2Detector,
         SolutionPatcherSettings? settings = null)
-        : base(scope, nameVm, profileDisplay, confirmation, idProvider, renameFactory, groupTarget, settings)
+        : base(scope, nameVm, profileDisplay, confirmation, idProvider, renameFactory, groupTarget, errorDisplayVmFactory, settings)
     {
         SolutionPathInput = solutionPathInput;
         SelectedProjectInput = selectedProjectInput;
         Settings = settingsVm;
         _loadOrder = loadOrder;
         _logger = logger;
+        RunningInsideMo2 = mo2Detector.IsRunningInsideMo2();
         CopyInSettings(settings);
 
         AvailableProjects = availableProjectsFollower.Process(
                 this.WhenAnyValue(x => x.SolutionPathInput.Picker.TargetPath).Select(x => new FilePath(x)))
-            .ObserveOnGui()
-            .ToObservableCollection(this);
+            .ToObservableCollection(this, schedulerProvider.MainThread);
 
         _state = Observable.CombineLatest(
                 this.WhenAnyValue(x => x.SolutionPathInput.Picker.ErrorState),
@@ -95,7 +105,7 @@ public class SolutionPatcherVm : PatcherVm
             .ToGuiProperty<ConfigurationState>(this, nameof(State), new ConfigurationState(ErrorResponse.Fail("Evaluating"))
             {
                 IsHaltingError = false
-            }, deferSubscription: true);
+            }, schedulerProvider.MainThread, deferSubscription: true);
 
         OpenSolutionCommand = ReactiveCommand.Create(
             canExecute: this.WhenAnyValue(x => x.SolutionPathInput.Picker.InError)

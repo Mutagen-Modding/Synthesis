@@ -1,4 +1,5 @@
-﻿using System.Reactive;
+using System.Reactive;
+using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 

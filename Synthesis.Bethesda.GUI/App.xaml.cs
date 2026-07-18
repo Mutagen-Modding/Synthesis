@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using System.Windows;
 using Autofac;
+using Noggog;
 using Noggog.IO;
+using ReactiveUI.Builder;
 using Serilog;
 using Synthesis.Bethesda.Execution.Placement;
 using Synthesis.Bethesda.GUI.Services.Startup;
@@ -17,7 +19,13 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
-            
+
+        // ReactiveUI 23+ requires explicit initialization via the builder pattern.
+        RxAppBuilder.CreateReactiveUIBuilder()
+            .WithCoreServices()
+            .WithWpf()
+            .BuildApp();
+
         var singleApp = new SingletonApplicationEnforcer("Synthesis");
 
         if (!singleApp.IsFirstApplication)
@@ -63,7 +71,8 @@ public partial class App : Application
             var container = builder.Build();
 
             container.Resolve<IStartup>()
-                .Initialize();
+                .Initialize()
+                .FireAndForget(ex => Log.Logger.Error(ex, "Error starting"));
         }
         catch (Exception ex)
         {
