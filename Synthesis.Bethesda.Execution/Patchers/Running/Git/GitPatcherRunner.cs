@@ -17,17 +17,20 @@ public class GitPatcherRunner : IGitPatcherRunner
     private readonly IConstructSolutionPatcherRunArgs _constructArgs;
     private readonly ISynthesisSubProcessRunner _processRunner;
     private readonly IRunProcessStartInfoProvider _runProcessStartInfoProvider;
+    private readonly IMo2RetryCoordinator _mo2RetryCoordinator;
     private readonly ILogger _logger;
 
     public GitPatcherRunner(
         IConstructSolutionPatcherRunArgs constructArgs,
         ISynthesisSubProcessRunner processRunner,
         IRunProcessStartInfoProvider runProcessStartInfoProvider,
+        IMo2RetryCoordinator mo2RetryCoordinator,
         ILogger logger)
     {
         _constructArgs = constructArgs;
         _processRunner = processRunner;
         _runProcessStartInfoProvider = runProcessStartInfoProvider;
+        _mo2RetryCoordinator = mo2RetryCoordinator;
         _logger = logger;
     }
 
@@ -47,10 +50,12 @@ public class GitPatcherRunner : IGitPatcherRunner
 
         var args = _constructArgs.Construct(settings);
 
-        var exitCode = await _processRunner.RunWithCapture(
-            _runProcessStartInfoProvider.GetStart(meta.ExecutablePath, args),
-            capture,
-            cancel: cancel).ConfigureAwait(false);
+        var exitCode = await _mo2RetryCoordinator.OnTransientSpawnFailure(
+            () => _processRunner.RunWithCapture(
+                _runProcessStartInfoProvider.GetStart(meta.ExecutablePath, args),
+                capture,
+                cancel: cancel),
+            cancel).ConfigureAwait(false);
 
         if (exitCode != 0)
         {
