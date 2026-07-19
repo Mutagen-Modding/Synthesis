@@ -1,7 +1,8 @@
 using System.Diagnostics;
 using Serilog;
+using Synthesis.Bethesda.Execution.Utility;
 
-namespace Synthesis.Bethesda.Execution.Utility;
+namespace Synthesis.Bethesda.Execution.Services.Singletons;
 
 /// <summary>
 /// Detects if the application is running within Mod Organizer 2 by checking for USVFS DLLs
