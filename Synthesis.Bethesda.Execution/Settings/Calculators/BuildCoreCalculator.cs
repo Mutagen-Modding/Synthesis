@@ -14,12 +14,12 @@ public class BuildCoreCalculator
         _mo2Detector = mo2Detector;
     }
 
-    public byte Calculate(double percent)
+    public byte Calculate(double percent, bool blockBuildingWithinMo2)
     {
         var target = Environment.ProcessorCount * Percent.FactoryPutInRange(percent);
         var ret = Math.Min(byte.MaxValue, target);
         ret = Math.Max(1, ret);
-        if (_mo2Detector.IsRunningInsideMo2())
+        if (blockBuildingWithinMo2 && _mo2Detector.IsRunningInsideMo2())
         {
             ret = Math.Min(ret, Mo2MaxCores);
         }

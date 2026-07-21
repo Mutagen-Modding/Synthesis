@@ -61,12 +61,15 @@ public class GlobalSettingsVm : ViewModel,
         BuildCorePercentage = settingsSingleton.Pipeline.BuildCorePercentage;
         SpecifyTargetFramework = settingsSingleton.Gui.SpecifyTargetFramework;
 
-        _buildCores = this.WhenAnyValue(x => x.BuildCorePercentage)
-            .Select(calculator.Calculate)
+        _buildCores = this.WhenAnyValue(
+                x => x.BuildCorePercentage,
+                x => x.BlockBuildingWithinMo2,
+                (percent, blockMo2) => calculator.Calculate(percent, blockMo2))
             .ToGuiProperty<byte>(this, nameof(BuildCores), scheduler: schedulerProvider.MainThread, initialValue: 2, deferSubscription: true);
 
-        _isBuildCoresLimitedForMo2 = Observable.Return(mo2Detector.IsRunningInsideMo2())
-            .ToGuiProperty(this, nameof(IsBuildCoresLimitedForMo2), initialValue: mo2Detector.IsRunningInsideMo2(), scheduler: schedulerProvider.MainThread);
+        _isBuildCoresLimitedForMo2 = this.WhenAnyValue(x => x.BlockBuildingWithinMo2)
+            .Select(blockMo2 => blockMo2 && mo2Detector.IsRunningInsideMo2())
+            .ToGuiProperty(this, nameof(IsBuildCoresLimitedForMo2), initialValue: BlockBuildingWithinMo2 && mo2Detector.IsRunningInsideMo2(), scheduler: schedulerProvider.MainThread);
 
         // When BlockBuildingWithinMo2 is enabled, force Shortcircuit on
         this.WhenAnyValue(x => x.BlockBuildingWithinMo2)

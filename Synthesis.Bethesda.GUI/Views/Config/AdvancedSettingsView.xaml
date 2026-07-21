@@ -18,7 +18,7 @@
                     Content="Short Circuit Checks"
                     ToolTip="Whether to track and skip building and other meta gathering steps when deemed appropriate" />
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
+            <StackPanel x:Name="ProcessorRow" Orientation="Horizontal">
                 <TextBlock
                     Margin="0,0,10,0"
                     VerticalAlignment="Center"
