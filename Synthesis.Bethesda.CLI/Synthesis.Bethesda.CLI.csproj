@@ -17,6 +17,7 @@
     <PackageReference Include="Autofac" />
       <PackageReference Include="Noggog.Autofac" />
     <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="Serilog.Enrichers.Thread" />
   </ItemGroup>
 
   <ItemGroup>

@@ -19,6 +19,7 @@ public class SolutionPatcherRunner : ISolutionPatcherRunner
     public ISynthesisSubProcessRunner ProcessRunner { get; }
     public IFormatCommandLine Formatter { get; }
     public IProjectRunProcessStartInfoProvider ProcessRunStartInfoProvider { get; }
+    private readonly IMo2RetryCoordinator _mo2RetryCoordinator;
     private readonly ILogger _logger;
 
     public SolutionPatcherRunner(
@@ -27,6 +28,7 @@ public class SolutionPatcherRunner : ISolutionPatcherRunner
         IConstructSolutionPatcherRunArgs constructArgs,
         ISynthesisSubProcessRunner processRunner,
         IFormatCommandLine formatter,
+        IMo2RetryCoordinator mo2RetryCoordinator,
         ILogger logger)
     {
         PathToProjProvider = pathToProjProvider;
@@ -34,6 +36,7 @@ public class SolutionPatcherRunner : ISolutionPatcherRunner
         ProcessRunner = processRunner;
         Formatter = formatter;
         ProcessRunStartInfoProvider = processRunStartInfoProvider;
+        _mo2RetryCoordinator = mo2RetryCoordinator;
         _logger = logger;
     }
         
@@ -41,12 +44,14 @@ public class SolutionPatcherRunner : ISolutionPatcherRunner
     {
         _logger.Information("Running");
         var args = ConstructArgs.Construct(settings);
-        var exitCode = await ProcessRunner.RunWithCapture(
-            ProcessRunStartInfoProvider.GetStart(
-                PathToProjProvider.Path,
-                Formatter.Format(args)),
-            capture,
-            cancel: cancel).ConfigureAwait(false);
+        var exitCode = await _mo2RetryCoordinator.OnTransientSpawnFailure(
+            () => ProcessRunner.RunWithCapture(
+                ProcessRunStartInfoProvider.GetStart(
+                    PathToProjProvider.Path,
+                    Formatter.Format(args)),
+                capture,
+                cancel: cancel),
+            cancel).ConfigureAwait(false);
 
         if (exitCode != 0)
         {

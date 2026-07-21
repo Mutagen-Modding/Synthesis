@@ -18,8 +18,9 @@ namespace Synthesis.Bethesda.IntegrationTests.Errors;
 
 /// <summary>
 /// Abstract base for Mo2 access denied error detection tests.
-/// Tests that when running inside MO2 and an access denied error occurs,
-/// the error is classified as RanBuildInMo2ErrorClassification instead of AccessDeniedErrorClassification.
+/// Tests that an access denied error occurring outside of a build (e.g. during a patcher run) while
+/// inside MO2 is classified as a plain AccessDeniedErrorClassification, NOT a RanBuildInMo2ErrorClassification.
+/// Only genuine build failures inside MO2 should surface the MO2 build error.
 /// </summary>
 public abstract class Mo2AccessDeniedErrorTest : IntegrationTest
 {
@@ -30,7 +31,7 @@ public abstract class Mo2AccessDeniedErrorTest : IntegrationTest
     protected abstract override PipelineMode Mode { get; }
 
     [Fact]
-    public async Task AccessDeniedError_InMo2_IsClassifiedAsRanBuildInMo2()
+    public async Task AccessDeniedError_InMo2_OutsideBuild_IsClassifiedAsAccessDenied()
     {
         // Arrange
         // Create a test patcher that throws an access denied error
@@ -137,18 +138,18 @@ public class Mo2AccessDeniedErrorUIPipelineTest : Mo2AccessDeniedErrorTest
         patcherRun.State.Value.ShouldBe(RunState.Error,
             "Patcher should be in Error state");
 
-        // Verify that the ErrorClassification is RanBuildInMo2ErrorVm (not AccessDeniedErrorVm)
+        // Verify that a runtime access denied inside MO2 is NOT mistaken for an MO2 build event
         patcherRun.ErrorClassification.ShouldNotBeNull("ErrorClassification should be populated");
-        patcherRun.ErrorClassification.ShouldBeOfType<RanBuildInMo2ErrorVm>(
-            "ErrorClassification should be RanBuildInMo2ErrorVm when running inside Mo2");
+        patcherRun.ErrorClassification.ShouldBeOfType<AccessDeniedErrorVm>(
+            "ErrorClassification should be AccessDeniedErrorVm for a non-build access denied error, even inside Mo2");
 
-        var vm = (RanBuildInMo2ErrorVm)patcherRun.ErrorClassification;
+        var vm = (AccessDeniedErrorVm)patcherRun.ErrorClassification;
         Output.WriteLine($"Patcher State: {patcherRun.State.Value} (Failed: {patcherRun.State.Failed})");
         Output.WriteLine($"Error Classification Type: {vm.ErrorType}");
         Output.WriteLine($"Error Message: {vm.Message}");
 
-        vm.ErrorType.ShouldBe(RanBuildInMo2ErrorClassification.ErrorTypeString);
-        Output.WriteLine("Successfully verified access denied error in Mo2 was classified as RanBuildInMo2");
+        vm.ErrorType.ShouldBe(AccessDeniedErrorClassification.ErrorTypeString);
+        Output.WriteLine("Successfully verified non-build access denied error in Mo2 was classified as plain AccessDenied");
 
         await Task.CompletedTask;
     }
@@ -210,13 +211,13 @@ public class Mo2AccessDeniedErrorCliPipelineTest : Mo2AccessDeniedErrorTest
         }
         Output.WriteLine("=== End Error Messages ===");
 
-        // Verify that the error classification was detected and logged as RanBuildInMo2
-        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains(RanBuildInMo2ErrorClassification.ErrorTypeString),
-            "Should have logged the Mo2 error classification");
-        errorMessages.ShouldContain(msg => msg.Contains("MO2's virtual file system"),
-            "Should have logged the Mo2 error message");
+        // Verify that a non-build access denied inside MO2 is classified as plain AccessDenied, not RanBuildInMo2
+        errorMessages.ShouldContain(msg => msg.Contains("Error detected:") && msg.Contains(AccessDeniedErrorClassification.ErrorTypeString),
+            "Should have logged the plain access denied error classification");
+        errorMessages.ShouldContain(msg => msg.Contains("cannot access a file") || msg.Contains("being used by another process"),
+            "Should have logged the access denied error message");
 
-        Output.WriteLine("Successfully verified access denied error in Mo2 was classified as RanBuildInMo2");
+        Output.WriteLine("Successfully verified non-build access denied error in Mo2 was classified as plain AccessDenied");
         return Task.CompletedTask;
     }
 }

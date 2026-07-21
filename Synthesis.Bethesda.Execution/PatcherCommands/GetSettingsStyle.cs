@@ -34,6 +34,7 @@ public class GetSettingsStyle : IGetSettingsStyle
     private readonly IQueryExecutablePath _queryExecutablePath;
     private readonly IShortCircuitSettingsProvider _shortCircuitSettingsProvider;
     private readonly IWriteShortCircuitMeta _writeShortCircuitMeta;
+    private readonly IMo2RetryCoordinator _mo2RetryCoordinator;
     public ILinesToReflectionConfigsParser LinesToConfigsParser { get; }
     public ISynthesisSubProcessRunner ProcessRunner { get; }
     public IRunProcessStartInfoProvider GetRunProcessStartInfoProvider { get; }
@@ -49,9 +50,11 @@ public class GetSettingsStyle : IGetSettingsStyle
         IShortCircuitSettingsProvider shortCircuitSettingsProvider,
         ILinesToReflectionConfigsParser linesToConfigsParser,
         IWriteShortCircuitMeta writeShortCircuitMeta,
-        IRunProcessStartInfoProvider getRunProcessStartInfoProvider)
+        IRunProcessStartInfoProvider getRunProcessStartInfoProvider,
+        IMo2RetryCoordinator mo2RetryCoordinator)
     {
         _logger = logger;
+        _mo2RetryCoordinator = mo2RetryCoordinator;
         _workDropoff = workDropoff;
         _metaFileReader = metaFileReader;
         _build = build;
@@ -121,9 +124,11 @@ public class GetSettingsStyle : IGetSettingsStyle
         {
             var start = GetRunProcessStartInfoProvider.GetStart(executablePath, new SettingsQuery());
 
-            var result = await ProcessRunner.RunAndCapture(
-                start,
-                cancel: cancel);
+            var result = await _mo2RetryCoordinator.OnTransientSpawnFailure(
+                () => ProcessRunner.RunAndCapture(
+                    start,
+                    cancel: cancel),
+                cancel);
 
             return ParseSettingsResult(result);
         }, cancel).ConfigureAwait(false);
@@ -140,9 +145,11 @@ public class GetSettingsStyle : IGetSettingsStyle
 
         var start = GetRunProcessStartInfoProvider.GetStart(executablePath.Value, new SettingsQuery());
 
-        var result = await ProcessRunner.RunAndCapture(
-            start,
-            cancel: cancel);
+        var result = await _mo2RetryCoordinator.OnTransientSpawnFailure(
+            () => ProcessRunner.RunAndCapture(
+                start,
+                cancel: cancel),
+            cancel);
 
         return (ParseSettingsResult(result), executablePath.Value);
     }

@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
+using System.Windows;
 using ReactiveUI;
 
 namespace Synthesis.Bethesda.GUI.Views;
@@ -25,6 +26,12 @@ public partial class AdvancedSettingsView
             this.WhenAnyValue(x => x.ViewModel!.BuildCores)
                 .Select(x => x == 0 ? Environment.ProcessorCount : x)
                 .BindTo(this, x => x.ActiveProcessorsText.Text)
+                .DisposeWith(dispose);
+            this.WhenAnyValue(x => x.ViewModel!.IsBuildCoresLimitedForMo2)
+                .Select(x => x ? Visibility.Collapsed : Visibility.Visible)
+                .BindTo(this, x => x.ProcessorRow.Visibility)
+                .DisposeWith(dispose);
+            this.OneWayBind(ViewModel, x => x.IsBuildCoresLimitedForMo2, x => x.Mo2ProcessorLimitBlurb.Visibility)
                 .DisposeWith(dispose);
             this.Bind(ViewModel, x => x.SpecifyTargetFramework, x => x.SpecifyTargetFrameworkCheck.IsChecked)
                 .DisposeWith(dispose);
