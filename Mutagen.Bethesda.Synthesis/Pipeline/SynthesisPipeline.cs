@@ -877,6 +877,7 @@ public class SynthesisPipeline
             UseUtf8ForEmbeddedStrings = extraParameters.UseUtf8ForEmbeddedStrings,
             FormIDRangeMode = extraParameters.FormIDRangeMode,
             HeaderVersionOverride = extraParameters.HeaderVersionOverride,
+            SplitIfMaxMastersExceeded = extraParameters.SplitIfMaxMastersExceeded,
         };
     }
 
