@@ -28,7 +28,7 @@ public class CliPatcherRun : ICliPatcherRun
 
     public ILogger Logger { get; }
     private readonly IPatcherNameProvider _name;
-    public IGenericSettingsToMutagenSettings GenericToMutagenSettings { get; }
+    public IConstructBaseRunArgs ConstructBaseRunArgs { get; }
     public IFormatCommandLine Format { get; }
 
     [ExcludeFromCodeCoverage]
@@ -40,7 +40,7 @@ public class CliPatcherRun : ICliPatcherRun
         IPatcherNameProvider name,
         IPathToExecutableInputProvider exePath,
         IIndexDisseminator indexDisseminator,
-        IGenericSettingsToMutagenSettings genericToMutagenSettings,
+        IConstructBaseRunArgs constructBaseRunArgs,
         IFormatCommandLine format)
     {
         Key = idProvider.InternalId;
@@ -49,7 +49,7 @@ public class CliPatcherRun : ICliPatcherRun
         ExePath = exePath;
         Logger = logger;
         _name = name;
-        GenericToMutagenSettings = genericToMutagenSettings;
+        ConstructBaseRunArgs = constructBaseRunArgs;
         Format = format;
         Index = indexDisseminator.GetNext();
     }
@@ -73,7 +73,7 @@ public class CliPatcherRun : ICliPatcherRun
     {
         if (cancel.IsCancellationRequested) return;
 
-        var internalSettings = GenericToMutagenSettings.Convert(settings);
+        var internalSettings = ConstructBaseRunArgs.Construct(settings);
         var args = Format.Format(internalSettings);
 
         try

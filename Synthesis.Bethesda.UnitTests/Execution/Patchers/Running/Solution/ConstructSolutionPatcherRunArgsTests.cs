@@ -1,5 +1,6 @@
 ﻿using Shouldly;
 using Mutagen.Bethesda.Strings;
+using Mutagen.Bethesda.Synthesis.CLI;
 using Noggog;
 using NSubstitute;
 using Synthesis.Bethesda.Commands;
@@ -11,33 +12,15 @@ namespace Synthesis.Bethesda.UnitTests.Execution.Patchers.Running.Solution;
 public class ConstructSolutionPatcherRunArgsTests
 {
     [Theory, SynthAutoData]
-    public void SettingsForwarding(
+    public void BuildsOnTopOfBaseArgs(
         Language language,
         RunSynthesisPatcher settings,
+        RunSynthesisMutagenPatcher baseArgs,
         ConstructSolutionPatcherRunArgs sut)
     {
         settings.TargetLanguage = language.ToString();
-        var ret = sut.Construct(settings);
-        ret.DataFolderPath.ShouldBe(settings.DataFolderPath);
-        ret.GameRelease.ShouldBe(settings.GameRelease);
-        ret.LoadOrderFilePath.ShouldBe(settings.LoadOrderFilePath);
-        ret.OutputPath.ShouldBe(settings.OutputPath);
-        ret.SourcePath.ShouldBe(settings.SourcePath);
-        ret.PatcherName.ShouldBe(settings.PatcherName);
-        ret.PersistencePath.ShouldBe(settings.PersistencePath);
-    }
-
-    [Theory, SynthAutoData]
-    public void SetsExtraDataToProviderResult(
-        DirectoryPath dir,
-        Language language,
-        RunSynthesisPatcher settings,
-        ConstructSolutionPatcherRunArgs sut)
-    {
-        settings.TargetLanguage = language.ToString();
-        sut.PatcherExtraDataPathProvider.Path.Returns(dir);
-        sut.Construct(settings)
-            .ExtraDataFolder.ShouldBe(dir);
+        sut.BaseRunArgs.Construct(settings).Returns(baseArgs);
+        sut.Construct(settings).ShouldBeSameAs(baseArgs);
     }
 
     [Theory, SynthAutoData]
