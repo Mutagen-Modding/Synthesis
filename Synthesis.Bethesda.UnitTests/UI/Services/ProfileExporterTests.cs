@@ -152,7 +152,7 @@ public class ProfileExporterTests
 
         sut.Export("target");
 
-        var copied = fs.Path.Combine("Export", "Data", "sub", "extra.txt");
+        var copied = System.IO.Path.GetFullPath(fs.Path.Combine("Export", "Data", "sub", "extra.txt"));
         fs.File.Exists(copied).ShouldBeTrue();
         fs.File.ReadAllText(copied).ShouldBe("payload");
     }
@@ -185,7 +185,7 @@ public class ProfileExporterTests
 
         sut.Export("target");
 
-        navigate.Received(1).Navigate(Arg.Is<DirectoryPath>(d => d.Name == "Export"));
+        navigate.Received(1).Navigate("Export");
     }
 
     [Theory, SynthAutoData]
