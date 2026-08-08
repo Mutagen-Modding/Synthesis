@@ -8,6 +8,7 @@ using Noggog.UI;
 using Noggog.WPF;
 using ReactiveUI;
 using Serilog;
+using Synthesis.Bethesda.GUI.ViewModels.Top;
 
 namespace Synthesis.Bethesda.GUI.ViewModels.EnvironmentErrors;
 
@@ -23,6 +24,7 @@ public class PluginsTxtMissingVm : ViewModel, IEnvironmentErrorVm
     public PluginsTxtMissingVm(
         ILogger logger,
         IPluginListingsPathContext listingsPathProvider,
+        IMo2PrepModeProvider mo2PrepMode,
         ISchedulerProvider schedulerProvider)
     {
         PluginFilePath = listingsPathProvider.Path;
@@ -41,6 +43,9 @@ public class PluginsTxtMissingVm : ViewModel, IEnvironmentErrorVm
                     return true;
                 }
             })
+            .CombineLatest(
+                mo2PrepMode.ActiveObservable,
+                (missing, prepMode) => missing && !prepMode)
             .ToGuiProperty(this, nameof(InError), scheduler: schedulerProvider.MainThread, deferSubscription: true);
 
         ErrorString = $"Could not find plugin file to read the load order from. \n\n" +

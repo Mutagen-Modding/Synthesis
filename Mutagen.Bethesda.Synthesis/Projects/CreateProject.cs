@@ -49,6 +49,8 @@ public class CreateProject : ICreateProject
         sb.AppendLine($"    <OutputType>Exe</OutputType>");
         sb.AppendLine($"    <TargetFramework>{(targetFramework ?? TargetNetVersion.Target)}</TargetFramework>");
         sb.AppendLine($"    <ImplicitUsings>true</ImplicitUsings>");
+        sb.AppendLine($"    <!-- Turned off for Mo2 compatibility -->");
+        sb.AppendLine($"    <CETCompat>false</CETCompat>");
         sb.AppendLine($"  </PropertyGroup>");
         sb.AppendLine();
         sb.AppendLine($"  <ItemGroup>");

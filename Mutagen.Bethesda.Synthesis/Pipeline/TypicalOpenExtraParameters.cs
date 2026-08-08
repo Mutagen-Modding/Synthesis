@@ -10,4 +10,5 @@ public record TypicalOpenExtraParameters
     public bool UseUtf8ForEmbeddedStrings { get; init; }
     public float? HeaderVersionOverride { get; init; }
     public FormIDRangeMode FormIDRangeMode { get; init; }
+    public bool SplitIfMaxMastersExceeded { get; init; } = true;
 }

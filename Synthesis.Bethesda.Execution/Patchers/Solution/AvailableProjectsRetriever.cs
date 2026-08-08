@@ -43,7 +43,7 @@ public class AvailableProjectsRetriever : IAvailableProjectsRetriever
             var projSpan = line.AsSpan().Slice(indexOfComma + 1, laterIndexOfComma - indexOfComma - 1).Trim();
             projSpan = projSpan.TrimStart("\"").TrimEnd("\"");
             if (!projSpan.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase)) continue;
-            yield return Path.Combine(Path.GetDirectoryName(solutionPath)!, projSpan.ToString());
+            yield return IFileSystemExt.CleanDirectorySeparators(Path.Combine(Path.GetDirectoryName(solutionPath)!, projSpan.ToString()));
         }
     }
 }

@@ -23,30 +23,33 @@ public class CliPatcherRun : ICliPatcherRun
     public int Index { get; }
     public string Name => _name.Name;
     public ISynthesisSubProcessRunner ProcessRunner { get; }
+    public IMo2RetryCoordinator Mo2RetryCoordinator { get; }
     public IPathToExecutableInputProvider ExePath { get; }
 
     public ILogger Logger { get; }
     private readonly IPatcherNameProvider _name;
-    public IGenericSettingsToMutagenSettings GenericToMutagenSettings { get; }
+    public IConstructBaseRunArgs ConstructBaseRunArgs { get; }
     public IFormatCommandLine Format { get; }
 
     [ExcludeFromCodeCoverage]
     public CliPatcherRun(
         ILogger logger,
         ISynthesisSubProcessRunner processRunner,
+        IMo2RetryCoordinator mo2RetryCoordinator,
         IPatcherIdProvider idProvider,
         IPatcherNameProvider name,
         IPathToExecutableInputProvider exePath,
         IIndexDisseminator indexDisseminator,
-        IGenericSettingsToMutagenSettings genericToMutagenSettings,
+        IConstructBaseRunArgs constructBaseRunArgs,
         IFormatCommandLine format)
     {
         Key = idProvider.InternalId;
         ProcessRunner = processRunner;
+        Mo2RetryCoordinator = mo2RetryCoordinator;
         ExePath = exePath;
         Logger = logger;
         _name = name;
-        GenericToMutagenSettings = genericToMutagenSettings;
+        ConstructBaseRunArgs = constructBaseRunArgs;
         Format = format;
         Index = indexDisseminator.GetNext();
     }
@@ -70,17 +73,19 @@ public class CliPatcherRun : ICliPatcherRun
     {
         if (cancel.IsCancellationRequested) return;
 
-        var internalSettings = GenericToMutagenSettings.Convert(settings);
+        var internalSettings = ConstructBaseRunArgs.Construct(settings);
         var args = Format.Format(internalSettings);
 
         try
         {
-            var exitCode = await ProcessRunner.RunWithCapture(
-                new ProcessStartInfo(ExePath.Path, args)
-                {
-                    WorkingDirectory = ExePath.Path.Directory!
-                },
-                capture,
+            var exitCode = await Mo2RetryCoordinator.OnTransientSpawnFailure(
+                () => ProcessRunner.RunWithCapture(
+                    new ProcessStartInfo(ExePath.Path, args)
+                    {
+                        WorkingDirectory = ExePath.Path.Directory!
+                    },
+                    capture,
+                    cancel),
                 cancel).ConfigureAwait(false);
             if (exitCode != 0)
             {

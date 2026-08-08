@@ -29,6 +29,7 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
     private readonly IShortCircuitSettingsProvider _shortCircuitSettingsProvider;
     private readonly IWriteShortCircuitMeta _writeShortCircuitMeta;
     private readonly IPatcherInternalDataPathProvider _internalDataPathProvider;
+    private readonly IMo2RetryCoordinator _mo2RetryCoordinator;
     public const int MaxLines = 100;
         
     public IWorkDropoff Dropoff { get; }
@@ -51,7 +52,8 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
         IRunProcessStartInfoProvider runProcessStartInfoProvider,
         IFileSystem fileSystem,
         IDefaultDataPathProvider defaultDataPathProvider,
-        IPatcherInternalDataPathProvider internalDataPathProvider)
+        IPatcherInternalDataPathProvider internalDataPathProvider,
+        IMo2RetryCoordinator mo2RetryCoordinator)
     {
         MetaFileReader = metaFileReader;
         _shortCircuitSettingsProvider = shortCircuitSettingsProvider;
@@ -65,6 +67,7 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
         _fileSystem = fileSystem;
         _defaultDataPathProvider = defaultDataPathProvider;
         _internalDataPathProvider = internalDataPathProvider;
+        _mo2RetryCoordinator = mo2RetryCoordinator;
     }
 
     public async Task<ErrorResponse> Check(
@@ -106,10 +109,12 @@ public class ExecuteRunnabilityCheck : IExecuteRunnabilityCheck
 
         var result = (Codes)await Dropoff.EnqueueAndWait(() =>
         {
-            return ProcessRunner.RunWithCallback(
-                RunProcessStartInfoProvider.GetStart(executablePath, checkState),
-                AddResult,
-                cancel: cancel);
+            return _mo2RetryCoordinator.OnTransientSpawnFailure(
+                () => ProcessRunner.RunWithCallback(
+                    RunProcessStartInfoProvider.GetStart(executablePath, checkState),
+                    AddResult,
+                    cancel: cancel),
+                cancel);
         }).ConfigureAwait(false);
 
         if (result is Codes.NotRunnable or Codes.Unsupported)

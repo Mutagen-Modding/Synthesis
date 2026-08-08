@@ -1,35 +1,22 @@
 using System.ComponentModel;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
-using Synthesis.Bethesda.Execution.Utility;
 
 namespace Synthesis.Bethesda.Execution.Reporters.Classifications;
 
 /// <summary>
-/// Detects file access denied errors in captured output and exceptions
+/// Detects file access denied errors in captured output and exceptions.
+/// MO2-caused build failures are handled separately via <see cref="Mo2BuildExceptionDetector"/>,
+/// so this always reports a plain access denied error regardless of the MO2 environment.
 /// </summary>
 public class AccessDeniedError : IErrorClassificationDetector, IExceptionClassificationDetector
 {
     private const int ERROR_ACCESS_DENIED = 5;
     private readonly ILogger<AccessDeniedError> _logger;
-    private readonly IMo2EnvironmentDetector _mo2Detector;
-
-    // Pattern for IOException with file path
-    private static readonly Regex IoExceptionPattern = new Regex(
-        @"System\.IO\.IOException:\s+The process cannot access the file\s+'([^']+)'\s+because it is being used by another process",
-        RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-    // Pattern for Win32Exception access denied (no file path)
-    private static readonly Regex Win32ExceptionPattern = new Regex(
-        @"System\.ComponentModel\.Win32Exception\s*\(\d+\):\s*Access is denied",
-        RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     public AccessDeniedError(
-        ILogger<AccessDeniedError> logger,
-        IMo2EnvironmentDetector mo2Detector)
+        ILogger<AccessDeniedError> logger)
     {
         _logger = logger;
-        _mo2Detector = mo2Detector;
     }
 
     public ErrorClassification? IsApplicable(
@@ -47,40 +34,9 @@ public class AccessDeniedError : IErrorClassificationDetector, IExceptionClassif
             allLines.AddRange(capturedErrors);
         }
 
-        if (allLines.Count == 0)
+        if (AccessDeniedDetection.TryFind(allLines, out var filePath))
         {
-            return null;
-        }
-
-        // Look for access denied errors
-        foreach (var line in allLines)
-        {
-            // Check for IOException with file path
-            var ioMatch = IoExceptionPattern.Match(line);
-            if (ioMatch.Success)
-            {
-                var filePath = ioMatch.Groups[1].Value;
-
-                // If running inside MO2, return the MO2-specific classification
-                if (_mo2Detector.IsRunningInsideMo2())
-                {
-                    return new RanBuildInMo2ErrorClassification(filePath);
-                }
-
-                return new AccessDeniedErrorClassification(filePath);
-            }
-
-            // Check for Win32Exception access denied
-            if (Win32ExceptionPattern.IsMatch(line))
-            {
-                // If running inside MO2, return the MO2-specific classification
-                if (_mo2Detector.IsRunningInsideMo2())
-                {
-                    return new RanBuildInMo2ErrorClassification(string.Empty);
-                }
-
-                return new AccessDeniedErrorClassification(string.Empty);
-            }
+            return new AccessDeniedErrorClassification(filePath);
         }
 
         return null;
@@ -94,13 +50,6 @@ public class AccessDeniedError : IErrorClassificationDetector, IExceptionClassif
         {
             if (current is Win32Exception win32Ex && win32Ex.NativeErrorCode == ERROR_ACCESS_DENIED)
             {
-                // If running inside MO2, return the MO2-specific classification
-                if (_mo2Detector.IsRunningInsideMo2())
-                {
-                    _logger.LogInformation("Detected Win32Exception ACCESS_DENIED while running inside MO2");
-                    return new RanBuildInMo2ErrorClassification(string.Empty);
-                }
-
                 _logger.LogInformation("Detected Win32Exception ACCESS_DENIED");
                 return new AccessDeniedErrorClassification(string.Empty);
             }

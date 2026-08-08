@@ -1,4 +1,4 @@
-﻿using Autofac;
+using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Noggog.Autofac;
@@ -12,6 +12,7 @@ using Synthesis.Bethesda.Execution.Patchers.Running;
 using Synthesis.Bethesda.Execution.Patchers.TopLevel;
 using Synthesis.Bethesda.Execution.Pathing;
 using Synthesis.Bethesda.Execution.Running.Runner;
+using Synthesis.Bethesda.Execution.Services.Singletons;
 using Synthesis.Bethesda.Execution.Settings.Calculators;
 using Synthesis.Bethesda.Execution.Settings.Json;
 using Synthesis.Bethesda.Execution.Utility;
@@ -39,6 +40,8 @@ public class MainModule : Module
         builder.Populate(services);
 
         builder.RegisterType<BuildLock>().As<IBuildLock>().SingleInstance();
+
+        builder.RegisterFolder<Mo2EnvironmentDetector>(RegistrationStyle.Singleton);
 
         builder.RegisterAssemblyTypes(typeof(ISynthesisSubProcessRunner).Assembly)
             .InNamespacesOf(

@@ -2,33 +2,33 @@ using System.Diagnostics.CodeAnalysis;
 using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Synthesis.CLI;
 using Synthesis.Bethesda.Commands;
-using Synthesis.Bethesda.Execution.Patchers.Common;
 
-namespace Synthesis.Bethesda.Execution.Patchers.Running.Cli;
+namespace Synthesis.Bethesda.Execution.Patchers.Common;
 
-public interface IGenericSettingsToMutagenSettings
+public interface IConstructBaseRunArgs
 {
-    RunSynthesisMutagenPatcher Convert(RunSynthesisPatcher settings);
+    RunSynthesisMutagenPatcher Construct(RunSynthesisPatcher settings);
 }
 
-public class GenericSettingsToMutagenSettings : IGenericSettingsToMutagenSettings
+public class ConstructBaseRunArgs : IConstructBaseRunArgs
 {
     public IPatcherExtraDataPathProvider ExtraDataPathProvider { get; }
 
     [ExcludeFromCodeCoverage]
-    public GenericSettingsToMutagenSettings(
+    public ConstructBaseRunArgs(
         IPatcherExtraDataPathProvider extraDataPathProvider)
     {
         ExtraDataPathProvider = extraDataPathProvider;
     }
-        
-    public RunSynthesisMutagenPatcher Convert(RunSynthesisPatcher settings)
+
+    public RunSynthesisMutagenPatcher Construct(RunSynthesisPatcher settings)
     {
         return new RunSynthesisMutagenPatcher()
         {
             DataFolderPath = settings.DataFolderPath,
             GameRelease = settings.GameRelease,
             LoadOrderFilePath = settings.LoadOrderFilePath,
+            LoadOrderIncludesCreationClub = settings.LoadOrderIncludesCreationClub,
             OutputPath = settings.OutputPath,
             SourcePath = settings.SourcePath,
             PersistencePath = settings.PersistencePath,
@@ -38,8 +38,9 @@ public class GenericSettingsToMutagenSettings : IGenericSettingsToMutagenSetting
             TargetLanguage = Enum.Parse<Language>(settings.TargetLanguage),
             ModKey = settings.ModKey,
             UseUtf8ForEmbeddedStrings = settings.UseUtf8ForEmbeddedStrings,
-            FormIDRangeMode = settings.FormIDRangeMode,
             HeaderVersionOverride = settings.HeaderVersionOverride,
+            FormIDRangeMode = settings.FormIDRangeMode,
+            SplitIfMaxMastersExceeded = settings.SplitIfMaxMastersExceeded,
         };
     }
 }
