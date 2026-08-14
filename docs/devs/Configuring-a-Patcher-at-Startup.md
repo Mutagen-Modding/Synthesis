@@ -54,6 +54,27 @@ You can also pass `SetTypicalOpen` any C# Action, which will give you the abilit
 })
 ```
 
+### Extra Parameters
+`SetTypicalOpen` takes an optional `TypicalOpenExtraParameters`, which customizes how the standalone run is configured:
+
+```cs
+.SetTypicalOpen(GameRelease.SkyrimSE, "YourPatcher.esp", new TypicalOpenExtraParameters()
+{
+    Localize = true,
+    TargetLanguage = Language.English,
+})
+```
+
+- `TargetLanguage`: What language to treat as the default _(default `English`)_
+- `Localize`: Whether to use `.STRINGS` files during export _(default false)_
+- `UseUtf8ForEmbeddedStrings`: Use UTF8 when reading/writing embedded localizable strings _(default false)_
+- `HeaderVersionOverride`: Overrides the header version when making a new mod object
+- `FormIDRangeMode`: Controls use of the lower FormID range
+- `SplitIfMaxMastersExceeded`: Whether to split output across multiple files if the master limit is exceeded _(default true)_
+
+!!! info "Standalone runs only"
+    These only apply when your patcher opens standalone.  When the Synthesis pipeline runs your patcher it passes its own [command line arguments](Patcher-CLI.md) instead, driven by the user's profile settings, and these values are not consulted.
+
 ## Run
 Capstone call to the SynthesisPipeline builder which takes in the arguments given to your app when it started and runs the patcher given the rules you've specified.  The program will do nothing if this is missing.
 

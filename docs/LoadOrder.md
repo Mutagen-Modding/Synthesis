@@ -74,3 +74,18 @@ Then the following will occur:
 The result is that A has now built itself on an outdated understanding of B.  This may or may not mean the results will not be as expected, and a 2nd run will suddenly "fix" the issue as now A will see B's new results.
 
 Instead, it is recommended to keep the ordering in sync, unless you plan to run the groups independently in some special custom setup.
+
+## Split Patches
+A patch that references more masters than a single plugin file allows is written out as a numbered set of files instead of one:
+
+```
+Synthesis.esp
+Synthesis_2.esp
+Synthesis_3.esp
+```
+
+These are one logical patch, but each file takes its own slot in your load order, and **they must remain adjacent and in order**.  Placing another mod in between them will cause the next run to fail.
+
+Synthesis keeps these entries arranged correctly on its own as long as the relevant profile settings are enabled.
+
+[:octicons-arrow-right-24: Master Overflow Settings](Master-Overflow-Settings.md)

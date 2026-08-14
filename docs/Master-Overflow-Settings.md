@@ -1,74 +1,71 @@
 # Master Overflow Settings
 
+Bethesda plugin files can only reference a limited number of master files (~255).  As load orders grow, a Synthesis patch that touches records from many different mods can run up against that ceiling.
+
+Master Overflow settings let Synthesis handle that situation by **splitting your patch across several plugin files**, so that each individual file stays under the limit.  This is an opt-in feature: it is off until you turn it on.
+
+When a patch would exceed the master limit, Synthesis writes the patch out as a numbered set of files instead of a single one:
+
+```
+Synthesis.esp
+Synthesis_2.esp
+Synthesis_3.esp
+```
+
+- The first file keeps the plain name.  Numbering on the additional files **starts at `_2`**
+- Each file carries a subset of the records, chosen so that no single file exceeds the master limit
+- Together they represent one logical patch
+
+!!! info "It is still one patch"
+    A split set is not "several patches".  Synthesis, and any patcher running after it, reads the whole set back as a single unified mod.  You do not need to configure anything extra, and patcher authors do not need to write special code.
+
 ## Split Files if Max Masters Exceeded
-This setting allows Synthesis to automatically handle the `TooManyMastersException` by detecting and merging split mod files that were created when a patcher exceeded the master file limit (typically 255 masters in Skyrim).
 
-**Default:** ON (enabled by default)
+This is the main setting toggle.  When enabled, Synthesis splits patch output as described above rather than failing with a `TooManyMastersException`.
 
-## When to Enable
-
-- Turn this ON (default) if you encounter `TooManyMastersException` errors during pipeline execution
-- This allows patchers to create multiple split files (e.g., `Patch_1.esp`, `Patch_2.esp`) when they exceed the master limit
-- The next patcher in the group will automatically detect and merge these split files back together
-
-## Important Requirements
-
-- **All patchers in the group must target a Synthesis version that supports this feature** (v0.36.0 or later)
-- If you have older patchers that need to target older Synthesis versions:
-  - Place them earlier in the patcher group (before the master limit is reached)
-  - This ensures they run successfully before split files are created
-  - Later patchers with modern Synthesis versions can handle the split files
-
-## How It Works
-
-1. When a patcher exceeds the master limit, it creates split files: `ModName_1.esp`, `ModName_2.esp`, etc.
-2. Each split file contains a subset of the masters to stay under the limit
-3. The next patcher with this setting enabled will:
-   - Detect the split files
-   - Merge their contents back together
-   - Present them as a single unified mod in the load order
-   - Continue patching normally
-
-## Example Scenario
-```
-Group Order:
-1. OldPatcher (v0.35.0) - runs first, doesn't create split files
-2. HeavyPatcher (v0.36.0) - adds many masters, creates Patch_1.esp and Patch_2.esp
-3. FinalPatcher (v0.36.0) - merges split files and continues
-```
-
-In this example:
-
-- `OldPatcher` runs with v0.35.0 (doesn't support split files) and completes successfully
-- `HeavyPatcher` hits the master limit and creates `Patch_1.esp` and `Patch_2.esp`
-- `FinalPatcher` automatically detects and merges the split files, then continues patching normally
-
-## Troubleshooting
-
-### Error: "Could not find file 'ModName.esp'"
-This error typically means:
-
-- A patcher created split files (e.g., `ModName_1.esp`, `ModName_2.esp`) but the next patcher doesn't support the split file feature
-- **Solution**: Ensure all patchers in the group use Synthesis v0.36.0 or later, OR place older patchers earlier in the group
-
-### Mixed Version Scenarios
-If you must use older patchers (< v0.36.0) alongside newer ones:
-
-1. **Analyze your load order**: Identify which patchers are likely to cause the master limit to be exceeded
-2. **Place old patchers first**: Put all v0.35.x and older patchers at the beginning of your group
-3. **Place heavy patchers last**: Patchers that add many masters should come after old patchers
-4. This ensures old patchers run before split files are created
-
----
+**Default:** OFF
 
 ## Update Load Order After Run
-When split files are created, your `Plugins.txt` needs to be updated to include the new split files so that the game and other tools recognize them. This setting automates that process.
 
-**Default:** ON (enabled by default)
+This setting automates the addition/removal of new split mod files to the load order as they appear or disappear.
 
-After a successful run, Synthesis will update `Plugins.txt` to reflect the current set of output files:
+**Default:** ON
 
-- **Adds** any new split files (e.g., `Patch_2.esp`, `Patch_3.esp`) that were created
-- **Removes** old split file entries that are no longer produced
-- **Preserves** the original position and enabled/disabled state of the base mod in the load order
-- New entries are inserted adjacent to the base mod entry so that split files remain consecutive
+## Requirements
+
+### Version Requirement
+
+!!! warning "All patchers in the group must support this feature"
+    Split output can only be read back by patchers targeting **Synthesis v0.36.0 or later**.  A patcher on an older version that receives a split set as its input will not understand it, and will typically fail or misbehave
+
+If you have patchers that must stay on older Synthesis versions:
+
+- **Place them earlier in the group**, before the master limit is reached
+- Patchers on modern versions can then come afterwards and handle any split files that appear
+
+See [Versioning](Versioning.md#recommended-setup) for guidance on keeping patchers up to date.
+
+### Adjacency Requirement
+
+**All files in a split set must sit next to each other, in order, in your load order.**
+
+Correct:
+
+```
+ModA.esp
+Synthesis.esp
+Synthesis_2.esp
+Synthesis_3.esp
+ModB.esp
+```
+
+Not allowed:
+
+```
+ModA.esp
+Synthesis.esp
+ModB.esp          <-- breaks up the split set
+Synthesis_2.esp
+```
+
+If the set is broken up, Synthesis will refuse to run and report a non-adjacent split mods error naming the files involved.  The fix is to move the numbered files back together, immediately following their base file.

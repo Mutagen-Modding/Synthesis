@@ -19,6 +19,7 @@ The Synthesis pipeline passes in [command line arguments](https://github.com/Mut
 - `-g`/`--GameRelease`: The game the patch is expected to be run on (SkyrimSE/SkyrimLE/Oblivion/etc)
 - `-d`/`--DataFolderPath`: The path to the data folder to look for mods.  This may or may not be the typical install folder
 - `-l`/`--LoadOrderFilePath`: The path to the load order file to use.  This may or may not be the typical plugins.txt
+- `--SplitIfMaxMastersExceeded`: Whether a patch that exceeds the master limit should be split across numbered files (`Patch.esp`, `Patch_2.esp`, ...).  When on, the `--SourcePath` you are given may itself be such a set, and must be read as a whole rather than just the named file.  [Read More](../Master-Overflow-Settings.md)
 
 ## Other Commands
 There may be other commands Synthesis sends.  Any of these are optional and do not need to be supported in order to be compatible.
