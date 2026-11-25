@@ -12,7 +12,7 @@ public class RanBuildInMo2ErrorVm : ErrorClassificationVm
     private readonly RanBuildInMo2ErrorClassification _error;
 
     // Expose specific error properties for binding
-    public string FilePath => _error.FilePath;
+    public string? FilePath => _error.FilePath;
 
     /// <summary>
     /// Global settings VM for accessing BlockBuildingWithinMo2 setting

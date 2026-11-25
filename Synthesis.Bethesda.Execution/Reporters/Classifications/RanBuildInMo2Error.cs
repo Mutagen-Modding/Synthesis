@@ -9,9 +9,9 @@ public class RanBuildInMo2ErrorClassification : ErrorClassification
 {
     public const string ErrorTypeString = "Mo2 Causing Build Errors";
 
-    public string FilePath { get; }
+    public string? FilePath { get; }
 
-    public RanBuildInMo2ErrorClassification(string filePath)
+    public RanBuildInMo2ErrorClassification(string? filePath = null)
     {
         FilePath = filePath;
     }

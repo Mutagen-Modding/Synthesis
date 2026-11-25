@@ -51,6 +51,7 @@ public class GlobalSettingsVm : ViewModel,
         ISettingsSingleton settingsSingleton,
         BuildCoreCalculator calculator,
         IMo2EnvironmentDetector mo2Detector,
+        Mo2MsBuildServerDisabler mo2MsBuildServerDisabler,
         INavigateTo navigateTo,
         ISchedulerProvider schedulerProvider)
     {
@@ -70,6 +71,9 @@ public class GlobalSettingsVm : ViewModel,
         _isBuildCoresLimitedForMo2 = this.WhenAnyValue(x => x.BlockBuildingWithinMo2)
             .Select(blockMo2 => blockMo2 && mo2Detector.IsRunningInsideMo2())
             .ToGuiProperty(this, nameof(IsBuildCoresLimitedForMo2), initialValue: BlockBuildingWithinMo2 && mo2Detector.IsRunningInsideMo2(), scheduler: schedulerProvider.MainThread);
+
+        this.WhenAnyValue(x => x.BlockBuildingWithinMo2)
+            .Subscribe(mo2MsBuildServerDisabler.Apply);
 
         // When BlockBuildingWithinMo2 is enabled, force Shortcircuit on
         this.WhenAnyValue(x => x.BlockBuildingWithinMo2)
